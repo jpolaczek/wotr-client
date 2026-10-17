@@ -9,6 +9,8 @@ settlements and forces are drawn above them. Their places (`Resources/MapCanvas/
 board units, height from the drawing's aspect) keep clear of the region's name and the forces' row
 (`MapLandmarksTests`). Where the region's name and forces leave little room (Moria, Rivendell, the Woodland Realm) the
 drawing is 30 board units wide and may reach over the region's edge; it never covers a neighbour's name.
+Since UI-258 (2026-10-18, owner's request) every drawing stands at least half on its own region, and Minas Tirith
+(moved right, 44 wide) and Minas Morgul (in the tip of its region under its name, 30 wide) at least three quarters.
 
 **Generation.** OpenAI Images API (`gpt-image-1.5`, 1024×1024, medium quality, transparent background) with the
 user's key from the environment. [Prompts](v1/prompts.json), [generation script](v1/generate.py) and
