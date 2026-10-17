@@ -493,3 +493,10 @@ The damaged file is a row “Damaged play · ...” with a reason; it only works
   library from which the player came (menu or screen before logging in), with the list scrolling
   saved.
 - Delete only removes a local copy and does not send anything to the server.
+
+## Join by code in one readable row — UI-257 (2026-10-18)
+
+The owner's screenshot: in the 250 px action column the code field showed "Cod" and Observe wrapped to "Observ/e".
+Join and Observe are now as wide as their one-line words in 15 px type (`white-space: nowrap`), and the code field takes
+the rest of the row (at least 84 px), so its "Code" placeholder shows whole. The row keeps its height, so the column
+still fits 1366×768 at 125 % (`MainMenuLayoutTests` measures both labels on one line).

@@ -368,9 +368,12 @@
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
 }
 .main-menu .menu-join-line { flex-direction: row; align-items: center; }
-.main-menu .menu-join-code { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 36px; margin: 0 6px 0 0; }
-.main-menu .menu-join-submit { width: 64px; min-width: 64px; height: 36px; min-height: 36px; flex-shrink: 0; }
-.main-menu #observe-invitation { width: 78px; min-width: 78px; margin-left: 6px; }
+/* UI-257: Join and Observe are as wide as their one-line words in a smaller type; the code field takes the rest of the
+   row, wide enough for its placeholder. */
+.main-menu .menu-join-code { flex-grow: 1; flex-shrink: 1; min-width: 84px; height: 36px; margin: 0 6px 0 0; }
+.main-menu .menu-join-submit { flex-grow: 0; flex-shrink: 0; width: auto; min-width: 0; height: 36px; min-height: 36px;
+    padding: 0 8px; font-size: 15px; white-space: nowrap; -unity-text-align: middle-center; }
+.main-menu #observe-invitation { margin-left: 6px; }
 .main-menu .menu-actions-spacer { flex-grow: 1; }
 .main-menu .menu-action-quiet { color: rgb(214, 198, 160); }
 /* MENU-31: Sign out and Quit game side by side in the column's last row. */

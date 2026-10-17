@@ -79,6 +79,14 @@ namespace Wotr.PlayTests
                         Fits(menu.Root.Q<Button>(name), content);
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q("menu-actions"));
                     }
+                    // UI-257: Join and Observe keep their words on one line, and the code field is wide enough for its placeholder.
+                    foreach (var name in new[] { "join-invitation", "observe-invitation" })
+                    {
+                        var button = menu.Root.Q<Button>(name);
+                        var words = button.MeasureTextSize(button.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                        Assert.LessOrEqual(words.x, button.contentRect.width + 0.5f, name + " fits on one line");
+                    }
+                    Assert.GreaterOrEqual(menu.Root.Q<TextField>("table-invitation").worldBound.width, 84, "The code field shows its placeholder.");
                     // MENU-31: Sign out and Quit game share the last row without overlapping.
                     Assert.IsFalse(menu.Root.Q<Button>("sign-out").worldBound.Overlaps(menu.Root.Q<Button>("quit-game").worldBound));
                     Assert.That(menu.Root.Q<Button>("sign-out").worldBound.yMin, Is.EqualTo(menu.Root.Q<Button>("quit-game").worldBound.yMin).Within(.5f));
