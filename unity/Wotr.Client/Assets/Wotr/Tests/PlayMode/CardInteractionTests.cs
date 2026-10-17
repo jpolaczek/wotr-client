@@ -130,8 +130,11 @@ namespace Wotr.PlayTests
                         {
                             Assert.LessOrEqual(card.worldBound.xMax, client.Board.Hand.worldBound.xMax, card.text);
                             Assert.LessOrEqual(card.worldBound.yMax, client.Board.Root.worldBound.yMax, card.text);
-                            var required = card.MeasureTextSize(card.text, card.contentRect.width, VisualElement.MeasureMode.Exactly, 0, VisualElement.MeasureMode.Undefined);
-                            Assert.LessOrEqual(required.y, card.contentRect.height + 1, "Title clipped: " + card.text);
+                            // UI-217: the name sits in the tile's title label (the slot button has no text of its own).
+                            var title = card.Q<Label>("hand-card-title");
+                            var required = title.MeasureTextSize(title.text, title.contentRect.width, VisualElement.MeasureMode.Exactly, 0, VisualElement.MeasureMode.Undefined);
+                            Assert.LessOrEqual(required.y, title.contentRect.height + 1, "Title clipped: " + title.text);
+                            Assert.GreaterOrEqual(title.resolvedStyle.fontSize, CardTitleFit.MinimumSize, title.text);
                         }
                         Assert.IsNull(client.Board.Tray.Q<Button>("confirm-decision"));
                         LayoutTests.AssertNoDecisionScroll(client.Board);

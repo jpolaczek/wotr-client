@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -29,6 +30,9 @@ namespace Wotr.Client
         private readonly Label hint = Text("hand-card-hint");
         private readonly Label ready = Text("card-ready");
         private float collapsedHeight;
+        // UI-217: the stylesheet size of the tile title, read while no fitted size overrides it.
+        private float normalTitleSize;
+        private bool titleShrunk;
 
         public HandCard(string id, Action clicked)
         {
@@ -53,6 +57,7 @@ namespace Wotr.Client
             Face.Add(compact);
             Face.Add(ready);
             Slot.Add(Face);
+            title.RegisterCallback<GeometryChangedEvent>(_ => FitTitle());
             // Inside its slot the button's own click handles the press; above it only the face can.
             // UI-142: every click counts; a fast second click on an armed card plays it like a slow one.
             Face.RegisterCallback<ClickEvent>(e =>
@@ -65,7 +70,13 @@ namespace Wotr.Client
         public void Apply(MatchConfiguration configuration, bool battle, bool fromTable)
         {
             var card = CardLibrary.Cards[Id];
-            title.text = battle && card.HasCombat ? card.CombatTitle : card.Title;
+            var name = battle && card.HasCombat ? card.CombatTitle : card.Title;
+            if (title.text != name)
+            {
+                title.text = name;
+                // Another name of the same width does not change the label's geometry.
+                title.schedule.Execute(FitTitle);
+            }
             fullTitle.text = card.Title;
             kind.text = CardTextFormat.Kind(card) + (fromTable ? " · FROM THE TABLE" : "");
             eventText.text = CardLibrary.EventText(card, configuration);
@@ -86,6 +97,9 @@ namespace Wotr.Client
         // The full layer always keeps the expanded width, so its height is known and text never reflows while the face moves.
         public void Place(float left, float top, float width, float height, float gridWidth)
         {
+            // The compact board changes the tile and its title's stylesheet size; fit again from that size.
+            if (!Mathf.Approximately(height, collapsedHeight))
+                ResetTitle();
             collapsedHeight = height;
             Slot.style.left = left;
             Slot.style.top = top;
@@ -122,6 +136,38 @@ namespace Wotr.Client
             Face.style.left = 0;
             Face.style.width = Slot.style.width;
             Face.style.height = collapsedHeight;
+        }
+
+        private void FitTitle()
+        {
+            var available = title.contentRect.width;
+            if (title.panel == null || float.IsNaN(available) || available <= 0 || string.IsNullOrWhiteSpace(title.text))
+                return;
+            var current = title.resolvedStyle.fontSize;
+            if (!titleShrunk)
+                normalTitleSize = current;
+            var words = title.text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(TitleWidth).ToArray();
+            var space = TitleWidth("I I") - 2 * TitleWidth("I");
+            var size = CardTitleFit.Size(words, space, current, normalTitleSize, available);
+            if (size >= normalTitleSize)
+                ResetTitle();
+            // A slightly larger result can come from rounding of the measured widths; only a real gain changes the size.
+            else if (size < current - .1f || size >= current + .5f)
+            {
+                title.style.fontSize = size;
+                titleShrunk = true;
+            }
+        }
+
+        private float TitleWidth(string text) =>
+            title.MeasureTextSize(text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+
+        private void ResetTitle()
+        {
+            if (!titleShrunk)
+                return;
+            title.style.fontSize = StyleKeyword.Null;
+            titleShrunk = false;
         }
 
         private static ActionSymbol Symbol(DieFace face)
