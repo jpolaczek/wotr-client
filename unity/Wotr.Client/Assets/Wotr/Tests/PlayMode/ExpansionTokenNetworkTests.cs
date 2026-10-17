@@ -74,7 +74,7 @@ namespace Wotr.PlayTests
                 Assert.AreSame(room.Fp.Board.Characters.DecisionHost, room.Fp.Board.Tray.parent,
                     "The selected ability stays in its character inspector without a second action selection.");
                 var cost = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
-                StringAssert.Contains("→", room.Fp.Board.Tray.Q<Button>("cost-" + cost.Id).text);
+                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("cost-" + cost.Id), "UI-239: the only die is taken for the player.");
                 Assert.AreEqual(DieFace.Character, cost.Face, "The draft must not change the projected die.");
                 await Layout(room, room.Fp, "ruler-recruit", "ui09");
                 await Reconnect(room, room.Fp);
@@ -214,10 +214,9 @@ namespace Wotr.PlayTests
                 // UI-108/UI-142: the token panel has no entry button; the Serpent's row enters by a click.
                 Assert.IsNull(room.Sh.Board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + ComponentGestures.Character(choice)));
                 await ComponentGestures.Enter(room, room.Sh, choice);
-                Assert.IsTrue(room.Sh.Board.Tray.Q<Button>("cost-" + choice.Dice[0]).ClassListContains("selected"));
+                Assert.IsNull(room.Sh.Board.Tray.Q<Button>("cost-" + choice.Dice[0]), "UI-239: the only die is not a button.");
                 await Layout(room, room.Sh, "entry-token", "ui09");
                 await Reconnect(room, room.Sh);
-                Assert.IsTrue(room.Sh.Board.Tray.Q<Button>("cost-" + choice.Dice[0]).ClassListContains("selected"));
                 var revision = room.Sh.Board.View.Revision;
                 room.Sh.Board.Map.Select("near-harad");
                 await room.At(revision + 1);
@@ -236,7 +235,6 @@ namespace Wotr.PlayTests
                 await ComponentGestures.Cost(room, room.Sh, choice.Dice[0]);
                 await ComponentGestures.Enter(room, room.Sh, choice);
                 Click(room.Sh, "character-reserve-sauron-Elite");
-                Click(room.Sh, "cost-" + choice.Dice[0]);
                 var before = room.Sh.Board.View.Units.Count(u => u.Location == "moria" && u.Kind == UnitKind.Elite);
                 await Layout(room, room.Sh, "balrog-entry", "ui09");
                 await room.Confirm(room.Sh);

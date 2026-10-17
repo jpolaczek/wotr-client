@@ -114,7 +114,8 @@ namespace Wotr.Client
                     ? "Click a card, then click it again to discard it face down."
                     : NazgulFlightDraft.Active(view, draft) ? NazgulFlightDraft.Hint(view, draft)
                     : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)
-                    : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft) : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
+                    : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
+                    : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
                     SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Owns(view)
                     ? "" : "Select your components, then confirm.";

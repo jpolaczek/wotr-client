@@ -18,7 +18,7 @@ namespace Wotr.EditorTests
             DraftGesture.Choose(draft, view, option.Kind);
             Assert.IsFalse(draft.Ready(option));
             CharacterDraft.Select(draft, view, choice);
-            Assert.IsEmpty(draft.Payload.DieId);
+            Assert.AreEqual("die", draft.Payload.DieId, "UI-239: the only die is taken for the player.");
             CharacterDraft.Region(draft, option, "fangorn");
             draft.Change(p => p.DieId = "die");
             Assert.IsTrue(draft.Ready(option));

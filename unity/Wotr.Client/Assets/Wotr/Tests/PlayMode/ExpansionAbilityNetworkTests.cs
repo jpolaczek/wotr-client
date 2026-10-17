@@ -42,7 +42,7 @@ namespace Wotr.PlayTests
                     Click(client, "character-reserve-" + nation + "-" + placement.Item2);
                 }
                 var before = client.Board.View.Units.Count(u => u.Nation == nation && u.Location == "reserve");
-                Click(client, "cost-" + choice.Dice.Single());
+                Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + choice.Dice.Single()), "UI-239: the only die is taken for the player.");
                 await Layout(room, client, dain ? "dain" : "brand", "t34");
                 await Reconnect(room, client);
                 await room.Confirm(client);

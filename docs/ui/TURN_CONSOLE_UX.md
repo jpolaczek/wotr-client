@@ -77,6 +77,11 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-239 (2026-10-17): bringing a character into play opens no window of choiceless buttons. The tray shows character
+  buttons only while none is chosen, Change only with several characters, and cost dice only when they differ
+  (`CharacterChoices.DiceChoice`); one die, or identical dice, are taken for the player (`CharacterDraft.UniformDie`).
+  A chosen character that needs only a region leaves the tray without choices, so the window stays closed and the
+  console reads "Gandalf the White · Click a highlighted region on the map" (`CharacterChoices.RegionHint`).
 - UI-237 (2026-10-17): action dice are chosen by clicks only. Pressing a die and moving the pointer starts no drag,
   shows no ghost and drops nothing (`DraftInput`, as for armies and figures since UI-105); the Hunt allocation, costs
   and every other die choice work by click. Rings, ruler tokens and cards keep their drops.
