@@ -18,6 +18,11 @@ namespace Wotr.Client
         private string description = "";
         private CharacterRosterView shown;
         private bool offered;
+        private bool chosen;
+        private string statusText = "";
+        // UI-243: the chosen row while its entry waits for a region: solid gold and a short instruction.
+        public const string ChosenClass = "entry-chosen";
+        public const string ChosenHint = "Choose a highlighted region";
 
         public CharacterRosterRow(string id)
         {
@@ -54,7 +59,8 @@ namespace Wotr.Client
             portrait.EnableInClassList("shadow", entry.Side == Side.Shadow);
             var location = data.Regions.TryGetValue(entry.RegionId, out var region) ? region.Name : "";
             var state = CharacterCardFacts.Status(entry, location);
-            detail.text = state.Short;
+            statusText = state.Short;
+            detail.text = chosen ? ChosenHint : statusText;
             statusIcon.RemoveFromClassList("character-status-" + status);
             statusIcon.AddToClassList("character-status-" + state.Key);
             status = state.Key;
@@ -79,6 +85,14 @@ namespace Wotr.Client
         {
             offered = entry;
             ShowOffer();
+        }
+
+        public void Choose(bool value)
+        {
+            chosen = value;
+            Root.EnableInClassList(ChosenClass, value);
+            detail.text = value ? ChosenHint : statusText;
+            detail.EnableInClassList("entry-chosen-hint", value);
         }
 
         private void ShowOffer()

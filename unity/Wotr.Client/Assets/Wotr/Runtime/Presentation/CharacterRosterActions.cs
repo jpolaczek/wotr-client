@@ -35,6 +35,10 @@ namespace Wotr.Client
             view?.Decision?.Kind == DecisionKind.Action && !view.Winner.HasValue && draft.Kind != CommandKind.EnterCharacter &&
             DecisionFigure(view, draft).Length > 0;
 
+        public static string EnteringFigure(PlayerView view, TurnDraft draft) =>
+            draft.Kind == CommandKind.EnterCharacter && draft.Payload.RegionId.Length == 0 && view.DecisionOwner == view.You
+                ? Figure(view, draft.Payload.CharacterId) : "";
+
         public static bool HasReaction(PlayerView view, string id) =>
             id.Length > 0 && view?.Decision != null && view.DecisionOwner == view.You && view.Decision.Kind != DecisionKind.Action &&
             (Figure(view, view.Decision.SourceId) == id || view.Options.Any(option =>

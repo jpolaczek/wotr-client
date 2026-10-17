@@ -67,7 +67,7 @@ namespace Wotr.Client
             if (draft.Kind != CommandKind.EnterCharacter || draft.Payload.RegionId.Length > 0)
                 return "";
             var selected = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
-            return selected == null || selected.Recruitment.Count > 0 ? "" : CharacterLibrary.Name(selected.CharacterId) + " · Click a highlighted region on the map";
+            return selected == null || selected.Recruitment.Count > 0 ? "" : CharacterLibrary.Name(selected.CharacterId) + " · Choose a highlighted region on the map";
         }
 
         // One die, or dice of one kind, are chosen for the player; only different dice are a choice worth a button.

@@ -153,11 +153,13 @@ namespace Wotr.Client
             var offered = false;
             foreach (var row in rows)
             {
-                var entry = Enterable(row.Key);
+                var chosen = row.Key == Actions.EnteringFigure;
+                var entry = Enterable(row.Key) && !chosen;
                 offered |= entry;
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry);
+                row.Value.Choose(chosen);
             }
             pulse.Run(offered);
         }

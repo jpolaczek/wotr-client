@@ -75,3 +75,12 @@
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1.05 1.05;
 }
+
+/* UI-243: the Characters row whose entry waits for a region stays chosen: solid gold, no pulse, and its second line
+   reads "Choose a highlighted region". */
+#board-screen .edge-left-panel .character-roster-grid .action.entry-chosen {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(150, 110, 30, 0.75);
+}
+#board-screen .edge-left-panel .character-roster-grid .entry-chosen-hint { color: rgb(255, 226, 150); -unity-font-style: bold; }

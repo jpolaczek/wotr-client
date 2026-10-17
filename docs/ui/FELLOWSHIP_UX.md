@@ -437,3 +437,13 @@ line of embers (`mordor-track-path`), the current stone burns orange, passed sto
 the last one holds the Crack of Doom. The stones never line up with the square cells of the corruption track below.
 The row keeps its fixed height in every layout (42 px, 32 px dropped down, 25 px compact). Styles: `Styles/Mordor.uss`,
 replaceable without code.
+
+## A visibly chosen character while its region is chosen — UI-243 (2026-10-17)
+
+After a click on an enterable row in the Characters panel (UI-240), the row stays chosen while the entry, or the
+change into the next version, waits for its region: a solid gold rim on a warm plate without the pulse
+(`entry-chosen`), and its second line reads "Choose a highlighted region" in place of its status. The highlighted
+regions glow on the map, and the console reads "Gandalf the White · Choose a highlighted region on the map"
+(UI-239). A region click enters the character; Back clears the choice. Sizes stay fixed
+(`CharacterRosterActions.EnteringFigure`, `CharacterRosterRow.Choose`; test
+`CharacterRosterActionTests.AnEntryComesFromItsRowAndNeverHostsTheInspector`).

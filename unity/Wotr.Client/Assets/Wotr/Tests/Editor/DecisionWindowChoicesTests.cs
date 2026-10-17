@@ -62,7 +62,7 @@ namespace Wotr.EditorTests
             tray.HintChanged += (text, _) => hint = text;
             tray.Render(view, draft, false, false);
             Assert.IsFalse(tray.HasChoices, "The chosen character and its only die are not buttons.");
-            Assert.AreEqual("Gandalf the White · Click a highlighted region on the map", hint);
+            Assert.AreEqual("Gandalf the White · Choose a highlighted region on the map", hint);
             Assert.AreEqual("w", draft.Payload.DieId);
             choice.Dice.Add("c");
             view.Dice.Add(new DieView { Id = "c", Face = DieFace.Character, Source = "standard", Owner = Side.FreePeoples, Location = DieLocation.Available });

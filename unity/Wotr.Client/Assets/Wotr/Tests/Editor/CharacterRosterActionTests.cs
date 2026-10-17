@@ -130,6 +130,15 @@ namespace Wotr.EditorTests
             Assert.IsFalse(CharacterRosterActions.OwnsDecision(view, draft));
             Assert.AreSame(dock, tray.parent, "The prepared entry stays in the decision dock.");
             Assert.AreEqual(DisplayStyle.None, panel.Inspector.Root.style.display.value, "Preparing an entry opens no window.");
+            // UI-243: the chosen row stays chosen and asks for a region while the regions glow on the map.
+            Assert.AreEqual(Grey, panel.Actions.EnteringFigure);
+            var row = panel.Root.Q<Button>("character-roster-" + Grey);
+            Assert.IsTrue(row.ClassListContains("entry-chosen"));
+            Assert.IsFalse(row.ClassListContains(ChoiceGlow.ClassName), "A chosen row no longer pulses as an offer.");
+            Assert.AreEqual("Choose a highlighted region", row.Q<Label>("character-roster-detail").text);
+            panel.Actions.Apply(view, idle, ComponentActions.For(view, idle), true);
+            Assert.IsFalse(row.ClassListContains("entry-chosen"), "Back clears the choice.");
+            Assert.AreNotEqual("Choose a highlighted region", row.Q<Label>("character-roster-detail").text);
         }
 
         [Test]

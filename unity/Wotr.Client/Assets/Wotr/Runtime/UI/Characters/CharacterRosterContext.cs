@@ -12,6 +12,8 @@ namespace Wotr.Client
         public event Action<ComponentAction> Selected;
         public Action OpenReaction { get; set; }
         public string DecisionFigure { get; private set; } = "";
+        // UI-243: the figure whose entry (or change into its next version) waits for a region on the map.
+        public string EnteringFigure { get; private set; } = "";
         private readonly CharacterRosterPanel panel;
         private readonly ComponentActionView actions = new ComponentActionView();
         private readonly Button reaction;
@@ -61,6 +63,7 @@ namespace Wotr.Client
             enabled = canEdit;
             DecisionFigure = CharacterRosterActions.OwnsDecision(view, draft)
                 ? CharacterRosterActions.DecisionFigure(view, draft) : "";
+            EnteringFigure = CharacterRosterActions.EnteringFigure(view, draft);
             decisionVersion = DecisionFigure.Length == 0 ? "" : draft.Kind == CommandKind.EnterCharacter
                 ? draft.Payload.CharacterId
                 : view.OwnCharacterRoster.First(row => row.FigureId == DecisionFigure).CurrentDefinitionId;
