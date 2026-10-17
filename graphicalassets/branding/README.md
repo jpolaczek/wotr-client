@@ -1,13 +1,23 @@
 # Release application icon
 
 The shared War of the Ring Online icon is a gold ring on a warm charcoal
-rounded-square plate with transparent outer corners. It is original artwork
-generated for this project with the built-in imagegen tool on 2026-10-16.
+rounded-square plate with transparent outer corners.
+
+**Since UI-260 (2026-10-18)** the master is [v2](v2/): the owner found the first ring
+flat and crooked (its band thinned to one side and the hole sat off centre). The new
+ring lies tilted back in correct perspective with a band of constant thickness, the
+far inner surface visible and a soft contact shadow; it is mirror-symmetric about the
+vertical axis and reads at 16–32 px. Generated with the OpenAI Images API
+(`gpt-image-1.5`, 1024×1024, high quality, transparent background) with the owner's key
+from the environment: [prompts](v2/prompts.json), [script](v2/generate.py) and
+[journal](v2/generations.jsonl) with three candidates in `v2/raw/` (`ring-tilted` chosen;
+`ring-upright` read as a letter O, `ring-floating` leaned). The key never enters the files.
+The first icon (2026-10-16, built-in imagegen tool) is kept as [v1](v1/wotr-icon-master.png).
 No existing publisher artwork or other image was supplied as a reference.
 
 ## Files
 
-- [wotr-icon-master.png](wotr-icon-master.png): untouched generated master.
+- [wotr-icon-master.png](wotr-icon-master.png): the chosen generated master (a copy of `v2/raw/ring-tilted.png`).
 - [wotr.png](../../release/icons/wotr.png): 1024×1024 portable PNG.
 - [wotr.ico](../../release/icons/wotr.ico): Windows, 16/24/32/48/64/128/256 px.
 - [wotr.icns](../../release/icons/wotr.icns): macOS standard and Retina sizes
@@ -28,7 +38,7 @@ PNGs in a Windows ICO directory. It does not invoke an image generation API.
 Keep alpha and the complete app-icon plate; do not crop away the ring.
 The master remains untouched. Review small sizes before replacing the artwork.
 
-## Final generation prompt
+## First icon's generation prompt (v1)
 
 Tool: built-in `image_gen.imagegen`; transparent_background: true.
 

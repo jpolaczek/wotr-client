@@ -1,0 +1,13 @@
+{
+  "version": "branding-v2",
+  "model": "gpt-image-1.5",
+  "size": "1024x1024",
+  "quality": "high",
+  "background": "transparent",
+  "style": "Use case: logo-brand. A polished square 1024x1024 desktop application icon for the game War of the Ring Online, one finished icon, not a mockup or a sheet. Plate: a warm charcoal-black rounded square with a very restrained fine stone texture, occupying about 90 percent of the canvas, clean antialiased edges, fully transparent outside the plate. Subject: the One Ring \u2014 a single plain, smooth, thick band of polished antique gold with no gems, no engraving and no inscription. Geometry is the priority: the band has exactly constant thickness all the way round; the ring is a perfect circle seen in correct, consistent perspective, so its outline is a clean symmetric ellipse centred on the plate and mirror-symmetric about the vertical axis; the hole is centred inside the ring; the inner surface of the far side of the band is visible and the near side of the band shows its outer surface, exactly as a real ring photographed with a lens. Lighting: warm key light from upper left, crisp specular highlights running along the curve of the band, deep soft shadow inside the hole, a faint ember-red glow reflected on the inner surface only, a soft contact shadow under the ring on the plate. The ring occupies about 62 percent of the plate width with generous margin, bold silhouette that reads at 16 to 32 pixels. No text, letters, runes, symbols, characters, frame or watermark. View: ",
+  "items": {
+    "ring-tilted": "the ring lies on the plate tilted back about 55 degrees from the viewer, seen from slightly above, so it reads as a wide horizontal ellipse with the far inner surface clearly visible.",
+    "ring-upright": "the ring stands upright facing the viewer, turned only about 20 degrees around its vertical axis, so it reads as a tall slightly narrowed ellipse with a sliver of the inner surface visible on one side, perfectly vertical and not leaning.",
+    "ring-floating": "the ring floats above the plate, tilted back about 40 degrees, seen from slightly above and exactly from the front, perfectly level left to right, with its soft shadow cast on the plate below."
+  }
+}
