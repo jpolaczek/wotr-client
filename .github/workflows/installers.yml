@@ -1,7 +1,7 @@
 # DIST-06: release players built with GameCI, packed into Velopack installers (scripts/package_velopack.py) and
-# smoke-tested on Windows and macOS runners: install, self-check, update to the next package, player data kept,
-# uninstall. Run by hand for an acceptance build; DIST-10's release workflow calls it for every tag. Artifacts:
-# installers-<version> (both platforms with SHA256SUMS) and evidence-windows / evidence-macos. Repository secrets:
+# smoke-tested on Windows, macOS and Linux runners: install, self-check, update to the next package, player data
+# kept, uninstall. Run by hand for an acceptance build; DIST-10's release workflow calls it for every tag. Artifacts:
+# installers-<version> (all platforms with SHA256SUMS) and evidence-windows / -macos / -linux. Repository secrets:
 # UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD (Unity Personal). The pinned wotr-server
 # releases are public; the job token only raises the API rate limit.
 name: Installers
@@ -77,6 +77,9 @@ jobs:
           - target: StandaloneWindows64
             method: BuildReleaseWindows
             folder: windows
+          - target: StandaloneLinux64
+            method: BuildReleaseLinux
+            folder: linux
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
@@ -227,8 +230,50 @@ jobs:
           path: evidence
           retention-days: 14
 
+  # LNX-02: the AppImage packs and runs on Linux; vpk needs mksquashfs, the AppImage needs FUSE.
+  linux:
+    needs: [prepare, unity]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: player-linux
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Tools (squashfs-tools, FUSE, vpk)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq squashfs-tools fuse3
+          dotnet tool install --global vpk --version "$VPK_VERSION"
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Pack the release and the smoke package
+        run: |
+          mkdir -p ".artifacts/releases/$VERSION"
+          tar -C ".artifacts/releases/$VERSION" -xzf player-linux.tgz
+          python3 scripts/package_velopack.py pack --platform linux
+          python3 scripts/package_velopack.py pack --platform linux --smoke-output .artifacts/smoke/linux
+      - name: Install, self-check, update, remove
+        run: |
+          bash scripts/smoke-installer-linux.sh ".artifacts/releases/$VERSION/installers/linux-x64" \
+            .artifacts/smoke/linux evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-linux-x64
+          path: .artifacts/releases/${{ env.VERSION }}/installers/linux-x64
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-linux
+          path: evidence
+          retention-days: 14
+
   verify:
-    needs: [prepare, pack-windows, macos]
+    needs: [prepare, pack-windows, macos, linux]
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
@@ -242,6 +287,10 @@ jobs:
         with:
           name: installers-macos-universal
           path: .artifacts/releases/${{ env.VERSION }}/installers/macos-universal
+      - uses: actions/download-artifact@v4
+        with:
+          name: installers-linux-x64
+          path: .artifacts/releases/${{ env.VERSION }}/installers/linux-x64
       - name: Sums and verification
         run: |
           python3 scripts/package_velopack.py sums

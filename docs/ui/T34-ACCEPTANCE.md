@@ -4,7 +4,7 @@
 <a id="zakres-i-źródła"></a>
 ## Scope and sources
 
-R02/R03 and R15/R17–R20; S17–S19. The sources of rules and all 93 legal configurations are pinned in [T33](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T33-COMPOSITION.md), and the implementation of controls and previous results is described by [UI-09](UI-09-IMPLEMENTATION.md). We do not change the interpretation of rules during acceptance. The server is still responsible for the legality, drawing, recording and separate projections of both sides.
+R02/R03 and R15/R17–R20; S17–S19. The sources of rules and all 93 legal configurations are pinned in [T33](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T33-COMPOSITION.md), and the implementation of controls and previous results is described by [UI-09](UI-09-IMPLEMENTATION.md). We do not change the interpretation of rules during acceptance. The server is still responsible for the legality, drawing, recording and separate projections of both sides.
 
 <a id="plan-przed-zmianami"></a>
 ## Plan before changes

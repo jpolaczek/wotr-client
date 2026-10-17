@@ -12,7 +12,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 # Folder: (BuildTasks method, Unity build target, ClientBuildInfo platform of DIST-05).
 PLATFORMS = {"macos": ("BuildReleaseMac", "StandaloneOSX", "macos-universal"),
-             "windows": ("BuildReleaseWindows", "StandaloneWindows64", "windows-x64")}
+             "windows": ("BuildReleaseWindows", "StandaloneWindows64", "windows-x64"),
+             "linux": ("BuildReleaseLinux", "StandaloneLinux64", "linux-x64")}
 # Client inputs only (DIST-03): server sources reach the client as archives pinned in the lock.
 SOURCE_PATHS = ["unity/Wotr.Client/Assets", "unity/Wotr.Client/Packages", "unity/Wotr.Client/ProjectSettings",
                 "scripts", "release", "wotr-deps.lock.json"]

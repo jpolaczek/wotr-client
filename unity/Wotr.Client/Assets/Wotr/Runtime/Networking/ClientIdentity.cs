@@ -54,8 +54,12 @@ namespace Wotr.Client
         private static ClientBuildInfo Development() => new ClientBuildInfo
         {
             Version = DevelopmentVersion(),
-            Platform = Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer
-                ? ClientPlatforms.Windows : ClientPlatforms.MacOS,
+            Platform = Application.platform switch
+            {
+                RuntimePlatform.WindowsEditor or RuntimePlatform.WindowsPlayer => ClientPlatforms.Windows,
+                RuntimePlatform.LinuxEditor or RuntimePlatform.LinuxPlayer => ClientPlatforms.Linux,
+                _ => ClientPlatforms.MacOS
+            },
             Development = true,
             ProtocolVersion = Protocol.Version,
             RulesVersion = Protocol.RulesVersion,

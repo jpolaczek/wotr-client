@@ -1,7 +1,7 @@
 <a id="map-17--raport-odbioru-mapy-z-konturów"></a>
 # MAP-17 — acceptance report on contour maps
 
-Final report from 2026-10-08 . Verification shall include . NET **3723/3723**, Editor **478/478** and full Play **440/440** in 42 hosts; new regression card total **441** unique Play cases, zero skip. HTTPS/WSS , three builds, macOS smokes and Development Player with 36 measurements and inspections of all 42 PNG counted within the defined scope. The status of the task remains only within [Register](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/tasks/tasks.json) The limitations on platforms and window placement are publicized below.
+Final report from 2026-10-08 . Verification shall include . NET **3723/3723**, Editor **478/478** and full Play **440/440** in 42 hosts; new regression card total **441** unique Play cases, zero skip. HTTPS/WSS , three builds, macOS smokes and Development Player with 36 measurements and inspections of all 42 PNG counted within the defined scope. The status of the task remains only within [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json) The limitations on platforms and window placement are publicized below.
 
 <a id="dane-i-zakres"></a>
 ## Data and scope
@@ -18,9 +18,9 @@ Final report from 2026-10-08 . Verification shall include . NET **3723/3723**, E
   renderer gets 142 164 points. These are input data counters with MapProfileMemory/MapRenderer , no
   GPU vertics or the sum of variants.
 - Sources: [import and
-  restrictions](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/MAP-12-GEOMETRY.json),
+  restrictions](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/MAP-12-GEOMETRY.json),
   [Comparison of borders with
-  board](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/map13-review/README.md),
+  board](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/map13-review/README.md),
   [plan and pallet](MAP_CONTOURS_UX.md), [Interaction](MAP15_INTERACTION_COVERAGE.md). interpolated
   source lines under mountains/panels and primary route tolerance remain public; acceptance does not
   add imaginary transitions.

@@ -31,7 +31,9 @@ namespace Wotr.Client
                 screen = null;
                 return;
             }
-            if (Application.platform == RuntimePlatform.WindowsPlayer && Cursor.lockState != CursorLockMode.Confined)
+            // Windows and Linux (X11/XWayland, the Steam Deck) confine the cursor themselves; macOS needs KeepOnScreen.
+            if ((Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.LinuxPlayer) &&
+                Cursor.lockState != CursorLockMode.Confined)
                 Cursor.lockState = CursorLockMode.Confined;
             else if (Application.platform == RuntimePlatform.OSXPlayer)
                 KeepOnScreen();

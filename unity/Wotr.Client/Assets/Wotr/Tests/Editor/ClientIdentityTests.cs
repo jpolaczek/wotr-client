@@ -93,6 +93,8 @@ namespace Wotr.Client.Tests
             Assert.IsTrue(local.Development);
             Assert.AreEqual(PublicContentLock.PinnedVersion(root), local.PublicContentVersion);
             Assert.AreEqual(ClientPlatforms.MacOS, ClientBuildIdentity.Create(BuildTarget.StandaloneOSX, release: false).Platform);
+            Assert.AreEqual(ClientPlatforms.Linux, ClientBuildIdentity.Create(BuildTarget.StandaloneLinux64, release: false).Platform);
+            Assert.AreEqual("Linux", UpdateTexts.Platform(ClientPlatforms.Linux));
             if (Environment.GetEnvironmentVariable("WOTR_BUILD_COMMIT") == null)
                 Assert.Throws<InvalidOperationException>(() => ClientBuildIdentity.Create(BuildTarget.StandaloneOSX, release: true));
         }

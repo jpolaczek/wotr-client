@@ -6,7 +6,7 @@
 
 Recovery of uncertain command takes precedence over the draft tips. The change of election message after the new revision cannot disable `Check result`. The availability of recovery depends on the connection and ongoing request; confirmation of the new action still requires an up-to-date preview. The actual `UI10NetworkTests.Receipt` also checks the availability of the button after the opponent's move when the old cost has disappeared from draft.
 
-The range is based on R09/R10/R11/R17/R21, U03/U11, S20–S21 and [transactions T07](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/server/T07-TRANSACTIONS.md). The server remains the owner of legality, cost, draws and write. The client does not interpret the receipt as the new state of board; he collects a safe projection. We do not change the DTO nor the rules of the game.
+The range is based on R09/R10/R11/R17/R21, U03/U11, S20–S21 and [transactions T07](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/server/T07-TRANSACTIONS.md). The server remains the owner of legality, cost, draws and write. The client does not interpret the receipt as the new state of board; he collects a safe projection. We do not change the DTO nor the rules of the game.
 
 | Entry | Conditions of acceptance and result |
 | --- | --- |

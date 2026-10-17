@@ -1,7 +1,7 @@
 <a id="walki-powiadomienia-i-dziennik-akcji"></a>
 # Combats, notifications and the action journal
 
-Plan agreed 2026-10-07. UI-37 receives documentation preparation; [UI-38–UI-47](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/ROADMAP.md) realizes data, client and integration. Status and evidence remain only in [Register](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/tasks/tasks.json). This document does not confirm implementation.
+Plan agreed 2026-10-07. UI-37 receives documentation preparation; [UI-38–UI-47](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ROADMAP.md) realizes data, client and integration. Status and evidence remain only in [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json). This document does not confirm implementation.
 
 <a id="cel-i-granice"></a>
 ## Purpose and boundaries
@@ -233,7 +233,7 @@ The red tab click shows immediately the full card at Hunt, with source, cost and
 
 Implementation descriptions and results below UI-38 – UI-72 document the condition of 2026-10-08 UTC before UI-80 They keep historical gestures hover/pin and actual results; the current opening standards are in sections above, and BOARD_INTERACTION_UX These results are not acceptance new behavior of tooltips and windows.
 
-API , typical models and cursors define [CONTRACTS](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/CONTRACTS.md) The source is the existing GameEvent with fixed metadata and context action Two. marches/Finish read older pages and grow filter secrets before you limitami/rodzicami/licznikami. Older texts don't get guessed facts. `ActionLog*Tests` include actual movement, > 120 entries, 5000 entries for measurement, legacies, migration, privacy and process restart Kestrel/PG. Evidence and limitations: UI-38 The foundation itself does not count BA02 neither views UI-41 – UI-47 ; other families are within the scope UI-39 .
+API , typical models and cursors define [CONTRACTS](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/CONTRACTS.md) The source is the existing GameEvent with fixed metadata and context action Two. marches/Finish read older pages and grow filter secrets before you limitami/rodzicami/licznikami. Older texts don't get guessed facts. `ActionLog*Tests` include actual movement, > 120 entries, 5000 entries for measurement, legacies, migration, privacy and process restart Kestrel/PG. Evidence and limitations: UI-38 The foundation itself does not count BA02 neither views UI-41 – UI-47 ; other families are within the scope UI-39 .
 
 <a id="integracja-pozostałego-ui-partii--ui-62"></a>
 ## Integration of the remaining UI batch — UI-62

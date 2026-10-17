@@ -1,7 +1,7 @@
 <a id="klient-unity--budowanie-i-testy"></a>
 # Unity Client — Building and Testing
 
-Moved from `docs/DEVELOPMENT.md` monorepo at the repository division (DIST-03). The instructions for the backend, the database and implementation are in [DEVELOPMENT server](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/DEVELOPMENT.md). Before running Unity `scripts/unity.sh` downloads pinned with dependencies (`python3 scripts/bootstrap_deps.py`, description in [README](../README.md)).
+Moved from `docs/DEVELOPMENT.md` monorepo at the repository division (DIST-03). The instructions for the backend, the database and implementation are in [DEVELOPMENT server](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DEVELOPMENT.md). Before running Unity `scripts/unity.sh` downloads pinned with dependencies (`python3 scripts/bootstrap_deps.py`, description in [README](../README.md)).
 
 In the server settings, each build, also without Development Build, allows you to save local HTTP: `http://127.0.0.1:5088`, `http://localhost:5088` or `http://[::1]:5088`. The server on this port must actually support HTTP; the port change itself in the address HTTPS does not change the protocol. Other servers require HTTPS. The settings record checks the address format, not the server availability; the account and the parties are part of the database of the selected base.
 

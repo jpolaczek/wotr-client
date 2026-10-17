@@ -1,7 +1,7 @@
 <a id="mapa-z-istniejących-konturów--plan-map-12map-17"></a>
 # Map from existing contours — MAP-12-MAP-17 plan
 
-The project with 2026-10-08 after correction of MAP-10. The status of the implementation is only in [Register](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/tasks/tasks.json). MAP-11 receives the documentation; the change of Unity map itself remains to be performed in subsequent tasks.
+The project with 2026-10-08 after correction of MAP-10. The status of the implementation is only in [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json). MAP-11 receives the documentation; the change of Unity map itself remains to be performed in subsequent tasks.
 
 <a id="rezultat-i-źródła"></a>
 ## Result and sources
@@ -15,18 +15,18 @@ Sources:
   neighboring nations and water areas. These are existing designations of board.
 - Board scan `wotr-server:graphicalassets/highedfmap.jpeg` (local-only, not in git — D17),
   [audit
-  data](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/T04-DATA-AUDIT.md)
+  data](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/T04-DATA-AUDIT.md)
   and
-  [base-board](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/content/base-board.json):
+  [base-board](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/content/base-board.json):
   names, nations, settlement, 105 ID and 232 uncomplicated connections of ordinary motion.
-- [geometry.json](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/graphicalassets/region-map/geometry.json),
-  [map-regions.svg](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/graphicalassets/region-map/map-regions.svg),
-  [README](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/graphicalassets/region-map/README.txt)
+- [geometry.json](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/graphicalassets/region-map/geometry.json),
+  [map-regions.svg](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/graphicalassets/region-map/map-regions.svg),
+  [README](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/graphicalassets/region-map/README.txt)
   and mask/seed points and audit contacts in `graphicalassets/region-map/reference/`.
 - [Composition MAP-10](../../graphicalassets/maps/parchment-v4/README.txt): accepted paper and
   terrain, improved Black Gate and Erebor.
-- [T32-SETUP](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T32-FATE-SETUP.md),
-  [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/EXPANSIONS.md)
+- [T32-SETUP](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T32-FATE-SETUP.md),
+  [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/EXPANSIONS.md)
   and
   T28:
   public Fate/New Cities and White Hand caps.
@@ -122,7 +122,7 @@ MAP-17 requires proof of all MC01–MC18, not the screenshots themselves. New te
 
 Implementation descriptions and results below MAP-12 – MAP-17 come from 2026-10-08 UTC before UI-80 . They retain the gestures and test results of the day; the current hover and opening standards are defined in the section « Interactions , expansions and record’ above. These results do not count acceptance new behavior of tooltips and windows.
 
-`contours-2` replaces geometers- 1 : 105 ID , 106 rings, 26 455 points without re-closure, 323 original paths and 14 348 unique episodes. All 232 legal couples have contact; additional 50 ed 282 physical pairs remain only geometry. pinned entrances are in [MAP-12-GEOMETRY](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/MAP-12-GEOMETRY.json) Import does not simplify episodes again. Previous source tolerance 0,6 The working pixel and the reading limitations under the mountains/panels remain public.
+`contours-2` replaces geometers- 1 : 105 ID , 106 rings, 26 455 points without re-closure, 323 original paths and 14 348 unique episodes. All 232 legal couples have contact; additional 50 ed 282 physical pairs remain only geometry. pinned entrances are in [MAP-12-GEOMETRY](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/MAP-12-GEOMETRY.json) Import does not simplify episodes again. Previous source tolerance 0,6 The working pixel and the reading limitations under the mountains/panels remain public.
 
 Rings and edges use offset (x− 335 ,y- 40 ) and anchors of the same conversion `point` , without historical `seed` All anchors are closely within the inland part of the land. The only hole of the polygon, in Gorgoroth, retains a contact with the outer ring at one point. The sea and the cut do not choose the region exactly on the common land line. The draw picks smaller ID Ordering the original, regardless of the order of the source. The incorrect resource stops the loader; it does not restore the approximate map.
 
@@ -131,7 +131,7 @@ The client layout is 1632×1338. PNG 6144×5037 uses `xMidYMid meet`: scale min(
 <a id="map-13--katalog-granic-i-paleta"></a>
 ## MAP-13 — border directory and pallet
 
-W `borders-1` all classified 323 contours: 360 parts, including 225 Passage, 8 River, 86 Impassable, 17 Coast, 11 Lake and 13 Frame. 33 paths have a division, so the white pass does not remove the mountain fragment of the same legal couple. Nurn/Gorgoroth This is an example of two separate contacts: Western `0212` It's got a passageway, east `0213` remains black. Audit includes 9 sectors in general board and the approximation of gates, Moria, High Pass and Grey Havens/Ered Luin; [evidence](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/map13-review/README.md) also show inherited route restrictions MAP-12 .
+W `borders-1` all classified 323 contours: 360 parts, including 225 Passage, 8 River, 86 Impassable, 17 Coast, 11 Lake and 13 Frame. 33 paths have a division, so the white pass does not remove the mountain fragment of the same legal couple. Nurn/Gorgoroth This is an example of two separate contacts: Western `0212` It's got a passageway, east `0213` remains black. Audit includes 9 sectors in general board and the approximation of gates, Moria, High Pass and Grey Havens/Ered Luin; [evidence](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/map13-review/README.md) also show inherited route restrictions MAP-12 .
 
 `map-style-1` defines interchangeable shades of eight nations according to BASE p.9. The band takes Nation from the right normal side, never Control. Biel separates two different colors and the inner contact of one nation remains white. Working widths: the crossing 1,5, the barrier 3,2, the band of the nation 3,0. The black bar has a contrast 9,066 relative to the background, the white 8,620 relative to the dark outline. Bright national bands themselves do not constitute a contrasting legal sign action; dark outline and white are separate tokens. These values do not replace the view by zoom and measurements of the MAP-14/MAP-17. renderer.
 
@@ -144,7 +144,7 @@ The map uses source contours and separate paper/area MAP-10 without burnt region
 
 The source/selection/target/attack/protection delicate fillings remain under the borders. Attention has a separate symbol. Control settlement uses the Free Peoples triangle or the diamond Shadow; it does not overwrite the color of the nations. The markings of sediment and control remain visible in fit; units retain the earlier rule zoom/hover. Button “?” opens the English legend of the line, eight nations, sediment and control; it itself does not choose the region. The legend is the overlay over the map controls, with a compact pallet in up to two columns; all names and samples remain available in four layouts.
 
-acceptance includes actual pixels of transitions and fillings, no regeneration of static boundaries in interaction, close-up of both gates of Mordor, Erebor, Moria, High Pass, water, two nations and nodes, and images of the final Player Development. Layers and cache describe [procedure renderera](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/MAP-14-RENDERER.md), and actual results record MAP-14 Task. acceptanceThe gesture and variant mechanics still belongs to MAP-15/MAP-16, a complete matrix to MAP-17.
+acceptance includes actual pixels of transitions and fillings, no regeneration of static boundaries in interaction, close-up of both gates of Mordor, Erebor, Moria, High Pass, water, two nations and nodes, and images of the final Player Development. Layers and cache describe [procedure renderera](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/MAP-14-RENDERER.md), and actual results record MAP-14 Task. acceptanceThe gesture and variant mechanics still belongs to MAP-15/MAP-16, a complete matrix to MAP-17.
 
 <a id="map-15--dowody-mc09mc12"></a>
 ## MAP-15 — evidence MC09–MC12

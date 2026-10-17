@@ -1,7 +1,7 @@
 <a id="ui-11--prywatne-pomijanie-kart-bitwy"></a>
 # UI-11 — Private omission cards battle
 
-The shortcut executes the U08/S13 requirement, not the new rule of the game. The order cards remains in accordance with B11 and [T18](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T18-BATTLES.md): attacking, defender, disclosure, effects. The lack of card is the same open choice regardless of its approval method. The availability of cards never decides to open the window.
+The shortcut executes the U08/S13 requirement, not the new rule of the game. The order cards remains in accordance with B11 and [T18](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T18-BATTLES.md): attacking, defender, disclosure, effects. The lack of card is the same open choice regardless of its approval method. The availability of cards never decides to open the window.
 
 <a id="wejście-i-legalność"></a>
 ## Entry and legality
@@ -29,4 +29,4 @@ A small button in the own resource panel remains available during battle, also w
 
 Domain tests: both roles, order of both slots, no automation of other decisions, cancellation after reply, hand change/draw-play-discard, End/new battle , illegal version/battleId And the same projection of the opponent. PostgreSQL/HTTP: reboot, retry, rollback, competitive cancellation and approval, privacy receipt/powiadomie Unity: real server, on while waiting, reconnet, cancel, saved result and layout 1366×768 and 1920×1080 with 100/125%.
 
-The results of the checks performed will be added to [TESTING](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/TESTING.md). The migration of historical fingerprints of commands remains a separate T37 range; we do not declare the old receipt compliance after adding the fields of contract.
+The results of the checks performed will be added to [TESTING](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/TESTING.md). The migration of historical fingerprints of commands remains a separate T37 range; we do not declare the old receipt compliance after adding the fields of contract.

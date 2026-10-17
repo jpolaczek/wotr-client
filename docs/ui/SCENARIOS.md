@@ -71,7 +71,7 @@ UI-05 closes [Evaluation protocol](SCENARIOS.md): click paths, actual layout fix
 
 Conditions: Units 6000.6.0f1, macOS / M1 Pro, public `BoardFixture` and responses HTTP isolating interactions. RenderTexture 1366×768 and 1920×1080, the scale 100% and 125%. The authoritative rules movement/recruitment have separate tests T11/T12; the complete sequence of these actions on two real clients receives T13.
 
-T13 adds `MovementNetworkTests` with two full panels, HTTP/WSS and PostgreSQL: movement and alternate recruitment, click and drag, one commit, malicious unobstructed target, loss of response after the commit and recovery of the result without a return cost. [Description of conditions](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/TESTING.md) distinguishes the repetitive input snapshot from the actual execution. The result does not include future special abilities or a test between two operating systems.
+T13 adds `MovementNetworkTests` with two full panels, HTTP/WSS and PostgreSQL: movement and alternate recruitment, click and drag, one commit, malicious unobstructed target, loss of response after the commit and recovery of the result without a return cost. [Description of conditions](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/TESTING.md) distinguishes the repetitive input snapshot from the actual execution. The result does not include future special abilities or a test between two operating systems.
 
 | Scenario | Actual scope of the check |
 | --- | --- |
@@ -448,7 +448,7 @@ The UI-51 response inspection bypasses its own Hunt panel and keeps its hover wi
   neutral fields and no bar and water bands. Change Control does not change the band. Python
   reverses all 323 paths and checks normal conversion without changing the sides of the regions.
 
-The final [Source caps](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/map13-review/README.md) was viewed all over board, in 9 sectors and 5 details. The actual command results are in MAP-13. The domain regression remains BoardTests.PrintedBordersDetermineMovement; the graph code has not been modified. This acceptance catalog/pallets, not the final return declaration and gestures.
+The final [Source caps](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/map13-review/README.md) was viewed all over board, in 9 sectors and 5 details. The actual command results are in MAP-13. The domain regression remains BoardTests.PrintedBordersDetermineMovement; the graph code has not been modified. This acceptance catalog/pallets, not the final return declaration and gestures.
 
 
 <a id="ui-57--effects-przy-źródłach"></a>
@@ -500,7 +500,7 @@ Five CharacterRosterPersistenceTests : real HTTP/PostgreSQL both sides, full sna
   names and eight samples have a real hit-test over Zoom/Effects controls in four systems; Escape
   closes preview.
 
-Evidence: MapContourRenderingTests save images before/after And pixel assertions on source coordinates. `scripts/review-map-client.py` collect 26 screenshots and 12 real Development Player measurements at 1366 × 768/1920 × 1080 and 100/125%. Separate reading format/graphicsFormat and texture blocks distinguish memory GPU from the editor's bedspread; the Player limit remains independent. Results and possible limitations: MAP-14 , configuration: [MAP-14-RENDERER](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/MAP-14-RENDERER.md) .
+Evidence: MapContourRenderingTests save images before/after And pixel assertions on source coordinates. `scripts/review-map-client.py` collect 26 screenshots and 12 real Development Player measurements at 1366 × 768/1920 × 1080 and 100/125%. Separate reading format/graphicsFormat and texture blocks distinguish memory GPU from the editor's bedspread; the Player limit remains independent. Results and possible limitations: MAP-14 , configuration: [MAP-14-RENDERER](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/MAP-14-RENDERER.md) .
 
 <a id="ui-59--g08g11-portrety-próba-i-oczyszczanie"></a>
 ## UI-59 — G08–G11: portraits, testing and purification

@@ -20,15 +20,15 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
 <a id="przed-każdym-zadaniem"></a>
 ## Before EVERY task
 
-1. Reread this file, [WORKFLOW](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/WORKFLOW.md), the task entry in the
-   [registry](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/tasks/tasks.json) and its individual document. Do not rely only
+1. Reread this file, [WORKFLOW](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/WORKFLOW.md), the task entry in the
+   [registry](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json) and its individual document. Do not rely only
    on memory from a previous session.
-2. Read [REQUIREMENTS](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/REQUIREMENTS.md), the relevant parts of
-   [ARCHITECTURE](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/ARCHITECTURE.md), [LOGIC](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/LOGIC.md),
-   [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/EXPANSIONS.md),
+2. Read [REQUIREMENTS](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/REQUIREMENTS.md), the relevant parts of
+   [ARCHITECTURE](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ARCHITECTURE.md), [LOGIC](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/LOGIC.md),
+   [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/EXPANSIONS.md),
    [UX_SPEC](docs/ui/UX_SPEC.md)
    and the task's `read_before` documents.
-3. Check dependencies, open [source gaps](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/gaps.json), current file
+3. Check dependencies, open [source gaps](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/gaps.json), current file
    changes and recent history entries. Do not overwrite the user's work.
 4. Run `python3 scripts/tasks.py ready --stage <stage>`. Work autonomously only
    within the commissioned stage. ROADMAP defines priority order. Technical
@@ -133,7 +133,7 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
 - `tasks.json` is the sole source of task states; `INDEX.md` is generated. Each
   active task's definition lives in its Markdown file. Completed descriptions and full records are removed; the compact completion ledger retains dependency and coverage identifiers.
 - A new task requires a goal, dependencies, sources, logic, acceptance criteria,
-  a verification plan and documents to update. Use the [template](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/tasks/TEMPLATE.md).
+  a verification plan and documents to update. Use the [template](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/TEMPLATE.md).
 - A scope or dependency change requires a ROADMAP update and a graph check. Do
   not remove dependencies merely to start blocked work.
 - Do not deploy or publish without authorization in the request. Do not add

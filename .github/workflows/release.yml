@@ -1,6 +1,6 @@
 # DIST-10: a tag v<version> builds a client release into a draft GitHub Release. The tag must name
 # release/version.json and release/notes/<version>.md must exist (scripts/release.py check-tag). EditMode runs in
-# GameCI while installers.yml builds, packs and smoke-tests both platforms; the draft gets flat files (packages,
+# GameCI while installers.yml builds, packs and smoke-tests all platforms; the draft gets flat files (packages,
 # installers, build-info-<platform>.json, RELEASE-NOTES.md, SHA256SUMS) for the publisher's release command
 # (DIST-11). Nothing reaches players from here. Secrets: as installers.yml.
 name: Release

@@ -9,7 +9,8 @@ namespace Wotr.Client
     public static class UpdateTexts
     {
         public static string Platform(string platform) =>
-            platform == ClientPlatforms.Windows ? "Windows" : platform == ClientPlatforms.MacOS ? "macOS" : platform;
+            platform == ClientPlatforms.Windows ? "Windows" : platform == ClientPlatforms.MacOS ? "macOS"
+            : platform == ClientPlatforms.Linux ? "Linux" : platform;
 
         public static string Size(long bytes) =>
             bytes <= 0 ? "" : Math.Max(1, (long)Math.Round(bytes / 1048576.0)).ToString(CultureInfo.InvariantCulture) + " MB";

@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 import plistlib
+import shutil
 import struct
 import tempfile
 import unittest
@@ -14,7 +15,7 @@ SPEC = importlib.util.spec_from_file_location(
     "wotr_package_velopack", Path(__file__).resolve().parents[2] / "scripts/package_velopack.py")
 PACKAGE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(PACKAGE)
-WINDOWS, MACOS = PACKAGE.TARGETS["windows"], PACKAGE.TARGETS["macos"]
+WINDOWS, MACOS, LINUX = PACKAGE.TARGETS["windows"], PACKAGE.TARGETS["macos"], PACKAGE.TARGETS["linux"]
 VERSION = "0.3.0"
 
 
@@ -42,6 +43,18 @@ def fat(*cpu_types):
 
 
 UNIVERSAL_BINARY = fat(0x01000007, 0x0100000C)
+
+
+def elf(appimage=True, machine=0x3E):
+    header = bytearray(64)
+    header[:4] = b"\x7fELF"
+    if appimage:
+        header[8:11] = b"AI\x02"
+    struct.pack_into("<H", header, 18, machine)
+    return bytes(header)
+
+
+APPIMAGE = elf()
 THIN_ARM64 = b"\xcf\xfa\xed\xfe" + struct.pack("<I", 0x0100000C) + b"\0" * 64
 
 
@@ -50,20 +63,25 @@ def nuspec(version=VERSION, os="win"):
             f"<metadata><id>{PACKAGE.PACK_ID}</id><version>{version}</version><os>{os}</os></metadata></package>")
 
 
-def write_platform(folder, target, files, version=VERSION, info=None):
+def write_platform(folder, target, files, version=VERSION, info=None, installer=None):
     folder.mkdir(parents=True, exist_ok=True)
-    suffix = "-full.nupkg" if target.os == "win" else "-osx-full.nupkg"
+    suffix = "-full.nupkg" if target.os == "win" else f"-{target.os}-full.nupkg"
     with zipfile.ZipFile(folder / f"{PACKAGE.PACK_ID}-{version}{suffix}", "w") as archive:
         archive.writestr(f"{PACKAGE.PACK_ID}.nuspec", nuspec(version, target.os))
         for name, content in files.items():
             archive.writestr(name, content)
-    (folder / target.installer_name(version)).write_bytes(b"installer")
+    default = APPIMAGE if target.os == "linux" else b"installer"
+    (folder / target.installer_name(version)).write_bytes(installer or default)
     (folder / "build-info.json").write_text(json.dumps(info or identity(target)))
 
 
 def windows_files(launcher=True):
     return {"lib/app/Wotr.exe": pe(extra=PACKAGE.LAUNCHER_MARKER if launcher else b"unity"),
             "lib/app/UnityPlayer.dll": pe(), "lib/app/Wotr_Data/globalgamemanagers": b"data"}
+
+
+def linux_files(appimage=APPIMAGE):
+    return {"lib/app/WotrOnline.AppImage": appimage}
 
 
 def macos_files(executable=UNIVERSAL_BINARY):
@@ -113,11 +131,20 @@ class ContentTests(unittest.TestCase):
 
 
 class PackageTests(unittest.TestCase):
-    def check(self, target, files, version=VERSION):
+    def check(self, target, files, version=VERSION, installer=None):
         with tempfile.TemporaryDirectory() as temporary:
             folder = Path(temporary) / target.platform
-            write_platform(folder, target, files, version)
+            write_platform(folder, target, files, version, installer=installer)
             return PACKAGE.check_package(folder, target, VERSION)
+
+    def test_linux_package_carries_an_x86_64_appimage(self):
+        self.assertEqual(f"{PACKAGE.PACK_ID}-{VERSION}-linux.AppImage", LINUX.installer_name(VERSION))
+        self.check(LINUX, linux_files())
+        for files, installer in [({}, None), (linux_files(elf(appimage=False)), None),
+                                 (linux_files(elf(machine=0xB7)), None), (linux_files(), b"#!/bin/sh"),
+                                 (linux_files(), elf(machine=0xB7))]:
+            with self.subTest(files=files, installer=installer), self.assertRaises(ValueError):
+                self.check(LINUX, files, installer=installer)
 
     def test_windows_package_starts_the_launcher_on_x64(self):
         self.check(WINDOWS, windows_files())
@@ -164,6 +191,7 @@ class ReleaseFolderTests(unittest.TestCase):
         self.base = PACKAGE.installers(self.folder)
         write_platform(self.base / WINDOWS.platform, WINDOWS, windows_files())
         write_platform(self.base / MACOS.platform, MACOS, macos_files())
+        write_platform(self.base / LINUX.platform, LINUX, linux_files())
         patches = [patch.object(PACKAGE.release, "destination", return_value=self.folder),
                    patch.object(PACKAGE, "check_sources")]
         for active in patches:
@@ -186,10 +214,18 @@ class ReleaseFolderTests(unittest.TestCase):
             PACKAGE.verify()
 
     def test_platforms_from_different_commits_are_refused(self):
-        (self.base / MACOS.platform / "build-info.json").write_text(json.dumps(identity(MACOS, sourceCommit="b" * 40)))
-        PACKAGE.sums()
-        with self.assertRaises(ValueError):
-            PACKAGE.verify()
+        for target in (MACOS, LINUX):
+            original = (self.base / target.platform / "build-info.json").read_text()
+            (self.base / target.platform / "build-info.json").write_text(json.dumps(identity(target, sourceCommit="b" * 40)))
+            PACKAGE.sums()
+            with self.subTest(platform=target.platform), self.assertRaises(ValueError):
+                PACKAGE.verify()
+            (self.base / target.platform / "build-info.json").write_text(original)
+
+    def test_a_missing_linux_platform_fails_the_release(self):
+        shutil.rmtree(self.base / LINUX.platform)
+        with self.assertRaisesRegex(ValueError, "linux-x64"):
+            PACKAGE.sums()
 
     def test_release_assets_are_flat_with_their_own_sums(self):
         notes = Path(self.temporary.name) / "notes.md"
@@ -200,7 +236,9 @@ class ReleaseFolderTests(unittest.TestCase):
         names = sorted(path.name for path in output.iterdir())
         self.assertEqual(sorted([f"{PACKAGE.PACK_ID}-{VERSION}-full.nupkg", WINDOWS.installer_name(VERSION),
                                  f"{PACKAGE.PACK_ID}-{VERSION}-osx-full.nupkg", MACOS.installer_name(VERSION),
+                                 f"{PACKAGE.PACK_ID}-{VERSION}-linux-full.nupkg", LINUX.installer_name(VERSION),
                                  "build-info-windows-x64.json", "build-info-macos-universal.json",
+                                 "build-info-linux-x64.json",
                                  "RELEASE-NOTES.md", "SHA256SUMS"]), names)
         sums = dict(reversed(line.split("  ")) for line in (output / "SHA256SUMS").read_text().splitlines())
         self.assertEqual(set(names) - {"SHA256SUMS"}, set(sums))

@@ -4,7 +4,7 @@
 <a id="zakres-i-stan"></a>
 ## Scope and state
 
-Work started with 2026-10-06. The status of the task is led by `tasks.json`. The source of the election is the server projection with T33; the client does not calculate the legality of the rules nor does he discover identifier hidden tiles. acceptance T33 describes [93 matrix](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T33-COMPOSITION.md).
+Work started with 2026-10-06. The status of the task is led by `tasks.json`. The source of the election is the server projection with T33; the client does not calculate the legality of the rules nor does he discover identifier hidden tiles. acceptance T33 describes [93 matrix](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T33-COMPOSITION.md).
 
 <a id="przepływ"></a>
 ## Flow

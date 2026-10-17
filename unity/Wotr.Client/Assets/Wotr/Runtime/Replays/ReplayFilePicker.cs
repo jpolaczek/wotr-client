@@ -16,18 +16,20 @@ namespace Wotr.Client
     }
 
     // The system's own dialogs without the editor's API: on macOS through AppleScript's choose file, on Windows through
-    // the common file dialogs.
+    // the common file dialogs, on Linux (LNX-02, also the Steam Deck's desktop) through zenity or kdialog.
     public sealed class NativeReplayFilePicker : IReplayFilePicker
     {
         public Task<string> ChooseImport() => Application.platform switch
         {
             RuntimePlatform.WindowsPlayer or RuntimePlatform.WindowsEditor => Task.FromResult(WindowsDialogs.Open()),
+            RuntimePlatform.LinuxPlayer or RuntimePlatform.LinuxEditor => LinuxDialogs.Open(),
             _ => AppleScript("POSIX path of (choose file with prompt \"Import a replay\" of type {\"wotrreplay\"})")
         };
 
         public Task<string> ChooseExport(string suggestedName) => Application.platform switch
         {
             RuntimePlatform.WindowsPlayer or RuntimePlatform.WindowsEditor => Task.FromResult(WindowsDialogs.Save(suggestedName)),
+            RuntimePlatform.LinuxPlayer or RuntimePlatform.LinuxEditor => LinuxDialogs.Save(Quoted(suggestedName)),
             _ => AppleScript("POSIX path of (choose file name with prompt \"Export the replay\" default name \"" +
                 Quoted(suggestedName) + "\")")
         };
@@ -48,6 +50,45 @@ namespace Wotr.Client
             process.WaitForExit();
             return process.ExitCode == 0 && chosen.Length > 0 ? chosen : null;
         });
+
+        // zenity (GNOME and most desktops) or kdialog (KDE, the Steam Deck's desktop mode); without either the
+        // dialog is unavailable and the caller reports it like a cancelled choice.
+        private static class LinuxDialogs
+        {
+            public static Task<string> Open() => Run(
+                ("zenity", "--file-selection --title=\"Import a replay\" --file-filter=\"Replays | *.wotrreplay\""),
+                ("kdialog", "--title \"Import a replay\" --getopenfilename . \"*.wotrreplay|Replays\""));
+
+            public static Task<string> Save(string suggestedName) => Run(
+                ("zenity", "--file-selection --save --confirm-overwrite --title=\"Export the replay\" --filename=\"" + suggestedName + "\""),
+                ("kdialog", "--title \"Export the replay\" --getsavefilename \"" + suggestedName + "\" \"*.wotrreplay|Replays\""));
+
+            private static Task<string> Run(params (string Tool, string Arguments)[] dialogs) => Task.Run(() =>
+            {
+                foreach (var (tool, arguments) in dialogs)
+                {
+                    var start = new ProcessStartInfo(tool, arguments)
+                    {
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+                    try
+                    {
+                        using var process = Process.Start(start);
+                        var chosen = process.StandardOutput.ReadToEnd().Trim();
+                        process.WaitForExit();
+                        return process.ExitCode == 0 && chosen.Length > 0 ? chosen : null;
+                    }
+                    catch (System.ComponentModel.Win32Exception)
+                    {
+                        // This tool is not installed; try the next one.
+                    }
+                }
+                return null;
+            });
+        }
 
         private static class WindowsDialogs
         {

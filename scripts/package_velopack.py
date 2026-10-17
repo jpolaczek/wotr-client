@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """DIST-06: pack the release players into Velopack installers and update packages, then verify them.
 
-  pack --platform windows|macos   stage a BuildTasks.BuildRelease* player, add the Windows launcher and run vpk
+  pack --platform windows|macos|linux   stage a BuildTasks.BuildRelease* player, add the Windows launcher and run vpk
   pack ... --smoke-output DIR     the same player under the next version, only for installer smoke tests
-  sums                            write installers/SHA256SUMS over both platforms
+  sums                            write installers/SHA256SUMS over all platforms
   verify                          check identities, package contents and sums before the release is signed
   assets --output DIR             flat files for the draft GitHub Release (DIST-10), read by the release command
 
-Windows packs on any system with mingw-w64 and icoutils; macOS packs only on macOS (codesign, pkgbuild). Output:
+Windows packs on any system with mingw-w64 and icoutils; macOS packs only on macOS (codesign, pkgbuild); Linux packs
+an AppImage on Linux with squashfs-tools (LNX-02). Output:
 .artifacts/releases/<version>/installers/<platform>/ with the full package, the installer and build-info.json.
 """
 import argparse
@@ -34,7 +35,7 @@ PACK_ID = "WotrOnline"
 TITLE = "War of the Ring Online"
 AUTHORS = "WoTR Private"
 # Unity writes debug symbols beside the player; build-info.json travels beside the package, not inside it.
-STAGING_IGNORED = shutil.ignore_patterns("build-info.json", "*_DoNotShip")
+STAGING_IGNORED = shutil.ignore_patterns("build-info.json", "*_DoNotShip", "*_s.debug")
 # Names that must never reach a player: test assemblies, fixtures, debug symbols and secrets.
 FORBIDDEN = ("Wotr.Tests", "Wotr.PlayTests", "Wotr.EditorTests", "Wotr.Fixtures", "nunit.framework",
              "UnityEngine.TestRunner", "client-integration", "DoNotShip", "/secrets/", "/.env", "build-info.json")
@@ -52,11 +53,16 @@ class Target:
     os: str  # vpk directive and <os> in the package's nuspec
 
     def installer_name(self, version):
+        if self.os == "linux":
+            return f"{PACK_ID}-{version}-linux.AppImage"
         return f"{PACK_ID}-{version}-{self.os}-Setup" + (".exe" if self.os == "win" else ".pkg")
 
 
 TARGETS = {"windows": Target("windows", "windows-x64", "win"),
-           "macos": Target("macos", "macos-universal", "osx")}
+           "macos": Target("macos", "macos-universal", "osx"),
+           "linux": Target("linux", "linux-x64", "linux")}
+LINUX_EXECUTABLE = "Wotr.x86_64"
+ICON_PNG = ROOT / "release/icons/wotr.png"
 
 
 def run(*args, **kwargs):
@@ -181,6 +187,23 @@ def check_macos_game_mode(info):
             raise ValueError(f"macOS app must disable {key} with a boolean false; rebuild the player.")
 
 
+def is_appimage(header):
+    """An x86_64 ELF with the AppImage type-2 magic ("AI" 2 at offset 8)."""
+    return header[:4] == b"\x7fELF" and header[8:11] == b"AI\x02" and header[18:20] == b"\x3e\x00"
+
+
+def check_linux_package(archive, installer):
+    # Velopack's Linux package carries the whole AppImage; an update replaces the file in place.
+    if "lib/app/WotrOnline.AppImage" not in archive.namelist():
+        raise ValueError("Linux package lacks lib/app/WotrOnline.AppImage.")
+    with archive.open("lib/app/WotrOnline.AppImage") as stream:
+        if not is_appimage(stream.read(64)):
+            raise ValueError("Linux package's WotrOnline.AppImage is not an x86_64 AppImage.")
+    with installer.open("rb") as stream:
+        if not is_appimage(stream.read(64)):
+            raise ValueError(f"{installer.name} is not an x86_64 AppImage.")
+
+
 def check_package(folder, target, version):
     """The packed folder holds exactly the package, the installer and (for a release) build-info.json."""
     packages = sorted(folder.glob("*-full.nupkg"))
@@ -195,6 +218,8 @@ def check_package(folder, target, version):
             raise ValueError(f"{packages[0].name} is not {PACK_ID} {version} for {target.os}: {nuspec(archive)}.")
         if target.os == "win":
             check_windows_package(archive)
+        elif target.os == "linux":
+            check_linux_package(archive, installer)
         else:
             check_macos_package(archive)
     return packages[0], installer
@@ -239,6 +264,21 @@ def pack_macos(source, work, version):
     return output
 
 
+# LNX-02: the Linux player (Wotr.x86_64, UnityPlayer.so, Wotr_Data) becomes one AppImage; vpk needs mksquashfs.
+def pack_linux(source, work, version):
+    if platform.system() != "Linux":
+        raise ValueError("vpk packs the Linux AppImage only on Linux (mksquashfs).")
+    stage, output = work / "player", work / "out"
+    shutil.copytree(source, stage, symlinks=True, ignore=STAGING_IGNORED)
+    if not (stage / LINUX_EXECUTABLE).is_file():
+        raise ValueError(f"The Linux player lacks {LINUX_EXECUTABLE}.")
+    check_names(path.relative_to(stage).as_posix() for path in stage.rglob("*"))
+    vpk("[linux]", "pack", "--packId", PACK_ID, "--packVersion", version, "--packDir", str(stage),
+        "--mainExe", LINUX_EXECUTABLE, "--packTitle", TITLE, "--packAuthors", AUTHORS, "--runtime", "linux-x64",
+        "--icon", str(ICON_PNG), "--delta", "None", "--outputDir", str(output))
+    return output
+
+
 def check_macos_signature(installer, expanded):
     run("pkgutil", "--expand-full", str(installer), str(expanded), stdout=subprocess.DEVNULL)
     apps = [path for path in expanded.rglob("*.app") if path.is_dir() and ".app/" not in str(path.relative_to(expanded))]
@@ -249,7 +289,8 @@ def check_macos_signature(installer, expanded):
 
 
 def collect(output, destination, target, version, identity):
-    packages, setups = sorted(output.glob("*-full.nupkg")), sorted(output.glob("*-Setup.*"))
+    packages = sorted(output.glob("*-full.nupkg"))
+    setups = sorted(output.glob("*.AppImage" if target.os == "linux" else "*-Setup.*"))
     if len(packages) != 1 or len(setups) != 1:
         raise ValueError(f"vpk left {len(packages)} packages and {len(setups)} installers in {output}.")
     if destination.exists():
@@ -273,7 +314,7 @@ def pack(name, smoke_output=None):
         if destination.is_relative_to(installers(folder).resolve()):
             raise ValueError("A smoke package never goes beside the release installers.")
     with tempfile.TemporaryDirectory(prefix="wotr-pack-") as temporary:
-        packer = pack_windows if name == "windows" else pack_macos
+        packer = {"windows": pack_windows, "macos": pack_macos, "linux": pack_linux}[name]
         output = packer(folder / target.folder, Path(temporary), version)
         package, installer = collect(output, destination, target, version, identity)
     kind = "smoke package (not releasable)" if smoke_output is not None else "release package"
@@ -285,7 +326,7 @@ def platform_files(base):
     for target in TARGETS.values():
         folder = base / target.platform
         if not folder.is_dir():
-            raise ValueError(f"Missing {folder}; pack both platforms first.")
+            raise ValueError(f"Missing {folder}; pack every platform first.")
         files.extend(path for path in folder.iterdir() if path.is_file())
     return sorted(files)
 
@@ -320,14 +361,14 @@ def verify():
         check_package(base / target.platform, target, folder.name)
     shared = ("sourceCommit", "protocolVersion", "publicContentSha256")
     if len({tuple(info[field] for field in shared) for info in identities.values()}) != 1:
-        raise ValueError("Both platforms must come from one commit, protocol and public content.")
+        raise ValueError("All platforms must come from one commit, protocol and public content.")
     check_sources(identities["windows"])
     check_sums(base)
-    print(f"PASS: {folder.name} installers for Windows x64 and macOS Universal, one commit, sums match.")
+    print(f"PASS: {folder.name} installers for Windows x64, macOS Universal and Linux x64, one commit, sums match.")
 
 
 def release_assets(output):
-    """The draft GitHub Release holds flat files: packages and installers of both platforms, build-info.json named
+    """The draft GitHub Release holds flat files: packages and installers of all platforms, build-info.json named
     by platform, the release notes and SHA256SUMS over all of them."""
     folder = release.destination()
     base, output = installers(folder), Path(output)

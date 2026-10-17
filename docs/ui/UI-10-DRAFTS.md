@@ -1,7 +1,7 @@
 <a id="ui-10--zachowanie-lokalnego-zamiaru-po-aktualizacji"></a>
 # UI-10 — behavior of local intent after upgrade
 
-The description precedes the changes to the code. The source is the requirements of R09–R11, R17, R19–R21, UX U02 and [Draft contract](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/CONTRACTS.md). Reconcilion does not interpret the new rules of the game; it uses only the projection and server options.
+The description precedes the changes to the code. The source is the requirements of R09–R11, R17, R19–R21, UX U02 and [Draft contract](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/CONTRACTS.md). Reconcilion does not interpret the new rules of the game; it uses only the projection and server options.
 
 <a id="granica-decyzji-i-podglądu"></a>
 ## Decision and Preview boundary

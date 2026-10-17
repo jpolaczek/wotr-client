@@ -10,6 +10,7 @@ GitHub → Actions → Installers → Last Green Pass → Artifacts → `install
 
 - `macos-universal/WotrOnline-<version>-osx-Setup.pkg` — Mac;
 - `windows-x64/WotrOnline-<version>-win-Setup.exe` — for the tester Windows;
+- `linux-x64/WotrOnline-<version>-linux.AppImage` — the owner's Linux PC and the Steam Deck;
 - `SHA256SUMS` — totals to compare (`shasum -a 256 <file>` on Mac, `Get-FileHash <file>` on
   PowerShell).
 
@@ -37,6 +38,28 @@ GitHub → Actions → Installers → Last Green Pass → Artifacts → `install
 6. Optionally log into the test server and open the table as usual.
 
 Send: messages from the 2 step, whether the game started itself and showed the menu, the 4 step score, the 5 step score. Installations do not need to be deleted.
+
+## LNX-02 — Linux PC (owner)
+
+1. If `~/Applications/WotrOnline.AppImage` exists, move it away. `~/.config/unity3d/WoTR
+   Private/War of the Ring Online` (settings) can stay.
+2. Download the AppImage with the browser into `~/Applications`, `chmod +x` it and start it from
+   the file manager. The game should show the main menu in a window; note any message.
+3. Sign in to the production server and open `Tables`. Close the game.
+4. In a terminal:
+
+   ```sh
+   app=~/Applications/WotrOnline-<version>-linux.AppImage
+   "$app" -batchmode -nographics -logFile /tmp/wotr-self-check.log --wotr-self-check /tmp/wotr-self-check.json
+   cat /tmp/wotr-self-check.json   # installedVersion = <version>, platform linux-x64, canUpdateItself true
+   ```
+
+5. The update from N to N+1 comes from the game itself after the next release (DIST-07): `Settings`
+   → `Game version` → `Check now`, `Download update`, `Restart and update`; the game restarts as
+   N+1 from the same file.
+
+Record: the distribution and desktop, messages from step 2, the results of steps 3–5 and
+`/tmp/velopack_WotrOnline.log` when something fails.
 
 ## DS13 — Windows (tester)
 

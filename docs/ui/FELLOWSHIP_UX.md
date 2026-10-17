@@ -1,7 +1,7 @@
 <a id="drużyna-i-polowanie--docelowy-interfejs"></a>
 # Fellowship and Hunt — target interface
 
-The design with 2026-10-07, written in UI-36. Specification and description of the interaction; the status of the execution is determined only by [registry](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/tasks/INDEX.md). It develops [U09](UX_SPEC.md) and [plan Hunt](HUNT_UX.md). UI uses English labels and simple interchangeable icons.
+The design with 2026-10-07, written in UI-36. Specification and description of the interaction; the status of the execution is determined only by [registry](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/INDEX.md). It develops [U09](UX_SPEC.md) and [plan Hunt](HUNT_UX.md). UI uses English labels and simple interchangeable icons.
 
 <a id="graficzne-tory--ui-79"></a>
 ## Graphical tracks — UI-79
@@ -268,7 +268,7 @@ UI-153 (graphics and geometry), UI-154 (track on map and Fellowship on track), U
 <a id="źródła-i-granica-zmian"></a>
 ## Sources and limit of change
 
-The source of the rules and their sides are in [T15](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T15-FELLOWSHIP.md) ( BASE p. 24,34,36–39 , FAQ p. 1–2 ), [T16](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T16-HUNT.md) ( BASE p. 37–42 ; allocation dice also p. 19,22–23 ), [T17](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T17-MORDOR.md) ( BASE p. 39,43–44 ), [T20](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T20-CHARACTERS.md) and [interaction kart](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T21-HUNT-INTERACTIONS.md) Exceptions Lords/Council/Kings/Fate are compatible with [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/EXPANSIONS.md) and existing server options.
+The source of the rules and their sides are in [T15](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T15-FELLOWSHIP.md) ( BASE p. 24,34,36–39 , FAQ p. 1–2 ), [T16](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T16-HUNT.md) ( BASE p. 37–42 ; allocation dice also p. 19,22–23 ), [T17](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T17-MORDOR.md) ( BASE p. 39,43–44 ), [T20](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T20-CHARACTERS.md) and [interaction kart](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T21-HUNT-INTERACTIONS.md) Exceptions Lords/Council/Kings/Fate are compatible with [EXPANSIONS](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/EXPANSIONS.md) and existing server options.
 
 command, cost, legal options, preview, shared sender and moved windows are reused. UI-33 is the owner of the report. The new public test mark in Mordor belongs to UI-34-MORDOR. The project does not require sending full status, adding a secret route or a new RNG in the client. Each part must keep running early flows until they are replaced in the appropriate task; hiding the old form without an available successor is not the completion of the task.
 

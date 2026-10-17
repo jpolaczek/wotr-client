@@ -66,8 +66,8 @@ namespace Wotr.Editor
 
         internal static void RequirePlatform(BuildTarget target)
         {
-            if (target != BuildTarget.StandaloneOSX && target != BuildTarget.StandaloneWindows64)
-                throw new BuildFailedException("WoTR supports macOS and Windows x64 desktop builds.");
+            if (target != BuildTarget.StandaloneOSX && target != BuildTarget.StandaloneWindows64 && target != BuildTarget.StandaloneLinux64)
+                throw new BuildFailedException("WoTR supports macOS, Windows x64 and Linux x64 desktop builds.");
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, target))
                 throw new BuildFailedException("Install the " + target + " build support module in Unity Hub.");
         }

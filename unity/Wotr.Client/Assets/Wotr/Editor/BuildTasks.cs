@@ -28,6 +28,17 @@ namespace Wotr.Editor
             Build(BuildTarget.StandaloneWindows64, "local/windows/Wotr.exe", BuildOptions.None);
         }
 
+        // LNX-02 (D18): Linux x86_64, also the Steam Deck's build.
+        public static void BuildLocalLinux()
+        {
+            Build(BuildTarget.StandaloneLinux64, "local/linux/Wotr.x86_64", BuildOptions.None);
+        }
+
+        public static void BuildLinux()
+        {
+            Build(BuildTarget.StandaloneLinux64, "linux/Wotr.x86_64", BuildOptions.Development);
+        }
+
         public static void BuildMac()
         {
             PlatformArchitecture.UseMacUniversal();
@@ -49,6 +60,11 @@ namespace Wotr.Editor
         {
             PlatformArchitecture.UseWindowsX64();
             BuildRelease(BuildTarget.StandaloneWindows64, "windows/Wotr.exe");
+        }
+
+        public static void BuildReleaseLinux()
+        {
+            BuildRelease(BuildTarget.StandaloneLinux64, "linux/Wotr.x86_64");
         }
 
         private static void BuildRelease(BuildTarget target, string output)

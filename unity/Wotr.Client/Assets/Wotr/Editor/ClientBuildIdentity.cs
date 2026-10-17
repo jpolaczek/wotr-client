@@ -76,7 +76,9 @@ namespace Wotr.Editor
                 return ClientPlatforms.MacOS;
             if (target == BuildTarget.StandaloneWindows64)
                 return ClientPlatforms.Windows;
-            throw new BuildFailedException("WoTR builds only macOS Universal and Windows x64.");
+            if (target == BuildTarget.StandaloneLinux64)
+                return ClientPlatforms.Linux;
+            throw new BuildFailedException("WoTR builds only macOS Universal, Windows x64 and Linux x64.");
         }
 
         private static string ReleaseVersion(string root)

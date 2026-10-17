@@ -1,7 +1,7 @@
 <a id="t22--odbiór-początku-tury-kosztów-i-zdolności"></a>
 # T22 — acceptance start turn , costs and capacity
 
-The description precedes the code. This is a supplement to acceptance existing rules, without changing the domain. Sources: BASE p.18–21 (order, pass and Rings), p.33–35 (politics), s.19/40-42 (suffrage Hunt) and full obverses of Gimli and Saruman of [SRC-02](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/sources/base-character-index.json), described in [T20](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/rules/T20-CHARACTERS.md). They apply R09–R11 and R15–R21 and [client contract](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/CONTRACTS.md).
+The description precedes the code. This is a supplement to acceptance existing rules, without changing the domain. Sources: BASE p.18–21 (order, pass and Rings), p.33–35 (politics), s.19/40-42 (suffrage Hunt) and full obverses of Gimli and Saruman of [SRC-02](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/sources/base-character-index.json), described in [T20](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/T20-CHARACTERS.md). They apply R09–R11 and R15–R21 and [client contract](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/CONTRACTS.md).
 
 <a id="wejścia-i-sprawdzane-zachowanie"></a>
 ## Inputs and checked behaviour

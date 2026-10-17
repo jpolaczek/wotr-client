@@ -30,7 +30,7 @@ The regression will cover current actual traffic, recruitment, cards, Fellowship
 <a id="checkpoint-2026-10-05--brak-miejsca-na-dysku"></a>
 ## Checkpoint 2026-10-05 — no disk space
 
-The system refused even small records ( `ENOSPC` , approximately 134 Mi B the reported free space). Failed patche did not change the production code or the tests. The integrity of the affected files has been checked; new `InteractionScenario.cs` , client helpers and tests have not been created. [transport](UI-10-TRANSPORT.md) , [draft](UI-10-DRAFTS.md) and [server](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/server/UI-10-ACCEPTANCE.md) contain an audit and a plan before the code.
+The system refused even small records ( `ENOSPC` , approximately 134 Mi B the reported free space). Failed patche did not change the production code or the tests. The integrity of the affected files has been checked; new `InteractionScenario.cs` , client helpers and tests have not been created. [transport](UI-10-TRANSPORT.md) , [draft](UI-10-DRAFTS.md) and [server](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/server/UI-10-ACCEPTANCE.md) contain an audit and a plan before the code.
 
 Removing the reproducible cache of Swift `.artifacts/swift-cache` modules recovered approximately 55 Mi B for transfer. Earlier cleaning included the unpacked Windows installer, old applications builds and byte identical copies of audit images; tools, canonical sources, reports and user data were preserved. Currently no standalone builds are available; they should be re-generated in a demanding build task. Do not start compilation with such a small space reserve.
 

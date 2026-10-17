@@ -24,7 +24,7 @@
       }
     },
     "com.wotr.contracts": {
-      "version": "file:../../../.deps/com.wotr.contracts-0.9.0.tgz",
+      "version": "file:../../../.deps/com.wotr.contracts-0.10.0.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {}

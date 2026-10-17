@@ -405,7 +405,7 @@ The error appears in the status of the menu, and the room is released anyway.
 <a id="logowanie-bez-rejestracji--auth-03-2026-10-16"></a>
 ## Logging without registration — AUTH-03 (2026-10-16)
 
-Decision [D16](https://github.com/jpolaczek/wotr-server/blob/777d590353667fe7b7a7b6f96f7498f7da3c1540/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
+Decision [D16](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
 - one `Username or email` (`auth-username`) field and password; the client checks that the entry is
   a valid name or address and the server searches for the account after both;
 - `Login` (`auth-submit`) is the only operation sent to the server;
