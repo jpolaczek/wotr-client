@@ -35,15 +35,29 @@ trap unmount EXIT
 
 json_field() { python3 -I -c 'import json, sys; print(json.load(open(sys.argv[1]))[sys.argv[2]])' "$1" "$2"; }
 
-# Player data outside the installation: every file with its SHA-256.
+# Player data outside the installation: every file with its SHA-256. On Linux Unity keeps PlayerPrefs in this folder
+# (`prefs`; macOS and Windows keep them elsewhere) and rewrites its own session counters and IDs on every start, so
+# those entries are left out; the game's own preferences still count.
 fingerprint() {
   python3 -I - "$1" <<'PY'
-import hashlib, sys
+import hashlib, re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
+SESSION = re.compile(r'name="(unity\.player_session(id|_count)|unity_connect\.(session_id|mega_session_id))"')
 for path in sorted(p for p in root.rglob("*") if p.is_file()):
-    print(hashlib.sha256(path.read_bytes()).hexdigest(), path.relative_to(root))
+    content = path.read_bytes()
+    if path.relative_to(root).as_posix() == "prefs":
+        content = b"".join(line for line in content.splitlines(True) if not SESSION.search(line.decode("utf-8", "replace")))
+    print(hashlib.sha256(content).hexdigest(), path.relative_to(root))
 PY
+}
+
+same_data() {
+  local now
+  now="$(fingerprint "$data")"
+  [[ "$now" == "$before" ]] && return 0
+  diff <(echo "$before") <(echo "$now") > "$out/player-data.diff" || true
+  return 1
 }
 
 # The installed game reports itself (InstallationSelfCheck) and quits before opening a window.
@@ -106,11 +120,11 @@ record "damaged package refused; AppImage unchanged"
 apply_package "$next_package" || fail "UpdateNix apply exit $?"
 [[ -x "$app" ]] || fail "the updated AppImage is not executable"
 self_check next "$next_version" "$version"
-[[ "$(fingerprint "$data")" == "$before" ]] || fail "player data changed during the update"
+same_data || fail "player data changed during the update (player-data.diff)"
 record "update: $version -> $next_version in place, player data unchanged"
 
 rm -f "$app"
-[[ "$(fingerprint "$data")" == "$before" ]] || fail "player data changed when the AppImage was removed"
+same_data || fail "player data changed when the AppImage was removed (player-data.diff)"
 record "removed the AppImage; player data unchanged"
 cp /tmp/velopack_WotrOnline.log "$out/" 2>/dev/null || true
 record PASS
