@@ -44,7 +44,7 @@ Variable repository ( MENU-28 ): `WOTR_SERVER_URL` (game server) and `WOTR_DOWNL
    (`-rc.1`) is marked as pre-release. Restarting replaces draft with this tag; the published
    release of workflow does not change.
 
-draft signs and publishes the publisher on Mac with one checkout command wotr-server: `python3 scripts/release_client.py v<version>` (first `--dry-run` ; runbook in `wotr-server:infra/README.md` , DIST-11 According to D14 and D18 ( `wotr-server:docs/DECISIONS.md` ) all three platforms are published and players are shown the macOS and Linux installers until Windows passes acceptance ( DIST-13 The run uses approx. 30 Linux minutes (including EditMode ), 3 minutes macOS (× 10 ) and 1 Windows minute (× 2 ), which means c. 62 minutes from the account limit.
+draft signs and publishes the publisher on Mac with one checkout command wotr-server: `python3 scripts/release_client.py v<version>` (first `--dry-run` ; runbook in `wotr-server:infra/README.md` , DIST-11 According to D14 and D18 ( `wotr-server:docs/DECISIONS.md` ) all three platforms are published and the game page offers all three, Windows marked experimental until its acceptance ( DIST-13 The run uses approx. 30 Linux minutes (including EditMode ), 3 minutes macOS (× 10 ) and 1 Windows minute (× 2 ), which means c. 62 minutes from the account limit.
 
 <a id="wynik"></a>
 ## Result
