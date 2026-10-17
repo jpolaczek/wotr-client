@@ -216,7 +216,9 @@ namespace Wotr.Client
             Allocate(latest, draft);
             Dice.Context(latest, draft, enabled);
             Responses.Context(latest, draft, enabled);
-            Tile.Root.EnableInClassList("legal-target", enabled && HuntResponseActions.Option(latest) is { } damage && draft.Ready(damage));
+            var tileLegal = enabled && HuntResponseActions.Option(latest) is { } damage && draft.Ready(damage);
+            Tile.Root.EnableInClassList("legal-target", tileLegal);
+            ReadOnlyControl.Apply(Tile.Root, tileLegal);
             var guide = owns && latest.Decision?.Kind == DecisionKind.Guide && latest.DecisionOwner == latest.You;
             Guides.Root.style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
             Guides.Context(latest, draft, context, enabled && guide);

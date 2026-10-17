@@ -180,6 +180,11 @@
 }
 
 .action.selected { background-image: resource("Wotr/Art/UI/frames/button-selected"); }
+/* UI-235: a control that cannot act now is its picture only: no frame, hover or press. */
+#board-screen .action.read-only,
+#board-screen .action.read-only:hover,
+#board-screen .action.read-only:focus,
+#board-screen .action.read-only.pressed { background-image: none; -unity-background-image-tint-color: rgb(255, 255, 255); }
 .action:disabled { color: rgb(158, 150, 128); -unity-background-image-tint-color: rgb(150, 150, 150); }
 
 

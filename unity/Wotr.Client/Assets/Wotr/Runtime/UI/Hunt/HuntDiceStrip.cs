@@ -90,6 +90,8 @@ namespace Wotr.Client
                 var button = BoardScreen.Button("", () => Selected?.Invoke(id));
                 button.name = "hunt-die-" + id;
                 button.AddToClassList("hunt-roll-die");
+                // UI-235: a rolled die is a picture until a reroll lets the player choose it.
+                ReadOnlyControl.Apply(button, false);
                 var face = BoardScreen.Row("hunt-natural-result");
                 face.pickingMode = PickingMode.Ignore;
                 face.Add(new HuntDieFace());
@@ -115,6 +117,7 @@ namespace Wotr.Client
                     (selected || draft.Payload.Ids.Count < option.Maximum);
                 pair.Value.EnableInClassList("legal-target", legal);
                 pair.Value.EnableInClassList("selected", selected);
+                ReadOnlyControl.Apply(pair.Value, legal || selected);
                 // Keep public results inspectable for either player; the controller guards choices.
             }
         }

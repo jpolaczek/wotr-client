@@ -25,6 +25,8 @@ namespace Wotr.Client
             Root.AddToClassList("hunt-tile-card");
             Root.userData = new DraftToken(DraftObject.HuntTile);
             Root.clicked += () => Selected?.Invoke();
+            // UI-235: the drawn tile is a picture until a damage decision makes it the place to confirm.
+            ReadOnlyControl.Apply(Root, false);
             art.Root.name = "hunt-tile-art";
             Root.Add(art.Root);
             Root.Add(face);

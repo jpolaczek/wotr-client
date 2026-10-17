@@ -328,3 +328,14 @@ User application from 2026-10-16: Hunt window opened by clicking the tile at the
 - In the assignment, click the tile only approves the ready-made allocation (UI-172, UI-205) and
   does not develop the list.
 - Test: `HuntNetworkTests` (caf, icon, assignment).
+
+## Static pictures and the response row — UI-235 (2026-10-17)
+
+User report: in a finished game (and so in a replay or for an observer) the Hunt window showed three empty response
+buttons with the Guide line, and drawn tiles or rolled dice looked like buttons although a click did nothing.
+
+- The response row (Ring, Guide, Random companion) is hidden from construction; only `HuntPanel.Context`, called by
+  the live player's turn, shows it for a damage decision, with each legal choice named and its consequence.
+- `ReadOnlyControl` marks a control that cannot act now (`read-only`): no button frame, hover or press
+  (`PressFeedback` ignores it); its tooltip stays. The drawn tile is read-only until a damage decision makes it the
+  place to confirm; a rolled die until a reroll lets the player choose it.

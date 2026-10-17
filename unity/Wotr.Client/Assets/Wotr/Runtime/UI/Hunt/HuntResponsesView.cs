@@ -29,6 +29,8 @@ namespace Wotr.Client
             }
             Root.Add(row);
             Root.Add(guideOrder);
+            // UI-235: only a damage decision fills and shows the row (Context); a replay or an observer never calls it.
+            Root.style.display = DisplayStyle.None;
         }
 
         private static void AddFace(Button button, HuntResponse response)

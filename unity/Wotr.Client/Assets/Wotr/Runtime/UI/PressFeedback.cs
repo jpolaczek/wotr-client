@@ -50,7 +50,7 @@ namespace Wotr.Client
                 if (element is TextField)
                     return null;
                 if (element is Button || element.ClassListContains(PressableClass))
-                    return element.enabledInHierarchy ? element : null;
+                    return element.enabledInHierarchy && !ReadOnlyControl.Is(element) ? element : null;
             }
             return null;
         }
