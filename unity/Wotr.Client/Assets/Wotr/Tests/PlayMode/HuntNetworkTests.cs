@@ -67,8 +67,6 @@ namespace Wotr.PlayTests
             StringAssert.Contains("limit", board.OwnDice.Q<Button>(second).tooltip);
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(second));
             await room.Settle();
-            await Drop(room, board.OwnDice.Q<Button>(second), board.Hunt.Tab);
-            await room.Settle();
             Assert.IsTrue(board.OwnDice.Q<Button>(first).ClassListContains("hunt-allocated"));
             Assert.IsFalse(board.OwnDice.Q<Button>(second).ClassListContains("hunt-allocated"));
             Assert.AreEqual(0, room.Boundary.Commands);
@@ -76,7 +74,11 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual("Allocate 0/1", board.Hunt.Caption, "A second click on the die returns it.");
             Assert.IsTrue(board.Hunt.Tab.ClassListContains("hunt-confirm-waiting"));
+            // UI-237: a die is chosen by a click only; dragging it to the plaque does nothing.
             await Drop(room, board.OwnDice.Q<Button>(second), board.Hunt.Tab);
+            await room.Settle();
+            Assert.AreEqual("Allocate 0/1", board.Hunt.Caption, "A dragged die is not allocated.");
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(second));
             await PlaqueReady(room, board);
             PointerGestureEvents.ClickAt(board.Hunt.Tab);
             await room.At(revision + 1);
@@ -120,10 +122,10 @@ namespace Wotr.PlayTests
                 StringAssert.StartsWith("Allocate 0/", board.Hunt.Caption, "The last die returns too.");
                 PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(chosen[0]));
                 await room.Settle();
-                await Drop(room, board.OwnDice.Q<Button>(chosen[1]), board.Hunt.Tab);
+                PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(chosen[1]));
                 await room.Settle();
                 StringAssert.StartsWith("Allocate 2/", board.Hunt.Caption);
-                Assert.IsFalse(board.Hunt.IsOpen, "A drop on the plaque opens nothing.");
+                Assert.IsFalse(board.Hunt.IsOpen, "Choosing dice opens nothing.");
                 Assert.AreEqual(0, room.Boundary.Commands);
                 Assert.AreEqual(before, room.Fp.Board.View.Revision);
                 Assert.IsTrue(room.Fp.Board.View.Dice.Where(d => chosen.Contains(d.Id)).All(d => d.Location == DieLocation.Unrolled));

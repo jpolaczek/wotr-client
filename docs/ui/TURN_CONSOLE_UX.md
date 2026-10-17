@@ -77,6 +77,9 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-237 (2026-10-17): action dice are chosen by clicks only. Pressing a die and moving the pointer starts no drag,
+  shows no ghost and drops nothing (`DraftInput`, as for armies and figures since UI-105); the Hunt allocation, costs
+  and every other die choice work by click. Rings, ruler tokens and cards keep their drops.
 - UI-230 (2026-10-17): the resource inspector (a window with Spent, Hunt, Discarded, Fellowship, Removed and Tokens
   tabs opened from the dice panel's location counts) is removed. The counts are information only (read-only, icon,
   number and tooltip). A die outside the pool that the player's decision may choose (e.g. a Balrog or Nenya die in the
