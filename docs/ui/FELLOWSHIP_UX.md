@@ -419,3 +419,12 @@ line says what the click does. Applied to:
 - the next Guide (UI-229) and the die an Elven Ring changes (UI-238).
 
 Tests: `CharacterRosterPanelTests.AnEnterableRowNamesTheChangeItsClickMakes`, `FellowshipGuideChoiceTests`.
+
+## The Ring icon hides the Fellowship — UI-232 (2026-10-17)
+
+There is no separate Hide control or "Revealed · Hide" caption. While hiding is legal with the chosen die, the Ring
+icon (the revealed symbol) on the corner plaque and in the panel's state row is the control: it wears the shared
+`ChoiceGlow` and pulses, and its tooltip reads "Click the Ring to hide the Fellowship at its current position · No
+progress; this die does not enter the Hunt." Otherwise the icon is a plain picture and a click on the plaque opens the
+panel as before (`FellowshipRingControl`). On the Mordor track the figure on the map still hides with one click
+(UI-155). Test: `FellowshipRingControlTests`.

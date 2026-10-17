@@ -15,7 +15,7 @@ namespace Wotr.Client
         public bool MoveOffered { get; private set; }
         // UI-220: a revealed Fellowship hides from its status plaque, not from a button in this row.
         public bool HideOffered { get; private set; }
-        public const string HideDescription = "Click to hide the Fellowship at its current position · No progress; this die does not enter the Hunt.";
+        public const string HideDescription = "Click the Ring to hide the Fellowship at its current position · No progress; this die does not enter the Hunt.";
         public string MoveDescription { get; private set; } = "";
         private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
         private readonly Label hint = new Label { name = "fellowship-action-hint" };

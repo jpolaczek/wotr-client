@@ -23,8 +23,8 @@ namespace Wotr.PlayTests
             var board = room.Fp.Board;
             var before = board.View;
             var pan = board.Map.Camera.Pan;
-            // UI-220: hiding is the status plaque's click; moving is the track symbol in the panel.
-            Button Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress") : board.Fellowship.Status;
+            // UI-232: hiding is the Ring icon's click; moving is the track symbol in the panel.
+            Button Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress") : board.Fellowship.Ring;
             Assert.IsFalse(board.Fellowship.IsOpen, "UI-98: no decision holds the panel; it unrolls from its plaque.");
             await room.Settle();
             StringAssert.Contains("Select a Character die", board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
@@ -39,7 +39,13 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.IsTrue(board.Fellowship.Status.ClassListContains("legal-target"), "The plaque offers the Fellowship action.");
             if (!move)
-                Assert.IsTrue(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "The plaque itself hides.");
+            {
+                Assert.IsTrue(board.Fellowship.Ring.ClassListContains(FellowshipStatus.HideClass), "The Ring icon hides.");
+                Assert.IsTrue(board.Fellowship.Ring.ClassListContains(ChoiceGlow.ClassName));
+                StringAssert.StartsWith("Click the Ring to hide", board.Fellowship.Ring.tooltip);
+                Assert.IsFalse(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
+                Assert.AreEqual("Revealed", board.Fellowship.Status.Q<Label>("fellowship-status-condition").text);
+            }
             // Hovering the corner tab unrolls the full form over it, as a player reaches the panel.
             CardGestures.Move(board.Fellowship.Status);
             await room.Settle();

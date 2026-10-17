@@ -11,6 +11,7 @@ namespace Wotr.Client
         private BoardPresentation data;
         public VisualElement Root { get; } = new VisualElement { name = "fellowship-panel", focusable = true };
         public Button Status => status.Summary;
+        public Button Ring => status.Ring;
         public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
@@ -40,11 +41,8 @@ namespace Wotr.Client
             this.map = map;
             Root.AddToClassList("fellowship-panel");
             Root.style.display = DisplayStyle.None;
-            status = new FellowshipStatus(() =>
-            {
-                if (!RequestHide())
-                    Open();
-            });
+            status = new FellowshipStatus(Open);
+            status.HideRequested += () => RequestHide();
             status.TrackFocusRequested += focus;
             Observe(Status);
             Observe(map.FellowshipMarker.Root);
@@ -70,7 +68,7 @@ namespace Wotr.Client
             RegisterHover();
         }
 
-        // UI-220: a click on the status plaque hides a revealed Fellowship when the chosen die allows it.
+        // UI-232: a click on the Ring icon hides a revealed Fellowship when the chosen die allows it.
         public bool RequestHide()
         {
             if (!controls.HideOffered)

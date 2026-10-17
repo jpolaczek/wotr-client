@@ -18,10 +18,10 @@ namespace Wotr.PlayTests
 
         public static void Action(MountedMatchClient client, string name)
         {
-            // UI-220: the status plaque hides the Fellowship; it sits in the corner tab, not in the panel.
+            // UI-232: the Ring icon on the status plaque hides the Fellowship.
             if (name == "fellowship-status")
             {
-                CardNetworkTests.Click(client.Board.Fellowship.Status);
+                CardNetworkTests.Click(client.Board.Fellowship.Ring);
                 return;
             }
             // UI-236: the figure on the map declares its position; the panel has no button for it.

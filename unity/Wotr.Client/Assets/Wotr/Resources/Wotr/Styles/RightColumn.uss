@@ -319,3 +319,41 @@
 }
 .motion-enabled #board-screen .fellowship-track-move.track-move.track-move-bright > .track-move-glow { opacity: 1; scale: 1.18; }
 #board-screen .fellowship-track-move.track-move:hover > .track-move-glow { opacity: 1; }
+
+/* UI-232: the Ring icon is the Hide control, on the plaque and in the panel's state row. A plain picture until hiding
+   is legal; then the shared ChoiceGlow rim, plate and pulse mark it. Sizes and places stay those of the icon. */
+#board-screen .fellowship-ring-button {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+}
+#board-screen .edge-corner-tab .edge-plaque .fellowship-ring-button {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    margin: 0 6px 0 0;
+}
+#board-screen .edge-corner-tab .edge-plaque .fellowship-ring-button > .plaque-emblem { width: 100%; height: 100%; margin: 0; }
+#board-screen .fellowship-locate .fellowship-state-row > .fellowship-ring-button {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    margin: 0 3px 0 0;
+}
+#board-screen .fellowship-locate .fellowship-ring-button > .fellowship-symbol { width: 100%; height: 100%; margin: 0; }
+#board-screen .fellowship-ring-button.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .choice-glow-pulse .fellowship-ring-button.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.08 1.08;
+}
