@@ -4,29 +4,34 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // UI-232: the Fellowship's Ring icon is the Hide control. While hiding is legal with the chosen die it glows and
-    // pulses (ChoiceGlow) and says what a click does; otherwise it is a plain picture and a click reaches its host.
+    // pulses (ChoiceGlow) and says what a click does; otherwise it looks like a plain picture and a click does what
+    // its host does (the plaque opens the panel, the panel's row locates the Fellowship).
     public sealed class FellowshipRingControl
     {
         public const string ClassName = "fellowship-ring-button";
         public Button Root { get; }
         public bool Offered { get; private set; }
 
-        public FellowshipRingControl(string name, Image icon, Action hide)
+        public FellowshipRingControl(string name, Image icon, Action hide, Action host)
         {
             Root = new Button(() =>
             {
                 if (Offered)
                     hide();
+                else
+                    host();
             }) { name = name };
             Root.AddToClassList(ClassName);
             Root.Add(icon);
+            // The host is a button too; it never takes the Ring's press as its own.
+            Root.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
+            Root.RegisterCallback<PointerUpEvent>(e => e.StopPropagation());
             Offer(false, "");
         }
 
         public void Offer(bool offered, string tooltip)
         {
             Offered = offered;
-            Root.pickingMode = offered ? PickingMode.Position : PickingMode.Ignore;
             Root.focusable = offered;
             Root.EnableInClassList(FellowshipStatus.HideClass, offered);
             ChoiceGlow.Apply(Root, offered);

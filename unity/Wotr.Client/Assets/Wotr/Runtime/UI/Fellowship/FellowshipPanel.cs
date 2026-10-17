@@ -12,6 +12,7 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "fellowship-panel", focusable = true };
         public Button Status => status.Summary;
         public Button Ring => status.Ring;
+        public Button PanelRing => status.PanelRing;
         public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
@@ -43,6 +44,7 @@ namespace Wotr.Client
             Root.style.display = DisplayStyle.None;
             status = new FellowshipStatus(Open);
             status.HideRequested += () => RequestHide();
+            status.LocateRequested += focus;
             status.TrackFocusRequested += focus;
             Observe(Status);
             Observe(map.FellowshipMarker.Root);

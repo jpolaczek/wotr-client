@@ -11,18 +11,18 @@ namespace Wotr.EditorTests
         public void TheRingIconHidesOnlyWhileHidingIsOffered()
         {
             var status = new FellowshipStatus(() => { });
-            Assert.AreEqual(PickingMode.Ignore, status.Ring.pickingMode, "A plain picture lets the plaque open the panel.");
+            Assert.IsFalse(status.Ring.focusable, "A plain picture until hiding is legal.");
             Assert.IsFalse(status.Ring.ClassListContains(ChoiceGlow.ClassName));
             status.OfferHide(true, FellowshipControls.HideDescription);
             foreach (var ring in new[] { status.Ring, status.PanelRing })
             {
-                Assert.AreEqual(PickingMode.Position, ring.pickingMode);
+                Assert.IsTrue(ring.focusable);
                 Assert.IsTrue(ring.ClassListContains(ChoiceGlow.ClassName));
                 StringAssert.StartsWith("Click the Ring to hide", ring.tooltip);
             }
             Assert.IsFalse(status.Summary.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
             status.OfferHide(false, "");
-            Assert.AreEqual(PickingMode.Ignore, status.PanelRing.pickingMode);
+            Assert.IsFalse(status.PanelRing.focusable);
             Assert.AreEqual("", status.Ring.tooltip);
         }
     }

@@ -340,11 +340,12 @@
 }
 #board-screen .edge-corner-tab .edge-plaque .fellowship-ring-button > .plaque-emblem { width: 100%; height: 100%; margin: 0; }
 #board-screen .fellowship-locate .fellowship-state-row > .fellowship-ring-button {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    min-height: 20px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
     margin: 0 3px 0 0;
+    padding: 3px;
 }
 #board-screen .fellowship-locate .fellowship-ring-button > .fellowship-symbol { width: 100%; height: 100%; margin: 0; }
 #board-screen .fellowship-ring-button.choice-glow {

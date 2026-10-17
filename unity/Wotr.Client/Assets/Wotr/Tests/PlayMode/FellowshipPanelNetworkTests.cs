@@ -23,8 +23,10 @@ namespace Wotr.PlayTests
             var board = room.Fp.Board;
             var before = board.View;
             var pan = board.Map.Camera.Pan;
-            // UI-232: hiding is the Ring icon's click; moving is the track symbol in the panel.
-            Button Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress") : board.Fellowship.Ring;
+            // UI-232: hiding is the Ring icon's click (on the plaque, or in the panel once it unrolls over the plaque);
+            // moving is the track symbol in the panel.
+            Button Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress")
+                : board.Fellowship.IsOpen ? board.Fellowship.PanelRing : board.Fellowship.Ring;
             Assert.IsFalse(board.Fellowship.IsOpen, "UI-98: no decision holds the panel; it unrolls from its plaque.");
             await room.Settle();
             StringAssert.Contains("Select a Character die", board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);

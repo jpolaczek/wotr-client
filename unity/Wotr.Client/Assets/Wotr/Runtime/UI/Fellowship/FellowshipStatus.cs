@@ -19,6 +19,8 @@ namespace Wotr.Client
         public event Action TrackFocusRequested;
         // UI-232: a click on the Ring icon (plaque or panel) while hiding is legal.
         public event Action HideRequested;
+        // A click on the panel's Ring while it does not hide: the row's own locate.
+        public event Action LocateRequested;
         public Button Ring => plaqueRing.Root;
         public Button PanelRing => panelRing.Root;
         private readonly FellowshipRingControl plaqueRing;
@@ -55,7 +57,7 @@ namespace Wotr.Client
             Summary.style.display = DisplayStyle.None;
             summaryCondition = FellowshipArtwork.Image("hidden");
             summaryCondition.AddToClassList(EdgePlaque.EmblemClass);
-            plaqueRing = new FellowshipRingControl("fellowship-ring", summaryCondition, () => HideRequested?.Invoke());
+            plaqueRing = new FellowshipRingControl("fellowship-ring", summaryCondition, () => HideRequested?.Invoke(), open);
             Summary.Add(plaqueRing.Root);
             pulse = new ChoicePulse(Summary);
             Summary.Add(EdgePlaque.Text(summaryLocation, summaryState));
@@ -65,7 +67,8 @@ namespace Wotr.Client
             values.Add(EdgePlaque.Value(FellowshipArtwork.Image("corruption"), summaryCorruption));
             Summary.Add(values);
             condition = FellowshipArtwork.Image("hidden");
-            panelRing = new FellowshipRingControl("fellowship-panel-ring", condition, () => HideRequested?.Invoke());
+            panelRing = new FellowshipRingControl("fellowship-panel-ring", condition, () => HideRequested?.Invoke(),
+                () => LocateRequested?.Invoke());
             StateRow.Add(panelRing.Root);
             panelPulse = new ChoicePulse(StateRow);
             StateRow.Add(state);
