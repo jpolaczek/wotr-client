@@ -29,6 +29,12 @@ namespace Wotr.Client
         private MapVectorLayer mordorTrack;
         private MapVectorLayer terrainLayer;
         private MapPoliticalView political;
+        // UI-224: the pulsing edge glow of enterable (green) and attackable (red) regions, and its reused buffers.
+        private MapTargetGlow targetGlow;
+        private readonly List<string> enterable = new List<string>();
+        private readonly List<string> attackable = new List<string>();
+        public bool TargetsGlowing => targetGlow?.Glowing == true;
+        public int TargetGlowRepaints => targetGlow?.Layer.Repaints ?? 0;
         private bool politicalActive;
         // UI-218: the illustration under the nations' colours is subdued, so the borders between them read clearly.
         public const float PoliticalTerrainOpacity = .55f;
@@ -73,6 +79,8 @@ namespace Wotr.Client
                 regions.Add(shape.Id, region);
                 Add(region.Layer);
             }
+            targetGlow = new MapTargetGlow(geometry, size);
+            Add(targetGlow.Layer);
             AddPassages(data, bands, byId, size);
             passages = new MapVectorLayer("map-passages", size.x, size.y,
                 context => DrawPassages(context.painter2D, data));
@@ -127,8 +135,18 @@ namespace Wotr.Client
             Prepare(data);
             Root.style.translate = new Translate(camera.Pan.x, camera.Pan.y);
             Root.style.scale = new Scale(Vector3.one * camera.Zoom);
+            enterable.Clear();
+            attackable.Clear();
             foreach (var entry in regions)
-                entry.Value.Update(Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed));
+            {
+                var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed);
+                entry.Value.Update(emphasis);
+                if (draft?.AttackTargets.Contains(entry.Key) == true)
+                    attackable.Add(entry.Key);
+                else if (draft?.Targets.Contains(entry.Key) == true)
+                    enterable.Add(entry.Key);
+            }
+            targetGlow.Update(enterable, attackable);
             LastUpdateMilliseconds = (Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency;
         }
 
@@ -243,6 +261,7 @@ namespace Wotr.Client
             passages = null;
             terrainLayer = null;
             political = null;
+            targetGlow = null;
         }
     }
 }

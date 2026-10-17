@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -58,6 +59,35 @@ namespace Wotr.EditorTests
             Assert.AreEqual(MapRegionEmphasis.Attack, map.Renderer.CurrentEmphasis("osgiliath"));
             map.SetHovered("not-a-region");
             Assert.IsEmpty(map.Hovered);
+        }
+
+        // UI-224: enterable and attackable regions glow; the glow layer repaints only when the targets change.
+        [Test]
+        public void TargetsGlowAndTheGlowFollowsOnlyChangesOfTheTargets()
+        {
+            var map = new MapCanvas(BoardPresentation.Load());
+            map.Redraw();
+            Assert.IsFalse(map.Renderer.TargetsGlowing);
+            map.DraftOverlay.Targets.Add("osgiliath");
+            map.DraftOverlay.AttackTargets.Add("minas-morgul");
+            map.Redraw();
+            Assert.IsTrue(map.Renderer.TargetsGlowing);
+            map.DraftOverlay.Targets.Clear();
+            map.DraftOverlay.AttackTargets.Clear();
+            map.Redraw();
+            Assert.IsFalse(map.Renderer.TargetsGlowing);
+        }
+
+        [Test]
+        public void TheGlowSetChangesOnlyWhenItsRegionsDo()
+        {
+            var current = new HashSet<string>();
+            Assert.IsTrue(MapTargetGlow.Changed(current, new[] { "a", "b" }));
+            Assert.IsFalse(MapTargetGlow.Changed(current, new[] { "b", "a" }), "order does not matter");
+            Assert.IsTrue(MapTargetGlow.Changed(current, new[] { "a" }));
+            CollectionAssert.AreEquivalent(new[] { "a" }, current);
+            Assert.IsTrue(MapTargetGlow.Changed(current, new string[0]));
+            Assert.IsEmpty(current);
         }
     }
 }

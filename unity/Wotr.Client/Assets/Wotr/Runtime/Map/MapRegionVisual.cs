@@ -31,8 +31,9 @@ namespace Wotr.Client
         {
             // UI-114: the terrain under a held pointer darkens until the release chooses it.
             MapRegionEmphasis.Pressed => new Color(.26f, .17f, .05f, .22f),
-            MapRegionEmphasis.Attack => new Color(.8f, .17f, .12f, .28f),
-            MapRegionEmphasis.Target => new Color(.16f, .65f, .34f, .25f),
+            // UI-224: targets are filled more strongly; their edges also glow (MapTargetGlow).
+            MapRegionEmphasis.Attack => new Color(.8f, .17f, .12f, .36f),
+            MapRegionEmphasis.Target => new Color(.16f, .65f, .34f, .34f),
             MapRegionEmphasis.Selected => new Color(.9f, .56f, .12f, .26f),
             MapRegionEmphasis.Source => new Color(.96f, .7f, .24f, .20f),
             MapRegionEmphasis.Protection => new Color(.25f, .69f, .95f, .16f),

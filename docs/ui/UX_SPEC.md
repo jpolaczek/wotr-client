@@ -1208,3 +1208,7 @@ The owner's request: the cards in play on the table unroll on hover like the han
 ## Discard from the hand by clicking — UI-222 (2026-10-17)
 
 The owner's request: whenever cards must be discarded from the hand — an excess hand, the cost of removing A Power too Great or Tom Bombadil (one Shadow die of any result, one Army and one Character card), or an effect's choice of a card from this hand (We Won't Go Back) — the player clicks the cards in the hand on the right. Cards that may be discarded glow red (`parchment-discard`), the counterpart of the green playable glow; the discard is sent as soon as the selection is complete (the second cost card removes the protection), with no extra confirmation. The server keeps validating the cost.
+
+## Pulsing target regions — UI-224 (2026-10-17)
+
+Enterable regions glow green and attackable enemy regions red along their edges, with a gentle pulse (still with Reduced motion). Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#pulsing-glow-of-enterable-and-enemy-regions--ui-224-2026-10-17).

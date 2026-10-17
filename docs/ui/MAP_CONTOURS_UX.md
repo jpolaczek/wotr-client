@@ -344,3 +344,12 @@ kept on the device (`wotr.map-view.v1`).
   The eight nation colours are never replaced by a two-side split; the captor marker is added on top.
 - The layer repaints only when a region's nation or controller changes; switching the view and moving the
   camera only show/hide the layer and fade the terrain.
+
+## Pulsing glow of enterable and enemy regions — UI-224 (2026-10-17)
+
+The owner's requests: regions the current action can enter are marked more clearly, gently pulsing with a green glow,
+and enemy regions it can attack get the same effect in red. Their fills are stronger (target alpha 0.34, attack
+0.36), and one retained layer (`map-target-glow`, under the bands and barriers) draws a soft wide halo and a bright
+thin line along each target's edge. The layer repaints only when the target sets change; its pulse toggles a class
+every 750 ms whose opacity transition (to 0.35) runs only under `.motion-enabled`, so Reduced motion keeps a still
+glow and panning or zooming never repaints it. Selected and pressed regions keep their own fill on top.

@@ -40,3 +40,13 @@
     transition-property: height, width, left, translate, -unity-background-image-tint-color;
     transition-duration: 140ms, 140ms, 140ms, 70ms, 70ms;
 }
+
+/* UI-224: the edge glow of enterable and attackable regions pulses gently; with Reduced motion it stays at full
+   strength (the dim state applies only under .motion-enabled). */
+.map-target-glow { opacity: 1; }
+.motion-enabled .map-target-glow {
+    transition-property: opacity;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .map-target-glow.map-target-glow-dim { opacity: 0.35; }
