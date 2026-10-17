@@ -28,7 +28,8 @@ namespace Wotr.Client
             {
                 Actor = owner,
                 Own = own,
-                Headline = own ? OwnHeadline(view, draft, die) : WaitingHeadline(view, owner, regionName),
+                Headline = own ? RingChoice.Headline(draft) is { Length: > 0 } ring ? ring : OwnHeadline(view, draft, die)
+                    : WaitingHeadline(view, owner, regionName),
                 Guidance = own ? OwnGuidance(view, die) : owner.HasValue
                     ? "The opponent is deciding. The notices under the top bar show what they do."
                     : "The game moves to its next step."
@@ -56,6 +57,7 @@ namespace Wotr.Client
             DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels.",
             DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
+            DecisionKind.Guide => FellowshipGuideText.ChooseHint,
             _ => "Click the status to open this decision."
         };
 
@@ -68,7 +70,7 @@ namespace Wotr.Client
             if (Offered(view, CommandKind.EnterMordor))
                 steps.Add("Enter Mordor: click the glowing gate");
             if (Offered(view, CommandKind.SelectGuide))
-                steps.Add("Guide: Fellowship panel");
+                steps.Add("Guide: Change guide in the Fellowship panel");
             steps.Add(steps.Count == 0 ? "Continue to the Hunt." : "or continue to the Hunt.");
             return string.Join(" · ", steps);
         }

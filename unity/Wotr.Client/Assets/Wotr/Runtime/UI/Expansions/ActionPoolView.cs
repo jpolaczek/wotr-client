@@ -13,7 +13,14 @@ namespace Wotr.Client
         {
             var header = BoardScreen.Row("dice-header");
             header.name = "dice-header";
-            header.Add(BoardScreen.Title(BoardScreen.SideName(side).ToUpperInvariant()));
+            var title = BoardScreen.Title(BoardScreen.SideName(side).ToUpperInvariant());
+            title.AddToClassList("dice-side-title");
+            header.Add(title);
+            // UI-238: while an armed Ring waits for its die, the band asks for it (RingInteraction.ChoosingClass).
+            var prompt = new Label("CHOOSE A DIE") { name = "dice-ring-prompt", pickingMode = PickingMode.Ignore };
+            prompt.AddToClassList("title");
+            prompt.AddToClassList("dice-ring-prompt");
+            header.Add(prompt);
             return header;
         }
 

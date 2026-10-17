@@ -52,6 +52,21 @@ namespace Wotr.EditorTests
             StringAssert.EndsWith("· Hunt allocation", TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Headline);
         }
 
+        // UI-238: an armed Elven Ring names its step in the headline: first the die to change, then its new result.
+        [Test]
+        public void AnArmedRingNamesTheDieToChange()
+        {
+            var view = View(Side.FreePeoples, Side.FreePeoples, DecisionKind.Action);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.UseRing);
+            draft.Change(p => p.RingId = "vilya");
+            Assert.AreEqual("ELVEN RING · CHOOSE THE DIE TO CHANGE", TurnConsoleState.For(view, draft, new ActionDieContext(), Region).Headline);
+            Assert.AreEqual("Click a highlighted die to change its result · Esc cancels", RingChoice.Hint(draft));
+            draft.Change(p => p.DieId = "die");
+            Assert.AreEqual("ELVEN RING · CHOOSE THE NEW RESULT", TurnConsoleState.For(view, draft, new ActionDieContext(), Region).Headline);
+            Assert.AreEqual("", RingChoice.Headline(new TurnDraft()));
+        }
+
         // UI-236: the Fellowship phase names the map's figure and the track's gate instead of panel buttons.
         [Test]
         public void FellowshipPhaseNamesTheFigureAndTheGate()

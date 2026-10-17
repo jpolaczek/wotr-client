@@ -77,6 +77,11 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-238 (2026-10-17): choosing the die an Elven Ring changes is its own, clearly marked moment. The console's
+  headline reads "ELVEN RING · CHOOSE THE DIE TO CHANGE" (then "… CHOOSE THE NEW RESULT"), the dice panel's band
+  replaces the side name with a gold "CHOOSE A DIE", the dice the Ring can change wear a thick gold rim on a warm plate
+  that pulses in the shared 750 ms rhythm under `.motion-enabled`, and the other dice fade to 28 %
+  (`RingChoice.Headline`, `RingInteraction.ChoosingClass`/`PulseClass`).
 - UI-239 (2026-10-17): bringing a character into play opens no window of choiceless buttons. The tray shows character
   buttons only while none is chosen, Change only with several characters, and cost dice only when they differ
   (`CharacterChoices.DiceChoice`); one die, or identical dice, are taken for the player (`CharacterDraft.UniformDie`).

@@ -13,7 +13,14 @@ namespace Wotr.Client
         // False when the Guide has no portrait here (e.g. Gollum); the status row then names it.
         public bool ShowsGuide { get; private set; }
         private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
+        private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
+        private readonly ChoicePulse pulse;
         private string roster = "";
+
+        public FellowshipRoster()
+        {
+            pulse = new ChoicePulse(Root);
+        }
 
         public void Apply(PlayerView view)
         {
@@ -51,7 +58,7 @@ namespace Wotr.Client
                 item.Value.Q<Label>("portrait-name").text = CharacterLibrary.ShortName(version.Length > 0 ? version : item.Key);
                 item.Value.EnableInClassList("current-guide", guide);
                 item.Value.Q<Label>("guide-badge").style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = CharacterLibrary.Name(version.Length > 0 ? version : item.Key) +
+                item.Value.tooltip = descriptions[item.Key] = CharacterLibrary.Name(version.Length > 0 ? version : item.Key) +
                     (character == null ? "" : $" · Level {character.Level} · Leadership {character.Leadership} · {FigureGrid.Name(character.NationIcon)}") +
                     (version.Length > 0 ? "\n" + Abilities(version) : view.Configuration.Lords ? "\nVersion unrevealed" : "");
             }
@@ -67,15 +74,23 @@ namespace Wotr.Client
 
         public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled)
         {
+            var choosingGuide = false;
             foreach (var item in portraits)
             {
                 var kind = FellowshipActions.PortraitKind(view, context, item.Key, draft);
                 // Inspection and keyboard focus remain available for non-candidates.
                 item.Value.SetEnabled(true);
                 item.Value.EnableInClassList("legal-target", enabled && kind.HasValue);
+                // UI-229: the next Guide is chosen here; its candidates glow and pulse and say what a click does.
+                var guide = enabled && kind == CommandKind.SelectGuide;
+                choosingGuide |= guide;
+                ChoiceGlow.Apply(item.Value, guide);
+                if (descriptions.TryGetValue(item.Key, out var description))
+                    item.Value.tooltip = guide ? "Click to make " + CharacterLibrary.ShortName(view, item.Key) + " the Guide\n" + description : description;
                 item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
                     : draft.Kind == CommandKind.SeparateCompanions && draft.Payload.Ids.Contains(item.Key));
             }
+            pulse.Run(choosingGuide);
         }
     }
 }

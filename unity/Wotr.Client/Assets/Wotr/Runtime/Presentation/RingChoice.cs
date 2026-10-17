@@ -40,6 +40,14 @@ namespace Wotr.Client
             return option.Faces.Select(face => new RingFace(face, face != current)).ToList();
         }
 
+        // UI-238: the console's headline names the Ring's step, so choosing the die to change is its own moment.
+        public static string Headline(TurnDraft draft) => Step(draft) switch
+        {
+            RingStep.Die => "ELVEN RING · CHOOSE THE DIE TO CHANGE",
+            RingStep.Face => "ELVEN RING · CHOOSE THE NEW RESULT",
+            _ => ""
+        };
+
         public static string Hint(TurnDraft draft) => Step(draft) switch
         {
             RingStep.Die => "Click a highlighted die to change its result · Esc cancels",

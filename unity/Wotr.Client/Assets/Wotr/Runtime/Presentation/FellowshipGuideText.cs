@@ -6,6 +6,9 @@ namespace Wotr.Client
     // Presentation of already projected versions; candidacy and effects remain server rules.
     public static class FellowshipGuideText
     {
+        // UI-229: the console's hint while the next Guide is chosen from the glowing portraits.
+        public const string ChooseHint = "Click a glowing companion in the Fellowship panel to make it the Guide";
+
         public static bool IsGuide(FellowshipView fellowship, string id) => fellowship.Guide == id ||
             CharacterLibrary.Identity(fellowship.Guide) == id;
 

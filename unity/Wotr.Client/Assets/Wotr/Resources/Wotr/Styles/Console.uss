@@ -333,6 +333,12 @@
    a popover of results (console/picker, slices in texture pixels = 2x assets.json) with a tail pointing at it. */
 #board-screen .dice-panel .die.ring-candidate { border-width: 2px; border-color: rgb(231, 193, 107); border-radius: 18px; }
 #board-screen .dice-panel .die.ring-muted { opacity: 0.4; }
+/* UI-238: choosing the die to change is its own moment. The panel's band reads CHOOSE A DIE in gold, the dice the
+   Ring can change glow and pulse with the shared ChoiceGlow (Choice.uss), and the other dice fade further. */
+.dice-ring-prompt { display: none; }
+#board-screen .dice-panel.ring-choosing .dice-header > .dice-side-title { display: none; }
+#board-screen .dice-panel.ring-choosing .dice-header > .dice-ring-prompt { display: flex; color: rgb(255, 214, 112); }
+#board-screen .dice-panel.ring-choosing .die.ring-muted { opacity: 0.28; }
 .ring-face-picker {
     position: absolute;
     flex-direction: row;

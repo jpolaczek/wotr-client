@@ -50,3 +50,28 @@
     transition-timing-function: ease-in-out-sine;
 }
 .motion-enabled .map-target-glow.map-target-glow-dim { opacity: 0.35; }
+
+/* UI-229/UI-238/UI-240: ChoiceGlow. An object the player is asked to click for a choice (the next Guide, the die an
+   Elven Ring changes, a character's change into another version) wears a thick gold rim on a warm plate; its host
+   pulses it in the shared 750 ms rhythm under .motion-enabled, and Reduced motion keeps it bright and still. */
+#board-screen .action.choice-glow,
+#board-screen .dice-panel .die.choice-glow,
+#board-screen .fellowship-panel .companion-token.choice-glow,
+#board-screen .edge-left-panel .character-roster-grid .action.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .choice-glow-pulse .action.choice-glow,
+.motion-enabled #board-screen .choice-glow-pulse .die.choice-glow,
+.motion-enabled #board-screen .choice-glow-pulse .companion-token.choice-glow,
+.motion-enabled #board-screen .choice-glow-pulse .character-roster-grid .action.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}

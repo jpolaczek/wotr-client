@@ -392,3 +392,16 @@ The Fellowship panel has no Declare position or Enter Mordor button. In the Fell
 
 Change guide and Finish phase stay in the panel. Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
 the PlayMode gestures `FellowshipGestures.Declare` and `FellowshipGestures.EnterMordor`.
+
+## The next Guide in the Fellowship panel — UI-229 (2026-10-17)
+
+The next Guide is chosen from the portraits of the panel at the top right: the Fellowship panel, or the Hunt panel's
+Guide row while the Hunt holds the decision. A Guide decision (after a casualty, or after Change guide in the
+Fellowship phase) opens no decision window. The candidates the server offers glow in gold and pulse in the shared
+750 ms rhythm (`ChoiceGlow`, `.choice-glow`, Reduced motion keeps them bright and still), their tooltip starts with
+"Click to make Strider the Guide", the panel's plaque is lit, and the console reads "Click a glowing companion in the
+Fellowship panel to make it the Guide". One click chooses (UI-142). Change guide stays a button in the Fellowship
+phase, because choosing a Guide there ends the phase. Test: `FellowshipGuideChoiceTests`.
+
+`ChoiceGlow` is the one look for an object the player is asked to click for a choice; the Elven Ring's dice (UI-238)
+and character changes (UI-240) use it too.

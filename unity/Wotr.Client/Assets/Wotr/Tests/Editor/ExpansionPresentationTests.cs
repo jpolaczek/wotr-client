@@ -85,6 +85,7 @@ namespace Wotr.EditorTests
             StringAssert.StartsWith("Hunt\n", root.Q<Button>("pool-Hunt").tooltip);
             StringAssert.Contains("keeper", root.Q<Button>("pool-Hunt").tooltip.ToLowerInvariant());
             Assert.IsTrue(root.Q<Button>("pool-Hunt").ClassListContains(ReadOnlyControl.ClassName), "UI-230: the count is information only.");
+            Assert.AreEqual("CHOOSE A DIE", root.Q<Label>("dice-ring-prompt").text, "UI-238: the band's prompt for an armed Ring.");
             Assert.IsNull(root.Q<Button>("nenya"), "A die in the Hunt box stays out of the pool's row without a decision.");
             view.DecisionOwner = Side.FreePeoples;
             view.Options.Add(new ActionOption { Kind = CommandKind.UseRing, Enabled = true, EligibleDice = { "nenya" } });
