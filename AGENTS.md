@@ -5,9 +5,9 @@
 ## Repositories
 
 This repository contains the Unity client, artwork, UI documentation (`docs/ui`),
-client tests, builds and player packages. The task registry, ROADMAP, WORKFLOW,
-requirements, rules, sources, Contracts, canonical content and server live in
-`wotr-server`. Run `python3 scripts/tasks.py …` in the `wotr-server` checkout;
+client tests, builds and player packages. WORKFLOW, requirements, rules, sources,
+Contracts, canonical content and the server live in `wotr-server`; the task registry
+and ROADMAP are local, ignored files of the `wotr-server` checkout. Run `python3 scripts/tasks.py …` in the `wotr-server` checkout;
 client tasks reference files in this repository as `wotr-client:<path>`.
 
 The client does not compile the backend. Contracts, public content, and the server
@@ -21,7 +21,7 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
 ## Before EVERY task
 
 1. Reread this file, [WORKFLOW](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/WORKFLOW.md), the task entry in the
-   [registry](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json) and its individual document. Do not rely only
+   registry and its individual document. Do not rely only
    on memory from a previous session.
 2. Read [REQUIREMENTS](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/REQUIREMENTS.md), the relevant parts of
    [ARCHITECTURE](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ARCHITECTURE.md), [LOGIC](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/rules/LOGIC.md),
@@ -131,10 +131,12 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
 <a id="ograniczenia-procesu"></a>
 ## Process constraints
 
-- `tasks.json` is the sole source of task states; `INDEX.md` is generated. Each
-  active task's definition lives in its Markdown file. Completed descriptions and full records are removed; the compact completion ledger retains dependency and coverage identifiers.
+- The task registry is local to the `wotr-server` checkout and ignored by Git (user
+  decision 2026-10-17): its `docs/tasks/tasks.json` is the sole source of task states,
+  `INDEX.md` is generated and each active task's definition lives in its local Markdown
+  file. Completed tasks are removed; never commit or link the registry or the roadmap.
 - A new task requires a goal, dependencies, sources, logic, acceptance criteria,
-  a verification plan and documents to update. Use the [template](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/TEMPLATE.md).
+  a verification plan and documents to update. Use the template.
 - A scope or dependency change requires a ROADMAP update and a graph check. Do
   not remove dependencies merely to start blocked work.
 - Do not deploy or publish without authorization in the request. Do not add

@@ -1,7 +1,7 @@
 <a id="mapa-z-istniejących-konturów--plan-map-12map-17"></a>
 # Map from existing contours — MAP-12-MAP-17 plan
 
-The project with 2026-10-08 after correction of MAP-10. The status of the implementation is only in [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json). MAP-11 receives the documentation; the change of Unity map itself remains to be performed in subsequent tasks.
+The project with 2026-10-08 after correction of MAP-10. The status of the implementation is only in Register. MAP-11 receives the documentation; the change of Unity map itself remains to be performed in subsequent tasks.
 
 <a id="rezultat-i-źródła"></a>
 ## Result and sources

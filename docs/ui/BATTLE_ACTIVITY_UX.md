@@ -1,7 +1,7 @@
 <a id="walki-powiadomienia-i-dziennik-akcji"></a>
 # Combats, notifications and the action journal
 
-Plan agreed 2026-10-07. UI-37 receives documentation preparation; [UI-38–UI-47](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ROADMAP.md) realizes data, client and integration. Status and evidence remain only in [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json). This document does not confirm implementation.
+Plan agreed 2026-10-07. UI-37 receives documentation preparation; UI-38–UI-47 realizes data, client and integration. Status and evidence remain only in Register. This document does not confirm implementation.
 
 <a id="cel-i-granice"></a>
 ## Purpose and boundaries

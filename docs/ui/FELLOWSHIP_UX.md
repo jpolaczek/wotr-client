@@ -1,7 +1,7 @@
 <a id="drużyna-i-polowanie--docelowy-interfejs"></a>
 # Fellowship and Hunt — target interface
 
-The design with 2026-10-07, written in UI-36. Specification and description of the interaction; the status of the execution is determined only by [registry](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/INDEX.md). It develops [U09](UX_SPEC.md) and [plan Hunt](HUNT_UX.md). UI uses English labels and simple interchangeable icons.
+The design with 2026-10-07, written in UI-36. Specification and description of the interaction; the status of the execution is determined only by registry. It develops [U09](UX_SPEC.md) and [plan Hunt](HUNT_UX.md). UI uses English labels and simple interchangeable icons.
 
 <a id="graficzne-tory--ui-79"></a>
 ## Graphical tracks — UI-79

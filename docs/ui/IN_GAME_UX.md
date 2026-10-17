@@ -1,7 +1,7 @@
 <a id="pozostały-interfejs-podczas-partii--projekt-ui-56ui-63"></a>
 # Other interface during the batch — UI-56-UI-63 project
 
-The 2026-10-07/08 call project, saved in the UI-55 documentation. The status of the execution is determined only by [registry](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/INDEX.md). This document describes the target behavior, does not confirm implementation or the performance of future tests.
+The 2026-10-07/08 call project, saved in the UI-55 documentation. The status of the execution is determined only by registry. This document describes the target behavior, does not confirm implementation or the performance of future tests.
 
 From UI-173 (user decision with 2026-10-15) the game does not have a Help panel or links "?" and "Why unavailable?"; Help descriptions below are historical ([UX_SPEC](UX_SPEC.md#bez-help--ui-173)).
 

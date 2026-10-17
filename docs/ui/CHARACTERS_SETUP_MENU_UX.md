@@ -1,7 +1,7 @@
 <a id="characters-przygotowanie-i-menu--plan-ui-65ui-72"></a>
 # Characters, Preparation and Menu — UI-65-UI-72 plan
 
-The project adopted in the 2026-10-08 interview and written down in the documentary UI-64. [Registry](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/INDEX.md) defines the statuses. Description and matrix are requirements for future implementation, not evidence of acceptance.
+The project adopted in the 2026-10-08 interview and written down in the documentary UI-64. Registry defines the statuses. Description and matrix are requirements for future implementation, not evidence of acceptance.
 
 <a id="zakres-i-odpowiedzialność"></a>
 ## Scope and responsibility

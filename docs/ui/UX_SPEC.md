@@ -3,7 +3,7 @@
 
 **The mandatory UI-73–UI-80 model:** [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) separates non-interactive information on hover/focus from the panel opened by clicking or Enter/Space. The map area on the hover only stands out; the region opens by clicking. The legal end click/drop continues to perform a step. The map covers the screen and has the edge pan; figure moves readably and Fellowship/Hunt have a common layout. The U01–U17 below are current requirements; the clearly marked descriptions of historical implementations and results are not acceptance of this version. The status of implementation defines the register.
 
-Specification accepted 2026-10-06 for UI-14–UI-24, developed by the subsequent tasks UI. The document itself does not mean finished runtime; status and evidence are in [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/INDEX.md). Full decision coverage: [catalog](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ui/interaction-inventory.json), attempts: [SCENARIOS](SCENARIOS.md).
+Specification accepted 2026-10-06 for UI-14–UI-24, developed by the subsequent tasks UI. The document itself does not mean finished runtime; status and evidence are in Register. Full decision coverage: [catalog](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/ui/interaction-inventory.json), attempts: [SCENARIOS](SCENARIOS.md).
 
 <a id="u01--cel-i-układ"></a>
 ## U01 — Objective and arrangement

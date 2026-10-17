@@ -1,7 +1,7 @@
 <a id="map-17--raport-odbioru-mapy-z-konturów"></a>
 # MAP-17 — acceptance report on contour maps
 
-Final report from 2026-10-08 . Verification shall include . NET **3723/3723**, Editor **478/478** and full Play **440/440** in 42 hosts; new regression card total **441** unique Play cases, zero skip. HTTPS/WSS , three builds, macOS smokes and Development Player with 36 measurements and inspections of all 42 PNG counted within the defined scope. The status of the task remains only within [Register](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/tasks/tasks.json) The limitations on platforms and window placement are publicized below.
+Final report from 2026-10-08 . Verification shall include . NET **3723/3723**, Editor **478/478** and full Play **440/440** in 42 hosts; new regression card total **441** unique Play cases, zero skip. HTTPS/WSS , three builds, macOS smokes and Development Player with 36 measurements and inspections of all 42 PNG counted within the defined scope. The status of the task remains only within Register The limitations on platforms and window placement are publicized below.
 
 <a id="dane-i-zakres"></a>
 ## Data and scope
