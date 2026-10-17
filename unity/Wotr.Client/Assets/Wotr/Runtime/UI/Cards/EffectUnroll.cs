@@ -10,6 +10,7 @@ namespace Wotr.Client
     {
         public VisualElement Root { get; } = new VisualElement { name = "effect-unroll", pickingMode = PickingMode.Ignore };
         public EffectEntry Entry { get; private set; }
+        // Only a shown card's text is in the panel, so an ability never carries a card text block.
         private readonly EffectCardText card = new EffectCardText();
         private readonly Label text = new Label { name = "effect-unroll-text" };
 
@@ -18,7 +19,6 @@ namespace Wotr.Client
             Root.AddToClassList("effect-unroll");
             Root.style.position = Position.Absolute;
             Root.style.display = DisplayStyle.None;
-            Root.Add(card.Root);
             Root.Add(text);
         }
 
@@ -28,9 +28,14 @@ namespace Wotr.Client
             var source = entry.Source;
             var isCard = CardLibrary.Cards.TryGetValue(source.SourceId, out var printed);
             if (isCard)
+            {
                 card.Show(printed, CardLibrary.EventText(printed, configuration), false);
+                if (card.Root.parent != Root)
+                    Root.Insert(0, card.Root);
+            }
+            else
+                card.Root.RemoveFromHierarchy();
             text.text = isCard ? "" : string.Join("\n", source.Effects.Select(e => e.Description).Where(d => !string.IsNullOrEmpty(d)).Distinct());
-            card.Root.style.display = isCard ? DisplayStyle.Flex : DisplayStyle.None;
             text.style.display = isCard ? DisplayStyle.None : DisplayStyle.Flex;
             var tile = host.WorldToLocal(entry.Root.worldBound);
             var area = host.WorldToLocal(list.worldBound);
@@ -45,6 +50,7 @@ namespace Wotr.Client
         public void Hide()
         {
             Entry = null;
+            card.Root.RemoveFromHierarchy();
             Root.style.display = DisplayStyle.None;
         }
     }
