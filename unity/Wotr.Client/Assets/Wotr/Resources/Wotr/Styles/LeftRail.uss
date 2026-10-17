@@ -51,6 +51,36 @@
 .board-left-tabs .edge-tab.selected,
 .board-left-tabs .edge-tab.selected:hover,
 .board-left-tabs .edge-tab.selected:focus { background-image: resource("Wotr/Art/UI/rail/edge-tab-selected"); }
+/* UI-223: over the map a tab sits on a dark lacquer plate with a fine gilt rim, so the medallion and its label read
+   on light and dark terrain alike; a usable tab gets a bright gold rim, a warmer plate and a gold label, and pulses
+   gently under .motion-enabled (Reduced motion keeps it bright and still). Sizes and places stay fixed. */
+.board-left-tabs .edge-tab {
+    background-color: rgba(22, 19, 15, 0.82);
+    border-width: 1px;
+    border-color: rgba(214, 178, 98, 0.55);
+    border-radius: 12px;
+}
+.board-left-tabs .edge-tab:hover,
+.board-left-tabs .edge-tab:focus { background-color: rgba(38, 32, 24, 0.9); border-color: rgba(240, 206, 128, 0.8); }
+.board-left-tabs .edge-tab.legal-target,
+.board-left-tabs .edge-tab.die-option {
+    background-color: rgba(70, 52, 18, 0.92);
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    color: rgb(255, 226, 150);
+}
+.motion-enabled .board-left-tabs .edge-tab.legal-target,
+.motion-enabled .board-left-tabs .edge-tab.die-option {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .board-left-tabs.edge-tabs-pulse .edge-tab.legal-target,
+.motion-enabled .board-left-tabs.edge-tabs-pulse .edge-tab.die-option {
+    border-color: rgba(255, 214, 112, 0.45);
+    background-color: rgba(46, 36, 16, 0.88);
+}
+.board-left-tabs .edge-tab.selected { border-color: rgb(196, 70, 52); }
 .edge-tab-icon {
     position: absolute;
     left: 35px;

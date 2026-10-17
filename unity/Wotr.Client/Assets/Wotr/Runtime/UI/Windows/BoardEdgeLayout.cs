@@ -30,6 +30,8 @@ namespace Wotr.Client
             this.stage = stage;
             board.Root.AddToClassList("edge-board");
             Left.AddToClassList("board-left-tabs");
+            // UI-223: a usable tab pulses gently; the class only matters under .motion-enabled (LeftRail.uss).
+            Left.schedule.Execute(() => Left.ToggleInClassList(TabPulseClass)).Every(MapTargetGlow.PulseMilliseconds);
             Right.AddToClassList("board-right-panels");
             Left.AddToClassList("map-edge-control");
             Right.AddToClassList("map-edge-control");
@@ -119,6 +121,8 @@ namespace Wotr.Client
             board.Menu.VictoryRequested += board.Victory.Open;
             board.Menu.VictoryRequested += () => board.Victory.Root.Focus();
         }
+
+        public const string TabPulseClass = "edge-tabs-pulse";
 
         private void AddTab(Button tab, string title, string icon)
         {

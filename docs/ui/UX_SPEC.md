@@ -1212,3 +1212,7 @@ The owner's request: whenever cards must be discarded from the hand — an exces
 ## Pulsing target regions — UI-224 (2026-10-17)
 
 Enterable regions glow green and attackable enemy regions red along their edges, with a gentle pulse (still with Reduced motion). Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#pulsing-glow-of-enterable-and-enemy-regions--ui-224-2026-10-17).
+
+## Left tabs stand out from the map — UI-223 (2026-10-17)
+
+The owner's request: over the map the left tabs (Politics, Effects, Characters, …) were barely visible. Each tab now sits on a dark lacquer plate with a fine gilt rim (`LeftRail.uss`), so the medallion and its label read over light and dark terrain. A usable tab (a legal target or usable by the chosen die, UI-136/UI-193) gets a bright gold rim, a warmer plate and a gold label, and pulses gently with the map targets' rhythm (750 ms); Reduced motion keeps it bright and still. Sizes and places stay fixed.
