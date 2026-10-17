@@ -629,6 +629,33 @@ namespace Wotr.PlayTests
             CollectionAssert.AreEquivalent(candidates.Take(2), test.Backend.Last.Payload.Ids);
         }
 
+        // UI-259: the board's chat field shows what is typed — light text on a dark field with a clear contrast.
+        [UnityTest]
+        public IEnumerator ChatInputShowsTypedTextWithReadableContrast()
+        {
+            using var test = new Harness();
+            yield return Settle();
+            var chat = test.Board.GameChat;
+            chat.Available(true);
+            chat.Open();
+            chat.Chat.Input.value = "Hello from Rivendell";
+            yield return Settle();
+            var field = chat.Chat.Input.Q(className: "unity-base-text-field__input");
+            var text = field.Q<TextElement>();
+            var contrast = Contrast(text.resolvedStyle.color, field.resolvedStyle.backgroundColor);
+            Assert.GreaterOrEqual(contrast, 7f, "Typed chat text reads against its field.");
+            Assert.Greater(text.resolvedStyle.color.grayscale, field.resolvedStyle.backgroundColor.grayscale, "Light text on a dark field.");
+        }
+
+        private static float Contrast(Color a, Color b)
+        {
+            var light = Mathf.Max(Luminance(a), Luminance(b));
+            var dark = Mathf.Min(Luminance(a), Luminance(b));
+            return (light + 0.05f) / (dark + 0.05f);
+        }
+
+        private static float Luminance(Color color) => 0.2126f * color.linear.r + 0.7152f * color.linear.g + 0.0722f * color.linear.b;
+
         [UnityTest]
         public IEnumerator EliteDragAndPoliticalEmblemNeedOnlyOneCommitEach()
         {

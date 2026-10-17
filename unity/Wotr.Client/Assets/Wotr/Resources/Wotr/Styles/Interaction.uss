@@ -140,6 +140,23 @@
 #board-screen .game-chat .room-chat-text { flex-shrink: 1; margin: 0; padding: 0; font-size: 12px; white-space: normal; color: rgb(231, 228, 215); }
 #board-screen .game-chat .room-chat-line { flex-direction: row; align-items: center; flex-shrink: 0; height: 30px; margin-top: 4px; }
 #board-screen .game-chat .room-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 26px; margin: 0 4px 0 0; font-size: 12px; }
+/* UI-259: the field shows what is typed — parchment text on a dark field, a gold caret and selection, a quiet
+   placeholder and a gold rim while focused. */
+#board-screen .game-chat .room-chat-input > .unity-base-text-field__input {
+    margin: 0;
+    padding: 2px 6px;
+    background-color: rgb(46, 41, 34);
+    color: rgb(245, 239, 222);
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgba(214, 178, 98, 0.55);
+    --unity-cursor-color: rgb(245, 212, 133);
+    --unity-selection-color: rgba(214, 178, 98, 0.45);
+}
+#board-screen .game-chat .room-chat-input > .unity-base-text-field__input > TextElement { color: rgb(245, 239, 222); }
+#board-screen .game-chat .room-chat-input:focus > .unity-base-text-field__input { border-color: rgb(232, 204, 130); }
+#board-screen .game-chat .room-chat-input .unity-base-text-field__input--placeholder,
+#board-screen .game-chat .room-chat-input .unity-base-text-field__input--placeholder > TextElement { color: rgba(214, 198, 160, 0.6); }
 #board-screen .game-chat .room-chat-send { width: 56px; height: 26px; min-height: 26px; flex-shrink: 0; font-size: 12px; }
 #board-screen .game-chat-status { height: 14px; margin: 2px 0 0 0; font-size: 11px; color: rgb(232, 160, 120); }
 

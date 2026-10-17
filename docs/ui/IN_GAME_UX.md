@@ -233,3 +233,8 @@ with a "?" badge until the panel opens; the first read after connecting marks no
 players' messages and observers read everyone's — the server filters by role (`GET/POST /api/matches/{id}/chat`).
 A game without a room (a demo or a server without the route) answers 404: the icon hides and polling stops. The panel
 polls every 3 s while the board is open. Test: `GameChatPanelTests`.
+
+UI-259 (2026-10-18, owner's report): the chat field shows what is typed — parchment text on a dark field
+(rgb 245,239,222 on rgb 46,41,34), a gold caret, selection and focus rim, and a quiet placeholder. Before, the text
+had a contrast of about 1.1:1 against the field. Test: `BoardInteractionTests.ChatInputShowsTypedTextWithReadableContrast`
+(at least 7:1).
