@@ -670,3 +670,12 @@ User application from 2026-10-16: “Add nice colorful city tags, sediments and 
 - The army government stands 12 set above the anchor settlement (ex 8), over the largest stone in
   the frame. The region name zone (`MapRegionNamePoints`) remains unchanged: its extension hid one
   name approximately, and the name test passes with figure UI-192 at the former zone.
+
+## Fellowship figure inside its region — UI-228 (2026-10-17)
+
+The Fellowship's figure in an ordinary region stands above the region's forces when its feet fall inside the region at
+the current zoom. Otherwise it stands below them, then right or left of them (`MapFellowshipMarker.RegionCentre`).
+Gorgoroth's point lies just under the Barad-dûr border, so its figure used to stand in Barad-dûr and now stands below
+the forces. A region too small for every place keeps the figure above its forces, as before. On the Mordor track the
+figure stays on its step, which lies inside Gorgoroth (the Crack of Doom is drawn at Barad-dûr's foot). Test:
+`MapContourDataTests.FellowshipFigureStandsInsideGorgoroth`.

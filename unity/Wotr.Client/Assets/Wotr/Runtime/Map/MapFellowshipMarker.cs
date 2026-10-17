@@ -11,6 +11,9 @@ namespace Wotr.Client
         public const float MotionSeconds = .4f;
         // UI-185/UI-192: as large as the figures of the armies (MapArmyArtwork).
         private static readonly Vector2 RegionSize = new Vector2(64, 72);
+        // UI-228: above the region's forces first; where that would stand in the neighbouring region (Gorgoroth under
+        // Barad-dûr), below them, then right and left of them.
+        private static readonly Vector2[] RegionPlaces = { new Vector2(0, -64), new Vector2(0, 64), new Vector2(70, -8), new Vector2(-70, -8) };
         private static readonly Vector2 TrackDetail = new Vector2(36, 40), TrackToken = new Vector2(28, 32);
         private const float StatusWidth = 58;
         private const float TileWidth = 30;
@@ -127,9 +130,24 @@ namespace Wotr.Client
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
-            Place(map.LocalMarkerRect(anchor + new Vector2(0, -64), RegionSize), true);
+            Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
             marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position";
         }
+
+        // The first place whose figure stands with its feet inside the region at the current zoom; a region too small
+        // for every place keeps the figure above its forces.
+        public static Vector2 RegionCentre(RegionGeometry shape, Vector2 anchor, CameraState camera)
+        {
+            foreach (var place in RegionPlaces)
+            {
+                var centre = anchor + place;
+                if (MapContourMath.Contains(shape, camera.ToBoard(Feet(centre))))
+                    return centre;
+            }
+            return anchor + RegionPlaces[0];
+        }
+
+        public static Vector2 Feet(Vector2 centre) => centre + new Vector2(0, RegionSize.y / 2 - 8);
 
         // The figure's feet stand on the step; under the step a row holds the drawn tile (zoomed in only) and the
         // Corruption badge, clear of the neighbouring steps along the path.
