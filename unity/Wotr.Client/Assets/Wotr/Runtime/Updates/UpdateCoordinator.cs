@@ -237,6 +237,10 @@ namespace Wotr.Client.Updates
                     return false;
                 }
                 await installer.Stage(state.ReadyPackage, state.ReadyIsRepair, lifetime.Token);
+                // The installer holds its own copy now. A repair keeps the running version, so a ready package left
+                // behind would offer the same repair again on every start (2026-10-17); an update would be dropped by
+                // the new version anyway.
+                DropReady();
                 return true;
             }
             catch (Exception error) when (!lifetime.IsCancellationRequested)

@@ -253,6 +253,14 @@ namespace Wotr.Client.Tests
             Assert.IsTrue(updater.Snapshot.Repair);
             Assert.IsTrue(await updater.Install());
             Assert.IsTrue(installer.Staged[0].Repair);
+            // The repaired game starts with the same version: no repair is offered again.
+            updater.Dispose();
+            var restarted = Updater();
+            await restarted.Check();
+            Assert.AreNotEqual(UpdateStatus.Ready, restarted.Snapshot.Status);
+            Assert.IsFalse(restarted.Snapshot.Repair);
+            Assert.AreEqual("", new UpdateStore(folder).Load().ReadyVersion);
+            Assert.IsEmpty(Directory.GetDirectories(folder));
         }
 
         [Test]
