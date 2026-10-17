@@ -83,6 +83,27 @@ namespace Wotr.EditorTests
             Assert.AreEqual(("on-board", "Erebor · Garrison", "Erebor"), (onBoard.Key, onBoard.Text, onBoard.Short));
         }
 
+        // UI-240: an enterable row says what its click does: a change into the next version or an entry.
+        [Test]
+        public void AnEnterableRowNamesTheChangeItsClickMakes()
+        {
+            var strider = new CharacterRosterView
+            {
+                FigureId = "base.character.strider", CurrentDefinitionId = "base.character.strider", Lifecycle = CharacterRosterLifecycle.OnBoard,
+                FutureVersions = { new CharacterEntryVersionView { DefinitionId = "base.character.aragorn", Entry = new ActionAvailabilityView { CanAct = true } } }
+            };
+            StringAssert.StartsWith("Click to turn Strider into Aragorn", CharacterRosterPresentation.EntryOffer(strider));
+            var white = new CharacterRosterView
+            {
+                FigureId = "base.character.gandalf-white", Lifecycle = CharacterRosterLifecycle.NotEntered,
+                FutureVersions = { new CharacterEntryVersionView { DefinitionId = "base.character.gandalf-white", Entry = new ActionAvailabilityView { CanAct = true } } }
+            };
+            Assert.AreEqual("Click to bring Gandalf the White into play", CharacterRosterPresentation.EntryOffer(white));
+            Assert.AreEqual("Click to separate Merry from the Fellowship",
+                FellowshipRoster.Offer(new PlayerView(), "base.character.merry", CommandKind.SeparateCompanions));
+            Assert.AreEqual("", FellowshipRoster.Offer(new PlayerView(), "base.character.merry", null));
+        }
+
         [Test]
         public void InspectorShowsStatusStatisticsAndAbilityChipsWithoutUnrolledText()
         {

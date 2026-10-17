@@ -74,23 +74,31 @@ namespace Wotr.Client
 
         public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled)
         {
-            var choosingGuide = false;
+            var choosing = false;
             foreach (var item in portraits)
             {
                 var kind = FellowshipActions.PortraitKind(view, context, item.Key, draft);
                 // Inspection and keyboard focus remain available for non-candidates.
                 item.Value.SetEnabled(true);
                 item.Value.EnableInClassList("legal-target", enabled && kind.HasValue);
-                // UI-229: the next Guide is chosen here; its candidates glow and pulse and say what a click does.
-                var guide = enabled && kind == CommandKind.SelectGuide;
-                choosingGuide |= guide;
-                ChoiceGlow.Apply(item.Value, guide);
+                // UI-229/UI-240: a portrait whose click chooses the next Guide or separates the companion glows and
+                // pulses, and its tooltip starts with what the click does.
+                var offer = enabled ? Offer(view, item.Key, kind) : "";
+                choosing |= offer.Length > 0;
+                ChoiceGlow.Apply(item.Value, offer.Length > 0);
                 if (descriptions.TryGetValue(item.Key, out var description))
-                    item.Value.tooltip = guide ? "Click to make " + CharacterLibrary.ShortName(view, item.Key) + " the Guide\n" + description : description;
+                    item.Value.tooltip = offer.Length > 0 ? offer + "\n" + description : description;
                 item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
                     : draft.Kind == CommandKind.SeparateCompanions && draft.Payload.Ids.Contains(item.Key));
             }
-            pulse.Run(choosingGuide);
+            pulse.Run(choosing);
         }
+
+        public static string Offer(PlayerView view, string id, CommandKind? kind) => kind switch
+        {
+            CommandKind.SelectGuide => "Click to make " + CharacterLibrary.ShortName(view, id) + " the Guide",
+            CommandKind.SeparateCompanions => "Click to separate " + CharacterLibrary.ShortName(view, id) + " from the Fellowship",
+            _ => ""
+        };
     }
 }

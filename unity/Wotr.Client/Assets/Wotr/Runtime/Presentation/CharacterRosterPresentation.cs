@@ -14,6 +14,19 @@ namespace Wotr.Client
                 row.Identity != "gollum" && row.Identity != "smeagol" &&
                 (row.Lifecycle != CharacterRosterLifecycle.InFellowship || row.FutureVersions.Count > 0));
 
+        // UI-240: what a click on an enterable row does: a character in play changes into its next version (Strider
+        // into Aragorn), one not in play comes into play.
+        public static string EntryOffer(CharacterRosterView row)
+        {
+            var future = row.FutureVersions.FirstOrDefault(v => v.Entry.CanAct || v.CouncilEntry?.CanAct == true) ?? row.FutureVersions.FirstOrDefault();
+            var target = CharacterLibrary.Name(future?.DefinitionId ?? row.CurrentDefinitionId);
+            return row.Lifecycle is CharacterRosterLifecycle.OnBoard or CharacterRosterLifecycle.InFellowship &&
+                !string.IsNullOrEmpty(row.CurrentDefinitionId) && future != null &&
+                future.DefinitionId != row.CurrentDefinitionId
+                ? "Click to turn " + CharacterLibrary.Name(row.CurrentDefinitionId) + " into " + target
+                : "Click to bring " + target + " into play";
+        }
+
         public static CharacterRosterSection Section(CharacterRosterView row) => row.Lifecycle switch
         {
             CharacterRosterLifecycle.OnBoard => CharacterRosterSection.OnBoard,

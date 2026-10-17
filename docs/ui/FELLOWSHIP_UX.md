@@ -405,3 +405,17 @@ phase, because choosing a Guide there ends the phase. Test: `FellowshipGuideChoi
 
 `ChoiceGlow` is the one look for an object the player is asked to click for a choice; the Elven Ring's dice (UI-238)
 and character changes (UI-240) use it too.
+
+## A click that changes something glows and says so — UI-240 (2026-10-17)
+
+Rule for every object whose click itself makes a change: it wears the shared `ChoiceGlow` (gold rim on a warm plate,
+pulsing in the 750 ms rhythm under `.motion-enabled`, bright and still with Reduced motion), and its tooltip's first
+line says what the click does. Applied to:
+
+- the Characters list: a row whose click changes a character into its next version reads "Click to turn Strider into
+  Aragorn", and a row that brings a character into play reads "Click to bring Gandalf the White into play"
+  (`CharacterRosterPresentation.EntryOffer`, `CharacterRosterRow.Offer`; the panel pulses them with `ChoicePulse`);
+- Fellowship portraits that the chosen die can separate: "Click to separate Merry from the Fellowship";
+- the next Guide (UI-229) and the die an Elven Ring changes (UI-238).
+
+Tests: `CharacterRosterPanelTests.AnEnterableRowNamesTheChangeItsClickMakes`, `FellowshipGuideChoiceTests`.

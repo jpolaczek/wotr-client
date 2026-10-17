@@ -15,6 +15,9 @@ namespace Wotr.Client
         private readonly VisualElement statusIcon = new VisualElement { name = "character-roster-status", pickingMode = PickingMode.Ignore };
         private readonly Label detail = new Label { name = "character-roster-detail" };
         private string status = "";
+        private string description = "";
+        private CharacterRosterView shown;
+        private bool offered;
 
         public CharacterRosterRow(string id)
         {
@@ -62,10 +65,26 @@ namespace Wotr.Client
             var fullLocation = location.Length > 0
                 ? location + (entry.Garrison ? " · Garrison" : "") : CharacterRosterPresentation.State(entry);
             // UI-187: the card's abilities follow in their short form.
-            Root.tooltip = CharacterAbilitySummaries.Append(CharacterRosterPresentation.Title(entry) + (edition.Length > 0 ? " · " + edition : "") +
+            shown = entry;
+            description = CharacterAbilitySummaries.Append(CharacterRosterPresentation.Title(entry) + (edition.Length > 0 ? " · " + edition : "") +
                 "\n" + fullLocation + "\n" + CharacterCardFacts.Summary(facts) +
                 (candidate == null ? "" : "\n" + CharacterRosterPresentation.Conditions(candidate.Entry)), definition);
+            ShowOffer();
             Root.EnableInClassList("legal-target", entry.FutureVersions.Any(v => v.Entry.CanAct || v.CouncilEntry?.CanAct == true));
+        }
+
+        // UI-240: a row whose click enters a character, or changes one into its next version, glows and pulses
+        // (ChoiceGlow), and its tooltip starts with what the click does.
+        public void Offer(bool entry)
+        {
+            offered = entry;
+            ShowOffer();
+        }
+
+        private void ShowOffer()
+        {
+            ChoiceGlow.Apply(Root, offered);
+            Root.tooltip = offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) + "\n" + description : description;
         }
     }
 }

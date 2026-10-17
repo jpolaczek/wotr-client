@@ -34,6 +34,7 @@ namespace Wotr.Client
         private readonly Foldout removed = new Foldout { text = "Removed", value = false, name = "characters-removed" };
         private readonly Label empty = new Label("No named characters in this view") { name = "characters-empty" };
         private VisualElement sovereigns;
+        private readonly ChoicePulse pulse;
         private PlayerView view;
         private VisualElement source;
         private bool visible;
@@ -47,6 +48,7 @@ namespace Wotr.Client
             Tab.AddToClassList(RuntimeTooltip.RichHoverClass);
             Root.AddToClassList("characters-panel");
             Root.style.display = DisplayStyle.None;
+            pulse = new ChoicePulse(Root);
             Inspector = new CharacterInspector(data, focus, CloseInspection, PinInspection);
             Actions = new CharacterRosterContext(this);
             var header = BoardScreen.Row("character-header");
@@ -148,11 +150,16 @@ namespace Wotr.Client
 
         public void RefreshSelection()
         {
+            var offered = false;
             foreach (var row in rows)
             {
+                var entry = Enterable(row.Key);
+                offered |= entry;
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
-                row.Value.Root.EnableInClassList(EntryClass, Enterable(row.Key));
+                row.Value.Root.EnableInClassList(EntryClass, entry);
+                row.Value.Offer(entry);
             }
+            pulse.Run(offered);
         }
 
         public void Attach(VisualElement tray, VisualElement dock) => Actions.Attach(tray, dock);
