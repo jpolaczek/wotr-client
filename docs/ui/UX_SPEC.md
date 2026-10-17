@@ -1192,3 +1192,7 @@ Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-se
   portions. Later reading wins with earlier, so fast jumps do not show a step out of order.
 - Code: `ReplaySession`, `ReplaySource`, `ReplayHistory`, `ReplayReports`,
   `UI/Replays/ReplayBar`.
+
+## Political view — UI-218 (2026-10-17)
+
+A folded-map button above the map legend and the P key switch the political view: regions in their nations' colours over a subdued illustration, captured settlements striped in the captor's colour; play continues in the view and the choice is kept on the device. Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#political-view--ui-218-2026-10-17).

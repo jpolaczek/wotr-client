@@ -10,14 +10,19 @@ Usage: render.py [--preview] [--only CATEGORY]
 import argparse
 import hashlib
 import json
+import os
 import re
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+MAC_CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# WOTR_CHROME picks the browser; otherwise Chrome on a Mac, then Chromium or Chrome on the PATH (Linux).
+CHROME = (os.environ.get("WOTR_CHROME") or (MAC_CHROME if Path(MAC_CHROME).exists() else None) or
+          shutil.which("chromium") or shutil.which("google-chrome") or MAC_CHROME)
 FOLDER_META = """fileFormatVersion: 2
 guid: {guid}
 folderAsset: yes
@@ -159,7 +164,10 @@ def output_path(catalog, source, variant):
 
 
 def selected(asset, only):
-    return only is None or asset["source"].startswith(only.rstrip("/") + "/")
+    if only is None:
+        return True
+    only = only.rstrip("/")
+    return asset["source"].startswith(only + "/") or asset["source"] in (only, only + ".svg")
 
 
 def render_assets(renderer, catalog, only=None):
@@ -222,7 +230,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--preview", action="store_true", help="also render previews/*.html to PNG")
     parser.add_argument("--only", metavar="CATEGORY",
-                        help="render only src/CATEGORY (e.g. armies) and keep the other manifest entries")
+                        help="render only src/CATEGORY (e.g. armies) or one source (e.g. actions/political) "
+                             "and keep the other manifest entries")
     arguments = parser.parse_args()
     catalog = json.loads((HERE / "assets.json").read_text(encoding="utf-8"))
     with tempfile.TemporaryDirectory() as workspace:

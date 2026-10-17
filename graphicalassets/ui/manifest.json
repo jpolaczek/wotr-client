@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "e0745f33723a6f10f68efc0889aaa46a5c70573d2aed3c7d71e029cea33b335d"
+    "assets.json": "127f2024251f2bc60f6f6a922d0dc4b32677aad31e01c3f571532c94af33b3d0"
   },
   "assets": [
     {
@@ -3270,6 +3270,22 @@
       "alpha": true,
       "source_sha256": "55ae6120c47f6d9f70ddd107c393bf50e983b72dd3af9a0e4d3e222b002b8000",
       "png_sha256": "0133c3dbbc3fdf5552644985a32d8e79fa5fa1b1479febbc79fd47f651a0e64e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/political.png",
+      "source": "src/actions/political.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "0cec5fb08989ddf869ee28735335581710b58c8181d8fa2364f79f91d5a111d9",
+      "png_sha256": "61f60620a0facfa0fc51abe181f11e5a3538de7a687dfa3162adda49667c6011"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/pin.png",

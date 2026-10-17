@@ -328,3 +328,19 @@ So, on the whole map of a small screen (1366×768 at 125%) the names of fortress
 - The long name of a few words, wider than the region, breaks into two lines at the middle space
   (e.g. “Narrows of / the Forest”).
 
+## Political view — UI-218 (2026-10-17)
+
+The owner's request: a map mode that marks clearly which nation each region belongs to. The button with the
+folded-map icon above the legend's `?` (or the P key, unless a text field has focus) switches it; the choice is
+kept on the device (`wotr.map-view.v1`).
+
+- Every region with a nation is filled with its nation's palette colour (`map-style.json`, alpha 0.5); regions
+  without a nation stay plain. The nation is the current one, so Fate of Erebor and the White Hand
+  (`RegionOverrides`) count.
+- The illustration is subdued (terrain opacity 0.55); bands, passages, barriers, names, settlement gems,
+  armies and every highlight draw above the layer, so play continues in the view.
+- A settlement held by the other side (controller different from the original owner) gets diagonal stripes and
+  an outline in its captor's colour, the gems' sapphire (Free Peoples) or ruby (Shadow), over its nation colour.
+  The eight nation colours are never replaced by a two-side split; the captor marker is added on top.
+- The layer repaints only when a region's nation or controller changes; switching the view and moving the
+  camera only show/hide the layer and fade the terrain.

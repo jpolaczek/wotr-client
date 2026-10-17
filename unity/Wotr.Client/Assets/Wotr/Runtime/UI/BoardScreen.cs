@@ -81,6 +81,18 @@ namespace Wotr.Client
         // UI-136: halos on the controls the chosen action die can use.
         public DieOptionGlow DieGlow { get; } = new DieOptionGlow();
 
+        // UI-218: P switches the political view, unless the key types into a text field.
+        private void PoliticalViewKey(KeyDownEvent e)
+        {
+            if (e.keyCode != KeyCode.P || e.actionKey || e.altKey || e.shiftKey)
+                return;
+            var target = e.target as VisualElement;
+            if (target is TextField || target?.GetFirstAncestorOfType<TextField>() != null)
+                return;
+            Map.SetPoliticalView(!Map.PoliticalView);
+            e.StopPropagation();
+        }
+
         private void AttachDieGlows()
         {
             // UI-193: the left rail tabs glow gold round their medallions (Styles/LeftRail.uss), with no halo.
@@ -142,6 +154,7 @@ namespace Wotr.Client
             stage.Add(TopBar.Shadow);
             Map = new MapCanvas(Presentation);
             Map.Legend.SetOverlayHost(stage);
+            Root.RegisterCallback<KeyDownEvent>(PoliticalViewKey);
             Root.Add(Map);
             Root.Add(top);
             Resources = new ResourceInspector(id => DieSelected?.Invoke(id));
@@ -328,7 +341,7 @@ namespace Wotr.Client
             CompanionSetup.Attach(Tray, decisionDock);
             Map.RegisterCallback<GeometryChangedEvent>(_ => Sovereigns.RequestPosition());
             stage.Insert(stage.IndexOf(Cards.Root), Battles.Root);
-            var overlays = new[] { Map.Legend.Toggle, Map.Legend.Popup, Nations.Root, Nations.Drawer, Sovereigns.Inspector, Resources.Root, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
+            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, Nations.Root, Nations.Drawer, Sovereigns.Inspector, Resources.Root, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
                 HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root,
                 CompanionSetup.Tab, CompanionSetup.Root };
@@ -339,7 +352,7 @@ namespace Wotr.Client
                 .Select(element => element.worldBound);
             // UI-98: the Fellowship and Hunt plaques sit in the corner tab, a summary one hover away from the full
             // panels; like the hand, a decision window may cover it when the board has no other room (overlays).
-            var fixedControls = new VisualElement[] { Map.Legend.Toggle, Nations.Root,
+            var fixedControls = new VisualElement[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Nations.Root,
                 tableEffects.Tab, HandDrawer.Tab, ResourceDecision.Tab, Victory.Tab, Victory.Banner, CompanionSetup.Tab };
             foreach (var control in fixedControls)
             {

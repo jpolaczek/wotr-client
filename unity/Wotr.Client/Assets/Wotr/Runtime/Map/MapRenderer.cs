@@ -27,6 +27,13 @@ namespace Wotr.Client
         private MapTerrainVisual terrain;
         private MapVectorLayer passages;
         private MapVectorLayer mordorTrack;
+        private MapVectorLayer terrainLayer;
+        private MapPoliticalView political;
+        private bool politicalActive;
+        // UI-218: the illustration under the nations' colours is subdued, so the borders between them read clearly.
+        public const float PoliticalTerrainOpacity = .55f;
+        public bool PoliticalActive => politicalActive;
+        public int PoliticalRepaints => political?.Layer.Repaints ?? 0;
         // UI-154: the ink of the Mordor track is fainter while the Fellowship is not on it.
         private const float InactiveTrackOpacity = .85f;
         // UI-157: the track's ink is a deep Mordor red on a paper underlay, so it reads over ash and differs from barriers.
@@ -54,7 +61,12 @@ namespace Wotr.Client
             var bands = MapBandGeometry.Load(data.Borders);
             var byId = bands.Paths.ToDictionary(p => p.Id);
             // UI-102: water is painted into the canvas rasters, so there is no flat water layer.
-            Add(new MapVectorLayer("map-terrain", size.x, size.y, context => terrain.Draw(context, size)));
+            terrainLayer = new MapVectorLayer("map-terrain", size.x, size.y, context => terrain.Draw(context, size));
+            Add(terrainLayer);
+            // UI-218: the political view lies on the terrain, under every highlight, band and marker.
+            political = new MapPoliticalView(geometry, size);
+            Add(political.Layer);
+            SetPoliticalView(politicalActive);
             foreach (var shape in geometry.Regions)
             {
                 var region = new MapRegionVisual(shape, size);
@@ -95,6 +107,17 @@ namespace Wotr.Client
                 return;
             foreach (var border in borders)
                 border.Update(data.Regions);
+            political.Update(data);
+        }
+
+        // Switching the view only shows the layer and fades the terrain; it never repaints either.
+        public void SetPoliticalView(bool active)
+        {
+            politicalActive = active;
+            if (political == null)
+                return;
+            political.SetActive(active);
+            terrainLayer.style.opacity = active ? PoliticalTerrainOpacity : 1;
         }
 
         public void Update(BoardPresentation data, CameraState camera, string selected,
@@ -218,6 +241,8 @@ namespace Wotr.Client
             regions.Clear();
             geometry = null;
             passages = null;
+            terrainLayer = null;
+            political = null;
         }
     }
 }

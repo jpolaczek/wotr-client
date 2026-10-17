@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-218: Political view: a folded map whose panels are tinted like nations. -->
+  <g filter="url(#lift)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 7.5 L11.5 5 L20.5 7.5 L27.5 5 V24.5 L20.5 27 L11.5 24.5 L4.5 27 Z" fill="none" style="stroke: var(--ink)" stroke-width="4.6"/>
+    <path d="M4.5 7.5 L11.5 5 V24.5 L4.5 27 Z" style="fill: var(--enamel-mid)"/>
+    <path d="M11.5 5 L20.5 7.5 V27 L11.5 24.5 Z" style="fill: var(--lacquer-red-top)"/>
+    <path d="M20.5 7.5 L27.5 5 V24.5 L20.5 27 Z" style="fill: var(--gilt-dim)"/>
+    <path d="M4.5 7.5 L11.5 5 L20.5 7.5 L27.5 5 V24.5 L20.5 27 L11.5 24.5 L4.5 27 Z M11.5 5 V24.5 M20.5 7.5 V27" fill="none" stroke="url(#gilt)" stroke-width="2.2"/>
+  </g>
+</svg>

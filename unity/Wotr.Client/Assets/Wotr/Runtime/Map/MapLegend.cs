@@ -9,6 +9,8 @@ namespace Wotr.Client
         private VisualElement overlayHost;
         public VisualElement Popup { get; } = new VisualElement { name = "map-legend", focusable = true };
         public Button Toggle { get; }
+        // UI-218: switches the political view; it sits above the legend's button.
+        public Button PoliticalToggle { get; }
 
         public MapLegend(MapCanvas map)
         {
@@ -24,6 +26,19 @@ namespace Wotr.Client
             Toggle.style.backgroundColor = new Color(.22f, .21f, .19f);
             Toggle.style.color = new Color(.98f, .92f, .76f);
             Toggle.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
+            PoliticalToggle = IconButton.Create("political",
+                "Political view (P) · Regions in their nations' colours; stripes mark settlements held by the other side",
+                () => map.SetPoliticalView(!map.PoliticalView));
+            PoliticalToggle.name = "map-political-toggle";
+            PoliticalToggle.style.position = Position.Absolute;
+            PoliticalToggle.style.left = 12;
+            PoliticalToggle.style.bottom = 52;
+            PoliticalToggle.style.width = PoliticalToggle.style.height = 32;
+            PoliticalToggle.style.backgroundColor = Toggle.style.backgroundColor;
+            PoliticalToggle.style.color = Toggle.style.color;
+            PoliticalToggle.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
+            map.PoliticalViewChanged += SyncPoliticalToggle;
+            SyncPoliticalToggle();
             Popup.style.position = Position.Absolute;
             Popup.style.width = 356;
             Popup.style.paddingLeft = Popup.style.paddingRight = 10;
@@ -46,6 +61,7 @@ namespace Wotr.Client
             map.RegisterCallback<DetachFromPanelEvent>(_ => Popup.RemoveFromHierarchy());
             SetOpen(false);
             map.Add(Toggle);
+            map.Add(PoliticalToggle);
             map.Add(Popup);
         }
 
@@ -71,12 +87,15 @@ namespace Wotr.Client
                 overlayHost.UnregisterCallback<GeometryChangedEvent>(HostGeometryChanged);
             overlayHost = host;
             host.Add(Toggle);
+            host.Add(PoliticalToggle);
             host.Add(Popup);
             host.RegisterCallback<GeometryChangedEvent>(HostGeometryChanged);
             PositionPopup();
         }
 
         private void HostGeometryChanged(GeometryChangedEvent e) => PositionPopup();
+
+        private void SyncPoliticalToggle() => PoliticalToggle.EnableInClassList("selected", map.PoliticalView);
 
         private void PositionPopup()
         {
@@ -112,9 +131,23 @@ namespace Wotr.Client
                 nations.Add(row);
             }
             Popup.Add(nations);
-            Popup.Add(Text("○ Town   □ City   ▣ Stronghold   △ Fortification\n▲ Free Peoples control   ◆ Shadow control\nHighlighted terrain — current option"));
+            // UI-195: control is the settlement gem's colour; its cut tells the kind of settlement.
+            Popup.Add(Text("Settlement gem: round — Town, emerald cut — City, gold setting — Stronghold, triangle — Fortification\n" +
+                "Sapphire — Free Peoples control   Ruby — Shadow control\nHighlighted terrain — current option"));
+            AddPolitical();
             AddArmies();
             AddMordor();
+        }
+
+        // UI-218: what the political view shows.
+        private void AddPolitical()
+        {
+            var heading = Text("Political view (P)", "map-legend-political");
+            heading.style.unityFontStyleAndWeight = FontStyle.Bold;
+            heading.style.marginTop = 6;
+            Popup.Add(heading);
+            Popup.Add(Text("Every region in its nation's colour. Stripes and an outline in sapphire or ruby: a settlement " +
+                "held by the other side."));
         }
 
         // UI-154: the Mordor track, drawn with the same art as on the map.

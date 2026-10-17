@@ -42,7 +42,7 @@ namespace Wotr.PlayTests
             Assert.LessOrEqual(panel.worldBound.yMax, viewport.yMax + 1);
             Assert.LessOrEqual(panel.worldBound.yMax, panel.parent.worldBound.yMax + 1, "The panel must leave the dice dock visible.");
             // UI-98: the corner tab's plaques are soft occlusions, like the hand (BoardScreen fixedControls).
-            var fixedControls = new VisualElement[] { board.Map.Legend.Toggle, board.Nations.Root,
+            var fixedControls = new VisualElement[] { board.Map.Legend.Toggle, board.Map.Legend.PoliticalToggle, board.Nations.Root,
                 board.TableEffects.Tab,
                 board.HandDrawer.Tab, board.ResourceDecision.Tab, board.Victory.Tab, board.Victory.Banner };
             foreach (var control in fixedControls.Where(c => c != null && Visible(c) && (c.childCount > 0 || c is TextElement)))

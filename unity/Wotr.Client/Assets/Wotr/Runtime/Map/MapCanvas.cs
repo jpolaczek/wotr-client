@@ -32,6 +32,10 @@ namespace Wotr.Client
         public MapActionOverlay HistoryOverlay { get; }
         public MapRenderer Renderer { get; } = new MapRenderer();
         public MapLegend Legend { get; }
+        // UI-218: the political view, kept on this device.
+        public MapViewPreference ViewPreference { get; } = new MapViewPreference();
+        public bool PoliticalView => Renderer.PoliticalActive;
+        public event Action PoliticalViewChanged;
         public MapEdgePan EdgePan { get; }
         public MapFigureMotion Figures { get; }
         // UI-131: ghosts of reinforcements planned by a card or an ability.
@@ -82,6 +86,7 @@ namespace Wotr.Client
             focusable = true;
             AddToClassList("map");
             Renderer.Prepare(data);
+            Renderer.SetPoliticalView(ViewPreference.Political);
             Add(Renderer.Root);
             // UI-186: the names lie on the terrain, under the settlements, the markers and every panel.
             Names = new MapRegionNames(data);
@@ -384,6 +389,15 @@ namespace Wotr.Client
             RegionSelected?.Invoke(id);
             Refresh();
         }
+        public void SetPoliticalView(bool active)
+        {
+            if (PoliticalView == active)
+                return;
+            Renderer.SetPoliticalView(active);
+            ViewPreference.SetPolitical(active);
+            PoliticalViewChanged?.Invoke();
+        }
+
         public void UpdateData(BoardPresentation data)
         {
             CancelPress();
