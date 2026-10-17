@@ -154,9 +154,9 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 39 | text | Name(group.Key) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 53 | text | All / none |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 73 | text | (required ? "◇ " : "") + piece.Label |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 47 | text | Login |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 49 | text | Create account |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 52 | text | Forgot password? |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 54 | text | Login |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 56 | text | Create account |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 59 | text | Forgot password? |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 66 | text | Replays |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntDiceStrip.cs` | 90 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntPanel.cs` | 82 | text | Hunt |

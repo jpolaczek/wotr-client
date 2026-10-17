@@ -5,7 +5,9 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // AUTH-03 (D16): the game only signs in; AUTH-05: with the account name only. Accounts are made and passwords
-    // reset on the game's site, which the two account buttons open in the browser.
+    // reset on the game's site, which the two account buttons open in the browser. UI-255: the card is one centred
+    // column — title, tagline, labelled fields, status, the three account buttons, the browser hint, then Settings and
+    // Replays side by side — whose fields and buttons share one width.
     public sealed class GatewayScreen
     {
         public const string RegisterPage = "register";
@@ -37,11 +39,16 @@ namespace Wotr.Client
             card.AddToClassList("login-card");
             Root.Add(card);
             var heading = BoardScreen.Row();
+            heading.AddToClassList("gateway-heading");
             heading.Add(BoardScreen.Title("WAR OF THE RING"));
             card.Add(heading);
-            card.Add(new Label("A table for two. Return whenever you are ready."));
+            var tagline = new Label("A table for two. Return whenever you are ready.") { name = "gateway-tagline" };
+            tagline.AddToClassList("gateway-tagline");
+            card.Add(tagline);
             card.Add(login);
             card.Add(password);
+            Status.AddToClassList("status-message");
+            card.Add(Status);
             login.tooltip = "The account name you chose when you created the account (not the email address)";
             password.tooltip = "12–128 characters. Spaces are part of your password.";
             submit = BoardScreen.Button("Login", Submit);
@@ -52,14 +59,7 @@ namespace Wotr.Client
             forgot = BoardScreen.Button("Forgot password?", () => OpenAccountPage(ForgotPage));
             forgot.name = "auth-forgot";
             forgot.tooltip = "Opens the game's site in your browser";
-            // Login, Create account, Forgot password and Settings stand one under another, centred.
-            var actions = new VisualElement { name = "auth-actions" };
-            actions.AddToClassList("auth-actions");
-            actions.Add(submit);
-            actions.Add(create);
-            actions.Add(forgot);
-            actions.Add(InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke()));
-            card.Add(actions);
+            card.Add(Column("auth-actions", submit, create, forgot));
             var hint = new Label("Create your account in the browser, then come back and log in.") { name = "auth-browser-hint" };
             hint.AddToClassList("auth-hint");
             card.Add(hint);
@@ -67,10 +67,19 @@ namespace Wotr.Client
             replays.name = "auth-replays";
             replays.tooltip = "Watch saved games again; no account or server needed.";
             replays.AddToClassList("auth-replays");
-            card.Add(replays);
-            Status.AddToClassList("status-message");
-            card.Add(Status);
+            var secondary = Column("auth-secondary", InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke()), replays);
+            secondary.AddToClassList("auth-secondary");
+            card.Add(secondary);
             SubmitOnEnter(password);
+        }
+
+        private static VisualElement Column(string name, params Button[] buttons)
+        {
+            var column = new VisualElement { name = name };
+            column.AddToClassList(name);
+            foreach (var button in buttons)
+                column.Add(button);
+            return column;
         }
 
         // The account page on the server's site, e.g. https://wotr.example.test/account/register.

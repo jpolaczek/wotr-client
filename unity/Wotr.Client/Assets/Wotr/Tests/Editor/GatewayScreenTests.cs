@@ -22,8 +22,10 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("Login", screen.Root.Q<Button>("auth-submit").text);
             Assert.AreEqual("Create account", screen.Root.Q<Button>("auth-create").text);
             Assert.AreEqual("Forgot password?", screen.Root.Q<Button>("auth-forgot").text);
-            CollectionAssert.AreEqual(new[] { "auth-submit", "auth-create", "auth-forgot", "open-interface" },
-                screen.Root.Q("auth-actions").Children().Select(child => child.name), "The four stand one under another; Settings last.");
+            CollectionAssert.AreEqual(new[] { "auth-submit", "auth-create", "auth-forgot" },
+                screen.Root.Q("auth-actions").Children().Select(child => child.name), "The three stand one under another.");
+            CollectionAssert.AreEqual(new[] { "open-interface", "auth-replays" },
+                screen.Root.Q("auth-secondary").Children().Select(child => child.name), "Settings and Replays share the row under them.");
             StringAssert.Contains("browser", screen.Root.Q<Label>("auth-browser-hint").text);
         }
 

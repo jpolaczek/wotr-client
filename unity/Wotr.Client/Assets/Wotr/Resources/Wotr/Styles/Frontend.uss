@@ -398,9 +398,70 @@
 .main-menu .replay-footer { flex-direction: row; justify-content: flex-end; flex-shrink: 0; height: 44px; align-items: center; }
 .main-menu .replay-footer-action { width: 120px; height: 36px; min-height: 36px; margin-left: 8px; }
 .main-menu .replay-status { flex-shrink: 0; height: 22px; font-size: 14px; color: rgb(214, 198, 160); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.frontend .auth-replays { margin-top: 10px; align-self: center; width: 160px; }
 
-/* The gateway's Login, Create account, Forgot password and Settings stand one under another, centred and equally wide. */
-.frontend .login-card .auth-actions { flex-direction: column; align-items: center; flex-shrink: 0; margin-top: 6px; }
-.frontend .login-card .auth-actions .action { flex-grow: 0; width: 260px; margin: 0 0 8px 0; }
-.frontend .login-card .auth-hint { -unity-text-align: middle-center; }
+/* UI-255: the gateway card is one centred column 400 px wide. Title and tagline are centred, labels stand above their
+   fields, and the fields and every button share the column's edges and one size; Settings and Replays share the last
+   row. Labels keep the parchment colour on hover and turn gold on focus instead of Unity's blue. */
+.frontend .login-card {
+    width: 480px;
+    max-width: 94%;
+    padding: 18px 36px 20px 36px;
+    align-items: stretch;
+    border-width: 1px;
+    border-color: rgba(214, 178, 110, 0.45);
+    border-radius: 4px;
+}
+.frontend .login-card .gateway-heading { justify-content: center; margin-bottom: 4px; }
+.frontend .login-card .gateway-heading .title { -unity-text-align: middle-center; }
+.frontend .login-card .gateway-tagline {
+    -unity-text-align: middle-center;
+    white-space: normal;
+    font-size: 16px;
+    color: rgb(190, 184, 166);
+    margin: 0 0 4px 0;
+}
+.frontend .login-card .unity-text-field {
+    flex-direction: column;
+    align-items: stretch;
+    margin: 8px 0 0 0;
+}
+.frontend .login-card .unity-text-field > .unity-base-field__label {
+    min-width: 0;
+    width: auto;
+    margin: 0 0 3px 2px;
+    padding: 0;
+    font-size: 15px;
+    color: rgb(214, 198, 160);
+}
+.frontend .login-card .unity-text-field:hover > .unity-base-field__label { color: rgb(214, 198, 160); }
+.frontend .login-card .unity-text-field:focus > .unity-base-field__label { color: rgb(245, 212, 133); }
+.frontend .login-card .unity-text-field > .unity-base-text-field__input {
+    height: 36px;
+    min-height: 36px;
+    margin: 0;
+    font-size: 18px;
+    border-radius: 3px;
+}
+.frontend .login-card .unity-text-field:focus > .unity-base-text-field__input {
+    border-top-color: rgb(214, 178, 110);
+    border-bottom-color: rgb(214, 178, 110);
+    border-left-color: rgb(214, 178, 110);
+    border-right-color: rgb(214, 178, 110);
+}
+.frontend .login-card .status-message { -unity-text-align: middle-center; margin: 6px 0 0 0; font-size: 15px; }
+.frontend .login-card .auth-actions { flex-direction: column; align-items: stretch; flex-shrink: 0; margin-top: 10px; }
+.frontend .login-card .auth-secondary { flex-direction: row; flex-shrink: 0; margin-top: 8px; padding-top: 10px;
+    border-top-width: 1px; border-top-color: rgba(214, 178, 110, 0.3); }
+.frontend .login-card .auth-actions .action,
+.frontend .login-card .auth-secondary .action {
+    height: 38px;
+    min-height: 38px;
+    margin: 0 0 6px 0;
+    padding: 0 12px;
+    font-size: 18px;
+    flex-grow: 0;
+    width: auto;
+}
+.frontend .login-card .auth-secondary .action { flex-grow: 1; flex-basis: 0; margin: 0; }
+.frontend .login-card .auth-secondary .action:first-child { margin-right: 10px; }
+.frontend .login-card .auth-hint { -unity-text-align: middle-center; font-size: 14px; margin: 0; }
