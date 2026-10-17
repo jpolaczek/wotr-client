@@ -366,7 +366,7 @@ namespace Wotr.Client
                 return cards.Drop(source, target);
             if (!DraftGesture.Drop(draft, view, source, target))
             {
-                tray.Preview(previewLegal, "That component cannot be used here.");
+                tray.Preview(previewLegal, DecisionObjects.Unusable(source));
                 return false;
             }
             notice = "";

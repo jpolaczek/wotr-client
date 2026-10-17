@@ -120,7 +120,7 @@ namespace Wotr.Client
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
                     SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Owns(view)
-                    ? "" : "Select your components, then confirm.";
+                    ? "" : DecisionObjects.Confirm(view, draft);
                 status.style.display = status.text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
                 HintChanged?.Invoke(status.text, status.text);
             }
@@ -184,7 +184,7 @@ namespace Wotr.Client
             var footer = BoardScreen.Row();
             footer.AddToClassList("decision-choice-footer");
             AddDraftChoices(view, draft, option, footer);
-            status = new Label("Select the highlighted components.");
+            status = new Label(DecisionObjects.Prompt(view, draft) + ".");
             status.AddToClassList("draft-status");
             footer.Insert(0, status);
             if (view.Battle != null)

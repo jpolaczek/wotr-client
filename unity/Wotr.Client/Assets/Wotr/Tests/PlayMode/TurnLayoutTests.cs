@@ -45,7 +45,7 @@ namespace Wotr.PlayTests
                     draft.Choose(kind);
                     screen.Apply(view);
                     tray.Render(view, draft, false, false);
-                    tray.Preview(false, "Select your components, preview the cost, then confirm.");
+                    tray.Preview(false, "Select the highlighted dice, preview the cost, then confirm.");
                     for (var frame = 0; frame < 12; frame++)
                         yield return null;
                     LayoutTests.Save(target, $"turn-{kind}-{width}.png");

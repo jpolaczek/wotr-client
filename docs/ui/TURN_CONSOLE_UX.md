@@ -77,6 +77,10 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-242 (2026-10-17): hints and notices never say "components"; they name what to click for the step — dice,
+  armies and regions, units, characters, cards, a nation, regions — from the step's command and presentation
+  (`DecisionObjects`), e.g. "Select the highlighted armies and regions, then confirm." A refused drop names the object
+  ("That die cannot be used here.").
 - UI-241 (2026-10-17): while any decision of this player waits (an action, a reaction, a Hunt step, a Guide, a
   battle choice), the status plaque wears its gold halo on its own, the halo pulses in the shared 750 ms rhythm under
   `.motion-enabled` and the headline turns gold (`ConsoleStatus.SetMustAct`, `TurnSignal.MustAct`); the opponent's
