@@ -12,7 +12,9 @@ namespace Wotr.Client
         private readonly Label owner = new Label();
 
         // UI-94: a click selects the source; its details, including a card's complete text, open below the list.
-        public EffectEntry(EffectSource source, Action<EffectSource, bool> inspect, Action<string> remove)
+        // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll).
+        public EffectEntry(EffectSource source, Action<EffectSource, bool> inspect, Action<string> remove,
+            Action<EffectEntry, bool> hover)
         {
             Source = source;
             Root.AddToClassList("effect-entry");
@@ -27,6 +29,14 @@ namespace Wotr.Client
             removal.AddToClassList("effect-remove");
             removal.style.display = DisplayStyle.None;
             Root.Add(removal);
+            Root.RegisterCallback<PointerEnterEvent>(e =>
+            {
+                if (e.pressedButtons == 0)
+                    hover(this, true);
+            });
+            Root.RegisterCallback<PointerLeaveEvent>(_ => hover(this, false));
+            title.RegisterCallback<FocusInEvent>(_ => hover(this, true));
+            title.RegisterCallback<FocusOutEvent>(_ => hover(this, false));
         }
 
         public void Apply(EffectSource source)

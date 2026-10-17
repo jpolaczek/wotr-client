@@ -9,7 +9,6 @@ namespace Wotr.Client
 {
     public sealed class TableEffectsView
     {
-        private const int PageSize = 4;
         public VisualElement Root { get; } = new VisualElement { name = "effects-panel" };
         public Button Tab { get; }
         public VisualElement DecisionHost { get; } = new VisualElement { name = "effects-decision-host" };
@@ -26,7 +25,6 @@ namespace Wotr.Client
         private readonly EffectSourceDetails details;
         private readonly EffectsReadingWidth reading;
         private readonly VisualElement list = new VisualElement { name = "effects-sources" };
-        private readonly VisualElement pagination = BoardScreen.Row("effects-pagination");
         private readonly Label empty = new Label("No active effects") { name = "effects-empty" };
         private readonly Label cost = new Label { name = "effect-removal-cost" };
         private readonly Dictionary<string, EffectEntry> entries = new Dictionary<string, EffectEntry>();
@@ -34,13 +32,12 @@ namespace Wotr.Client
         private IReadOnlyDictionary<string, string> offers = new Dictionary<string, string>();
         private bool choicesEnabled, offersEnabled;
         private IReadOnlyList<EffectSource> sources = Array.Empty<EffectSource>();
-        private readonly Button previous, next;
-        private readonly Label pageLabel = new Label();
+        // UI-221: the hovered source's text, over the other sources.
+        private readonly EffectUnroll unroll = new EffectUnroll();
         private PlayerView view;
         private EffectSource selected;
         private VisualElement tray, dock, obstruction, viewport;
         private bool shown, ended, sourcePinned, preparing;
-        private int page;
 
         public TableEffectsView(VisualElement surface, MapCanvas map)
         {
@@ -51,6 +48,7 @@ namespace Wotr.Client
             Tab.AddToClassList("effects-tab");
             Tab.AddToClassList(RuntimeTooltip.RichHoverClass);
             Tab.tooltip = "Active sources on both sides";
+            // UI-221: the header holds only the close button, on the right; every source is in view at once.
             var header = FloatingWindow.Header("EFFECTS");
             var close = IconButton.Create("close", "Close", Close);
             close.name = "close-effects";
@@ -58,20 +56,13 @@ namespace Wotr.Client
             Root.Add(header);
             Root.Add(empty);
             Root.Add(list);
-            previous = IconButton.Create("back", "Previous", () => Page(-1));
-            next = IconButton.Create("next", "Next", () => Page(1));
-            previous.name = "effects-previous";
-            next.name = "effects-next";
-            pagination.Add(previous);
-            pagination.Add(pageLabel);
-            pagination.Add(next);
-            header.Insert(header.childCount - 1, pagination);
             details = new EffectSourceDetails(map.Focus);
             reading = new EffectsReadingWidth(Root);
             details.Rebuilt += ReadingChanged;
             Root.Add(details.Root);
             Root.Add(cost);
             Root.Add(DecisionHost);
+            Root.Add(unroll.Root);
             hover = new DrawerHover(surface, Tab, Root, _ => false, RefreshVisibility);
             Root.RegisterCallback<AttachToPanelEvent>(e =>
             {
@@ -141,7 +132,6 @@ namespace Wotr.Client
             {
                 selected = null;
                 sourcePinned = false;
-                page = 0;
                 Close();
             }
             view = latest;
@@ -149,6 +139,8 @@ namespace Wotr.Client
             var current = sources.ToDictionary(s => s.Key);
             foreach (var key in entries.Keys.Where(k => !current.ContainsKey(k)).ToList())
             {
+                if (unroll.Entry == entries[key])
+                    unroll.Hide();
                 entries[key].Root.RemoveFromHierarchy();
                 entries.Remove(key);
             }
@@ -156,7 +148,7 @@ namespace Wotr.Client
             {
                 if (!entries.TryGetValue(source.Key, out var entry))
                 {
-                    entry = new EffectEntry(source, Select, Remove);
+                    entry = new EffectEntry(source, Select, Remove, Hover);
                     entries.Add(source.Key, entry);
                     list.Add(entry.Root);
                 }
@@ -176,7 +168,6 @@ namespace Wotr.Client
             Tab.text = "Effects · " + sources.Count;
             empty.style.display = sources.Count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
             details.Show(selected, ended, view.Configuration);
-            Page(0);
             RefreshChoices();
         }
 
@@ -198,18 +189,6 @@ namespace Wotr.Client
             offersEnabled = enabled;
             ApplyContext();
             RefreshChoices();
-            if (appearing)
-                ShowFirstOffer();
-        }
-
-        // A new offer turns to the page of its first source, so a lit source is in view when the panel opens.
-        private void ShowFirstOffer()
-        {
-            var index = sources.ToList().FindIndex(s => offers.ContainsKey(s.SourceId));
-            if (index < 0)
-                return;
-            page = index / PageSize;
-            Page(0);
         }
 
         private void ApplyContext()
@@ -246,18 +225,15 @@ namespace Wotr.Client
             else if (tray?.parent == DecisionHost)
                 dock.Add(tray);
             list.style.display = preparing ? DisplayStyle.None : DisplayStyle.Flex;
-            Page(0);
+            if (preparing)
+                unroll.Hide();
         }
 
         public void Inspect(string sourceId)
         {
             var source = sources.FirstOrDefault(s => s.SourceId == sourceId);
             if (source != null)
-            {
                 Select(source, true);
-                page = sources.ToList().FindIndex(s => s.Key == source.Key) / PageSize;
-                Page(0);
-            }
         }
 
         private void Select(EffectSource source, bool pin)
@@ -299,16 +275,13 @@ namespace Wotr.Client
                 offersEnabled && sources.Any(s => offers.ContainsKey(s.SourceId)));
         }
 
-        private void Page(int delta)
+        // UI-221: hovering a tile unrolls its text like a hand card; leaving it rolls it back. Nothing is sent.
+        private void Hover(EffectEntry entry, bool over)
         {
-            var pages = Math.Max(1, (sources.Count + PageSize - 1) / PageSize);
-            page = Math.Max(0, Math.Min(pages - 1, page + delta));
-            for (var i = 0; i < sources.Count; i++)
-                entries[sources[i].Key].Root.style.display = i / PageSize == page ? DisplayStyle.Flex : DisplayStyle.None;
-            pagination.style.display = pages > 1 && !preparing ? DisplayStyle.Flex : DisplayStyle.None;
-            previous.SetEnabled(page > 0);
-            next.SetEnabled(page + 1 < pages);
-            pageLabel.text = (page + 1) + " / " + pages;
+            if (over && !preparing && IsOpen)
+                unroll.Show(entry, list, Root, view?.Configuration);
+            else if (!over && unroll.Entry == entry)
+                unroll.Hide();
         }
 
         private const float CompactBelow = 400;
@@ -353,6 +326,8 @@ namespace Wotr.Client
                 }
                 Root.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
                 Tab.EnableInClassList("selected", shown);
+                if (!shown)
+                    unroll.Hide();
             }
             Position();
             Window?.Refresh();

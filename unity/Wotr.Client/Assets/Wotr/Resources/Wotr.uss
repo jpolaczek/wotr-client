@@ -1118,9 +1118,6 @@
 .effect-entry > Label { font-size: 10px; width: 20px; white-space: normal; color: rgb(175, 193, 190); }
 .effects-panel .effect-source { flex-grow: 1; flex-shrink: 1; min-width: 0; white-space: normal; font-size: 12px; min-height: 32px; margin: 0; padding: 2px 3px; background-color: rgba(0, 0, 0, 0); border-width: 0; }
 .effects-panel .effect-remove { width: 23px; min-width: 23px; min-height: 26px; height: 26px; padding: 0; margin: 0; }
-.effects-pagination { flex-direction: row; justify-content: flex-end; align-items: center; }
-.effects-pagination > .action { min-width: 26px; min-height: 24px; height: 24px; padding: 0; margin: 0; }
-.effects-pagination > Label { font-size: 11px; margin-left: 5px; margin-right: 5px; }
 #effects-source-details { margin-top: 3px; padding-top: 3px; border-top-width: 1px; border-top-color: rgb(95, 113, 110); }
 #effects-source-details Label { white-space: normal; font-size: 12px; }
 #effect-detail-title { -unity-font-style: bold; }

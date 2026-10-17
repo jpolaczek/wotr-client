@@ -64,11 +64,17 @@ namespace Wotr.PlayTests
                     Assert.AreEqual("lorien", board.Map.Selected);
                     Assert.AreEqual("◇ 2", board.Map.Q<Label>("map-effects-lorien").text);
                     Assert.IsNull(board.Map.Q("map-effects-orthanc"));
-                    PointerGestureEvents.ClickAt(board.TableEffects.Root.Q<Button>("effects-next"));
-                    yield return Frames();
+                    // UI-221: no pages; every source is in view at once.
                     var visibleSources = board.TableEffects.Root.Query<Button>().ToList()
                         .Where(b => b.name.StartsWith("effect-source-") && b.parent.resolvedStyle.display != DisplayStyle.None).ToList();
-                    Assert.AreEqual(2, visibleSources.Count);
+                    Assert.AreEqual(6, visibleSources.Count);
+                    // UI-221: hovering a source unrolls its text over the others, like a hand card.
+                    CardGestures.Move(visibleSources[0]);
+                    yield return Frames();
+                    var unroll = board.TableEffects.Root.Q("effect-unroll");
+                    Assert.AreEqual(DisplayStyle.Flex, unroll.resolvedStyle.display);
+                    Assert.Greater(unroll.worldBound.height, 20);
+                    Assert.AreEqual(PickingMode.Ignore, unroll.pickingMode, "The unrolled text takes no pointer.");
                     foreach (var source in visibleSources)
                         Inside(source.worldBound, board.TableEffects.Root.worldBound);
                     board.TableEffects.Inspect("kings.character.theoden.corrupted");

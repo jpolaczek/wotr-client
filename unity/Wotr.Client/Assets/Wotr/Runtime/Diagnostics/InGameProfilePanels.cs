@@ -10,7 +10,6 @@ namespace Wotr.Client.Diagnostics
         private readonly BoardScreen board;
         private readonly Action<Button> click;
         private bool open;
-        private int page;
         private string resourceTitle;
         private string inspected = "";
         private bool freePeoplesPage, shadowPage;
@@ -26,11 +25,12 @@ namespace Wotr.Client.Diagnostics
         {
             switch (step % 6)
             {
-                case 0: click(board.TableEffects.Tab); open = true; page = 0; break;
+                case 0: click(board.TableEffects.Tab); open = true; break;
                 case 1: Inspect(Protection); break;
                 case 2: Inspect(OtherSource()); break;
-                case 3: click(board.TableEffects.Root.Q<Button>("effects-next")); page = 1; break;
-                case 4: click(board.TableEffects.Root.Q<Button>("effects-previous")); page = 0; break;
+                // UI-221: every source is in view at once; the steps read sources instead of turning pages.
+                case 3: Inspect(Protection); break;
+                case 4: Inspect(OtherSource()); break;
                 default: click(board.TableEffects.Root.Q<Button>("close-effects")); open = false; break;
             }
         }
@@ -111,8 +111,8 @@ namespace Wotr.Client.Diagnostics
                     VerifyInspected(root);
                 var visible = root.Query<Button>().ToList().Count(button => button.name.StartsWith("effect-source-", StringComparison.Ordinal) &&
                     button.parent.resolvedStyle.display != DisplayStyle.None);
-                if (visible != (page == 0 ? 4 : 2))
-                    throw new InvalidOperationException("The requested Effects page was not rendered.");
+                if (visible != 6)
+                    throw new InvalidOperationException("Every Effects source must be in view.");
             }
             else if (kind == "victory")
             {

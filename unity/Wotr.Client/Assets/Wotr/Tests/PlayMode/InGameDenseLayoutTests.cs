@@ -110,19 +110,11 @@ namespace Wotr.PlayTests
         {
             Press(board.TableEffects.Tab);
             await room.Settle();
-            var previous = board.TableEffects.Root.Q<Button>("effects-previous");
-            if (previous.enabledInHierarchy)
-            {
-                Press(previous);
-                await room.Settle();
-            }
             Assert.AreEqual("Effects · 6", board.TableEffects.Tab.text);
             Inside(board.TableEffects.Root.worldBound, board.Map.worldBound);
-            Assert.AreEqual(4, Sources(board));
-            SovereignTargets(board);
-            Press(board.TableEffects.Root.Q<Button>("effects-next"));
-            await room.Settle();
-            Assert.AreEqual(2, Sources(board));
+            // UI-221: every source is in view at once; the header has only its close button.
+            Assert.AreEqual(6, Sources(board));
+            Assert.AreEqual(1, board.TableEffects.Root.Q(className: "window-header").Query<Button>().ToList().Count);
             SovereignTargets(board);
             LayoutTests.Save(target, $"ui63-dense-effects-{board.View.You}-{width}-{scale:0.00}.png");
             Press(board.TableEffects.Root.Q<Button>("close-effects"));
@@ -132,21 +124,15 @@ namespace Wotr.PlayTests
                 Assert.IsNotNull(board.Map.Q<Label>("map-effects-" + targetId));
         }
 
-        // The dense board with Effects unfolded: four sources a page, every control reachable (UI-173: no Help link).
+        // The dense board with Effects unfolded: every source in view (UI-221), every control reachable (UI-173: no Help link).
         private static async Task DenseEffects(MatchTestRoom room, BoardScreen board, RenderTexture target, int width, float scale)
         {
             Press(board.TableEffects.Tab);
             await room.Settle();
             Assert.IsNull(board.TableEffects.Root.Q<Button>("help-for-effects"), "UI-173: panels have no Help link.");
-            var previous = board.TableEffects.Root.Q<Button>("effects-previous");
-            if (Sources(board) != 4 && previous.enabledInHierarchy)
-            {
-                Press(previous);
-                await room.Settle();
-            }
             LayoutTests.Save(target, $"ui63-dense-effects-{board.View.You}-{width}-{scale:0.00}.png");
             Assert.IsTrue(board.TableEffects.IsOpen);
-            Assert.AreEqual(4, Sources(board));
+            Assert.AreEqual(6, Sources(board));
             foreach (var source in VisibleSources(board))
                 Pickable(source);
             SovereignTargets(board);

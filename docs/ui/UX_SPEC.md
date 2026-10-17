@@ -1200,3 +1200,7 @@ A folded-map button above the map legend and the P key switch the political view
 ## Hide from the Fellowship plaque — UI-220 (2026-10-17)
 
 The Hide button is gone: with a die that can hide a revealed Fellowship, the corner status plaque glows and one click hides it. Details: [FELLOWSHIP_UX](FELLOWSHIP_UX.md#hide-from-the-status-plaque--ui-220-2026-10-17).
+
+## Table effects unroll like the hand — UI-221 (2026-10-17)
+
+The owner's request: the cards in play on the table unroll on hover like the hand's cards. Every source of the Effects tab is a tile in view at once (no pages); hovering or focusing a tile unrolls its complete text on parchment under the tile, over the other tiles, and leaving it rolls it back; the unrolled text takes no pointer and sends nothing (a user-approved hover exception like UI-91). A click still pins the source's details (scopes, Locate), and × still removes or chooses a source. The panel's header has only its close button, on the right.

@@ -247,7 +247,7 @@
 
 /* UI-94: a selected card source shows its complete text on the parchment of an unrolled hand card
    (graphicalassets/ui/src/cards), under the source's scopes. The title stays in the details heading. */
-#board-screen #effects-source-details #effect-card {
+#board-screen #effects-source-details #effect-card, #board-screen #effect-unroll #effect-card {
     margin: 5px 0 0 0;
     padding: 7px 10px 8px 10px;
     background-color: rgba(0, 0, 0, 0);
@@ -258,7 +258,7 @@
     -unity-slice-left: 28;
     -unity-slice-scale: 0.5px;
 }
-#board-screen #effects-source-details #effect-card.effect-card-ended { opacity: 0.8; }
+#board-screen #effects-source-details #effect-card.effect-card-ended, #board-screen #effect-unroll #effect-card.effect-card-ended { opacity: 0.8; }
 /* Above the card text a scope keeps only its targets and expiry, on one wrapping row. */
 #board-screen #effects-source-details .effect-scope-compact { padding: 2px 5px; }
 #board-screen #effects-source-details .effect-targets > .effect-expiry { flex-shrink: 1; margin: 1px 0 1px 2px; font-size: 11px; color: rgb(214, 205, 180); }
@@ -271,16 +271,16 @@
 #board-screen .preparing-effect-removal #effects-source-details #effect-card { display: none; }
 #board-screen #effect-card .effect-card-heading { flex-direction: row; align-items: center; margin: 0 0 4px 0; }
 #board-screen #effect-card .action-symbol { position: relative; left: 0; top: 0; width: 15px; height: 15px; margin: 0 6px 0 0; flex-shrink: 0; }
-#board-screen #effects-source-details #effect-card Label { margin: 0; padding: 0; white-space: normal; -unity-text-align: upper-left; color: rgb(58, 42, 24); }
-#board-screen #effects-source-details #effect-card #effect-card-kind { flex-shrink: 1; font-size: 9px; letter-spacing: 1.2px; color: rgb(122, 74, 30); }
-#board-screen #effects-source-details #effect-card #effect-card-event { font-size: 11.5px; }
+#board-screen #effects-source-details #effect-card Label, #board-screen #effect-unroll #effect-card Label { margin: 0; padding: 0; white-space: normal; -unity-text-align: upper-left; color: rgb(58, 42, 24); }
+#board-screen #effects-source-details #effect-card #effect-card-kind, #board-screen #effect-unroll #effect-card #effect-card-kind { flex-shrink: 1; font-size: 9px; letter-spacing: 1.2px; color: rgb(122, 74, 30); }
+#board-screen #effects-source-details #effect-card #effect-card-event, #board-screen #effect-unroll #effect-card #effect-card-event { font-size: 11.5px; }
 #board-screen #effect-card #effect-card-combat { margin: 6px 0 0 0; padding: 4px 0 0 0; border-top-width: 1px; border-top-color: rgba(140, 106, 51, 0.7); }
 /* QUAL-19: a compact Effects panel docked under the rail keeps its whole card readable above the console with less
    vertical spacing. */
 #board-screen .effects-panel.edge-left-panel.compact-effects { padding-top: 4px; padding-bottom: 5px; }
 #board-screen .compact-effects #effect-card #effect-card-combat { margin-top: 3px; padding-top: 3px; }
-#board-screen #effects-source-details #effect-card #effect-card-combat-heading { margin: 0 0 2px 0; font-size: 9px; letter-spacing: 1.2px; -unity-font-style: bold; color: rgb(122, 26, 16); }
-#board-screen #effects-source-details #effect-card #effect-card-combat-text { font-size: 11px; }
+#board-screen #effects-source-details #effect-card #effect-card-combat-heading, #board-screen #effect-unroll #effect-card #effect-card-combat-heading { margin: 0 0 2px 0; font-size: 9px; letter-spacing: 1.2px; -unity-font-style: bold; color: rgb(122, 26, 16); }
+#board-screen #effects-source-details #effect-card #effect-card-combat-text, #board-screen #effect-unroll #effect-card #effect-card-combat-text { font-size: 11px; }
 
 /* Short viewports keep the earlier compact panel padding. */
 #board-screen.short-viewport .edge-left-panel { padding: 5px 6px 6px 6px; }
@@ -295,3 +295,23 @@
     transition-timing-function: ease-out-cubic;
 }
 #board-screen .edge-left-panel.edge-panel-entering { opacity: 0; translate: -18px 0; scale: 0.96 1; }
+
+/* UI-221: a hovered table source unrolls its text under its tile on the parchment of the card text above,
+   over the other sources and like a hand card; it takes no pointer. */
+#board-screen .effects-panel #effect-unroll {
+    padding: 0;
+    margin: 0;
+}
+#board-screen #effect-unroll #effect-card { margin: 0; }
+#board-screen #effect-unroll #effect-unroll-text {
+    padding: 7px 10px 8px 10px;
+    white-space: normal;
+    font-size: 12px;
+    color: rgb(58, 42, 24);
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
