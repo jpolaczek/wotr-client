@@ -40,7 +40,8 @@ namespace Wotr.PlayTests
             }
             PointerGestureEvents.ClickAt(panel.Q<Button>("fellowship-change-guide"));
             await room.Settle();
-            Assert.AreEqual("Choosing a guide ends the Fellowship phase", panel.Q<Label>("fellowship-guide-hint").text);
+            Assert.IsNull(panel.Q<Label>("fellowship-guide-hint"), "UI-241: the glowing portraits carry the step without a caption.");
+            Assert.IsTrue(target.ClassListContains(ChoiceGlow.ClassName), "UI-229: the candidate glows.");
             Assert.IsTrue(target.ClassListContains("legal-target"));
             var nonCandidate = Portrait(board, "base.character.gimli");
             Assert.IsFalse(nonCandidate.ClassListContains("legal-target"));

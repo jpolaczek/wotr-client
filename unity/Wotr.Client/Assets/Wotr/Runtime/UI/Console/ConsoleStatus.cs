@@ -19,6 +19,10 @@ namespace Wotr.Client
         public event Action Clicked;
         public event Action<ConsoleOption> OptionChosen;
         public bool YourTurn => Plaque.ClassListContains("your-turn");
+        // UI-241: while any decision of this player waits, the plaque glows and pulses on its own.
+        public const string MustActClass = "must-act";
+        public bool MustAct => Plaque.ClassListContains(MustActClass);
+        private readonly ChoicePulse pulse;
         public int Flashes { get; private set; }
         private readonly VisualElement emblem = new VisualElement { name = "console-emblem", pickingMode = PickingMode.Ignore };
         private readonly VisualElement glow = new VisualElement { name = "console-status-glow", pickingMode = PickingMode.Ignore };
@@ -30,6 +34,7 @@ namespace Wotr.Client
             Root.AddToClassList("console-status");
             Plaque = new Button(() => Clicked?.Invoke()) { name = "console-status-plaque" };
             Plaque.AddToClassList("console-status-plaque");
+            pulse = new ChoicePulse(Plaque);
             glow.AddToClassList("console-status-glow");
             Plaque.Add(glow);
             emblem.AddToClassList("console-emblem");
@@ -55,6 +60,12 @@ namespace Wotr.Client
 
         // UI-167: the plaque glows while the player's starting decision waits for its first step.
         public void SetYourTurn(bool value) => Plaque.EnableInClassList("your-turn", value);
+
+        public void SetMustAct(bool value)
+        {
+            Plaque.EnableInClassList(MustActClass, value);
+            pulse.Run(value);
+        }
 
         // UI-167: with reduced motion the ribbon is replaced by one short flash of the glow.
         public void Flash()

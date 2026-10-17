@@ -65,6 +65,7 @@ namespace Wotr.Client
             fallback = state.Guidance;
             board.Console.Status.Apply(state, Opens(choices));
             board.Console.Status.SetYourTurn(idle && TurnSignal.Waiting(view, draft));
+            board.Console.Status.SetMustAct(idle && TurnSignal.MustAct(view));
             // UI-171: the tray reports its hint before this refresh; a hint-less step shows the new guidance, not the last.
             ShowHint();
             var rings = ExpansionActions.RingKind(view, draft);

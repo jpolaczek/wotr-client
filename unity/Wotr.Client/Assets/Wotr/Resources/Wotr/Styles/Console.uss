@@ -402,6 +402,16 @@
 }
 .console-status-plaque.your-turn > .console-status-glow,
 .console-status-plaque.flash > .console-status-glow { display: flex; }
+/* UI-241: while any decision of this player waits, the plaque wears the halo on its own and it pulses in the shared
+   750 ms rhythm (ChoicePulse) under .motion-enabled; the headline turns gold. Reduced motion keeps it bright and still. */
+.console-status-plaque.must-act > .console-status-glow { display: flex; }
+#board-screen .console-status-plaque.must-act .console-headline { color: rgb(255, 226, 150); }
+.motion-enabled .console-status-plaque.must-act > .console-status-glow {
+    transition-property: opacity;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .console-status-plaque.must-act.choice-glow-pulse > .console-status-glow { opacity: 0.3; }
 
 /* UI-167: the ribbon that crosses the top of the map when the action passes to the player (console/ribbon-*),
    under the notice strip and centred; it slides in for 200 ms, holds and fades out for 300 ms. */

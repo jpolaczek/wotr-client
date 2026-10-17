@@ -112,8 +112,9 @@ namespace Wotr.Client
                 return draft.Payload.AbilityId.Length == 0 ? "Choose a Council token." : "Choose a Shadow nation.";
             if (draft.Kind == CommandKind.ResolveHuntDamage && !draft.HuntChoice.HasValue)
                 return "Click a response to apply it.";
+            // UI-241: the glowing portraits and the console's hint carry the Guide's choice; no caption repeats it.
             if (draft.Kind == CommandKind.SelectGuide)
-                return "Choose a Guide from the highlighted portraits.";
+                return "";
             if (UsesRoute(draft.Kind))
             {
                 if (view.Fellowship.MordorStep.HasValue && draft.Kind == CommandKind.SeparateCompanions)

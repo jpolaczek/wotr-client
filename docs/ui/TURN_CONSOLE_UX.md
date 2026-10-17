@@ -77,6 +77,12 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-241 (2026-10-17): while any decision of this player waits (an action, a reaction, a Hunt step, a Guide, a
+  battle choice), the status plaque wears its gold halo on its own, the halo pulses in the shared 750 ms rhythm under
+  `.motion-enabled` and the headline turns gold (`ConsoleStatus.SetMustAct`, `TurnSignal.MustAct`); the opponent's
+  turn and observers keep it still. The untouched starting decision keeps its UI-167 halo and ribbon. Choosing the next
+  Guide shows no captions ("Choose the next Guide…", "Choose a Guide from the highlighted portraits"): the glowing
+  portraits (UI-229) and the console's hint carry the step.
 - UI-238 (2026-10-17): choosing the die an Elven Ring changes is its own, clearly marked moment. The console's
   headline reads "ELVEN RING · CHOOSE THE DIE TO CHANGE" (then "… CHOOSE THE NEW RESULT"), the dice panel's band
   replaces the side name with a gold "CHOOSE A DIE", the dice the Ring can change wear a thick gold rim on a warm plate

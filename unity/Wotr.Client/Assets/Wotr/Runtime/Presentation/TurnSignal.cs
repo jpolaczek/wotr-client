@@ -48,6 +48,9 @@ namespace Wotr.Client
             _ => "YOUR ACTION · Turn " + view.Turn
         };
 
+        // UI-241: any decision of this player waits, so the plaque glows and pulses until it is answered.
+        public static bool MustAct(PlayerView view) => Own(view) && !view.Winner.HasValue;
+
         // The console's plaque glows while such a decision waits for its first step.
         public static bool Waiting(PlayerView view, TurnDraft draft) => view.Decision != null && view.DecisionOwner == view.You &&
             !view.Winner.HasValue && Starts(view.Decision.Kind) && Untouched(draft);

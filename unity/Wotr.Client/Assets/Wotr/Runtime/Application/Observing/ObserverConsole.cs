@@ -17,6 +17,7 @@ namespace Wotr.Client
             var state = TurnConsoleState.For(view, draft, board.ActionDie, RegionName);
             board.Console.Status.Apply(state, "");
             board.Console.Status.SetYourTurn(false);
+            board.Console.Status.SetMustAct(false);
             board.Console.Status.SetHint(Hint(view, decision, state));
         }
 

@@ -19,7 +19,6 @@ namespace Wotr.Client
         public string MoveDescription { get; private set; } = "";
         private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
         private readonly Label hint = new Label { name = "fellowship-action-hint" };
-        private readonly Label guideHint = new Label { name = "fellowship-guide-hint" };
 
         public FellowshipControls()
         {
@@ -29,7 +28,6 @@ namespace Wotr.Client
             Add(row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
             Root.Add(row);
             Root.Add(hint);
-            Root.Add(guideHint);
         }
 
         private void Add(VisualElement row, CommandKind kind, string text, string name)
@@ -65,9 +63,6 @@ namespace Wotr.Client
             }
             hint.text = FellowshipActions.ActionHint(view, draft, context);
             hint.style.display = own && !route && inActions && !docked ? DisplayStyle.Flex : DisplayStyle.None;
-            guideHint.text = view.Decision?.Kind == DecisionKind.FellowshipPhase
-                ? "Choosing a guide ends the Fellowship phase" : "Choose the next Guide · The current action continues";
-            guideHint.style.display = own && !route && draft.Kind == CommandKind.SelectGuide ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private static string Description(PlayerView view, CommandKind kind) => kind switch

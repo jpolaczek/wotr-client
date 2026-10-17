@@ -44,7 +44,7 @@ namespace Wotr.PlayTests
                         {
                             Assert.IsTrue(Visible(board.Hunt.Guides.Root));
                             Assert.IsFalse(Visible(board.Hunt.Tile.Root));
-                            Assert.IsFalse(Visible(board.Fellowship.Root.Q<Label>("fellowship-guide-hint")));
+                            Assert.IsNull(board.Fellowship.Root.Q<Label>("fellowship-guide-hint"), "UI-241: no Guide caption.");
                         }
                         else
                         {

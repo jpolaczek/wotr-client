@@ -37,8 +37,7 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     PointerGestureEvents.ClickAt(client.Board.Fellowship.Root.Q<Button>("fellowship-change-guide"));
                     yield return Settle();
-                    var hint = client.Board.Fellowship.Root.Q<Label>("fellowship-guide-hint");
-                    Assert.AreEqual("Choosing a guide ends the Fellowship phase", hint.text);
+                    Assert.IsNull(client.Board.Fellowship.Root.Q<Label>("fellowship-guide-hint"), "UI-241: no Guide caption.");
                     foreach (var portrait in client.Board.Fellowship.Root.Query<Button>(className: "companion-token").ToList())
                     {
                         var picked = portrait.panel.Pick(portrait.worldBound.center);
@@ -54,9 +53,6 @@ namespace Wotr.PlayTests
                         "The guide badge and the figure's name must remain separately readable.");
                     // UI-187: the Guide's ability is one of the portrait's short ability lines.
                     StringAssert.Contains("Guide · ", guide.tooltip);
-                    var measured = hint.MeasureTextSize(hint.text, hint.contentRect.width, VisualElement.MeasureMode.Exactly, 0,
-                        VisualElement.MeasureMode.Undefined);
-                    Assert.LessOrEqual(measured.y, hint.contentRect.height + 1);
                     Check(client.Board);
                     LayoutTests.Save(target, $"ui34-guide-{width}-{scale:0.00}.png");
                     client.Panel.targetTexture = client.Viewport;

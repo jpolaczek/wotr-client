@@ -29,6 +29,9 @@ namespace Wotr.Client
             if (view.Hunt == null)
                 return view.HuntReport == null ? "No Hunt report yet" :
                     view.HuntReport.Completed ? "Complete" : "Awaiting continuation";
+            // UI-241: the next Guide is chosen from the glowing portraits without a caption.
+            if (view.DecisionOwner == view.You && view.Decision?.Kind == DecisionKind.Guide)
+                return "";
             if (view.DecisionOwner == view.You && view.Decision != null)
                 return HuntActions.DecisionText(view);
             // Stage is a continuation point, not the other player's current private decision.

@@ -84,6 +84,12 @@ namespace Wotr.Client.Tests
             var status = new ConsoleStatus();
             status.SetYourTurn(true);
             Assert.IsTrue(status.YourTurn);
+            // UI-241: any own pending decision makes the plaque glow and pulse on its own.
+            status.SetMustAct(true);
+            Assert.IsTrue(status.MustAct);
+            status.SetMustAct(false);
+            Assert.IsFalse(status.MustAct);
+            Assert.IsFalse(status.Plaque.ClassListContains(ChoiceGlow.PulseClass));
             Assert.AreEqual(PickingMode.Ignore, status.Plaque.Q("console-status-glow").pickingMode);
             status.SetYourTurn(false);
             status.Flash();
