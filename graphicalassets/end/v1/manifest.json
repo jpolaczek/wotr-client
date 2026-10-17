@@ -1,0 +1,77 @@
+{
+  "version": "end-v1",
+  "task": "UI-233",
+  "model": "gpt-image-1.5",
+  "generator": "OpenAI Images API via v1/generate.py (v1/generations.jsonl); band cut and scaled with Pillow by build.py",
+  "pixels_modified": "cropped, scaled and re-encoded only",
+  "outputs": [
+    {
+      "key": "free-victory",
+      "source": "v1/raw/free-victory.jpg",
+      "sourceSha256": "6c88bc1855de7eef4f98e26aa212966f84f7a13d84fdae90736de0743a12783d",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/end-scenes/free-victory.jpg",
+      "outputSha256": "9d7ef376bf001be58dc5ea34c105701a1e5bfca6f15b606ffbfd764e1c1b3bde",
+      "band": [
+        0,
+        116,
+        1536,
+        884
+      ],
+      "size": [
+        960,
+        480
+      ]
+    },
+    {
+      "key": "free-defeat",
+      "source": "v1/raw/free-defeat.jpg",
+      "sourceSha256": "1906069c5e3086b2d0114e8c77aa2ebc2d3caecc10eb2fa13667655f8c8c6f84",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/end-scenes/free-defeat.jpg",
+      "outputSha256": "227337af2447f6749e8a4b9b509ab2889bf27855cde399aafc61eb8949628489",
+      "band": [
+        0,
+        176,
+        1536,
+        944
+      ],
+      "size": [
+        960,
+        480
+      ]
+    },
+    {
+      "key": "shadow-victory",
+      "source": "v1/raw/shadow-victory.jpg",
+      "sourceSha256": "88ea0fb501ed14c77a5421a0c1cec51606a081433e1eec1469831e68b3939d95",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/end-scenes/shadow-victory.jpg",
+      "outputSha256": "a33884898aa1d7e4f407d73f745017dbb6b595fe64c5136b2ed5952f3e5481d7",
+      "band": [
+        0,
+        56,
+        1536,
+        824
+      ],
+      "size": [
+        960,
+        480
+      ]
+    },
+    {
+      "key": "shadow-defeat",
+      "source": "v1/raw/shadow-defeat.jpg",
+      "sourceSha256": "6e4bc477e32a2bce0e39f51ca5d112b2713b1bae261b4f7c5affe625c3e14f53",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/end-scenes/shadow-defeat.jpg",
+      "outputSha256": "cd29acbc9d2d48ec8bb404e5ec46a16f6397ab59db4a3b9dcbca46cb035e51df",
+      "band": [
+        0,
+        96,
+        1536,
+        864
+      ],
+      "size": [
+        960,
+        480
+      ]
+    }
+  ]
+}

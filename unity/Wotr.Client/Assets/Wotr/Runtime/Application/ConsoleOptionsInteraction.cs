@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.UIElements;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -20,8 +21,23 @@ namespace Wotr.Client
 
         public void Refresh(PlayerView view, TurnDraft draft, bool enabled)
         {
+            if (view.Winner.HasValue)
+            {
+                ShowGameEnd(view, draft);
+                return;
+            }
             board.Console.Status.SetOptions(CardConsoleOptions.For(view, draft), enabled);
             board.TableEffects.Offer(CardConsoleOptions.TableCards(view, draft), enabled);
+        }
+
+        // UI-233: a finished game keeps one button in the console that reopens its end; it glows while the replay
+        // can still be saved.
+        private void ShowGameEnd(PlayerView view, TurnDraft draft)
+        {
+            board.Console.Status.SetOptions(GameEndConsole.Options, true);
+            var reopen = board.Console.Status.Options.Q<Button>(GameEndConsole.Name);
+            ChoiceGlow.Apply(reopen, board.GameEnd.Replay is ReplaySaveState.Ready or ReplaySaveState.Failed);
+            board.TableEffects.Offer(CardConsoleOptions.TableCards(view, draft), false);
         }
 
         private void Chosen(ConsoleOption option)
@@ -29,6 +45,11 @@ namespace Wotr.Client
             if (option.Kind == ConsoleOptionKind.OpenEffects)
             {
                 board.TableEffects.Open();
+                return;
+            }
+            if (option.Kind == ConsoleOptionKind.OpenGameEnd)
+            {
+                board.GameEnd.Open();
                 return;
             }
             choose(option);

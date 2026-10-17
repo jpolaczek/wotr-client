@@ -10,7 +10,9 @@ namespace Wotr.Client
         Reaction,
         Decline,
         OpenEffects,
-        Action
+        Action,
+        // UI-233: after View board, the console reopens the end of the game (result, log, Save replay).
+        OpenGameEnd
     }
 
     // UI-214: one object-less choice of a card or a reaction, shown as a button in the turn console's status zone.

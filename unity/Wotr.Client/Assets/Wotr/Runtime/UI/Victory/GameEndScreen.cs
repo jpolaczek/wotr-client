@@ -169,6 +169,8 @@ namespace Wotr.Client
         private void Render(GameEndState state)
         {
             title.text = state.Title;
+            // UI-233: a longer title (an observer's FREE PEOPLES WIN) is set smaller, clear of the plate's ornaments.
+            title.EnableInClassList("game-end-title-long", state.Title.Length > 8);
             subtitle.text = state.Subtitle;
             Root.EnableInClassList("won", state.Won);
             Root.EnableInClassList("lost", !state.Won && !state.Observed);

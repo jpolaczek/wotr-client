@@ -40,8 +40,8 @@ namespace Wotr.PlayTests
                 var die = fp.Board.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Location == DieLocation.Available);
                 await session.Send(Side.FreePeoples, CommandKind.DiscardDie, new CommandPayload { DieId = die.Id });
                 await session.Until(() => fp.Board.GameEnd.IsOpen && sh.Board.GameEnd.IsOpen);
-                AssertScreen(fp.Board, "VICTORY", "Free Peoples win · Military victory", "military-free");
-                AssertScreen(sh.Board, "DEFEAT", "Free Peoples win · Military victory", "military-free");
+                AssertScreen(fp.Board, "VICTORY", "Free Peoples win · Military victory", "free-victory");
+                AssertScreen(sh.Board, "DEFEAT", "Free Peoples win · Military victory", "shadow-defeat");
                 StringAssert.Contains("Free Peoples 4/4", fp.Board.GameEnd.State.Summary[1]);
                 await session.Until(() => sh.Activity.Model.Groups.Any(group => group.Result.Header.StartsWith("Die discarded")));
                 Assert.AreEqual(0, fp.Board.Ribbon.Shown + sh.Board.Ribbon.Shown, "A finished game gives no turn ribbon.");
@@ -81,8 +81,8 @@ namespace Wotr.PlayTests
             await session.Settle();
             CollectionAssert.AreEqual(new[] { SoundCue.Victory }, fpCues, "The winner hears the victory once, nothing else.");
             CollectionAssert.AreEqual(new[] { SoundCue.Defeat }, shCues, "The other player hears the defeat once.");
-            AssertScreen(fp.Board, "VICTORY", "Free Peoples win · The Ring is destroyed", "ring-destroyed");
-            AssertScreen(sh.Board, "DEFEAT", "Free Peoples win · The Ring is destroyed", "ring-destroyed");
+            AssertScreen(fp.Board, "VICTORY", "Free Peoples win · The Ring is destroyed", "free-victory");
+            AssertScreen(sh.Board, "DEFEAT", "Free Peoples win · The Ring is destroyed", "shadow-defeat");
             StringAssert.StartsWith("Fellowship · Crack of Doom", fp.Board.GameEnd.State.Summary[2]);
 
             var board = fp.Board;
@@ -93,6 +93,15 @@ namespace Wotr.PlayTests
             CardNetworkTests.Click(board.Console.Status.Plaque);
             await session.Settle();
             Assert.IsTrue(board.GameEnd.IsOpen, "The console's GAME OVER opens the end again.");
+            CardNetworkTests.Click(board.GameEnd.Root.Q<Button>("game-end-view-board"));
+            await session.Settle();
+            // UI-233: the console's own button brings back the result, the log and Save replay.
+            var reopen = board.Console.Status.Options.Q<Button>(GameEndConsole.Name);
+            Assert.AreEqual(DisplayStyle.Flex, board.Console.Status.Options.resolvedStyle.display);
+            Assert.AreEqual("Results & replay", reopen.text);
+            CardNetworkTests.Click(reopen);
+            await session.Settle();
+            Assert.IsTrue(board.GameEnd.IsOpen, "Results & replay opens the end again.");
             CardNetworkTests.Click(board.GameEnd.Root.Q<Button>("game-end-log"));
             await session.Settle();
             Assert.IsTrue(board.Log.IsOpen, "Game log opens the Log.");
@@ -110,7 +119,7 @@ namespace Wotr.PlayTests
             again.Interface.Sounds.Policy.Played += againCues.Add;
             await session.Until(() => again.Board.GameEnd.IsOpen);
             await session.Settle();
-            AssertScreen(again.Board, "VICTORY", "Free Peoples win · The Ring is destroyed", "ring-destroyed");
+            AssertScreen(again.Board, "VICTORY", "Free Peoples win · The Ring is destroyed", "free-victory");
             Assert.IsFalse(againCues.Contains(SoundCue.Victory), "A finished game opened again is silent.");
         }
 
@@ -134,8 +143,8 @@ namespace Wotr.PlayTests
             var die = sh.Board.View.Dice.First(d => d.Owner == Side.Shadow && d.Location == DieLocation.Available);
             await session.Send(Side.Shadow, CommandKind.DiscardDie, new CommandPayload { DieId = die.Id });
             await session.Until(() => fp.Board.GameEnd.IsOpen && sh.Board.GameEnd.IsOpen);
-            AssertScreen(sh.Board, "VICTORY", "Shadow win · Military victory", "military-shadow");
-            AssertScreen(fp.Board, "DEFEAT", "Shadow win · Military victory", "military-shadow");
+            AssertScreen(sh.Board, "VICTORY", "Shadow win · Military victory", "shadow-victory");
+            AssertScreen(fp.Board, "DEFEAT", "Shadow win · Military victory", "free-defeat");
             StringAssert.Contains("Shadow 10/10", sh.Board.GameEnd.State.Summary[1]);
             foreach (var width in new[] { 1366, 1920 })
                 foreach (var scale in new[] { 1f, 1.25f })
@@ -182,6 +191,16 @@ namespace Wotr.PlayTests
                 Assert.GreaterOrEqual(element.worldBound.yMin + 1, bounds.yMin, element.name + " · " + label);
                 Assert.LessOrEqual(element.worldBound.yMax, bounds.yMax + 1, element.name + " · " + label);
             }
+            // UI-233: the buttons stand inside the window's frame, and the title clear of the plate's ornaments.
+            var frame = root.Q("game-end-window").worldBound;
+            foreach (var button in root.Query<Button>().ToList())
+            {
+                Assert.GreaterOrEqual(button.worldBound.xMin + 1, frame.xMin + 8, button.name + " inside the frame · " + label);
+                Assert.LessOrEqual(button.worldBound.xMax, frame.xMax - 8 + 1, button.name + " inside the frame · " + label);
+            }
+            var title = root.Q<Label>("game-end-title");
+            var text = title.MeasureTextSize(title.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+            Assert.LessOrEqual(text.x, root.Q("game-end-title-plate").contentRect.width + 1, "The title keeps clear of the ornaments · " + label);
         }
     }
 }

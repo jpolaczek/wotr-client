@@ -1,0 +1,20 @@
+{
+  "version": "end-v1",
+  "model": "gpt-image-1.5",
+  "size": "1536x1024",
+  "quality": "medium",
+  "background": "opaque",
+  "style": "A wide cinematic panoramic oil painting for the end-of-game screen of a Tolkien-inspired fantasy strategy board game, painterly brushwork, rich but slightly muted earthy colours, dramatic natural light, atmospheric depth. Composition for a wide banner: the main subject lies in the middle half of the image height and stretches across the width; the top and bottom quarters are calm sky and ground that can be cropped away. Figures are small and seen from a distance; no close-up faces and no single hero in the foreground. An original scene, not resembling any film still. No text, letters, numbers, runes, logos, frame or border. Scene: ",
+  "items": {
+    "free-victory": "dawn breaks after a long war: far in the distance a dark volcanic mountain collapses in fire and smoke while great eagles soar towards it; in the middle ground a white walled city on a green hill flies the banners of free men, elves and dwarves, and golden sunlight breaks through parting storm clouds over cheering ranks of soldiers; triumphant, hopeful mood.",
+    "free-defeat": "a white walled city of free men lies beaten under a black sky; its gate is broken and smoking, its banners hang torn, and a vast dark host fills the plain before it; in the foreground grass a fallen white banner lies in the mud beside a broken spear; sorrowful mood, cold grey light and dying embers.",
+    "shadow-victory": "a colossal black iron fortress tower rises over a volcanic plain under a blood-red sky, a fiery glow burning at its crown; beneath it an endless host of orcs, trolls and dark riders marches with black banners, while the far horizon of the free lands burns; triumphant, menacing mood.",
+    "shadow-defeat": "a colossal black fortress tower cracks and falls into a chasm of fire while a volcano erupts behind it; its dark armies flee in disarray across the ash plain; the black clouds tear apart and pale golden light pierces through onto the ruin; mood of downfall."
+  },
+  "crop": {
+    "free-victory": 500,
+    "free-defeat": 560,
+    "shadow-victory": 440,
+    "shadow-defeat": 480
+  }
+}

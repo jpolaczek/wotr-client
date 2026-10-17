@@ -260,16 +260,23 @@ Victory panel with a break of points stays in the Menu.
   - the title from the player’s perspective (‘VICTORY’ or ‘DEFEAT’);
   - subtitle „{page} win · {reason}”: „The Ring is destroyed”, „The
     Ring-bearers are corrupted”, „Military victory”;
-  - scene reason: `ring-destroyed`, `ring-corrupted`, `military-free`,
-    `military-shadow`;
+  - scene (UI-233): a painting of the result from the viewer's side — `free-victory`, `free-defeat`,
+    `shadow-victory`, `shadow-defeat`; an observer sees the winner's victory (`graphicalassets/end`);
   - four lines: turn; points of both sides n/4 and n/10 (`VictoryPresentation.ScoreText`);
     Fellowship (Specs of Doom, Mordor step or progress, Corruption n/12); number of Companion in
     Fellowship.
 - `GameEndScreen` (`Runtime/UI/Victory`): cover for the whole board (Denmark 72%) with window in the
   `frames/panel` frame like window battle:
-  - scene `end/scene-*`, the winner's emblem next to the title sign `end/title-victory` or
+  - scene `Art/end-scenes/*` (480×240), the winner's emblem next to the title sign `end/title-victory` or
     `end/title-defeat`, subtitle and summary;
-  - fixed buttons `game-end-view-board`, `game-end-log`, `game-end-menu`.
+  - fixed buttons `game-end-view-board`, `game-end-log`, `game-end-save-replay`, `game-end-menu`.
+
+UI-233 (2026-10-17): after View board the console keeps a "Results & replay" button in the place of its hint
+(`GameEndConsole`, `ConsoleOptionsInteraction`); it reopens the end of the game and glows (`ChoiceGlow`) while the
+replay can still be saved. The four buttons are 112 px wide, so they stay inside the window's frame. The title plate
+stretches between its ornaments (9-slice, 400 px) and keeps the title clear of them; a longer title (an observer's
+FREE PEOPLES WIN) is set at 21 px. PlayMode `GameEndNetworkTests` checks the buttons inside the frame, the title
+within the plate and the reopen button.
 
 Opens itself with the first view with the winner on a given board, so once per batch and each time the finished batch is opened. “View board” and Esc closes it. The status of the “GAME OVER” console opens it again (`TurnConsoleInteraction`, host `GameEnd`). “Game log” closes the screen and opens the Log. “Main menu” exits the same way as Menu → Games (`BoardMenu.LeaveToGames`). The Victory panel opens from the Menu, just like “View board”.
 - Tests:

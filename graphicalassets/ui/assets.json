@@ -1174,23 +1174,6 @@
       "role": "Hunt damage choice (UI-159): a random companion; a face-down stack of counters."
     },
     {
-      "source": "end/scene-ring-destroyed.svg",
-      "role": "UI-169: end-of-game scene of the Ring destroyed: Mount Doom erupting, the Ring falling into the Crack of Doom."
-    },
-    {
-      "source": "end/scene-ring-corrupted.svg",
-      "role": "UI-169: end-of-game scene of the Ring-bearers corrupted: the burning Eye on Barad-dûr over a dark plain."
-    },
-    {
-      "source": "end/scene-military.svg",
-      "role": "UI-169: end-of-game scene of a military victory: the winner's banners in their side's enamel (free or shadow) over a taken fortress.",
-      "variants": [
-        "free",
-        "shadow"
-      ],
-      "base": false
-    },
-    {
       "source": "end/title-victory.svg",
       "role": "UI-169: plate under the VICTORY title: gilt band on green enamel with laurel sprigs; code writes the title."
     },

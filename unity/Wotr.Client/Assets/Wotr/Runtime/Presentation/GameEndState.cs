@@ -14,6 +14,7 @@ namespace Wotr.Client
         public bool Observed { get; private set; }
         public string Title => Observed ? (Winner == Side.FreePeoples ? "FREE PEOPLES WIN" : "SHADOW WINS") : Won ? "VICTORY" : "DEFEAT";
         public string Subtitle { get; private set; } = "";
+        // UI-233: the painting from this view: the viewer's side and result, or the winner's victory for an observer.
         public string Scene { get; private set; } = "";
         public IReadOnlyList<string> Summary { get; private set; } = new string[0];
 
@@ -28,7 +29,7 @@ namespace Wotr.Client
                 Won = !observed && winner == view.You,
                 Observed = observed,
                 Subtitle = BoardScreen.SideName(winner) + " win · " + Reason(view.Victory),
-                Scene = SceneOf(view.Victory, winner),
+                Scene = SceneOf(observed ? winner : view.You, observed || winner == view.You),
                 Summary = Lines(view)
             };
         }
@@ -41,13 +42,8 @@ namespace Wotr.Client
             _ => "The game is over"
         };
 
-        // The art of the reason: the Crack of Doom, the Eye over the corrupted Ring-bearers, or the winner's banners.
-        private static string SceneOf(VictoryCondition? victory, Side winner) => victory switch
-        {
-            VictoryCondition.RingDestroyed => "ring-destroyed",
-            VictoryCondition.RingCorrupted => "ring-corrupted",
-            _ => winner == Side.FreePeoples ? "military-free" : "military-shadow"
-        };
+        private static string SceneOf(Side side, bool won) =>
+            (side == Side.FreePeoples ? "free" : "shadow") + (won ? "-victory" : "-defeat");
 
         private static IReadOnlyList<string> Lines(PlayerView view) => new[]
         {

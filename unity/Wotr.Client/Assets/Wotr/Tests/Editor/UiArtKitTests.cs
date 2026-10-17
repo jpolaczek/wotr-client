@@ -42,8 +42,6 @@ namespace Wotr.EditorTests
             ("rail/edge-tab-pressed", 94, 66, true), ("rail/edge-tab-available", 94, 66, true),
             ("rail/edge-tab-available-hover", 94, 66, true),
             ("console/ribbon-free", 300, 40, true), ("console/ribbon-shadow", 300, 40, true), ("console/status-glow", 48, 48, true),
-            ("end/scene-ring-destroyed", 480, 120, true), ("end/scene-ring-corrupted", 480, 120, true),
-            ("end/scene-military-free", 480, 120, true), ("end/scene-military-shadow", 480, 120, true),
             ("end/title-victory", 300, 56, true), ("end/title-defeat", 300, 56, true),
             ("actions/back", 20, 20, true), ("actions/battle", 20, 20, true), ("actions/close", 20, 20, true),
             ("actions/collapse", 20, 20, true), ("actions/discard", 20, 20, true), ("actions/pass", 20, 20, true),

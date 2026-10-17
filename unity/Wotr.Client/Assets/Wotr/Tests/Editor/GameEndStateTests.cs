@@ -14,15 +14,17 @@ namespace Wotr.Client.Tests
             var free = GameEndState.For(Ended(Side.FreePeoples, Side.FreePeoples, VictoryCondition.RingDestroyed));
             Assert.AreEqual("VICTORY", free.Title);
             Assert.AreEqual("Free Peoples win · The Ring is destroyed", free.Subtitle);
-            Assert.AreEqual("ring-destroyed", free.Scene);
+            Assert.AreEqual("free-victory", free.Scene, "UI-233: the painting of the viewer's own result.");
             var shadow = GameEndState.For(Ended(Side.Shadow, Side.FreePeoples, VictoryCondition.RingDestroyed));
             Assert.AreEqual("DEFEAT", shadow.Title);
             Assert.AreEqual(free.Subtitle, shadow.Subtitle, "Both players read the same result.");
             Assert.AreEqual("Shadow win · The Ring-bearers are corrupted",
                 GameEndState.For(Ended(Side.Shadow, Side.Shadow, VictoryCondition.RingCorrupted)).Subtitle);
-            Assert.AreEqual("ring-corrupted", GameEndState.For(Ended(Side.FreePeoples, Side.Shadow, VictoryCondition.RingCorrupted)).Scene);
-            Assert.AreEqual("military-shadow", GameEndState.For(Ended(Side.FreePeoples, Side.Shadow, VictoryCondition.ShadowMilitary)).Scene);
-            Assert.AreEqual("military-free", GameEndState.For(Ended(Side.Shadow, Side.FreePeoples, VictoryCondition.FreePeoplesMilitary)).Scene);
+            Assert.AreEqual("shadow-defeat", shadow.Scene);
+            Assert.AreEqual("free-defeat", GameEndState.For(Ended(Side.FreePeoples, Side.Shadow, VictoryCondition.RingCorrupted)).Scene);
+            Assert.AreEqual("shadow-victory", GameEndState.For(Ended(Side.Shadow, Side.Shadow, VictoryCondition.ShadowMilitary)).Scene);
+            Assert.AreEqual("shadow-victory", GameEndState.For(Ended(Side.FreePeoples, Side.Shadow, VictoryCondition.ShadowMilitary), true).Scene,
+                "An observer sees the winner's victory.");
         }
 
         [Test]
@@ -58,7 +60,7 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("DEFEAT", screen.Root.Q<Label>("game-end-title").text);
             Assert.IsTrue(screen.Root.ClassListContains("lost"));
             Assert.IsTrue(screen.Root.Q("game-end-emblem").ClassListContains("side-free"));
-            Assert.IsTrue(screen.Root.Q("game-end-scene").ClassListContains("game-end-scene-military-free"));
+            Assert.IsTrue(screen.Root.Q("game-end-scene").ClassListContains("game-end-scene-shadow-defeat"));
             foreach (var name in new[] { "game-end-view-board", "game-end-log", "game-end-menu" })
                 Assert.IsNotNull(screen.Root.Q<Button>(name), name);
             screen.Close();
