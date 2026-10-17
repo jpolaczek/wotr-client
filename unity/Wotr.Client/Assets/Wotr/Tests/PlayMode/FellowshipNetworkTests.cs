@@ -63,10 +63,8 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(0, room.Fp.Board.View.Revision);
                     Assert.AreEqual(camera, room.Fp.Board.Map.Camera.Pan);
                     FellowshipGestures.Action(room.Fp, "fellowship-declare");
+                    // UI-219: the fifth step uses all five Progress and declares at once.
                     await Route(room.Fp, token, "fords-of-bruinen", "hollin", "moria", "dimrill-dale", "lorien");
-                    await Until(() => room.Fp.Board.Tray.Q<Label>(className: "draft-status")?.text.Contains("Heal 1") == true, token);
-                    Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.IsRouteEnd("lorien"));
-                    FellowshipGestures.FinishRoute(room.Fp, "lorien");
                     await room.At(1, token);
                     Assert.AreEqual("lorien", room.Fp.Board.View.Fellowship.RegionId);
                     Assert.AreEqual(0, room.Fp.Board.View.Fellowship.Corruption);
@@ -190,14 +188,14 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-cancel"));
             Assert.AreEqual(DecisionKind.FellowshipRoute, room.Fp.Board.View.Decision.Kind);
             StringAssert.Contains("Become revealed", room.Fp.Board.Tray.Q<Label>("fellowship-route-effect").text);
-            await Route(room.Fp, token, "dimrill-dale", "north-anduin-vale", "dol-guldur");
+            await Route(room.Fp, token, "dimrill-dale", "north-anduin-vale");
             await Task.Delay(80, token);
-            Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.IsRouteEnd("dol-guldur"));
             var endpoint = MapContourProbe.ReachRegion(room.Fp.Board.Map, "dol-guldur");
             pan = room.Fp.Board.Map.Camera.Pan;
             var zoom = room.Fp.Board.Map.Camera.Zoom;
+            // UI-219: the third step uses all three Progress and reveals at once.
             MapContourProbe.Click(room.Fp.Board.Map, endpoint);
-            MapContourProbe.Click(room.Fp.Board.Map, endpoint, 2); // A fast second click must not answer the following damage decision.
+            MapContourProbe.Click(room.Fp.Board.Map, endpoint, 2); // Fast further clicks must not answer the following damage decision.
             await room.At(5, token);
             foreach (var source in new[] { "moria", "dol-guldur" })
             {

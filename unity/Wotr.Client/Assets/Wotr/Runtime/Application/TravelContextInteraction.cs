@@ -73,14 +73,15 @@ namespace Wotr.Client
             TravelDraft.IsGrouped(selection.Kind) && option.MaximumGroups != 1 && option.EligibleIds.Count > 1 &&
             view.Decision.Kind is not (DecisionKind.Action or DecisionKind.ActionSequence);
 
-        public bool Finish(string region)
+        // UI-219: a step of a drawn Fellowship route; the step that completes the route sends it.
+        public bool Step(string region)
         {
             if (view == null || busy())
                 return false;
             var next = draft.Fork();
-            if (!TravelActions.End(next, view, region))
+            if (!TravelDraft.Step(next, view, board.Presentation, region))
                 return false;
-            edit(() => draft.Adopt(next), true);
+            edit(() => draft.Adopt(next), TravelActions.Complete(next, view));
             return true;
         }
     }

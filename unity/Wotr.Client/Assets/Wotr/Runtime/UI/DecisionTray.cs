@@ -223,7 +223,7 @@ namespace Wotr.Client
                 footer.Add(button);
             }
             if (draft.Kind == CommandKind.AwakenSovereign || ComponentActions.Immediate(view, draft) || ExpansionActions.Immediate(draft.Kind) || FellowshipActions.Immediate(draft.Kind) || ContextualFellowship && FellowshipDraft.UsesRoute(draft.Kind) &&
-                option.Travel.Count > 0 && !TravelDraft.IsGrouped(draft.Kind) ||
+                option.Travel.Count > 0 && !TravelDraft.IsGrouped(draft.Kind) && !FellowshipDraft.LocationRoute(draft.Kind) ||
                 option.Kind is CommandKind.ResolveHuntDamage or CommandKind.CommitCombatCard or CommandKind.AdvanceBattle or CommandKind.RetreatBattle or CommandKind.ExtendSiege || option.Kind == CommandKind.ChooseEffect &&
                 option.Minimum == 1 && option.Maximum == 1 && option.EventRecruitment == null || option.Kind == CommandKind.RespondEffect)
             {

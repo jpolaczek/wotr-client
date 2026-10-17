@@ -17,7 +17,7 @@ Legal action preserves priority: click dice / figure The preview does not add se
 
 The map raster covers the entire screen under HUD. The minimum zoom is cover, so with other ratios you can initially not see the whole map simultaneously. Each piece is reachable; you can never reveal the background outside of its rectangle. Resize, Location and manual master have the same limits. The cursor at the shore moves the map smoothly; the corner works in two axes. Panels and active controls block scrolling under each other, except for the narrow external pass reserved for navigation (expression of UI-81). Loss of focus, cursor output, decks or manual master stop this path.
 
-Legal targets are highlighted regions. Without arrows, floating descriptions, target buttons and indicators that create a list of options over board. The choice of source/participants and budget still shows the actual state. On the routes, many steps, the next clicks select the area and the reclick ends the route, according to legality (UI-142: without a double click). We do not choose the path behind the player. History can distinguish the known source/target, without the arrow of motion.
+Legal targets are highlighted regions. Without arrows, floating descriptions, target buttons and indicators that create a list of options over board. The choice of source/participants and budget still shows the actual state. On the routes, many steps, the next clicks select the area; the step that uses all of the Progress ends the route and a shorter one is sent with ✓ (UI-219: no reclick, no double click). We do not choose the path behind the player. History can distinguish the known source/target, without the arrow of motion.
 
 <a id="drużyna-i-hunt"></a>
 ## Fellowship and Hunt
@@ -581,7 +581,7 @@ The user's decision with 2026-10-14: the game does not use a double click. `Draf
 | siege extension — figure extension | The figure click extends the siege. |
 | Reserve chip at one settlement (UI-130) | The chip click recruits in the only legal settlement; with several settlements they shine. |
 | Army — Selection of the whole (UI-127) | Army click selects the whole; switch select/unselect (UI-140). |
-| End of route Fellowship/figure | Click the end of the route again. |
+| End of route Fellowship/figure | Figures: click the destination (UI-105). Fellowship: the step that uses all of the Progress, or ✓ for a shorter route (UI-219). |
 | dice reroll and losses in battle | Each click switches/cyclically changes the selection; aggregate ✓ He's staying. |
 | card combat in battle window | First clicks armed, second one plays covered. |
 | Content of card in the inspector with excess hand | The content click rejects card. |

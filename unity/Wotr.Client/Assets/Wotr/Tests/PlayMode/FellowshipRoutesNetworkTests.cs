@@ -26,20 +26,15 @@ namespace Wotr.PlayTests
             await room.Settle();
             var pan = board.Map.Camera.Pan;
             var zoom = board.Map.Camera.Zoom;
-            MapContourProbe.Click(board.Map, MapContourProbe.Terrain(board.Map, "minas-tirith"));
-            await room.Until(() => board.Tray.Q<Label>(className: "draft-status")?.text.Contains("Activate Gondor") == true);
-            await room.Settle();
             StringAssert.Contains("Remain hidden", board.Tray.Q<Label>("fellowship-route-effect").text);
-            StringAssert.Contains("Heal 1", board.Tray.Q<Label>(className: "draft-status").text);
             Assert.AreEqual(0, room.Boundary.Commands);
             Assert.IsNull(room.Sh.Board.View.Decision);
             Assert.IsEmpty(room.Sh.Board.View.Options);
             Assert.IsEmpty(room.Sh.Board.Map.DraftOverlay.Targets);
             Assert.AreEqual(1, room.Sh.Board.View.Fellowship.Corruption);
 
+            // UI-219: with no Progress, one click on the Fellowship's region stays and declares at once.
             room.Boundary.HoldNextCommand = true;
-            Assert.IsTrue(board.Map.DraftOverlay.IsRouteEnd("minas-tirith"));
-            Assert.IsEmpty(board.Map.Query<Button>(className: "map-target").ToList());
             MapContourProbe.Click(board.Map, MapContourProbe.Terrain(board.Map, "minas-tirith"));
             await room.Until(() => room.Boundary.CommandHeld);
             await room.At(1);

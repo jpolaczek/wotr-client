@@ -125,7 +125,7 @@ namespace Wotr.PlayTests
             Assert.IsFalse(board.Fellowship.Pinned);
             Assert.IsTrue(board.Fellowship.IsOpen, "Fellowship remains available in the permanent column.");
             await room.Settle();
-            foreach (var region in new[] { "dimrill-dale", "north-anduin-vale", "dol-guldur" })
+            foreach (var region in new[] { "dimrill-dale", "north-anduin-vale" })
             {
                 MapContourProbe.ReachRegion(board.Map, region);
                 await room.Settle();
@@ -134,8 +134,9 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 Assert.AreEqual(stepCamera, Camera(board), "Choosing " + region + " must not navigate.");
             }
-            Assert.IsTrue(board.Map.DraftOverlay.IsRouteEnd("dol-guldur"));
+            Assert.IsTrue(board.Map.DraftOverlay.Targets.Contains("dol-guldur"));
             await HuntRoleScreenshots.Capture(room, "reveal-route", fellowship: true);
+            // UI-219: the third step uses all of the Progress and reveals at once.
             MapContourProbe.ReachRegion(board.Map, "dol-guldur");
             await room.Settle();
             var camera = Camera(board);

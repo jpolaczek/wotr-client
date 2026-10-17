@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 
 namespace Wotr.PlayTests
@@ -37,14 +38,32 @@ namespace Wotr.PlayTests
             CardNetworkTests.Click(client.Board.Hover.Panel.Root.Q<Button>("hover-figure-" + id));
         }
 
-        // UI-105: a character group moves on the click of its destination; only a route the player draws step by
-        // step (the Fellowship's declaration) ends with a second click on its last region.
+        // UI-105: a character group moves on the click of its destination. UI-219: a Fellowship route the player draws
+        // step by step moves on the step that uses all of its Progress; a shorter one is sent with ✓ once the server's
+        // preview allows it.
         public static void FinishRoute(MountedMatchClient client, string region)
         {
-            var drawn = client.Board.Map.DraftOverlay.IsRouteEnd(region);
-            MapClick(client, region, 1);
-            if (!drawn && client.Board.Map.DraftOverlay.IsRouteEnd(region))
+            var overlay = client.Board.Map.DraftOverlay;
+            // A route that already used all of its Progress has moved; a click then would reach the next decision.
+            if (!overlay.IsRouteEnd(region) && overlay.Targets.Contains(region))
                 MapClick(client, region, 1);
+            var travel = client.Board.View?.Options.FirstOrDefault(o => FellowshipDraft.LocationRoute(o.Kind))?.Travel.FirstOrDefault();
+            if (overlay.IsRouteEnd(region) && travel != null && overlay.RouteSteps < travel.Range)
+                ConfirmWhenReady(client);
+        }
+
+        private static void ConfirmWhenReady(MountedMatchClient client)
+        {
+            var tray = client.Board.Tray;
+            var clicked = false;
+            tray.schedule.Execute(() =>
+            {
+                var confirm = tray.Q<Button>("confirm-decision");
+                if (clicked || confirm == null || !confirm.enabledInHierarchy)
+                    return;
+                clicked = true;
+                CardNetworkTests.Click(confirm);
+            }).Every(16).Until(() => clicked);
         }
 
         public static void Region(MountedMatchClient client, string region) => MapClick(client, region, 1);

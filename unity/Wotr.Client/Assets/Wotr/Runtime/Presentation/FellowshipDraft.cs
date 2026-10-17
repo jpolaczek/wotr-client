@@ -132,7 +132,9 @@ namespace Wotr.Client
                 if (route?.Count > 0 && travel != null && !TravelDraft.EndAllowed(route, travel))
                     return route.Count - 1 > travel.Range ? "Shorten the route or select a companion with enough range."
                         : "Continue the route · This region cannot be the destination.";
-                return "Trace a route · Click its end again to finish.";
+                // UI-219: the last step of the whole Progress moves at once; a shorter route goes with ✓.
+                return route?.Count > 0 && travel != null && TravelDraft.EndAllowed(route, travel)
+                    ? "Continue the route, or ✓ to move here." : "Trace a route · Using all of the Progress moves at once.";
             }
             return draft.Payload.DieId.Length == 0 && view.Options.Any(o => o.Kind == draft.Kind && o.EligibleDice.Count > 0)
                 ? "Choose an action die from your pool." : "";

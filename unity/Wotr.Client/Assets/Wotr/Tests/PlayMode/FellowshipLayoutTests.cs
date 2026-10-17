@@ -211,7 +211,8 @@ namespace Wotr.PlayTests
                 MapContourProbe.ClickRegion(client.Board.Map, "dol-guldur");
                 yield return Settle();
                 StringAssert.Contains("Moria → Dimrill Dale → North Anduin Vale → Dol Guldur", client.Board.Tray.Q<Label>("travel-summary").tooltip);
-                CollectionAssert.AreEquivalent(new[] { "dol-guldur" }, client.Board.Map.DraftOverlay.Targets);
+                // UI-219: the whole Progress is used, so no step is left (online this step would already have moved).
+                Assert.IsEmpty(client.Board.Map.DraftOverlay.Targets);
                 Assert.IsNotNull(client.Board.Tray.Q<Label>("hunt-tile"));
                 client.Board.Cards.Show(view.Hand[0], true);
                 var camera = client.Board.Map.Camera;
@@ -219,7 +220,7 @@ namespace Wotr.PlayTests
                 client.Board.Map.Refresh();
                 yield return Settle();
                 Assert.IsTrue(client.Board.Cards.Pinned);
-                Assert.IsNull(client.Board.Tray.Q<Button>("confirm-decision"));
+                Assert.IsNotNull(client.Board.Tray.Q<Button>("confirm-decision"), "UI-219: a drawn route is sent with ✓.");
                 PointerGestureEvents.ClickAt(client.Board.Tray.Q<Button>("route-undo"));
                 yield return Settle();
                 StringAssert.Contains("North Anduin Vale", client.Board.Tray.Q<Label>("travel-summary").text);

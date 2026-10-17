@@ -15,12 +15,15 @@ namespace Wotr.Client
         public MapDraftOverlay(MapCanvas map) => this.map = map;
 
         public bool IsRouteEnd(string region) => endpoint.Length > 0 && endpoint == region;
+        // UI-219: the steps of the drawn Fellowship route, or -1 when none is drawn.
+        public int RouteSteps { get; private set; } = -1;
 
         public void Apply(PlayerView view, TurnDraft draft, ActionDieContext context = null)
         {
             Targets.Clear();
             AttackTargets.Clear();
             endpoint = "";
+            RouteSteps = -1;
             if (context != null)
             {
                 if (MusterActions.Active(view, draft, context) && draft.Kind is null or CommandKind.Recruit)
@@ -59,8 +62,11 @@ namespace Wotr.Client
                 if (travel != null && route != null)
                 {
                     var end = route.Count > 0 ? route.Last() : travel.Origin;
-                    if (travel.Targets.Contains(end))
+                    // UI-219: only the start offers a stay; a drawn route ends with its last step or with ✓.
+                    if (route.Count == 0 && travel.Targets.Contains(end))
                         Targets.Add(end);
+                    if (route.Count > 0)
+                        RouteSteps = route.Count - 1;
                     if (route.Count > 0 && TravelDraft.EndAllowed(route, travel))
                         endpoint = end;
                 }

@@ -86,6 +86,19 @@ namespace Wotr.Client
             or CommandKind.UseCouncilToken
             ? TravelDraft.Group(draft)?.Ids ?? Enumerable.Empty<string>() : Enumerable.Empty<string>();
 
+        // UI-219: a drawn Fellowship route is complete when it is a legal end with no step left (all of the Progress
+        // is used; with no Progress, the stay). A shorter legal route waits for ✓.
+        public static bool Complete(TurnDraft draft, PlayerView view)
+        {
+            if (!FellowshipDraft.LocationRoute(draft.Kind))
+                return false;
+            var option = DraftOptions.For(view, draft);
+            var travel = option == null ? null : TravelDraft.Travel(draft, option);
+            var route = TravelDraft.Route(draft);
+            return travel != null && route != null && TravelDraft.EndAllowed(route, travel) &&
+                route.Count - 1 >= travel.Range && draft.Ready(option);
+        }
+
         public static bool End(TurnDraft draft, PlayerView view, string region)
         {
             if (!FellowshipDraft.UsesRoute(draft.Kind))

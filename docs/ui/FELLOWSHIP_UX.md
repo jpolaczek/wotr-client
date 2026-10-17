@@ -58,7 +58,7 @@ In the Fellowship `Declare position` phase, it starts a voluntary declaration if
 
 The player points to the next neighbouring regions. Sees the used range, legal next steps, goal and known effects of the preview: progress reset, possible treatment, nation activation or additional fortress tiles. UI does not set a strategic route. `Undo step` undoes the last unsent step; `Cancel` abandons local draft, does not cancel the disclosure obligation.
 
-The legal subsequent regions and the selected end are highlighted, without arrows, floating descriptions or target buttons. The reclick of the selected end approves the ready-to-way; its two-click is an equivalent gesture. The click of the current region prepares to remain if legal and the next click of the same end approves them. The lack of goal does not lead to a fictional route or consumption of dice. The disclosure effects and additional tiles must be completed before returning to the usual action.
+The legal subsequent regions and the selected end are highlighted, without arrows, floating descriptions or target buttons. From UI-219 (2026-10-17) the route has no second click: the step that uses all of the Progress moves at once (with no Progress, the click on the Fellowship's region stays at once), and a shorter legal route or a stay with Progress left is sent with ✓ in the Fellowship's decision panel (or Enter) once the server preview allows it. The click of the current region prepares to remain if legal. The lack of goal does not lead to a fictional route or consumption of dice. The disclosure effects and additional tiles must be completed before returning to the usual action.
 
 <a id="f04--przewodnik-i-towarzysze"></a>
 ## F04 — Guide and Companion

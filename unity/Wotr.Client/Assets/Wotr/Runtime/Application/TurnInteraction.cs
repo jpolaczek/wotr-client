@@ -209,9 +209,9 @@ namespace Wotr.Client
             }
             if (view?.Decision != null && FellowshipDraft.UsesRoute(draft.Kind))
             {
-                if (board.Map.DraftOverlay.IsRouteEnd(region) && travel.Finish(region))
-                    return;
-                Edit(() => TravelDraft.Step(draft, view, board.Presentation, region));
+                // UI-219: each click adds a step; a route that uses all of the Progress moves at once, a shorter one
+                // waits for ✓.
+                travel.Step(region);
                 return;
             }
             if (draft.Kind == CommandKind.ChooseEffect)

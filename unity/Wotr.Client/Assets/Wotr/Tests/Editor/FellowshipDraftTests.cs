@@ -37,6 +37,40 @@ namespace Wotr.EditorTests
             Assert.IsFalse(TravelDraft.Step(draft, view, board, "moria"));
         }
 
+        // UI-219: the step that uses all of the Progress completes the route and sends it; a shorter legal route and
+        // a stay with Progress left wait for ✓, and an end that is not a legal destination never completes.
+        [TestCase(CommandKind.DeclareFellowship)]
+        [TestCase(CommandKind.RevealFellowship)]
+        public void TheRouteIsCompleteOnlyWhenItUsesAllOfTheProgress(CommandKind kind)
+        {
+            var view = View(kind);
+            var option = view.Options[0];
+            option.EligibleDice.Clear();
+            option.Travel.Add(new TravelOption { Id = "fellowship", Origin = "hollin", Range = 2, Targets = { "hollin", "moria" } });
+            var board = BoardPresentation.Load();
+            var draft = new TurnDraft();
+            draft.Choose(kind);
+            Assert.IsFalse(TravelActions.Complete(draft, view), "nothing drawn yet");
+            Assert.IsTrue(TravelDraft.Step(draft, view, board, "hollin"));
+            Assert.IsFalse(TravelActions.Complete(draft, view), "a stay with Progress left waits for ✓");
+            FellowshipDraft.CancelRoute(draft);
+            draft.Choose(kind);
+            Assert.IsTrue(TravelDraft.Step(draft, view, board, "moria"));
+            Assert.IsTrue(TravelDraft.EndAllowed(draft.Payload.Route, option.Travel[0]));
+            Assert.IsFalse(TravelActions.Complete(draft, view), "a shorter legal route waits for ✓");
+            Assert.IsTrue(TravelDraft.Step(draft, view, board, "hollin"));
+            Assert.IsTrue(TravelActions.Complete(draft, view), "all of the Progress is used");
+            option.Travel[0].Targets.Remove("hollin");
+            Assert.IsFalse(TravelActions.Complete(draft, view), "an end that is not a destination (a sanctuary) never sends");
+            option.Travel[0].Targets.Add("hollin");
+            option.Travel[0].Range = 0;
+            FellowshipDraft.CancelRoute(draft);
+            draft.Choose(kind);
+            Assert.IsTrue(TravelDraft.Step(draft, view, board, "hollin"));
+            Assert.IsTrue(TravelActions.Complete(draft, view), "with no Progress the stay sends at once");
+            Assert.IsFalse(TravelActions.Complete(new TurnDraft(), view));
+        }
+
         [Test]
         public void PanelNeverGuessesTheCostAndKeepsTheExactCharacterOrWillDie()
         {
