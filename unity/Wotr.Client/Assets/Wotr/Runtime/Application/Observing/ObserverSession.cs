@@ -17,6 +17,7 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly MatchConnection connection;
         private readonly ActionLogController history;
+        private readonly RoomChatController chat;
         private readonly BattleReportController reports;
         private readonly ObserverInteraction interaction;
         private readonly ObserverConsole console;
@@ -43,6 +44,7 @@ namespace Wotr.Client
             connection = new MatchConnection(api, room.MatchId, routes);
             history = new ActionLogController(api, routes, board.Log);
             reports = new BattleReportController(api, routes, board.BattleReport);
+            chat = RoomChatController.ForGame(api, board.GameChat, room.MatchId);
             interaction = new ObserverInteraction(board);
             console = new ObserverConsole(board);
             sounds = soundModule == null ? null : new GameSounds(soundModule, board, NoCommands.Instance, false);
@@ -158,6 +160,7 @@ namespace Wotr.Client
             sounds?.Dispose();
             history.Dispose();
             reports.Dispose();
+            chat.Dispose();
             connection.Dispose();
             lifetime.Dispose();
         }

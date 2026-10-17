@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "2cab959f9f1cc93879b4ae831e13864aafa11f2468062b36514338001d4361da"
+    "assets.json": "eea0ef23f6c269c36c1b64c879a2170f7cd7d3cddfe9271a17c92839963bd38a"
   },
   "assets": [
     {
@@ -3254,6 +3254,22 @@
       "alpha": true,
       "source_sha256": "d38026444802c09a2b85a094cdc475174d8ebe9c0e2ec98ab5c99989d90df8d9",
       "png_sha256": "565a6ef1682c5c9eff69a3b8ac005f80fa83ff57d02e3e57651873c973544ba0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/chat.png",
+      "source": "src/actions/chat.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "5ebaf78cadcbacf54dd5721c93aa69824a44103da36c891d7cbd0b7615c13f6e",
+      "png_sha256": "b32ab08bc34ded1e388d8c621aad19c7fe5597a9342f633bdcfe54265a5b87db"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/locate.png",

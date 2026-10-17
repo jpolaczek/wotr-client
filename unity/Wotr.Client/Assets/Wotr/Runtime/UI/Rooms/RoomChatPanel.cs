@@ -15,6 +15,9 @@ namespace Wotr.Client
         public Button Send { get; }
         public long Latest { get; private set; }
         public event Action<string> Sent;
+        // CHAT-01: how many new lines a read added, and whether it was the first read of this panel.
+        public event Action<int, bool> Added;
+        private int reads;
         private readonly ScrollView log = new ScrollView(ScrollViewMode.Vertical) { name = "room-chat-log" };
 
         public RoomChatPanel()
@@ -47,17 +50,20 @@ namespace Wotr.Client
                 log.Clear();
                 Latest = 0;
             }
-            var added = false;
+            var added = 0;
             foreach (var message in view.Messages)
             {
                 if (message.Sequence <= Latest)
                     continue;
                 log.Add(Line(message));
                 Latest = message.Sequence;
-                added = true;
+                added++;
             }
-            if (added)
-                log.schedule.Execute(() => log.scrollOffset = new Vector2(0, float.MaxValue));
+            reads++;
+            if (added == 0)
+                return;
+            log.schedule.Execute(() => log.scrollOffset = new Vector2(0, float.MaxValue));
+            Added?.Invoke(added, reads == 1);
         }
 
         public void Clear() => Input.SetValueWithoutNotify("");

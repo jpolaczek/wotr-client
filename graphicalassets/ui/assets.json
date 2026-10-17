@@ -909,6 +909,10 @@
       "role": "Action icon (UI-138): Map legend (UI-173: no Help panel)."
     },
     {
+      "source": "actions/chat.svg",
+      "role": "Action icon (CHAT-01): the board's chat, a speech bubble."
+    },
+    {
       "source": "actions/locate.svg",
       "role": "Action icon (UI-138): Show on the map."
     },

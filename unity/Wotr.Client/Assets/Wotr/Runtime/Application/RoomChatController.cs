@@ -18,16 +18,35 @@ namespace Wotr.Client
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private bool sending;
         private bool disposed;
+        // CHAT-01: a server without the board's chat answers 404; the board then hides its chat.
+        public event Action Unavailable;
 
         public RoomChatController(GameApi api, RoomChatPanel panel, Label status, string roomId, TimeSpan? interval = null)
+            : this(api, panel, status, "api/rooms/" + roomId + "/chat", interval, true)
+        {
+        }
+
+        private RoomChatController(GameApi api, RoomChatPanel panel, Label status, string path, TimeSpan? interval, bool start)
         {
             this.api = api;
             this.panel = panel;
             this.status = status;
-            path = "api/rooms/" + roomId + "/chat";
+            this.path = path;
             this.interval = interval ?? TimeSpan.FromSeconds(1);
             panel.Sent += Send;
-            _ = Poll();
+            if (start)
+                _ = Poll();
+        }
+
+        // CHAT-01: the chat of the room that started this game, read every few seconds on the board.
+        public static RoomChatController ForGame(GameApi api, GameChatPanel chat, string matchId, TimeSpan? interval = null)
+        {
+            var controller = new RoomChatController(api, chat.Chat, chat.Status, "api/matches/" + Uri.EscapeDataString(matchId) + "/chat",
+                interval ?? TimeSpan.FromSeconds(3), false);
+            controller.Unavailable += () => chat.Available(false);
+            chat.Available(true);
+            _ = controller.Poll();
+            return controller;
         }
 
         private async Task Poll()
@@ -53,6 +72,12 @@ namespace Wotr.Client
                     panel.Show(view);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
+            catch (ApiException error) when (error.Status == 404 && Unavailable != null)
+            {
+                if (!disposed)
+                    Unavailable?.Invoke();
+                lifetime.Cancel();
+            }
             catch (Exception) { }
         }
 

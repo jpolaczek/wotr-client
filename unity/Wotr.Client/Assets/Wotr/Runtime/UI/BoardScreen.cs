@@ -58,6 +58,8 @@ namespace Wotr.Client
         public TurnConsole Console { get; } = new TurnConsole();
         public TurnRibbon Ribbon { get; } = new TurnRibbon();
         public GameEndScreen GameEnd { get; } = new GameEndScreen();
+        // CHAT-01: the board's chat at the bottom left, beside the map legend.
+        public GameChatPanel GameChat { get; } = new GameChatPanel();
         public GameDeletedNotice GameDeleted { get; } = new GameDeletedNotice();
         public DecisionWindow DecisionWindow { get; } = new DecisionWindow();
         // UI-161: the results an Elven Ring can give the chosen die, above that die.
@@ -153,6 +155,8 @@ namespace Wotr.Client
             stage.Add(TopBar.Shadow);
             Map = new MapCanvas(Presentation);
             Map.Legend.SetOverlayHost(stage);
+            stage.Add(GameChat.Root);
+            stage.Add(GameChat.Icon);
             Root.RegisterCallback<KeyDownEvent>(PoliticalViewKey);
             Root.Add(Map);
             Root.Add(top);
@@ -338,7 +342,7 @@ namespace Wotr.Client
             CompanionSetup.Attach(Tray, decisionDock);
             Map.RegisterCallback<GeometryChangedEvent>(_ => Sovereigns.RequestPosition());
             stage.Insert(stage.IndexOf(Cards.Root), Battles.Root);
-            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
+            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, GameChat.Icon, GameChat.Root, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
                 HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root,
                 CompanionSetup.Tab, CompanionSetup.Root };
@@ -349,7 +353,7 @@ namespace Wotr.Client
                 .Select(element => element.worldBound);
             // UI-98: the Fellowship and Hunt plaques sit in the corner tab, a summary one hover away from the full
             // panels; like the hand, a decision window may cover it when the board has no other room (overlays).
-            var fixedControls = new VisualElement[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Nations.Root,
+            var fixedControls = new VisualElement[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, GameChat.Icon, Nations.Root,
                 tableEffects.Tab, HandDrawer.Tab, ResourceDecision.Tab, Victory.Tab, Victory.Banner, CompanionSetup.Tab };
             foreach (var control in fixedControls)
             {

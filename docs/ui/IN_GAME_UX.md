@@ -223,3 +223,13 @@ Final Editor after the stabilisation amendment has 551/551 PASS ( 17:57:00–17:
 ## Binding to Characters and Menu — UI-72
 
 New preparation views and Characters use the same windows, hints and resources as the previous batch interface. The menu does not stop the game or approve local selection. 56 network views check privacy, stable draft and available targets in four systems. Historical G01–G18 results keep dates and SHA ; callback correction of Characters has public new attempts, unaltered historical report. acceptance CM01 – CM18 and additional measurements: UI-72 .
+
+## Chat on the board — CHAT-01 (2026-10-17)
+
+A small chat icon sits at the bottom left of the board, beside the legend (`GameChatPanel`). A click unrolls a compact
+260 × 176 px panel upward from the icon, over the map corner only, with the room's messages, a text field and Send;
+Esc or another click on the icon rolls it up. A message that arrives while the panel is rolled up marks the icon
+with a "?" badge until the panel opens; the first read after connecting marks nothing. Players read only the
+players' messages and observers read everyone's — the server filters by role (`GET/POST /api/matches/{id}/chat`).
+A game without a room (a demo or a server without the route) answers 404: the icon hides and polling stops. The panel
+polls every 3 s while the board is open. Test: `GameChatPanelTests`.

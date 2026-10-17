@@ -84,3 +84,61 @@
     background-color: rgba(150, 110, 30, 0.75);
 }
 #board-screen .edge-left-panel .character-roster-grid .entry-chosen-hint { color: rgb(255, 226, 150); -unity-font-style: bold; }
+
+/* CHAT-01: the board's chat. The icon stands beside the map legend at the bottom left; the panel unrolls just above it
+   over the map's western sea (260 × 176), so it covers as little of the board as it can. "?" marks unread messages. */
+#board-screen .game-chat-icon {
+    position: absolute;
+    left: 52px;
+    bottom: 12px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+}
+#board-screen .game-chat-unread {
+    position: absolute;
+    right: -6px;
+    top: -6px;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 11px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(40, 28, 12);
+    background-color: rgb(255, 214, 112);
+}
+#board-screen .game-chat {
+    position: absolute;
+    left: 52px;
+    bottom: 50px;
+    width: 260px;
+    height: 176px;
+    padding: 6px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgba(214, 178, 98, 0.7);
+    background-color: rgba(22, 19, 15, 0.9);
+}
+#board-screen .game-chat .room-chat { flex-grow: 1; flex-shrink: 1; min-height: 0; margin: 0; padding: 0; }
+#board-screen .game-chat .room-chat-title { display: none; }
+#board-screen .game-chat .room-chat-log {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 3px 6px;
+    background-color: rgba(15, 13, 12, 0.55);
+}
+#board-screen .game-chat .room-chat-message { flex-direction: row; flex-wrap: wrap; margin-bottom: 1px; }
+#board-screen .game-chat .room-chat-author { margin: 0 4px 0 0; padding: 0; font-size: 12px; -unity-font-style: bold; }
+#board-screen .game-chat .room-chat-author.side-free { color: rgb(160, 200, 230); }
+#board-screen .game-chat .room-chat-author.side-shadow { color: rgb(230, 150, 130); }
+#board-screen .game-chat .room-chat-author.observer { color: rgb(200, 192, 170); }
+#board-screen .game-chat .room-chat-text { flex-shrink: 1; margin: 0; padding: 0; font-size: 12px; white-space: normal; color: rgb(231, 228, 215); }
+#board-screen .game-chat .room-chat-line { flex-direction: row; align-items: center; flex-shrink: 0; height: 30px; margin-top: 4px; }
+#board-screen .game-chat .room-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 26px; margin: 0 4px 0 0; font-size: 12px; }
+#board-screen .game-chat .room-chat-send { width: 56px; height: 26px; min-height: 26px; flex-shrink: 0; font-size: 12px; }
+#board-screen .game-chat-status { height: 14px; margin: 2px 0 0 0; font-size: 11px; color: rgb(232, 160, 120); }

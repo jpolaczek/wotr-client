@@ -81,6 +81,7 @@ namespace Wotr.Client
             Add(board.Reinforcements.Root, board.Reinforcements.Close, board.Reinforcements.Tab);
             Add(board.Sovereigns.Inspector, board.Sovereigns.Close, board.Characters.Tab);
             Add(board.Information.Root, board.Information.Close, board.Root);
+            Add(board.GameChat.Root, board.GameChat.Close, board.GameChat.Icon);
             Add(board.Hover.Panel.Root, board.Hover.Close, board.Root);
             Add(board.Hand, board.HandDrawer.Close, board.HandDrawer.Tab);
             Add(board.Battles.Root, board.Battles.Close, board.Root);
