@@ -212,8 +212,8 @@
         132
       ],
       "alpha": true,
-      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
-      "png_sha256": "24ef6f7deb5e5358202ce9889e160b654582267cba78fe3e6afcbad98b98a918"
+      "source_sha256": "8b1310473577eed7b7608726b58b4bdae173f387b0bd4ef9ddd20e3a7a41a264",
+      "png_sha256": "af30a5789923e14c9f4f43df0fbcb2f95034351d5a20439dfaffa0178442e618"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-hover.png",
@@ -228,8 +228,8 @@
         132
       ],
       "alpha": true,
-      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
-      "png_sha256": "ce4ea5cf9f9947ee63d48789e1def770a735df3382ac87dcaf780f24b9039505"
+      "source_sha256": "8b1310473577eed7b7608726b58b4bdae173f387b0bd4ef9ddd20e3a7a41a264",
+      "png_sha256": "a99200d0bb7c1bb21b57676c390f5f04c02aaf82e3732b69cca122ca547f9e26"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-selected.png",
@@ -244,8 +244,8 @@
         132
       ],
       "alpha": true,
-      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
-      "png_sha256": "cc739d7fd36dd9ce854032cac51a22c5ec1ae5c9d6305771aed28185c6fc59a8"
+      "source_sha256": "8b1310473577eed7b7608726b58b4bdae173f387b0bd4ef9ddd20e3a7a41a264",
+      "png_sha256": "c67bbfa47db2f14f657baff55023c866b5199dafd39590597fd63b91de8d44eb"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-pressed.png",
@@ -260,8 +260,8 @@
         132
       ],
       "alpha": true,
-      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
-      "png_sha256": "846be6d3bb6c0f691e62fb5ab2787322fef04257839bb2c30fe57f990d563bc3"
+      "source_sha256": "8b1310473577eed7b7608726b58b4bdae173f387b0bd4ef9ddd20e3a7a41a264",
+      "png_sha256": "bba326ac1d0a6e6724604f8f9ced74b7b04aeb8bcc8325ec0309cf4fc7697b65"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-available.png",
@@ -276,8 +276,8 @@
         132
       ],
       "alpha": true,
-      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
-      "png_sha256": "eec2f70050595fa0067569d4fd6c5d99f93be6aec7cae19741b5281bc741c10a"
+      "source_sha256": "8b1310473577eed7b7608726b58b4bdae173f387b0bd4ef9ddd20e3a7a41a264",
+      "png_sha256": "804418d4bec55a7ed49b87f82b13ede1da353263b5acd6842fddc46d2ef25b70"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-available-hover.png",
@@ -292,8 +292,8 @@
         132
       ],
       "alpha": true,
-      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
-      "png_sha256": "7ba6f264e6eb05620a9b4ea19d38b40246fae90cb4ca46923d3f32a5c37ca730"
+      "source_sha256": "8b1310473577eed7b7608726b58b4bdae173f387b0bd4ef9ddd20e3a7a41a264",
+      "png_sha256": "e0a803d0c59b052cd2e4ca87713b8f096495b2364b89e3dfead38f3d78322588"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/glow.png",

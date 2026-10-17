@@ -5,6 +5,29 @@
        with red lacquer and pressed darkens it. UI-193: an available tab glows gold round the medallion itself, a
        soft disc of light and a bright ring hugging the beads (the label below stays clear of it). -->
   <defs>
+    <!-- Symmetric metal: the rim and its bevel are shaded round the centre, not by a diagonal light, so the small
+         medallion reads as a true circle with its icon in the middle (a diagonal light made the rim look thicker on
+         the lower right, as if the tab leaned right). -->
+    <radialGradient id="tab-rim" cx="47" cy="22" r="16.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0.86" style="stop-color: var(--gilt-highlight)"/>
+      <stop offset="0.9" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.94" style="stop-color: var(--gilt-shadow)"/>
+      <stop offset="0.98" style="stop-color: var(--gilt-mid)"/>
+      <stop offset="1" style="stop-color: var(--gilt-light)"/>
+    </radialGradient>
+    <radialGradient id="tab-bevel" cx="47" cy="22" r="14.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0.88" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.95" style="stop-color: var(--gilt-highlight)"/>
+      <stop offset="1" style="stop-color: var(--gilt-mid)"/>
+    </radialGradient>
+    <filter id="tab-lift" x="-20%" y="-20%" width="140%" height="145%">
+      <feDropShadow dx="0" dy="0.7" stdDeviation="0.7" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+    <radialGradient id="tab-enamel" cx="47" cy="20" r="13" gradientUnits="userSpaceOnUse">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.65" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </radialGradient>
     <radialGradient id="tab-halo" cx="47" cy="22" r="22" gradientUnits="userSpaceOnUse">
       <stop offset="0.74" style="stop-color: var(--tab-glow)" stop-opacity="0.95"/>
       <stop offset="0.86" style="stop-color: var(--tab-glow)" stop-opacity="0.5"/>
@@ -16,9 +39,9 @@
     <circle cx="47" cy="22" r="19" fill="none" style="stroke: var(--tab-glow)" stroke-width="2.2" filter="url(#glow)"/>
     <circle cx="47" cy="22" r="18.9" fill="none" stroke="#fff3cc" stroke-width="0.7" opacity="0.9"/>
   </g>
-  <g filter="url(#lift)">
+  <g filter="url(#tab-lift)">
     <circle cx="47" cy="22" r="18.2" fill="url(#button-fill)" stroke="url(#gilt)" stroke-width="0.8"/>
-    <circle cx="47" cy="22" r="16.4" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
+    <circle cx="47" cy="22" r="16.4" fill="url(#tab-rim)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
     <g style="fill: var(--gilt-highlight)">
       <circle cx="62.40" cy="22.00" r="0.55"/>
       <circle cx="61.23" cy="27.89" r="0.55"/>
@@ -37,8 +60,8 @@
       <circle cx="57.89" cy="11.11" r="0.55"/>
       <circle cx="61.23" cy="16.11" r="0.55"/>
     </g>
-    <circle cx="47" cy="22" r="14.2" fill="url(#gilt-bevel)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
-    <circle cx="47" cy="22" r="13" fill="url(#enamel-dome)" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+    <circle cx="47" cy="22" r="14.2" fill="url(#tab-bevel)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="47" cy="22" r="13" fill="url(#tab-enamel)" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
     <path d="M38.5 15.5 A 11 11 0 0 1 52 11.6" fill="none" stroke="#fff" stroke-width="0.9" opacity="0.18" stroke-linecap="round"/>
   </g>
 </svg>
