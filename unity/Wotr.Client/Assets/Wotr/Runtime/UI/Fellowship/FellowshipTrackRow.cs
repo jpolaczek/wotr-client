@@ -10,6 +10,8 @@ namespace Wotr.Client
         // UI-95: the marker lives in the lane and glides between cells instead of jumping.
         public const string GlidingClass = "track-marker-gliding";
         public const string MoveClass = "track-move";
+        // UI-231: steps behind the marker; the Mordor track darkens them as cooled stones.
+        public const string PassedClass = "track-passed";
         private const string BrightClass = "track-move-bright";
         private const long PulseMilliseconds = 700;
         private const float OverflowWidth = 9;
@@ -46,6 +48,8 @@ namespace Wotr.Client
             lane = new VisualElement { name = name + "-lane", pickingMode = PickingMode.Ignore };
             lane.AddToClassList("fellowship-track-lane");
             Root.Add(lane);
+            if (maximum == MordorTrackGeometry.LastStep)
+                lane.Add(MordorPath());
             cells = new Label[maximum + 1];
             for (var i = 0; i < cells.Length; i++)
             {
@@ -74,6 +78,14 @@ namespace Wotr.Client
             Value = new Label { name = valueName, pickingMode = PickingMode.Ignore };
             Value.AddToClassList("fellowship-track-value");
             Root.Add(Value);
+        }
+
+        // UI-231: the Mordor track's steps are stones on a line of embers, unlike the progress and corruption cells.
+        private static VisualElement MordorPath()
+        {
+            var path = new VisualElement { name = "mordor-track-path", pickingMode = PickingMode.Ignore };
+            path.AddToClassList("mordor-track-path");
+            return path;
         }
 
         // Only the visible track carries the move; its name stays the Fellowship's progress action.
@@ -105,6 +117,8 @@ namespace Wotr.Client
                 var moved = selected >= 0;
                 selected = state.Position;
                 cells[selected].AddToClassList("selected");
+                for (var i = 0; i < cells.Length; i++)
+                    cells[i].EnableInClassList(PassedClass, i < selected);
                 Place(true);
                 if (moved)
                     Flash();

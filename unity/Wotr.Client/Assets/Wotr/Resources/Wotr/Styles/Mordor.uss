@@ -101,3 +101,62 @@
     border-radius: 8px;
 }
 .map .fellowship-marker.fellowship-declare-target:hover { scale: 1.08 1.08; }
+
+
+/* UI-231: in the Fellowship panel the Mordor track is its own thing: a dark basalt band with an ember rim, on which
+   the six steps are round stones joined by a line of embers; the current stone burns, the passed ones have cooled and
+   the last holds the Crack of Doom. Unlike the square cells of the progress and corruption tracks, it never lines
+   up with the corruption row below. Sizes stay those of the row (42 px; 32 px dropped down; 25 px compact). */
+#board-screen .fellowship-panel .mordor-track .fellowship-track-lane {
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    border-width: 1px;
+    border-radius: 19px;
+    border-color: rgb(158, 70, 38);
+    background-color: rgb(26, 16, 13);
+}
+#board-screen .fellowship-panel .mordor-track .mordor-track-path {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    background-color: rgba(214, 96, 44, 0.75);
+}
+#board-screen .fellowship-panel .mordor-track .fellowship-track-cell {
+    flex-grow: 0;
+    flex-basis: auto;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    margin: 0;
+    border-width: 2px;
+    border-radius: 13px;
+    border-color: rgb(126, 58, 36);
+    background-color: rgb(48, 27, 20);
+}
+#board-screen .fellowship-panel .mordor-track .fellowship-track-cell.track-passed {
+    border-color: rgb(78, 52, 44);
+    background-color: rgb(34, 28, 26);
+}
+#board-screen .fellowship-panel .mordor-track .fellowship-track-cell.selected {
+    border-color: rgb(255, 156, 74);
+    background-color: rgb(116, 46, 22);
+}
+/* The stones carry no numbers; the row's value and tooltip give the step. */
+#board-screen .fellowship-panel .mordor-track .fellowship-track-tick { display: none; }
+#board-screen .fellowship-panel .mordor-track .fellowship-track-end { left: 5px; bottom: 5px; width: 12px; height: 12px; }
+#board-screen .fellowship-panel .mordor-track .fellowship-track-marker { top: 7px; height: 24px; }
+#board-screen .fellowship-panel .mordor-track .fellowship-track-value { color: rgb(255, 156, 74); }
+#board-screen .board-dropdowns .fellowship-panel .mordor-track .fellowship-track-lane { height: 32px; border-radius: 16px; }
+#board-screen .board-dropdowns .fellowship-panel .mordor-track .fellowship-track-marker { top: 5px; height: 22px; }
+#board-screen.compact-edge-board .board-dropdowns .fellowship-panel .mordor-track .fellowship-track-lane { height: 25px; border-radius: 12px; }
+#board-screen.compact-edge-board .board-dropdowns .fellowship-panel .mordor-track .fellowship-track-cell {
+    width: 21px;
+    min-width: 21px;
+    height: 21px;
+    border-radius: 10px;
+}
+#board-screen.compact-edge-board .board-dropdowns .fellowship-panel .mordor-track .fellowship-track-marker { top: 2px; height: 20px; }

@@ -428,3 +428,12 @@ icon (the revealed symbol) on the corner plaque and in the panel's state row is 
 progress; this die does not enter the Hunt." Otherwise the icon is a plain picture and a click on the plaque opens the
 panel as before (`FellowshipRingControl`). On the Mordor track the figure on the map still hides with one click
 (UI-155). Test: `FellowshipRingControlTests`.
+
+## A Mordor track of its own — UI-231 (2026-10-17)
+
+In the Fellowship panel the two tracks the Fellowship can be on look clearly different. The progress track keeps its
+square cells. The Mordor track is a dark basalt band with an ember rim: its six steps are round stones joined by a
+line of embers (`mordor-track-path`), the current stone burns orange, passed stones have cooled (`track-passed`) and
+the last one holds the Crack of Doom. The stones never line up with the square cells of the corruption track below.
+The row keeps its fixed height in every layout (42 px, 32 px dropped down, 25 px compact). Styles: `Styles/Mordor.uss`,
+replaceable without code.
