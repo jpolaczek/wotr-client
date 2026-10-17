@@ -49,6 +49,22 @@ namespace Wotr.Client.Tests
             CollectionAssert.AreEqual(Illustrations.OrderBy(key => key), keys);
         }
 
+        // UI-226: a nation's town, city or stronghold asks for its nation's picture first, then the side's.
+        [Test]
+        public void SettlementsAskForTheirNationsPictureBeforeTheirSides()
+        {
+            var regions = BoardPresentation.Load().Regions;
+            CollectionAssert.AreEqual(new[] { "stronghold-gondor-" + BattleSceneArt.NationVersion(regions["minas-tirith"], regions.Values),
+                BattleSceneArt.Key(regions["minas-tirith"], regions.Values) }, BattleSceneArt.Keys(regions["minas-tirith"], regions.Values));
+            Assert.IsNull(BattleSceneArt.NationGroup(regions["osgiliath"]), "a fortification keeps its UI-206 picture");
+            Assert.AreEqual(1, BattleSceneArt.Keys(regions["fangorn"], regions.Values).Count, "open land keeps its UI-206 picture");
+            var versions = regions.Values.Where(r => BattleSceneArt.NationGroup(r) == "stronghold-sauron")
+                .Select(r => BattleSceneArt.NationVersion(r, regions.Values)).Distinct().OrderBy(v => v).ToList();
+            CollectionAssert.AreEqual(new[] { 1, 2 }, versions, "a nation with several strongholds alternates two pictures");
+            var single = regions.Values.Single(r => BattleSceneArt.NationGroup(r) == "stronghold-isengard");
+            Assert.AreEqual(1, BattleSceneArt.NationVersion(single, regions.Values), "a single place has one picture");
+        }
+
         [Test]
         public void TheVersionDoesNotDependOnTheBoardsOrder()
         {

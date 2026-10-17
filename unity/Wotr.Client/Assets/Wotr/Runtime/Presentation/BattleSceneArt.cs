@@ -17,6 +17,37 @@ namespace Wotr.Client
         public static string Key(RegionDefinition region, IEnumerable<RegionDefinition> board) =>
             Group(region) + "-" + Version(region, board);
 
+        // UI-226: a town, city or stronghold first shows its nation's picture (its current nation, so Fate and the White
+        // Hand count); the side's UI-206 picture stays the fallback when the nation's is missing.
+        public static IReadOnlyList<string> Keys(RegionDefinition region, IEnumerable<RegionDefinition> board)
+        {
+            var places = board as ICollection<RegionDefinition> ?? board.ToList();
+            var keys = new List<string>(2);
+            var nation = NationGroup(region);
+            if (nation != null)
+                keys.Add(nation + "-" + NationVersion(region, places));
+            keys.Add(Key(region, places));
+            return keys;
+        }
+
+        public static string NationGroup(RegionDefinition region)
+        {
+            var kind = Kind(region.Settlement);
+            return kind is "town" or "city" or "stronghold" && !string.IsNullOrEmpty(region.Nation) ? kind + "-" + region.Nation : null;
+        }
+
+        // Two versions where the nation has two or more such places, otherwise one; alternating by region id.
+        public static int NationVersion(RegionDefinition region, IEnumerable<RegionDefinition> board)
+        {
+            var group = NationGroup(region);
+            var places = board.Where(other => NationGroup(other) == group)
+                .Select(other => other.Id)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+            var versions = Math.Max(1, Math.Min(Versions, places.Count));
+            return 1 + Math.Max(0, places.IndexOf(region.Id)) % versions;
+        }
+
         public static string Group(RegionDefinition region)
         {
             var kind = Kind(region.Settlement);

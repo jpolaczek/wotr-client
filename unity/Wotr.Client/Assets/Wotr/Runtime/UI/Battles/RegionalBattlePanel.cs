@@ -117,7 +117,9 @@ namespace Wotr.Client
         private void Scene(PlayerView view)
         {
             var mode = view.Battle == null ? "" : BattleSceneArtwork.Key(view.Battle.Mode);
-            var illustration = view.Battle == null ? "" : BattleSceneArt.Key(map.Data.Regions[region], map.Data.Regions.Values);
+            // UI-226: the nation's picture when there is one, otherwise the side's.
+            var illustration = view.Battle == null ? "" : BattleSceneArt.Keys(map.Data.Regions[region], map.Data.Regions.Values)
+                .FirstOrDefault(key => BattleSceneArtwork.Illustration(key) != null) ?? "";
             if (sceneMode != mode + "/" + illustration)
             {
                 foreach (var name in scene.GetClasses().Where(name => name.StartsWith("battle-scene-") && name != "battle-scene-emblem").ToList())
