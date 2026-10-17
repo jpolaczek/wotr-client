@@ -142,3 +142,68 @@
 #board-screen .game-chat .room-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 26px; margin: 0 4px 0 0; font-size: 12px; }
 #board-screen .game-chat .room-chat-send { width: 56px; height: 26px; min-height: 26px; flex-shrink: 0; font-size: 12px; }
 #board-screen .game-chat-status { height: 14px; margin: 2px 0 0 0; font-size: 11px; color: rgb(232, 160, 120); }
+
+/* UI-245: a combat card's targets in the Battle window — a die, a portrait or a figure stack — wear ChoiceGlow; the
+   chosen one keeps a solid gold rim until the choice is sent. */
+#board-screen .battle-force .portrait-medallion.choice-glow,
+#board-screen .battle-force .battle-figure.choice-glow {
+    border-width: 3px;
+    border-radius: 18px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .choice-glow-pulse .portrait-medallion.choice-glow,
+.motion-enabled #board-screen .choice-glow-pulse .battle-figure.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
+#board-screen .battle-force .portrait-medallion.selected,
+#board-screen .battle-force .battle-figure.selected {
+    border-width: 3px;
+    border-radius: 18px;
+    border-color: rgb(255, 226, 150);
+    background-color: rgba(150, 110, 30, 0.75);
+}
+
+/* UI-246: Leadership points on their Nazgûl and Heroic Death's cancelled hits on the incoming hits — fixed gilt pips
+   that glow while they can be chosen and fill once chosen. */
+#board-screen .battle-leadership-points {
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: -5px;
+    flex-direction: row;
+    justify-content: center;
+}
+#board-screen .battle-hit-cancels { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 4px; }
+#board-screen .battle-choice-pip {
+    width: 14px;
+    height: 14px;
+    min-height: 14px;
+    margin: 0 1px;
+    padding: 0;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: rgb(196, 160, 90);
+    background-color: rgba(30, 24, 16, 0.92);
+    color: rgb(230, 200, 130);
+    font-size: 9px;
+    -unity-text-align: middle-center;
+}
+#board-screen .battle-choice-pip:disabled { opacity: 0.45; }
+#board-screen .battle-choice-pip.choice-glow {
+    border-width: 2px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.9);
+}
+.motion-enabled #board-screen .choice-glow-pulse .battle-choice-pip.choice-glow {
+    border-color: rgba(255, 214, 112, 0.45);
+    scale: 1.15 1.15;
+}
+#board-screen .battle-choice-pip.selected {
+    border-color: rgb(255, 236, 170);
+    background-color: rgb(214, 170, 70);
+    color: rgb(30, 20, 10);
+}
+#board-screen.short-viewport .battle-choice-pip { width: 11px; height: 11px; min-height: 11px; border-radius: 6px; font-size: 7px; }

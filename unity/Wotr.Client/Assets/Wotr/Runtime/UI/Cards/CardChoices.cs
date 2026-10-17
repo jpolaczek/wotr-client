@@ -142,7 +142,8 @@ namespace Wotr.Client
             VisualElement row = null;
             foreach (var id in option.EligibleIds)
             {
-                if (figures.Rendered.Contains(id))
+                // UI-245: a battle die or figure is chosen on itself in the Battle window.
+                if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id))
                     continue;
                 var choice = option.EffectChoices.FirstOrDefault(c => c.Id == id) ?? new EffectChoiceView { Id = id };
                 if (row == null || choice.SelectionGroup != currentGroup)

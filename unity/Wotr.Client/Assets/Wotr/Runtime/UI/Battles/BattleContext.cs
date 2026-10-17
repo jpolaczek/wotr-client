@@ -21,6 +21,9 @@ namespace Wotr.Client
             root.Add(row);
             Force(row, battle.Attacker, "attacker", battle, view, draft, edit, inspect, cards);
             Force(row, battle.Defender, "defender", battle, view, draft, edit, inspect, cards);
+            // UI-245: the dice and figures a combat card may choose pulse together.
+            var pulse = new ChoicePulse(row);
+            refresh.Add(() => pulse.Run(row.Query(className: ChoiceGlow.ClassName).ToList().Count > 0));
         }
 
         private void Force(VisualElement root, BattleForceView force, string role, BattleView battle, PlayerView view, TurnDraft draft,
@@ -37,8 +40,8 @@ namespace Wotr.Client
             heading.tooltip = modifiers;
             column.Add(heading);
             if (force.Characters.Count > 0)
-                Characters(column, force, view);
-            column.Add(Composition(force));
+                Characters(column, force, view, draft, edit);
+            column.Add(Composition(force, view, draft, edit));
             column.Add(Statistics(force, modifiers));
             var outside = draft == null ? "" : BattleForceText.Nonparticipants(force, battle, view);
             if (outside.Length > 0)
@@ -51,20 +54,25 @@ namespace Wotr.Client
         }
 
         // Medallions first, then the names on one small line; the historical version of a character stays.
-        private static void Characters(VisualElement column, BattleForceView force, PlayerView view)
+        private void Characters(VisualElement column, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             var portraits = BoardScreen.Row("battle-portraits");
             portraits.name = "battle-portraits";
             foreach (var character in force.Characters)
-                portraits.Add(new PortraitMedallion(character, CharacterLibrary.Name(character.DefinitionId),
-                    CharacterLibrary.ShortName(view, character.Id), force.CancelledAbilities.Contains(character.Id)));
+            {
+                var portrait = new PortraitMedallion(character, CharacterLibrary.Name(character.DefinitionId),
+                    CharacterLibrary.ShortName(view, character.Id), force.CancelledAbilities.Contains(character.Id));
+                ChoiceTarget(portrait, view, draft, edit, () => character.Id);
+                Points(portrait, view, draft, edit, new[] { character.Id });
+                portraits.Add(portrait);
+            }
             column.Add(portraits);
             AddLine(column, string.Join(", ", force.Characters.Select(c =>
                 (force.CancelledAbilities.Contains(c.Id) ? "⦸ " : "") + CharacterLibrary.ShortName(view, c.Id))),
                 "battle-characters", string.Join("\n", force.Characters.Select(c => CharacterLibrary.Name(c.DefinitionId))));
         }
 
-        private static VisualElement Composition(BattleForceView force)
+        private VisualElement Composition(BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             var row = BoardScreen.Row("battle-composition");
             row.name = "battle-composition";
@@ -78,10 +86,64 @@ namespace Wotr.Client
                 emblem.AddToClassList("nation-emblem-" + nation.Key);
                 group.Add(emblem);
                 foreach (var kind in nation.GroupBy(u => u.Kind))
-                    group.Add(Figure(kind.First(), kind.Count()));
+                {
+                    var figure = Figure(kind.First(), kind.Count());
+                    var stack = kind.ToList();
+                    ChoiceTarget(figure, view, draft, edit, () => BattleObjectChoices.NextInStack(view, draft, stack),
+                        () => stack.Any(u => draft.Payload.Ids.Contains(u.Id)));
+                    Points(figure, view, draft, edit, stack.Select(u => u.Id).ToList());
+                    group.Add(figure);
+                }
                 row.Add(group);
             }
             return row;
+        }
+
+        // UI-245: a portrait or figure stack the current combat card may choose glows and chooses on a click; a stack's
+        // figures of one nation and kind are equivalent, so its next eligible figure is taken.
+        private void ChoiceTarget(VisualElement element, PlayerView view, TurnDraft draft, Action<Action> edit, Func<string> next,
+            Func<bool> chosen = null)
+        {
+            if (draft == null || edit == null)
+                return;
+            element.AddManipulator(new Clickable(() =>
+            {
+                var id = next();
+                if (id.Length > 0 && BattleObjectChoices.Offered(view, id))
+                    edit(() => BattleObjectChoices.Choose(view, draft, id));
+            }));
+            var tooltip = element.tooltip;
+            refresh.Add(() =>
+            {
+                var id = next();
+                var offered = id.Length > 0 && BattleObjectChoices.CanChoose(view, draft, id);
+                var selected = draft.Kind == CommandKind.ChooseEffect && (chosen?.Invoke() ?? draft.Payload.Ids.Contains(id));
+                element.pickingMode = offered || selected ? PickingMode.Position : element.pickingMode;
+                ChoiceGlow.Apply(element, offered && !selected);
+                element.EnableInClassList("selected", selected);
+                element.tooltip = offered ? BattleObjectChoices.Detail(view, id) + "\n" + tooltip : tooltip;
+            });
+        }
+
+        // UI-246: the Leadership points a Nazgûl card may forfeit stand on their figure or portrait, one pip each, so
+        // the Witch-king's points stay his own and the player sees which figures pay.
+        private void Points(VisualElement element, PlayerView view, TurnDraft draft, Action<Action> edit, ICollection<string> figures)
+        {
+            if (draft == null || edit == null)
+                return;
+            var points = BattleObjectChoices.PointsOf(view, figures);
+            if (points.Count == 0)
+                return;
+            var row = new VisualElement { name = "battle-leadership-points", pickingMode = PickingMode.Ignore };
+            row.AddToClassList("battle-leadership-points");
+            foreach (var id in points)
+            {
+                var pip = BattleChoicePip.Create("battle-point-" + id, "◆", () => edit(() => BattleObjectChoices.Choose(view, draft, id)));
+                row.Add(pip);
+                refresh.Add(() => BattleChoicePip.Show(pip, BattleObjectChoices.CanChoose(view, draft, id),
+                    draft.Kind == CommandKind.ChooseEffect && draft.Payload.Ids.Contains(id), BattleObjectChoices.Detail(view, id)));
+            }
+            element.Add(row);
         }
 
         private static VisualElement Figure(UnitView unit, int count)

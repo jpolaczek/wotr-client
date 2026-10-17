@@ -9,6 +9,8 @@ namespace Wotr.Client
     public sealed class BattleDiceStrip
     {
         private readonly List<Action> refresh = new List<Action>();
+        // The heading's controls outlive a page switch, which rebuilds only the dice.
+        private readonly List<Action> headingRefresh = new List<Action>();
 
         public BattleDiceStrip(VisualElement root, BattleForceView force, BattleView battle, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
@@ -26,6 +28,7 @@ namespace Wotr.Client
             var switcher = IconButton.Create("next", "Show next roll", null);
             switcher.name = "battle-roll-page-" + force.Side;
             switcher.AddToClassList("battle-roll-page");
+            HitCancels(heading, force, view, draft, edit);
             if (pages.Count > 1)
                 heading.Add(switcher);
             row.Add(content);
@@ -39,7 +42,7 @@ namespace Wotr.Client
                 source.tooltip = page.Title + "\n" + BattleForceText.Modifiers(force, battle, view);
                 var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.RerollBattle);
                 foreach (var die in page.Dice)
-                    AddDie(content, die, page.Title, force, battle, view.You, draft, option, edit);
+                    AddDie(content, die, page.Title, force, battle, view, draft, option, edit);
                 Refresh();
             }
             switcher.clicked += () => { selected = (selected + 1) % pages.Count; Show(); };
@@ -47,18 +50,53 @@ namespace Wotr.Client
         }
 
         private void AddDie(VisualElement root, BattleDieView die, string source, BattleForceView force, BattleView battle,
-            Side viewer, TurnDraft draft, ActionOption option, Action<Action> edit)
+            PlayerView view, TurnDraft draft, ActionOption option, Action<Action> edit)
         {
-            var button = new BattleDieButton(die, source, battle, () => edit?.Invoke(() => draft.Toggle(die.Id)));
+            var viewer = view.You;
+            var tooltip = BattleRollText.Describe(die, source, battle);
+            // UI-245: a combat card's choice of this die is made on the die itself.
+            var button = new BattleDieButton(die, source, battle, () => edit?.Invoke(() =>
+            {
+                if (BattleObjectChoices.Offered(view, die.Id))
+                    BattleObjectChoices.Choose(view, draft, die.Id);
+                else
+                    draft.Toggle(die.Id);
+            }));
             if (draft == null) button.userData = null;
             root.Add(button);
             refresh.Add(() =>
             {
+                var target = draft != null && BattleObjectChoices.Offered(view, die.Id);
+                var targetChosen = target && draft.Kind == CommandKind.ChooseEffect && draft.Payload.Ids.Contains(die.Id);
                 var selectable = draft?.Kind == CommandKind.RerollBattle && force.Side == viewer && option?.Enabled == true && option.EligibleIds.Contains(die.Id);
                 var chosen = selectable && draft.Payload.Ids.Contains(die.Id);
-                button.SetEnabled(selectable && (chosen || draft.Payload.Ids.Count < option.Maximum));
-                button.EnableInClassList("selected", chosen || force.OwnRerollSelection.Contains(die.Id));
+                button.SetEnabled(selectable && (chosen || draft.Payload.Ids.Count < option.Maximum) ||
+                    target && (targetChosen || BattleObjectChoices.CanChoose(view, draft, die.Id)));
+                button.EnableInClassList("selected", chosen || targetChosen || force.OwnRerollSelection.Contains(die.Id));
+                ChoiceGlow.Apply(button, target && !targetChosen);
+                button.tooltip = target ? BattleObjectChoices.Detail(view, die.Id) + "\n" + tooltip : tooltip;
             });
+        }
+
+        // UI-246: Heroic Death cancels the opponent's hits on their own indicator, one pip per hit it may cancel; the
+        // chosen amount fills from the left. Keep hits (zero) stays a button with Keep all.
+        private void HitCancels(VisualElement heading, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
+        {
+            if (draft == null || edit == null || force.Side == view.You)
+                return;
+            var amounts = BattleObjectChoices.HitAmounts(view);
+            if (amounts.Count == 0)
+                return;
+            var row = BoardScreen.Row("battle-hit-cancels");
+            row.name = "battle-hit-cancels";
+            foreach (var (id, amount) in amounts)
+            {
+                var pip = BattleChoicePip.Create("battle-hit-cancel-" + amount, "●", () => edit(() => BattleObjectChoices.Choose(view, draft, id)));
+                row.Add(pip);
+                headingRefresh.Add(() => BattleChoicePip.Show(pip, BattleObjectChoices.CanChoose(view, draft, id),
+                    BattleObjectChoices.ChosenHits(view, draft) >= amount, BattleObjectChoices.Detail(view, id)));
+            }
+            heading.Add(row);
         }
 
         private static List<RollPage> Pages(BattleForceView force, BattleView battle)
@@ -80,6 +118,8 @@ namespace Wotr.Client
 
         public void Refresh()
         {
+            foreach (var update in headingRefresh)
+                update();
             foreach (var update in refresh)
                 update();
         }

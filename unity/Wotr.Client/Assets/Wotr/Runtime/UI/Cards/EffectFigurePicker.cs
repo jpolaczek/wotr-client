@@ -15,7 +15,8 @@ namespace Wotr.Client
 
         public EffectFigurePicker(VisualElement root, PlayerView view, ActionOption option, TurnDraft draft, Action<Action> edit)
         {
-            var figures = option.EffectChoices.Where(c => (c.SelectionGroup.Length == 0 || c.SelectionGroup == "Sacrifice" || view.Decision?.Presentation == "LeaderOrCompanion") &&
+            var figures = option.EffectChoices.Where(c => !BattleObjectChoices.Offered(view, c.Id) &&
+                (c.SelectionGroup.Length == 0 || c.SelectionGroup == "Sacrifice" || view.Decision?.Presentation == "LeaderOrCompanion") &&
                 (view.Units.Any(u => u.Id == c.Id) || view.Characters.Any(u => u.Id == c.Id))).ToList();
             if (figures.Count < 6)
                 return;

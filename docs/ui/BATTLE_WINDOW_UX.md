@@ -348,3 +348,30 @@ moved keeps the player's place, as before.
 A battle at a town, city or stronghold shows its nation's picture (`<kind>-<nation>-<1|2>`, the region's current
 nation, so Fate and the White Hand count); a missing picture falls back to the side's UI-206 picture. Open land and
 fortifications keep their UI-206 pictures. Set and generation: [graphicalassets/battles](../../graphicalassets/battles/README.md#nation-set--ui-226-2026-10-17).
+
+
+## Combat-card targets on the battle's own objects — UI-245 (2026-10-17)
+
+A combat card's choice whose id is a battle die or a figure in the battle is made on that object in the Battle
+window (`BattleObjectChoices`): Andúril's and Mighty Attack's misses on their dice in the dice strip, Mighty
+Attack's paying Companion, Black Breath's, Fateful Strike's, Words of Power's and Blade of Westernesse's figures on
+the force column's portraits or figure stacks. A target wears the shared `ChoiceGlow` and pulses; its tooltip starts
+with the choice's title and detail (the cost, e.g. the forfeited Leadership). A single target sends with its click;
+an adjustable set (Aragorn's two misses, Mighty Attack's Companion and miss) keeps its one confirmation. Identical
+figures of one nation and kind are equivalent, so a stack's click takes its next eligible figure. An exclusive
+outcome without an object — Keep misses, Keep Minions — keeps its button, and the list no longer repeats the dice
+and figures. Test: `BattleObjectChoicesTests`.
+
+## Leadership points and Heroic Death on their objects — UI-246 (2026-10-17)
+
+Cruel as Death, They Are Terrible and Dread and Despair (`NazgulLeadership`) show each offered Leadership point as a
+gilt pip (`BattleChoicePip`, ◆) on the figure that forfeits it — the choice's `SourceId`: the Witch-king's points on
+his portrait, a Nazgûl's on its figure stack. Point ids, the printed cost and the group limits stay the server's: a
+fixed cost closes the other pips once it is complete, a variable cost accepts any positive set, a click on a chosen
+pip takes it back so the source can change before the one confirmation, and spent Leadership offers no pip. Heroic
+Death (`SacrificeAndHits`) takes the sacrificed Leader or Companion on its portrait or stack (UI-245) and the
+cancelled hits as pips (●) on the opponent's roll heading beside its hit count; an amount opens only after a figure
+that can cancel it is chosen, the chosen amount fills from the left, and a smaller pip replaces a larger one. Keep
+hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons; the confirmation sends the figure
+and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports) and never move the figures. Test:
+`BattleObjectChoicesTests`.
