@@ -147,9 +147,12 @@ namespace Wotr.Client
                 return;
             if (!glide)
                 marker.RemoveFromClassList(GlidingClass);
-            marker.style.left = cell.x;
+            // An absolute marker counts from inside the lane's border (UI-231: the Mordor band has one); a cell's layout
+            // counts from outside it.
+            var border = lane.resolvedStyle.borderLeftWidth;
+            marker.style.left = cell.x - border;
             marker.style.width = cell.width;
-            overflow.style.left = cell.xMax - OverflowWidth;
+            overflow.style.left = cell.xMax - border - OverflowWidth;
             if (!marker.ClassListContains(GlidingClass))
                 marker.schedule.Execute(() => marker.AddToClassList(GlidingClass));
         }
