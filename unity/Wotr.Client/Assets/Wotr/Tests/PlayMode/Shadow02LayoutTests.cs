@@ -61,7 +61,12 @@ namespace Wotr.PlayTests
                             }
                             if (mode is "dread" or "terrible")
                                 foreach (var id in view.Options[0].EligibleIds.Take(mode == "dread" ? 10 : 1))
-                                    CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-" + id));
+                                {
+                                    // UI-246: a point of a figure in the battle is a pip on that figure.
+                                    CardNetworkTests.Click(MatchTestRoom.Choice(client, "effect-choice-" + id));
+                                    for (var frame = 0; frame < 2; frame++)
+                                        yield return null;
+                                }
                             for (var frame = 0; frame < 5; frame++)
                                 yield return null;
                             FellowshipLayoutTests.Check(client.Board);

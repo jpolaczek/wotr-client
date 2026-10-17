@@ -185,9 +185,14 @@ namespace Wotr.PlayTests
             var tray = client.Board.Tray;
             if (view.Battle != null)
             {
+                // UI-246: a Leadership point is clicked on the figure that has it (its choice's source).
+                var source = view.Options.FirstOrDefault(o => o.Kind == CommandKind.ChooseEffect)?.EffectChoices
+                    .FirstOrDefault(c => c.Id == id && id.Contains(":leadership:"))?.SourceId;
+                if (!string.IsNullOrEmpty(source))
+                    id = source;
                 var unit = view.Units.FirstOrDefault(u => u.Id == id);
                 var hits = id.Contains(".hits.") ? id.Substring(id.LastIndexOf('.') + 1) : "";
-                return tray.Q<Button>("battle-die-" + id) ?? tray.Q<Button>("battle-point-" + id) ??
+                return tray.Q<Button>("battle-die-" + id) ??
                     (hits.Length > 0 ? tray.Q<Button>("battle-hit-cancel-" + hits) : null) ?? tray.Q("portrait-" + id) ??
                     (unit == null ? null : tray.Q("battle-figure-" + unit.Nation + "-" + unit.Kind));
             }

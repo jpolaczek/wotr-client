@@ -245,3 +245,6 @@ When a card's region holds two eligible forces — Dreadful Spells' field army a
 the region panel glows and its header chooses it (`RegionForceChoices`); the console keeps the same two named
 alternatives, so the region alone never collapses them. A region with one eligible force is chosen by the region
 click. Test: `RegionForceChoicesTests`.
+
+UI-246 revision (2026-10-17): Leadership points are taken on their source figure or portrait (a badge counts them) and
+Heroic Death's amounts are full-size "−1/−2/−3" buttons; see BATTLE_WINDOW_UX.

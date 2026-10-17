@@ -78,8 +78,8 @@ namespace Wotr.Client
             });
         }
 
-        // UI-246: Heroic Death cancels the opponent's hits on their own indicator, one pip per hit it may cancel; the
-        // chosen amount fills from the left. Keep hits (zero) stays a button with Keep all.
+        // UI-246: Heroic Death cancels the opponent's hits on their own indicator: one button per amount it may cancel
+        // (−1, −2, …); the chosen amount is selected. Keep hits (zero) stays a button with Keep all.
         private void HitCancels(VisualElement heading, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             if (draft == null || edit == null || force.Side == view.You)
@@ -91,10 +91,10 @@ namespace Wotr.Client
             row.name = "battle-hit-cancels";
             foreach (var (id, amount) in amounts)
             {
-                var pip = BattleChoicePip.Create("battle-hit-cancel-" + amount, "●", () => edit(() => BattleObjectChoices.Choose(view, draft, id)));
+                var pip = BattleChoicePip.Create("battle-hit-cancel-" + amount, "−" + amount, () => edit(() => BattleObjectChoices.Choose(view, draft, id)));
                 row.Add(pip);
                 headingRefresh.Add(() => BattleChoicePip.Show(pip, BattleObjectChoices.CanChoose(view, draft, id),
-                    BattleObjectChoices.ChosenHits(view, draft) >= amount, BattleObjectChoices.Detail(view, id)));
+                    BattleObjectChoices.ChosenHits(view, draft) == amount, BattleObjectChoices.Detail(view, id)));
             }
             heading.Add(row);
         }

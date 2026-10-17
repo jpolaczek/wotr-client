@@ -166,29 +166,39 @@
     background-color: rgba(150, 110, 30, 0.75);
 }
 
-/* UI-246: Leadership points on their Nazgûl and Heroic Death's cancelled hits on the incoming hits — fixed gilt pips
-   that glow while they can be chosen and fill once chosen. */
+/* UI-246: Leadership points on their Nazgûl or the Witch-king — a badge counting the chosen points on the source, which
+   is the click target — and Heroic Death's cancelled hits as full-size buttons beside the opponent's hits. */
 #board-screen .battle-leadership-points {
     position: absolute;
-    left: -4px;
-    right: -4px;
-    top: -5px;
-    flex-direction: row;
-    justify-content: center;
-}
-#board-screen .battle-hit-cancels { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 4px; }
-#board-screen .battle-choice-pip {
-    width: 14px;
-    height: 14px;
-    min-height: 14px;
-    margin: 0 1px;
+    left: -6px;
+    right: -6px;
+    top: -9px;
+    height: 15px;
+    margin: 0;
     padding: 0;
     border-width: 1px;
     border-radius: 7px;
     border-color: rgb(196, 160, 90);
     background-color: rgba(30, 24, 16, 0.92);
     color: rgb(230, 200, 130);
-    font-size: 9px;
+    font-size: 10px;
+    -unity-text-align: middle-center;
+}
+#board-screen .battle-force .selected > .battle-leadership-points { background-color: rgb(214, 170, 70); color: rgb(30, 20, 10); }
+#board-screen .battle-hit-cancels { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 6px; }
+#board-screen .battle-choice-pip {
+    min-width: 40px;
+    height: 32px;
+    min-height: 32px;
+    margin: 0 2px;
+    padding: 0 6px;
+    border-width: 1px;
+    border-radius: 5px;
+    border-color: rgb(196, 160, 90);
+    background-color: rgba(30, 24, 16, 0.92);
+    color: rgb(230, 200, 130);
+    font-size: 14px;
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 #board-screen .battle-choice-pip:disabled { opacity: 0.45; }
@@ -197,16 +207,12 @@
     border-color: rgb(255, 214, 112);
     background-color: rgba(120, 88, 24, 0.9);
 }
-.motion-enabled #board-screen .choice-glow-pulse .battle-choice-pip.choice-glow {
-    border-color: rgba(255, 214, 112, 0.45);
-    scale: 1.15 1.15;
-}
+.motion-enabled #board-screen .choice-glow-pulse .battle-choice-pip.choice-glow { border-color: rgba(255, 214, 112, 0.45); }
 #board-screen .battle-choice-pip.selected {
     border-color: rgb(255, 236, 170);
     background-color: rgb(214, 170, 70);
     color: rgb(30, 20, 10);
 }
-#board-screen.short-viewport .battle-choice-pip { width: 11px; height: 11px; min-height: 11px; border-radius: 6px; font-size: 7px; }
 
 /* UI-251: a force section of the region panel that a card may choose (Dreadful Spells' field army or garrison). */
 #board-screen .region-hover .hover-force.choice-glow {

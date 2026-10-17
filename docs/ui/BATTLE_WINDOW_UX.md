@@ -398,3 +398,12 @@ mouse-down, acts on mouse-up inside it and is cancelled when the pointer leaves 
 capture. Its action rebuilds the Battle window, and a capture held by an element leaving the panel kept the next
 click (a die, a pip) from reaching its object. Tests: `CardPackNetworkTests` (Mighty Attack: Companion then miss),
 `CardPack02NetworkTests` (Heroic Death: figure then hits).
+
+## Leadership points on their figure; full-size hit buttons — UI-246 revision (2026-10-17)
+
+The final acceptance found the 14 px pips below the 32 px click target every control in the Battle window keeps.
+Leadership points are now taken on the figure or portrait that has them: its click takes its next point while one can
+be added and gives its points back once none can, and a badge on it counts them ("◆ 1/2"); the source glows while a
+point can be added and is marked once one is chosen. Heroic Death's amounts are 32 px buttons "−1", "−2", "−3" beside
+the opponent's hits; the chosen one is selected. Tests: `BattleObjectChoicesTests`, `Shadow01NetworkTests`,
+`Shadow01LayoutTests`, `Shadow02LayoutTests`, `CardPack02NetworkTests`.

@@ -74,8 +74,10 @@ namespace Wotr.PlayTests
                 await Until(() => board.Connection.text == "Live", token);
                 Assert.AreEqual(live, board.View.Revision, "A reconnect shows the current state.");
 
+                // CHAT-01: reading the board's chat is the observer's own traffic, not a player's.
                 Assert.IsEmpty(recorder.Sent.Where(route => route.Contains("/commands") || route.Contains("/preview") ||
-                    route.Contains("/receipts") || route.Contains("/seen") || route.StartsWith("/api/matches/" + match.Id)),
+                    route.Contains("/receipts") || route.Contains("/seen") ||
+                    route.StartsWith("/api/matches/" + match.Id) && !route.EndsWith("/chat")),
                     "Watching sends nothing that a player's board would.");
 
                 await ClickReady(client.Root, "open-board-menu", token);

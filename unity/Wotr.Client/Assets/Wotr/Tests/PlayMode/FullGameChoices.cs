@@ -78,8 +78,7 @@ namespace Wotr.PlayTests
             }
             if (kind == CommandKind.DeclareFellowship)
             {
-                client.Board.Fellowship.Open();
-                await room.Settle();
+                // UI-236: the declaration is the map figure's click; the panel is not needed for it.
                 inspect?.Invoke(client);
                 await FellowshipGestures.Declare(client);
             }

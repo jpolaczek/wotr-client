@@ -51,6 +51,27 @@ namespace Wotr.Client
                 .Select(c => c.Id).ToList();
         }
 
+        // UI-246: a source's click takes its next Leadership point while one can be added, and gives back all of its
+        // points once none can.
+        public static string NextPoint(PlayerView view, TurnDraft draft, IReadOnlyList<string> points) =>
+            points.FirstOrDefault(id => !Chosen(draft, id) && CanChoose(view, draft, id)) ?? "";
+
+        public static int ChosenPoints(TurnDraft draft, IEnumerable<string> points) => points.Count(id => Chosen(draft, id));
+
+        public static void ClickPoints(PlayerView view, TurnDraft draft, IReadOnlyList<string> points)
+        {
+            var next = NextPoint(view, draft, points);
+            if (next.Length > 0)
+            {
+                Choose(view, draft, next);
+                return;
+            }
+            foreach (var id in points.Where(id => Chosen(draft, id)).ToList())
+                Choose(view, draft, id);
+        }
+
+        private static bool Chosen(TurnDraft draft, string id) => draft.Kind == CommandKind.ChooseEffect && draft.Payload.Ids.Contains(id);
+
         // Heroic Death's amounts of cancelled hits above zero, smallest first.
         public static List<(string Id, int Amount)> HitAmounts(PlayerView view)
         {

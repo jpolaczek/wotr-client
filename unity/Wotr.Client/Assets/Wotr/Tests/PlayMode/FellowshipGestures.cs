@@ -60,8 +60,16 @@ namespace Wotr.PlayTests
                 map.FocusOn(new UnityEngine.Vector2(anchor[0], anchor[1]), map.Camera.Zoom);
                 await Task.Delay(120);
             }
+            // The last Hunt's window may still lie over the map; a player closes it to reach the figure.
+            if (!Reachable(map, marker.Root))
+            {
+                client.Board.Hunt.Close();
+                await Task.Delay(120);
+            }
             Assert.AreEqual(DisplayStyle.Flex, marker.Root.style.display.value, "The figure is in view to declare.");
-            Assert.IsTrue(Reachable(map, marker.Root), "The figure can be clicked: " + marker.Root.worldBound);
+            var picked = marker.Root.panel.Pick(marker.Root.worldBound.center);
+            Assert.IsTrue(Reachable(map, marker.Root), "The figure can be clicked: " + marker.Root.worldBound + " · on top: " +
+                picked?.name + " in " + picked?.parent?.name + " < " + picked?.parent?.parent?.name);
             CardNetworkTests.Click(marker.Root);
         }
 

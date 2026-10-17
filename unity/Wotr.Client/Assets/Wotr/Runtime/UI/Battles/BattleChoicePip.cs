@@ -3,9 +3,9 @@ using UnityEngine.UIElements;
 
 namespace Wotr.Client
 {
-    // UI-246: a small gilt pip for a choice that sits on a battle object without being one — a Leadership point
-    // beside its Nazgûl, a hit Heroic Death cancels on the incoming hits. It glows while it can be chosen and fills
-    // once chosen; its size and place never change.
+    // UI-246: a small gilt button for a choice that sits on a battle object without being one — an amount of hits
+    // Heroic Death cancels, on the incoming hits. It glows while it can be chosen and is selected once chosen; its
+    // size (a full 32 px click target) and place never change.
     public static class BattleChoicePip
     {
         public const string ClassName = "battle-choice-pip";

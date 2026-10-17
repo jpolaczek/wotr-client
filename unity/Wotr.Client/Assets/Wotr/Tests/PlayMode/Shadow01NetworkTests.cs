@@ -71,11 +71,13 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(room.Sh.Board.Tray.Query<Label>().ToList().Any(label => label.text.Contains("Forfeit 2 Leadership")));
                 Assert.IsNull(room.Fp.Board.View.Decision);
                 var revision = room.Sh.Board.View.Revision;
+                // UI-246: the Witch-king's points are taken on his own portrait, which counts them.
                 Click(room.Sh, "effect-choice-" + points[0].Id);
+                await room.Settle();
                 Assert.IsFalse(room.Sh.Board.Tray.Q<Button>("confirm-decision").enabledSelf);
-                // UI-246: the Witch-king's points are pips on his own portrait.
-                Assert.IsNotNull(room.Sh.Board.Tray.Q("portrait-base.character.witch-king").Q<Button>("battle-point-" + points[0].Id));
+                StringAssert.StartsWith("◆ 1/", room.Sh.Board.Tray.Q("portrait-base.character.witch-king").Q<Label>("battle-leadership-points").text);
                 Click(room.Sh, "effect-choice-" + points[1].Id);
+                await room.Settle();
                 var connected = room.Sh.Connected;
                 room.Sh.Connection.Reconnect();
                 await room.Until(() => room.Sh.Connected > connected);

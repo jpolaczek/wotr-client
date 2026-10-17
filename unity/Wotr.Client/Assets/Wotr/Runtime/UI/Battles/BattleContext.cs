@@ -65,12 +65,10 @@ namespace Wotr.Client
             {
                 var portrait = new PortraitMedallion(character, CharacterLibrary.Name(character.DefinitionId),
                     CharacterLibrary.ShortName(view, character.Id), force.CancelledAbilities.Contains(character.Id));
-                // One click handler per portrait (a manipulator that takes the press keeps it from any other); the
-                // reaction's glow is refreshed after the choice target's.
-                Action reaction = null;
-                ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => reaction?.Invoke());
-                reaction = ReactionSource(portrait, character, view, draft);
-                Points(portrait, view, draft, edit, new[] { character.Id });
+                // One click handler per portrait; a reaction or Leadership points refresh after the choice target.
+                Action other = null;
+                ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => other?.Invoke());
+                other = ReactionSource(portrait, character, view, draft) ?? Points(portrait, view, draft, edit, new[] { character.Id });
                 portraits.Add(portrait);
             }
             column.Add(portraits);
@@ -96,9 +94,10 @@ namespace Wotr.Client
                 {
                     var figure = Figure(kind.First(), kind.Count());
                     var stack = kind.ToList();
+                    Action points = null;
                     ChoiceTarget(figure, view, draft, edit, () => BattleObjectChoices.NextInStack(view, draft, stack),
-                        () => stack.Any(u => draft.Payload.Ids.Contains(u.Id)));
-                    Points(figure, view, draft, edit, stack.Select(u => u.Id).ToList());
+                        () => stack.Any(u => draft.Payload.Ids.Contains(u.Id)), () => points?.Invoke());
+                    points = Points(figure, view, draft, edit, stack.Select(u => u.Id).ToList());
                     group.Add(figure);
                 }
                 row.Add(group);
@@ -151,25 +150,32 @@ namespace Wotr.Client
             return () => complete(() => BattleReactions.Choose(draft, reaction.Id));
         }
 
-        // UI-246: the Leadership points a Nazgûl card may forfeit stand on their figure or portrait, one pip each, so
-        // the Witch-king's points stay his own and the player sees which figures pay.
-        private void Points(VisualElement element, PlayerView view, TurnDraft draft, Action<Action> edit, ICollection<string> figures)
+        // UI-246: the Leadership points a Nazgûl card may forfeit belong to the figure or portrait that has them, so the
+        // Witch-king's points stay his own and the player sees which figures pay. A click takes the source's next point
+        // while one can be added, and gives its points back once none can; a badge counts them. Returns that click.
+        private Action Points(VisualElement element, PlayerView view, TurnDraft draft, Action<Action> edit, ICollection<string> figures)
         {
             if (draft == null || edit == null)
-                return;
+                return null;
             var points = BattleObjectChoices.PointsOf(view, figures);
             if (points.Count == 0)
-                return;
-            var row = new VisualElement { name = "battle-leadership-points", pickingMode = PickingMode.Ignore };
-            row.AddToClassList("battle-leadership-points");
-            foreach (var id in points)
+                return null;
+            var badge = new Label { name = "battle-leadership-points", pickingMode = PickingMode.Ignore, enableRichText = false };
+            badge.AddToClassList("battle-leadership-points");
+            element.Add(badge);
+            var tooltip = element.tooltip;
+            refresh.Add(() =>
             {
-                var pip = BattleChoicePip.Create("battle-point-" + id, "◆", () => edit(() => BattleObjectChoices.Choose(view, draft, id)));
-                row.Add(pip);
-                refresh.Add(() => BattleChoicePip.Show(pip, BattleObjectChoices.CanChoose(view, draft, id),
-                    draft.Kind == CommandKind.ChooseEffect && draft.Payload.Ids.Contains(id), BattleObjectChoices.Detail(view, id)));
-            }
-            element.Add(row);
+                var chosen = BattleObjectChoices.ChosenPoints(draft, points);
+                var more = BattleObjectChoices.NextPoint(view, draft, points).Length > 0;
+                badge.text = "◆ " + chosen + "/" + points.Count;
+                element.pickingMode = PickingMode.Position;
+                ChoiceGlow.Apply(element, more);
+                element.EnableInClassList("selected", chosen > 0);
+                element.tooltip = (more ? "Click to forfeit one Leadership point" : "Click to take these points back") +
+                    " · " + chosen + " of " + points.Count + " chosen\n" + BattleObjectChoices.Detail(view, points[0]) + "\n" + tooltip;
+            });
+            return () => edit(() => BattleObjectChoices.ClickPoints(view, draft, points));
         }
 
         private static VisualElement Figure(UnitView unit, int count)

@@ -66,22 +66,25 @@ namespace Wotr.EditorTests
             var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { });
             context.Refresh();
             var witchKing = root.Q("portrait-witch-king");
-            Assert.AreEqual(2, witchKing.Query<Button>(className: BattleChoicePip.ClassName).ToList().Count, "One pip per point on the portrait.");
-            Assert.IsTrue(witchKing.Q<Button>("battle-point-witch-king:leadership:1").ClassListContains("selected"));
-            Assert.IsFalse(witchKing.Q<Button>("battle-point-witch-king:leadership:2").enabledSelf, "The full cost closes the other points.");
+            Assert.AreEqual("◆ 1/2", witchKing.Q<Label>("battle-leadership-points").text, "The portrait counts its own points.");
+            Assert.IsTrue(witchKing.ClassListContains("selected"));
+            Assert.IsFalse(witchKing.ClassListContains(ChoiceGlow.ClassName), "The full cost leaves nothing to add.");
             var stack = root.Q("battle-figure-sauron-Nazgul");
-            Assert.AreEqual(1, stack.Query<Button>(className: BattleChoicePip.ClassName).ToList().Count, "Only the offered point of the stack shows.");
+            Assert.AreEqual("◆ 1/1", stack.Q<Label>("battle-leadership-points").text, "Only the offered point of the stack counts.");
+            Assert.IsEmpty(root.Query<Button>(className: BattleChoicePip.ClassName).ToList(), "No small point buttons.");
 
-            BattleObjectChoices.Choose(view, draft, "nazgul-a:leadership:1");
+            var stackPoints = BattleObjectChoices.PointsOf(view, new[] { "nazgul-a", "nazgul-b" });
+            BattleObjectChoices.ClickPoints(view, draft, stackPoints);
+            CollectionAssert.AreEqual(new[] { "witch-king:leadership:1" }, draft.Payload.Ids, "A source that can add nothing gives its points back.");
             context.Refresh();
-            Assert.IsTrue(witchKing.Q<Button>("battle-point-witch-king:leadership:2").ClassListContains(ChoiceGlow.ClassName),
-                "Removing a point opens the others again.");
-            BattleObjectChoices.Choose(view, draft, "witch-king:leadership:2");
-            CollectionAssert.AreEquivalent(new[] { "witch-king:leadership:1", "witch-king:leadership:2" }, draft.Payload.Ids);
+            Assert.IsTrue(witchKing.ClassListContains(ChoiceGlow.ClassName), "Taking a point back opens the others again.");
+            BattleObjectChoices.ClickPoints(view, draft, BattleObjectChoices.PointsOf(view, new[] { "witch-king" }));
+            CollectionAssert.AreEquivalent(new[] { "witch-king:leadership:1", "witch-king:leadership:2" }, draft.Payload.Ids,
+                "The Witch-king's click takes his next point.");
             Assert.IsTrue(CardDraft.Ready(draft, view.Options[0]));
         }
 
-        // UI-246: a variable cost (They Are Terrible) accepts any positive set; no points means no pips.
+        // UI-246: a variable cost (They Are Terrible) accepts any positive set; no points means no badge.
         [Test]
         public void AVariableLeadershipCostAcceptsAnyPositiveSetAndExhaustedPointsShowNothing()
         {
@@ -129,7 +132,9 @@ namespace Wotr.EditorTests
             context.Refresh();
             CollectionAssert.AreEquivalent(new[] { "gimli", "heroic-death.hits.2" }, draft.Payload.Ids);
             Assert.AreEqual(2, BattleObjectChoices.ChosenHits(view, draft));
-            Assert.IsTrue(pips.Q<Button>("battle-hit-cancel-1").ClassListContains("selected"), "The chosen amount fills from the left.");
+            Assert.IsTrue(pips.Q<Button>("battle-hit-cancel-2").ClassListContains("selected"), "The chosen amount is selected.");
+            Assert.IsFalse(pips.Q<Button>("battle-hit-cancel-1").ClassListContains("selected"));
+            Assert.AreEqual("−2", pips.Q<Button>("battle-hit-cancel-2").text);
             Assert.IsTrue(CardDraft.Ready(draft, view.Options[0]));
 
             BattleObjectChoices.Choose(view, draft, "heroic-death.hits.1");

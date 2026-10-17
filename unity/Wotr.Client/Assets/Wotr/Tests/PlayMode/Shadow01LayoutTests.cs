@@ -30,10 +30,15 @@ namespace Wotr.PlayTests
                                 yield return null;
                             if (combat)
                             {
+                                // UI-246: a point of a figure in the battle is a pip on that figure; any other stays listed.
                                 foreach (var choice in view.Options[0].EffectChoices.TakeLast(2))
-                                    CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-" + choice.Id));
-                                Assert.AreEqual(view.Options[0].EffectChoices.Count,
-                                    client.Board.Tray.Q<VisualElement>("effect-group-Leadership").Query<Button>().ToList().Count);
+                                {
+                                    CardNetworkTests.Click(MatchTestRoom.Choice(client, "effect-choice-" + choice.Id));
+                                    for (var frame = 0; frame < 3; frame++)
+                                        yield return null;
+                                }
+                                foreach (var choice in view.Options[0].EffectChoices)
+                                    Assert.IsNotNull(MatchTestRoom.Choice(client, "effect-choice-" + choice.Id), "Every point has its place: " + choice.Id);
                             }
                             else
                             {

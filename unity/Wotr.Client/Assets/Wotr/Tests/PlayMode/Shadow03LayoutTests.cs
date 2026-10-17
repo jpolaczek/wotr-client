@@ -53,13 +53,14 @@ namespace Wotr.PlayTests
                                 Assert.AreSame(client.Board.Hunt.DecisionHost, client.Board.Tray.parent);
                                 foreach (var choice in entry.Value.Options.Single(o => o.Kind == CommandKind.ChooseEffect).EligibleIds.Take(3))
                                 {
-                                    var portrait = client.Board.Tray.Q<Button>("effect-choice-" + choice);
+                                    // UI-249: the Companions are the Hunt panel's roster portraits.
+                                    var portrait = client.Board.Hunt.Guides.Root.Q<Button>("fellowship-portrait-" + choice);
                                     Assert.IsNotNull(portrait);
                                     Assert.IsTrue(portrait.enabledInHierarchy, choice);
                                     PointerGestureEvents.ClickAt(portrait);
                                     for (var frame = 0; frame < 3; frame++)
                                         yield return null;
-                                    Assert.IsTrue(client.Board.Tray.Q<Button>("effect-choice-" + choice)
+                                    Assert.IsTrue(client.Board.Hunt.Guides.Root.Q<Button>("fellowship-portrait-" + choice)
                                         .ClassListContains("selected"), choice);
                                 }
                                 Assert.IsTrue(client.Board.Map.DraftOverlay.PlannedRegions.Contains("hollin"));
