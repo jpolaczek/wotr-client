@@ -81,6 +81,11 @@
     background-color: rgba(46, 36, 16, 0.88);
 }
 .board-left-tabs .edge-tab.selected { border-color: rgb(196, 70, 52); }
+/* UI-261: the icon is placed from the tab's inner edge, which moves with the border (1 px, 3 px on an available tab),
+   while the medallion art keeps its centre (47, 22) on the tab; each state places the 24 px icon on that centre. */
+.board-left-tabs .edge-tab .edge-tab-icon { left: 34px; top: 9px; }
+.board-left-tabs .edge-tab.legal-target .edge-tab-icon,
+.board-left-tabs .edge-tab.die-option .edge-tab-icon { left: 32px; top: 7px; }
 .edge-tab-icon {
     position: absolute;
     left: 35px;

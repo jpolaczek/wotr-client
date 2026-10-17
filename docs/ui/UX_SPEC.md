@@ -1235,3 +1235,10 @@ region), the battle window for losses, the Hunt panel for its damage, the hand f
 the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md),
 [CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
 `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
+
+## Rail icons stay on their medallions — UI-261 (2026-10-18)
+
+After choosing a die the available left tabs' icons jumped off their medallions: the icon is placed from the tab's
+inner edge, which moves with the border (1 px at rest, 3 px when available, UI-223), while the medallion art keeps its
+centre (47, 22). Each state now places the 24 px icon on that centre (`LeftRail.uss`). Test:
+`BoardInteractionTests.LeftRailIconsStayOnTheirMedallionsWhenATabIsAvailable` (within 0.75 px in both states).

@@ -629,6 +629,31 @@ namespace Wotr.PlayTests
             CollectionAssert.AreEquivalent(candidates.Take(2), test.Backend.Last.Payload.Ids);
         }
 
+        // UI-261: a left-rail icon sits on its medallion's centre (47, 22) both at rest and when the tab is available
+        // (its border grows from 1 to 3 px); before, the available tab's icon jumped 3 px right and down.
+        [UnityTest]
+        public IEnumerator LeftRailIconsStayOnTheirMedallionsWhenATabIsAvailable()
+        {
+            using var test = new Harness();
+            yield return Settle();
+            var tabs = test.Board.Root.Query<Button>(className: "edge-tab").ToList()
+                .Where(tab => tab.Q(className: "edge-tab-icon") != null && tab.resolvedStyle.display == DisplayStyle.Flex).ToList();
+            Assert.IsNotEmpty(tabs);
+            foreach (var available in new[] { false, true })
+            {
+                foreach (var tab in tabs)
+                    tab.EnableInClassList("die-option", available);
+                yield return Settle();
+                LayoutTests.Save(test.Viewport, available ? "ui261-rail-available.png" : "ui261-rail-rest.png");
+                foreach (var tab in tabs)
+                {
+                    var icon = tab.Q(className: "edge-tab-icon").worldBound.center - tab.worldBound.position;
+                    Assert.AreEqual(47f, icon.x, 0.75f, tab.name + (available ? " available" : " at rest") + " icon x");
+                    Assert.AreEqual(22f, icon.y, 0.75f, tab.name + (available ? " available" : " at rest") + " icon y");
+                }
+            }
+        }
+
         // UI-259: the board's chat field shows what is typed — light text on a dark field with a clear contrast.
         [UnityTest]
         public IEnumerator ChatInputShowsTypedTextWithReadableContrast()
