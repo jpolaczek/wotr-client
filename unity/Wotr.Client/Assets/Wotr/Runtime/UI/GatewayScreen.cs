@@ -38,7 +38,6 @@ namespace Wotr.Client
             Root.Add(card);
             var heading = BoardScreen.Row();
             heading.Add(BoardScreen.Title("WAR OF THE RING"));
-            heading.Add(InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke()));
             card.Add(heading);
             card.Add(new Label("A table for two. Return whenever you are ready."));
             card.Add(login);
@@ -53,10 +52,13 @@ namespace Wotr.Client
             forgot = BoardScreen.Button("Forgot password?", () => OpenAccountPage(ForgotPage));
             forgot.name = "auth-forgot";
             forgot.tooltip = "Opens the game's site in your browser";
-            var actions = BoardScreen.Row();
+            // Login, Create account, Forgot password and Settings stand one under another, centred.
+            var actions = new VisualElement { name = "auth-actions" };
+            actions.AddToClassList("auth-actions");
             actions.Add(submit);
             actions.Add(create);
             actions.Add(forgot);
+            actions.Add(InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke()));
             card.Add(actions);
             var hint = new Label("Create your account in the browser, then come back and log in.") { name = "auth-browser-hint" };
             hint.AddToClassList("auth-hint");

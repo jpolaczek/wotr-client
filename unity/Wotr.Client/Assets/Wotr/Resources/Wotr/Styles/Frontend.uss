@@ -399,3 +399,8 @@
 .main-menu .replay-footer-action { width: 120px; height: 36px; min-height: 36px; margin-left: 8px; }
 .main-menu .replay-status { flex-shrink: 0; height: 22px; font-size: 14px; color: rgb(214, 198, 160); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .frontend .auth-replays { margin-top: 10px; align-self: center; width: 160px; }
+
+/* The gateway's Login, Create account, Forgot password and Settings stand one under another, centred and equally wide. */
+.frontend .login-card .auth-actions { flex-direction: column; align-items: center; flex-shrink: 0; margin-top: 6px; }
+.frontend .login-card .auth-actions .action { flex-grow: 0; width: 260px; margin: 0 0 8px 0; }
+.frontend .login-card .auth-hint { -unity-text-align: middle-center; }
