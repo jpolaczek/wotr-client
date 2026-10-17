@@ -23,7 +23,7 @@ namespace Wotr.EditorTests
             Assert.IsFalse(status.Summary.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
             status.OfferHide(false, "");
             Assert.IsFalse(status.PanelRing.focusable);
-            Assert.AreEqual("", status.Ring.tooltip);
+            Assert.AreEqual("", status.Ring.tooltip, "Before any projection the icon has nothing to describe.");
         }
     }
 }

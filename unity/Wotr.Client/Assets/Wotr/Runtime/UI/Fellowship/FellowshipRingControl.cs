@@ -11,6 +11,9 @@ namespace Wotr.Client
         public const string ClassName = "fellowship-ring-button";
         public Button Root { get; }
         public bool Offered { get; private set; }
+        // While it does not hide, the icon still explains itself: the Fellowship's condition.
+        private string description = "";
+        private string offer = "";
 
         public FellowshipRingControl(string name, Image icon, Action hide, Action host)
         {
@@ -32,10 +35,19 @@ namespace Wotr.Client
         public void Offer(bool offered, string tooltip)
         {
             Offered = offered;
+            offer = tooltip;
             Root.focusable = offered;
             Root.EnableInClassList(FellowshipStatus.HideClass, offered);
             ChoiceGlow.Apply(Root, offered);
-            Root.tooltip = offered ? tooltip : "";
+            ShowTooltip();
         }
+
+        public void Describe(string text)
+        {
+            description = text;
+            ShowTooltip();
+        }
+
+        private void ShowTooltip() => Root.tooltip = Offered ? offer : description;
     }
 }

@@ -104,6 +104,8 @@ namespace Wotr.Client
             state.text = hidden;
             condition.sprite = FellowshipArtwork.Sprite(travel.Symbol);
             state.tooltip = fellowship.Hidden ? "The Fellowship is hidden." : "The Fellowship is revealed. Hide before moving again.";
+            plaqueRing.Describe(state.tooltip);
+            panelRing.Describe(state.tooltip);
             var regionName = data.Regions.TryGetValue(fellowship.RegionId, out var region) ? region.Name : fellowship.RegionId;
             location.text = fellowship.MordorStep.HasValue ? "Mordor" : regionName;
             summaryLocation.text = location.text;
