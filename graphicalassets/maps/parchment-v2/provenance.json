@@ -1,8 +1,0 @@
-{
-  "task": "MAP-08",
-  "mode": "built-in imagegen",
-  "file": "mordor-paper.png",
-  "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-022294d9-983e-42fb-8e3a-f500728d46a7.png",
-  "input": "../parchment-v1/aged-paper.png",
-  "prompt": "mordor-paper.prompt.txt"
-}

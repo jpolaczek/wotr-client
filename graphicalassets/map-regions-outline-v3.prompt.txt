@@ -1,9 +1,0 @@
-Edit the original board image into a precise, undecorated region-outline map. Treat this as tracing the photograph, not designing a new map.
-
-Retain ONLY the real coastline and the actual game-region boundary centerlines. Copy their paths, junctions, positions and proportions from the original image with maximum fidelity. Each of the source's 105 named game territories must remain exactly one closed cell. Use the names to identify the territories while tracing, but erase all names in the result. Do not add territories where the source has mountains or rivers. Do not merge or invent territories.
-
-CRITICAL: Each shared boundary must be ONE SINGLE BLACK STROKE. The blue rivers are NOT separate strips or polygons: where a river coincides with a region boundary, collapse it to a SINGLE centerline with white land touching both sides. Erase river branches inside a region. Never draw parallel riverbanks or double border lines. Draw the coastline once only, without a narrow fringe.
-
-Flat opaque pure white region interiors, black boundary lines of uniform fine thickness, truly transparent ocean and exterior. Remove every other printed element: trees, mountains, terrain lines, textures, colors, text, icons, settlements, cards, portraits, circular tracks, border frame and title. The final image must contain no landscape illustration or decoration whatsoever, just the accurately traced land regions.
-
-Preserve the exact source geography and north-up orientation without stretching, smoothing away geographic features or redistributing territory sizes. Include all original playable land, from the original northern map edge to Umbar/Far Harad and from the original coast to the eastern map edge. Only remove the board's non-geographic panels and outer frame. Large high-resolution technical PNG, closed region contours suitable for later checking and masking.

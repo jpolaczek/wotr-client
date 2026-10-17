@@ -1,3 +1,0 @@
-Use case: precise-object-edit
-Input image: exact edit target, a small crop of a black-and-white pencil map.
-Remove ALL trees and forest marks from this image, including both large clusters and the two tiny isolated trees at the upper left. Restore the same plain clean white paper everywhere. This crop should become empty white paper, with no remaining dark marks, no shadows of the removed trees and no new objects. Preserve the exact square framing and overall white background tone. No rivers, terrain, text, color or decorations.

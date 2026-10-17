@@ -1,8 +1,0 @@
-Use case: precise-object-edit
-Image 1 is the 768 x 768 pencil map crop to edit. Image 2 is the same crop with a MAGENTA outline around the Moria region and a broad CYAN BAND showing exactly where the mountain passage must go.
-
-Change ONLY the area covered by that cyan band and a narrow margin around it. ERASE the mountain crests and dense hatching across the full width of that band, leaving a clearly visible white east-west valley/passage through the north-south ridge. The mountain chain must STOP at the band's north edge and RESTART at its south edge; no ridge, peak, slope hatching or wall may connect across the band. This is the essential change, not just a doorway placed in front of an uninterrupted mountain wall. Keep the north and south mountain groups naturally shaped where they meet the gap.
-
-At one rock face just inside the passage add one tiny simple dark arched cave entrance to subtly indicate Moria, with only two faint short approach strokes. No castle, gate complex, stonework, runes, letters, symbols or other architecture. Match the existing light graphite/charcoal line drawing. Preserve all surrounding mountains, the forest, every river, hills, exact crop framing, scale and positions outside this local passage. No changes to Lorien in this edit.
-
-Output the complete same crop, with no crop or zoom. Remove the magenta line and cyan guide entirely: no region outline or colored trace. Neutral black/gray pencil only on white paper, no text, no labels, no new terrain elsewhere.

@@ -1,42 +1,7 @@
 {
   "decision": "wotr-server D17",
-  "note": "Board scans and crops, an AI copy of the board and photos of other maps, used as references by the map tools under graphicalassets/maps (whose inputs.json keep their SHA-256), are kept outside git. Keep a local copy at the same path to rerun those tools.",
+  "note": "Photos of other maps, used as references by the parchment-v4 map composition (whose inputs.json keeps their SHA-256), are kept outside git. Keep a local copy at the same path to rerun those tools. The other reference crops served only the deleted map drafts (QUAL-20, 2026-10-17).",
   "files": [
-    {
-      "path": "graphicalassets/183b6c0d-2a7a-4f83-886d-bcf02deae2e3-d41d8cd98f00b204e9800998ecf8427e.png",
-      "sha256": "8c9fcd62772534cea94f7cf486e298e1e4916d0c23e5daa109366aa5dd06c427",
-      "what": "crop of the rulebook board diagram"
-    },
-    {
-      "path": "graphicalassets/1b3186f4-e987-4e55-9cbc-cd6c3ef70f12-d41d8cd98f00b204e9800998ecf8427e.png",
-      "sha256": "3b1eccc486b219f37ad9a6a281675a87aab50ebcafe26ffd2eff637f6761d54f",
-      "what": "crop of the rulebook board diagram"
-    },
-    {
-      "path": "graphicalassets/419846bd-51ae-4ee9-b561-4263da96fdb6-d41d8cd98f00b204e9800998ecf8427e.png",
-      "sha256": "5e402078faf7828e2fd718886de8e3447c10cfe6343bb6827dda572a3b3489e8",
-      "what": "crop of the rulebook board diagram"
-    },
-    {
-      "path": "graphicalassets/6e176ef3-b53c-4fdb-b991-118bab343263-d41d8cd98f00b204e9800998ecf8427e.png",
-      "sha256": "ac43030468058d0646378598769286709a446d32cab5bc02d02894a15b917fb6",
-      "what": "crop of the rulebook board diagram"
-    },
-    {
-      "path": "graphicalassets/8f2c4cfb-918d-48e0-9bd6-89001d71435f-d41d8cd98f00b204e9800998ecf8427e.png",
-      "sha256": "5a92c64486a06079a1911d28574e2de2281056ef8f61cc443ab4e49365427dd4",
-      "what": "crop of the rulebook board diagram"
-    },
-    {
-      "path": "graphicalassets/9fc3cce8-d868-459d-9415-4dba4e63f217-d41d8cd98f00b204e9800998ecf8427e.png",
-      "sha256": "5f8f3046af13e5c6090cb48210c27c823fab30992945b7d4856c70719515ff92",
-      "what": "crop of the rulebook board diagram"
-    },
-    {
-      "path": "graphicalassets/ChatGPT Image Oct 5, 2026, 03_39_03 PM.png",
-      "sha256": "26266a5c6b49f97838296d271b34c93aa660ec9acd01cf2a511159b00a7d7c03",
-      "what": "AI reproduction of the board"
-    },
     {
       "path": "graphicalassets/maps/718b9hBS4AL._AC_SL1000_.jpg",
       "sha256": "f483599a8b708f1d46a2a4ae67c00ed002db3d601093a08111e9cde2aa9a249f",
@@ -48,34 +13,9 @@
       "what": "product photo of a commercial Middle-earth poster (third party)"
     },
     {
-      "path": "graphicalassets/maps/pencil-v2/board-reference.png",
-      "sha256": "6143dcbfdcd95c9d552d339415baeb71c5e030beb0932ac013e1da6f068cbd9e",
-      "what": "atlas of board crops"
-    },
-    {
-      "path": "graphicalassets/maps/pencil-v3/fangorn-board.png",
-      "sha256": "34fdc082097f9c88005a73102de8b7642cbd91f60953dc24589273d09ff3015d",
-      "what": "crop of the board (Fangorn)"
-    },
-    {
       "path": "graphicalassets/maps/s-l1600.webp",
       "sha256": "f9587ad0389494779bd06b98237aa21ecc0262028d73aad00a1fba6cce2945e8",
       "what": "photo of a hand-drawn Middle-earth map (third party)"
-    },
-    {
-      "path": "graphicalassets/maps/terrain-v1/source-layout-reference.png",
-      "sha256": "0e1ed739cd59afd7f59dc20e1cf58dd5e900124a63028e0eaaab63510a1c1f5a",
-      "what": "crop of the board with outlines"
-    },
-    {
-      "path": "graphicalassets/mirkwood-source-2026-10-05-180801.png",
-      "sha256": "fae6182c90e69e4def7241bb4186571ea1dc6af67a9c9fae639a27eca353493a",
-      "what": "screenshot of the board (Mirkwood)"
-    },
-    {
-      "path": "graphicalassets/te5487pprwsh1.jpeg",
-      "sha256": "67b6490f319c257d01ab57ab46da7ef4035d1d8074f306bce702a1f3e3f60db4",
-      "what": "scan of the board (copy of the server reference)"
     }
   ]
 }
