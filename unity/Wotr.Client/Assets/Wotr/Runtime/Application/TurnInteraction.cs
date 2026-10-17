@@ -402,8 +402,9 @@ namespace Wotr.Client
                 return;
             if (draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore && CanChoose(draft.Kind.Value))
             {
+                // UI-248: the chosen Ring clicked again is taken back; no payment is chosen in its place.
                 if (id.Length == 0 || DraftOptions.For(view, draft).EligibleIds.Contains(id))
-                    Edit(() => draft.Change(p => p.RingId = id));
+                    Edit(() => draft.Change(p => p.RingId = p.RingId == id ? "" : id));
                 return;
             }
             if (CanChoose(CommandKind.UseRing))
@@ -632,6 +633,17 @@ namespace Wotr.Client
                 return;
             if (resources.Die(id))
                 return;
+            // UI-248: a payment's alternative die is chosen in the pool; a Will die for Palantír of Orthanc needs no Ring.
+            if (CostDice.Offered(view, draft).Contains(id))
+            {
+                Edit(() => draft.Change(p =>
+                {
+                    p.DieId = id;
+                    if (CostDice.DropsRing(view, draft, id))
+                        p.RingId = "";
+                }));
+                return;
+            }
             if (view.Decision.Kind == DecisionKind.Action && ActionDieContext.DirectIntent(draft) &&
                 draft.Payload.DieId.Length > 0 && draft.Payload.RulerTokenId.Length == 0 && draft.Payload.AbilityId.Length == 0 &&
                 view.Dice.Any(d => d.Id == id && d.Owner == view.You && d.Location == DieLocation.Available))

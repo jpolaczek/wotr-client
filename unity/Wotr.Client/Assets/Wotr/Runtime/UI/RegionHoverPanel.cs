@@ -22,6 +22,11 @@ namespace Wotr.Client
         public event Action<string> SettlementInspected;
         // UI-140: select or leave behind every figure of a force that can move (region, garrison).
         public event Action<string, bool> SelectAllRequested;
+        // UI-251: the card choice a force section makes now ("" when none), and its click.
+        public Func<Side, bool, string> ForceChoice { get; set; } = (_, _) => "";
+        public event Action<string> ForceChosen;
+        private readonly List<(VisualElement Force, VisualElement Header, Side Side, bool Garrison)> forceSections =
+            new List<(VisualElement, VisualElement, Side, bool)>();
         private readonly Dictionary<string, Button> figures = new Dictionary<string, Button>();
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
         // UI-187: a character's ability lines, after the line that names it and its state.
@@ -54,6 +59,18 @@ namespace Wotr.Client
         {
             Components.Apply(actions.Where(a => a.Region == Region), actionsEnabled);
             Root.EnableInClassList(NameOnlyClass, NameOnly);
+            RefreshForces();
+        }
+
+        // UI-251: a force the current card may choose glows and its header chooses it.
+        public void RefreshForces()
+        {
+            foreach (var force in forceSections)
+            {
+                var choice = ForceChoice(force.Side, force.Garrison);
+                ChoiceGlow.Apply(force.Force, choice.Length > 0);
+                force.Header.tooltip = choice.Length > 0 ? "Click to choose this force" : "";
+            }
         }
 
         public RegionHoverPanel()
@@ -94,6 +111,7 @@ namespace Wotr.Client
             descriptions.Clear();
             abilities.Clear();
             forceToggles.Clear();
+            forceSections.Clear();
             Root.Add(BoardScreen.Title(region.Name));
             Root.Add(new Label((region.Settlement ?? "Wilderness") + " · " +
                 (region.Nation == null ? "Neutral" : FigureGrid.Name(region.Nation)) + " · " +
@@ -139,7 +157,14 @@ namespace Wotr.Client
             var header = BoardScreen.Row("hover-force-header");
             header.Add(new Label((side == Side.FreePeoples ? "FP" : "SH") + (garrison ? " · Garrison" : " · Field")));
             header.Add(SelectAllToggle(side, garrison, units.Select(u => u.Id).Concat(characters.Select(c => c.Id)).ToArray()));
+            header.AddManipulator(new Clickable(() =>
+            {
+                var choice = ForceChoice(side, garrison);
+                if (choice.Length > 0)
+                    ForceChosen?.Invoke(choice);
+            }));
             force.Add(header);
+            forceSections.Add((force, header, side, garrison));
             var row = BoardScreen.Row("hover-unit-row");
             foreach (var nation in units.GroupBy(u => u.Nation))
             {

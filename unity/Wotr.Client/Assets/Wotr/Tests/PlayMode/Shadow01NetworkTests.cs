@@ -73,14 +73,15 @@ namespace Wotr.PlayTests
                 var revision = room.Sh.Board.View.Revision;
                 Click(room.Sh, "effect-choice-" + points[0].Id);
                 Assert.IsFalse(room.Sh.Board.Tray.Q<Button>("confirm-decision").enabledSelf);
-                Assert.AreEqual("WK ◆", room.Sh.Board.Tray.Q<Button>("effect-choice-" + points[0].Id).text);
+                // UI-246: the Witch-king's points are pips on his own portrait.
+                Assert.IsNotNull(room.Sh.Board.Tray.Q("portrait-base.character.witch-king").Q<Button>("battle-point-" + points[0].Id));
                 Click(room.Sh, "effect-choice-" + points[1].Id);
                 var connected = room.Sh.Connected;
                 room.Sh.Connection.Reconnect();
                 await room.Until(() => room.Sh.Connected > connected);
                 await room.Settle();
                 Assert.AreEqual(revision, room.Sh.Board.View.Revision);
-                Assert.IsTrue(room.Sh.Board.Tray.Q<Button>("effect-choice-" + points[1].Id).ClassListContains("selected"));
+                Assert.IsTrue(Choice(room.Sh, "effect-choice-" + points[1].Id).ClassListContains("selected"));
                 await room.Confirm(room.Sh);
                 Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision);
                 Assert.AreEqual(3, room.Fp.Board.View.Battle.Defender.Leadership);

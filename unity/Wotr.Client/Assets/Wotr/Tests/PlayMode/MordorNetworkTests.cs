@@ -96,9 +96,12 @@ namespace Wotr.PlayTests
             Assert.AreEqual("FellowshipCompanions", board.View.Decision.Presentation);
             Assert.AreSame(board.Hunt.DecisionHost, board.Tray.parent);
             Assert.AreEqual("Remove companions from play", HuntActions.DecisionText(board.View));
+            // UI-249: the Companions are chosen on the Hunt panel's roster portraits, which say "remove from play".
             foreach (var id in new[] { "base.character.merry", "base.character.pippin" })
             {
-                PointerGestureEvents.ClickAt(board.Tray.Q<Button>("effect-choice-" + id));
+                var portrait = board.Hunt.Guides.Root.Q<Button>("fellowship-portrait-" + id);
+                StringAssert.StartsWith("Click to remove", portrait.tooltip);
+                PointerGestureEvents.ClickAt(portrait);
                 await room.Settle();
             }
             Assert.IsEmpty(board.Map.DraftOverlay.Targets);

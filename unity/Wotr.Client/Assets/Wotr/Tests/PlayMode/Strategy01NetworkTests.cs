@@ -52,10 +52,17 @@ namespace Wotr.PlayTests
                 Click(room.Fp, "companion-base.character.gimli");
                 await room.Settle();
                 MapContourProbe.ClickRegion(room.Fp.Board.Map, "erebor");
-                Click(room.Fp, "new-companion-group");
                 await room.Settle();
+                // UI-250: Gimli's group has its route, so Legolas starts the next group; no group button.
+                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("new-companion-group"));
+                var progress = room.Fp.Board.Tray.Q<Label>("companion-group-progress");
+                StringAssert.Contains("Erebor", progress.tooltip, "Gimli's route: " + progress.text + " · " + progress.tooltip);
+                Assert.IsTrue(room.Fp.Board.Tray.Q<Button>("companion-base.character.legolas").enabledInHierarchy, "Legolas starts the next group.");
                 Click(room.Fp, "companion-base.character.legolas");
                 await room.Settle();
+                // The tray is laid out again after the click; read its new progress label.
+                progress = room.Fp.Board.Tray.Q<Label>("companion-group-progress");
+                Assert.AreEqual("Group 2 / 2", progress.text, progress.tooltip);
                 Click(room.Fp, "travel-stay");
                 await Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);

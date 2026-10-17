@@ -228,3 +228,14 @@ The abbreviation does not repeat the title (e.g. Gollum: ‘Guide · Joins the F
 - The Army Tooltip on the map stays with the characters names; the skills are in the region panel,
   one click away. Full text stays on the character card (UI-139).
 
+
+## Character reactions at the character — UI-247 (2026-10-17)
+
+A character's reaction is used on the character itself rather than in a list: the White Rider and the Witch-king's
+draw on their battle portraits, Gandalf the Grey's draw on the Guide's portrait in the Fellowship panel. The
+Characters inspector keeps its link to the reaction's owner (UI-71). See BATTLE_WINDOW_UX and FELLOWSHIP_UX, UI-247.
+
+## Entry dice in the pool — UI-248 (2026-10-17)
+
+A character whose entry or ability can be paid with different dice no longer lists them in its row: the dice glow in
+the own pool and a click chooses one (`CostDice`). One die or identical dice are still taken for the player (UI-239).

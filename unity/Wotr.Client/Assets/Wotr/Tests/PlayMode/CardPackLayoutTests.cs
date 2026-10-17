@@ -27,10 +27,14 @@ namespace Wotr.PlayTests
                         client.Apply(Screen());
                         for (var frame = 0; frame < 12; frame++)
                             yield return null;
-                        Assert.AreEqual(7, client.Board.Tray.Q<VisualElement>("effect-group-Companion").Query<Button>().ToList().Count);
-                        Assert.AreEqual(5, client.Board.Tray.Q<VisualElement>("effect-group-Miss").Query<Button>().ToList().Count);
-                        CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-base.character.aragorn"));
-                        CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-miss-0"));
+                        // UI-245: the seven Companions are their portraits and the five misses their dice, not lists.
+                        Assert.IsNull(client.Board.Tray.Q<VisualElement>("effect-group-Companion"));
+                        Assert.IsNull(client.Board.Tray.Q<VisualElement>("effect-group-Miss"));
+                        Assert.AreEqual(7, client.Board.Tray.Query(className: "portrait-medallion").ToList().Count(p => p.ClassListContains(Wotr.Client.ChoiceGlow.ClassName)));
+                        Assert.AreEqual(5, client.Board.Tray.Query<Button>().ToList().Count(b => b.name.StartsWith("battle-die-miss-") &&
+                            b.ClassListContains(Wotr.Client.ChoiceGlow.ClassName)));
+                        CardNetworkTests.Click(client.Board.Tray.Q("portrait-base.character.aragorn"));
+                        CardNetworkTests.Click(client.Board.Tray.Q<Button>("battle-die-miss-0"));
                         for (var frame = 0; frame < 8; frame++)
                             yield return null;
                         LayoutTests.Save(target, $"mighty-attack-{width}-{scale:0.00}.png");

@@ -339,3 +339,9 @@ buttons with the Guide line, and drawn tiles or rolled dice looked like buttons 
 - `ReadOnlyControl` marks a control that cannot act now (`read-only`): no button frame, hover or press
   (`PressFeedback` ignores it); its tooltip stays. The drawn tile is read-only until a damage decision makes it the
   place to confirm; a rolled die until a reroll lets the player choose it.
+
+## The Breaking of the Fellowship on the Guide row's portraits — UI-249 (2026-10-17)
+
+While The Breaking of the Fellowship's tile asks for Companions, the Hunt panel shows its roster row (the one the
+forced Guide uses) with the candidates glowing; clicking a portrait selects or releases it, and the panel's
+confirmation sends the set. The decision tray no longer lists the Companions by name. See FELLOWSHIP_UX, UI-249.

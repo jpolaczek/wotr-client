@@ -53,7 +53,8 @@ namespace Wotr.Client
             board.Map.FellowshipMarker.OfferDeclare(!busy() && !step.HasValue && draft.Kind == null && Offered(CommandKind.DeclareFellowship));
         }
 
-        private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null;
+        private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null ||
+            FellowshipCardActions.Choice(view, kind).Length > 0;
 
         private void Step(int step) => Choose(step == 0 && view?.Fellowship.MordorStep == null ? CommandKind.EnterMordor : CommandKind.MoveFellowship);
 
@@ -81,7 +82,16 @@ namespace Wotr.Client
 
         private void Choose(CommandKind kind)
         {
-            if (busy() || FellowshipActions.Option(view, board.ActionDie, kind, draft) == null)
+            if (busy())
+                return;
+            // UI-249: a card's Move or Hide (There Is Another Way) resolves the card's choice with this one click.
+            var card = FellowshipCardActions.Choice(view, kind);
+            if (card.Length > 0)
+            {
+                edit(() => FellowshipCardActions.Choose(view, draft, card), true);
+                return;
+            }
+            if (FellowshipActions.Option(view, board.ActionDie, kind, draft) == null)
                 return;
             board.Fellowship.Open();
             entering |= kind == CommandKind.EnterMordor;
@@ -104,7 +114,8 @@ namespace Wotr.Client
             if (busy() || !kind.HasValue || HuntActions.UsesPanel(view, draft))
                 return;
             board.Fellowship.Open();
-            edit(() => FellowshipActions.Portrait(view, draft, board.ActionDie, id), kind == CommandKind.SelectGuide);
+            // The Guide and a reaction send with their click; a separation keeps building its group.
+            edit(() => FellowshipActions.Portrait(view, draft, board.ActionDie, id), kind is CommandKind.SelectGuide or CommandKind.RespondEffect);
         }
 
         public void Dispose()

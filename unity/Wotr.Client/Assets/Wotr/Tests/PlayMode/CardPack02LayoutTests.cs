@@ -33,10 +33,9 @@ namespace Wotr.PlayTests
                             LayoutTests.Save(target, $"heroic-{tab.name}-{width}-{scale:0.00}.png");
                             CheckVisible(client);
                         }
-                        CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-tab-companions"));
-                        for (var frame = 0; frame < 4; frame++)
-                            yield return null;
-                        CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-base.character.aragorn"));
+                        // UI-245: the Companions are their portraits in the Battle window; the leaders stay listed.
+                        Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-base.character.aragorn"));
+                        CardNetworkTests.Click(client.Board.Tray.Q("portrait-base.character.aragorn"));
                         CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-hits-3"));
                         for (var frame = 0; frame < 4; frame++)
                             yield return null;

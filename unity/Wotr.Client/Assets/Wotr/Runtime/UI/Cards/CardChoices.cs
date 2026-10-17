@@ -142,8 +142,10 @@ namespace Wotr.Client
             VisualElement row = null;
             foreach (var id in option.EligibleIds)
             {
-                // UI-245: a battle die or figure is chosen on itself in the Battle window.
-                if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id))
+                // UI-245: a battle die or figure is chosen on itself in the Battle window; UI-249: a Companion of The
+                // Breaking of the Fellowship on its portrait in the Hunt panel; UI-247: a battle reaction on its portrait.
+                if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
+                    BattleReactions.OnPortrait(view, id))
                     continue;
                 var choice = option.EffectChoices.FirstOrDefault(c => c.Id == id) ?? new EffectChoiceView { Id = id };
                 if (row == null || choice.SelectionGroup != currentGroup)

@@ -6,20 +6,21 @@ namespace Wotr.EditorTests
 {
     public sealed class FellowshipGuideTests
     {
+        // UI-249: the voluntary Guide in the Fellowship phase and the forced one both come straight from the portrait.
         [Test]
-        public void VoluntaryGuideNeedsAnExplicitModeButMandatoryGuideDoesNot()
+        public void VoluntaryAndMandatoryGuidesBothComeStraightFromThePortrait()
         {
             var view = new PlayerView { You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
                 Decision = new DecisionView { Kind = DecisionKind.FellowshipPhase },
                 Options = { new ActionOption { Kind = CommandKind.SelectGuide, EligibleIds = { "gimli", "legolas" } } } };
             var draft = new TurnDraft();
             var context = new ActionDieContext();
-            Assert.IsNull(FellowshipActions.PortraitKind(view, context, "gimli", draft));
-            Assert.IsFalse(FellowshipActions.Portrait(view, draft, context, "gimli"));
-            Assert.IsTrue(FellowshipActions.Choose(view, draft, context, CommandKind.SelectGuide));
-            Assert.IsFalse(draft.Ready(view.Options[0]));
+            Assert.AreEqual(CommandKind.SelectGuide, FellowshipActions.PortraitKind(view, context, "gimli", draft));
             Assert.IsNull(FellowshipActions.PortraitKind(view, context, "merry", draft));
+            Assert.IsFalse(FellowshipActions.Portrait(view, draft, context, "merry"));
+            Assert.IsNull(draft.Kind, "A portrait that is not a candidate starts nothing.");
             Assert.IsTrue(FellowshipActions.Portrait(view, draft, context, "legolas"));
+            Assert.AreEqual(CommandKind.SelectGuide, draft.Kind);
             Assert.AreEqual("legolas", draft.Payload.GuideId);
             Assert.IsEmpty(draft.Payload.DieId);
             draft.Clear();

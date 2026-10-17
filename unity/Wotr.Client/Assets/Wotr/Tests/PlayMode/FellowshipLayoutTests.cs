@@ -35,8 +35,6 @@ namespace Wotr.PlayTests
                     client.SetOnline();
                     client.Board.Fellowship.Open();
                     yield return Settle();
-                    PointerGestureEvents.ClickAt(client.Board.Fellowship.Root.Q<Button>("fellowship-change-guide"));
-                    yield return Settle();
                     Assert.IsNull(client.Board.Fellowship.Root.Q<Label>("fellowship-guide-hint"), "UI-241: no Guide caption.");
                     foreach (var portrait in client.Board.Fellowship.Root.Query<Button>(className: "companion-token").ToList())
                     {

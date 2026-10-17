@@ -682,3 +682,6 @@
 .portrait-medallion.portrait-illustrated > .portrait-figure { left: 4px; right: 4px; top: 4px; bottom: 4px; }
 .portrait-medallion.portrait-illustrated > .portrait-initial { display: none; }
 .battle-scene.battle-scene-painted { background-size: 168px 100%; }
+
+/* UI-251: losses from an event outside a battle stay a region's panel — no battle scene strip or side emblems. */
+.regional-battle.event-loss-panel .battle-scene { display: none; }

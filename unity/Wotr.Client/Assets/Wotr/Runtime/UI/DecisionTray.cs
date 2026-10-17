@@ -331,7 +331,8 @@ namespace Wotr.Client
             if (view.Battle != null && !completedBattleExcess)
             {
                 root.Add(BattleStages.Create(view.Battle));
-                var battle = new BattleContext(root, view.Battle, view, draft, action => DraftEdited?.Invoke(action), id => CardInspected?.Invoke(id), cards);
+                var battle = new BattleContext(root, view.Battle, view, draft, action => DraftEdited?.Invoke(action), id => CardInspected?.Invoke(id), cards,
+                    action => ChoiceCompleted?.Invoke(action));
                 refreshChoices.Add(battle.Refresh);
                 title.text = data.Regions[view.Battle.RegionId].Name + " · " + view.Battle.Mode + " · Round " + view.Battle.Round +
                     (view.Battle.MandatorySiegeRounds > 0 && view.Battle.Round <= view.Battle.MandatorySiegeRounds ? "/" + view.Battle.MandatorySiegeRounds : "") +
@@ -485,7 +486,9 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row();
             root.Add(row);
-            foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind != CommandKind.PlayEvent))
+            // UI-247: reactions used on their portraits in the Battle window need no Respond step here.
+            foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind != CommandKind.PlayEvent &&
+                !(o.Kind == CommandKind.RespondEffect && BattleReactions.AllOnPortraits(view))))
             {
                 var button = BoardScreen.Button(ContextualHunt && option.Kind == CommandKind.DeclineReaction ? "Skip" : Label(option.Kind), () => ActionChosen?.Invoke(option.Kind));
                 button.SetEnabled(option.Enabled);
@@ -500,7 +503,9 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row();
             root.Add(row);
-            if (option.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore)
+            // UI-248: Palantír of Orthanc takes its Ring on the Ring itself and its die in the pool; the expansions'
+            // Palantír of Barad-dûr and Lore keep these buttons.
+            if (option.Kind is CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore)
             {
                 var noRing = Choice("No Ring", () => draft.Payload.RingId == "", () => RingChosen?.Invoke(""), "A Will of the West die needs no Ring.");
                 noRing.name = option.Kind == CommandKind.DiscardLore ? "lore-no-ring" : "palantir-no-ring";
@@ -512,7 +517,7 @@ namespace Wotr.Client
                     row.Add(ring);
                 }
             }
-            foreach (var id in option.EligibleDice)
+            foreach (var id in CostDice.InPool(view, draft) ? new List<string>() : option.EligibleDice)
             {
                 var die = view.Dice.Single(d => d.Id == id);
                 var conversion = option.DrawCosts.Any(c => c.DieId == id && c.AbilityId == CardDrawDraft.Palantir);

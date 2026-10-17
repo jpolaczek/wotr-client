@@ -58,6 +58,9 @@ namespace Wotr.Client
             DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
+            DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
+            DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
+                "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Decline.",
             _ => "Click the status to open this decision."
         };
 
@@ -70,7 +73,7 @@ namespace Wotr.Client
             if (Offered(view, CommandKind.EnterMordor))
                 steps.Add("Enter Mordor: click the glowing gate");
             if (Offered(view, CommandKind.SelectGuide))
-                steps.Add("Guide: Change guide in the Fellowship panel");
+                steps.Add("Guide: click a glowing companion");
             steps.Add(steps.Count == 0 ? "Continue to the Hunt." : "or continue to the Hunt.");
             return string.Join(" · ", steps);
         }

@@ -128,8 +128,8 @@ namespace Wotr.PlayTests
                 room.Fp.Board.Fellowship.Open();
             var revision = room.Fp.Board.View.Revision;
             await room.Settle();
-            // UI-214: a response outside the Hunt and battles is a console button.
-            PointerGestureEvents.ClickAt(MatchTestRoom.TrayOrConsole(room.Fp, "effect-choice-character." + response));
+            // UI-247: the reaction is used at its source — the battle portrait or the Guide's portrait.
+            await ReactionGestures.Use(room, room.Fp, "character." + response);
             await room.At(revision + 1);
         }
     }

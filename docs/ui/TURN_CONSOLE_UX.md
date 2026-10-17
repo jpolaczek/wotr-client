@@ -449,3 +449,14 @@ The decisions of expansions (Council, Kings, Lords) remain at their panels (Dice
   `sh-eye-hunt-allocation`, `fp-elven-ring`, `sh-elven-ring`, `fp-mordor-track`).
 
 Results, commands and commits go to the to-do documents, this document, TESTING and the register. Push only on request.
+
+## Fellowship guidance — UI-249 (2026-10-17)
+
+In the Fellowship phase the console reads "Guide: click a glowing companion" (no Change guide button). For There Is
+Another Way it names the Fellowship's controls first: "Move: click the glowing track" or "Hide: click the glowing
+Ring", then "or Stay to finish after healing"; Stay is the console's only button for the card.
+
+## Payment dice light the pool — UI-248 (2026-10-17)
+
+While a payment has alternative dice, the dice pool's frame lights (`DiceDecision`) and the alternatives glow in the
+shared rhythm; the console and the decision window do not repeat them.

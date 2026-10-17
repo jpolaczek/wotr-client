@@ -63,13 +63,13 @@ The legal subsequent regions and the selected end are highlighted, without arrow
 <a id="f04--przewodnik-i-towarzysze"></a>
 ## F04 — Guide and Companion
 
-Portrait of Guide has a `Guide` badge, name and access to the ability. `Change guide` only backlights legal candidates. In the Fellowship phase, before selection, it is displayed by `Choosing a guide ends the Fellowship phase`; click on the portrait makes the decision. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma.
+Portrait of Guide has a `Guide` badge, name and access to the ability. Since UI-249 there is no `Change guide` mode: in the Fellowship phase the legal candidates glow at once and their tooltip reads `Click to make … the Guide · This ends the Fellowship phase` before the click; one click on the portrait makes the decision. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma.
 
 `Separate companions` leads through portraits → common route → `Separate here`. The selected group, range and effects are visible before the final click. Information `Separated companions cannot rejoin` explains the decision durability. The change of the group converts the legality of draft according to options; it does not select alternate characters. The usual action requires a specific dice, the forced effect retains its own cost and returns to the overriding decision.
 
 In siege, with special capacity and Mordor, the presentation is based on options/preview server. Removing from the game is not shown as a move on the map. Once separated, the self-traveling uses the existing UI-21; the project does not rebuild this separate flow.
 
-The UI-34-GUIDES: portraits of non-candidates retain tooltip and focus; click does not finish the phase before entering the Change guide. Forced Guide does not require this mode. The descriptions of the Council version appear only after public disclosure. Cancel the imposed return group removes its route, retaining the composition of the RequiredGroup. In the absence of a route in the final Mordor, the choice is Remove from play. Preview separately calls placing and removal, also when Sméagol leaves with figure placed on the map.
+The UI-34-GUIDES: portraits of non-candidates retain tooltip and focus, and their click never finishes the phase. Forced and optional Guide choices use the same glowing portraits (UI-249). The descriptions of the Council version appear only after public disclosure. Cancel the imposed return group removes its route, retaining the composition of the RequiredGroup. In the absence of a route in the final Mordor, the choice is Remove from play. Preview separately calls placing and removal, also when Sméagol leaves with figure placed on the map.
 
 <a id="f05--przydział-rzut-i-kafel"></a>
 ## F05 — Allocation, Throw and Tile
@@ -390,18 +390,17 @@ The Fellowship panel has no Declare position or Enter Mordor button. In the Fell
 - the console names both: "Declare: click the Fellowship figure · Enter Mordor: click the glowing gate · … or continue
   to the Hunt." (`TurnConsoleState`).
 
-Change guide and Finish phase stay in the panel. Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
+Finish phase stays in the panel; the Guide is chosen on its portrait (UI-249). Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
 the PlayMode gestures `FellowshipGestures.Declare` and `FellowshipGestures.EnterMordor`.
 
 ## The next Guide in the Fellowship panel — UI-229 (2026-10-17)
 
 The next Guide is chosen from the portraits of the panel at the top right: the Fellowship panel, or the Hunt panel's
-Guide row while the Hunt holds the decision. A Guide decision (after a casualty, or after Change guide in the
-Fellowship phase) opens no decision window. The candidates the server offers glow in gold and pulse in the shared
+Guide row while the Hunt holds the decision. A Guide decision (after a casualty) opens no decision window. The candidates the server offers glow in gold and pulse in the shared
 750 ms rhythm (`ChoiceGlow`, `.choice-glow`, Reduced motion keeps them bright and still), their tooltip starts with
 "Click to make Strider the Guide", the panel's plaque is lit, and the console reads "Click a glowing companion in the
-Fellowship panel to make it the Guide". One click chooses (UI-142). Change guide stays a button in the Fellowship
-phase, because choosing a Guide there ends the phase. Test: `FellowshipGuideChoiceTests`.
+Fellowship panel to make it the Guide". One click chooses (UI-142). Since UI-249 the Fellowship phase uses the same portraits without a Change guide button.
+Test: `FellowshipGuideChoiceTests`.
 
 `ChoiceGlow` is the one look for an object the player is asked to click for a choice; the Elven Ring's dice (UI-238)
 and character changes (UI-240) use it too.
@@ -447,3 +446,49 @@ regions glow on the map, and the console reads "Gandalf the White · Choose a hi
 (UI-239). A region click enters the character; Back clears the choice. Sizes stay fixed
 (`CharacterRosterActions.EnteringFigure`, `CharacterRosterRow.Choose`; test
 `CharacterRosterActionTests.AnEntryComesFromItsRowAndNeverHostsTheInspector`).
+
+## The Guide straight from its portrait in the Fellowship phase — UI-249 (2026-10-17)
+
+The Fellowship phase has no Change guide button. The companions the server offers as Guide glow in the panel from
+the start of the phase (`FellowshipActions.PortraitKind`), and their tooltip starts with "Click to make Strider the
+Guide · This ends the Fellowship phase", so the consequence is read before the click. One click sends `SelectGuide`
+(UI-142); Finish phase keeps the current Guide; a portrait that is not a candidate stays readable and its click sends
+nothing. The console reads "Guide: click a glowing companion". Tests: `FellowshipGuideChoiceTests`,
+`FellowshipGuideNetworkTests`.
+
+## The Breaking of the Fellowship and There Is Another Way on the Fellowship's objects — UI-249 (2026-10-17)
+
+The Breaking of the Fellowship (`FellowshipCompanions`, during its Hunt tile) chooses its Companions on the Hunt
+panel's roster — the same portraits as the forced Guide choice — instead of a second list of names. The candidates
+glow; the tooltip reads "Click to separate Merry into the Fellowship's region", or "Click to remove Merry from play"
+on the Mordor track. The server's group limit holds (a limit of one replaces the choice), and the chosen portraits
+send together with the one confirmation in the Hunt panel (`FellowshipActions.RosterChoice`).
+
+There Is Another Way with Gollum as Guide (`FellowshipAction`) moves or hides where the Fellowship's own controls
+are: the track's glowing move symbol (or the Mordor track's next step) moves and the glowing Ring (or the map figure
+in Mordor) hides, each with one click that resolves the card's choice without another die
+(`FellowshipCardActions`). Stay — finish after healing — stays a console button, and the console reads "Hide: click
+the glowing Ring · or Stay to finish after healing". Lure of the Ring keeps its console alternatives, whose
+sacrifice-versus-corruption consequences portraits would hide. Tests: `FellowshipGuideChoiceTests`,
+`FellowshipCardActionsTests`.
+
+## Gandalf the Grey's draw on his portrait — UI-247 (2026-10-17)
+
+When Gandalf the Grey as Guide may draw after an Event card, his portrait in the Fellowship panel glows and its
+tooltip reads "Click to use Draw matching card · …"; one click draws, and the panel's plaque is lit. The console
+says "Click the Guide's glowing portrait in the Fellowship panel to use Draw matching card · or Decline" and keeps
+only Decline. Test: `ReactionSourcesTests`.
+
+## Companion groups by clicks alone — UI-250 (2026-10-17)
+
+A journey of several companion groups (Book of Mazarbul, We Prove the Swifter, Gwaihir, Fear! Fire! Foes!, I Will Go
+Alone and the like) has no "+ Group", "Remove" or numbered group buttons (`TravelDraft.ToggleCompanion`): the first
+eligible companion starts a group and companions from the same place join it; a companion that cannot join it, or any
+companion once the current group has its route, starts the next group; clicking a member of another planned group
+selects that group for editing (its portrait stays in the roster, dimmed with a blue rim); a group whose last member
+is clicked away disappears. "Group 2 / 3" in the route row shows the plan's progress and its tooltip lists every
+group with its destination. Stay all remains the explicit legal no-move choice, the shared Back undoes the last
+gesture, and the plan keeps its one confirmation. Required groups stay locked. A companion picked on the map for an
+ordinary Character-die move starts over from that source, as before. Test:
+`CompanionGroupGestureTests`, `TravelActionTests`;
+`Strategy01NetworkTests` (Book of Mazarbul).

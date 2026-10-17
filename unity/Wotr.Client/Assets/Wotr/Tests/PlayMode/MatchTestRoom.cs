@@ -157,7 +157,8 @@ namespace Wotr.PlayTests
                 submitted.Remove(client);
                 submitted.Add(client, new SubmittedChoice { Revision = view.Revision });
             }
-            var button = TrayOrConsole(client, name) ?? Reinforcement(client, name) ?? PanelFigure(client, name);
+            VisualElement button = TrayOrConsole(client, name) ?? Reinforcement(client, name) ?? PanelFigure(client, name) ??
+                ObjectChoice(client, name);
             if (button == null && name.StartsWith("companion-"))
             {
                 if (client.Board.Tray.parent == client.Board.Hunt.DecisionHost)
@@ -173,6 +174,42 @@ namespace Wotr.PlayTests
             }
             CardNetworkTests.Click(button);
         }
+        // UI-245/UI-246/UI-249: a card's choice made on its object — a battle die, portrait, figure stack, Leadership
+        // or hit pip, a Companion on the Hunt panel's roster, or There Is Another Way's track and Ring.
+        internal static VisualElement ObjectChoice(MountedMatchClient client, string name)
+        {
+            if (!name.StartsWith("effect-choice-"))
+                return null;
+            var id = name.Substring("effect-choice-".Length);
+            var view = client.Board.View;
+            var tray = client.Board.Tray;
+            if (view.Battle != null)
+            {
+                var unit = view.Units.FirstOrDefault(u => u.Id == id);
+                var hits = id.Contains(".hits.") ? id.Substring(id.LastIndexOf('.') + 1) : "";
+                return tray.Q<Button>("battle-die-" + id) ?? tray.Q<Button>("battle-point-" + id) ??
+                    (hits.Length > 0 ? tray.Q<Button>("battle-hit-cancel-" + hits) : null) ?? tray.Q("portrait-" + id) ??
+                    (unit == null ? null : tray.Q("battle-figure-" + unit.Nation + "-" + unit.Kind));
+            }
+            if (FellowshipActions.RosterChoice(view, id))
+            {
+                client.Board.Hunt.Open();
+                return client.Board.Hunt.Guides.Root.Q<Button>("fellowship-portrait-" + id);
+            }
+            if (id == FellowshipCardActions.Move)
+            {
+                client.Board.Fellowship.Open();
+                return client.Board.Fellowship.Root.Q<Button>("fellowship-progress");
+            }
+            if (id == FellowshipCardActions.Hide)
+                return client.Board.Fellowship.IsOpen ? client.Board.Fellowship.PanelRing : client.Board.Fellowship.Ring;
+            return null;
+        }
+
+        // A choice by its tray name, wherever it is made now: the tray, the console or its object.
+        internal static VisualElement Choice(MountedMatchClient client, string name) =>
+            (VisualElement)TrayOrConsole(client, name) ?? ObjectChoice(client, name);
+
         // UI-214: a card's object-less options and a reaction's responses are buttons in the console, named as in the tray.
         internal static Button TrayOrConsole(MountedMatchClient client, string name) =>
             client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);

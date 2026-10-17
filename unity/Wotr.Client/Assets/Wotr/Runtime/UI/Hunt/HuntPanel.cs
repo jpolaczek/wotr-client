@@ -219,7 +219,9 @@ namespace Wotr.Client
             var tileLegal = enabled && HuntResponseActions.Option(latest) is { } damage && draft.Ready(damage);
             Tile.Root.EnableInClassList("legal-target", tileLegal);
             ReadOnlyControl.Apply(Tile.Root, tileLegal);
-            var guide = owns && latest.Decision?.Kind == DecisionKind.Guide && latest.DecisionOwner == latest.You;
+            // UI-249: the roster holds the forced Guide choice and The Breaking of the Fellowship's Companions.
+            var guide = owns && latest.DecisionOwner == latest.You && (latest.Decision?.Kind == DecisionKind.Guide ||
+                FellowshipActions.CompanionsOption(latest) != null);
             Guides.Root.style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
             Guides.Context(latest, draft, context, enabled && guide);
             Tab.EnableInClassList("legal-target", owns && latest.DecisionOwner == latest.You && latest.Decision != null);

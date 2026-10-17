@@ -93,56 +93,31 @@ namespace Wotr.Client
                 var origin = travel?.Origin ?? character?.Location;
                 if (origin != null && data.Regions.TryGetValue(origin, out var region))
                     button.tooltip += " · " + region.Name;
-                refresh.Add(() => button.SetEnabled(guide || TravelDraft.CanToggle(draft, view, option, id)));
+                // UI-250: a member of another planned group stays shown; its click selects that group.
+                refresh.Add(() => button.SetEnabled(guide || TravelDraft.Selectable(draft, view, option, id)));
                 if (TravelDraft.IsGrouped(draft.Kind))
-                    refresh.Add(() => button.style.display = draft.Payload.CompanionMoves
-                        .Where((_, index) => index != draft.CompanionFocus).Any(group => group.Ids.Contains(id))
-                        ? DisplayStyle.None : DisplayStyle.Flex);
+                    refresh.Add(() => button.EnableInClassList("planned-group", TravelDraft.PlannedGroup(draft, id) >= 0));
                 row.Add(button);
             }
         }
 
+        // UI-250: the plan's progress, read only: the groups are chosen by clicking their members.
         private void Groups(VisualElement root)
         {
-            var count = draft.Payload.CompanionMoves.Count;
-            var pageSize = option.EligibleIds.Count > 7 ? 4 : 7;
-            var focus = draft.CompanionFocus < 0 ? Math.Max(0, count - 1) : draft.CompanionFocus;
-            var start = focus / pageSize * pageSize;
-            if (count > pageSize)
-                GroupPage(root, "back", "previous-companion-groups", Math.Max(0, start - pageSize), start > 0);
-            for (var index = start; index < Math.Min(count, start + pageSize); index++)
+            var progress = new Label { name = "companion-group-progress" };
+            refresh.Add(() =>
             {
-                var captured = index;
-                var group = draft.Payload.CompanionMoves[index];
-                var button = Choice((index + 1).ToString(), "companion-group-" + index,
-                    () => draft.CompanionFocus == captured, () => TravelDraft.SelectGroup(draft, captured));
-                button.AddToClassList("companion-group-choice");
-                refresh.Add(() => button.tooltip = string.Join(", ", group.Ids.Select(id => CharacterLibrary.Name(view, id))) + "\n" + string.Join(" → ", group.Route.Select(Region)));
-                root.Add(button);
-            }
-            if (count > pageSize)
-                GroupPage(root, "next", "next-companion-groups", Math.Min(count - 1, start + pageSize), start + pageSize < count);
-        }
-
-        private void GroupPage(VisualElement root, string icon, string name, int focus, bool enabled)
-        {
-            var tooltip = name.StartsWith("previous") ? "Previous groups" : "Next groups";
-            var button = IconButton.Create(icon, tooltip, () => edit(() => TravelDraft.SelectGroup(draft, focus)));
-            button.name = name;
-            button.AddToClassList("companion-group-choice");
-            button.SetEnabled(enabled);
-            root.Add(button);
+                var count = draft.Payload.CompanionMoves.Count;
+                progress.text = count == 0 ? "No group" : "Group " + (Math.Max(0, draft.CompanionFocus) + 1) + " / " + count;
+                progress.tooltip = string.Join("\n", draft.Payload.CompanionMoves.Select((group, index) => index + 1 + ". " +
+                    string.Join(", ", group.Ids.Select(id => CharacterLibrary.Name(view, id))) +
+                    (group.Route.Count > 0 ? " → " + Region(group.Route[group.Route.Count - 1]) : "")));
+            });
+            root.Add(progress);
         }
 
         private void GroupActions(VisualElement root)
         {
-            var add = Choice("+ Group", "new-companion-group", () => false, () => TravelDraft.NewGroup(draft));
-            refresh.Add(() => add.SetEnabled(draft.Payload.CompanionMoves.Count < option.EligibleIds.Count && draft.Payload.CompanionMoves.All(g => g.Ids.Count > 0 && g.Route.Count > 0)));
-            root.Add(add);
-            var remove = Choice("Remove", "remove-companion-group", () => false, () => TravelDraft.RemoveGroup(draft));
-            remove.tooltip = "Remove the selected group from this draft";
-            refresh.Add(() => remove.SetEnabled(TravelDraft.Group(draft) != null));
-            root.Add(remove);
             if (option.AllowEmptySelection)
                 root.Add(Choice("Stay all", "travel-stay-all", () => draft.Payload.CompanionMoves.Count == 0,
                     () => draft.Change(p => { p.CompanionMoves.Clear(); draft.CompanionFocus = -1; })));

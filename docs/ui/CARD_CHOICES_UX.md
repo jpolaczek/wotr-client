@@ -209,3 +209,39 @@ that can cancel it is chosen, the chosen amount fills from the left, and a small
 hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons; the confirmation sends the figure
 and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports) and never move the figures. Test:
 `BattleObjectChoicesTests`.
+
+## Fellowship cards on the Fellowship's objects — UI-249 (2026-10-17)
+
+The Breaking of the Fellowship's Companions are chosen on the Hunt panel's roster portraits, and There Is Another
+Way's Move and Hide on the Fellowship's track and Ring (`FellowshipActions.RosterChoice`, `FellowshipCardActions`);
+the choice list and the console no longer repeat them. Stay, Keep-style declines and Lure of the Ring's alternatives
+stay buttons. See FELLOWSHIP_UX, UI-249.
+
+## Reactions at their sources — UI-247 (2026-10-17)
+
+A reaction is used where its source is: a card in the hand at that card (UI-164), a table card during the Hunt in
+the Hunt panel's response area (UI-214), a battle character on its portrait in the Battle window, Gandalf the Grey's
+draw on the Guide's portrait in the Fellowship panel, and a table card's own reaction outside a battle or the Hunt —
+The Balrog of Moria — at that card's × in the Effects panel (the reaction discards the card). The console keeps
+"Use a table card" (it opens the Effects panel) and Decline; it no longer lists a reaction that has a source object.
+Worn with Sorrow and Toil keeps its three explicit alternatives. Tests: `ReactionSourcesTests`,
+`CharacterNetworkTests`, `Shadow03NetworkTests`.
+
+## Payments in the dice pool, on the Ring and in the hand — UI-248 (2026-10-17)
+
+A payment by one of several different action dice is made in the own dice pool (`CostDice`): a character's entry
+or ability with different dice, and the removal of Palantír of Orthanc, a protection card (A Power Too Great, Tom
+Bombadil) or Denethor's Folly, started at the table card's × (UI-221). The alternative dice glow and pulse in the
+pool, the chosen one is selected, the pool's frame lights, and a click on another die switches the payment; the
+decision window lists no dice. Palantír of Orthanc takes its Elven Ring on the Ring in the console: a click on the
+chosen Ring takes it back without choosing another payment, and choosing a Will of the West die (which pays alone)
+drops a Ring chosen for another die. Hand discards keep their red marking (UI-222). An incomplete payment spends
+nothing; a complete one keeps its single commit. The expansions' Palantír of Barad-dûr, Lore, Council tokens and
+special dice keep their buttons. Test: `CostDiceTests`; `EffectsNetworkTests` (Palantír on the Ring).
+
+## A region's two forces on their sections — UI-251 (2026-10-17)
+
+When a card's region holds two eligible forces — Dreadful Spells' field army and garrison — each force's section in
+the region panel glows and its header chooses it (`RegionForceChoices`); the console keeps the same two named
+alternatives, so the region alone never collapses them. A region with one eligible force is chosen by the region
+click. Test: `RegionForceChoicesTests`.

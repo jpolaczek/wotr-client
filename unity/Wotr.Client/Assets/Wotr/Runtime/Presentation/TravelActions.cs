@@ -60,7 +60,10 @@ namespace Wotr.Client
             var option = Option(view, draft, context);
             var journey = view.Decision.Kind == DecisionKind.CompanionSeparation;
             var council = draft.Kind == CommandKind.UseCouncilToken;
-            if (draft.Kind != option.Kind || !TravelDraft.CanToggle(draft, view, option, id))
+            // UI-250: in a journey a figure that cannot join the current group starts the next one (TravelDraft); an
+            // ordinary move picked on the map starts over from the new source.
+            var joins = journey ? TravelDraft.Selectable(draft, view, option, id) : TravelDraft.CanToggle(draft, view, option, id);
+            if (draft.Kind != option.Kind || !joins)
             {
                 var token = draft.Payload.RulerTokenId;
                 if ((journey || council) && draft.Kind == option.Kind)

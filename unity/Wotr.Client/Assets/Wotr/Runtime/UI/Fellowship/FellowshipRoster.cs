@@ -72,6 +72,9 @@ namespace Wotr.Client
             return lines.Count > 0 ? string.Join("\n", lines) : FellowshipGuideText.Ability(version);
         }
 
+        // Some portrait's click makes a choice now, so the panel's plaque invites a look.
+        public bool Choosing { get; private set; }
+
         public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled)
         {
             var choosing = false;
@@ -89,15 +92,23 @@ namespace Wotr.Client
                 if (descriptions.TryGetValue(item.Key, out var description))
                     item.Value.tooltip = offer.Length > 0 ? offer + "\n" + description : description;
                 item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
-                    : draft.Kind == CommandKind.SeparateCompanions && draft.Payload.Ids.Contains(item.Key));
+                    : draft.Kind is CommandKind.SeparateCompanions or CommandKind.ChooseEffect && draft.Payload.Ids.Contains(item.Key));
             }
+            Choosing = choosing;
             pulse.Run(choosing);
         }
 
         public static string Offer(PlayerView view, string id, CommandKind? kind) => kind switch
         {
-            CommandKind.SelectGuide => "Click to make " + CharacterLibrary.ShortName(view, id) + " the Guide",
+            CommandKind.SelectGuide => "Click to make " + CharacterLibrary.ShortName(view, id) + " the Guide" +
+                (view.Decision?.Kind == DecisionKind.FellowshipPhase ? " · This ends the Fellowship phase" : ""),
             CommandKind.SeparateCompanions => "Click to separate " + CharacterLibrary.ShortName(view, id) + " from the Fellowship",
+            // UI-247: the Guide's reaction (Gandalf the Grey's draw).
+            CommandKind.RespondEffect => FellowshipActions.RosterReaction(view, id) is { } reaction ? BattleReactions.Offer(reaction) : "",
+            // UI-249: The Breaking of the Fellowship places the Companion in the Fellowship's region, or removes it in Mordor.
+            CommandKind.ChooseEffect when view.Fellowship.MordorStep.HasValue =>
+                "Click to remove " + CharacterLibrary.ShortName(view, id) + " from play",
+            CommandKind.ChooseEffect => "Click to separate " + CharacterLibrary.ShortName(view, id) + " into the Fellowship's region",
             _ => ""
         };
     }

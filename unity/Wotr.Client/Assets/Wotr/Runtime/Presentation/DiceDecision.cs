@@ -4,7 +4,8 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-183: the player's current decision takes dice from the own pool, so the pool's frame lights: the Hunt
-    // allocation, an armed Elven Ring before its die is chosen, and a card that waits for the die that pays it.
+    // allocation, an armed Elven Ring before its die is chosen, a card that waits for the die that pays it, and a
+    // payment with alternative dice (UI-248).
     public static class DiceDecision
     {
         public const string ClassName = "dice-decision";
@@ -15,7 +16,7 @@ namespace Wotr.Client
                 return false;
             if (draft.Kind == CommandKind.AllocateHunt && HuntActions.Allocation(view) != null)
                 return true;
-            return RingChoice.Armed(draft) || CardAwaitsDie(view, draft);
+            return RingChoice.Armed(draft) || CardAwaitsDie(view, draft) || CostDice.InPool(view, draft);
         }
 
         private static bool CardAwaitsDie(PlayerView view, TurnDraft draft) =>

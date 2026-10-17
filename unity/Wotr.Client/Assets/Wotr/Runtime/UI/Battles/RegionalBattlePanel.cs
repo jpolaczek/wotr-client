@@ -95,6 +95,8 @@ namespace Wotr.Client
             BattleId = view.Battle?.Id ?? "";
             region = view.EventLoss?.RegionId ?? view.Battle?.RegionId ?? "";
             Root.EnableInClassList("has-battle", view.Battle != null);
+            // UI-251: losses from an event outside a battle are a region's losses: no battle scene or emblems.
+            Root.EnableInClassList("event-loss-panel", view.Battle == null && view.EventLoss != null);
             var destination = active ? Root : dock;
             if (tray.parent != destination)
                 destination.Add(tray);

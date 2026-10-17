@@ -375,3 +375,26 @@ that can cancel it is chosen, the chosen amount fills from the left, and a small
 hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons; the confirmation sends the figure
 and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports) and never move the figures. Test:
 `BattleObjectChoicesTests`.
+
+## Character reactions on their portraits — UI-247 (2026-10-17)
+
+A character's reaction in a battle is used on its portrait in the force column (`BattleReactions`): Gandalf the
+White's White Rider at the start of the battle and the Witch-king's Sorcerer draw when the first round closes. The
+portrait glows and pulses, its tooltip starts with "Click to use White Rider · …", and one click sends the reaction
+(no Respond step, no list). Decline stays the tray's button. A character with more than one reaction at once keeps
+the list. Test: `ReactionSourcesTests`.
+
+## Event losses are a region's losses — UI-251 (2026-10-17)
+
+Losses from an event outside a battle (Ent attacks, Dreadful Spells) keep the regional panel at the affected region
+with its loss controls, hit count and one confirmation, but without the battle scene strip and side emblems
+(`event-loss-panel`): it reads "<Region> · Event losses", never as a battle. Losses inside a live battle stay in the
+Battle window.
+
+## Portraits and figure stacks are pressed, not captured — UI-245 follow-up (2026-10-17)
+
+A portrait or figure stack that a choice makes clickable (UI-245–UI-247) uses `ObjectPress`: it is pressed on
+mouse-down, acts on mouse-up inside it and is cancelled when the pointer leaves (UI-113), without taking the pointer
+capture. Its action rebuilds the Battle window, and a capture held by an element leaving the panel kept the next
+click (a die, a pip) from reaching its object. Tests: `CardPackNetworkTests` (Mighty Attack: Companion then miss),
+`CardPack02NetworkTests` (Heroic Death: figure then hits).

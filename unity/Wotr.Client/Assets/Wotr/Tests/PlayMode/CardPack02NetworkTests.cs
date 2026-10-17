@@ -83,11 +83,13 @@ namespace Wotr.PlayTests
             {
                 var ids = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.ChooseEffect).EligibleIds.Take(3).ToList();
                 Click(room.Fp, "effect-choice-" + ids[0]);
+                await room.Settle();
                 Click(room.Fp, "effect-choice-" + ids[1]);
-                Assert.IsFalse(room.Fp.Board.Tray.Q<Button>("effect-choice-" + ids[2]).enabledSelf);
+                await room.Settle();
+                Assert.IsFalse(Choice(room.Fp, "effect-choice-" + ids[2]).enabledSelf);
                 await Reconnect(room);
-                Assert.IsTrue(room.Fp.Board.Tray.Q<Button>("effect-choice-" + ids[0]).ClassListContains("selected"));
-                Assert.IsTrue(room.Fp.Board.Tray.Q<Button>("effect-choice-" + ids[1]).ClassListContains("selected"));
+                Assert.IsTrue(Choice(room.Fp, "effect-choice-" + ids[0]).ClassListContains("selected"));
+                Assert.IsTrue(Choice(room.Fp, "effect-choice-" + ids[1]).ClassListContains("selected"));
                 await room.Confirm(room.Fp);
                 Assert.AreEqual(2, room.Sh.Board.View.Battle.Attacker.Hits);
                 Assert.AreEqual(2, room.Sh.Board.View.Battle.Attacker.Leadership);
@@ -99,13 +101,19 @@ namespace Wotr.PlayTests
             using (var room = await Connect("heroic", ScenarioKind.CardPack))
             {
                 const string three = "effect-choice-heroic-death.hits.3";
-                Assert.IsFalse(room.Fp.Board.Tray.Q<Button>(three).enabledSelf);
+                Assert.IsFalse(Choice(room.Fp, three).enabledSelf);
+                // UI-246: the figure on its portrait, the hits on the opponent's hit pips; the Battle window lays its
+                // objects out again after each choice, as a player's next click would find them.
                 Click(room.Fp, "effect-choice-base.character.strider");
+                await room.Settle();
                 Click(room.Fp, three);
+                await room.Settle();
                 Click(room.Fp, "effect-choice-base.character.gimli");
-                Assert.IsFalse(room.Fp.Board.Tray.Q<Button>(three).enabledSelf);
+                await room.Settle();
+                Assert.IsFalse(Choice(room.Fp, three).enabledSelf);
                 Assert.IsFalse(room.Fp.Board.Tray.Q<Button>("confirm-decision").enabledSelf);
                 Click(room.Fp, "effect-choice-heroic-death.hits.2");
+                await room.Settle();
                 await Reconnect(room);
                 await room.Confirm(room.Fp);
                 Assert.IsFalse(room.Sh.Board.View.Characters.Any(c => c.Id == "base.character.gimli" && c.Location == "minas-tirith"));

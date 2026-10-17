@@ -171,8 +171,22 @@ namespace Wotr.Client
                 });
         }
 
+        // UI-250: groups are built by clicks alone. A member of another planned group selects that group for editing;
+        // a companion outside the current group starts the next group once the current one has its route (or when it
+        // cannot join it); a group left without members is dropped. No group buttons are needed.
         public static void ToggleCompanion(TurnDraft draft, PlayerView view, ActionOption option, string id)
         {
+            if (IsGrouped(draft.Kind))
+            {
+                var planned = PlannedGroup(draft, id);
+                if (planned >= 0)
+                {
+                    SelectGroup(draft, planned);
+                    return;
+                }
+                if (StartsNextGroup(draft, view, option, id))
+                    NewGroup(draft);
+            }
             if (!CanToggle(draft, view, option, id))
                 return;
             draft.Change(p =>
@@ -185,7 +199,38 @@ namespace Wotr.Client
                 var ids = IsGrouped(draft.Kind) ? Group(draft).Ids : p.Ids;
                 if (!ids.Remove(id))
                     ids.Add(id);
+                if (IsGrouped(draft.Kind) && Group(draft).Ids.Count == 0)
+                {
+                    p.CompanionMoves.RemoveAt(draft.CompanionFocus);
+                    draft.CompanionFocus = p.CompanionMoves.Count - 1;
+                }
             });
+        }
+
+        // UI-250: a companion's click does something now: it joins or leaves the current group, starts the next group or
+        // selects its planned group.
+        public static bool Selectable(TurnDraft draft, PlayerView view, ActionOption option, string id) =>
+            CanToggle(draft, view, option, id) || IsGrouped(draft.Kind) &&
+            (PlannedGroup(draft, id) >= 0 || StartsNextGroup(draft, view, option, id));
+
+        // The index of another planned group that holds this figure, or -1.
+        public static int PlannedGroup(TurnDraft draft, string id)
+        {
+            for (var index = 0; index < draft.Payload.CompanionMoves.Count; index++)
+                if (index != draft.CompanionFocus && draft.Payload.CompanionMoves[index].Ids.Contains(id))
+                    return index;
+            return -1;
+        }
+
+        private static bool StartsNextGroup(TurnDraft draft, PlayerView view, ActionOption option, string id)
+        {
+            var current = Group(draft);
+            if (current == null || current.Ids.Contains(id) || !option.EligibleIds.Contains(id) ||
+                option.Travel.Any(t => t.RequiredGroup.Contains(id)))
+                return false;
+            if (option.MaximumGroups > 0 && draft.Payload.CompanionMoves.Count >= option.MaximumGroups)
+                return false;
+            return current.Route.Count > 0 || !CanToggle(draft, view, option, id);
         }
 
         public static bool CanToggle(TurnDraft draft, PlayerView view, ActionOption option, string id)

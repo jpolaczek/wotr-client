@@ -35,12 +35,44 @@ namespace Wotr.Client
 
         public static CommandKind? PortraitKind(PlayerView view, ActionDieContext context, string id, TurnDraft draft = null)
         {
-            if ((view?.Decision?.Kind == DecisionKind.Guide || draft?.Kind == CommandKind.SelectGuide) &&
+            // UI-249: in the Fellowship phase a legal portrait chooses the Guide directly; there is no Change guide mode.
+            if ((view?.Decision?.Kind is DecisionKind.Guide or DecisionKind.FellowshipPhase || draft?.Kind == CommandKind.SelectGuide) &&
                 Option(view, context, CommandKind.SelectGuide, draft)?.EligibleIds.Contains(id) == true)
                 return CommandKind.SelectGuide;
+            if (RosterChoice(view, id))
+                return CommandKind.ChooseEffect;
+            if (RosterReaction(view, id) != null)
+                return CommandKind.RespondEffect;
             return Option(view, context, CommandKind.SeparateCompanions, draft)?.EligibleIds.Contains(id) == true
                 ? CommandKind.SeparateCompanions : null;
         }
+
+        // UI-249: The Breaking of the Fellowship chooses its Companions on the Hunt panel's roster, not in a second list.
+        public static bool RosterChoice(PlayerView view, string id) => CompanionsOption(view)?.EligibleIds.Contains(id) == true;
+
+        public static ActionOption CompanionsOption(PlayerView view) =>
+            view?.Decision?.Kind == DecisionKind.EffectChoice && view.Decision.Presentation == CompanionsPresentation &&
+            view.DecisionOwner == view.You && HuntActions.UsesPanel(view)
+                ? view.Options.FirstOrDefault(o => o.Kind == CommandKind.ChooseEffect && o.Enabled) : null;
+
+        public const string CompanionsPresentation = "FellowshipCompanions";
+
+        // UI-247: the Guide's own reaction outside a battle or the Hunt (Gandalf the Grey's draw after an Event card) is
+        // used on the Guide's portrait in the Fellowship panel.
+        public static EffectChoiceView RosterReaction(PlayerView view, string id)
+        {
+            if (view?.Decision?.Kind != DecisionKind.Reaction || view.DecisionOwner != view.You || view.Battle != null ||
+                view.Hunt != null || view.EventLoss != null || view.Fellowship == null || !FellowshipGuideText.IsGuide(view.Fellowship, id))
+                return null;
+            var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.RespondEffect && o.Enabled);
+            var choices = option?.EffectChoices.Where(c => option.EligibleIds.Contains(c.Id) &&
+                (c.SourceId == id || CharacterLibrary.Identity(c.SourceId) == id || FellowshipGuideText.IsGuide(view.Fellowship, c.SourceId))).ToList();
+            return choices?.Count == 1 ? choices[0] : null;
+        }
+
+        // Whether this reaction is used on the Guide's portrait, so the console does not repeat it.
+        public static bool ReactionOnRoster(PlayerView view, string reactionId) =>
+            view?.Fellowship != null && RosterReaction(view, view.Fellowship.Guide)?.Id == reactionId;
 
         public static bool Portrait(PlayerView view, TurnDraft draft, ActionDieContext context, string id)
         {
@@ -51,6 +83,10 @@ namespace Wotr.Client
                 Choose(view, draft, context, kind.Value);
             if (kind == CommandKind.SelectGuide)
                 draft.Change(p => p.GuideId = id);
+            else if (kind == CommandKind.ChooseEffect)
+                EffectChoiceDraft.Choose(draft, CompanionsOption(view), id);
+            else if (kind == CommandKind.RespondEffect)
+                ReactionDraft.Choose(draft, RosterReaction(view, id).Id);
             else
                 TravelDraft.ToggleCompanion(draft, view, DraftOptions.For(view, draft), id);
             return true;

@@ -198,7 +198,7 @@ UI-34-PANEL implements the described status, Move/Hide and Location. No selected
 
 UI-34-ROUTES: F03 uses the highlighted terrain according to UI-73. The current region click prepares to remain. From UI-219 (2026-10-17) the route has no second click: the step that uses all of the Progress moves at once (with no Progress, the click on the Fellowship's region stays at once), and a shorter legal route or a stay with Progress left is sent with ✓ in the Fellowship's decision panel (or Enter) once the server preview allows it. Undo step and Cancel only applies to the local route; mandatory disclosure remains pending decision. Preview shows progress reset, legal treatment/activation or known additional fortresses, without the result of the tiles. Change of draft, projection and panel opening does not move the camera.
 
-UI-34-GUIDES: voluntary Guide requires a clear Change guide and a warning before portraits explains the end of the phase. Forced choice remains direct. Guide has the badge and hint of the correct, visible version. Other portraits can be viewed without changing the decision. Separation: selected die → portraits → route → re-click the end of the route. Undo/Cancel does not remove the group of mandatory Hobbit return. Forced separation in Mordor shows Remove from play. Before approval, it is shown by the Separated associations cannot rejoin.
+UI-34-GUIDES (UI-249): a voluntary Guide is chosen directly on its glowing portrait, whose tooltip says before the click that it ends the phase; there is no Change guide mode. Forced choice remains direct. Guide has the badge and hint of the correct, visible version. Other portraits can be viewed without changing the decision. Separation: selected die → portraits → route → re-click the end of the route. Undo/Cancel does not remove the group of mandatory Hobbit return. Forced separation in Mordor shows Remove from play. Before approval, it is shown by the Separated associations cannot rejoin.
 
 UI-34-HUNT: click or Enter/Space on the Hunt with Eye page opens the moving window. Hover/fokus shows only a public description available. One tray supports the decision: allocation, reroll, injury and Guide in Hunt belong to the Eye, and a regional route to Fellowship/map. dice (from UI-88 without a step Eye) or drop on the Eye prepares the set; click the assigned one withdraws it. Allocate & roll/Keep roll/Reroll selected approves the entire set selected. The meshes, hits, bonuses and the limit of the spreads are separate. The cable shows Damage ?, Reveal and Stop independently. The public report retains the known results at the end of the procedure; the previous entries are available without scrolling. The lock survives GET/reconnect of the same decision, and the opening does not move the map.
 
@@ -940,8 +940,9 @@ The 2026-10-12 application: “Do not add a new move button when moving the ring
   movement. When the motion is activated, the glow pulsates gently; the reduced motion leaves a
   constant glow.
 - Tooltip gives the effect, and the hint of the panel indicates “Click the shining track symbol”.
-- Without legal movement, the icon is a simple, non-clip symbol. Hidden, declaration, change Guide
-  and entry to Mordor become buttons.
+- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the
+  declaration the Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing
+  portrait (UI-249); none of them is a panel button.
 
 <a id="proste-powiadomienia-i-pergaminowe-karty--ui-106"></a>
 ## Simple notifications and parchment card — UI-106

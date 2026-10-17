@@ -118,7 +118,7 @@ namespace Wotr.Client
             Root.EnableInClassList("fellowship-hunt-summary", hunt && latest.Hunt != null);
             controls.Refresh(latest, draft, context, enabled && !hunt, route || separation || hunt, Docked);
             status.OfferMove(controls.MoveOffered, controls.MoveDescription);
-            status.OfferHide(controls.HideOffered, FellowshipControls.HideDescription);
+            status.OfferHide(controls.HideOffered, controls.HideTooltip);
             roster.Context(latest, draft, context, enabled && !hunt);
             var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;
@@ -131,7 +131,7 @@ namespace Wotr.Client
                 Root.Add(tray);
             else if (!owns && tray.parent == Root)
                 dock.Add(tray);
-            Status.EnableInClassList("legal-target", owns && latest.Decision != null || controls.Offers);
+            Status.EnableInClassList("legal-target", owns && latest.Decision != null || controls.Offers || roster.Choosing);
             OpenNewDecision(latest, owns);
             RefreshVisibility();
         }

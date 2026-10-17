@@ -17,14 +17,15 @@ namespace Wotr.Client
         public bool HideOffered { get; private set; }
         public const string HideDescription = "Click the Ring to hide the Fellowship at its current position · No progress; this die does not enter the Hunt.";
         public string MoveDescription { get; private set; } = "";
+        public string HideTooltip { get; private set; } = HideDescription;
         private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
         private readonly Label hint = new Label { name = "fellowship-action-hint" };
 
         public FellowshipControls()
         {
             // UI-236: the figure on the map declares and the Mordor track's gate enters; no buttons here for them.
+            // UI-249: a glowing portrait chooses the Guide; no Change guide button.
             var row = BoardScreen.Row("fellowship-actions");
-            Add(row, CommandKind.SelectGuide, "Change guide", "fellowship-change-guide");
             Add(row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
             Root.Add(row);
             Root.Add(hint);
@@ -45,10 +46,15 @@ namespace Wotr.Client
             Root.SetEnabled(own);
             var inActions = view.Phase == GamePhase.ActionResolution && view.Hunt == null && view.Winner == null &&
                 !FellowshipDraft.UsesRoute(draft.Kind) && draft.Kind != CommandKind.SelectGuide;
-            MoveOffered = own && !route && enabled && FellowshipActions.Option(view, context, CommandKind.MoveFellowship, draft) != null;
-            MoveDescription = Description(view, CommandKind.MoveFellowship);
+            // UI-249: There Is Another Way's Move and Hide use the same track symbol and Ring.
+            var cardMove = FellowshipCardActions.Choice(view, CommandKind.MoveFellowship);
+            var cardHide = FellowshipCardActions.Choice(view, CommandKind.HideFellowship);
+            MoveOffered = own && !route && enabled &&
+                (FellowshipActions.Option(view, context, CommandKind.MoveFellowship, draft) != null || cardMove.Length > 0);
+            MoveDescription = cardMove.Length > 0 ? FellowshipCardActions.Description(cardMove) : Description(view, CommandKind.MoveFellowship);
             HideOffered = own && !route && enabled && !view.Fellowship.Hidden &&
-                FellowshipActions.Option(view, context, CommandKind.HideFellowship, draft) != null;
+                (FellowshipActions.Option(view, context, CommandKind.HideFellowship, draft) != null || cardHide.Length > 0);
+            HideTooltip = cardHide.Length > 0 ? FellowshipCardActions.Description(cardHide) : HideDescription;
             Offers = MoveOffered || HideOffered;
             foreach (var item in actions)
             {
@@ -56,9 +62,7 @@ namespace Wotr.Client
                 Offers |= legal && enabled;
                 item.Value.SetEnabled(enabled && legal);
                 item.Value.EnableInClassList("legal-target", legal);
-                var guideAction = item.Key == CommandKind.SelectGuide;
-                var guideVisible = !guideAction || view.Decision?.Kind == DecisionKind.FellowshipPhase && draft.Kind != CommandKind.SelectGuide;
-                item.Value.style.display = own && !route && guideVisible && legal ? DisplayStyle.Flex : DisplayStyle.None;
+                item.Value.style.display = own && !route && legal ? DisplayStyle.Flex : DisplayStyle.None;
                 item.Value.tooltip = Description(view, item.Key);
             }
             hint.text = FellowshipActions.ActionHint(view, draft, context);
@@ -69,7 +73,6 @@ namespace Wotr.Client
         {
             CommandKind.MoveFellowship when view.Fellowship.MordorStep.HasValue => "Attempt to move · No Hunt roll. Draw and resolve a Hunt tile before any advance, even with no dice in the Hunt.",
             CommandKind.MoveFellowship => "Move the Fellowship · Progress +1 and resolve the Hunt; the last known region stays unchanged.",
-            CommandKind.SelectGuide => "Highlight legal candidates · Choosing a guide ends the Fellowship phase.",
             _ => "Keep the current Guide and finish the Fellowship phase."
         };
     }

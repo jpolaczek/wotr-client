@@ -28,9 +28,13 @@ namespace Wotr.PlayTests
             var panel = board.Fellowship.Root;
             var candidate = before.Options.Single(o => o.Kind == CommandKind.SelectGuide).EligibleIds.First(id => id != before.Fellowship.Guide);
             var target = Portrait(board, candidate);
-            PointerGestureEvents.ClickAt(target);
-            Assert.AreEqual(0, room.Boundary.Commands, "Reading a portrait must not finish the phase.");
-            Assert.IsFalse(target.ClassListContains("legal-target"));
+            // UI-249: the candidates glow from the start of the phase, and the tooltip says before the click that choosing
+            // ends the phase; there is no Change guide mode.
+            Assert.IsNull(panel.Q<Button>("fellowship-change-guide"), "UI-249: no Change guide button.");
+            Assert.IsNull(panel.Q<Label>("fellowship-guide-hint"), "UI-241: the glowing portraits carry the step without a caption.");
+            Assert.IsTrue(target.ClassListContains(ChoiceGlow.ClassName), "UI-229: the candidate glows.");
+            Assert.IsTrue(target.ClassListContains("legal-target"));
+            StringAssert.Contains("ends the Fellowship phase", target.tooltip);
             if (before.Configuration.Council)
             {
                 StringAssert.Contains("Narya", target.tooltip);
@@ -38,11 +42,6 @@ namespace Wotr.PlayTests
                 StringAssert.DoesNotContain("Narya", Portrait(room.Sh.Board, "gandalf").tooltip);
                 StringAssert.Contains("Fellowship Box", room.Sh.Board.Fellowship.Root.Q<Label>("fellowship-guide").tooltip);
             }
-            PointerGestureEvents.ClickAt(panel.Q<Button>("fellowship-change-guide"));
-            await room.Settle();
-            Assert.IsNull(panel.Q<Label>("fellowship-guide-hint"), "UI-241: the glowing portraits carry the step without a caption.");
-            Assert.IsTrue(target.ClassListContains(ChoiceGlow.ClassName), "UI-229: the candidate glows.");
-            Assert.IsTrue(target.ClassListContains("legal-target"));
             var nonCandidate = Portrait(board, "base.character.gimli");
             Assert.IsFalse(nonCandidate.ClassListContains("legal-target"));
             Assert.IsTrue(nonCandidate.enabledInHierarchy);

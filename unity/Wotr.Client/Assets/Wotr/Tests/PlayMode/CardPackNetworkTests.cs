@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -53,16 +54,21 @@ namespace Wotr.PlayTests
                 var option = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.ChooseEffect);
                 var die = option.EffectChoices.First(c => c.SelectionGroup == "Miss").Id;
                 Assert.IsFalse(room.Fp.Board.Tray.Q<Button>("confirm-decision").enabledSelf);
-                var aragorn = room.Fp.Board.Tray.Q<Button>("effect-choice-base.character.strider");
-                Assert.AreEqual("Aragorn", aragorn.text);
-                Click(room.Fp, aragorn.name);
+                // UI-245: the paying Companion is its portrait in the Battle window.
+                var aragorn = Choice(room.Fp, "effect-choice-base.character.strider");
+                Assert.IsTrue(aragorn.ClassListContains(ChoiceGlow.ClassName));
+                StringAssert.Contains("Aragorn", aragorn.tooltip);
+                Click(room.Fp, "effect-choice-base.character.strider");
+                // The Battle window lays its objects out again after a choice, as a player's next click would find them.
+                await room.Settle();
                 Assert.IsFalse(room.Fp.Board.Tray.Q<Button>("confirm-decision").enabledSelf);
                 Click(room.Fp, "effect-choice-" + die);
+                await room.Settle();
                 var connected = room.Fp.Connected;
                 room.Fp.Connection.Reconnect();
                 await room.Until(() => room.Fp.Connected > connected);
                 await room.Settle();
-                Assert.IsTrue(room.Fp.Board.Tray.Q<Button>("effect-choice-" + die).ClassListContains("selected"));
+                Assert.IsTrue(Choice(room.Fp, "effect-choice-" + die).ClassListContains("selected"));
                 await room.Confirm(room.Fp);
                 Assert.AreEqual(1, room.Sh.Board.View.Battle.Attacker.Leadership);
                 Assert.AreEqual(1, room.Sh.Board.View.Battle.Attacker.Hits);
@@ -75,9 +81,9 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("blade", ScenarioKind.CardPack))
             {
-                var button = room.Fp.Board.Tray.Q<Button>("effect-choice-base.character.witch-king");
-                StringAssert.Contains("Witch", button.text);
-                Click(room.Fp, button.name);
+                var button = Choice(room.Fp, "effect-choice-base.character.witch-king");
+                StringAssert.Contains("Witch", button.tooltip);
+                Click(room.Fp, "effect-choice-base.character.witch-king");
                 await room.Confirm(room.Fp);
                 Assert.AreEqual(0, room.Sh.Board.View.Battle.Attacker.Hits);
                 Assert.AreEqual(1, room.Sh.Board.View.Battle.Attacker.SpentHits);

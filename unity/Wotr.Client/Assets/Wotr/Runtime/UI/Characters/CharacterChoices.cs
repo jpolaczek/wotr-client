@@ -75,7 +75,8 @@ namespace Wotr.Client
 
         private void AddCosts(VisualElement root, PlayerView view, TurnDraft draft, CharacterActionOption choice, Action<Action> edit)
         {
-            foreach (var id in DiceChoice(view, choice) ? choice.Dice : Enumerable.Empty<string>())
+            // UI-248: different dice are chosen in the own dice pool, where they glow (CostDice); none is listed here.
+            foreach (var id in DiceChoice(view, choice) && !CostDice.InPool(view, draft) ? choice.Dice : Enumerable.Empty<string>())
             {
                 var die = view.Dice.Single(d => d.Id == id);
                 var button = BoardScreen.Button(ExpansionLabels.DieCost(view, draft, die) + (ExpansionLabels.Special(die) ? " · " + ExpansionLabels.DieSource(die) : ""),

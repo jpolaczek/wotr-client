@@ -12,10 +12,13 @@ namespace Wotr.Client
     public sealed class BattleContext
     {
         private readonly List<Action> refresh = new List<Action>();
+        // UI-247: sends a complete choice at once (a character's reaction on its portrait).
+        private readonly Action<Action> complete;
 
         public BattleContext(VisualElement root, BattleView battle, PlayerView view, TurnDraft draft,
-            Action<Action> edit, Action<string> inspect, CardInspector cards = null)
+            Action<Action> edit, Action<string> inspect, CardInspector cards = null, Action<Action> complete = null)
         {
+            this.complete = complete;
             var row = BoardScreen.Row("battle-forces");
             row.name = "battle-forces";
             root.Add(row);
@@ -62,7 +65,11 @@ namespace Wotr.Client
             {
                 var portrait = new PortraitMedallion(character, CharacterLibrary.Name(character.DefinitionId),
                     CharacterLibrary.ShortName(view, character.Id), force.CancelledAbilities.Contains(character.Id));
-                ChoiceTarget(portrait, view, draft, edit, () => character.Id);
+                // One click handler per portrait (a manipulator that takes the press keeps it from any other); the
+                // reaction's glow is refreshed after the choice target's.
+                Action reaction = null;
+                ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => reaction?.Invoke());
+                reaction = ReactionSource(portrait, character, view, draft);
                 Points(portrait, view, draft, edit, new[] { character.Id });
                 portraits.Add(portrait);
             }
@@ -102,16 +109,18 @@ namespace Wotr.Client
         // UI-245: a portrait or figure stack the current combat card may choose glows and chooses on a click; a stack's
         // figures of one nation and kind are equivalent, so its next eligible figure is taken.
         private void ChoiceTarget(VisualElement element, PlayerView view, TurnDraft draft, Action<Action> edit, Func<string> next,
-            Func<bool> chosen = null)
+            Func<bool> chosen = null, Action otherwise = null)
         {
             if (draft == null || edit == null)
                 return;
-            element.AddManipulator(new Clickable(() =>
+            ObjectPress.Register(element, () =>
             {
                 var id = next();
                 if (id.Length > 0 && BattleObjectChoices.Offered(view, id))
                     edit(() => BattleObjectChoices.Choose(view, draft, id));
-            }));
+                else
+                    otherwise?.Invoke();
+            });
             var tooltip = element.tooltip;
             refresh.Add(() =>
             {
@@ -123,6 +132,23 @@ namespace Wotr.Client
                 element.EnableInClassList("selected", selected);
                 element.tooltip = offered ? BattleObjectChoices.Detail(view, id) + "\n" + tooltip : tooltip;
             });
+        }
+
+        // UI-247: a character's reaction (White Rider, the Witch-king's draw) is used on its portrait with one click;
+        // returns that click, or null when the character has no reaction now.
+        private Action ReactionSource(VisualElement portrait, CharacterView character, PlayerView view, TurnDraft draft)
+        {
+            var reaction = draft == null || complete == null ? null : BattleReactions.Of(view, character);
+            if (reaction == null)
+                return null;
+            portrait.pickingMode = PickingMode.Position;
+            var tooltip = BattleReactions.Offer(reaction) + "\n" + portrait.tooltip;
+            refresh.Add(() =>
+            {
+                ChoiceGlow.Apply(portrait, true);
+                portrait.tooltip = tooltip;
+            });
+            return () => complete(() => BattleReactions.Choose(draft, reaction.Id));
         }
 
         // UI-246: the Leadership points a Nazgûl card may forfeit stand on their figure or portrait, one pip each, so

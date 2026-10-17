@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -38,9 +39,16 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("shadow-breaking", ScenarioKind.CardPack))
             {
-                foreach (var id in new[] { "merry", "pippin", "boromir" })
-                    Click(room.Fp, "effect-choice-base.character." + id);
+                // UI-249: the Companions are chosen on the Hunt panel's roster portraits.
                 await room.Settle();
+                foreach (var id in new[] { "merry", "pippin", "boromir" })
+                {
+                    var portrait = room.Fp.Board.Hunt.Guides.Root.Q<Button>("fellowship-portrait-base.character." + id);
+                    Assert.IsTrue(portrait.ClassListContains(ChoiceGlow.ClassName), id + " glows on the roster.");
+                    PointerGestureEvents.ClickAt(portrait);
+                    await room.Settle();
+                }
+                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("effect-choice-base.character.merry"), "No second list of names.");
                 Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.PlannedRegions.Contains("hollin"));
                 Assert.AreEqual(7, room.Fp.Board.View.Fellowship.CompanionCount);
                 await room.Confirm(room.Fp);
@@ -100,8 +108,10 @@ namespace Wotr.PlayTests
             {
                 Assert.AreEqual(2, room.Sh.Board.View.Fellowship.Corruption);
                 await room.Settle();
-                Click(room.Sh, "effect-choice-card.balrog-of-moria.declaration");
-                await room.Confirm(room.Sh);
+                // UI-247: the Balrog's reaction is its table card's × in the Effects panel; the click sends it.
+                var reacted = room.Sh.Board.View.Revision;
+                await ReactionGestures.TableCard(room, room.Sh, "base.sh.character.17");
+                await room.At(reacted + 1);
                 var damageRevision = room.Fp.Board.View.Revision;
                 Click(room.Fp, "hunt-response-Ring");
                 await room.At(damageRevision + 1);
@@ -115,7 +125,9 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("shadow-words", ScenarioKind.CardPack))
             {
-                Click(room.Sh, "effect-choice-base.character.gimli");
+                // UI-245: Words of Power takes the Companion on its portrait in the Battle window.
+                await room.Settle();
+                PointerGestureEvents.ClickAt(room.Sh.Board.Tray.Q("portrait-base.character.gimli"));
                 await room.Confirm(room.Sh);
                 Assert.Contains("base.character.gimli", room.Fp.Board.View.Battle.Defender.CancelledAbilities);
                 Assert.IsTrue(room.Fp.Board.Tray.Query<Label>("battle-characters").ToList().Any(label => label.text.Contains("⦸ Gimli")));

@@ -207,3 +207,19 @@
     color: rgb(30, 20, 10);
 }
 #board-screen.short-viewport .battle-choice-pip { width: 11px; height: 11px; min-height: 11px; border-radius: 6px; font-size: 7px; }
+
+/* UI-251: a force section of the region panel that a card may choose (Dreadful Spells' field army or garrison). */
+#board-screen .region-hover .hover-force.choice-glow {
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.35);
+}
+#board-screen .region-hover .hover-force.choice-glow > .hover-force-header { color: rgb(255, 226, 150); }
+
+/* UI-250: a member of another planned group stays in the roster, dimmed with a blue rim; its click selects that group. */
+#board-screen .companion-portrait.planned-group { opacity: 0.7; border-color: rgb(140, 176, 210); }
+
+/* UI-113 for battle objects: a portrait or figure stack that a choice made clickable sinks while pressed (ObjectPress). */
+#board-screen .battle-force .portrait-medallion.pressed,
+#board-screen .battle-force .battle-figure.pressed { translate: 0 1px; }

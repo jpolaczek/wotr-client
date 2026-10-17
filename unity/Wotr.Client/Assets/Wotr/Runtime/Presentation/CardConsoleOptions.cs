@@ -83,7 +83,9 @@ namespace Wotr.Client
                 return None;
             if (RegionChoice(view))
                 return Alternatives(view, draft, option);
-            var options = option.EffectChoices.Where(c => !TableCard(c)).Select(c => Effect(view, draft, option, c)).ToList();
+            // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
+            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id))
+                .Select(c => Effect(view, draft, option, c)).ToList();
             if (option.EffectChoices.Any(TableCard))
                 options.Insert(0, new ConsoleOption
                 {
@@ -123,13 +125,47 @@ namespace Wotr.Client
                 ? CharacterLibrary.ShortName(view, choice.SourceId) + " · " + title : title;
         }
 
+        // UI-247: a table card's own reaction outside a battle or the Hunt (The Balrog of Moria) is used at that card's ×
+        // in the Effects panel — the reaction discards the card: source id → tooltip.
+        public static IReadOnlyDictionary<string, string> ReactionTableCards(PlayerView view)
+        {
+            var respond = TableReactionOption(view);
+            if (respond == null)
+                return NoTableCards;
+            return respond.EffectChoices.Where(c => respond.EligibleIds.Contains(c.Id) && view.Effects.Any(e => e.SourceId == c.SourceId))
+                .GroupBy(c => c.SourceId).Where(g => g.Count() == 1)
+                .ToDictionary(g => g.Key, g => "Discard " + CardLibrary.Title(g.Key) + " to use it · " + g.First().Detail);
+        }
+
+        // The reaction a table card's × uses, or "".
+        public static string TableReaction(PlayerView view, string sourceId) =>
+            ReactionTableCards(view).ContainsKey(sourceId)
+                ? TableReactionOption(view).EffectChoices.First(c => c.SourceId == sourceId).Id : "";
+
+        private static ActionOption TableReactionOption(PlayerView view) =>
+            view?.Decision?.Kind == DecisionKind.Reaction && view.DecisionOwner == view.You && view.Battle == null && view.Hunt == null &&
+            view.EventLoss == null ? view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect) : null;
+
         private static bool TableCard(EffectChoiceView choice) => choice.SourceId.Length > 0 && CardLibrary.Cards.ContainsKey(choice.SourceId);
 
         private static IReadOnlyList<ConsoleOption> ReactionOptions(PlayerView view)
         {
             var respond = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect);
-            var options = respond?.EffectChoices.Where(c => !view.Hand.Contains(c.SourceId)).Select(Response).ToList() ??
+            // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247).
+            var tableCards = ReactionTableCards(view);
+            var options = respond?.EffectChoices.Where(c => !view.Hand.Contains(c.SourceId) && !FellowshipActions.ReactionOnRoster(view, c.Id) &&
+                    !tableCards.ContainsKey(c.SourceId))
+                .Select(Response).ToList() ??
                 new List<ConsoleOption>();
+            if (tableCards.Count > 0)
+                options.Insert(0, new ConsoleOption
+                {
+                    Id = "table-cards",
+                    Name = "console-option-table-cards",
+                    Label = "Use a table card",
+                    Tooltip = "Click the lit table card's × in the Effects panel",
+                    Kind = ConsoleOptionKind.OpenEffects
+                });
             var decline = view.Options.FirstOrDefault(o => o.Kind == CommandKind.DeclineReaction);
             if (decline != null)
                 options.Add(new ConsoleOption

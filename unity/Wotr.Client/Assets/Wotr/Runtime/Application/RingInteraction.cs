@@ -47,14 +47,16 @@ namespace Wotr.Client
             var armed = RingChoice.Armed(draft);
             var dice = RingChoice.Dice(view, draft);
             var choosing = RingChoice.Step(draft) == RingStep.Die;
+            // UI-248: a payment's alternative dice glow in the same rhythm (CostDice).
+            var paying = CostDice.InPool(view, draft);
             board.OwnDice.EnableInClassList(ChoosingClass, choosing);
-            pulse.Run(choosing);
+            pulse.Run(choosing || paying);
             foreach (var button in board.OwnDice.Query<Button>().ToList())
             {
                 if (button.userData is not DraftToken token || token.Object != DraftObject.Die)
                     continue;
                 button.EnableInClassList(CandidateClass, armed && dice.Contains(token.Id));
-                ChoiceGlow.Apply(button, choosing && dice.Contains(token.Id));
+                ChoiceGlow.Apply(button, choosing && dice.Contains(token.Id) || paying && CostDice.Glows(view, draft, token.Id));
                 button.EnableInClassList(MutedClass, armed && !dice.Contains(token.Id));
             }
         }
