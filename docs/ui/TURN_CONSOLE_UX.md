@@ -82,6 +82,16 @@ The console replaces the present dock and has a **fixed height** of the entire l
   window, the Fellowship panel, the Characters list or the console's options. The status reopens that host — since
   UI-244 also the Fellowship panel and the table effects — and a choice no object owns yet keeps the decision
   window as its fallback.
+- UI-254 (2026-10-17, owner's request): the plaque opens the host of the decision and a second click closes it again
+  (Reinforcements, the decision window, the battle window, the Hunt panel, the Fellowship panel, the table effects,
+  the end of the game, or the window the decision notice opens), so a decision's window can be put away and brought
+  back from the console; its tooltip says "Click to open or close …". Excess units outside a battle — and a card's
+  figure choice made in the region panel — now have a host: the plaque (and the decision notice) focus the map on the
+  region of the first offered figure (`MapCanvas.Focus`) and open its region panel as a decision panel
+  (`RegionHover.OpenDecision`) that stays while the decision waits. A decision the game waits on (`RequiredDecisions`:
+  excess units, battle and event losses, Hunt damage, excess hand cards) also turns the decision notice at the top into
+  its red required variant (`DecisionNotice.Required`). No new window is made for any of them. Tests:
+  `RequiredDecisionTests`, `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
 - UI-242 (2026-10-17): hints and notices never say "components"; they name what to click for the step — dice,
   armies and regions, units, characters, cards, a nation, regions — from the step's command and presentation
   (`DecisionObjects`), e.g. "Select the highlighted armies and regions, then confirm." A refused drop names the object

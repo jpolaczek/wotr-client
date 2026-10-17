@@ -96,7 +96,7 @@ namespace Wotr.PlayTests
                             yield return Settle();
                             client.Board.Map.Fit(); // Explicit player action after a viewport resize, never an automatic camera move.
                             yield return Settle();
-                            if (view.Battle != null)
+                            if (view.Battle != null && !client.Board.Battles.IsOpen)
                             {
                                 CardNetworkTests.Click(client.Board.Console.Status.Plaque);
                                 yield return Settle();
@@ -190,7 +190,8 @@ namespace Wotr.PlayTests
                             PlayTheDefender(view, kind);
                         client.Apply(view);
                         yield return Settle();
-                        CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+                        if (!client.Board.Battles.IsOpen)
+                            CardNetworkTests.Click(client.Board.Console.Status.Plaque);
                         yield return Settle();
                         var tray = client.Board.Tray;
                         var own = tray.Q(defender ? "battle-defender" : "battle-attacker");
@@ -249,7 +250,8 @@ namespace Wotr.PlayTests
                 var view = BattleScreenFixture.Create(CommandKind.CommitCombatCard);
                 client.Apply(view);
                 yield return Settle();
-                CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+                if (!client.Board.Battles.IsOpen)
+                    CardNetworkTests.Click(client.Board.Console.Status.Plaque);
                 yield return Settle();
                 Assert.IsFalse(client.Board.Tray.Q<Button>("battle-card-attacker").enabledSelf);
                 var pan = client.Board.Map.Camera.Pan;

@@ -35,7 +35,7 @@ namespace Wotr.PlayTests
                             for (var frame = 0; frame < 10; frame++)
                                 yield return null;
                             client.Board.Map.Fit();
-                            if (client.Board.View.Battle != null || client.Board.View.EventLoss != null)
+                            if ((client.Board.View.Battle != null || client.Board.View.EventLoss != null) && !client.Board.Battles.IsOpen)
                             {
                                 CardNetworkTests.Click(client.Board.Console.Status.Plaque);
                                 for (var frame = 0; frame < 3; frame++)

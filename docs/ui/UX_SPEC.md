@@ -1224,3 +1224,14 @@ Every own decision has one host object family (`DecisionRoutes`: map, region pan
 hand, Battle, Hunt, Fellowship, characters, console, or the generic window as a fallback), read only from the
 decision's kind and presentation. The console status opens that host; UI-245–UI-251 move the remaining
 presentations from the generic window onto their objects. Test: `DecisionRoutesTests`.
+
+## Required decisions reach their own window — UI-254 (2026-10-17)
+
+The owner's request: a decision the game waits on — excess units, battle and event losses, Hunt damage, excess hand
+cards (`RequiredDecisions`) — turns the decision notice at the top into a red enamel notice with a "!" that pulses in
+the plaque's rhythm (still with Reduced motion) and goes when the decision is resolved. The notice and the console's
+plaque open the window that already handles the decision — the region panel for excess units (the map focuses that
+region), the battle window for losses, the Hunt panel for its damage, the hand for excess cards — and a second click on
+the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md),
+[CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
+`BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.

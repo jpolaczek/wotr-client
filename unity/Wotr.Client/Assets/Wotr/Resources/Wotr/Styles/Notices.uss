@@ -51,6 +51,33 @@
 .notice-log-icon { background-image: resource("Wotr/Art/UI/icons/log"); }
 .notice-battle-icon { width: 18px; height: 18px; background-image: resource("Wotr/Art/UI/dice/faces/army"); }
 
+/* UI-254: a decision the game waits on (excess units, losses, Hunt damage, excess cards) wears red enamel with a gold
+   rim and a "!" in front of its text, apart from the plain decision notice; under .motion-enabled it pulses in the
+   plaque's 750 ms must-act rhythm (ChoicePulse), and Reduced motion keeps it still. */
+#board-screen .notification-bar .decision-notice.required-decision {
+    flex-shrink: 0;
+    margin: 0 4px 0 0;
+    padding: 0 12px;
+    background-image: none;
+    background-color: rgb(128, 26, 20);
+    border-width: 1px;
+    border-color: rgb(222, 178, 96);
+    border-radius: 4px;
+    color: rgb(255, 236, 196);
+    -unity-font-style: bold;
+}
+#board-screen .notification-bar .decision-notice.required-decision:hover,
+#board-screen .notification-bar .decision-notice.required-decision:focus { background-color: rgb(158, 38, 28); }
+.motion-enabled #board-screen .notification-bar .decision-notice.required-decision {
+    transition-property: background-color, border-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .notification-bar .decision-notice.required-decision.choice-glow-pulse {
+    background-color: rgb(92, 18, 14);
+    border-color: rgb(150, 112, 62);
+}
+
 /* The stack: the newest pennant in front, up to two pennants of older notices peeking out behind it,
    and a wax seal with the count. Fixed-size icons, no text: the tooltip names the newest action. */
 #board-screen .notification-bar .notice-stack {

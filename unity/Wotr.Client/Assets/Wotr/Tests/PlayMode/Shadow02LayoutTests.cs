@@ -29,7 +29,7 @@ namespace Wotr.PlayTests
                             client.Apply(view);
                             for (var frame = 0; frame < 10; frame++)
                                 yield return null;
-                            if (view.Battle != null || view.EventLoss != null)
+                            if ((view.Battle != null || view.EventLoss != null) && !client.Board.Battles.IsOpen)
                             {
                                 CardNetworkTests.Click(client.Board.Console.Status.Plaque);
                                 for (var frame = 0; frame < 3; frame++)

@@ -115,7 +115,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleRings.cs` | 29 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 35 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 107 | text | option.Label |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionNotice.cs` | 15 | text | ◎ Your decision |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionNotice.cs` | 21 | text | ◎ Your decision |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 141 | text | Check result |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 199 | icon | back |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 208 | text | ContextualHunt ? "Skip" : "Decline" |

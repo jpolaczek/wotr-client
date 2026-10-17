@@ -579,6 +579,56 @@ namespace Wotr.PlayTests
             CollectionAssert.AreEqual(new[] { candidates[0] }, test.Backend.Last.Payload.Ids);
         }
 
+        // UI-254: excess units are a decision the game waits on. The red notice names it; the console's plaque focuses the
+        // region and opens its panel, which stays while the pointer is back on the console; the plaque closes it and the
+        // notice brings it back; the figures and ✓ resolve it.
+        [UnityTest]
+        public IEnumerator RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice()
+        {
+            var fixture = new BoardFixture(true);
+            fixture.Put("gondor", UnitKind.Regular, "osgiliath", 9);
+            fixture.Refresh();
+            var candidates = fixture.View.Units.Where(u => u.Location == "osgiliath" && ArmyDraft.IsCombat(u)).Select(u => u.Id).ToList();
+            fixture.View.ActionSequence = null;
+            fixture.View.Decision = new DecisionView { Kind = DecisionKind.RemoveExcess, RequiredCount = 2 };
+            fixture.View.Options.Clear();
+            fixture.View.Options.Add(new ActionOption { Kind = CommandKind.RemoveExcess, Enabled = true, EligibleIds = candidates, Minimum = 2, Maximum = 2 });
+            using var test = new Harness(fixture);
+            yield return Settle();
+            var board = test.Board;
+            Assert.IsTrue(board.Notice.Required, "Excess units raise the required notice.");
+            StringAssert.Contains("Return 2 excess units", board.Notice.Button.text);
+            board.Map.Fit();
+            yield return Settle();
+            PointerGestureEvents.ClickAt(board.Console.Status.Plaque);
+            yield return Settle();
+            Assert.AreEqual("osgiliath", board.Map.Selected, "The plaque focuses the region.");
+            Assert.IsTrue(board.Hover.HoldsDecision, "The plaque opens the region panel for the decision.");
+            Assert.IsTrue(board.Hover.Panel.Root.Q<Button>("hover-figure-" + candidates[0]).ClassListContains("eligible-figure"));
+            Assert.IsFalse(board.DecisionWindow.IsOpen, "No new window: the region panel is the decision's host.");
+            yield return new WaitForSecondsRealtime(.5f);
+            Assert.AreEqual(DisplayStyle.Flex, board.Hover.Panel.Root.resolvedStyle.display, "The pointer on the console keeps the panel.");
+            PointerGestureEvents.ClickAt(board.Console.Status.Plaque);
+            yield return Settle();
+            Assert.AreEqual(DisplayStyle.None, board.Hover.Panel.Root.resolvedStyle.display, "The plaque closes the panel it opened.");
+            PointerGestureEvents.ClickAt(board.Notice.Button);
+            yield return Settle();
+            Assert.IsTrue(board.Hover.HoldsDecision, "The notice opens the same panel.");
+            Click(board.Hover.Panel.Root.Q<Button>("hover-figure-" + candidates[0]));
+            yield return Settle();
+            Click(board.Hover.Panel.Root.Q<Button>("hover-figure-" + candidates[1]));
+            yield return Settle();
+            Assert.IsTrue(board.Hover.HoldsDecision, "Choosing figures keeps the panel.");
+            var confirm = board.Console.Actions.Confirm;
+            for (var frame = 0; frame < 120 && !confirm.enabledSelf; frame++)
+                yield return null;
+            Assert.IsTrue(confirm.enabledSelf, confirm.tooltip + " · " + board.Console.Status.Hint.text);
+            PointerGestureEvents.ClickAt(confirm);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(CommandKind.RemoveExcess, test.Backend.Last.Kind);
+            CollectionAssert.AreEquivalent(candidates.Take(2), test.Backend.Last.Payload.Ids);
+        }
+
         [UnityTest]
         public IEnumerator EliteDragAndPoliticalEmblemNeedOnlyOneCommitEach()
         {

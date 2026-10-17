@@ -25,6 +25,10 @@ namespace Wotr.Client
         // this delay, which leaves time to cross the gap between the region and the panel.
         private const long LeaveDelay = 300;
         private IVisualElementScheduledItem leaving;
+        // UI-254: the decision whose panel this is, when the console's plaque or the decision notice opened it. Such a
+        // panel stays while the decision waits — no leave delay, presses elsewhere, wheel or focus loss close it — and
+        // follows its region when the camera moves; Esc, the plaque, a click on a region or the resolution close it.
+        private string decision = "";
         private readonly System.Collections.Generic.Dictionary<VisualElement, PickingMode> dragPicking =
             new System.Collections.Generic.Dictionary<VisualElement, PickingMode>();
 
@@ -58,8 +62,13 @@ namespace Wotr.Client
             });
             map.RegisterCallback<GeometryChangedEvent>(_ => Position());
             stage.RegisterCallback<GeometryChangedEvent>(_ => Position());
-            map.RegisterCallback<WheelEvent>(_ => Close(), TrickleDown.TrickleDown);
+            map.RegisterCallback<WheelEvent>(_ => { if (!HoldsDecision) Close(); }, TrickleDown.TrickleDown);
+            map.CameraChanged += () => { if (HoldsDecision) Position(); };
         }
+
+        public bool HoldsDecision => decision.Length > 0 && explicitRegion.Length > 0;
+
+        public bool HoldsDecisionOf(string decisionId) => HoldsDecision && decision == decisionId;
 
         public void Apply(PlayerView latest)
         {
@@ -67,6 +76,8 @@ namespace Wotr.Client
                 Close();
             view = latest;
             index = new RegionViewIndex(latest);
+            if (decision.Length > 0 && latest.Decision?.Id != decision)
+                Close();
             if (explicitRegion.Length > 0)
                 Show();
         }
@@ -75,9 +86,17 @@ namespace Wotr.Client
         {
             if (Excluded?.Invoke(region) == true) { Close(); return; }
             CancelLeave();
+            decision = "";
             explicitRegion = region;
             Show();
             Panel.Root.BringToFront();
+        }
+
+        // UI-254: opens the region panel that hosts a decision and keeps it while that decision waits.
+        public void OpenDecision(string region, string decisionId)
+        {
+            Open(region);
+            decision = explicitRegion == region ? decisionId ?? "" : "";
         }
 
         // UI-103: a click on the region whose panel is open closes that panel; another region switches to it.
@@ -115,7 +134,7 @@ namespace Wotr.Client
             pressedOpen = e.button == 0 && target != null && (target == map || map.Contains(target)) ? explicitRegion : "";
             holdPanel = e.button == 0 && target != null &&
                 (target == Panel.Root || Panel.Root.Contains(target) || IsArmyMarker(target));
-            if (!holdPanel && RelatedInspection?.Invoke(target) != true)
+            if (!holdPanel && !HoldsDecision && RelatedInspection?.Invoke(target) != true)
                 Close();
         }
 
@@ -150,7 +169,7 @@ namespace Wotr.Client
         {
             if (explicitRegion.Length == 0)
                 return;
-            if (region == explicitRegion || Inside(target))
+            if (HoldsDecision || region == explicitRegion || Inside(target))
                 CancelLeave();
             else
                 ScheduleLeave();
@@ -192,7 +211,7 @@ namespace Wotr.Client
             holdPanel = false;
             map.SetHovered("");
             // UI-189: leaving the game window is leaving the region and the panel too.
-            if (explicitRegion.Length > 0)
+            if (explicitRegion.Length > 0 && !HoldsDecision)
                 ScheduleLeave();
         }
 
@@ -241,13 +260,14 @@ namespace Wotr.Client
             holdPanel = false;
             rendered = "";
             explicitRegion = "";
+            decision = "";
             Panel.Hide();
             map.InspectRegion("");
         }
 
         private void ApplicationFocus(bool focused)
         {
-            if (!focused)
+            if (!focused && !HoldsDecision)
                 Close();
         }
     }

@@ -225,11 +225,65 @@ namespace Wotr.Client
             return own ? Host.Notice : Host.None;
         }
 
+        // UI-254: the plaque also closes the window it opens, so a decision's window can be put away and brought back.
         private void OpenDecisionHost()
         {
             if (view == null)
                 return;
-            switch (Target(board.DecisionWindow.HasChoices))
+            var host = Target(board.DecisionWindow.HasChoices);
+            if (IsOpen(host))
+                Close(host);
+            else
+                Open(host);
+        }
+
+        private bool IsOpen(Host host) => host switch
+        {
+            Host.Reinforcements => board.Reinforcements.IsOpen,
+            Host.DecisionWindow => board.DecisionWindow.IsOpen,
+            Host.Battle => board.Battles.IsOpen,
+            Host.Hunt => board.Hunt.IsOpen,
+            Host.Notice => board.Notice.IsOpen,
+            Host.GameEnd => board.GameEnd.IsOpen,
+            Host.Fellowship => board.Fellowship.IsOpen,
+            Host.Effects => board.TableEffects.IsOpen,
+            _ => false
+        };
+
+        private void Close(Host host)
+        {
+            switch (host)
+            {
+                case Host.Reinforcements:
+                    board.Reinforcements.Close();
+                    break;
+                case Host.DecisionWindow:
+                    board.DecisionWindow.Close();
+                    break;
+                case Host.Battle:
+                    board.Battles.Close();
+                    break;
+                case Host.Hunt:
+                    board.Hunt.Close();
+                    break;
+                case Host.Notice:
+                    board.Notice.Close();
+                    break;
+                case Host.GameEnd:
+                    board.GameEnd.Close();
+                    break;
+                case Host.Fellowship:
+                    board.Fellowship.Close();
+                    break;
+                case Host.Effects:
+                    board.TableEffects.Close();
+                    break;
+            }
+        }
+
+        private void Open(Host host)
+        {
+            switch (host)
             {
                 case Host.Reinforcements:
                     board.Reinforcements.Show();
@@ -260,14 +314,14 @@ namespace Wotr.Client
 
         private string Opens(bool choices) => Target(choices) switch
         {
-            Host.Reinforcements => "Click to open Reinforcements",
-            Host.DecisionWindow => "Click to open the decision window",
-            Host.Battle => "Click to open the battle window",
-            Host.Hunt => "Click to open the Hunt panel",
-            Host.Notice => "Click to show your decision",
-            Host.GameEnd => "Click to show the end of the game",
-            Host.Fellowship => "Click to open the Fellowship panel",
-            Host.Effects => "Click to open the table effects",
+            Host.Reinforcements => "Click to open or close Reinforcements",
+            Host.DecisionWindow => "Click to open or close the decision window",
+            Host.Battle => "Click to open or close the battle window",
+            Host.Hunt => "Click to open or close the Hunt panel",
+            Host.Notice => "Click to show or hide your decision",
+            Host.GameEnd => "Click to show or hide the end of the game",
+            Host.Fellowship => "Click to open or close the Fellowship panel",
+            Host.Effects => "Click to open or close the table effects",
             _ => ""
         };
 

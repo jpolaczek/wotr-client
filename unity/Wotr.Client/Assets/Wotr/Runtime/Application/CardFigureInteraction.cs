@@ -46,12 +46,13 @@ namespace Wotr.Client
             return true;
         }
 
-        // A lit region opens its panel; any other click keeps its usual meaning (a Dead Men destination).
+        // A lit region opens its panel; any other click keeps its usual meaning (a Dead Men destination). UI-254: the
+        // panel hosts the decision, so it stays while the pointer goes to the console's ✓.
         public bool Region(string region)
         {
             if (!Active || busy() || !CardFigureDraft.IsSource(view, draft, region))
                 return false;
-            board.Hover.Open(region);
+            board.Hover.OpenDecision(region, view.Decision.Id);
             return true;
         }
     }

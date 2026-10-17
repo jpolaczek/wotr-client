@@ -150,6 +150,12 @@ floating decision window (UI-160).
   (`EffectChoiceDraft.Choose`, or the excess count). A choice of exactly one figure is sent with its click; otherwise
   the console counts "Chosen n of m" and its ✓ confirms. The Dead Men's destination stays a map click. The tray
   builds no figure buttons, so the window stays closed; excess after a battle stays in the battle window.
+- **UI-254.** A click on a lit region, the console's plaque or the decision notice opens the region panel as a
+  decision panel (`RegionHover.OpenDecision`): it keeps no UI-189 leave delay, survives presses elsewhere, the wheel
+  and focus loss, follows its region when the camera moves, and closes with Esc, the plaque, a click on a region, or
+  when its decision is resolved (`RegionHover.Apply`, a new decision id). The plaque and the notice focus the map on
+  the region of the first offered figure (`DecisionAttention` → `Region`). Excess units are a required decision: the
+  decision notice wears its red variant until they are returned.
 - **UI-216.** `CardArmyEvent` (presentation) owns the player's ArmyEvent decision with a MoveArmies or AttackArmy
   draft. `CardArmyInteraction` (application) lights the event's armies on the map and, in the region panel, the
   planned army's figures (eligible, and selected while they move). A click on a lit army that is not a destination
