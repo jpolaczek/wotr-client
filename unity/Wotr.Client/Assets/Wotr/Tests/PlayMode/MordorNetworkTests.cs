@@ -155,7 +155,7 @@ namespace Wotr.PlayTests
                     var board = room.Fp.Board;
                     var shadowPan = room.Sh.Board.Map.Camera.Pan;
                     if (hidden)
-                        await Action(room, "fellowship-enter");
+                        await FellowshipGestures.EnterMordor(room.Fp);
                     else
                     {
                         // UI-155: the gate on the map enters with one click.

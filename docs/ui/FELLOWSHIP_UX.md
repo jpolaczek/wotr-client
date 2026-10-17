@@ -378,3 +378,17 @@ The owner's request: no separate Hide button. While the Fellowship is revealed a
 status plaque in the corner tab ("Rivendell · Revealed") glows green, reads "Revealed · Hide" and one click
 hides the Fellowship at once (UI-142). Without such a die the plaque only unrolls the panel, as before; the
 panel's hint says to click the glowing plaque. On the Mordor track the figure keeps its own hide click (UI-155).
+
+## Declare and Enter Mordor without panel buttons — UI-236 (2026-10-17)
+
+The Fellowship panel has no Declare position or Enter Mordor button. In the Fellowship phase:
+
+- the Fellowship figure on the map declares: while the server offers the declaration, the figure shows at every zoom
+  with a green frame (`fellowship-declare-target`) and the tooltip "Click to declare the Fellowship's position"; one
+  click starts the route on the map (`MapFellowshipMarker.DeclareRequested`);
+- the glowing gate (or step 0) of the Mordor track enters Mordor (UI-155);
+- the console names both: "Declare: click the Fellowship figure · Enter Mordor: click the glowing gate · … or continue
+  to the Hunt." (`TurnConsoleState`).
+
+Change guide and Finish phase stay in the panel. Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
+the PlayMode gestures `FellowshipGestures.Declare` and `FellowshipGestures.EnterMordor`.

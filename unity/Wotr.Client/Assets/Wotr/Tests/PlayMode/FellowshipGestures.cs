@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.UIElements;
 using Wotr.Client;
@@ -23,8 +24,34 @@ namespace Wotr.PlayTests
                 CardNetworkTests.Click(client.Board.Fellowship.Status);
                 return;
             }
+            // UI-236: the figure on the map declares its position; the panel has no button for it.
+            if (name == "fellowship-declare")
+            {
+                Declare(client);
+                return;
+            }
             client.Board.Fellowship.Open();
             CardNetworkTests.Click(client.Board.Fellowship.Root.Q<Button>(name));
+        }
+
+        public static void Declare(MountedMatchClient client)
+        {
+            var marker = client.Board.Map.FellowshipMarker;
+            Assert.IsTrue(marker.DeclareOffered, "The figure offers the declaration.");
+            Assert.IsTrue(marker.Root.ClassListContains(MapFellowshipMarker.DeclareClass));
+            Assert.AreEqual(DisplayStyle.Flex, marker.Root.style.display.value, "The figure is in view to declare.");
+            CardNetworkTests.Click(marker.Root);
+        }
+
+        // UI-236: the gate of the Mordor track enters; the view comes to the track first, as a player's would.
+        public static async Task EnterMordor(MountedMatchClient client)
+        {
+            var map = client.Board.Map;
+            map.FocusOn(map.Data.MordorTrack.Bounds.center, map.Camera.Zoom);
+            await Task.Delay(120);
+            var gate = map.MordorTrack.GateButton(client.Board.View.Fellowship.RegionId);
+            Assert.IsTrue(gate.ClassListContains(MapMordorTrack.NextClass), "The Fellowship's gate glows.");
+            CardNetworkTests.Click(gate);
         }
 
         public static void Portrait(MountedMatchClient client, string id)

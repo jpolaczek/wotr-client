@@ -69,6 +69,13 @@ namespace Wotr.PlayTests
                 await room.At(revision + 1);
                 return;
             }
+            if (kind == CommandKind.EnterMordor)
+            {
+                inspect?.Invoke(client);
+                await FellowshipGestures.EnterMordor(client);
+                await room.At(revision + 1);
+                return;
+            }
             var action = FellowshipButton(kind);
             if (action != null)
             {
@@ -123,7 +130,6 @@ namespace Wotr.PlayTests
         private static string FellowshipButton(CommandKind kind) => kind switch
         {
             CommandKind.ContinueFellowship => "fellowship-continue",
-            CommandKind.EnterMordor => "fellowship-enter",
             CommandKind.DeclareFellowship => "fellowship-declare",
             CommandKind.MoveFellowship => "fellowship-progress",
             CommandKind.HideFellowship => "fellowship-status",

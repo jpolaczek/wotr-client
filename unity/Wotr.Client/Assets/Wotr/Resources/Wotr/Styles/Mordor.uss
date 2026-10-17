@@ -94,3 +94,10 @@
     border-width: 2px;
     border-color: rgb(144, 203, 172);
 }
+/* UI-236: the figure that declares its position glows like the other legal targets on the map. */
+.map .fellowship-marker.fellowship-declare-target {
+    border-width: 2px;
+    border-color: rgb(144, 203, 172);
+    border-radius: 8px;
+}
+.map .fellowship-marker.fellowship-declare-target:hover { scale: 1.08 1.08; }

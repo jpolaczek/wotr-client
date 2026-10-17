@@ -145,7 +145,7 @@ namespace Wotr.PlayTests
                     await RerollAndReveal(room, token);
                 using (var room = await Room.Connect(fixture, fixture.MordorEntryMatch, token))
                 {
-                    FellowshipGestures.Action(room.Fp, "fellowship-enter");
+                    await FellowshipGestures.EnterMordor(room.Fp);
                     await room.At(1, token);
                     Assert.AreEqual(0, room.Fp.Board.View.Fellowship.MordorStep);
                     Assert.IsFalse(room.Fp.Board.View.Fellowship.Hidden);

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -52,10 +54,26 @@ namespace Wotr.Client
         {
             DecisionKind.Action when die.DieId.Length == 0 => "Choose an action die, then what it acts on: the map, a card or a panel.",
             DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels.",
-            DecisionKind.FellowshipPhase => "Use the Fellowship panel, or continue to the Hunt.",
+            DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             _ => "Click the status to open this decision."
         };
+
+        // UI-236: the map's figure declares and the Mordor track's gate enters, so the guidance names them.
+        private static string FellowshipGuidance(PlayerView view)
+        {
+            var steps = new List<string>();
+            if (Offered(view, CommandKind.DeclareFellowship))
+                steps.Add("Declare: click the Fellowship figure");
+            if (Offered(view, CommandKind.EnterMordor))
+                steps.Add("Enter Mordor: click the glowing gate");
+            if (Offered(view, CommandKind.SelectGuide))
+                steps.Add("Guide: Fellowship panel");
+            steps.Add(steps.Count == 0 ? "Continue to the Hunt." : "or continue to the Hunt.");
+            return string.Join(" · ", steps);
+        }
+
+        private static bool Offered(PlayerView view, CommandKind kind) => view.Options.Any(o => o.Kind == kind && o.Enabled);
 
         private static string DieText(ActionDieContext die) =>
             die.DieId.Length == 0 || !die.Face.HasValue ? "" : " · " + FaceName(die.Face.Value) + " die";

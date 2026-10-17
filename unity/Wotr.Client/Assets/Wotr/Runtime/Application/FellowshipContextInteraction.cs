@@ -27,6 +27,7 @@ namespace Wotr.Client
             board.Map.MordorTrack.StepClicked += Step;
             board.Map.MordorTrack.GateClicked += Gate;
             board.Map.FellowshipMarker.HideRequested += Hide;
+            board.Map.FellowshipMarker.DeclareRequested += Declare;
             board.Map.MordorTrack.Entered += Entered;
         }
 
@@ -49,6 +50,7 @@ namespace Wotr.Client
             var move = !busy() && step < MordorTrackGeometry.LastStep && Offered(CommandKind.MoveFellowship);
             board.Map.MordorTrack.Offer(enter ? 0 : move ? step.Value + 1 : -1, enter ? fellowship.RegionId : "");
             board.Map.FellowshipMarker.OfferHide(!busy() && step.HasValue && !fellowship.Hidden && Offered(CommandKind.HideFellowship));
+            board.Map.FellowshipMarker.OfferDeclare(!busy() && !step.HasValue && draft.Kind == null && Offered(CommandKind.DeclareFellowship));
         }
 
         private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null;
@@ -58,6 +60,8 @@ namespace Wotr.Client
         private void Gate(string region) => Choose(CommandKind.EnterMordor);
 
         private void Hide() => Choose(CommandKind.HideFellowship);
+
+        private void Declare() => Choose(CommandKind.DeclareFellowship);
 
         private void HighlightDice()
         {
@@ -111,6 +115,7 @@ namespace Wotr.Client
             board.Map.MordorTrack.StepClicked -= Step;
             board.Map.MordorTrack.GateClicked -= Gate;
             board.Map.FellowshipMarker.HideRequested -= Hide;
+            board.Map.FellowshipMarker.DeclareRequested -= Declare;
             board.Map.MordorTrack.Entered -= Entered;
         }
     }

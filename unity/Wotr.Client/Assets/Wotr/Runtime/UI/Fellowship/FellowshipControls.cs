@@ -23,10 +23,9 @@ namespace Wotr.Client
 
         public FellowshipControls()
         {
+            // UI-236: the figure on the map declares and the Mordor track's gate enters; no buttons here for them.
             var row = BoardScreen.Row("fellowship-actions");
-            Add(row, CommandKind.DeclareFellowship, "Declare position", "fellowship-declare");
             Add(row, CommandKind.SelectGuide, "Change guide", "fellowship-change-guide");
-            Add(row, CommandKind.EnterMordor, "Enter Mordor", "fellowship-enter");
             Add(row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
             Root.Add(row);
             Root.Add(hint);
@@ -75,9 +74,7 @@ namespace Wotr.Client
         {
             CommandKind.MoveFellowship when view.Fellowship.MordorStep.HasValue => "Attempt to move · No Hunt roll. Draw and resolve a Hunt tile before any advance, even with no dice in the Hunt.",
             CommandKind.MoveFellowship => "Move the Fellowship · Progress +1 and resolve the Hunt; the last known region stays unchanged.",
-            CommandKind.DeclareFellowship => "Choose the actual route and declare the Fellowship’s position.",
             CommandKind.SelectGuide => "Highlight legal candidates · Choosing a guide ends the Fellowship phase.",
-            CommandKind.EnterMordor => "Enter the Mordor track and prepare the Hunt pool.",
             _ => "Keep the current Guide and finish the Fellowship phase."
         };
     }

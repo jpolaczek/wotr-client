@@ -52,6 +52,19 @@ namespace Wotr.EditorTests
             StringAssert.EndsWith("· Hunt allocation", TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Headline);
         }
 
+        // UI-236: the Fellowship phase names the map's figure and the track's gate instead of panel buttons.
+        [Test]
+        public void FellowshipPhaseNamesTheFigureAndTheGate()
+        {
+            var view = View(Side.FreePeoples, Side.FreePeoples, DecisionKind.FellowshipPhase);
+            Assert.AreEqual("Continue to the Hunt.", TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Guidance);
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclareFellowship, Enabled = true });
+            view.Options.Add(new ActionOption { Kind = CommandKind.EnterMordor, Enabled = true });
+            var guidance = TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Guidance;
+            StringAssert.StartsWith("Declare: click the Fellowship figure · Enter Mordor: click the glowing gate", guidance);
+            StringAssert.EndsWith("or continue to the Hunt.", guidance);
+        }
+
         [Test]
         public void PhasesAndOtherDecisionsKeepOneLine()
         {

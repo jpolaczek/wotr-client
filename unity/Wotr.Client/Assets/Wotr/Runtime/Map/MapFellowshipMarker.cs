@@ -32,6 +32,11 @@ namespace Wotr.Client
         public event System.Action HideRequested;
         public const string HideClass = "fellowship-hide-target";
         public bool HideOffered { get; private set; }
+        // UI-236: in the Fellowship phase a click on the figure declares its position; the panel has no button for it.
+        public event System.Action DeclareRequested;
+        public const string DeclareClass = "fellowship-declare-target";
+        public const string DeclareHint = "Click to declare the Fellowship's position · Choose the route on the map.";
+        public bool DeclareOffered { get; private set; }
         private string regionId = "";
         private MordorTrackState mordor = MordorTrackState.Outside;
         private bool tileShown;
@@ -50,6 +55,8 @@ namespace Wotr.Client
             {
                 if (HideOffered && mordor.Active)
                     HideRequested?.Invoke();
+                else if (DeclareOffered && !mordor.Active)
+                    DeclareRequested?.Invoke();
                 else
                     Clicked?.Invoke();
             };
@@ -103,6 +110,15 @@ namespace Wotr.Client
                 marker.tooltip = mordor.FigureTooltip + (offered ? "\nClick to hide the Fellowship." : "");
         }
 
+        public void OfferDeclare(bool offered)
+        {
+            if (DeclareOffered == offered)
+                return;
+            DeclareOffered = offered;
+            marker.EnableInClassList(DeclareClass, offered && !mordor.Active);
+            map.Refresh();
+        }
+
         public void Inspect(bool open)
         {
             if (inspected == open)
@@ -125,13 +141,14 @@ namespace Wotr.Client
             marker.style.opacity = map.Figures?.FellowshipArriving == true ? .25f : 1;
             var visible = map.Data.Shapes.TryGetValue(regionId, out var shape);
             var anchor = visible ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1])) : Vector2.zero;
+            // A figure that offers the declaration is the control for it, so it shows at every zoom.
             visible &= map.NearView(anchor) &&
-                (hovered || inspected || map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
+                (DeclareOffered || hovered || inspected || map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
             Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
-            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position";
+            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" + (DeclareOffered ? "\n" + DeclareHint : "");
         }
 
         // The first place whose figure stands with its feet inside the region at the current zoom; a region too small
