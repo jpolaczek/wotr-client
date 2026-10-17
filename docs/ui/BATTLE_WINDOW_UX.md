@@ -333,3 +333,12 @@ The user's application from 2026-10-16: the reroll and hit chapter is to be on t
   checks that the entire battle window (with a footer) ends above the turn console. This Asertion
   detected that the progress grid under the columns hid the buttons under the console on the low
   screen.
+
+## The window keeps its place during a battle — UI-225 (2026-10-17)
+
+Reported by the owner in 0.9.0-rc.2: after "No card" the window vanished for a moment and reappeared elsewhere. The
+window re-ran its placement search on every size change, and the card step changes both its content (the Combat
+tiles leave) and the room it keeps free for a card preview. Now a window placed for a battle keeps its place when its
+content changes size; it is placed again only when it no longer fits there (outside the board or over a HUD panel),
+when the map is resized or panned (it follows its region, as before) or when it is reopened. A window the player
+moved keeps the player's place, as before.

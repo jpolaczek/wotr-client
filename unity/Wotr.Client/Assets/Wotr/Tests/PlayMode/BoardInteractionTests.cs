@@ -298,12 +298,23 @@ namespace Wotr.PlayTests
                 test.Push();
                 yield return new WaitForSeconds(.3f);
                 Assert.AreEqual(1, test.Backend.Commands, "The same decision is answered once.");
+                var window = test.Board.Battles.Root;
+                Assert.IsTrue(test.Board.Battles.IsOpen);
+                var place = window.worldBound.position;
 
                 test.Backend.View.Decision = null;
                 test.Backend.View.DecisionOwner = Side.FreePeoples;
                 test.Backend.View.Revision++;
                 test.Push();
+                // UI-225: the window neither disappears nor moves while the opponent chooses.
+                for (var frame = 0; frame < 6; frame++)
+                {
+                    yield return null;
+                    Assert.IsTrue(test.Board.Battles.IsOpen, "frame " + frame);
+                    Assert.AreEqual(DisplayStyle.Flex, window.resolvedStyle.display, "frame " + frame);
+                }
                 yield return Settle();
+                Assert.Less(Vector2.Distance(place, window.worldBound.position), 1f, "The battle window keeps its place after No card.");
                 var none = test.Board.Tray.Q<Button>("battle-no-card");
                 Assert.IsNotNull(none, "No card keeps its place while the opponent chooses.");
                 Assert.IsFalse(none.enabledInHierarchy);

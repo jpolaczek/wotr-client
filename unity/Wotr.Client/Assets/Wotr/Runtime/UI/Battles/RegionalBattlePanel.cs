@@ -30,6 +30,8 @@ namespace Wotr.Client
         private readonly VisualElement defenderEmblem = new VisualElement { name = "battle-scene-defender", pickingMode = PickingMode.Ignore };
         private string sceneMode = "";
         private string scope = "";
+        // UI-225: the battle (scope) the window's current place was found for.
+        private string placedScope = "";
         private string region = "";
         private bool active;
         private bool open;
@@ -63,7 +65,7 @@ namespace Wotr.Client
             Root.RegisterCallback<GeometryChangedEvent>(e =>
             {
                 if (PopoverPlacement.SizeChanged(e.oldRect, e.newRect))
-                    Position();
+                    Resized();
                 map.Refresh();
             });
             map.RegisterCallback<GeometryChangedEvent>(_ => Position());
@@ -219,6 +221,16 @@ namespace Wotr.Client
                 Position();
         }
 
+        // UI-225: a window placed for this battle keeps its place when its content changes size (No card, a played card,
+        // the opponent's choice); it is placed again only when it no longer fits there.
+        private void Resized()
+        {
+            if (placedScope == scope && !historyContext && !cardDrag && Window?.Restore() != true &&
+                MapPanelPlacement.Fits(map, Root, Root.layout))
+                return;
+            Position();
+        }
+
         public void Position()
         {
             if (cardDrag)
@@ -245,6 +257,7 @@ namespace Wotr.Client
             var bounds = MapPanelPlacement.Near(map, Root, anchor, combatChoice ? reservedWidth : 0);
             Root.style.left = bounds.x;
             Root.style.top = bounds.y;
+            placedScope = scope;
         }
     }
 }
