@@ -196,7 +196,7 @@ namespace Wotr.Client
                 component(item);
         }
 
-        private enum Host { None, Reinforcements, DecisionWindow, Battle, Hunt, Notice, GameEnd }
+        private enum Host { None, Reinforcements, DecisionWindow, Battle, Hunt, Notice, GameEnd, Fellowship, Effects }
 
         // The status opens wherever the current decision lives: Reinforcements, the decision window, the battle or
         // Hunt (own or the opponent's, without moving the camera), or the host the decision notice opens.
@@ -214,6 +214,14 @@ namespace Wotr.Client
                 return Host.Battle;
             if (board.Tray.parent == board.Hunt.DecisionHost || view.Hunt != null && !own)
                 return Host.Hunt;
+            // UI-244: an own decision whose objects live in a panel reopens that panel.
+            switch (DecisionRoutes.Of(view))
+            {
+                case DecisionHost.Fellowship:
+                    return Host.Fellowship;
+                case DecisionHost.Effects:
+                    return Host.Effects;
+            }
             return own ? Host.Notice : Host.None;
         }
 
@@ -241,6 +249,12 @@ namespace Wotr.Client
                 case Host.GameEnd:
                     board.GameEnd.Open();
                     break;
+                case Host.Fellowship:
+                    board.Fellowship.Open();
+                    break;
+                case Host.Effects:
+                    board.TableEffects.Open();
+                    break;
             }
         }
 
@@ -252,6 +266,8 @@ namespace Wotr.Client
             Host.Hunt => "Click to open the Hunt panel",
             Host.Notice => "Click to show your decision",
             Host.GameEnd => "Click to show the end of the game",
+            Host.Fellowship => "Click to open the Fellowship panel",
+            Host.Effects => "Click to open the table effects",
             _ => ""
         };
 

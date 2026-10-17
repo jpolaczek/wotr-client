@@ -77,6 +77,11 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-244 (2026-10-17): every own decision has one object host (`DecisionRoutes`, the families of the server's base
+  coverage matrix): the map, the region panel, Reserve, Effects, the dice, the Rings, the hand, the Battle or Hunt
+  window, the Fellowship panel, the Characters list or the console's options. The status reopens that host — since
+  UI-244 also the Fellowship panel and the table effects — and a choice no object owns yet keeps the decision
+  window as its fallback.
 - UI-242 (2026-10-17): hints and notices never say "components"; they name what to click for the step — dice,
   armies and regions, units, characters, cards, a nation, regions — from the step's command and presentation
   (`DecisionObjects`), e.g. "Select the highlighted armies and regions, then confirm." A refused drop names the object

@@ -1216,3 +1216,10 @@ Enterable regions glow green and attackable enemy regions red along their edges,
 ## Left tabs stand out from the map — UI-223 (2026-10-17)
 
 The owner's request: over the map the left tabs (Politics, Effects, Characters, …) were barely visible. Each tab now sits on a dark lacquer plate with a fine gilt rim (`LeftRail.uss`), so the medallion and its label read over light and dark terrain. A usable tab (a legal target or usable by the chosen die, UI-136/UI-193) gets a bright gold rim, a warmer plate and a gold label, and pulses gently with the map targets' rhythm (750 ms); Reduced motion keeps it bright and still. Sizes and places stay fixed.
+
+## Object-choice routing — UI-244 (2026-10-17)
+
+Every own decision has one host object family (`DecisionRoutes`: map, region panel, reserve, Effects, dice, Rings,
+hand, Battle, Hunt, Fellowship, characters, console, or the generic window as a fallback), read only from the
+decision's kind and presentation. The console status opens that host; UI-245–UI-251 move the remaining
+presentations from the generic window onto their objects. Test: `DecisionRoutesTests`.
