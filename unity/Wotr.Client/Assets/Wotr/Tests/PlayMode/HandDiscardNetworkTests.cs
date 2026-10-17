@@ -25,6 +25,10 @@ namespace Wotr.PlayTests
                 fpHandler: fpBoundary, shHandler: shBoundary);
             var fp = room.Fp;
             var sh = room.Sh;
+            // UI-227: discarding from the hand never opens the decision window, not even for a frame.
+            var openings = new System.Collections.Generic.List<string>();
+            foreach (var client in new[] { fp, sh })
+                client.Board.DecisionWindow.Opening += () => openings.Add(WindowContents(client));
             fpBoundary.MatchPath = shBoundary.MatchPath = "/api/matches/" + fp.Board.View.MatchId;
             var revision = fp.Board.View.Revision;
             var privateIds = fp.Board.View.Hand.ToArray();
@@ -75,6 +79,17 @@ namespace Wotr.PlayTests
             }
             Assert.AreEqual(6, sh.Board.View.Hand.Count);
             Assert.AreEqual(GamePhase.Fellowship, fp.Board.View.Phase);
+            await room.Settle();
+            Assert.IsEmpty(openings, "The decision window opened: " + string.Join(" / ", openings));
+        }
+
+        private static string WindowContents(MountedMatchClient client)
+        {
+            var board = client.Board;
+            var buttons = board.Tray.Query<Button>().ToList().Where(b => b.resolvedStyle.display != DisplayStyle.None).Select(b => b.name);
+            return board.View?.You + " " + board.View?.Decision?.Kind + " " + board.View?.Revision + ": " + string.Join(",", buttons) +
+                (board.Components.Root.childCount > 0 ? " components=" + board.Components.Root.childCount : "") +
+                (board.CardCosts.Root.childCount > 0 ? " costs=" + board.CardCosts.Root.childCount : "");
         }
 
         private static async Task ReadPassiveHint(MatchTestRoom room, MountedMatchClient client,

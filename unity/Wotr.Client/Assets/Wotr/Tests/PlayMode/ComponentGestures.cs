@@ -12,7 +12,26 @@ namespace Wotr.PlayTests
     {
         public static async Task Select(MountedMatchClient client, string key)
         {
-            CardNetworkTests.Click(await Show(client, key));
+            var button = await Show(client, key);
+            if (key is not ("Pass" or "DiscardDie"))
+            {
+                CardNetworkTests.Click(button);
+                return;
+            }
+            // UI-227: a console Pass or die discard is sent at once and never flashes the decision window.
+            var opened = 0;
+            void Opening() => opened++;
+            client.Board.DecisionWindow.Opening += Opening;
+            try
+            {
+                CardNetworkTests.Click(button);
+                await Task.Delay(400);
+            }
+            finally
+            {
+                client.Board.DecisionWindow.Opening -= Opening;
+            }
+            Assert.AreEqual(0, opened, key + " opened the decision window while it was being sent.");
         }
 
         public static async Task<Button> Show(MountedMatchClient client, string key)

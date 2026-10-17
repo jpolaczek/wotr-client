@@ -58,7 +58,8 @@ namespace Wotr.Client
             idle = online && !busy && !pending;
             uncertain = pending && !busy;
             var docked = board.Tray.parent == board.DecisionWindow.Dock;
-            var choices = docked && (uncertain || !reinforcing()) && (tray.HasChoices || Shown(board.Components.Root) || Shown(board.CardCosts.Root));
+            var choices = docked && (uncertain || !reinforcing()) && (tray.HasChoices || Shown(board.Components.Root) || Shown(board.CardCosts.Root)) &&
+                !SendingWithWindowClosed(busy);
             board.DecisionWindow.Apply(choices, Heading(), view.MatchId + "/" + view.Decision?.Id + "/" + draft.Kind + (uncertain ? "/check" : ""));
             var state = TurnConsoleState.For(view, draft, board.ActionDie, RegionName);
             fallback = state.Guidance;
@@ -71,6 +72,10 @@ namespace Wotr.Client
             board.Console.Hunt.SetAllocating(view.Decision?.Kind == DecisionKind.AllocateHunt && view.DecisionOwner == view.You);
             RefreshActions(docked && !board.DecisionWindow.IsOpen);
         }
+
+        // UI-227: a step being sent (a discarded die, a pass) has its choices made, so it never opens the window for the
+        // moment until the answer; a window already open keeps its place.
+        private bool SendingWithWindowClosed(bool busy) => busy && !uncertain && !board.DecisionWindow.IsOpen;
 
         private void RefreshActions(bool onBoard)
         {

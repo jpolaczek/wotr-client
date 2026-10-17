@@ -77,6 +77,9 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-227 (2026-10-17): a step being sent never opens the decision window. A die discarded or a Pass from the console
+  is sent at once, and for that moment the tray still held the step's die buttons, which flashed the window (titled
+  with the turn's action) above the console. A window already open keeps its place until the answer.
 - QUAL-19 (2026-10-17): problems and notices the player must read (a refused choice such as "Server update
   required", offline, refreshing the saved result, an unavailable preview, a refused command, a local save error) reach
   the hint through `DecisionTray.Notice`, also while the tray sits in the closed decision window. Step hints and
