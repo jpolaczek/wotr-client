@@ -245,6 +245,12 @@ The menu has a button in the action column (from MENU-11; previously in the head
   opens board on the side that starts.
 - Exit or Menu → Games ends the test session and returns to the menu; the test batch does not enter
   the My games list.
+- TEST-09 (2026-10-18, owner's request): the panel has three fixed tabs over the list — **Dice & game**
+  (`test-tab-dice-game`, every scenario that is not a card's), **Free Peoples cards** and **Shadow cards**
+  (`test-tab-free-peoples-cards`, `test-tab-shadow-cards`). Each card tab lists two scenarios per card, its event and
+  its combat card, under Character and Strategy. The tab comes from the server's group text before " · "
+  (`TestScenarioTabs`), so no contract changed; a tab without scenarios stays in place, disabled, and a refreshed
+  catalog keeps the open tab. Server side and proof that every card is playable: `wotr-server:docs/TEST_SCENARIOS.md`.
 
 <a id="wyjście-z-gry--menu-14-2026-10-15"></a>
 ## Out of the game — MENU-14 (2026-10-15)

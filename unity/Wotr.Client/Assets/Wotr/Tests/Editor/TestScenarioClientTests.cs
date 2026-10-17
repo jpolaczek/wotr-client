@@ -43,6 +43,32 @@ namespace Wotr.Client.Tests
             Assert.IsNull(list.Root.Q<Button>("test-scenario-sh-army-move"), "A new catalog replaces the rows.");
         }
 
+        // TEST-09: card scenarios stand in their side's tab; the dice and game scenarios keep the first tab.
+        [Test]
+        public void CardScenariosStandInTheirSidesTab()
+        {
+            var catalog = Catalog();
+            catalog.Scenarios.Add(Scenario("card-base.fp.character.01-event", "Free Peoples cards · Character", "Elven Cloaks · Event", Side.FreePeoples));
+            catalog.Scenarios.Add(Scenario("card-base.fp.strategy.01-combat", "Free Peoples cards · Strategy", "Book of Mazarbul · Combat: Durin's Bane", Side.FreePeoples));
+            var list = new TestScenarioList();
+            list.Show(catalog);
+            Assert.AreEqual(TestScenarioTabs.General, list.Tab);
+            CollectionAssert.AreEqual(new[] { "test-tab-dice-game", "test-tab-free-peoples-cards", "test-tab-shadow-cards" },
+                list.Root.Query<Button>(className: "test-scenario-tab").ToList().Select(b => b.name));
+            Assert.IsNull(list.Root.Q<Button>("test-scenario-card-base.fp.character.01-event"), "Card scenarios wait in their tab.");
+            Assert.IsFalse(list.Root.Q<Button>("test-tab-shadow-cards").enabledSelf, "A tab without scenarios keeps its place, disabled.");
+            list.Select(TestScenarioTabs.FreePeoplesCards);
+            CollectionAssert.AreEqual(new[] { "Character", "Strategy" },
+                list.Root.Query<Label>(className: "test-scenario-group").ToList().Select(l => l.text));
+            Assert.IsNotNull(list.Root.Q<Button>("test-scenario-card-base.fp.character.01-event"));
+            Assert.IsNull(list.Root.Q<Button>("test-scenario-fp-army-move"));
+            Assert.IsTrue(list.Root.Q<Button>("test-tab-free-peoples-cards").ClassListContains("selected"));
+            list.Show(catalog);
+            Assert.AreEqual(TestScenarioTabs.FreePeoplesCards, list.Tab, "A refreshed catalog keeps the open tab.");
+            Assert.AreEqual(TestScenarioTabs.ShadowCards, TestScenarioTabs.Of("Shadow cards · Strategy"));
+            Assert.AreEqual(TestScenarioTabs.General, TestScenarioTabs.Of("Shadow · Army die"));
+        }
+
         [Test]
         public void TheBarNamesTheScenarioAndOffersTheOtherSide()
         {
