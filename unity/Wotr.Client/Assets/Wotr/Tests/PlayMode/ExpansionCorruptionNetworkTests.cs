@@ -23,9 +23,8 @@ namespace Wotr.PlayTests
             {
                 const string sovereign = "kings.sovereign.thranduil";
                 const string die = "lords.die.nenya";
-                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>("pool-Hunt"));
-                await room.Settle();
-                CardNetworkTests.Click(room.Sh.Board.Resources.Root.Q<Button>("resource-die-" + die));
+                // UI-230: the Nenya die in the Hunt box stands in the pool's row while the attempt may use it.
+                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die));
                 await Layout(room, room.Sh, "corrupt-attempt-" + scenario, "ui09");
                 var revision = room.Sh.Board.View.Revision;
                 CardNetworkTests.Click(await BoardNavigation.Sovereign(room.Sh.Board, sovereign));

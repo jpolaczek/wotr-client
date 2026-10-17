@@ -76,13 +76,10 @@ namespace Wotr.PlayTests
                 StringAssert.Contains(hunt ? "Balrog" : "Ruler", room.Sh.Board.Tray.Q<Button>("effect-choice-" + die.Id).text);
                 if (hunt)
                 {
-                    PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-Hunt"));
-                    await room.Settle();
-                    PointerGestureEvents.ClickAt(room.Sh.Board.Resources.Root.Q<Button>("resource-die-" + die.Id));
+                    // UI-230: the Balrog die in the Hunt box stands in the pool's row while Lore may choose it.
+                    PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>(die.Id));
                     await room.Settle();
                     Assert.IsTrue(room.Sh.Board.Tray.Q<Button>("effect-choice-" + die.Id).ClassListContains("selected"));
-                    room.Sh.Board.Resources.Close();
-                    await room.Settle();
                 }
                 else
                     CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die.Id));

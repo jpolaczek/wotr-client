@@ -19,15 +19,13 @@ namespace Wotr.Client
 
         private readonly Action<string> dieChosen;
         private readonly Action<string> tokenChosen;
-        private readonly ResourceInspector inspector;
         public Action<string> CouncilChosen { get; set; }
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
 
-        public ActionPoolView(Action<string> dieChosen, Action<string> tokenChosen, ResourceInspector inspector)
+        public ActionPoolView(Action<string> dieChosen, Action<string> tokenChosen)
         {
             this.dieChosen = dieChosen;
             this.tokenChosen = tokenChosen;
-            this.inspector = inspector;
         }
 
         public void Apply(VisualElement root, PlayerView view, Side side, bool own)
@@ -41,8 +39,7 @@ namespace Wotr.Client
             snapshots[root] = snapshot;
             root.Clear();
             root.EnableInClassList("expanded-resources", view.Configuration.Lords || view.Configuration.Kings);
-            var visibleDice = view.Dice.Where(d => d.Owner == side &&
-                d.Location is DieLocation.Available or DieLocation.Unrolled or DieLocation.Resolving or DieLocation.AwaitingChoice).ToArray();
+            var visibleDice = view.Dice.Where(d => d.Owner == side && (DiceOutsidePool.InPool(d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
             root.EnableInClassList("dense-resources", visibleDice.Length > 8);
             // Opponent counters live in the top bar's OpponentSummary.
             root.Add(own ? Header(side) : OwnerLabel(side));
@@ -82,6 +79,7 @@ namespace Wotr.Client
         private static string Snapshot(PlayerView view, Side side, bool own) =>
             side + "/" + own + "/" + view.Configuration.Lords + "/" + view.Configuration.Kings + "/" +
             string.Join("|", view.Dice.Select(d => d.Id + ":" + d.Owner + ":" + ExpansionLabels.DieDetail(d))) + "/" +
+            string.Join("|", view.Dice.Where(d => own && DiceOutsidePool.Offered(view, d)).Select(d => d.Id)) + "/" +
             (own ? string.Join("|", view.RulerTokens.Select(t => t.Id + ":" + t.Location + ":" + ExpansionLabels.Token(view, t.Id) + ":" + DraftOptions.CanSelectToken(view, t.Id))) + "/" +
                 string.Join("|", view.CouncilTokens.Select(t => t.Id + ":" + t.Spent + ":" + t.UsedTokenThisTurn))
                 : "");
@@ -123,8 +121,11 @@ namespace Wotr.Client
                 var dice = view.Dice.Where(d => location == DieLocation.Spent
                     ? d.Location == location && (d.SpentWith ?? d.Owner) == side : d.Location == location && d.Owner == side).ToList();
                 var label = location == DieLocation.Discarded ? "Out" : location.ToString();
-                // UI-97: icon and count, as in the top bar; the name leads the description.
-                var button = BoardScreen.Button(dice.Count.ToString(), () => inspector.Show(location));
+                // UI-97: icon and count, as in the top bar; the name leads the description. UI-230: the count is
+                // information only; a die there that a decision may choose stands in the pool's row instead.
+                var button = BoardScreen.Button(dice.Count.ToString(), null);
+                button.focusable = false;
+                ReadOnlyControl.Apply(button, false);
                 button.name = "pool-" + location;
                 button.tooltip = dice.Count == 0 ? label + " · none" : label + "\n" + string.Join("\n", dice.Select(DieDescriptions.Summary));
                 button.AddToClassList("pool-count-" + location.ToString().ToLowerInvariant());

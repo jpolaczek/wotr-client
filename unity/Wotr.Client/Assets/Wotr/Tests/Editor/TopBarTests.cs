@@ -67,7 +67,7 @@ namespace Wotr.EditorTests
         [Test]
         public void OpponentPoolShowsItsOwnerInsteadOfCountsAndIgnoresHandChanges()
         {
-            var pool = new ActionPoolView(_ => { }, _ => { }, new ResourceInspector(_ => { }));
+            var pool = new ActionPoolView(_ => { }, _ => { });
             var root = new VisualElement();
             pool.Apply(root, View(handFp: 4, handShadow: 6), Side.Shadow, false);
             var owner = root.Q<Label>(className: "opponent-side");

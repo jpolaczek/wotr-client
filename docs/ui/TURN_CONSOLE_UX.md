@@ -77,6 +77,10 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - When a decision has a window (battle, Hunt, Fellowship, decision window...), the status tells
   where the decision is and the status click opens this window.
 - Texts build a presentation class without UI (`TurnConsoleState`).
+- UI-230 (2026-10-17): the resource inspector (a window with Spent, Hunt, Discarded, Fellowship, Removed and Tokens
+  tabs opened from the dice panel's location counts) is removed. The counts are information only (read-only, icon,
+  number and tooltip). A die outside the pool that the player's decision may choose (e.g. a Balrog or Nenya die in the
+  Hunt box for an expansion effect) stands lit in the pool's row for that decision (`DiceOutsidePool`).
 - UI-227 (2026-10-17): a step being sent never opens the decision window. A die discarded or a Pass from the console
   is sent at once, and for that moment the tray still held the step's die buttons, which flashed the window (titled
   with the turn's action) above the console. A window already open keeps its place until the answer.

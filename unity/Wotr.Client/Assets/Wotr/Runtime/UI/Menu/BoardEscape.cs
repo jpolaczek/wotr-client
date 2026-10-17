@@ -80,7 +80,6 @@ namespace Wotr.Client
             Add(board.ResourceDecision.Root, board.ResourceDecision.Close, board.ResourceDecision.Tab);
             Add(board.Reinforcements.Root, board.Reinforcements.Close, board.Reinforcements.Tab);
             Add(board.Sovereigns.Inspector, board.Sovereigns.Close, board.Characters.Tab);
-            Add(board.Resources.Root, board.Resources.Close, board.Root);
             Add(board.Information.Root, board.Information.Close, board.Root);
             Add(board.Hover.Panel.Root, board.Hover.Close, board.Root);
             Add(board.Hand, board.HandDrawer.Close, board.HandDrawer.Tab);

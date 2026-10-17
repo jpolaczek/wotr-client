@@ -68,14 +68,6 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     Assert.AreEqual(fellowship, board.Fellowship.Root.worldBound);
                     Assert.AreEqual(hunt, board.Hunt.Root.worldBound);
-                    board.Resources.Show(DieLocation.Spent);
-                    yield return Settle();
-                    yield return Drag(board.Resources.Root, new Vector2(150, 45));
-                    var resources = board.Resources.Root.layout.position;
-                    board.Resources.Apply(view); // Rebuilds the content, not the window controller.
-                    yield return Settle();
-                    Near(resources, board.Resources.Root.layout.position);
-                    board.Resources.Close();
                     board.Nations.Open();
                     yield return Settle();
                     Assert.IsNull(board.Nations.Drawer.Q(className: FloatingWindow.HandleClass));

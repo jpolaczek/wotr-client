@@ -50,7 +50,6 @@ namespace Wotr.PlayTests
             var board = client.Board;
             board.Characters.Close();
             board.TableEffects.Close();
-            board.Resources.Close();
             await room.Settle();
             var revision = board.View.Revision;
             var camera = board.Map.Camera.Pan;

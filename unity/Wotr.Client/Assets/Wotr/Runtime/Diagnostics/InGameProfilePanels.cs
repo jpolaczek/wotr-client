@@ -10,7 +10,6 @@ namespace Wotr.Client.Diagnostics
         private readonly BoardScreen board;
         private readonly Action<Button> click;
         private bool open;
-        private string resourceTitle;
         private string inspected = "";
         private bool freePeoplesPage, shadowPage;
         private const string Protection = "base.fp.strategy.02";
@@ -35,28 +34,11 @@ namespace Wotr.Client.Diagnostics
             }
         }
 
+        // UI-230: the resource inspector is gone; the workload renders the own resource panel, whose location counts
+        // are information only.
         public void Resources(int step)
         {
-            switch (step % 4)
-            {
-                case 0:
-                    click(board.OwnDice.Q<Button>("pool-Spent"));
-                    resourceTitle = "Dice · Spent";
-                    open = true;
-                    break;
-                case 1:
-                    click(ResourceButton("Hunt"));
-                    resourceTitle = "Dice · Hunt";
-                    break;
-                case 2:
-                    click(ResourceButton("Tokens"));
-                    resourceTitle = "Public resources";
-                    break;
-                default:
-                    click(ResourceButton("Close"));
-                    open = false;
-                    break;
-            }
+            open = true;
         }
 
         // The opened Menu, and each turned page, lays out before the next step clicks.
@@ -99,7 +81,7 @@ namespace Wotr.Client.Diagnostics
 
         public void VerifyRendered(string kind)
         {
-            var root = kind == "effects" ? board.TableEffects.Root : kind == "victory" ? board.Victory.Root : board.Resources.Root;
+            var root = kind == "effects" ? board.TableEffects.Root : kind == "victory" ? board.Victory.Root : board.OwnDice;
             if (open != (root.resolvedStyle.display != DisplayStyle.None))
                 throw new InvalidOperationException("The requested inspection visibility was not rendered: " + kind);
             if (!open)
@@ -119,9 +101,8 @@ namespace Wotr.Client.Diagnostics
                 VerifyVictoryPage(freePeoplesPage, "angmar", "umbar");
                 VerifyVictoryPage(shadowPage, "dol-amroth", "pelargir");
             }
-            else if (kind.StartsWith("resources-", StringComparison.Ordinal) &&
-                !root.Query<Label>().ToList().Any(label => label.text == resourceTitle))
-                throw new InvalidOperationException("The requested resource location was not rendered.");
+            else if (kind.StartsWith("resources-", StringComparison.Ordinal) && root.Q<Button>("pool-Spent") == null)
+                throw new InvalidOperationException("The resource panel's location counts were not rendered.");
         }
 
         private void VerifyVictoryPage(bool second, string first, string last)
@@ -133,9 +114,6 @@ namespace Wotr.Client.Diagnostics
         }
 
         private Button VictoryButton(string suffix) => board.Victory.Root.Q<Button>("victory-" + suffix);
-        // An icon button (UI-138, e.g. Close) names itself only in its tooltip.
-        private Button ResourceButton(string text) => board.Resources.Root.Query<Button>().ToList()
-            .Single(button => button.text == text || button.text.Length == 0 && button.tooltip == text);
     }
 }
 #endif

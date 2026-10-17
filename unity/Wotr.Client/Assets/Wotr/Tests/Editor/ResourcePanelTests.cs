@@ -133,7 +133,7 @@ namespace Wotr.EditorTests
             Assert.IsFalse(draft.Ready(DraftOptions.For(view, draft)));
 
             view.CouncilTokens.Add(new CouncilTokenView { Id = ExpansionDraft.CouncilPolitics });
-            var pool = new ActionPoolView(_ => { }, _ => { }, new ResourceInspector(_ => { }));
+            var pool = new ActionPoolView(_ => { }, _ => { });
             var root = new VisualElement();
             pool.Apply(root, view, Side.Shadow, true);
             var token = root.Q<Button>("pool-" + ExpansionDraft.CouncilPolitics);

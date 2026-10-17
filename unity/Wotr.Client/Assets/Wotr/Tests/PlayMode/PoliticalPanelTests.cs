@@ -31,7 +31,6 @@ namespace Wotr.PlayTests
                         client.Apply(fixture.View);
                         yield return Settle();
                         var panel = client.Board.Nations;
-                        client.Board.Resources.Show(DieLocation.Spent);
                         CardNetworkTests.Click(panel.Root);
                         yield return Settle();
                         Assert.AreEqual(DisplayStyle.Flex, panel.Drawer.resolvedStyle.display);
@@ -64,7 +63,6 @@ namespace Wotr.PlayTests
                             Assert.IsNotNull(token.Q("nation-emblem-" + nation.Id));
                             Hit(token);
                         }
-                        client.Board.Resources.Close();
                         Hit(panel.ShowOpponent);
                         var stable = Token(panel, "north");
                         CardNetworkTests.Click(panel.ShowOpponent);

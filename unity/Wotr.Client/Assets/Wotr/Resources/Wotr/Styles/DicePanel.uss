@@ -162,6 +162,10 @@
 #board-screen .dice-panel .resource-locations .action:hover,
 #board-screen .dice-panel .resource-locations .action:focus { background-image: resource("Wotr/Art/UI/frames/button-hover"); }
 #board-screen .dice-panel .resource-locations .action:last-child { margin-right: 0; }
+/* UI-230: the location counts are information only, pictures with a number rather than buttons. */
+#board-screen .dice-panel .resource-locations .action.read-only,
+#board-screen .dice-panel .resource-locations .action.read-only:hover,
+#board-screen .dice-panel .resource-locations .action.read-only:focus { background-image: none; }
 #pool-count-icon { position: absolute; left: 4px; top: 4px; width: 17px; height: 17px; -unity-background-scale-mode: scale-to-fit; }
 .pool-count-spent #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/spent"); }
 .pool-count-hunt #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/hunt"); }

@@ -74,8 +74,7 @@ namespace Wotr.EditorTests
                     Location = DieLocation.Hunt, HuntOrigin = "keeper-eye", RemoveSymbol = true },
                   new DieView { Id = "gothmog", Source = "lords.die.gothmog", Owner = Side.Shadow, Face = DieFace.Army,
                     Location = DieLocation.AwaitingChoice, RemoveSymbol = true } } };
-            var inspector = new ResourceInspector(_ => { });
-            var pool = new ActionPoolView(_ => { }, _ => { }, inspector);
+            var pool = new ActionPoolView(_ => { }, _ => { });
             var root = new VisualElement();
             pool.Apply(root, view, Side.Shadow, true);
             Assert.IsNotNull(root.Q<Button>("gothmog"));
@@ -85,9 +84,12 @@ namespace Wotr.EditorTests
             Assert.AreEqual("1", root.Q<Button>("pool-Hunt").text, "UI-97: icon and count; the name leads the description.");
             StringAssert.StartsWith("Hunt\n", root.Q<Button>("pool-Hunt").tooltip);
             StringAssert.Contains("keeper", root.Q<Button>("pool-Hunt").tooltip.ToLowerInvariant());
-            inspector.Apply(view);
-            inspector.Show(DieLocation.Hunt);
-            StringAssert.Contains("FP", inspector.Root.Q<Button>("resource-die-nenya").text);
+            Assert.IsTrue(root.Q<Button>("pool-Hunt").ClassListContains(ReadOnlyControl.ClassName), "UI-230: the count is information only.");
+            Assert.IsNull(root.Q<Button>("nenya"), "A die in the Hunt box stays out of the pool's row without a decision.");
+            view.DecisionOwner = Side.FreePeoples;
+            view.Options.Add(new ActionOption { Kind = CommandKind.UseRing, Enabled = true, EligibleDice = { "nenya" } });
+            pool.Apply(root, view, Side.FreePeoples, true);
+            Assert.IsNotNull(root.Q<Button>("nenya"), "UI-230: a die a decision may choose stands in the pool's row.");
         }
 
         [Test]

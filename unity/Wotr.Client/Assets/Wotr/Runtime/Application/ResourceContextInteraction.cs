@@ -71,7 +71,6 @@ namespace Wotr.Client
             var next = draft.Fork();
             if (ExpansionActions.Eye(view, next, id))
             {
-                board.Resources.Close();
                 edit(() => draft.Adopt(next), next.Payload.CharacterId.Length > 0);
                 return true;
             }

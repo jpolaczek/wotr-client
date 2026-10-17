@@ -74,7 +74,6 @@ namespace Wotr.Client
         private readonly EffectsScopeBadges effectScopes;
         public TableEffectsView TableEffects => tableEffects;
         private readonly ActionPoolView actionPool;
-        public ResourceInspector Resources { get; }
         public ResourcePanel ResourceDecision { get; } = new ResourcePanel();
         // UI-130: reserves of every own nation during a Muster action.
         public ReinforcementsPanel Reinforcements { get; } = new ReinforcementsPanel();
@@ -157,8 +156,7 @@ namespace Wotr.Client
             Root.RegisterCallback<KeyDownEvent>(PoliticalViewKey);
             Root.Add(Map);
             Root.Add(top);
-            Resources = new ResourceInspector(id => DieSelected?.Invoke(id));
-            actionPool = new ActionPoolView(id => DieSelected?.Invoke(id), id => RulerTokenSelected?.Invoke(id), Resources);
+            actionPool = new ActionPoolView(id => DieSelected?.Invoke(id), id => RulerTokenSelected?.Invoke(id));
             actionPool.CouncilChosen = id => CouncilTokenSelected?.Invoke(id);
             Sovereigns = new SovereignPanel(Presentation, id => Map.Focus(id));
             Root.Add(stage);
@@ -213,7 +211,6 @@ namespace Wotr.Client
             stage.Add(Information.Root);
             Victory.KeepShortcutClearOf(tableEffects.Root);
             stage.Add(Sovereigns.Inspector);
-            stage.Add(Resources.Root);
             stage.Add(ResourceDecision.Tab);
             stage.Add(ResourceDecision.Root);
             stage.Add(Reinforcements.Root);
@@ -341,7 +338,7 @@ namespace Wotr.Client
             CompanionSetup.Attach(Tray, decisionDock);
             Map.RegisterCallback<GeometryChangedEvent>(_ => Sovereigns.RequestPosition());
             stage.Insert(stage.IndexOf(Cards.Root), Battles.Root);
-            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, Nations.Root, Nations.Drawer, Sovereigns.Inspector, Resources.Root, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
+            var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
                 HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root,
                 CompanionSetup.Tab, CompanionSetup.Root };
@@ -422,7 +419,6 @@ namespace Wotr.Client
         private void AttachWindows()
         {
             _ = new FloatingWindow(Information.Root, Windows);
-            _ = new FloatingWindow(Resources.Root, Windows);
             _ = new FloatingWindow(ResourceDecision.Root, Windows);
             _ = new FloatingWindow(CompanionSetup.Root, Windows);
             _ = new FloatingWindow(BattleReport.Root, Windows);
@@ -564,7 +560,6 @@ namespace Wotr.Client
             var opponent = view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
             actionPool.Apply(OpponentDice, view, opponent, false);
             TopBar.Opponent.Apply(view, opponent);
-            Resources.Apply(view);
             Characters.Apply(view);
             Sovereigns.Apply(view);
             handView.Apply(view);
