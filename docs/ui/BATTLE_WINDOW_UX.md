@@ -342,3 +342,9 @@ tiles leave) and the room it keeps free for a card preview. Now a window placed 
 content changes size; it is placed again only when it no longer fits there (outside the board or over a HUD panel),
 when the map is resized or panned (it follows its region, as before) or when it is reopened. A window the player
 moved keeps the player's place, as before.
+
+## Battle pictures by nation — UI-226 (2026-10-17)
+
+A battle at a town, city or stronghold shows its nation's picture (`<kind>-<nation>-<1|2>`, the region's current
+nation, so Fate and the White Hand count); a missing picture falls back to the side's UI-206 picture. Open land and
+fortifications keep their UI-206 pictures. Set and generation: [graphicalassets/battles](../../graphicalassets/battles/README.md#nation-set--ui-226-2026-10-17).

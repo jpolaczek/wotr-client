@@ -1,8 +1,8 @@
 {
   "version": "battles-v1",
-  "task": "UI-206",
+  "task": "UI-206, UI-226",
   "model": "gpt-image-1.5",
-  "generator": "OpenAI Images API via v1/generate.py; band cut with Pillow by build.py",
+  "generator": "UI-206 set: OpenAI Images API via v1/generate.py (v1/generations.jsonl); UI-226 nation set: Codex built-in image_gen (v1/generations-codex.jsonl); band cut with Pillow by build.py",
   "pixels_modified": "cropped and re-encoded only",
   "outputs": [
     {
@@ -258,6 +258,396 @@
       "sourceSha256": "08f4a250b795d9a5102c790fe6d02d3f1724cdc3fe0df09e3fe8ec253ee2facd",
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-shadow-2.jpg",
       "outputSha256": "1ad99d79e657d7d375fcdea69ad1d2b0bb8ad50035c8c322a6bd0c321f544222",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-dwarves-1",
+      "source": "v1/raw/town-dwarves-1.jpg",
+      "sourceSha256": "f29d2df3f105b78897b34c6b2203bd18a11954789ef672b2623e3ab7260458ca",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-dwarves-1.jpg",
+      "outputSha256": "6ca90da3da77d9d201a27e1a1f67d8f7faf2d3688431b8cc04bc3860b1f66b2f",
+      "band": [
+        0,
+        360,
+        1536,
+        680
+      ]
+    },
+    {
+      "key": "town-dwarves-2",
+      "source": "v1/raw/town-dwarves-2.jpg",
+      "sourceSha256": "c53106545166575024e4401ccb025e5e0ce7e466d0d6123dd6c8273ca6b78d96",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-dwarves-2.jpg",
+      "outputSha256": "4451cb965407662294611acbee0fb0f3d9cda54267265becc6dd98562969d3de",
+      "band": [
+        0,
+        370,
+        1536,
+        690
+      ]
+    },
+    {
+      "key": "city-dwarves-1",
+      "source": "v1/raw/city-dwarves-1.jpg",
+      "sourceSha256": "6e1c9436e4c93c92edc7f5aba8bf6b492f15c4429d5be3ddab0766bad71f6b42",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-dwarves-1.jpg",
+      "outputSha256": "e374e1ef6a52318e88cfbf4329ed0acc958b8e9ac8cf3ce7ccf3d026e4af854e",
+      "band": [
+        0,
+        280,
+        1536,
+        600
+      ]
+    },
+    {
+      "key": "stronghold-dwarves-1",
+      "source": "v1/raw/stronghold-dwarves-1.jpg",
+      "sourceSha256": "79d165fc822ac020c470750037ccb7d7e3aebf64eb3737a97044ab61e8ac545d",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-dwarves-1.jpg",
+      "outputSha256": "e3245a5c0b43193185deb6454fda152155146ec165c8222f8652b3e72f71331e",
+      "band": [
+        0,
+        340,
+        1536,
+        660
+      ]
+    },
+    {
+      "key": "stronghold-elves-1",
+      "source": "v1/raw/stronghold-elves-1.jpg",
+      "sourceSha256": "b4c60a16176002b1ced13ca15bc8c2a1901c815a1d3b4089f56f8c4a7da61f74",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-elves-1.jpg",
+      "outputSha256": "3450f0b9e49075f76284bbb4b00c86f192022e41416918edb142b19a1c79ad30",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "stronghold-elves-2",
+      "source": "v1/raw/stronghold-elves-2.jpg",
+      "sourceSha256": "bc4919e5bede74e37ce794220a9c328bdce09ce1e1cb1d39bbbd01d6121624e2",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-elves-2.jpg",
+      "outputSha256": "424fd69c48ab1ac534eaef2ca7a65ae36e5178e336b2edbe305b138a7d583c54",
+      "band": [
+        0,
+        360,
+        1536,
+        680
+      ]
+    },
+    {
+      "key": "city-gondor-1",
+      "source": "v1/raw/city-gondor-1.jpg",
+      "sourceSha256": "ec11f2c48a123d273bcb4c8f38a2152b58d2bbab37d703c07eaf1e75071b7f84",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-gondor-1.jpg",
+      "outputSha256": "9dcd58dd633ddae717c8eeed4fe7b41fa5d790a4da66ac1b2dfa47590f60f2f0",
+      "band": [
+        0,
+        300,
+        1536,
+        620
+      ]
+    },
+    {
+      "key": "stronghold-gondor-1",
+      "source": "v1/raw/stronghold-gondor-1.jpg",
+      "sourceSha256": "28b4b946a1051659991cee6056a8bdaeb29284d3488907901607b17d3272b564",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-gondor-1.jpg",
+      "outputSha256": "7c238e778dce10e8e57d287b2b0b547acd1c9b9f6f6404b4dfe332f6cfabc26c",
+      "band": [
+        0,
+        360,
+        1536,
+        680
+      ]
+    },
+    {
+      "key": "stronghold-gondor-2",
+      "source": "v1/raw/stronghold-gondor-2.jpg",
+      "sourceSha256": "276225654e8747d77d4c240c0c7cc280bf0e0716382897af96b07c9eda5e3199",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-gondor-2.jpg",
+      "outputSha256": "71f88870f8e67e9cd3b4587de1d11e38c42c8c07f6c1eae36862d949b01cb500",
+      "band": [
+        0,
+        340,
+        1536,
+        660
+      ]
+    },
+    {
+      "key": "town-gondor-1",
+      "source": "v1/raw/town-gondor-1.jpg",
+      "sourceSha256": "81643c65081f861aabf909494e200019fd3df52a35e6330f24237797135c2873",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-gondor-1.jpg",
+      "outputSha256": "1f2635416c96b3d3cdac2bfa6664ebbd7247db3df3b24f6c89b9a6035f29fe16",
+      "band": [
+        0,
+        340,
+        1536,
+        660
+      ]
+    },
+    {
+      "key": "town-gondor-2",
+      "source": "v1/raw/town-gondor-2.jpg",
+      "sourceSha256": "be58b3e9eeb8c86cad1d5caa9e2d718f41a8789ab950bb79ff72e853e68b4ca4",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-gondor-2.jpg",
+      "outputSha256": "444deca1372837271b511fbfe27100aa7b72909b37c6500317b64fe35b1da4bd",
+      "band": [
+        0,
+        380,
+        1536,
+        700
+      ]
+    },
+    {
+      "key": "stronghold-isengard-1",
+      "source": "v1/raw/stronghold-isengard-1.jpg",
+      "sourceSha256": "7b122c8ef233f3eaf3ac8254326988b595bc4235606bf71f98d505abf0b911f2",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-isengard-1.jpg",
+      "outputSha256": "4cd4239207ea6909d00f1eb703d315d5da3a8854d6ba939ea9f0b9abea5d0dd3",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-isengard-1",
+      "source": "v1/raw/town-isengard-1.jpg",
+      "sourceSha256": "402e5eab899927807eb7d344533ad9bdb850b9d7e5fd5a9d21cf6363c062a75a",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-isengard-1.jpg",
+      "outputSha256": "15714f8ac3dd4bbcdb25419f22fa84adbf03e9517eae23d4b1d33b08620edff0",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-isengard-2",
+      "source": "v1/raw/town-isengard-2.jpg",
+      "sourceSha256": "b467683ebb488121224315548f4f900fa7151bdcf1c2cce2c72831baed90c393",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-isengard-2.jpg",
+      "outputSha256": "1f8af1a453b9c47ace323ba9c76c16368ec4217d1362572778b74bae4caedb53",
+      "band": [
+        0,
+        220,
+        1536,
+        540
+      ]
+    },
+    {
+      "key": "city-north-1",
+      "source": "v1/raw/city-north-1.jpg",
+      "sourceSha256": "65437a4d1e041d171e19d4e5285985e13438659af51fa2277da7b3868c8a4016",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-north-1.jpg",
+      "outputSha256": "25ac173a6d3231f6915b1f6bae674dee7e545291c4053f49397581920e466b06",
+      "band": [
+        0,
+        360,
+        1536,
+        680
+      ]
+    },
+    {
+      "key": "city-north-2",
+      "source": "v1/raw/city-north-2.jpg",
+      "sourceSha256": "e1a718459380caeca74e0ff68c71545584904c218dc41936c3a17779dae62d99",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-north-2.jpg",
+      "outputSha256": "3683e5d3dd1864ac9c0251fd3dff8102ca60bbe2526bfcc25c251593b460f3bd",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-north-1",
+      "source": "v1/raw/town-north-1.jpg",
+      "sourceSha256": "712982d29aff5bc96fbd5fd6c67b73a114e57277ed7539ac2a920c756de0e5d9",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-north-1.jpg",
+      "outputSha256": "5a26941aa2a53649db4bc8ed31d56749d41699b0c933122469d56316e1fd5794",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-north-2",
+      "source": "v1/raw/town-north-2.jpg",
+      "sourceSha256": "f9e0f5552b193d52c0cbcbc4d948a5ef22502d3120141e0c002787a991262526",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-north-2.jpg",
+      "outputSha256": "56a001e3834943cd07c1047bfa4e2048c1302e9cd13dc2c673e1f8356831afc4",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "city-rohan-1",
+      "source": "v1/raw/city-rohan-1.jpg",
+      "sourceSha256": "e80f9f515dd41b1fe232d0237dd48e0ac513a2786c3d8d0fc3eba031d8985b1b",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-rohan-1.jpg",
+      "outputSha256": "496d31ce012cd011990bf4473af17c86574df3215def40847e41a5e2eb960c20",
+      "band": [
+        0,
+        260,
+        1536,
+        580
+      ]
+    },
+    {
+      "key": "stronghold-rohan-1",
+      "source": "v1/raw/stronghold-rohan-1.jpg",
+      "sourceSha256": "23c0ee29ea939aa5daf01a510ac12057c0b02a826b4f1addd7ebd805367c85f3",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-rohan-1.jpg",
+      "outputSha256": "5d57af7faf95edc11fbf34ee1678302db0fc5f718ad3dabe239c2ddfe0a1554d",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-rohan-1",
+      "source": "v1/raw/town-rohan-1.jpg",
+      "sourceSha256": "0ebeef0557bc6bd91cf41b526fde4e0ab5414776b0c2c6496a51fb46a62d9a04",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-rohan-1.jpg",
+      "outputSha256": "e7bf923cebe7b918a7a8101ef82fdcddd39690f46adb8ad1e07b28020fc7bf83",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "town-rohan-2",
+      "source": "v1/raw/town-rohan-2.jpg",
+      "sourceSha256": "a74acf220a2aff9ce3b1d10a1ada4e81ede986d6d1966a30fa912045412937c2",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-rohan-2.jpg",
+      "outputSha256": "1a46587fdaf0cf3438cb691aa002e1a2b02ec8ef38ab406fdb95897290f54e06",
+      "band": [
+        0,
+        360,
+        1536,
+        680
+      ]
+    },
+    {
+      "key": "city-sauron-1",
+      "source": "v1/raw/city-sauron-1.jpg",
+      "sourceSha256": "2868c5035b4ee988199b60f567d6657a2d4909c2a429bfae2e0ebb85db39a3b6",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-sauron-1.jpg",
+      "outputSha256": "4ef843e1087d3a139335e224374d772a5235fe83ede155cfe1113dd638bb3e5c",
+      "band": [
+        0,
+        300,
+        1536,
+        620
+      ]
+    },
+    {
+      "key": "stronghold-sauron-1",
+      "source": "v1/raw/stronghold-sauron-1.jpg",
+      "sourceSha256": "7fa629b16fb6b2b79b3fa6836aae219ce7bde3f1a69965767a47bb9b3ef4b35a",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-sauron-1.jpg",
+      "outputSha256": "4d95e19f23deb911a3f68dd5e9141496eb694d87e42cc21af2c24db7ead1a076",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "stronghold-sauron-2",
+      "source": "v1/raw/stronghold-sauron-2.jpg",
+      "sourceSha256": "2d86fa399a0ddb57507250c98b47ebda0d21146f0436c02a8e79346c7e28df7a",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-sauron-2.jpg",
+      "outputSha256": "fe33c5133b2e525d1015c457232e4b8bd97ed7acf54bde4f30aa147411ed7374",
+      "band": [
+        0,
+        300,
+        1536,
+        620
+      ]
+    },
+    {
+      "key": "town-sauron-1",
+      "source": "v1/raw/town-sauron-1.jpg",
+      "sourceSha256": "525067c4756c32282f70c4d3ad4d3b8d4e47b41adea089232d93e0076f27a4c9",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-sauron-1.jpg",
+      "outputSha256": "3a5f72816ad5f5df9a33d849f9afa0a9f88b6391d01d8f4967d47b08df9f923c",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "city-southrons-1",
+      "source": "v1/raw/city-southrons-1.jpg",
+      "sourceSha256": "c1f98ec4d0111878ab703e70f97e4a4bf0437c134eb0bc37a3af73082d88adbb",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-southrons-1.jpg",
+      "outputSha256": "2e4dd4f0dcceb585f6fcaaf4e71df2968ac338415e64b40980f1d30cf26e2c30",
+      "band": [
+        0,
+        340,
+        1536,
+        660
+      ]
+    },
+    {
+      "key": "stronghold-southrons-1",
+      "source": "v1/raw/stronghold-southrons-1.jpg",
+      "sourceSha256": "75bf422397680c141cbb4e1c82d8f37d61438c724fadff072b78835aab7da47f",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-southrons-1.jpg",
+      "outputSha256": "abf818357d6184d7582540fef267e541da4bd7c6d7559aa33556cee784f7a536",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-southrons-1",
+      "source": "v1/raw/town-southrons-1.jpg",
+      "sourceSha256": "f343836fb63cac1358dda2f880d12b3fb0d35aebf91070ea229e21b50f6398e8",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-southrons-1.jpg",
+      "outputSha256": "4a8241b7e32d2ab8e56b5d0593ab84b9a74347fd73ee9a88ad1fa807f82645f5",
+      "band": [
+        0,
+        340,
+        1536,
+        660
+      ]
+    },
+    {
+      "key": "town-southrons-2",
+      "source": "v1/raw/town-southrons-2.jpg",
+      "sourceSha256": "c2803fecec05df5f9d94ba034e576599854bdb07226c8687fe298dc086a93925",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-southrons-2.jpg",
+      "outputSha256": "d0f333d262d40d8624317a924abc3f9469abc272421cbf68e53b8e78a04e1be0",
       "band": [
         0,
         320,

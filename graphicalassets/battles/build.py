@@ -53,8 +53,9 @@ def build(spec):
         entries.append({"key": key, "source": str(source.relative_to(HERE)), "sourceSha256": sha256(source),
                         "output": str(output.relative_to(ROOT)), "outputSha256": sha256(output),
                         "band": [0, top, WIDTH, top + HEIGHT]})
-    manifest = {"version": spec["version"], "task": "UI-206", "model": spec["model"],
-                "generator": "OpenAI Images API via v1/generate.py; band cut with Pillow by build.py",
+    manifest = {"version": spec["version"], "task": "UI-206, UI-226", "model": spec["model"],
+                "generator": "UI-206 set: OpenAI Images API via v1/generate.py (v1/generations.jsonl); UI-226 nation set: "
+                             "Codex built-in image_gen (v1/generations-codex.jsonl); band cut with Pillow by build.py",
                 "pixels_modified": "cropped and re-encoded only", "outputs": entries}
     MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"built {len(entries)} illustrations")

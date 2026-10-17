@@ -74,10 +74,34 @@ namespace Wotr.Client.Tests
                 Assert.AreEqual(BattleSceneArt.Key(region, regions), BattleSceneArt.Key(region, reversed), region.Id);
         }
 
+        // UI-226: every nation's town, city and stronghold of the board, and Fate's dwarven City, has its picture.
+        private static readonly string[] NationIllustrations =
+        {
+            "town-dwarves-1", "town-dwarves-2", "city-dwarves-1", "stronghold-dwarves-1",
+            "stronghold-elves-1", "stronghold-elves-2",
+            "city-gondor-1", "stronghold-gondor-1", "stronghold-gondor-2", "town-gondor-1", "town-gondor-2",
+            "stronghold-isengard-1", "town-isengard-1", "town-isengard-2",
+            "city-north-1", "city-north-2", "town-north-1", "town-north-2",
+            "city-rohan-1", "stronghold-rohan-1", "town-rohan-1", "town-rohan-2",
+            "city-sauron-1", "stronghold-sauron-1", "stronghold-sauron-2", "town-sauron-1",
+            "city-southrons-1", "stronghold-southrons-1", "town-southrons-1", "town-southrons-2"
+        };
+
+        [Test]
+        public void EveryNationSettlementOfTheBoardFindsItsNationsPicture()
+        {
+            var regions = BoardPresentation.Load().Regions.Values.ToList();
+            var wanted = regions.Where(r => BattleSceneArt.NationGroup(r) != null)
+                .Select(r => BattleSceneArt.Keys(r, regions)[0]).Distinct().OrderBy(k => k).ToList();
+            CollectionAssert.IsSubsetOf(wanted, NationIllustrations);
+            foreach (var key in wanted)
+                Assert.IsNotNull(BattleSceneArtwork.Illustration(key), key);
+        }
+
         [Test]
         public void EveryIllustrationIsAWideStripWithoutMipmapsThatDoesNotRepeat()
         {
-            foreach (var key in Illustrations)
+            foreach (var key in Illustrations.Concat(NationIllustrations))
             {
                 var texture = BattleSceneArtwork.Illustration(key);
                 Assert.IsNotNull(texture, key);
