@@ -6,7 +6,7 @@ Source: 2026-10-11 user agreement and "Implement the plan" order. It is a produc
 <a id="ekrany-i-decyzje"></a>
 ## Screens and decisions
 
-The first screen (from AUTH-03, D16): Username or email, Password, Login, Create account, Forgot password?, Settings. The game only logs in the account name or email address, in any case. Create account and Forgot password? open in the browser of the `<serwer>/account/register` and `/account/forgot` pages; the signature under the buttons says that after the account is set up it returns to the game and logs in. Enter in the password also log in. Passwords are not saved locally. Invitation to the account is not there; table codes are left. Details: section "Login without registration – AUTH-03". Settings provides scale and reduced motion, and since MENU-12 also window mode and resolution (section "Settings of the screen – MENU-12"). From MENU-20 has no server address.
+The first screen (from AUTH-03, D16): Account name, Password, Login, Create account, Forgot password?, Settings. The game only logs in, with the account name in any case (AUTH-05, 2026-10-17); an email address is refused with a hint. Create account and Forgot password? open in the browser of the `<serwer>/account/register` and `/account/forgot` pages; the signature under the buttons says that after the account is set up it returns to the game and logs in. Enter in the password also log in. Passwords are not saved locally. Invitation to the account is not there; table codes are left. Details: section "Login without registration – AUTH-03". Settings provides scale and reduced motion, and since MENU-12 also window mode and resolution (section "Settings of the screen – MENU-12"). From MENU-20 has no server address.
 
 From MENU-28 host addresses are not in git (`ServerConfiguration`, `ClientEnvironment`):
 - The source is environment variables and the untraceable file `wotr-client/.env`. Key pattern is in
@@ -406,14 +406,15 @@ The error appears in the status of the menu, and the room is released anyway.
 ## Logging without registration — AUTH-03 (2026-10-16)
 
 Decision [D16](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DECISIONS.md): an account is set up on the game page, the client only opens it. `GatewayScreen`:
-- one `Username or email` (`auth-username`) field and password; the client checks that the entry is
-  a valid name or address and the server searches for the account after both;
+- one `Account name` (`auth-username`) field and password; the client checks that the entry is a
+  valid account name (an email address gets "sign in with your account name, not the email address"),
+  and the server finds the account by name only (AUTH-05, 2026-10-17);
 - `Login` (`auth-submit`) is the only operation sent to the server;
 - `Create account` (`auth-create`) and `Forgot password?` (`auth-forgot`) open `AccountPage(server,
   register|forgot)` by `Application.OpenURL`; the address of the server is from
   `ServerConfiguration`, so the Editor opens the local server pages and build — the server from the
   installer. Buttons also work when logging in;
-- Failed login: „Username, email or password not accepted. Try again,
+- Failed login: „Account name or password not accepted. Try again,
   or reset your password in the browser.” and fokus in password.
 
 `GameApi.Register(name, email, password)` is only left for tests and tools (addresses in reserved domain `example.test`). Old `AuthScreen` has been removed. PlayMode tests log in with seeder accounts (`AccountA`, `AccountB`) or start accounts with API; `scripts/test-client.sh` raises registration limit (`Wotr__Email__PermitsPerAddress`).

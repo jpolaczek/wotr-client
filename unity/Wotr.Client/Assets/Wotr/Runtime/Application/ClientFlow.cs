@@ -76,7 +76,7 @@ namespace Wotr.Client
             root.Add(authScreen.Root);
             authScreen.InterfaceRequested += OpenInterface;
             authScreen.ReplaysRequested += () => ShowReplayLibrary();
-            // AUTH-03: the game only signs in, by name or email; accounts are made on the game's site.
+            // AUTH-03/AUTH-05: the game only signs in, with the account name; accounts are made on the game's site.
             authScreen.Submitted += (login, password) => Perform(async () =>
             {
                 api?.Dispose();

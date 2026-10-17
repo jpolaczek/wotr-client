@@ -54,7 +54,7 @@ The installation starts only after you click. Before it the game ends local reco
 2. You can assume an account on the game page: `Create account` opens it in your browser. Enter a
    name (3–32 characters: letters without Polish characters, digits or `._-`), email address and
    password (12–128 characters), and then confirm the address with a link from the message. Return
-   to the game and sign in (`Login`) name or email address. The forgotten password resets `Forgot
+   to the game and sign in (`Login`) with the account name (not the email address). The forgotten password resets `Forgot
    password?`, also in the browser; the reset link only comes to the confirmed address.
 3. Open `Tables`. Create `New table · Free Peoples` or `New table · Shadow`. `Copy table invitation`
    copy the code for the second player; it typed it in `Table invitation` and click `Join`.

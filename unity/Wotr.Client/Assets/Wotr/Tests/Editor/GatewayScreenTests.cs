@@ -7,14 +7,14 @@ namespace Wotr.Client.Tests
 {
     public class GatewayScreenTests
     {
-        // AUTH-03: one field for the name or the email, the password, Login and the two account pages; no invitation.
+        // AUTH-03/AUTH-05: one field for the account name, the password, Login and the two account pages; no invitation.
         [Test]
         public void EntryHasTheTwoCredentialsLoginAndTheTwoAccountPages()
         {
             var screen = new GatewayScreen(() => "https://wotr.example.test", _ => { });
             CollectionAssert.AreEqual(new[] { "auth-username", "auth-password" },
                 screen.Root.Query<TextField>().ToList().Select(field => field.name));
-            Assert.AreEqual("Username or email", screen.Root.Q<TextField>("auth-username").label);
+            Assert.AreEqual("Account name", screen.Root.Q<TextField>("auth-username").label);
             Assert.IsTrue(screen.Root.Q<TextField>("auth-password").isPasswordField);
             Assert.IsNull(screen.Root.Q<TextField>("auth-invitation"));
             Assert.IsNull(screen.Root.Q<Toggle>("auth-register"));
@@ -41,8 +41,8 @@ namespace Wotr.Client.Tests
         }
 
         [TestCase("Player")]
-        [TestCase("Player@Example.TEST")]
-        public void LoginAcceptsANameOrAnEmailAndKeepsPasswordSpaces(string login)
+        [TestCase("player.one_2")]
+        public void LoginAcceptsAnAccountNameAndKeepsPasswordSpaces(string login)
         {
             var screen = new GatewayScreen(() => "https://wotr.example.test", _ => { });
             var count = 0;
@@ -56,7 +56,13 @@ namespace Wotr.Client.Tests
             screen.Root.Q<TextField>("auth-username").value = "bad name";
             screen.Submit();
             Assert.Zero(count);
-            StringAssert.StartsWith("Username or email:", screen.Status.text);
+            StringAssert.StartsWith("Account name:", screen.Status.text);
+            // AUTH-05: an email address is refused with a hint before anything is sent.
+            screen.Root.Q<TextField>("auth-username").value = "player@example.test";
+            screen.Root.Q<TextField>("auth-password").value = "  long account password  ";
+            screen.Submit();
+            Assert.Zero(count);
+            StringAssert.Contains("not the email address", screen.Status.text);
             screen.Root.Q<TextField>("auth-username").value = " " + login + " ";
             screen.Root.Q<TextField>("auth-password").value = "short";
             screen.Submit();
@@ -77,7 +83,7 @@ namespace Wotr.Client.Tests
         {
             var screen = new GatewayScreen(() => "https://wotr.example.test", _ => { });
             screen.ShowAuthenticationFailure();
-            StringAssert.StartsWith("Username, email or password not accepted", screen.Status.text);
+            StringAssert.StartsWith("Account name or password not accepted", screen.Status.text);
             StringAssert.Contains("reset your password", screen.Status.text);
         }
     }

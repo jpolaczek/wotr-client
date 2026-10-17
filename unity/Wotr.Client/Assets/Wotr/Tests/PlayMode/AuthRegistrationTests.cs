@@ -49,9 +49,10 @@ namespace Wotr.PlayTests
             var root = client.Root;
             await ReturnTestFixture.Until(() => root.Q<TextField>("auth-username") != null, token);
             Assert.IsNull(root.Q<TextField>("auth-invitation"));
-            Fill(root, username.ToUpperInvariant() + "@EXAMPLE.test", "Incorrect password");
+            // AUTH-05: the account name signs in, in any case; a wrong password is refused.
+            Fill(root, username.ToUpperInvariant(), "Incorrect password");
             await ReturnTestFixture.ClickReady(root, "auth-submit", token);
-            await ReturnTestFixture.Until(() => Status(root).StartsWith("Username, email or password not accepted"), token);
+            await ReturnTestFixture.Until(() => Status(root).StartsWith("Account name or password not accepted"), token);
             var failedPassword = root.Q<TextField>("auth-password");
             await ReturnTestFixture.Until(() => failedPassword.panel.focusController.focusedElement == failedPassword ||
                 failedPassword.Contains(failedPassword.panel.focusController.focusedElement as VisualElement), token);

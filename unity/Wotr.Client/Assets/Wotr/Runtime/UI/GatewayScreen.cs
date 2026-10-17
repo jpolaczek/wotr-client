@@ -4,8 +4,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // AUTH-03 (D16): the game only signs in, by name or email. Accounts are made and passwords reset on the game's
-    // site, which the two account buttons open in the browser.
+    // AUTH-03 (D16): the game only signs in; AUTH-05: with the account name only. Accounts are made and passwords
+    // reset on the game's site, which the two account buttons open in the browser.
     public sealed class GatewayScreen
     {
         public const string RegisterPage = "register";
@@ -17,7 +17,7 @@ namespace Wotr.Client
         public event Action InterfaceRequested;
         // REPLAY-04: the library opens before sign-in, without an account or a server.
         public event Action ReplaysRequested;
-        private readonly TextField login = new TextField("Username or email") { name = "auth-username" };
+        private readonly TextField login = new TextField("Account name") { name = "auth-username" };
         private readonly TextField password = new TextField("Password") { name = "auth-password", isPasswordField = true };
         private readonly Button submit;
         private readonly Button create;
@@ -43,7 +43,7 @@ namespace Wotr.Client
             card.Add(new Label("A table for two. Return whenever you are ready."));
             card.Add(login);
             card.Add(password);
-            login.tooltip = "Your username or the email address of your account";
+            login.tooltip = "The account name you chose when you created the account (not the email address)";
             password.tooltip = "12–128 characters. Spaces are part of your password.";
             submit = BoardScreen.Button("Login", Submit);
             submit.name = "auth-submit";
@@ -93,8 +93,10 @@ namespace Wotr.Client
             if (busy)
                 return;
             var name = login.value.Trim();
-            if (!AccountInput.ValidUsername(name) && !AccountInput.ValidEmail(name))
-                Error(login, "Username or email: enter your username or your account's email address.");
+            if (AccountInput.ValidEmail(name))
+                Error(login, "Account name: sign in with your account name, not the email address.");
+            else if (!AccountInput.ValidUsername(name))
+                Error(login, "Account name: 3–32 letters a–z, digits or . _ -");
             else if (!AccountInput.ValidPassword(password.value))
                 Error(password, "Password: use 12–128 characters.");
             else
@@ -117,7 +119,7 @@ namespace Wotr.Client
         public void ClearPassword() => password.value = "";
 
         public void ShowAuthenticationFailure() =>
-            Status.text = "Username, email or password not accepted. Try again, or reset your password in the browser.";
+            Status.text = "Account name or password not accepted. Try again, or reset your password in the browser.";
 
         private void Error(TextField field, string message)
         {

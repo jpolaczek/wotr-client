@@ -1002,7 +1002,7 @@ The 2026-10-13 notification: ‘combat report is to disappear after opening it�
 <a id="menu-wejściowe--menu-01menu-08"></a>
 ## Input menu — MENU-01-MENU-08
 
-[MAIN_MENU_UX](MAIN_MENU_UX.md) replaces the old logflow and Tables. From AUTH-03, the login screen only log in (name or email); the account and password reset open in the browser on the game page. board and the safe return of UI-70 retain their mechanisms.
+[MAIN_MENU_UX](MAIN_MENU_UX.md) replaces the old logflow and Tables. From AUTH-03, the login screen only log in (with the account name since AUTH-05); the account and password reset open in the browser on the game page. board and the safe return of UI-70 retain their mechanisms.
 
 <a id="scenariusze-testowe-na-planszy--test-03"></a>
 ## Test scenarios for board — TEST-03
