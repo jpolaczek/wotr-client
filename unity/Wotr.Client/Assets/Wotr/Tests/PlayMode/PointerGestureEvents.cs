@@ -15,11 +15,19 @@ namespace Wotr.PlayTests
                 root.SendEvent(move);
             var picked = expected.panel.Pick(point);
             Assert.IsTrue(picked == expected || expected.Contains(picked),
-                $"{expected.name} is covered by {picked?.name} ({picked?.GetType().Name}).");
+                $"{expected.name} is covered by {picked?.name} ({picked?.GetType().Name}) in {Ancestors(picked)}.");
             using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = point, clickCount = count }))
                 picked.SendEvent(down);
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = point, clickCount = count }))
                 picked.SendEvent(up);
+        }
+
+        private static string Ancestors(VisualElement element)
+        {
+            var names = new System.Collections.Generic.List<string>();
+            for (var parent = element?.parent; parent != null && names.Count < 6; parent = parent.parent)
+                names.Add(parent.name.Length > 0 ? parent.name : string.Join(".", parent.GetClasses()));
+            return string.Join(" < ", names);
         }
 
         public static void Press(VisualElement target)

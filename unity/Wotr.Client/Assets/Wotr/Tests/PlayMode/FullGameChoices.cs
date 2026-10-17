@@ -76,6 +76,13 @@ namespace Wotr.PlayTests
                 await room.At(revision + 1);
                 return;
             }
+            if (kind == CommandKind.DeclareFellowship)
+            {
+                client.Board.Fellowship.Open();
+                await room.Settle();
+                inspect?.Invoke(client);
+                await FellowshipGestures.Declare(client);
+            }
             var action = FellowshipButton(kind);
             if (action != null)
             {
@@ -83,11 +90,8 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 inspect?.Invoke(client);
                 FellowshipGestures.Action(client, action);
-                if (kind != CommandKind.DeclareFellowship)
-                {
-                    await room.At(revision + 1);
-                    return;
-                }
+                await room.At(revision + 1);
+                return;
             }
             if (kind is CommandKind.DeclareFellowship or CommandKind.RevealFellowship)
             {
@@ -130,7 +134,6 @@ namespace Wotr.PlayTests
         private static string FellowshipButton(CommandKind kind) => kind switch
         {
             CommandKind.ContinueFellowship => "fellowship-continue",
-            CommandKind.DeclareFellowship => "fellowship-declare",
             CommandKind.MoveFellowship => "fellowship-progress",
             CommandKind.HideFellowship => "fellowship-status",
             _ => null
@@ -157,7 +160,9 @@ namespace Wotr.PlayTests
             {
                 await room.Settle();
                 Assert.Contains(Corridor[index], client.Board.Map.DraftOverlay.Targets.ToList(),
-                    $"Route from {travel.Origin}, step {index - start}; available map targets: {string.Join(",", client.Board.Map.DraftOverlay.Targets)}.");
+                    $"Route from {travel.Origin}, step {index - start}; available map targets: {string.Join(",", client.Board.Map.DraftOverlay.Targets)}; " +
+                    $"revision {client.Board.View.Revision}, decision {client.Board.View.Decision?.Kind}; tray: " +
+                    string.Join("|", client.Board.Tray.Query<Label>().ToList().Select(l => l.name + "=" + l.text)));
                 FellowshipGestures.Region(client, Corridor[index]);
                 await room.Settle();
             }

@@ -223,10 +223,11 @@ namespace Wotr.PlayTests
 
         private static void AssertInside(VisualElement child, VisualElement parent)
         {
-            Assert.GreaterOrEqual(child.worldBound.xMin, parent.worldBound.xMin - .5f, child.name);
-            Assert.GreaterOrEqual(child.worldBound.yMin, parent.worldBound.yMin - .5f, child.name);
-            Assert.LessOrEqual(child.worldBound.xMax, parent.worldBound.xMax + .5f, child.name);
-            Assert.LessOrEqual(child.worldBound.yMax, parent.worldBound.yMax + .5f, child.name);
+            var where = child.name + " " + child.worldBound + " in " + parent.name + " " + parent.worldBound;
+            Assert.GreaterOrEqual(child.worldBound.xMin, parent.worldBound.xMin - .5f, where);
+            Assert.GreaterOrEqual(child.worldBound.yMin, parent.worldBound.yMin - .5f, where);
+            Assert.LessOrEqual(child.worldBound.xMax, parent.worldBound.xMax + .5f, where);
+            Assert.LessOrEqual(child.worldBound.yMax, parent.worldBound.yMax + .5f, where);
         }
     }
 }

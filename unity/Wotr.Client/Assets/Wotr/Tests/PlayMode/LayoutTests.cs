@@ -124,7 +124,8 @@ namespace Wotr.PlayTests
         {
             var decisionScrolls = board.Root.Query<ScrollView>().ToList().Where(scroll =>
                 !board.Log.Root.Contains(scroll) && !board.Log.Popup.Contains(scroll) &&
-                !board.Notifications.Overflow.Contains(scroll) && !board.BattleReport.Root.Contains(scroll));
+                !board.Notifications.Overflow.Contains(scroll) && !board.BattleReport.Root.Contains(scroll) &&
+                !board.GameChat.Root.Contains(scroll));
             Assert.IsEmpty(decisionScrolls, "Only read-only history may scroll.");
             AssertDecisionWindowFits(board);
         }

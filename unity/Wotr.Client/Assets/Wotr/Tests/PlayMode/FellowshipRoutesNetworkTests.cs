@@ -21,7 +21,7 @@ namespace Wotr.PlayTests
             var dice = board.View.Dice.Select(d => d.Location).ToArray();
             Assert.IsTrue(board.Fellowship.IsOpen);
             Assert.IsNull(board.Fellowship.Root.Q<Button>("fellowship-declare"), "UI-236: no panel button declares.");
-            FellowshipGestures.Declare(room.Fp);
+            await FellowshipGestures.Declare(room.Fp);
             await room.Settle();
             MapContourProbe.ReachRegion(board.Map, "minas-tirith");
             await room.Settle();

@@ -24,7 +24,10 @@ namespace Wotr.PlayTests
             Assert.AreEqual(5, before.Fellowship.Progress);
             await room.Settle();
             var track = room.Fp.Board.Fellowship.Root.Q("journey-track");
+            Assert.IsNotNull(track, "The Fellowship panel shows the journey track.");
             var marker = track.Q<Image>(className: "fellowship-track-marker");
+            Assert.IsNotNull(marker, "The journey track has its marker.");
+            Assert.IsNotNull(before.Decision, "The scenario opens on a decision.");
             var origin = marker.worldBound.center.x;
             var receipt = await room.Fp.Api.Post<CommandReceipt>($"api/matches/{before.MatchId}/commands", new GameCommand
             {

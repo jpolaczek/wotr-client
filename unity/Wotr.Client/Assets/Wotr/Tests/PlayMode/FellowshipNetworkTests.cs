@@ -46,7 +46,7 @@ namespace Wotr.PlayTests
                     await room.Fp.Connection.Refresh();
                     Assert.IsFalse(panel.Pinned, "The same projection does not undo Close.");
                     Assert.AreEqual(camera, room.Fp.Board.Map.Camera.Pan);
-                    FellowshipGestures.Action(room.Fp, "fellowship-declare");
+                    await FellowshipGestures.Declare(room.Fp);
                     camera = await Route(room.Fp, token, "fords-of-bruinen");
                     panel.Close();
                     await room.Fp.Connection.Refresh();
@@ -54,7 +54,10 @@ namespace Wotr.PlayTests
                     PointerGestureEvents.ClickAt(room.Fp.Board.Notice.Button);
                     Assert.IsTrue(panel.IsOpen);
                     Assert.AreEqual(camera, room.Fp.Board.Map.Camera.Pan, "Opening a decision does not Locate it.");
-                    StringAssert.Contains("Fords of Bruinen", room.Fp.Board.Tray.Q<Label>("travel-summary").text);
+                    var summary = room.Fp.Board.Tray.Q<Label>("travel-summary");
+                    Assert.IsNotNull(summary, "The route stays in the tray · revision " + room.Fp.Board.View.Revision + " · tray in " +
+                        room.Fp.Board.Tray.parent?.name + " · " + string.Join("|", room.Fp.Board.Tray.Query<Label>().ToList().Select(l => l.name + "=" + l.text)));
+                    StringAssert.Contains("Fords of Bruinen", summary.text);
                     camera = await Route(room.Fp, token, "hollin");
                     PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-undo"));
                     StringAssert.Contains("Fords of Bruinen", room.Fp.Board.Tray.Q<Label>("travel-summary").text);
@@ -62,7 +65,7 @@ namespace Wotr.PlayTests
                     PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-cancel"));
                     Assert.AreEqual(0, room.Fp.Board.View.Revision);
                     Assert.AreEqual(camera, room.Fp.Board.Map.Camera.Pan);
-                    FellowshipGestures.Action(room.Fp, "fellowship-declare");
+                    await FellowshipGestures.Declare(room.Fp);
                     // UI-219: the fifth step uses all five Progress and declares at once.
                     await Route(room.Fp, token, "fords-of-bruinen", "hollin", "moria", "dimrill-dale", "lorien");
                     await room.At(1, token);
@@ -220,7 +223,7 @@ namespace Wotr.PlayTests
             await Discard(room.Sh, token);
             await room.At(8, token);
             FellowshipGestures.Die(room.Fp);
-            FellowshipGestures.Action(room.Fp, "fellowship-status");
+            await FellowshipGestures.Hide(room.Fp);
             await room.At(9, token);
             Assert.IsTrue(room.Fp.Board.View.Fellowship.Hidden);
             Assert.AreEqual("dol-guldur", room.Fp.Board.View.Fellowship.RegionId);

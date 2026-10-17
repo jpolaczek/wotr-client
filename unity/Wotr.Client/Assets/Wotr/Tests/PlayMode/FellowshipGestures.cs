@@ -18,29 +18,62 @@ namespace Wotr.PlayTests
 
         public static void Action(MountedMatchClient client, string name)
         {
-            // UI-232: the Ring icon on the status plaque hides the Fellowship.
+            // UI-232: the Ring icon hides the Fellowship — the panel's own while it is open (it covers the plaque), else
+            // the plaque's.
             if (name == "fellowship-status")
             {
-                CardNetworkTests.Click(client.Board.Fellowship.Ring);
-                return;
-            }
-            // UI-236: the figure on the map declares its position; the panel has no button for it.
-            if (name == "fellowship-declare")
-            {
-                Declare(client);
+                var fellowship = client.Board.Fellowship;
+                var ring = new[] { fellowship.PanelRing, fellowship.Ring }.FirstOrDefault(Reachable) ??
+                    (fellowship.IsOpen ? fellowship.PanelRing : fellowship.Ring);
+                Assert.IsTrue(ring.ClassListContains(ChoiceGlow.ClassName), "The Ring glows while hiding is legal.");
+                PointerGestureEvents.ClickAt(ring);
                 return;
             }
             client.Board.Fellowship.Open();
             CardNetworkTests.Click(client.Board.Fellowship.Root.Q<Button>(name));
         }
 
-        public static void Declare(MountedMatchClient client)
+        // UI-232: hiding is the Ring icon. Hovering the plaque unrolls the panel over it (UI-98), so the panel's own Ring
+        // is the one a player clicks; the panel is opened first when it is rolled up.
+        public static async Task Hide(MountedMatchClient client)
         {
-            var marker = client.Board.Map.FellowshipMarker;
+            var fellowship = client.Board.Fellowship;
+            if (!Reachable(fellowship.PanelRing))
+            {
+                fellowship.Open();
+                await Task.Delay(120);
+            }
+            Action(client, "fellowship-status");
+        }
+
+        // UI-236: the figure on the map declares its position; the panel has no button for it. A figure outside the
+        // view is brought into it first, as a player would pan to it.
+        public static async Task Declare(MountedMatchClient client)
+        {
+            var map = client.Board.Map;
+            var marker = map.FellowshipMarker;
             Assert.IsTrue(marker.DeclareOffered, "The figure offers the declaration.");
             Assert.IsTrue(marker.Root.ClassListContains(MapFellowshipMarker.DeclareClass));
+            if (!Reachable(map, marker.Root))
+            {
+                var anchor = map.Data.Shapes[client.Board.View.Fellowship.RegionId].Anchor;
+                map.FocusOn(new UnityEngine.Vector2(anchor[0], anchor[1]), map.Camera.Zoom);
+                await Task.Delay(120);
+            }
             Assert.AreEqual(DisplayStyle.Flex, marker.Root.style.display.value, "The figure is in view to declare.");
+            Assert.IsTrue(Reachable(map, marker.Root), "The figure can be clicked: " + marker.Root.worldBound);
             CardNetworkTests.Click(marker.Root);
+        }
+
+        private static bool Reachable(MapCanvas map, VisualElement figure) => map.worldBound.Contains(figure.worldBound.center) && Reachable(figure);
+
+        // Shown, laid out and on top at its centre, as a player's click would find it.
+        private static bool Reachable(VisualElement element)
+        {
+            if (element.panel == null || element.resolvedStyle.display == DisplayStyle.None || element.worldBound.width <= 0)
+                return false;
+            var picked = element.panel.Pick(element.worldBound.center);
+            return picked == element || element.Contains(picked);
         }
 
         // UI-236: the gate of the Mordor track enters; the view comes to the track first, as a player's would.
