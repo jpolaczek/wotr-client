@@ -80,7 +80,12 @@ namespace Wotr.Client
             // UI-162: the Hunt is a window of its own, opened from the console.
             Preview.Add(CornerKey, Corner, CornerPanels, OpenCorner, CloseCorner,
                 RightGroup, () => board.Fellowship.Held, CloseCorner);
-            board.Fellowship.Status.clickable = new Clickable(() => Preview.Show(CornerKey));
+            // UI-220: while hiding is legal, the plaque's click hides the Fellowship instead of unrolling the panel.
+            board.Fellowship.Status.clickable = new Clickable(() =>
+            {
+                if (!board.Fellowship.RequestHide())
+                    Preview.Show(CornerKey);
+            });
             // UI-91: no "Cards N" header or help link; the hand itself is the permanent bottom of the column.
             var cards = new VisualElement { name = "edge-cards" };
             cards.AddToClassList("edge-cards");

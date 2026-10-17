@@ -1196,3 +1196,7 @@ Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-se
 ## Political view — UI-218 (2026-10-17)
 
 A folded-map button above the map legend and the P key switch the political view: regions in their nations' colours over a subdued illustration, captured settlements striped in the captor's colour; play continues in the view and the choice is kept on the device. Details: [MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#political-view--ui-218-2026-10-17).
+
+## Hide from the Fellowship plaque — UI-220 (2026-10-17)
+
+The Hide button is gone: with a die that can hide a revealed Fellowship, the corner status plaque glows and one click hides it. Details: [FELLOWSHIP_UX](FELLOWSHIP_UX.md#hide-from-the-status-plaque--ui-220-2026-10-17).

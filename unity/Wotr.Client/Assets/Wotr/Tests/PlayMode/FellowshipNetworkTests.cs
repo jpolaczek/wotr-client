@@ -220,7 +220,7 @@ namespace Wotr.PlayTests
             await Discard(room.Sh, token);
             await room.At(8, token);
             FellowshipGestures.Die(room.Fp);
-            FellowshipGestures.Action(room.Fp, "fellowship-state");
+            FellowshipGestures.Action(room.Fp, "fellowship-status");
             await room.At(9, token);
             Assert.IsTrue(room.Fp.Board.View.Fellowship.Hidden);
             Assert.AreEqual("dol-guldur", room.Fp.Board.View.Fellowship.RegionId);

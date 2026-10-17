@@ -19,9 +19,9 @@ namespace Wotr.Tests
             // UI-110: the move is the glowing track symbol (FellowshipStatus), not a button in this row.
             Assert.IsNull(controls.Root.Q<Button>("fellowship-progress"));
             Assert.IsFalse(controls.MoveOffered, "A missing cost offers no move.");
-            var hide = controls.Root.Q<Button>("fellowship-state");
-            Assert.AreEqual(DisplayStyle.Flex, hide.style.display.value);
-            Assert.IsFalse(hide.enabledSelf, "A missing cost is explained to the owning player.");
+            // UI-220: hiding is the status plaque's click, not a button in this row.
+            Assert.IsNull(controls.Root.Q<Button>("fellowship-state"));
+            Assert.IsFalse(controls.HideOffered);
 
             view.You = Side.Shadow;
             view.Decision = null;
@@ -36,8 +36,35 @@ namespace Wotr.Tests
             view.You = Side.FreePeoples;
             controls.Refresh(view, draft, context, true, false);
             Assert.AreEqual(DisplayStyle.Flex, controls.Root.style.display.value);
-            Assert.AreSame(hide, controls.Root.Q<Button>("fellowship-state"));
-            Assert.AreEqual(DisplayStyle.Flex, hide.style.display.value);
+        }
+
+        // UI-220: a revealed Fellowship with a legal Hide and its die chosen is hidden from the status plaque.
+        [Test]
+        public void HidingIsOfferedOnlyForARevealedFellowshipWithTheChosenLegalDie()
+        {
+            var view = new PlayerView { You = Side.FreePeoples, Phase = GamePhase.ActionResolution, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Kind = DecisionKind.Action }, Fellowship = new FellowshipView { Hidden = false },
+                Options = { new ActionOption { Kind = CommandKind.HideFellowship, EligibleDice = { "character" } } },
+                Dice = { new DieView { Id = "character", Owner = Side.FreePeoples, Source = "standard", Location = DieLocation.Available,
+                    Face = DieFace.Character } } };
+            var controls = new FellowshipControls();
+            var draft = new TurnDraft();
+            var context = new ActionDieContext();
+            controls.Refresh(view, draft, context, true, false);
+            Assert.IsFalse(controls.HideOffered, "no die chosen");
+            context.Sync(view, "character");
+            controls.Refresh(view, draft, context, true, false);
+            Assert.IsTrue(controls.HideOffered);
+            Assert.IsTrue(controls.Offers, "the plaque invites a look");
+            controls.Refresh(view, draft, context, false, false);
+            Assert.IsFalse(controls.HideOffered, "not while a command is being sent");
+            view.Fellowship.Hidden = true;
+            controls.Refresh(view, draft, context, true, false);
+            Assert.IsFalse(controls.HideOffered, "a hidden Fellowship has nothing to hide");
+            view.Fellowship.Hidden = false;
+            view.You = Side.Shadow;
+            controls.Refresh(view, draft, context, true, false);
+            Assert.IsFalse(controls.HideOffered, "only the Free Peoples hide");
         }
 
         [Test]

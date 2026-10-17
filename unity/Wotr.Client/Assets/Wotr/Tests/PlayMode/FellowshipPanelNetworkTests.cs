@@ -23,22 +23,28 @@ namespace Wotr.PlayTests
             var board = room.Fp.Board;
             var before = board.View;
             var pan = board.Map.Camera.Pan;
-            var name = move ? "fellowship-progress" : "fellowship-state";
+            // UI-220: hiding is the status plaque's click; moving is the track symbol in the panel.
+            Button Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress") : board.Fellowship.Status;
             Assert.IsFalse(board.Fellowship.IsOpen, "UI-98: no decision holds the panel; it unrolls from its plaque.");
             await room.Settle();
             StringAssert.Contains("Select a Character die", board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
-            Assert.IsFalse(board.Fellowship.Root.Q<Button>(name).enabledInHierarchy);
+            if (move)
+                Assert.IsFalse(Control().enabledInHierarchy);
+            else
+                Assert.IsFalse(Control().ClassListContains(FellowshipStatus.HideClass), "No die chosen, no hide offer.");
             Assert.AreEqual(0, room.Boundary.Commands);
             var die = before.Dice.Single(d => d.Owner == Side.FreePeoples && d.Face == DieFace.WillOfTheWest).Id;
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("fellowship-cost"));
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die));
             await room.Settle();
             Assert.IsTrue(board.Fellowship.Status.ClassListContains("legal-target"), "The plaque offers the Fellowship action.");
+            if (!move)
+                Assert.IsTrue(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "The plaque itself hides.");
             // Hovering the corner tab unrolls the full form over it, as a player reaches the panel.
             CardGestures.Move(board.Fellowship.Status);
             await room.Settle();
             Assert.IsTrue(board.Fellowship.IsOpen, "The corner tab unrolls the panel.");
-            var action = board.Fellowship.Root.Q<Button>(name);
+            var action = Control();
             if (move)
             {
                 // UI-110: the chosen die lights the progress track's symbol; a click on it moves the Fellowship.
@@ -52,7 +58,7 @@ namespace Wotr.PlayTests
             action.Focus();
             await room.Fp.Connection.Refresh();
             await room.Settle();
-            Assert.AreSame(action, board.Fellowship.Root.Q<Button>(name));
+            Assert.AreSame(action, Control());
             Assert.AreSame(action, action.focusController.focusedElement);
             Assert.AreEqual(die, board.ActionDie.DieId);
             Assert.AreEqual(pan, board.Map.Camera.Pan);
@@ -68,8 +74,10 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.View.Fellowship.Hidden);
             Assert.AreEqual(move ? DieLocation.Hunt : DieLocation.Spent, board.View.Dice.Single(d => d.Id == die).Location);
             Assert.AreEqual(1, room.Boundary.Commands);
-            Assert.IsFalse(action.enabledInHierarchy);
+            if (move)
+                Assert.IsFalse(action.enabledInHierarchy);
             Assert.IsFalse(action.ClassListContains(FellowshipTrackRow.MoveClass), "The glow ends with the sent move.");
+            Assert.IsFalse(action.ClassListContains(FellowshipStatus.HideClass), "The hide offer ends with the sent hide.");
             room.Boundary.ReleaseCommand();
             await room.Until(() => Recovery(board) != null);
             await room.Settle();

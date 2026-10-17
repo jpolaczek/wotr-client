@@ -69,8 +69,9 @@ namespace Wotr.Client
                 return "No Fellowship action in this decision";
             if (Option(view, context, kind, draft) == null)
                 return (view.Fellowship.Hidden ? "" : "Hide first · ") + "Select a Character die";
+            // UI-220: the glowing status plaque is the hide.
             if (!view.Fellowship.Hidden)
-                return "Hide here; no progress or extra Hunt die.";
+                return "Click the glowing Fellowship plaque to hide here; no progress or extra Hunt die.";
             // UI-110: the glowing track symbol is the move.
             return view.Fellowship.MordorStep.HasValue ? "Click the glowing Mordor track symbol · Resolve a Hunt tile before any advance."
                 : "Click the glowing track symbol · Progress +1 and resolve the Hunt; the map position stays unchanged.";

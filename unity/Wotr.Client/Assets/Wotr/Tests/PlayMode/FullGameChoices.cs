@@ -126,7 +126,7 @@ namespace Wotr.PlayTests
             CommandKind.EnterMordor => "fellowship-enter",
             CommandKind.DeclareFellowship => "fellowship-declare",
             CommandKind.MoveFellowship => "fellowship-progress",
-            CommandKind.HideFellowship => "fellowship-state",
+            CommandKind.HideFellowship => "fellowship-status",
             _ => null
         };
 

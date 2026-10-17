@@ -11,6 +11,7 @@ namespace Wotr.Client
         private BoardPresentation data;
         public VisualElement Root { get; } = new VisualElement { name = "fellowship-panel", focusable = true };
         public Button Status => status.Summary;
+        public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
         public event Action Opening;
@@ -39,7 +40,11 @@ namespace Wotr.Client
             this.map = map;
             Root.AddToClassList("fellowship-panel");
             Root.style.display = DisplayStyle.None;
-            status = new FellowshipStatus(Open);
+            status = new FellowshipStatus(() =>
+            {
+                if (!RequestHide())
+                    Open();
+            });
             status.TrackFocusRequested += focus;
             Observe(Status);
             Observe(map.FellowshipMarker.Root);
@@ -63,6 +68,15 @@ namespace Wotr.Client
             status.MoveRequested += () => ActionSelected?.Invoke(CommandKind.MoveFellowship);
             roster.Selected += id => PortraitSelected?.Invoke(id);
             RegisterHover();
+        }
+
+        // UI-220: a click on the status plaque hides a revealed Fellowship when the chosen die allows it.
+        public bool RequestHide()
+        {
+            if (!controls.HideOffered)
+                return false;
+            ActionSelected?.Invoke(CommandKind.HideFellowship);
+            return true;
         }
 
         public void Attach(VisualElement decisionTray, VisualElement decisionDock)
@@ -104,6 +118,7 @@ namespace Wotr.Client
             Root.EnableInClassList("fellowship-hunt-summary", hunt && latest.Hunt != null);
             controls.Refresh(latest, draft, context, enabled && !hunt, route || separation || hunt, Docked);
             status.OfferMove(controls.MoveOffered, controls.MoveDescription);
+            status.OfferHide(controls.HideOffered, FellowshipControls.HideDescription);
             roster.Context(latest, draft, context, enabled && !hunt);
             var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;

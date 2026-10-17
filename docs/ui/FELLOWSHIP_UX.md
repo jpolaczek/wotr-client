@@ -370,3 +370,11 @@ UI-63 preserves the separation Fellowship , preparations and Hunt. Inspection He
 ## Versions, Guide and Homeland — check UI-72
 
 The actual attempts of the four layouts confirmed the separate local choices of the version and Guide in Lords/Council/Fate and click/drop/Stay at home. Esc closes the preview, retaining draft. The review of the full character list does not move the camera or Fellowship; the waiting Shadow does not get the opponent's form. The choice of the homeland is checked openly for the chart goal, without the strategic selection automation. Full report: UI-72.
+
+## Hide from the status plaque — UI-220 (2026-10-17)
+
+The owner's request: no separate Hide button. While the Fellowship is revealed and the chosen die can hide it
+(a Character or Will of the West die, any die with Strider as Guide — the server's `EligibleDice`), the
+status plaque in the corner tab ("Rivendell · Revealed") glows green, reads "Revealed · Hide" and one click
+hides the Fellowship at once (UI-142). Without such a die the plaque only unrolls the panel, as before; the
+panel's hint says to click the glowing plaque. On the Mordor track the figure keeps its own hide click (UI-155).

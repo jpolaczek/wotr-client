@@ -98,7 +98,7 @@ namespace Wotr.PlayTests
                 " -> " + board.Map.Camera.Pan.ToString("R"));
             Assert.AreEqual(zoom, board.Map.Camera.Zoom);
             Assert.AreEqual(0, board.View.Revision);
-            Move(board.Fellowship.Root.Q<Button>("fellowship-state"));
+            Move(board.Fellowship.Root.Q<Button>("focus-fellowship"));
             yield return new WaitForSecondsRealtime(.2f);
             Assert.IsTrue(board.Fellowship.IsOpen, "Moving from the status into its panel must keep the inspection open.");
             Move(board.Phase);

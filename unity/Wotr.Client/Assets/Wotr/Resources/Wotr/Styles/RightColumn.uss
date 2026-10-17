@@ -220,6 +220,13 @@
 #board-screen .edge-corner-tab .edge-plaque:hover,
 #board-screen .edge-corner-tab .edge-plaque:focus { background-color: rgba(241, 209, 122, 0.12); }
 #board-screen .edge-corner-tab .edge-plaque.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+/* UI-220: the plaque hides the Fellowship; a stronger green rim and wash than a general offer. */
+#board-screen .edge-corner-tab .edge-plaque.fellowship-hide-target {
+    border-width: 3px;
+    border-color: rgb(120, 214, 150);
+    background-color: rgba(46, 104, 66, 0.55);
+}
+#board-screen .edge-corner-tab .edge-plaque.fellowship-hide-target .plaque-caption { color: rgb(186, 238, 196); }
 #board-screen .edge-corner-tab .fellowship-status { flex-grow: 1; flex-shrink: 1; }
 #board-screen .edge-corner-tab .edge-plaque .plaque-emblem {
     width: 30px;

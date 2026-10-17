@@ -34,6 +34,9 @@ namespace Wotr.Client
         private readonly FellowshipTrackRow corruption = new FellowshipTrackRow("corruption-track", "corruption", 12, "corruption-step-", "corruption-label");
         private bool inMordor;
 
+        public const string HideClass = "fellowship-hide-target";
+        private string summaryStateText = "";
+
         public FellowshipStatus(Action open)
         {
             // UI-98: the top bar's plaque — condition, last known position, Progress and Corruption.
@@ -78,7 +81,9 @@ namespace Wotr.Client
             var hidden = fellowship.Hidden ? "Hidden" : "Revealed";
             Summary.style.display = DisplayStyle.Flex;
             summaryCondition.sprite = FellowshipArtwork.Sprite(travel.Symbol);
-            summaryState.text = hidden;
+            summaryStateText = hidden;
+            if (!Summary.ClassListContains(HideClass))
+                summaryState.text = hidden;
             summaryJourney.sprite = FellowshipArtwork.Sprite(fellowship.MordorStep.HasValue ? "mordor-gate" : "journey");
             summaryProgress.text = fellowship.MordorStep.HasValue ? travel.Value + "/5" : travel.Value.ToString();
             summaryCorruption.text = damage.Value.ToString();
@@ -117,6 +122,14 @@ namespace Wotr.Client
             activity.tooltip = fellowship.MordorAttemptedThisTurn.HasValue
                 ? MordorTrackState.ActivityHint
                 : "This server view does not report whether the Fellowship attempted to move or hide this turn.";
+        }
+
+        // UI-220: while hiding is legal with the chosen die, the plaque is the control: it glows and says so.
+        public void OfferHide(bool offered, string tooltip)
+        {
+            Summary.EnableInClassList(HideClass, offered);
+            summaryState.text = offered ? "Revealed · Hide" : summaryStateText;
+            Summary.tooltip = offered ? tooltip : "";
         }
 
         public void OfferMove(bool offered, string tooltip)
