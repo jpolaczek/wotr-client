@@ -62,13 +62,9 @@ namespace Wotr.PlayTests
             // UI-91: an unrolled card keeps the pointer over the cards it covers; leave it before the next card.
             CardGestures.Move(actor.Board.Map);
             await room.Settle();
+            // UI-222: the second card completes the cost, so its click removes the protection without ✓.
+            Assert.IsTrue(actor.Board.Hand.Q<Button>("base.sh.character.01").ClassListContains(HandCard.DiscardClass), "A cost card is marked red.");
             PointerGestureEvents.ClickAt(actor.Board.Hand.Q<Button>("base.sh.character.01"));
-            await Reconnect(room, actor);
-            Assert.That(actor.Board.Tray.Q<Label>("protection-cost").text, Does.Contain("Army ✓ · Character ✓"));
-            actor.Board.HandDrawer.Close();
-            actor.Board.Cards.Close();
-            await room.Settle();
-            PointerGestureEvents.ClickAt(actor.Board.Tray.Q<Button>("confirm-decision"));
             await room.At(before.Revision + 1);
             Assert.IsFalse(room.Fp.Board.View.Effects.Any(e => e.SourceId == Protection));
             Assert.AreEqual("Effects · 1", actor.Board.TableEffects.Tab.text);

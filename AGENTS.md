@@ -95,7 +95,8 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   one payment method) executes it immediately; a fast second click after a
   committed step is ignored. Grouped casualties/rerolls have one confirmation.
   Discard excess hand cards one at a time with a single click and no Confirm;
-  discards as a cost retain their own decision. The permanent tray shows the
+  since UI-222 every discard from the hand is made by clicking red-marked cards
+  in the hand and is sent once the selection is complete. The permanent tray shows the
   active die and remaining budget; panels sit beside their objects. Do not require
   numeric entry or scrolling in decision panels. Do not automate strategic
   choices. Since 2026-10-14 (user decision), the layout has fixed sizes (the bottom

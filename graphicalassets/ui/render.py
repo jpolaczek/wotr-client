@@ -170,7 +170,7 @@ def selected(asset, only):
     return asset["source"].startswith(only + "/") or asset["source"] in (only, only + ".svg")
 
 
-def render_assets(renderer, catalog, only=None):
+def render_assets(renderer, catalog, only=None, variant_only=None):
     palette = (HERE / "palette.css").read_text(encoding="utf-8")
     shared = (HERE / "src/shared/defs.svg").read_text(encoding="utf-8")
     scale = catalog["scale"]
@@ -183,6 +183,8 @@ def render_assets(renderer, catalog, only=None):
         size = logical_size(svg)
         base = [None] if asset.get("base", True) else []
         for variant in base + asset.get("variants", []):
+            if variant_only is not None and variant != variant_only:
+                continue
             css = BASE_CSS + palette + token_overrides(catalog["variants"][variant] if variant else {})
             output = output_path(catalog, asset["source"], variant)
             output.parent.mkdir(parents=True, exist_ok=True)
@@ -206,17 +208,21 @@ def render_previews(renderer, catalog):
         print(f"{output.relative_to(HERE)}: preview")
 
 
-# --only keeps the manifest entries of the other categories in catalog order. After a change to the palette
-# or the shared definitions that other categories use, render the whole catalog instead.
-def merged_entries(catalog, rendered, only):
-    if only is None:
+# --only keeps the manifest entries of the other categories in catalog order, and --variant those of the other
+# variants. After a change to the palette or the shared definitions that other categories use, render the whole
+# catalog instead.
+def merged_entries(catalog, rendered, only, variant_only=None):
+    if only is None and variant_only is None:
         return rendered
     previous = json.loads((HERE / "manifest.json").read_text(encoding="utf-8"))["assets"]
     result = []
     for asset in catalog["assets"]:
         source = "src/" + asset["source"]
-        pool = rendered if selected(asset, only) else previous
-        result.extend(entry for entry in pool if entry["source"] == source)
+        base = [None] if asset.get("base", True) else []
+        for variant in base + asset.get("variants", []):
+            fresh = selected(asset, only) and (variant_only is None or variant == variant_only)
+            pool = rendered if fresh else previous
+            result.extend(entry for entry in pool if entry["source"] == source and entry["variant"] == variant)
     return result
 
 
@@ -232,12 +238,13 @@ def main():
     parser.add_argument("--only", metavar="CATEGORY",
                         help="render only src/CATEGORY (e.g. armies) or one source (e.g. actions/political) "
                              "and keep the other manifest entries")
+    parser.add_argument("--variant", metavar="NAME", help="render only this variant of the selected sources")
     arguments = parser.parse_args()
     catalog = json.loads((HERE / "assets.json").read_text(encoding="utf-8"))
     with tempfile.TemporaryDirectory() as workspace:
         renderer = Renderer(workspace)
-        rendered = render_assets(renderer, catalog, arguments.only)
-        write_manifest(merged_entries(catalog, rendered, arguments.only))
+        rendered = render_assets(renderer, catalog, arguments.only, arguments.variant)
+        write_manifest(merged_entries(catalog, rendered, arguments.only, arguments.variant))
         if arguments.preview:
             render_previews(renderer, catalog)
 

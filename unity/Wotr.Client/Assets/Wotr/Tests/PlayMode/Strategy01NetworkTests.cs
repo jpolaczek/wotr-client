@@ -32,13 +32,10 @@ namespace Wotr.PlayTests
                 await ComponentGestures.Cost(room, room.Sh, cost);
                 await ComponentGestures.Remove(room.Sh, "base.fp.strategy.02");
                 await CardGestures.Open(room.Sh);
+                // UI-222: the second cost card completes the removal at once, without ✓.
                 foreach (var card in new[] { "base.sh.strategy.01", "base.sh.character.01" })
                     CardNetworkTests.Click(room.Sh.Board.Root.Q<Button>(card));
-
-                await Reconnect(room, room.Sh);
-                Assert.AreEqual(revision, room.Sh.Board.View.Revision);
-                Assert.That(room.Sh.Board.Tray.Q<Label>("protection-cost").text, Does.Contain("Army ✓ · Character ✓"));
-                await room.Confirm(room.Sh);
+                await room.At(revision + 1);
                 Assert.AreEqual(3, room.Fp.Board.View.Effects.Count);
                 Assert.IsFalse(room.Fp.Board.Presentation.ProtectedRegions.Contains("lorien"));
                 Assert.IsTrue(room.Fp.Board.Presentation.ProtectedRegions.Contains("the-shire"));

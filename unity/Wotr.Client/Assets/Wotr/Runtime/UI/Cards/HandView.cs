@@ -106,12 +106,12 @@ namespace Wotr.Client
                 card.Slot.EnableInClassList("combat-unavailable", combat != null && !combat.Contains(card.Id));
                 card.Slot.EnableInClassList("selected", draft.Payload.CardId == card.Id || draft.Payload.Ids.Contains(card.Id));
                 var eligible = Eligible(card.Id);
-                card.State(eligible, draft.Kind == CommandKind.DiscardCards, Hint(card.Id, eligible));
+                card.State(eligible, Discarding(), Hint(card.Id, eligible));
                 card.Slot.EnableInClassList(HandCard.UnplayableClass, dieChosen && !eligible);
                 anyPlayable |= eligible;
             }
             drawer.Highlight(anyPlayable || CardActions.CanDraw(view, draft, context, "character") ||
-                CardActions.CanDraw(view, draft, context, "strategy"), draft.Kind is CommandKind.DiscardCards or CommandKind.DiscardProtection);
+                CardActions.CanDraw(view, draft, context, "strategy"), Discarding());
         }
 
         public void Suspend(bool dragging)
@@ -201,8 +201,20 @@ namespace Wotr.Client
             return false;
         }
 
+        // UI-222: the hand is where the player discards: an excess hand, a removal cost (A Power too Great, Tom
+        // Bombadil) or an effect's choice of a card from this hand (We Won't Go Back).
+        private static readonly string[] HandDiscardChoices = { "SmeagolCorruption" };
+
+        private bool Discarding() => draft.Kind is CommandKind.DiscardCards or CommandKind.DiscardProtection ||
+            draft.Kind == CommandKind.ChooseEffect && HandDiscardChoices.Contains(view.Decision?.Presentation);
+
+        private bool HandChoice(string id) => draft.Kind == CommandKind.ChooseEffect && Discarding() && view.Hand.Contains(id) &&
+            DraftOptions.For(view, draft)?.EligibleIds.Contains(id) == true;
+
         private bool Eligible(string id)
         {
+            if (HandChoice(id))
+                return true;
             var removal = view.Options.FirstOrDefault(o => o.Kind == CommandKind.DiscardProtection && draft.Kind == o.Kind);
             if (removal != null)
                 return removal.EligibleIds.Contains(id);
@@ -223,13 +235,15 @@ namespace Wotr.Client
             context.DieId.Length > 0 && draft.Kind != CommandKind.DiscardCards;
 
         // Choosing a card as a cost is not a play.
-        private bool Playable(string id) => draft.Kind != CommandKind.DiscardProtection && Eligible(id);
+        private bool Playable(string id) => !Discarding() && Eligible(id);
 
         private string Hint(string id, bool eligible)
         {
             var discard = draft.Kind == CommandKind.DiscardCards;
             if (draft.Kind == CommandKind.DiscardProtection)
-                return eligible ? "Click to choose as the discard cost" : "Cannot pay this cost";
+                return eligible ? "Click to discard as the cost · both cards remove the protection" : "Cannot pay this cost";
+            if (HandChoice(id))
+                return "Click to discard this card";
             if (view.Decision?.Kind == DecisionKind.CombatCard)
                 return CombatCardCondition.Eligible(view)?.Contains(id) == false ? CombatCardCondition.Text(id)
                     : "Choose Combat cards in the battle window";

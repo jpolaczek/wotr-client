@@ -69,7 +69,7 @@ namespace Wotr.EditorTests
             ("icons/hunt", 26, 26, true), ("icons/out", 26, 26, true), ("icons/log", 20, 20, true),
             ("icons/politics", 28, 28, true), ("icons/effects", 28, 28, true), ("icons/characters", 28, 28, true),
             ("icons/fellowship", 28, 28, true),
-            ("cards/parchment", 96, 96, true), ("cards/parchment-playable", 96, 96, true), ("cards/parchment-armed", 96, 96, true),
+            ("cards/parchment", 96, 96, true), ("cards/parchment-playable", 96, 96, true), ("cards/parchment-armed", 96, 96, true), ("cards/parchment-discard", 96, 96, true),
             ("cards/back", 96, 96, true), ("cards/back-hover", 96, 96, true),
             ("icons/nations/dwarves", 20, 20, true), ("icons/nations/elves", 20, 20, true),
             ("icons/nations/gondor", 20, 20, true), ("icons/nations/north", 20, 20, true),

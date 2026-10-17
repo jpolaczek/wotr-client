@@ -65,7 +65,8 @@
 #board-screen .hand .hand-card:active,
 #board-screen .hand .hand-card:focus,
 #board-screen .hand .hand-card.selected,
-#board-screen .hand .hand-card.playable-card { background-color: rgba(0, 0, 0, 0); border-width: 0; }
+#board-screen .hand .hand-card.playable-card,
+#board-screen .hand .hand-card.discard-card { background-color: rgba(0, 0, 0, 0); border-width: 0; }
 
 /* The parchment face grows upward from the slot's bottom edge. */
 .hand-card > #hand-card-face {
@@ -81,6 +82,8 @@
     -unity-slice-scale: 0.5px;
 }
 .hand-card.playable-card > #hand-card-face { background-image: resource("Wotr/Art/UI/cards/parchment-playable"); }
+/* UI-222: a card the player may discard now glows red, the counterpart of the green playable glow. */
+.hand-card.discard-card > #hand-card-face { background-image: resource("Wotr/Art/UI/cards/parchment-discard"); }
 .hand-card.selected > #hand-card-face { background-image: resource("Wotr/Art/UI/cards/parchment-armed"); }
 .motion-enabled .hand-card > #hand-card-face {
     transition-property: height, width, left;

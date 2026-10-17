@@ -29,7 +29,7 @@ We choose a specific die. Army/Muster and Will of the West immediately highlight
 
 Clicks are the full path of each operation; drag is the shortcut. The end-click of the target or legal drop takes a complete step without additional Confirm. An incomplete gesture collects the next required selection. A wrong target does not release the resource. A preview of known effects appears before the gesture, without promising the result of RNG. Clicking sends through the previously secure sender and retriever; UI does not approve the result itself.
 
-Losses, reroll, discards as cost and allocation Hunt allow you to improve the set, then approve once by ✓ An empty set of reroll requires open ✓ To signify resignation. Simple Continue/Stop/Pass/Decline perform the indicated answer without further question.
+Losses, reroll and allocation Hunt allow you to improve the set, then approve once by ✓ (from UI-222 discards from the hand are clicks on red-marked cards in the hand, sent once complete) An empty set of reroll requires open ✓ To signify resignation. Simple Continue/Stop/Pass/Decline perform the indicated answer without further question.
 
 Esc only withdraws local unapproved selection. Approved step does not undo the choice of another army or panel closure. The gesture is associated with ID decision and review; the second click does not go to the next window. The upload blocks the replay, but does not disable. The strategic choice of dice, roads, victims or valuable resource belongs to the player.
 
@@ -1204,3 +1204,7 @@ The Hide button is gone: with a die that can hide a revealed Fellowship, the cor
 ## Table effects unroll like the hand — UI-221 (2026-10-17)
 
 The owner's request: the cards in play on the table unroll on hover like the hand's cards. Every source of the Effects tab is a tile in view at once (no pages); hovering or focusing a tile unrolls its complete text on parchment under the tile, over the other tiles, and leaving it rolls it back; the unrolled text takes no pointer and sends nothing (a user-approved hover exception like UI-91). A click still pins the source's details (scopes, Locate), and × still removes or chooses a source. The panel's header has only its close button, on the right.
+
+## Discard from the hand by clicking — UI-222 (2026-10-17)
+
+The owner's request: whenever cards must be discarded from the hand — an excess hand, the cost of removing A Power too Great or Tom Bombadil (one Shadow die of any result, one Army and one Character card), or an effect's choice of a card from this hand (We Won't Go Back) — the player clicks the cards in the hand on the right. Cards that may be discarded glow red (`parchment-discard`), the counterpart of the green playable glow; the discard is sent as soon as the selection is complete (the second cost card removes the protection), with no extra confirmation. The server keeps validating the cost.

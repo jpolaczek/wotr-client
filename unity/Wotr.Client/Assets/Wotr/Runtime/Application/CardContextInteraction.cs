@@ -83,8 +83,19 @@ namespace Wotr.Client
         {
             if (busy() || view == null)
                 return;
-            if (draft.Kind == CommandKind.DiscardProtection && DraftOptions.For(view, draft).EligibleIds.Contains(id))
-                edit(() => CardDraft.Choose(draft, DraftOptions.For(view, draft), id), false);
+            var option = DraftOptions.For(view, draft);
+            if (option == null || !option.EligibleIds.Contains(id))
+                return;
+            // UI-222: a removal cost is sent once both cards are chosen; a single card choice (ChooseEffect) is sent at
+            // once by the selection's own rule (CardActions.SingleEffect).
+            if (draft.Kind == CommandKind.DiscardProtection)
+            {
+                var next = draft.Fork();
+                CardDraft.Choose(next, option, id);
+                edit(() => draft.Adopt(next), CardDraft.Ready(next, option));
+            }
+            else if (draft.Kind == CommandKind.ChooseEffect && view.Hand.Contains(id))
+                edit(() => CardDraft.Choose(draft, option, id), false);
         }
 
         public bool Play(DraftToken token)

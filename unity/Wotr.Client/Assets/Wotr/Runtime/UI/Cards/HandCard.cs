@@ -12,6 +12,8 @@ namespace Wotr.Client
     {
         public const string ExpandedClass = "card-expanded";
         public const string UnplayableClass = "card-unplayable";
+        // UI-222: a card the player may discard now is marked red, as a playable one is marked green.
+        public const string DiscardClass = "discard-card";
         public Button Slot { get; }
         // An unrolled face takes the pointer, so the card stays readable and clickable over the cards it covers.
         public VisualElement Face { get; } = new VisualElement { name = "hand-card-face", pickingMode = PickingMode.Ignore };
@@ -88,7 +90,8 @@ namespace Wotr.Client
 
         public void State(bool eligible, bool discard, string action)
         {
-            Slot.EnableInClassList("playable-card", eligible);
+            Slot.EnableInClassList("playable-card", eligible && !discard);
+            Slot.EnableInClassList(DiscardClass, eligible && discard);
             ready.style.visibility = eligible ? Visibility.Visible : Visibility.Hidden;
             ready.text = discard ? "×" : "✓";
             hint.text = action;

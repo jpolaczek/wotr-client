@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "127f2024251f2bc60f6f6a922d0dc4b32677aad31e01c3f571532c94af33b3d0"
+    "assets.json": "2cab959f9f1cc93879b4ae831e13864aafa11f2468062b36514338001d4361da"
   },
   "assets": [
     {
@@ -950,6 +950,22 @@
       "alpha": true,
       "source_sha256": "0bac5a6438e23e99207b633ca4813add964a1fd9b11a61d92da2bb7e403ce0d3",
       "png_sha256": "f56bf600f54084911b756ac444dfe6574f8b0b1866a3fc1f0b16e3d7605233d3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment-discard.png",
+      "source": "src/cards/parchment.svg",
+      "variant": "discard",
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "0bac5a6438e23e99207b633ca4813add964a1fd9b11a61d92da2bb7e403ce0d3",
+      "png_sha256": "00c7699ce9bffa6412d7b8c094ba0252bb36e0fff456fa14afef7faca6c5c755"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/back.png",

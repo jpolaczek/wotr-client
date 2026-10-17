@@ -210,6 +210,11 @@
       "--button-bottom": "#252321",
       "--glow-opacity": "0.45",
       "--tab-glow-opacity": "1"
+    },
+    "discard": {
+      "--card-rim": "#7a2a1c",
+      "--card-glow": "#e0574a",
+      "--card-glow-opacity": "1"
     }
   },
   "assets": [
@@ -430,10 +435,11 @@
     },
     {
       "source": "cards/parchment.svg",
-      "role": "Hand card face: yellowed parchment, ink rules; playable glow and the gold glow of a selected card (variant armed).",
+      "role": "Hand card face: yellowed parchment, ink rules; playable glow and the gold glow of a selected card (variant armed); the red glow of a card the player may discard (variant discard, UI-222).",
       "variants": [
         "playable",
-        "armed"
+        "armed",
+        "discard"
       ],
       "slices": {
         "top": 14,
