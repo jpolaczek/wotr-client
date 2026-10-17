@@ -153,6 +153,8 @@ def gh_token():
 
 
 def token(environ):
+    if environ.get("WOTR_DEPS_ANONYMOUS") == "1":
+        return None
     for key in ("WOTR_DEPS_TOKEN", "GITHUB_TOKEN"):
         if environ.get(key):
             return environ[key]
@@ -198,7 +200,9 @@ class GitHubChannel:
             with urllib.request.urlopen(request, timeout=60) as response:
                 return response.read()
         except urllib.error.HTTPError as error:
-            raise DependencyError(self.refusal(error.code, tag)) from None
+            status = error.code
+            error.close()
+            raise DependencyError(self.refusal(status, tag)) from None
         except urllib.error.URLError as error:
             raise DependencyError(f"Cannot reach the dependency channel {self.api}: {error.reason}.") from None
 
@@ -409,6 +413,8 @@ def main():
     commands = parser.add_subparsers(dest="command")
     fetching = commands.add_parser("fetch", help="Fetch and verify the pinned archives (default).")
     fetching.add_argument("--test", action="store_true", help="Also unpack the pinned test backend for PlayMode.")
+    fetching.add_argument("--anonymous", action="store_true",
+                          help="Ignore token variables and gh credentials; prove the public channel works anonymously.")
     pinning = commands.add_parser("pin", help="Pin exact versions, e.g. com.wotr.contracts@0.2.0.")
     pinning.add_argument("packages", nargs="+")
     pinning.add_argument("--channel", help="Store this channel in the lock (file:<folder> or github:<owner>/<repo>).")
@@ -417,7 +423,10 @@ def main():
         if args.command == "pin":
             packages = pin(ROOT, os.environ, args.packages, args.channel)
         else:
-            packages = fetch(ROOT, os.environ, getattr(args, "test", False))
+            environment = dict(os.environ)
+            if getattr(args, "anonymous", False):
+                environment["WOTR_DEPS_ANONYMOUS"] = "1"
+            packages = fetch(ROOT, environment, getattr(args, "test", False))
     except DependencyError as error:
         raise SystemExit("bootstrap_deps: " + str(error))
     for name in sorted(packages):

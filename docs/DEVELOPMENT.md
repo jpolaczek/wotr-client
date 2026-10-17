@@ -3,6 +3,13 @@
 
 Moved from `docs/DEVELOPMENT.md` monorepo at the repository division (DIST-03). The instructions for the backend, the database and implementation are in [DEVELOPMENT server](https://github.com/jpolaczek/wotr-server/blob/a68ceee8bbc7e9ac7b505add92b197c61ba939f1/docs/DEVELOPMENT.md). Before running Unity `scripts/unity.sh` downloads pinned with dependencies (`python3 scripts/bootstrap_deps.py`, description in [README](../README.md)).
 
+For a clean contributor bootstrap, use `python3 scripts/bootstrap_deps.py fetch
+--anonymous --test` in a fresh checkout. The flag prevents the bootstrap from
+consulting token environment variables or `gh auth`; remove `.deps` first when
+repeating the availability check. The command downloads the exact Contracts,
+public-content, server and seeder archives in `wotr-deps.lock.json`, verifies their
+sizes and SHA-256 values, and refuses a missing release or different bytes.
+
 In the server settings, each build, also without Development Build, allows you to save local HTTP: `http://127.0.0.1:5088`, `http://localhost:5088` or `http://[::1]:5088`. The server on this port must actually support HTTP; the port change itself in the address HTTPS does not change the protocol. Other servers require HTTPS. The settings record checks the address format, not the server availability; the account and the parties are part of the database of the selected base.
 
 ## Unity
@@ -50,6 +57,33 @@ bash scripts/unity.sh -quit -executeMethod Wotr.Editor.BuildTasks.BuildWindows -
 ```
 
 `WOTR_UNITY_EDITOR` allows you to indicate a different location of the same editor. Results go to `.artifacts/builds/mac/Wotr.app` and `.artifacts/builds/windows/Wotr.exe`. Unity commands for the same project perform sequentially; editor blocks the simultaneous opening of the directory.
+
+### Complete PlayMode inventory
+
+Do not use an old result XML as the list of current tests. Export Unity's current
+test tree and bind it to the exact client sources and dependency lock:
+
+```sh
+python3 scripts/discover-tests.py --output .artifacts/playmode-discovery.xml
+```
+
+Full PlayMode also needs the profile fixture produced by
+`Wotr.Tests.DesktopProfileFixtureTests` in EditMode. Then run the discovered cases
+in isolated batches:
+
+```sh
+WOTR_TEST_DB='Host=127.0.0.1;Port=55432;Database=wotr_test;Username=wotr' \
+  python3 scripts/test-client-batches.py \
+  --inventory .artifacts/playmode-discovery.xml \
+  --output .artifacts/playmode-run --batching mixed --batch-size 8 --seed 1
+```
+
+Each batch creates a uniquely named disposable database and owns one server
+process, port, fixture, accounts, Unity log and XML result. The runner records the
+first outcome of every fully qualified test name and fails on missing, extra,
+skipped or filtered cases, a non-test process failure, absent cleanup evidence, or
+any source change. It never retries a failure into a passing aggregate. Use a new
+output directory and seed for an independent second full order.
 
 The above `BuildMac`/`BuildWindows` is a development for testing/profileing. Menu counterparts without Development: `Wotr.Editor.BuildTasks.BuildLocalMac` and `Wotr.Editor.BuildTasks.BuildLocalWindows`. Before using CLI close the editor of this project by saving your work. The pre-released packages with the requirements of a clean commit are described by [instructions for issue](../release/README.md).
 

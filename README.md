@@ -18,6 +18,7 @@ no token is needed (`WOTR_DEPS_TOKEN` or `gh auth login` only for a private chan
 
 ```bash
 python3 scripts/bootstrap_deps.py            # Contracts and public content from wotr-deps.lock.json
+python3 scripts/bootstrap_deps.py fetch --anonymous --test  # prove all four public packages need no credentials
 bash scripts/unity.sh -runTests -testPlatform EditMode -testResults .artifacts/editmode.xml -logFile .artifacts/editmode.log
 bash scripts/unity.sh -quit -executeMethod Wotr.Editor.BuildTasks.BuildLocalMac -logFile .artifacts/build-mac.log
 bash scripts/unity.sh -quit -executeMethod Wotr.Editor.BuildTasks.BuildLocalWindows -logFile .artifacts/build-win.log
@@ -27,6 +28,9 @@ bash scripts/unity.sh -quit -executeMethod Wotr.Editor.BuildTasks.BuildLocalWind
 only archives matching the lock's SHA-256 and rejects different bytes, unknown
 versions and unavailable access, without substituting another version. For offline
 use or a local channel, set `WOTR_DEPS_SOURCE=file:<folder>`.
+`fetch --anonymous` ignores `WOTR_DEPS_TOKEN`, `GITHUB_TOKEN` and the local GitHub
+CLI login, so a successful empty-cache run is evidence that the pinned release is
+public. It does not delete or modify any credential.
 
 <a id="testy-z-backendem"></a>
 ## Tests with a backend

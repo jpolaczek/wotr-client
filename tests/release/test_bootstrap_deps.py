@@ -338,6 +338,16 @@ class GitHubChannelTests(unittest.TestCase):
             BOOTSTRAP.fetch(self.client, self.base)
         self.assertEqual([], list((self.client / BOOTSTRAP.CACHE).iterdir()))
 
+    def test_explicit_anonymous_mode_ignores_every_credential_source(self):
+        environment = dict(self.base, WOTR_DEPS_ANONYMOUS="1",
+                           WOTR_DEPS_TOKEN=self.SECRET, GITHUB_TOKEN="environment-secret")
+        with patch.object(BOOTSTRAP, "gh_token") as gh_token:
+            self.assertIsNone(BOOTSTRAP.token(environment))
+            gh_token.assert_not_called()
+        with self.assertRaisesRegex(BOOTSTRAP.DependencyError, "not available anonymously"):
+            BOOTSTRAP.fetch(self.client, environment)
+        self.assertEqual([], list((self.client / BOOTSTRAP.CACHE).iterdir()))
+
     def test_token_reaches_only_the_api_and_is_never_written_or_reported(self):
         BOOTSTRAP.fetch(self.client, dict(self.base, WOTR_DEPS_TOKEN=self.SECRET))
         self.assertEqual(2, len(self.github.storage_headers))
