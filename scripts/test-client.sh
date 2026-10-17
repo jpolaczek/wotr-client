@@ -6,6 +6,10 @@ if [[ -z "${WOTR_TEST_DB:-}" ]]; then
   bash scripts/postgres.sh start
   export WOTR_TEST_DB='Host=127.0.0.1;Port=55432;Database=wotr_test;Username=wotr'
 fi
+# QUAL-06: each invocation owns one database and server; never reset a shared schema.
+if [[ -z "${WOTR_CLIENT_ISOLATED_DB:-}" ]]; then
+  exec python3 scripts/test_fixture.py "$@"
+fi
 wotr_test_port="${WOTR_CLIENT_TEST_PORT:-5088}"
 export WOTR_DB="$WOTR_TEST_DB"
 export ASPNETCORE_ENVIRONMENT=Development
@@ -36,11 +40,12 @@ s=json.load(open(p));s['Address']='http://127.0.0.1:'+sys.argv[1];json.dump(s,op
 PYPORT
 bash scripts/dotnet.sh "$wotr_server_dll" --urls "http://127.0.0.1:$wotr_test_port" > "$wotr_test_directory/client-server.log" 2>&1 &
 wotr_server_pid=$!
-trap 'kill "$wotr_server_pid" 2>/dev/null || true' EXIT
-python3 - "$wotr_test_port" <<'PY'
-import time,urllib.request,sys
+trap 'kill "$wotr_server_pid" 2>/dev/null || true; wait "$wotr_server_pid" 2>/dev/null || true' EXIT
+python3 - "$wotr_test_port" "$wotr_server_pid" <<'PY'
+import time,urllib.request,sys,os
 for attempt in range(50):
  try:
+  os.kill(int(sys.argv[2]), 0)
   urllib.request.urlopen('http://127.0.0.1:'+sys.argv[1]+'/health',timeout=1)
   break
  except OSError: time.sleep(.1)
