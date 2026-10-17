@@ -9,6 +9,7 @@ namespace Wotr.Client
     {
         public Texture2D Texture { get; }
         public Texture2D Margins { get; }
+        public MapLandmarks Landmarks { get; }
         private readonly MapCanvasLayout canvas;
         private readonly Vertex[] vertices = new Vertex[4];
         private static readonly ushort[] Indices = { 0, 1, 2, 2, 3, 0 };
@@ -18,6 +19,7 @@ namespace Wotr.Client
             this.canvas = canvas;
             Texture = Resources.Load<Texture2D>(canvas.TerrainTexture);
             Margins = Resources.Load<Texture2D>(canvas.MarginsTexture);
+            Landmarks = MapLandmarks.Load();
         }
 
         public void Draw(MeshGenerationContext context, Vector2 size)
@@ -27,6 +29,9 @@ namespace Wotr.Client
             Quad(context, Margins, canvas.Around(map));
             // The POT rasters sample their whole rectangle; each quad restores its aspect ratio.
             Quad(context, Texture, map);
+            // UI-234: the fortress drawings are part of the terrain, in its board units.
+            foreach (var landmark in Landmarks.Items)
+                Quad(context, landmark.Texture, landmark.Rect);
         }
 
         private void Quad(MeshGenerationContext context, Texture2D texture, Rect rect)

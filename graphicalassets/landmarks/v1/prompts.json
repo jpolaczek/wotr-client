@@ -1,0 +1,13 @@
+{
+  "version": "landmarks-v1",
+  "model": "gpt-image-1.5",
+  "size": "1024x1024",
+  "quality": "medium",
+  "background": "transparent",
+  "style": "A single fortress drawn as a map symbol for a hand-drawn fantasy map in the style of the map's mountains: grey-black ink and pencil line work with soft grey wash shading on nothing, slightly elevated three-quarter view, crisp contour lines and hatching, no colour except ink greys, no paper texture, no ground plane beyond a small rocky base, isolated on a fully transparent background, centred with generous empty margin. An original drawing. No text, letters, numbers, runes, logos, frame or border. Subject: ",
+  "items": {
+    "minas-tirith": "a great white city of seven tiered concentric walls built against the side of a mountain, a tall slender citadel tower at the top and a jutting rock prow dividing the tiers.",
+    "minas-morgul": "a sinister pale fortress city in a dark narrow valley, a tall thin tower whose top slowly turns, jagged walls and a bridge over a pale river in front of the gate.",
+    "helms-deep": "a mountain-gorge fortress: a stout keep on a rock spur, a long thick defensive wall closing the mouth of a narrow ravine between steep cliffs, a culvert under the wall."
+  }
+}

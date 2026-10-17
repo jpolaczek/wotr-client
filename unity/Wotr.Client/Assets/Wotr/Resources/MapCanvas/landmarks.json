@@ -1,0 +1,8 @@
+{
+  "version": "map-landmarks-1",
+  "landmarks": [
+    { "id": "minas-tirith", "texture": "Wotr/Art/map-landmarks/minas-tirith", "centre": [946, 920], "width": 50 },
+    { "id": "minas-morgul", "texture": "Wotr/Art/map-landmarks/minas-morgul", "centre": [1254, 979], "width": 36 },
+    { "id": "helms-deep", "texture": "Wotr/Art/map-landmarks/helms-deep", "centre": [765, 841], "width": 30 }
+  ]
+}

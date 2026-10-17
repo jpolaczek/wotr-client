@@ -1,0 +1,42 @@
+{
+  "version": "landmarks-v1",
+  "task": "UI-234",
+  "model": "gpt-image-1.5",
+  "generator": "OpenAI Images API via v1/generate.py (v1/generations.jsonl); cropped, parchment-multiplied and scaled with Pillow by build.py",
+  "pixels_modified": "cropped, colour-multiplied, scaled and re-encoded",
+  "outputs": [
+    {
+      "key": "minas-tirith",
+      "source": "v1/raw/minas-tirith.png",
+      "sourceSha256": "1f4151bc0807613de1b6d42194ecee25419ab4264160aec144c1cfb614b25dce",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/minas-tirith.png",
+      "outputSha256": "cd40035c98b5821d24e2533f146957624f87031ad6546dc48ab396e0eee442da",
+      "size": [
+        256,
+        237
+      ]
+    },
+    {
+      "key": "minas-morgul",
+      "source": "v1/raw/minas-morgul.png",
+      "sourceSha256": "87c5e179fac3da024d3be03b38d0c899648212f673d7e86ea9157444e15dafc6",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/minas-morgul.png",
+      "outputSha256": "1b66bf24878201a8834bfba12b8c67b400e067d2107a85b0941f83e99363ac66",
+      "size": [
+        256,
+        237
+      ]
+    },
+    {
+      "key": "helms-deep",
+      "source": "v1/raw/helms-deep.png",
+      "sourceSha256": "d141d0b34f2249f4566bfa9a8b89e25538ec5c5cefba4a709b7bb0895c99acb8",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/helms-deep.png",
+      "outputSha256": "6149c1becf3bbaa14bcc58a5541e6ab7b0cd0caf9f70ee2821262889687a1144",
+      "size": [
+        256,
+        154
+      ]
+    }
+  ]
+}

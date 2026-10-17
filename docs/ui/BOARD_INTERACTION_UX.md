@@ -679,3 +679,11 @@ Gorgoroth's point lies just under the Barad-dûr border, so its figure used to s
 the forces. A region too small for every place keeps the figure above its forces, as before. On the Mordor track the
 figure stays on its step, which lies inside Gorgoroth (the Crack of Doom is drawn at Barad-dûr's foot). Test:
 `MapContourDataTests.FellowshipFigureStandsInsideGorgoroth`.
+
+## Fortress drawings on the terrain — UI-234 (2026-10-17)
+
+Minas Tirith, Minas Morgul and Helm's Deep are drawn on the terrain as permanent map art, like forests and mountains
+(`graphicalassets/landmarks`). The drawings belong to the terrain layer in board units: they scale with the map,
+fade with the terrain in the political view, and never appear or disappear with the zoom. Names, settlement gems and
+forces are drawn above them, and each drawing stands in its region clear of the region's name and the forces' row
+(`Resources/MapCanvas/landmarks.json`, `MapLandmarksTests`).
