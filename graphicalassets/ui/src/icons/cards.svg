@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 32 32">
+  <!-- Cards in hand: two fanned cards with gilt edges. -->
+  <defs>
+    <linearGradient id="cards-back" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#5a2a22"/>
+      <stop offset="1" style="stop-color: var(--wax)"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <g transform="rotate(-15 14 18)">
+      <rect x="6.6" y="6" width="14.5" height="20.5" rx="2" fill="url(#cards-back)" stroke="url(#gilt-diagonal)" stroke-width="1.2"/>
+      <rect x="9" y="8.4" width="9.7" height="15.7" rx="1" fill="none" style="stroke: var(--gilt-mid)" stroke-width="0.55"/>
+    </g>
+    <g transform="rotate(9 18 18)">
+      <rect x="11" y="5.6" width="14.5" height="20.5" rx="2" fill="url(#enamel-dome)" stroke="url(#gilt-diagonal)" stroke-width="1.2"/>
+      <rect x="13.4" y="8" width="9.7" height="15.7" rx="1" fill="none" style="stroke: var(--gilt-light)" stroke-width="0.6"/>
+      <path d="M18.25 10.6 L21.5 15.85 L18.25 21.1 L15 15.85 Z" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.35"/>
+      <circle cx="18.25" cy="15.85" r="1" style="fill: var(--ink)"/>
+    </g>
+  </g>
+</svg>

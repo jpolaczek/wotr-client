@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- 9-slice outline under the ghost of a planned move or placement (UI-125). Slices (points): 12.
+       Not interactive; code draws the figures at reduced opacity inside it. -->
+  <rect x="1.5" y="1.5" width="45" height="45" rx="8" style="fill: var(--ink)" fill-opacity="0.18"/>
+  <rect x="1.5" y="1.5" width="45" height="45" rx="8" fill="none" style="stroke: var(--gilt-light)" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity="0.9"/>
+</svg>

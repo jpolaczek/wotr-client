@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- No card: a parchment card struck through in red. -->
+  <g filter="url(#lift)">
+    <rect x="8" y="4" width="16" height="23" rx="1.6" style="fill: var(--parchment-light); stroke: var(--card-ink)" stroke-width="1"/>
+    <path d="M11 9 H21 M11 13 H21 M11 17 H18" style="stroke: var(--card-ink)" stroke-width="1" opacity="0.6"/>
+    <path d="M6 7 L26 26 M26 7 L6 26" style="stroke: var(--lacquer-red-top)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M6 7 L26 26 M26 7 L6 26" style="stroke: var(--ember)" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+</svg>

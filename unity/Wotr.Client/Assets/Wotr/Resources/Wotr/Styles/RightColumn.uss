@@ -1,0 +1,314 @@
+/* UI-90: Fellowship and Hunt share the left rail's art (Styles/LeftRail.uss): gold panel frame,
+   red lacquer header with the panel icon, square buttons; a 28-point header (26 when compact),
+   thin padding and no rows that only repeat what is already shown.
+   UI-98: they no longer stand in the right column. A small corner tab at the top right of the map
+   shows the Fellowship and the Hunt Box; hovering it unrolls both full panels over it, above the
+   hand, and a panel that hosts the current decision stays unrolled.
+   Rules carry #board-screen so they win over the panel rules that Wotr.uss declares later. */
+
+.board-dropdowns {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 380px;
+    flex-direction: column;
+    align-items: stretch;
+}
+.compact-edge-board .board-dropdowns { width: 350px; }
+
+#board-screen .board-dropdowns .edge-dropdown-panel {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    flex-shrink: 0;
+    padding: 5px 7px 7px 7px;
+    margin: 0 0 2px 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+
+#board-screen .board-dropdowns .panel-header {
+    height: 28px;
+    min-height: 28px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 0 3px 0;
+    padding: 0 5px 0 6px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .board-dropdowns .panel-header .panel-header-icon { width: 20px; height: 20px; margin: 0 5px 0 2px; }
+.panel-header-icon-fellowship { background-image: resource("Wotr/Art/UI/icons/fellowship"); }
+.panel-header-icon-hunt { background-image: resource("Wotr/Art/UI/icons/hunt"); }
+#board-screen .board-dropdowns .panel-header > .title {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin: 0 6px 0 0;
+    padding: 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+}
+
+/* Square header buttons as in the left rail. */
+#board-screen .board-dropdowns .panel-header Button {
+    min-height: 0;
+    color: rgb(241, 227, 181);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .board-dropdowns .panel-header Button:hover,
+#board-screen .board-dropdowns .panel-header Button:focus {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square-hover");
+}
+/* 24 points is the board's minimum click target (HuntLayoutTests, MordorLayoutTests). */
+
+/* Fellowship: condition and last known position form the locate button in the header,
+   replacing the separate state row and the "Locate" button that the map controls also offer. */
+.window-header .action.fellowship-locate {
+    width: auto;
+    min-width: 0;
+    height: 24px;
+    min-height: 24px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 4px 0 0;
+    padding: 0 6px;
+}
+.fellowship-locate .fellowship-state-row { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; }
+.fellowship-locate .fellowship-state-row > .fellowship-symbol { width: 16px; height: 16px; margin-right: 3px; flex-shrink: 0; }
+.fellowship-panel .fellowship-locate #fellowship-condition { flex-shrink: 0; margin: 0 6px 0 0; padding: 0; font-size: 12px; }
+.fellowship-panel .fellowship-locate #fellowship-location {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -unity-text-align: middle-right;
+}
+#board-screen .board-dropdowns .fellowship-panel .fellowship-locate #fellowship-condition,
+#board-screen .board-dropdowns .fellowship-panel .fellowship-locate #fellowship-location { color: rgb(236, 224, 196); }
+
+/* One row of portraits: tokens narrow instead of wrapping a single companion onto a second row. */
+#board-screen .board-dropdowns .fellowship-panel .fellowship-members { flex-wrap: nowrap; }
+#board-screen .board-dropdowns .fellowship-panel .companion-token { flex-shrink: 1; min-width: 36px; }
+
+/* Hunt: without a Hunt the panel is only the Hunt Box (HuntBoxView) under its header (UI-109: no last
+   report); the plaque already carries the count, so the header's idle count and the empty body stay hidden. */
+.hunt-idle-count { display: none; }
+#board-screen .hunt-box {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 3px 6px;
+    background-color: rgba(16, 15, 14, 0.55);
+    border-width: 1px;
+    border-color: rgba(162, 125, 57, 0.55);
+    border-radius: 3px;
+}
+.hunt-box-entry { flex-direction: row; align-items: center; margin: 0 12px 0 0; }
+#board-screen .hunt-box-entry > .hunt-box-symbol { width: 20px; height: 20px; margin: 0 5px 0 0; flex-shrink: 0; }
+#board-screen .hunt-box-entry > Label { margin: 0; padding: 0; font-size: 13px; color: rgb(236, 224, 196); }
+
+/* Hovered panels close by themselves and held ones belong to their decision; only a panel opened
+   by code (map marker, Locate, victory screen) keeps its close button. */
+#board-screen .board-dropdowns .edge-panel-preview #close-fellowship,
+#board-screen .board-dropdowns .edge-permanent-panel #close-fellowship { display: none; }
+#board-screen .board-dropdowns .panel-header #close-fellowship { width: 24px; min-width: 24px; height: 24px; min-height: 24px; margin: 0 0 0 3px; }
+
+/* The full panels unroll over the corner tab (opacity, slide and a slight stretch), as the left rail's
+   panels unroll from their tabs (UI-92). */
+.edge-corner-panels { position: absolute; left: 0; top: 0; right: 0; flex-direction: column; align-items: stretch; }
+.motion-enabled #board-screen .edge-corner-panels {
+    transform-origin: right top;
+    transition-property: opacity, translate, scale;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out-cubic;
+}
+#board-screen .edge-corner-panels.edge-panel-entering { opacity: 0; translate: 0 -10px; scale: 1 0.96; }
+
+/* The corner tab: a small gilt panel with the Fellowship plaque and the Hunt plaque side by side.
+   Hovering it unrolls the full panels; plaques have no frame of their own inside it. */
+#board-screen .board-dropdowns .edge-corner-tab {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    width: auto;
+    height: 46px;
+    min-height: 46px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    padding: 4px 8px 5px 8px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .board-dropdowns .edge-corner-tab.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+.edge-corner-divider {
+    width: 8px;
+    height: 30px;
+    flex-shrink: 0;
+    margin: 0 4px;
+    background-image: resource("Wotr/Art/UI/ornaments/divider-small");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+#board-screen .edge-corner-tab .edge-plaque {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    width: auto;
+    min-width: 0;
+    height: 36px;
+    min-height: 36px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    padding: 0 6px 0 4px;
+    font-size: 12px;
+    color: rgb(241, 227, 181);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    border-width: 0;
+    border-radius: 3px;
+}
+#board-screen .edge-corner-tab .edge-plaque:hover,
+#board-screen .edge-corner-tab .edge-plaque:focus { background-color: rgba(241, 209, 122, 0.12); }
+#board-screen .edge-corner-tab .edge-plaque.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .edge-corner-tab .fellowship-status { flex-grow: 1; flex-shrink: 1; }
+#board-screen .edge-corner-tab .edge-plaque .plaque-emblem {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    margin: 0 6px 0 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.plaque-column { flex-direction: column; justify-content: center; flex-shrink: 0; }
+.plaque-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+#board-screen .edge-corner-tab .plaque-main {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(241, 230, 196);
+}
+#board-screen .edge-corner-tab .plaque-caption {
+    margin: 1px 0 0 0;
+    padding: 0;
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    -unity-font-style: bold;
+    color: rgb(201, 169, 100);
+}
+.plaque-value { flex-direction: row; align-items: center; height: 15px; }
+#board-screen .edge-corner-tab .plaque-value-symbol { width: 14px; height: 14px; margin: 0 3px 0 0; flex-shrink: 0; }
+#board-screen .edge-corner-tab .plaque-number {
+    min-width: 9px;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(241, 230, 196);
+}
+#board-screen .edge-corner-tab #fellowship-status-values { margin-left: 8px; }
+#board-screen .edge-corner-tab #fellowship-status-corruption { color: rgb(239, 165, 137); }
+/* An effect on the Fellowship marks the plaque's corner. */
+#board-screen .edge-corner-tab .edge-plaque > .effect-scope-badge { position: absolute; right: -3px; top: -4px; width: 22px; min-width: 22px; height: 16px; min-height: 16px; font-size: 10px; }
+
+/* The Eye on the Shadow's enamel, as on the dice (UI-97). */
+.hunt-eye-medallion { background-image: resource("Wotr/Art/UI/dice/medallion-shadow"); -unity-background-scale-mode: stretch-to-fill; }
+.hunt-eye-medallion > .die-face { left: 2px; top: 2px; right: 2px; bottom: 2px; }
+
+/* Compact boards (short viewports) keep the same pieces with a 26-point header. */
+#board-screen.compact-edge-board .board-dropdowns .edge-dropdown-panel { padding: 4px 6px 6px 6px; }
+#board-screen.compact-edge-board .board-dropdowns .panel-header { height: 26px; min-height: 26px; margin-bottom: 2px; }
+#board-screen.compact-edge-board .board-dropdowns .panel-header > .title { font-size: 13px; }
+
+/* UI-110: the track symbol is the Fellowship's move. It stays a plain symbol until the chosen die can move
+   the Fellowship; then a gilt halo (ornaments/move-glow) glows behind it and, with motion on, gently pulses. */
+#board-screen .fellowship-track-move,
+#board-screen .fellowship-track-move:hover,
+#board-screen .fellowship-track-move:active,
+#board-screen .fellowship-track-move:focus,
+#board-screen .fellowship-track-move:disabled {
+    flex-shrink: 0;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    overflow: visible;
+    opacity: 1;
+}
+#board-screen .fellowship-track-move:disabled > .fellowship-track-symbol { opacity: 1; }
+.track-move-glow {
+    display: none;
+    position: absolute;
+    left: -9px;
+    top: -8px;
+    width: 44px;
+    height: 44px;
+    background-image: resource("Wotr/Art/UI/ornaments/move-glow");
+    opacity: 0.9;
+}
+#board-screen .fellowship-track-move.track-move > .track-move-glow { display: flex; }
+.motion-enabled #board-screen .fellowship-track-move.track-move > .track-move-glow {
+    transition-property: opacity, scale;
+    transition-duration: 650ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .fellowship-track-move.track-move.track-move-bright > .track-move-glow { opacity: 1; scale: 1.18; }
+#board-screen .fellowship-track-move.track-move:hover > .track-move-glow { opacity: 1; }

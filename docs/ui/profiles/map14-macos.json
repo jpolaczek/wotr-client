@@ -1,0 +1,689 @@
+{
+  "RecordedAt": "2026-10-08T10:05:42.959935Z",
+  "Unity": "6000.6.0f1",
+  "Development": true,
+  "Editor": false,
+  "Platform": "OSXPlayer",
+  "OS": "Mac OS X 15.6.1",
+  "CPU": "Apple M1 Pro",
+  "GPU": "Apple M1 Pro",
+  "MemoryMB": 16384,
+  "GraphicsAPI": "Metal",
+  "TargetFPS": -1,
+  "VSync": 0,
+  "Geometry": "contours-2",
+  "Borders": "borders-1",
+  "Texture": {
+    "width": 4096,
+    "height": 4096,
+    "Format": "DXT1",
+    "GraphicsFormat": "RGBA_DXT1_UNorm",
+    "Bytes": 11185272,
+    "mipmapCount": 13
+  },
+  "BorderCount": 233,
+  "InputPoints": 142164,
+  "Workload": "Real offline Player board, standard setup; no accounts or server commands. Input-to-render excludes display latency.",
+  "Results": [
+    {
+      "Kind": "idle",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1787.5389673591551,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.55942836394630524,
+          "P95": 0.7917091716080904,
+          "Max": 4.0719956159591675
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.5576357305555556,
+          "P95": 0.783125,
+          "Max": 4.073042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 34.472222222222221,
+          "P95": 34.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0152,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 909048
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1508.9357407637976,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.66271874473184456,
+          "P95": 0.89920632308349013,
+          "Max": 1.1193807004019618
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.66127106666666635,
+          "P95": 0.899625,
+          "Max": 1.112125
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 890.85555555555561,
+          "P95": 2346.0,
+          "Max": 2450.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.087909722222222236,
+          "P95": 0.1287,
+          "Max": 0.1683
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.54557222222222246,
+          "P95": 0.7569,
+          "Max": 0.9647
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0119,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 909812
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1256.9347847291701,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.79558622463890871,
+          "P95": 0.99321140442043543,
+          "Max": 1.1162485461682081
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.79409942500000041,
+          "P95": 0.988208,
+          "Max": 1.118042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 534.66111111111115,
+          "P95": 554.0,
+          "Max": 571.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.056876388888888851,
+          "P95": 0.0771,
+          "Max": 0.1017
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.67680749999999956,
+          "P95": 0.84,
+          "Max": 0.9383
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.012,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 911067
+      }
+    },
+    {
+      "Kind": "idle",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1899.9032433130426,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.5263425932450142,
+          "P95": 0.73137047002092,
+          "Max": 2.0239583682268858
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.52493330277777772,
+          "P95": 0.737,
+          "Max": 2.05
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 34.472222222222221,
+          "P95": 34.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0579,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 909056
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1479.5123290148665,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.67589838921170065,
+          "P95": 0.905916967894882,
+          "Max": 1.125914161093533
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.67438967222222168,
+          "P95": 0.911334,
+          "Max": 1.127875
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 804.56666666666672,
+          "P95": 2378.0,
+          "Max": 3146.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.086445000000000036,
+          "P95": 0.1262,
+          "Max": 0.2079
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.55109944444444436,
+          "P95": 0.7862,
+          "Max": 0.9706
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0218,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 907032
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1275.3289018728547,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.78411145433266127,
+          "P95": 0.91208191588521,
+          "Max": 1.1174603132531047
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.78263113055555511,
+          "P95": 0.909209,
+          "Max": 1.111833
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 534.66111111111115,
+          "P95": 554.0,
+          "Max": 571.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.051375833333333343,
+          "P95": 0.0689,
+          "Max": 0.0911
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.65793666666666673,
+          "P95": 0.7786,
+          "Max": 0.8703
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.013,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 911075
+      }
+    },
+    {
+      "Kind": "idle",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1379.22489576108,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.725044916948213,
+          "P95": 0.84908585995435715,
+          "Max": 4.45491774007678
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.72352848055555607,
+          "P95": 0.847708,
+          "Max": 4.455209
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 34.613888888888887,
+          "P95": 34.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0585,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 909056
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1120.1169736442284,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.89276390192228261,
+          "P95": 1.1952947825193405,
+          "Max": 1.4077522791922092
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.89120510555555532,
+          "P95": 1.19425,
+          "Max": 1.407708
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1137.4027777777778,
+          "P95": 2698.0,
+          "Max": 6274.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.1005866666666666,
+          "P95": 0.1443,
+          "Max": 0.1702
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.75800055555555557,
+          "P95": 1.028,
+          "Max": 1.2252
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0207,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 909800
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1226.5174725967909,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.81531655466986,
+          "P95": 1.0090845171362162,
+          "Max": 1.1077097151428461
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.81322766111111122,
+          "P95": 1.009042,
+          "Max": 1.115833
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 534.70833333333337,
+          "P95": 554.0,
+          "Max": 571.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.056291388888888821,
+          "P95": 0.0797,
+          "Max": 0.1062
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.68282361111111145,
+          "P95": 0.8631,
+          "Max": 0.9384
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.014,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 911075
+      }
+    },
+    {
+      "Kind": "idle",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1475.1320155423318,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.67790542776088436,
+          "P95": 0.78183104051277041,
+          "Max": 8.8227465748786926
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.67686820555555549,
+          "P95": 0.779125,
+          "Max": 8.829459
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 34.56666666666667,
+          "P95": 34.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0593,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 909056
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1355.1342562072391,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.73793426401809681,
+          "P95": 1.0035856394097209,
+          "Max": 1.2949971714988351
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.73628562499999961,
+          "P95": 1.005041,
+          "Max": 1.297375
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 907.50277777777774,
+          "P95": 2570.0,
+          "Max": 2706.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.083449166666666741,
+          "P95": 0.1251,
+          "Max": 0.1579
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.609881388888889,
+          "P95": 0.859,
+          "Max": 1.0806
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0167,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 906916
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1325.1013198571143,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.754659273985049,
+          "P95": 0.90841838391497731,
+          "Max": 1.0979946237057447
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.75335048333333343,
+          "P95": 0.912,
+          "Max": 1.096917
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 534.66111111111115,
+          "P95": 554.0,
+          "Max": 571.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.0505825,
+          "P95": 0.0735,
+          "Max": 0.094
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.6358244444444443,
+          "P95": 0.7927,
+          "Max": 0.9159
+        }
+      },
+      "InputPoints": 142164,
+      "LastUpdateMilliseconds": 0.0183,
+      "BorderRepaints": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 911075
+      }
+    }
+  ],
+  "Screenshots": [
+    "whole-1366-1.00.png",
+    "maximum-zoom-1366-1.00.png",
+    "legend-1366-1.00.png",
+    "whole-1366-1.25.png",
+    "maximum-zoom-1366-1.25.png",
+    "legend-1366-1.25.png",
+    "whole-1920-1.00.png",
+    "maximum-zoom-1920-1.00.png",
+    "legend-1920-1.00.png",
+    "whole-1920-1.25.png",
+    "maximum-zoom-1920-1.25.png",
+    "legend-1920-1.25.png",
+    "morannon-before.png",
+    "morannon-after.png",
+    "minas-morgul-before.png",
+    "minas-morgul-after.png",
+    "erebor-before.png",
+    "erebor-after.png",
+    "moria-before.png",
+    "moria-after.png",
+    "high-pass-before.png",
+    "high-pass-after.png",
+    "grey-havens-before.png",
+    "grey-havens-after.png",
+    "nurn-before.png",
+    "nurn-after.png"
+  ]
+}

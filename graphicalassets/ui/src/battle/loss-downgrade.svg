@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32">
+  <!-- Loss overlay: downgrade (elite to regular), an ivory arrow pointing down on an ink disc. -->
+  <circle cx="16" cy="16" r="14" style="fill: var(--ink)" opacity="0.82"/>
+  <circle cx="16" cy="16" r="13" fill="none" style="stroke: var(--gilt-mid)" stroke-width="1.2"/>
+  <path d="M16 7 V22 M9.5 16.5 L16 23 L22.5 16.5" fill="none" style="stroke: var(--ivory)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,31 @@
+{
+  "task": "MAP-04",
+  "sha256": {
+    "graphicalassets/region-map/map-regions.svg": "bff49f0e67035b931f7e6013ae3b0792ccbd3fb8b70f37ae7f4502ce051389e5",
+    "graphicalassets/region-map/map-regions.png": "3bc9dfb196dff8f7db6af133aaf1696242fa86ddd9133393754206fa77744110",
+    "graphicalassets/region-map/geometry.json": "2b5db560643401f48f8415b4a76392596ed41b0cde187a2b9e738816c735b20a",
+    "graphicalassets/region-map/reference/region-labels.png": "9621c8e78d552e0b4dd3c2fd4d4fdf1bb4c45479481a20c7141fa1807fd97675",
+    "content/base-board.json": "b6b0575404de0a0d8d209244a7f1ec5c299383b0b4dd1267c7561f154f8fe6d4",
+    "content/map-geometry.json": "84e1e8281eda6045a3f434878b9ac1971b41bb0b75cbfd7b96c8541412756166",
+    "graphicalassets/highedfmap.jpeg": "67b6490f319c257d01ab57ab46da7ef4035d1d8074f306bce702a1f3e3f60db4",
+    "graphicalassets/maps/718b9hBS4AL._AC_SL1000_.jpg": "f483599a8b708f1d46a2a4ae67c00ed002db3d601093a08111e9cde2aa9a249f",
+    "graphicalassets/maps/71oBODdvMNL._AC_SL1500_.jpg": "23b227b64a030343da0de47b65ace3034cccbab7dbcdea0bc465950ca871f6c5",
+    "graphicalassets/maps/s-l1600.webp": "f9587ad0389494779bd06b98237aa21ecc0262028d73aad00a1fba6cce2945e8",
+    "graphicalassets/maps/middle-earth-terrain-v1.png": "2ccc7b777e3ef009feaa71cd2d1ec6591772a6d66e619db4c9072c4be9d31281",
+    "graphicalassets/maps/terrain-v1/map-composition.svg": "ed6330570b9d024157c80d652a9b2a69b344e1a8a685a88c970a7114cc59410c",
+    "graphicalassets/maps/pencil-v1/build_map.py": "ba6cea48e861d52bd06ce6430d9825ff32cf093ed844fb29ae12324613c09a60",
+    "graphicalassets/maps/pencil-v1/terrain-pencil.png": "4500ac002ff9e26894aa1a0c9a8d5fa3bda74105bf5c61f3833618c6eb80d75c",
+    "graphicalassets/maps/pencil-v1/map-composition.svg": "45817757d8bda09d9e8ce0fa97541c382e5534db8897d2bdf6991dc874c3c461",
+    "graphicalassets/maps/middle-earth-pencil-v1.png": "47faa820e2bb87fd3d8b59dc050981a1f8e8a879cec3ba853e66e0ba68d8a052"
+  },
+  "view_box": [
+    335,
+    40,
+    1632,
+    1338
+  ],
+  "target_size": [
+    6144,
+    5037
+  ]
+}

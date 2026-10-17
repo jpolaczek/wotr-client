@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-139: Movement: a leather travelling boot (heel, arch, long toe) with a gilt cuff. -->
+  <g filter="url(#lift)">
+    <path d="M10.5 5 H17.5 V17 C20 18 24.5 19 27 20.8 C28.6 22 29.2 23.4 29.2 25 V27.4 H15.2 L14.2 25.4 H11.8 L10.8 27.4 H6.8
+      C6.2 27.4 6 26.8 6.2 26.2 L8.6 19 C9.6 16 10.5 13 10.5 10 Z"
+      style="fill: var(--leather-top); stroke: var(--emblem-outline)" stroke-width="0.9" stroke-linejoin="round"/>
+    <path d="M15.4 26 H29" style="stroke: var(--leather-bottom)" stroke-width="2"/>
+    <path d="M17.6 19 C20.4 19.8 23.4 20.8 25.4 22" fill="none" style="stroke: var(--ink)" stroke-width="0.7" opacity="0.45"/>
+    <rect x="9.6" y="3.4" width="8.8" height="4" rx="1.2" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+  </g>
+</svg>

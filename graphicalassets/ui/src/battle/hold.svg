@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: hold position, a planted banner. -->
+  <g filter="url(#lift)">
+    <rect x="9" y="3" width="2.4" height="26" rx="1.2" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <path d="M11.4 5 H26 L22 11 L26 17 H11.4 Z" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="0.8"/>
+    <path d="M5 29 H16" style="stroke: var(--gilt-light)" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+</svg>

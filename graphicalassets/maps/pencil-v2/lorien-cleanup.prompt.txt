@@ -1,0 +1,3 @@
+Use case: precise-object-edit
+Remove the entire rounded forest group in the middle of this pencil map crop, including ALL crowns, trunks, roots and shadows down to the bottommost tree. Replace it with the same blank white paper. This is a background for repositioning the forest later, so do not draw any replacement trees.
+Preserve the mountain slopes on the left and the river curving closely around the forest's lower-left edge, as well as the main river on the right. Reconstruct only the sparse existing slope strokes where needed behind the erased trees; no new mountain peaks. Do not erase or move either river. Keep the exact complete 600 x 600 crop, positions, framing and pencil style. No labels, colors, buildings or other additions.

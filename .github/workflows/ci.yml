@@ -1,0 +1,31 @@
+name: Verify client
+on: [push, pull_request]
+# Read-only token; pull requests (forks included) run only the hosted checks.
+permissions:
+  contents: read
+# BUILD-03 (wotr-server): on a branch other than main a newer push cancels the running check.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check_docs.py
+      - run: python3 -m unittest discover -s tests/release -p 'test_*.py' -v
+  unity:
+    # Opt in only on a runner with a Unity license, both desktop modules, .NET 10 and PostgreSQL. Pushes only:
+    # a pull request never reaches the self-hosted runner. The pinned wotr-server releases are public;
+    # the job's own token only raises the API rate limit.
+    if: vars.WOTR_UNITY_CI == 'enabled' && github.event_name == 'push'
+    runs-on: [self-hosted, wotr-unity]
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/bootstrap_deps.py fetch --test
+      - run: bash scripts/unity.sh -runTests -testPlatform EditMode -testResults .artifacts/unity-editmode.xml -logFile .artifacts/unity-tests.log
+      - run: bash scripts/test-client.sh
+      - run: bash scripts/unity.sh -quit -executeMethod Wotr.Editor.BuildTasks.BuildMac -logFile .artifacts/unity-mac.log
+      - run: bash scripts/unity.sh -quit -executeMethod Wotr.Editor.BuildTasks.BuildWindows -logFile .artifacts/unity-windows.log

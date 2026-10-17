@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: advance into the region, an arrow forward with a gilt head. -->
+  <g filter="url(#lift)">
+    <path d="M5 16 H24" style="stroke: var(--ink)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M5 16 H24" style="stroke: var(--ivory)" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M19 7 L29 16 L19 25 Z" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.8"/>
+  </g>
+</svg>

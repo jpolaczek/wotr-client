@@ -1,0 +1,38 @@
+[
+  {
+    "id": "fate.character.gimli",
+    "title": "Gimli",
+    "identity": "gimli",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "dwarves",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "combat-strength-plus-one",
+      "politics-dwarves-at-fate-homelands"
+    ]
+  },
+  {
+    "id": "fate.character.gimli-dwarven-lord",
+    "title": "Gimli",
+    "identity": "gimli",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 1,
+    "leadership": 1,
+    "nationIcon": null,
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "guide-separate-to-reduce-hunt-one",
+      "champion-dwarves",
+      "messenger-dwarves",
+      "movement-level-two"
+    ]
+  }
+]

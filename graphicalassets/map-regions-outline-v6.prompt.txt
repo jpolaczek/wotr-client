@@ -1,0 +1,15 @@
+Precisely correct TWO small areas of the complete outline map. No changes elsewhere.
+
+Image 1 is the complete map to EDIT.
+Image 2 is the ERRONEOUS outline close-up around Moria; use it to locate the matching area in Image 1.
+Image 3 is the CORRECT original printed close-up of the SAME Moria area.
+Image 4 is the ERRONEOUS outline close-up around Fangorn and Parth Celebrant; locate it in Image 1.
+Image 5 is the CORRECT original printed close-up of the SAME Fangorn area.
+
+The two erroneous close-ups are diagnostic evidence, NOT geometry to reproduce.
+
+MORIA correction: compare image 2 directly to image 3, ignoring all text and drawn terrain in image 3. Trace the actual outline enclosing the red-labeled MORIA territory as ONE single region, removing spurious boundaries inside it. The previous extraction mistook parts of printed names or mountain drawing for regional dividing lines. Preserve the REAL narrow Fords of Bruinen region to the west, preserve High Pass above Moria, preserve Rivendell to the northwest, and preserve Goblin's Gate / Dimrill Dale to the east. The narrow Fords of Bruinen is a real region and must NOT be erased or merged. Only merge erroneous fragments within the original MORIA boundary and correct their enclosing contour. Do not create extra territories from the letters of MORIA or HIGH PASS.
+
+FANGORN correction: compare image 4 directly with image 5. Accurately copy the actual enclosing border of Fangorn and the real neighboring Parth Celebrant and Eastemnet contours. The forest artwork is not a boundary. Parth Celebrant is ONE continuous territory above/right of Fangorn, not several pieces split by its two-line name. Keep the actual Fangorn–Parth Celebrant–Eastemnet junctions and shared borders as in image 5; remove any false internal boundary generated from lettering. Preserve the correctly repaired Westemnet and all southern Rohan territories.
+
+Return the WHOLE map from image 1, with only these two local areas corrected in place. Keep every other border, the coastline, scale, framing, position and north-up orientation unchanged. No rescaling individual regions. Output opaque white territories bounded by single thin black lines, transparent water/exterior, closed cells with shared edges. No text, labels, annotation, colors, mountains, forest imagery, texture or comparison panels. Actually repair the topology in the two indicated patches; do not simply regenerate the same faulty map.

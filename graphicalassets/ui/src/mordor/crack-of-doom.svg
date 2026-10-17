@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="28" viewBox="0 0 68 56">
+  <!-- UI-153: the Crack of Doom, the last step of the Mordor track: an ink-drawn crater rim on the summit of
+       Orodruin with a glowing fissure and a curl of smoke. The next variant lights the legal green glow. -->
+  <defs>
+    <linearGradient id="crack-of-doom-rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--slab-stone-light)"/>
+      <stop offset="1" style="stop-color: var(--slab-stone-dark)"/>
+    </linearGradient>
+    <radialGradient id="crack-of-doom-fire" cx="0.5" cy="0.55" r="0.6">
+      <stop offset="0" style="stop-color: var(--ember-light)"/>
+      <stop offset="0.45" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-dark)"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="34" cy="34" rx="31" ry="20" style="fill: var(--slab-glow); opacity: var(--slab-glow-opacity)" filter="url(#glow)"/>
+  <path d="M6 38 Q5 31 11.4 27.6 L19 22.6 Q23.4 19.4 28 21.2 L33 19.6 Q37.4 18.4 41 20.8 L48.6 23.4 Q56.6 26.2 60.6 31.4 Q63.4 35.4 60.2 40.4 Q55.8 46.4 44 47.6 L24.6 47.8 Q11.8 47.2 7.6 42.6 Z" fill="url(#crack-of-doom-rim)" style="stroke: var(--slab-ink)" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M15.4 36 Q17 28.8 26.4 27.4 L40.6 27.2 Q51.6 28.4 53.2 35.2 Q52.6 41.4 40.8 42.2 L27 42.4 Q16.4 41.8 15.4 36 Z" style="fill: var(--slab-ink)" fill-opacity="0.92"/>
+  <path d="M19.6 35.4 L25.4 33.6 L28.8 36.8 L34.6 32.4 L38.2 36.4 L44 33.4 L48.8 35.6 L43.2 38.2 L38 37.6 L34.2 39.8 L29 38.6 L24.4 39.4 Z" fill="url(#crack-of-doom-fire)"/>
+  <ellipse cx="34" cy="36" rx="16" ry="5.6" style="fill: var(--ember)" fill-opacity="0.28" filter="url(#glow)"/>
+  <path d="M10.6 44.6 L13.2 41.6 M17 46.4 L19.4 43.4 M50.8 45.6 L53 42.6 M56 42.4 L58 39.8" fill="none" style="stroke: var(--slab-ink)" stroke-opacity="0.6" stroke-width="1" stroke-linecap="round"/>
+  <path d="M30.4 18 Q27.6 13.4 31.6 10.4 Q35.4 7.6 32.6 3.6 M37.2 18.4 Q40.2 14.6 37.4 11.2" fill="none" style="stroke: var(--slab-ink)" stroke-opacity="0.5" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,47 @@
+{
+ "task": "UI-103",
+ "date": "2026-10-12",
+ "commits": {
+  "implementation": "93ec871"
+ },
+ "environment": "Isolated checkout .artifacts/ui25/checkout (port 5098) and the pre-UI-103 baseline at 5580a12 in .artifacts/ui98/tree (port 5099).",
+ "playmode": {
+  "ui103-final": {
+   "summary": ".artifacts/ui98/runs/ui103-final.json",
+   "sources": [
+    "ui103t.json",
+    "ui103u.json",
+    "ui103v.xml",
+    "ui103w.xml"
+   ],
+   "total": 51,
+   "passed": 49,
+   "failed_tests": [
+    "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+    "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards"
+   ],
+   "baseline": "Both remaining failures also fail in base103.json (ContextHover expects Codex's permanent column; T22 Dense misses its height by 12 pt in both)."
+  }
+ },
+ "editmode": {
+  "result": "631/631",
+  "report": ".artifacts/ui100/runs/ui103-edit.xml"
+ },
+ "builds": {
+  "BuildLocalMac": ".artifacts/ui103/macos/Wotr.app",
+  "BuildLocalWindows": ".artifacts/ui103/windows/Wotr.exe",
+  "commit": "93ec871",
+  "tracked_inputs_matching_commit": 946,
+  "development": false
+ },
+ "smoke": {
+  "result": "PASS",
+  "identity": "com.wotr.ui103.smoke",
+  "runtime_files_checked": 949,
+  "original_profile_byte_identical": true,
+  "report": ".artifacts/ui103/isolated-smoke/run/result.json"
+ },
+ "notes": [
+  "Windows runtime and manual play not tested."
+ ]
+}

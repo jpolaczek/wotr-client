@@ -1,0 +1,32 @@
+{
+  "task": "MAP-03",
+  "mode": "built-in image_gen",
+  "generation": {
+    "prompt": "generation.prompt.txt",
+    "result": "exec-b41e3388-dbb2-482a-adae-69667513e101.png",
+    "native_size": [1385, 1136],
+    "inputs": [
+      {"path": "layout-reference.png", "role": "locked layout"},
+      {"path": "../terrain-v1/source-layout-reference.png", "role": "feature placement"},
+      {"path": "../s-l1600.webp", "role": "content reference"},
+      {"path": "../718b9hBS4AL._AC_SL1000_.jpg", "role": "content reference"},
+      {"path": "../71oBODdvMNL._AC_SL1500_.jpg", "role": "content reference"}
+    ]
+  },
+  "completion": {
+    "prompt": "completion.prompt.txt",
+    "input": "completion-guide.png",
+    "input_role": "first drawing with Old Forest and Emyn Muil edit markers",
+    "result": "exec-f1741f0f-d246-4877-aa2e-7ea1d33ea791.png",
+    "selected_copy": "terrain-pencil.png",
+    "native_size": [1385, 1136]
+  },
+  "composition": {
+    "builder": "build_map.py",
+    "geometry": "../../region-map/map-regions.svg",
+    "renderer": "macOS Quick Look with SVG grayscale filter; sips trims export canvas",
+    "output": "../middle-earth-pencil-v1.png",
+    "output_size": [6144, 5037],
+    "terrain_detail_is_native_resolution": true
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-141: Eye value of a Hunt tile: the red lidless eye. -->
+  <defs>
+    <radialGradient id="tile-eye-iris" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#fff0a8"/>
+      <stop offset="0.35" style="stop-color: var(--ember-light)"/>
+      <stop offset="0.75" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-dark)"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <path d="M2 16 C7 7.6 25 7.6 30 16 C25 24.4 7 24.4 2 16 Z" fill="url(#tile-eye-iris)" stroke="#3a0b05" stroke-width="1.1"/>
+    <path d="M16 8.6 C18.2 12 18.2 20 16 23.4 C13.8 20 13.8 12 16 8.6 Z" fill="#0b0503"/>
+    <ellipse cx="11.6" cy="13.4" rx="1.4" ry="0.8" fill="#fff6cf" opacity="0.75"/>
+  </g>
+</svg>

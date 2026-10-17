@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <!-- 9-slice small square button (close, help, paging). Slices (points): 8. -->
+  <g filter="url(#lift)">
+    <path d="M4 1.5 H24 L26.5 4 V24 L24 26.5 H4 L1.5 24 V4 Z" fill="url(#button-fill)" stroke="url(#gilt)" stroke-width="1.1"/>
+    <path d="M5 4 H23 L24 5 V23 L23 24 H5 L4 23 V5 Z" fill="none" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+  </g>
+</svg>

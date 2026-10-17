@@ -1,0 +1,231 @@
+{
+  "task": "UI-84",
+  "date": "2026-10-09",
+  "runtime_commit": "34cdbd8",
+  "reports": {
+    "map-green.xml": {
+      "passed": 8,
+      "failed": 0,
+      "sha256": "337624dd1b991be28f5ae2746b4b414c9e534f053b0b2ff6d60fad7b3ac50266"
+    },
+    "cards-green.xml": {
+      "passed": 2,
+      "failed": 0,
+      "sha256": "e2465c90e8007574b636ef498c8a102fc3d3176dfb19e1ea1d38a12c12657223"
+    },
+    "editor.xml": {
+      "passed": 608,
+      "failed": 0,
+      "sha256": "63623e69a91fb0dbbc3c334a430cee3b833f93f7b1437fd19f73d2310c3ee552"
+    }
+  },
+  "unique_play_methods": 10,
+  "play_methods": [
+    "Wotr.PlayTests.EngineHandDiscardNetworkTests.MiniatureDoubleClicksAfterAnotherControlDiscardBothHandsAtFourLayouts",
+    "Wotr.PlayTests.EngineHandDiscardNetworkTests.PreviewContentDoubleClicksDiscardBothHandsAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.EdgesCornersControlsFocusAndDetachNeverChangeTheMatch",
+    "Wotr.PlayTests.MapViewportTests.FixedOuterEdgesCornersAndHudPointsStayContinuousAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ModalWindowsCaptureAndOneAxisLimitsKeepEdgeNavigationSafeAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.MovingArmyCannotStopNavigationUnderAStationaryEdgePointerAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ReenteringTheViewportResumesEdgePanWithoutAnotherMoveAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ScreenRoutingKeepsTheLastPixelAndExactEdgesMovingAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ScreenSamplesRespectOutsideFocusButtonsCaptureAndModalUiAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ZoomPanLocateAndResizeCoverTheViewportForBothPlayers"
+  ],
+  "native_input": {
+    "window": {
+      "result": "PASS",
+      "path": ".artifacts/ui84/native-green-window-1.25/result.json",
+      "sha256": "4061e379ee9457354be0f6cb9c6fc1ed4f2a2d258cc118166ffdf98f3bfa3890",
+      "screen": [
+        1366,
+        768
+      ],
+      "scale": 1.25,
+      "cases": [
+        {
+          "name": "right",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            -720.5225570000001,
+            0.0
+          ],
+          "last_native": [
+            1366.0,
+            384.0
+          ]
+        },
+        {
+          "name": "top",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            0.0,
+            704.2565500000001
+          ],
+          "last_native": [
+            683.0,
+            768.0
+          ]
+        },
+        {
+          "name": "bottom",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            0.0,
+            -688.194
+          ],
+          "last_native": [
+            683.0,
+            1.0
+          ]
+        },
+        {
+          "name": "left",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            681.3877275,
+            0.0
+          ],
+          "last_native": [
+            1.0,
+            384.0
+          ]
+        },
+        {
+          "name": "outside-right",
+          "samples": 21,
+          "active": 0,
+          "pan_delta": [
+            0.0,
+            0.0
+          ],
+          "last_native": [
+            1382.0,
+            384.0
+          ]
+        },
+        {
+          "name": "outside-titlebar",
+          "samples": 21,
+          "active": 0,
+          "pan_delta": [
+            0.0,
+            0.0
+          ],
+          "last_native": [
+            683.0,
+            784.0
+          ]
+        }
+      ]
+    },
+    "fullscreen": {
+      "result": "PASS",
+      "path": ".artifacts/ui84/native-green-fullscreen-1.25/result.json",
+      "sha256": "bece904a6c1b9be2ba63523d0693c84fdb7e0c568e7d9a1add652e8f40a6e87d",
+      "screen": [
+        3024,
+        1890
+      ],
+      "scale": 1.25,
+      "cases": [
+        {
+          "name": "right",
+          "samples": 20,
+          "active": 20,
+          "pan_delta": [
+            -692.6984400000001,
+            0.0
+          ],
+          "last_native": [
+            3024.0,
+            945.0
+          ]
+        },
+        {
+          "name": "top",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            0.0,
+            724.2145972000001
+          ],
+          "last_native": [
+            1512.0,
+            1890.0
+          ]
+        },
+        {
+          "name": "bottom",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            0.0,
+            -687.92186
+          ],
+          "last_native": [
+            1512.0,
+            1.0
+          ]
+        },
+        {
+          "name": "left",
+          "samples": 21,
+          "active": 21,
+          "pan_delta": [
+            699.4685943,
+            0.0
+          ],
+          "last_native": [
+            1.0,
+            945.0
+          ]
+        }
+      ]
+    }
+  },
+  "red": {
+    "engine_report": "screen-red2.xml",
+    "sha256": "c1ce96af883993a19dd63d1e79346a1e9786b00714a4e70ae4c734a2a0d15903",
+    "cause": "DefaultEventSystem rejects the exclusive maximum before pointer dispatch; Leave retains the preceding point.",
+    "native_trace": "native-red-partial-read/trace.jsonl",
+    "native_trace_sha256": "0cd9a60a5850b163ed39253ab6c207b0ea784c2ccec192ccf45ced5692f63e54",
+    "native_stationary_seconds": 1.04165,
+    "focused_samples_without_pan": 20
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "output": ".artifacts/ui84/macos",
+      "inputs_sha256": "6140a2263714ef1a04e55da3da6f497f453a5cc182a432ad8004bd327012f7de",
+      "provenance_report_sha256": "933eee590d9d09a703ec60b72949ec8820a5225103682165d12abf4ad780b317",
+      "runtime_inputs_match_workspace": true,
+      "matched_runtime_files": 637,
+      "development": false
+    },
+    "BuildLocalWindows": {
+      "output": ".artifacts/ui84/windows",
+      "inputs_sha256": "6140a2263714ef1a04e55da3da6f497f453a5cc182a432ad8004bd327012f7de",
+      "provenance_report_sha256": "3df6dc78817706bbbb5179538b0b7549e798f03ed2dd989e94ce30fc09a41d1c",
+      "runtime_inputs_match_workspace": true,
+      "matched_runtime_files": 637,
+      "development": false
+    }
+  },
+  "macos_smoke": {
+    "passed": true,
+    "login_screenshot_reviewed": true,
+    "profile_preserved": true,
+    "report_sha256": "8d63b9c4d586a02d9ae37338623f40642554fc109ad517b7f55ddaf484ded4a2",
+    "profile_report_sha256": "5d426e37181e2940a685c504f1b939b4753ea1955ac027da59715dfed17d2a5a"
+  },
+  "limits": [
+    "Windows and Intel runtime not executed.",
+    "No manual game acceptance or physical mouse/trackpad trial.",
+    "Native OS input only macOS ARM64 Retina at UI125%; corners and UI100% covered by engine routing tests, not native OS input.",
+    "No player match commands, account login, backend changes or FPS benchmark."
+  ]
+}

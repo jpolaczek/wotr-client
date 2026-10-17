@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- UI-159: Hunt damage taken by a random companion: a face-down stack of companion counters, each with a
+       hooded silhouette; the identity stays hidden until the server draws it. -->
+  <defs>
+    <g id="random-counter">
+      <circle r="8.2" fill="url(#enamel-dome)" stroke="url(#gilt)" stroke-width="1"/>
+      <path d="M0 -4.6 C2.6 -4.6 3.8 -2.2 3.6 0.4 C4.8 1.6 5.4 3.4 5.6 5 H-5.6 C-5.4 3.4 -4.8 1.6 -3.6 0.4 C-3.8 -2.2 -2.6 -4.6 0 -4.6 Z" style="fill: var(--emblem-mid)" opacity="0.85"/>
+    </g>
+  </defs>
+  <g filter="url(#lift)">
+    <use href="#random-counter" transform="translate(11 12)"/>
+    <use href="#random-counter" transform="translate(21 13)"/>
+    <use href="#random-counter" transform="translate(16 20)"/>
+  </g>
+</svg>

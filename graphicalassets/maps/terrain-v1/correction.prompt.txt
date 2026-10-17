@@ -1,0 +1,9 @@
+Use case: precise-object-edit
+This supplied map image is the EDIT TARGET. The bright painted areas are local edit masks. Inpaint ALL painted areas seamlessly in the same antique ink and muted watercolor style; do not merely remove the marks and restore the old objects.
+
+MAGENTA: each of the three exact irregular shapes is the final footprint of one blue lake. Replace magenta with blue water and a fine shoreline exactly on the magenta edge. The east and southeast lakes currently have extra blue water to the RIGHT of these masks: that extra water must become dry land. Only the magenta footprint should remain blue. The tiny magenta eastward tail is part of the southeast lake.
+ORANGE: replace both orange areas with natural land. The western orange polygon must become empty rocky mountain foothills, with NO city. The eastern orange ellipse must become empty dark volcanic ground, with NO tower.
+CYAN CIRCLE: replace this circle with a SMALL white tiered Minas Tirith city entirely within this circular footprint, centered exactly where the circle is. Its white walls sit against the existing mountain spur. Do not move it back northwest to the orange polygon. No waterfall.
+BRIGHT GREEN CIRCLE: replace this circle with a small tall black Barad-dur tower, its base exactly at the circle center. This is immediately northeast of the volcano. Do not put the tower on the orange ellipse to its right.
+
+All changes are limited to the marked footprints and the extra water immediately outside the magenta lake silhouettes. Everything else, including exact crop, aspect ratio, existing coastline, mountains, rivers, forests, castles, volcano, fields, wetlands and empty upper-right parchment, must remain unchanged. No text, letters, numbers, labels, colored marks, crosses, dots, extra objects, region borders or interface. Return the fully restored map with no visible editing guides.

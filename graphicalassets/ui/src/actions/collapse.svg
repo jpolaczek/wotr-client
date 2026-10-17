@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-138: Show less. Filled bars: a level stroke has no height for the gilt gradient and the lift filter. -->
+  <g filter="url(#lift)">
+    <rect x="5.3" y="13.3" width="21.4" height="5.4" rx="2.7" style="fill: var(--ink)"/>
+    <rect x="6.4" y="14.4" width="19.2" height="3.2" rx="1.6" fill="url(#gilt)"/>
+  </g>
+</svg>

@@ -1,0 +1,1236 @@
+{
+  "scale": 2,
+  "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI",
+  "variants": {
+    "hover": {
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--enamel-light": "#5c5751",
+      "--enamel-mid": "#36322e",
+      "--enamel-dark": "#1e1c19",
+      "--button-top": "#3d3a36",
+      "--button-bottom": "#252321",
+      "--glow-opacity": "0.45"
+    },
+    "selected": {
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--button-top": "#6a2019",
+      "--button-bottom": "#2e0d0b"
+    },
+    "free": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135"
+    },
+    "shadow": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09"
+    },
+    "shadow-hover": {
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--enamel-light": "#96382c",
+      "--enamel-mid": "#5d1d16",
+      "--enamel-dark": "#33100c",
+      "--glow-opacity": "0.45"
+    },
+    "playable": {
+      "--card-rim": "#8a6424",
+      "--card-glow": "#90cbac",
+      "--card-glow-opacity": "1"
+    },
+    "armed": {
+      "--card-rim": "#a8761e",
+      "--card-glow": "#ffc94a",
+      "--card-glow-opacity": "1",
+      "--parchment-light": "#fbf0cc"
+    },
+    "free-hover": {
+      "--enamel-light": "#3b739a",
+      "--enamel-mid": "#1f4a6a",
+      "--enamel-dark": "#102a42",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "free-selected": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "shadow-selected": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "pressed": {
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15",
+      "--button-top": "#171614",
+      "--button-bottom": "#0d0c0b",
+      "--enamel-light": "#2a2724",
+      "--enamel-mid": "#181614",
+      "--enamel-dark": "#0b0a09"
+    },
+    "free-pressed": {
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15",
+      "--enamel-light": "#1a3852",
+      "--enamel-mid": "#0d2336",
+      "--enamel-dark": "#06121f"
+    },
+    "shadow-pressed": {
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15",
+      "--enamel-light": "#4e1a14",
+      "--enamel-mid": "#2c0d0a",
+      "--enamel-dark": "#160504"
+    },
+    "cancelled": {
+      "--cancel-opacity": "1"
+    },
+    "free-cancelled": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135",
+      "--cancel-opacity": "1"
+    },
+    "shadow-cancelled": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--cancel-opacity": "1"
+    },
+    "hit": {
+      "--die-glow-opacity": "0.85",
+      "--die-rim": "#a86b1e",
+      "--die-ring-opacity": "0.9"
+    },
+    "rerolled": {
+      "--die-ivory": "#9b9281",
+      "--die-ink": "#3b332a",
+      "--die-rim": "#4a3f2c"
+    },
+    "die-selected": {
+      "--die-ring-opacity": "1",
+      "--gilt-light": "#ffe08a"
+    },
+    "die-pressed": {
+      "--die-ivory": "#d6c69c",
+      "--die-rim": "#3f2f16"
+    },
+    "spent": {
+      "--seal-light": "#4a3d3b",
+      "--seal-dark": "#241b1a",
+      "--seal-mark": "#6f655d"
+    },
+    "free-eligible": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135",
+      "--army-glow": "#90cbac",
+      "--glow-opacity": "1"
+    },
+    "shadow-eligible": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--army-glow": "#90cbac",
+      "--glow-opacity": "1"
+    },
+    "free-moved": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135",
+      "--army-veil-opacity": "0.5"
+    },
+    "shadow-moved": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--army-veil-opacity": "0.5"
+    },
+    "filled": {
+      "--slot-fill-opacity": "1"
+    },
+    "passed": {
+      "--slab-veil-opacity": "0.55"
+    },
+    "next": {
+      "--slab-glow-opacity": "1"
+    },
+    "captured": {
+      "--elven-stone": "#ffb08f",
+      "--elven-stone-dark": "#8a1c0c"
+    },
+    "eligible": {
+      "--slab-glow-opacity": "1"
+    },
+    "available": {
+      "--tab-glow-opacity": "1"
+    },
+    "available-hover": {
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--enamel-light": "#5c5751",
+      "--enamel-mid": "#36322e",
+      "--enamel-dark": "#1e1c19",
+      "--button-top": "#3d3a36",
+      "--button-bottom": "#252321",
+      "--glow-opacity": "0.45",
+      "--tab-glow-opacity": "1"
+    }
+  },
+  "assets": [
+    {
+      "source": "surfaces/topbar-plate.svg",
+      "role": "Top bar background; repeats horizontally and stretches to the bar height.",
+      "repeat": "x"
+    },
+    {
+      "source": "surfaces/cast-shadow.svg",
+      "role": "Shadow a bar casts onto the map below it; stretched horizontally."
+    },
+    {
+      "source": "frames/topbar-frame.svg",
+      "role": "Top bar overlay (44 points since UI-98): gilt upper and lower rules with a plain gilt post at each end (UI-202: no filigree caps).",
+      "slices": {
+        "top": 20,
+        "right": 8,
+        "bottom": 20,
+        "left": 8
+      }
+    },
+    {
+      "source": "frames/pennant.svg",
+      "role": "Notification pennant (UI-100): a small enamel pennant on a gilt rod, one per unread opponent action; free/shadow carry the enamel of the side whose action it announces.",
+      "variants": [
+        "free",
+        "free-hover",
+        "shadow",
+        "shadow-hover"
+      ],
+      "base": false
+    },
+    {
+      "source": "frames/cartouche.svg",
+      "role": "Inset panel grouping the opponent counters.",
+      "slices": {
+        "top": 14,
+        "right": 14,
+        "bottom": 14,
+        "left": 14
+      }
+    },
+    {
+      "source": "frames/button.svg",
+      "role": "Framed bar button (Menu); the left rail tabs have their own art since UI-181 (rail/edge-tab).",
+      "variants": [
+        "hover",
+        "selected",
+        "pressed"
+      ],
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "rail/edge-tab.svg",
+      "role": "UI-181/UI-182/UI-193: left rail tab (Politics, Reserve, Characters, Effects): only an enamel medallion ringed with gilt beads for the icon, no plate, frame or ribbon; the rim turns red lacquer when selected, and an available tab (legal target or usable by the chosen die) glows gold round the medallion. Fixed 94x66 points; the label is drawn under it.",
+      "variants": [
+        "hover",
+        "selected",
+        "pressed",
+        "available",
+        "available-hover"
+      ]
+    },
+    {
+      "source": "frames/glow.svg",
+      "role": "UI-136: green halo drawn 6 points around a control the chosen action die can use (Characters and Politics tabs, Fellowship plaque).",
+      "slices": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      }
+    },
+    {
+      "source": "frames/panel.svg",
+      "role": "Side panel frame: dark plate, gilt double border, corner ornaments.",
+      "slices": {
+        "top": 22,
+        "right": 22,
+        "bottom": 22,
+        "left": 22
+      }
+    },
+    {
+      "source": "frames/panel-header.svg",
+      "role": "Panel header band in red lacquer with gilt rules.",
+      "slices": {
+        "top": 8,
+        "right": 16,
+        "bottom": 8,
+        "left": 16
+      }
+    },
+    {
+      "source": "frames/button-square.svg",
+      "role": "Small square button: close, help, paging.",
+      "variants": [
+        "hover",
+        "pressed"
+      ],
+      "slices": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    {
+      "source": "frames/entry.svg",
+      "role": "List entry in the enamel of its side (effects, characters).",
+      "variants": [
+        "hover",
+        "shadow",
+        "shadow-hover"
+      ],
+      "slices": {
+        "top": 10,
+        "right": 10,
+        "bottom": 10,
+        "left": 10
+      }
+    },
+    {
+      "source": "ornaments/divider.svg",
+      "role": "Vertical separator between bar sections."
+    },
+    {
+      "source": "ornaments/divider-small.svg",
+      "role": "Narrow separator between counters inside a cartouche."
+    },
+    {
+      "source": "ornaments/wax-seal.svg",
+      "role": "Plain red wax seal carrying the number of stacked notifications (UI-99)."
+    },
+    {
+      "source": "ornaments/move-glow.svg",
+      "role": "Soft gilt halo behind the Fellowship track symbol while a click on it moves the Fellowship (UI-110)."
+    },
+    {
+      "source": "dice/medallion.svg",
+      "role": "Round action die in the enamel of its side; a face glyph from dice/faces sits on top.",
+      "variants": [
+        "hover",
+        "free",
+        "free-hover",
+        "free-selected",
+        "shadow",
+        "shadow-hover",
+        "shadow-selected",
+        "pressed",
+        "free-pressed",
+        "shadow-pressed"
+      ]
+    },
+    {
+      "source": "dice/tile.svg",
+      "role": "Special die with an origin caption (Lords, Kings, Balrog).",
+      "variants": [
+        "hover"
+      ],
+      "slices": {
+        "top": 10,
+        "right": 10,
+        "bottom": 10,
+        "left": 10
+      }
+    },
+    {
+      "source": "dice/faces/character.svg",
+      "role": "Die face glyph · Character result: hooded figure."
+    },
+    {
+      "source": "dice/faces/army.svg",
+      "role": "Die face glyph · Army result: sword behind a round shield."
+    },
+    {
+      "source": "dice/faces/muster.svg",
+      "role": "Die face glyph · Muster result: banner on its pole."
+    },
+    {
+      "source": "dice/faces/army-muster.svg",
+      "role": "Die face glyph · Army or Muster result: banner beside a sword."
+    },
+    {
+      "source": "dice/faces/event.svg",
+      "role": "Die face glyph · Event result: sealed scroll."
+    },
+    {
+      "source": "dice/faces/will.svg",
+      "role": "Die face glyph · Will of the West result: eight-pointed star."
+    },
+    {
+      "source": "dice/faces/eye.svg",
+      "role": "Die face glyph · Eye result: lidless eye of fire."
+    },
+    {
+      "source": "dice/faces/card-draw.svg",
+      "role": "Die face glyph · Card Draw result (Lords special dice): card with a plus."
+    },
+    {
+      "source": "dice/faces/use-balrog.svg",
+      "role": "Die face glyph · Use Balrog result (Lords): flame."
+    },
+    {
+      "source": "tokens/politics-token.svg",
+      "role": "Political track token in the enamel of its side; the client draws the state glyph.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "base": false
+    },
+    {
+      "source": "cards/parchment.svg",
+      "role": "Hand card face: yellowed parchment, ink rules; playable glow and the gold glow of a selected card (variant armed).",
+      "variants": [
+        "playable",
+        "armed"
+      ],
+      "slices": {
+        "top": 14,
+        "right": 14,
+        "bottom": 14,
+        "left": 14
+      }
+    },
+    {
+      "source": "cards/back.svg",
+      "role": "Draw deck card back: tooled leather with gilt rules.",
+      "variants": [
+        "hover"
+      ],
+      "slices": {
+        "top": 14,
+        "right": 14,
+        "bottom": 14,
+        "left": 14
+      }
+    },
+    {
+      "source": "icons/cards.svg",
+      "role": "Counter: cards in hand."
+    },
+    {
+      "source": "icons/ring.svg",
+      "role": "Counter: Elven Rings held; on a console socket the ring a player can use. The captured variant is a ring the Shadow took (red stone).",
+      "variants": [
+        "captured"
+      ]
+    },
+    {
+      "source": "icons/spent.svg",
+      "role": "Counter: action dice used this turn."
+    },
+    {
+      "source": "icons/hunt.svg",
+      "role": "Counter: dice in the Hunt Box; header: Hunt."
+    },
+    {
+      "source": "icons/log.svg",
+      "role": "Action log button (UI-100): a half-unrolled parchment scroll beside the notification pennants."
+    },
+    {
+      "source": "icons/out.svg",
+      "role": "Counter: dice removed from play."
+    },
+    {
+      "source": "icons/politics.svg",
+      "role": "Tab and header: Politics."
+    },
+    {
+      "source": "icons/effects.svg",
+      "role": "Tab and header: Effects."
+    },
+    {
+      "source": "icons/characters.svg",
+      "role": "Tab and header: Characters."
+    },
+    {
+      "source": "icons/fellowship.svg",
+      "role": "Header: Fellowship (the One Ring)."
+    },
+    {
+      "source": "icons/nations/dwarves.svg",
+      "role": "Nation emblem: Dwarves."
+    },
+    {
+      "source": "icons/nations/elves.svg",
+      "role": "Nation emblem: Elves."
+    },
+    {
+      "source": "icons/nations/gondor.svg",
+      "role": "Nation emblem: Gondor."
+    },
+    {
+      "source": "icons/nations/north.svg",
+      "role": "Nation emblem: The North."
+    },
+    {
+      "source": "icons/nations/rohan.svg",
+      "role": "Nation emblem: Rohan."
+    },
+    {
+      "source": "icons/nations/isengard.svg",
+      "role": "Nation emblem: Isengard."
+    },
+    {
+      "source": "icons/nations/sauron.svg",
+      "role": "Nation emblem: Sauron."
+    },
+    {
+      "source": "icons/nations/southrons.svg",
+      "role": "Nation emblem: Southrons & Easterlings."
+    },
+    {
+      "source": "battle/scene-field.svg",
+      "role": "Field battle scene strip behind the window header; repeats horizontally.",
+      "repeat": "x"
+    },
+    {
+      "source": "battle/scene-siege.svg",
+      "role": "Siege scene strip: the besieged wall.",
+      "repeat": "x"
+    },
+    {
+      "source": "battle/scene-sortie.svg",
+      "role": "Sortie scene strip: the gate opens.",
+      "repeat": "x"
+    },
+    {
+      "source": "battle/scene-relief.svg",
+      "role": "Relief scene strip: road and banners of an arriving army.",
+      "repeat": "x"
+    },
+    {
+      "source": "battle/force-frame.svg",
+      "role": "Frame of one side of a battle in the enamel of that side.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "slices": {
+        "top": 14,
+        "right": 14,
+        "bottom": 14,
+        "left": 14
+      },
+      "base": false
+    },
+    {
+      "source": "battle/portrait-medallion.svg",
+      "role": "Medallion of a named character; code overlays the portrait or figure silhouette.",
+      "variants": [
+        "free",
+        "shadow",
+        "free-cancelled",
+        "shadow-cancelled"
+      ],
+      "base": false
+    },
+    {
+      "source": "battle/card-slot.svg",
+      "role": "Inset slot holding a force's Combat card button.",
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "battle/garrison-shelf.svg",
+      "role": "Ledge for figures that stay out of the fight.",
+      "slices": {
+        "top": 10,
+        "right": 10,
+        "bottom": 10,
+        "left": 10
+      }
+    },
+    {
+      "source": "battle/strength.svg",
+      "role": "Statistic icon: Strength."
+    },
+    {
+      "source": "battle/leadership.svg",
+      "role": "Statistic icon: Leadership."
+    },
+    {
+      "source": "battle/dice.svg",
+      "role": "Statistic icon: Combat dice."
+    },
+    {
+      "source": "battle/hit.svg",
+      "role": "Statistic icon: hit target."
+    },
+    {
+      "source": "battle/garrison.svg",
+      "role": "Icon of the garrison / not fighting shelf."
+    },
+    {
+      "source": "battle/stage-ribbon.svg",
+      "role": "Ribbon carrying the battle stages.",
+      "slices": {
+        "top": 6,
+        "right": 10,
+        "bottom": 6,
+        "left": 10
+      }
+    },
+    {
+      "source": "battle/stage-marker.svg",
+      "role": "Gilt pin behind the current stage icon."
+    },
+    {
+      "source": "battle/stage-cards.svg",
+      "role": "Stage icon: Combat cards."
+    },
+    {
+      "source": "battle/stage-roll.svg",
+      "role": "Stage icon: Combat roll."
+    },
+    {
+      "source": "battle/stage-reroll.svg",
+      "role": "Stage icon: Leader re-roll."
+    },
+    {
+      "source": "battle/stage-losses.svg",
+      "role": "Stage icon: Losses."
+    },
+    {
+      "source": "battle/stage-next.svg",
+      "role": "Stage icon: Next round or end."
+    },
+    {
+      "source": "battle/no-card.svg",
+      "role": "Decision icon: No card."
+    },
+    {
+      "source": "battle/skip-cards.svg",
+      "role": "Private setting icon: skip cards this battle."
+    },
+    {
+      "source": "battle/die-1.svg",
+      "role": "Combat die face 1.",
+      "variants": [
+        "hit",
+        "rerolled",
+        "die-selected",
+        "die-pressed"
+      ]
+    },
+    {
+      "source": "battle/die-2.svg",
+      "role": "Combat die face 2.",
+      "variants": [
+        "hit",
+        "rerolled",
+        "die-selected",
+        "die-pressed"
+      ]
+    },
+    {
+      "source": "battle/die-3.svg",
+      "role": "Combat die face 3.",
+      "variants": [
+        "hit",
+        "rerolled",
+        "die-selected",
+        "die-pressed"
+      ]
+    },
+    {
+      "source": "battle/die-4.svg",
+      "role": "Combat die face 4.",
+      "variants": [
+        "hit",
+        "rerolled",
+        "die-selected",
+        "die-pressed"
+      ]
+    },
+    {
+      "source": "battle/die-5.svg",
+      "role": "Combat die face 5.",
+      "variants": [
+        "hit",
+        "rerolled",
+        "die-selected",
+        "die-pressed"
+      ]
+    },
+    {
+      "source": "battle/die-6.svg",
+      "role": "Combat die face 6.",
+      "variants": [
+        "hit",
+        "rerolled",
+        "die-selected",
+        "die-pressed"
+      ]
+    },
+    {
+      "source": "battle/reroll-arrow.svg",
+      "role": "Arrow between a first roll and its Leader re-roll."
+    },
+    {
+      "source": "battle/loss-downgrade.svg",
+      "role": "Loss overlay: downgrade."
+    },
+    {
+      "source": "battle/loss-remove.svg",
+      "role": "Loss overlay: remove."
+    },
+    {
+      "source": "battle/hit-seal.svg",
+      "role": "A hit to assign as a wax seal; spent once assigned.",
+      "variants": [
+        "spent"
+      ]
+    },
+    {
+      "source": "battle/continue.svg",
+      "role": "Decision icon: continue."
+    },
+    {
+      "source": "battle/stop.svg",
+      "role": "Decision icon: stop."
+    },
+    {
+      "source": "battle/hold.svg",
+      "role": "Decision icon: hold."
+    },
+    {
+      "source": "battle/retreat.svg",
+      "role": "Decision icon: retreat."
+    },
+    {
+      "source": "battle/advance.svg",
+      "role": "Decision icon: advance."
+    },
+    {
+      "source": "battle/extend-siege.svg",
+      "role": "Decision icon: extend-siege."
+    },
+    {
+      "source": "battle/round-tab.svg",
+      "role": "Parchment tab naming the shown round of a battle report.",
+      "slices": {
+        "top": 8,
+        "right": 10,
+        "bottom": 8,
+        "left": 10
+      }
+    },
+    {
+      "source": "armies/base-field.svg",
+      "role": "Figure base of a field army on the map (UI-125) in the enamel of its side; code stands the silhouettes on it.",
+      "variants": [
+        "free",
+        "shadow",
+        "free-selected",
+        "shadow-selected",
+        "free-eligible",
+        "shadow-eligible",
+        "free-pressed",
+        "shadow-pressed",
+        "free-moved",
+        "shadow-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/base-garrison.svg",
+      "role": "Battlemented figure base of a garrison on the map (UI-125) in the enamel of its side.",
+      "variants": [
+        "free",
+        "shadow",
+        "free-selected",
+        "shadow-selected",
+        "free-eligible",
+        "shadow-eligible",
+        "free-pressed",
+        "shadow-pressed",
+        "free-moved",
+        "shadow-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/token-field.svg",
+      "role": "Whole-map token of a field army (UI-125); code draws the nation emblem and the count.",
+      "variants": [
+        "free",
+        "shadow",
+        "free-selected",
+        "shadow-selected",
+        "free-eligible",
+        "shadow-eligible",
+        "free-pressed",
+        "shadow-pressed",
+        "free-moved",
+        "shadow-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/token-garrison.svg",
+      "role": "Whole-map token of a garrison crowned with merlons (UI-125); code draws the emblem and the count.",
+      "variants": [
+        "free",
+        "shadow",
+        "free-selected",
+        "shadow-selected",
+        "free-eligible",
+        "shadow-eligible",
+        "free-pressed",
+        "shadow-pressed",
+        "free-moved",
+        "shadow-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/moved-check.svg",
+      "role": "Badge of figures that already marched in this action (UI-125)."
+    },
+    {
+      "source": "armies/ghost-outline.svg",
+      "role": "Outline under the ghost of a planned move or placement (UI-125).",
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "armies/reserve-slot.svg",
+      "role": "Slot of a reserve figure in the Reinforcements panel (UI-125).",
+      "variants": [
+        "selected",
+        "pressed"
+      ],
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "armies/budget-slot.svg",
+      "role": "One recruitment point of a Muster action (UI-125); filled once spent.",
+      "variants": [
+        "filled"
+      ]
+    },
+    {
+      "source": "actions/back.svg",
+      "role": "Action icon (UI-138): Previous page or step."
+    },
+    {
+      "source": "actions/battle.svg",
+      "role": "Action icon (UI-138): The last battle."
+    },
+    {
+      "source": "actions/close.svg",
+      "role": "Action icon (UI-138): Close a window or panel."
+    },
+    {
+      "source": "actions/confirm.svg",
+      "role": "Action icon (UI-138): Confirm or finish."
+    },
+    {
+      "source": "actions/deselect-all.svg",
+      "role": "Action icon (UI-138): Leave every figure behind."
+    },
+    {
+      "source": "actions/expand.svg",
+      "role": "Action icon (UI-138): Show more."
+    },
+    {
+      "source": "actions/help.svg",
+      "role": "Action icon (UI-138): Map legend (UI-173: no Help panel)."
+    },
+    {
+      "source": "actions/locate.svg",
+      "role": "Action icon (UI-138): Show on the map."
+    },
+    {
+      "source": "actions/next.svg",
+      "role": "Action icon (UI-138): Next page or step."
+    },
+    {
+      "source": "actions/pin.svg",
+      "role": "Action icon (UI-138): Keep open (not pinned)."
+    },
+    {
+      "source": "actions/pinned.svg",
+      "role": "Action icon (UI-138): Kept open (pinned)."
+    },
+    {
+      "source": "actions/refresh.svg",
+      "role": "Action icon (UI-138): Retry or refresh."
+    },
+    {
+      "source": "actions/reinforcements.svg",
+      "role": "Action icon (UI-138): Show the reserves and reinforcements."
+    },
+    {
+      "source": "actions/select-all.svg",
+      "role": "Action icon (UI-138): Select every figure that can move."
+    },
+    {
+      "source": "actions/why.svg",
+      "role": "Action icon (UI-138): Why this is or is not available."
+    },
+    {
+      "source": "actions/collapse.svg",
+      "role": "Action icon (UI-138): Show less."
+    },
+    {
+      "source": "actions/discard.svg",
+      "role": "Action icon (UI-138): Discard the selected die without effect."
+    },
+    {
+      "source": "actions/pass.svg",
+      "role": "Action icon (UI-138): Pass without using a die."
+    },
+    {
+      "source": "characters/level.svg",
+      "role": "Character symbol (UI-139): Level."
+    },
+    {
+      "source": "characters/movement.svg",
+      "role": "Character symbol (UI-139): Movement."
+    },
+    {
+      "source": "characters/flight.svg",
+      "role": "Character symbol (UI-139): Flight, unlimited movement."
+    },
+    {
+      "source": "characters/combat.svg",
+      "role": "Character symbol (UI-139): Combat level."
+    },
+    {
+      "source": "characters/ability.svg",
+      "role": "Character symbol (UI-139): An ability of the card."
+    },
+    {
+      "source": "characters/free-peoples.svg",
+      "role": "Character symbol (UI-139): Nation icon of all Free Peoples."
+    },
+    {
+      "source": "characters/on-board.svg",
+      "role": "Character status (UI-139): On the board."
+    },
+    {
+      "source": "characters/waiting.svg",
+      "role": "Character status (UI-139): Not in play yet."
+    },
+    {
+      "source": "characters/removed.svg",
+      "role": "Character status (UI-139): Removed from play."
+    },
+    {
+      "source": "characters/may-return.svg",
+      "role": "Character status (UI-139): A new version may come into play."
+    },
+    {
+      "source": "hunt/tile-standard.svg",
+      "role": "Hunt tile (UI-141): standard, beige cardboard."
+    },
+    {
+      "source": "hunt/tile-special-fp.svg",
+      "role": "Hunt tile (UI-141): Free Peoples special, blue enamel."
+    },
+    {
+      "source": "hunt/tile-special-sh.svg",
+      "role": "Hunt tile (UI-141): Shadow special, dark red."
+    },
+    {
+      "source": "hunt/tile-smeagol.svg",
+      "role": "Hunt tile (UI-141): Smeagol (Lords of Middle-earth)."
+    },
+    {
+      "source": "hunt/eye.svg",
+      "role": "Hunt tile value (UI-141): the Eye."
+    },
+    {
+      "source": "hunt/die.svg",
+      "role": "Hunt tile value (UI-141): a die roll."
+    },
+    {
+      "source": "hunt/smeagol.svg",
+      "role": "Hunt tile value (UI-141): Smeagol."
+    },
+    {
+      "source": "hunt/reveal.svg",
+      "role": "Hunt tile mark (UI-141): Reveal."
+    },
+    {
+      "source": "hunt/stop.svg",
+      "role": "Hunt tile mark (UI-141): Stop."
+    },
+    {
+      "source": "hunt/kings.svg",
+      "role": "Hunt tile mark (UI-141): a Kings of Middle-earth tile."
+    },
+    {
+      "source": "actions/hunt-pool.svg",
+      "role": "Action icon (UI-141): Show the Hunt pool."
+    },
+    {
+      "source": "mordor/slab.svg",
+      "role": "Flagstone of the Mordor track on the map (UI-153) in the warm ink of the pencil map; code writes the step number and stands the Fellowship on it.",
+      "variants": [
+        "passed",
+        "next"
+      ]
+    },
+    {
+      "source": "mordor/crack-of-doom.svg",
+      "role": "The Crack of Doom, last step of the Mordor track on the summit of Orodruin (UI-153): ink crater rim with a glowing fissure.",
+      "variants": [
+        "next"
+      ]
+    },
+    {
+      "source": "mordor/gate.svg",
+      "role": "Entrance mark of the Mordor track at Morannon and Minas Morgul (UI-153): an ink gate with a dark arch.",
+      "variants": [
+        "next"
+      ]
+    },
+    {
+      "source": "console/frame.svg",
+      "role": "Turn console plate (UI-159): dark lacquer with a gilt top rule, thin side rules and small corner ornaments.",
+      "slices": {
+        "top": 18,
+        "right": 18,
+        "bottom": 18,
+        "left": 18
+      }
+    },
+    {
+      "source": "console/status-plaque.svg",
+      "role": "Status plaque of the turn console (UI-159): enamel band of the acting side with a gilt rule and pointed ends; emblem and text laid over it.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "slices": {
+        "top": 8,
+        "right": 18,
+        "bottom": 8,
+        "left": 18
+      },
+      "base": false
+    },
+    {
+      "source": "console/hunt-box.svg",
+      "role": "Hunt Box of the turn console (UI-159): recessed ink well in a gilt rim; the eligible variant glows while the Shadow allocates dice.",
+      "variants": [
+        "eligible"
+      ],
+      "slices": {
+        "top": 10,
+        "right": 10,
+        "bottom": 10,
+        "left": 10
+      }
+    },
+    {
+      "source": "console/picker.svg",
+      "role": "Popover body offering the results of a die changed by an Elven Ring (UI-159).",
+      "slices": {
+        "top": 10,
+        "right": 10,
+        "bottom": 10,
+        "left": 10
+      }
+    },
+    {
+      "source": "console/picker-tail.svg",
+      "role": "Tail of the result popover pointing at the die (UI-159)."
+    },
+    {
+      "source": "console/ribbon.svg",
+      "role": "UI-167: ribbon that crosses the top of the map for about 1.5 s when the action passes to the player (YOUR ACTION, FELLOWSHIP PHASE, ALLOCATE HUNT DICE): enamel band of the player's side between gilt rules with swallowtail ends; code writes the text.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "slices": {
+        "top": 12,
+        "right": 28,
+        "bottom": 12,
+        "left": 28
+      },
+      "base": false
+    },
+    {
+      "source": "console/status-glow.svg",
+      "role": "UI-167: gold halo drawn 6 points around the status plaque while the player's starting decision waits for its first step (your-turn) and in the one flash that replaces the ribbon with reduced motion.",
+      "slices": {
+        "top": 16,
+        "right": 16,
+        "bottom": 16,
+        "left": 16
+      }
+    },
+    {
+      "source": "hunt/stage-tile.svg",
+      "role": "Hunt stage icon (UI-159): draw a tile."
+    },
+    {
+      "source": "hunt/stage-damage.svg",
+      "role": "Hunt stage icon (UI-159): damage and the Free Peoples' response."
+    },
+    {
+      "source": "hunt/stage-result.svg",
+      "role": "Hunt stage icon (UI-159): result."
+    },
+    {
+      "source": "hunt/stage-step.svg",
+      "role": "Hunt stage icon on the Mordor track (UI-159): the Fellowship's step."
+    },
+    {
+      "source": "hunt/scene-hunt.svg",
+      "role": "Hunt window scene strip (UI-159): dusk under the gaze, a ridge and crebain; repeats horizontally.",
+      "repeat": "x"
+    },
+    {
+      "source": "hunt/scene-mordor.svg",
+      "role": "Hunt window scene strip on the Mordor track (UI-159): ash sky, black crags, lava seams; repeats horizontally.",
+      "repeat": "x"
+    },
+    {
+      "source": "hunt/choice-corruption.svg",
+      "role": "Hunt damage choice (UI-159): take it as Corruption; the One Ring with a falling drop."
+    },
+    {
+      "source": "hunt/choice-random.svg",
+      "role": "Hunt damage choice (UI-159): a random companion; a face-down stack of counters."
+    },
+    {
+      "source": "end/scene-ring-destroyed.svg",
+      "role": "UI-169: end-of-game scene of the Ring destroyed: Mount Doom erupting, the Ring falling into the Crack of Doom."
+    },
+    {
+      "source": "end/scene-ring-corrupted.svg",
+      "role": "UI-169: end-of-game scene of the Ring-bearers corrupted: the burning Eye on Barad-dûr over a dark plain."
+    },
+    {
+      "source": "end/scene-military.svg",
+      "role": "UI-169: end-of-game scene of a military victory: the winner's banners in their side's enamel (free or shadow) over a taken fortress.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "base": false
+    },
+    {
+      "source": "end/title-victory.svg",
+      "role": "UI-169: plate under the VICTORY title: gilt band on green enamel with laurel sprigs; code writes the title."
+    },
+    {
+      "source": "end/title-defeat.svg",
+      "role": "UI-169: plate under the DEFEAT title: darkened iron and red band with dulled gilt and a cracked rule; code writes the title."
+    }
+  ],
+  "previews": [
+    {
+      "page": "previews/topbar.html",
+      "size": [
+        1366,
+        120
+      ]
+    },
+    {
+      "page": "previews/left-rail.html",
+      "size": [
+        520,
+        620
+      ]
+    },
+    {
+      "page": "previews/cards.html",
+      "size": [
+        420,
+        420
+      ]
+    },
+    {
+      "page": "previews/dice.html",
+      "size": [
+        520,
+        240
+      ]
+    },
+    {
+      "page": "previews/battle.html",
+      "size": [
+        560,
+        300
+      ]
+    },
+    {
+      "page": "previews/armies.html",
+      "size": [
+        560,
+        300
+      ]
+    }
+  ]
+}

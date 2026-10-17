@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 32 32">
+  <!-- UI-141: Stop mark of a Shadow special Hunt tile: a red octagon with a white bar. -->
+  <g filter="url(#lift)">
+    <path d="M10.4 2 H21.6 L30 10.4 V21.6 L21.6 30 H10.4 L2 21.6 V10.4 Z" fill="#b8231a" stroke="#f3e6c8" stroke-width="2"/>
+    <rect x="8" y="13.4" width="16" height="5.2" rx="1.2" fill="#f7efe0"/>
+  </g>
+</svg>

@@ -1,0 +1,44 @@
+.artifacts/
+.deps/
+**/bin/
+**/obj/
+**/TestResults/
+**/__pycache__/
+.DS_Store
+.env
+.env.*
+!.env.example
+infra/secrets/
+infra/backups/
+*.user
+*.suo
+unity/**/Library/
+unity/**/Temp/
+unity/**/Logs/
+unity/**/UserSettings/
+unity/**/Builds/
+unity/**/*.csproj
+unity/**/*.sln
+unity/**/*.slnx
+unity/**/Assets/InitTestScene*.unity
+unity/**/Assets/InitTestScene*.unity.meta
+# DIST-05: the identity BuildTasks embeds for the duration of one build.
+unity/Wotr.Client/Assets/Wotr/Generated/
+unity/Wotr.Client/Assets/Wotr/Generated.meta
+
+# wotr-server D17: board scans and third-party images stay local (docs/sources/LOCAL-ONLY.json).
+/graphicalassets/183b6c0d-2a7a-4f83-886d-bcf02deae2e3-d41d8cd98f00b204e9800998ecf8427e.png
+/graphicalassets/1b3186f4-e987-4e55-9cbc-cd6c3ef70f12-d41d8cd98f00b204e9800998ecf8427e.png
+/graphicalassets/419846bd-51ae-4ee9-b561-4263da96fdb6-d41d8cd98f00b204e9800998ecf8427e.png
+/graphicalassets/6e176ef3-b53c-4fdb-b991-118bab343263-d41d8cd98f00b204e9800998ecf8427e.png
+/graphicalassets/8f2c4cfb-918d-48e0-9bd6-89001d71435f-d41d8cd98f00b204e9800998ecf8427e.png
+/graphicalassets/9fc3cce8-d868-459d-9415-4dba4e63f217-d41d8cd98f00b204e9800998ecf8427e.png
+/graphicalassets/ChatGPT Image Oct 5, 2026, 03_39_03 PM.png
+/graphicalassets/maps/718b9hBS4AL._AC_SL1000_.jpg
+/graphicalassets/maps/71oBODdvMNL._AC_SL1500_.jpg
+/graphicalassets/maps/pencil-v2/board-reference.png
+/graphicalassets/maps/pencil-v3/fangorn-board.png
+/graphicalassets/maps/s-l1600.webp
+/graphicalassets/maps/terrain-v1/source-layout-reference.png
+/graphicalassets/mirkwood-source-2026-10-05-180801.png
+/graphicalassets/te5487pprwsh1.jpeg

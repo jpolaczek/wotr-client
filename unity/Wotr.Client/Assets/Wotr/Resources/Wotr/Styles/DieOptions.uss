@@ -1,0 +1,18 @@
+/* UI-136: a soft green halo (graphicalassets/ui/src/frames/glow.svg) drawn just outside each control the chosen
+   action die can use. The halo is the host's first child, ignores the pointer and shows only while the host has
+   .die-option; slices are texture pixels of the 2x render (16 points). */
+.die-option-glow {
+    position: absolute;
+    left: -7px;
+    right: -7px;
+    top: -7px;
+    bottom: -7px;
+    display: none;
+    background-image: resource("Wotr/Art/UI/frames/glow");
+    -unity-slice-top: 32;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 32;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+.die-option > .die-option-glow { display: flex; }

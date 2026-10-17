@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden">
+  <!-- Gradients and filters shared by every UI art source; colours come from palette.css. -->
+  <defs>
+    <!-- Gilt lit from above: rules, frames and solid ornaments. -->
+    <linearGradient id="gilt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--gilt-highlight)"/>
+      <stop offset="0.4" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.75" style="stop-color: var(--gilt-mid)"/>
+      <stop offset="1" style="stop-color: var(--gilt-shadow)"/>
+    </linearGradient>
+    <!-- Gilt lit from the upper left: rims and small solids. -->
+    <linearGradient id="gilt-diagonal" x1="0.15" y1="0.1" x2="0.85" y2="0.95">
+      <stop offset="0" style="stop-color: var(--gilt-highlight)"/>
+      <stop offset="0.38" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.72" style="stop-color: var(--gilt-mid)"/>
+      <stop offset="1" style="stop-color: var(--gilt-shadow)"/>
+    </linearGradient>
+    <!-- Reversed light for the inner bevel of a rim. -->
+    <linearGradient id="gilt-bevel" x1="0.85" y1="0.95" x2="0.15" y2="0.1">
+      <stop offset="0" style="stop-color: var(--gilt-highlight)"/>
+      <stop offset="0.5" style="stop-color: var(--gilt-light)"/>
+      <stop offset="1" style="stop-color: var(--gilt-shadow)"/>
+    </linearGradient>
+    <!-- Vertical gilt post seen from the side. -->
+    <linearGradient id="gilt-side" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--gilt-shadow)"/>
+      <stop offset="0.45" style="stop-color: var(--gilt-light)"/>
+      <stop offset="1" style="stop-color: var(--gilt-mid)"/>
+    </linearGradient>
+    <!-- Domed enamel inside round frames. -->
+    <radialGradient id="enamel-dome" cx="0.42" cy="0.36" r="0.7">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.65" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </radialGradient>
+    <!-- Flat enamel that may be stretched by 9-slice. -->
+    <linearGradient id="enamel-flat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.6" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </linearGradient>
+    <linearGradient id="button-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--button-top)"/>
+      <stop offset="1" style="stop-color: var(--button-bottom)"/>
+    </linearGradient>
+    <!-- Red lacquer of headers and the selected tab. -->
+    <linearGradient id="lacquer-red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--lacquer-red-top)"/>
+      <stop offset="1" style="stop-color: var(--lacquer-red-bottom)"/>
+    </linearGradient>
+    <!-- Silvered heraldry of the Free Peoples. -->
+    <linearGradient id="emblem-silver" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" style="stop-color: var(--emblem-light)"/>
+      <stop offset="0.55" style="stop-color: var(--emblem-mid)"/>
+      <stop offset="1" style="stop-color: var(--emblem-dark)"/>
+    </linearGradient>
+    <!-- Ember heraldry of the Shadow. -->
+    <linearGradient id="emblem-ember" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" style="stop-color: var(--ember-light)"/>
+      <stop offset="0.5" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-dark)"/>
+    </linearGradient>
+    <!-- Engraved ornaments on the plate. -->
+    <filter id="engrave" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0.45" dy="0.7" stdDeviation="0.35" flood-color="#000" flood-opacity="0.85"/>
+    </filter>
+    <!-- Raised objects: icons, dice and buttons. -->
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="145%">
+      <feDropShadow dx="0.3" dy="0.8" stdDeviation="0.65" flood-color="#000" flood-opacity="0.8"/>
+    </filter>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="0.9"/>
+    </filter>
+  </defs>
+</svg>

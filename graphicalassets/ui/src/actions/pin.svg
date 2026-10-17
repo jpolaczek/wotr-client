@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-138: Keep open (not pinned). -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 6 L26 16 L16 26 L6 16 Z" style="stroke: var(--ink)" stroke-width="4.6"/>
+    <path d="M16 6 L26 16 L16 26 L6 16 Z" stroke="url(#gilt)" stroke-width="2.4"/>
+  </g>
+</svg>

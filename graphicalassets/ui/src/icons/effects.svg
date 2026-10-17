@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32">
+  <!-- Effects: a radiant eight-pointed star for cards and abilities in force. -->
+  <g filter="url(#lift)">
+    <path d="M16 1.5 L18.2 12.6 L29.5 16 L18.2 19.4 L16 30.5 L13.8 19.4 L2.5 16 L13.8 12.6 Z" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5" stroke-linejoin="round"/>
+    <path d="M16 16 L23.6 8.4 L19.4 16 L23.6 23.6 L16 16 L8.4 23.6 L12.6 16 L8.4 8.4 Z" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.4" stroke-linejoin="round"/>
+    <circle cx="16" cy="16" r="3.2" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="16" cy="16" r="1.4" style="fill: var(--gilt-highlight)"/>
+  </g>
+</svg>

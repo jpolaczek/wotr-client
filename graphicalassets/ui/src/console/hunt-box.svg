@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="40" viewBox="0 0 64 40">
+  <!-- UI-159: the Hunt Box of the turn console: a recessed ink well in a gilt rim; Hunt dice and Eyes sit in it.
+       The eligible variant lights the legal green glow while the Shadow allocates. Slices (points): 10. -->
+  <defs>
+    <linearGradient id="hunt-box-well" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--ink)"/>
+      <stop offset="0.4" style="stop-color: var(--enamel-dark)"/>
+      <stop offset="1" style="stop-color: var(--enamel-mid)"/>
+    </linearGradient>
+  </defs>
+  <rect x="1.2" y="1.2" width="61.6" height="37.6" rx="6.6" filter="url(#glow)" fill="none" style="stroke: var(--slab-glow); stroke-opacity: var(--slab-glow-opacity)" stroke-width="2.4"/>
+  <rect x="1.5" y="1.5" width="61" height="37" rx="6" fill="url(#hunt-box-well)" style="stroke: var(--gilt-edge)" stroke-width="1"/>
+  <rect x="3" y="3" width="58" height="34" rx="4.6" fill="none" stroke="url(#gilt)" stroke-width="0.8" filter="url(#engrave)"/>
+  <rect x="3" y="3" width="58" height="34" rx="4.6" fill="none" style="stroke: var(--slab-glow); stroke-opacity: var(--slab-glow-opacity)" stroke-width="1.2"/>
+  <path d="M7 5.4 H57" stroke="#000000" stroke-width="2" opacity="0.5" stroke-linecap="round"/>
+</svg>

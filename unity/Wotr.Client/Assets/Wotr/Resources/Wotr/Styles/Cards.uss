@@ -1,0 +1,197 @@
+/* UI-91: the hand on yellowed parchment (graphicalassets/ui/src/cards); 9-slice values are texture pixels.
+   Each slot keeps its place; its face is anchored to the slot's bottom and unrolls upward over the
+   cards above as a read-only preview. HandView sets slot and face geometry; this sheet draws them.
+   Rules carry #board-screen so they win over the older hand rules declared later in Wotr.uss. */
+
+/* The cards area closes the right column with the same frame as the panels above it. */
+#board-screen .board-right-panels .edge-cards {
+    padding: 6px 7px 7px 7px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .edge-cards .edge-hand { padding: 0; border-width: 0; background-color: rgba(0, 0, 0, 0); }
+
+/* Draw decks: card backs in tooled leather, with the count shown on the back. */
+#board-screen .edge-cards .card-decks { height: 30px; margin: 0 0 6px 0; }
+#board-screen .edge-cards .card-decks .card-deck {
+    width: auto;
+    flex-grow: 1;
+    flex-basis: 0;
+    height: 30px;
+    min-height: 30px;
+    margin: 0;
+    padding: 0 8px;
+    border-width: 0;
+    border-radius: 0;
+    color: rgb(241, 223, 166);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/cards/back");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+/* Two equal halves with the gap inside the row, so the right back never passes the frame. */
+#board-screen .edge-cards .card-decks #deck-character { margin-right: 6px; }
+#board-screen .edge-cards .card-decks .card-deck:hover,
+#board-screen .edge-cards .card-decks .card-deck:focus { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/cards/back-hover"); }
+#board-screen .edge-cards .card-decks .card-deck.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .edge-cards .card-deck .unity-label { margin: 0 3px; font-size: 12px; letter-spacing: 1px; -unity-font-style: bold; }
+#board-screen .edge-cards .card-deck #deck-count { color: rgb(214, 190, 140); letter-spacing: 0; -unity-font-style: normal; }
+#board-screen .edge-cards .card-deck .action-symbol { width: 18px; height: 18px; }
+
+/* Fixed slots; HandView sets left, top, width and height of each. */
+#board-screen .hand-grid { position: relative; flex-direction: row; flex-wrap: nowrap; overflow: visible; }
+#board-screen .hand .hand-card {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    overflow: visible;
+    background-color: rgba(0, 0, 0, 0);
+}
+#board-screen .hand .hand-card:hover,
+#board-screen .hand .hand-card:active,
+#board-screen .hand .hand-card:focus,
+#board-screen .hand .hand-card.selected,
+#board-screen .hand .hand-card.playable-card { background-color: rgba(0, 0, 0, 0); border-width: 0; }
+
+/* The parchment face grows upward from the slot's bottom edge. */
+.hand-card > #hand-card-face {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    overflow: hidden;
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+.hand-card.playable-card > #hand-card-face { background-image: resource("Wotr/Art/UI/cards/parchment-playable"); }
+.hand-card.selected > #hand-card-face { background-image: resource("Wotr/Art/UI/cards/parchment-armed"); }
+.motion-enabled .hand-card > #hand-card-face {
+    transition-property: height, width, left;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out-cubic;
+}
+
+/* Collapsed layer: type symbol and title, pinned to the slot area at the bottom of the face. */
+#hand-card-compact {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 18px 0 8px;
+}
+#hand-card-title {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-height: 30px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-size: 12px;
+    white-space: normal;
+    -unity-font-style: bold;
+    color: rgb(59, 36, 18);
+}
+.compact-edge-board #hand-card-title { font-size: 11px; max-height: 28px; }
+#board-screen .hand-card .action-symbol { position: relative; left: 0; top: 0; width: 18px; height: 18px; margin: 0 6px 0 0; flex-shrink: 0; }
+
+/* Full layer: laid out at the hand's width; it fades in while the face unrolls. */
+#hand-card-full {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 9px 12px 9px 12px;
+    opacity: 0;
+}
+.hand-card.card-expanded #hand-card-full { opacity: 1; }
+.hand-card.card-expanded #hand-card-compact { opacity: 0; }
+.motion-enabled #hand-card-full,
+.motion-enabled #hand-card-compact {
+    transition-property: opacity;
+    transition-duration: 110ms;
+    transition-timing-function: ease-out;
+}
+.hand-card-heading { flex-direction: row; align-items: center; }
+#hand-card-full-title { flex-shrink: 1; margin: 0; padding: 0; font-size: 13px; white-space: normal; -unity-font-style: bold; color: rgb(59, 36, 18); }
+#hand-card-kind { margin: 1px 0 5px 24px; padding: 0; font-size: 9px; letter-spacing: 1.2px; color: rgb(122, 74, 30); }
+#hand-card-event { margin: 0; padding: 0; font-size: 11.5px; white-space: normal; color: rgb(58, 42, 24); }
+#hand-card-combat { margin: 7px 0 0 0; padding: 4px 0 0 0; border-top-width: 1px; border-top-color: rgba(140, 106, 51, 0.7); }
+#hand-card-combat.hand-card-combat-focus { padding: 4px 4px 3px 4px; background-color: rgba(140, 106, 51, 0.14); }
+#hand-card-combat-heading { margin: 0 0 2px 0; padding: 0; font-size: 9px; letter-spacing: 1.2px; -unity-font-style: bold; color: rgb(122, 26, 16); }
+#hand-card-combat-text { margin: 0; padding: 0; font-size: 11px; white-space: normal; color: rgb(58, 42, 24); }
+#hand-card-hint { margin: 8px 0 0 0; padding: 0; font-size: 10.5px; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(106, 74, 42); }
+
+/* The ready tick (or discard cross) inside the face's top-right corner. UI-194: no armed seal, one click plays. */
+.hand-card #card-ready { position: absolute; right: 7px; top: 3px; margin: 0; padding: 0; font-size: 12px; -unity-font-style: bold; color: rgb(120, 86, 20); }
+
+/* Card text reads left-aligned; labels would otherwise inherit the button's centred alignment. */
+#hand-card-full .unity-label, #hand-card-compact .unity-label { -unity-text-align: upper-left; }
+#hand-card-compact #hand-card-title { -unity-text-align: middle-left; }
+#hand-card-full #hand-card-hint { -unity-text-align: middle-center; }
+
+/* UI-106: the opened hand card is parchment like the hand and the recorded actions: dark ink, a red rubric
+   for the Event and Combat headings and the square buttons of the board's windows. */
+#board-screen .card-inspector {
+    padding: 10px 12px 12px 12px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .card-inspector Label { color: rgb(58, 42, 24); }
+#board-screen .card-inspector .card-header .title { font-size: 16px; -unity-font-style: bold; color: rgb(58, 42, 24); }
+#board-screen .card-inspector #card-window { color: rgb(122, 74, 30); }
+#board-screen .card-inspector .card-effect { border-left-color: rgba(140, 106, 51, 0.7); background-color: rgba(0, 0, 0, 0); }
+#board-screen .card-inspector .card-effect-heading,
+#board-screen .card-inspector .focused-effect .card-effect-heading {
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    -unity-font-style: bold;
+    color: rgb(122, 26, 16);
+}
+#board-screen .card-inspector .card-effect.playable-effect { border-left-color: rgb(46, 112, 84); background-color: rgba(46, 112, 84, 0.12); }
+#board-screen .card-inspector .card-rules { color: rgb(58, 42, 24); }
+#board-screen .card-inspector .card-header Button {
+    color: rgb(241, 227, 181);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .card-inspector .card-header Button:hover,
+#board-screen .card-inspector .card-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+
+
+/* UI-111: cards that cannot be committed in this battle stay visible but dimmed, with their unmet condition. */
+#board-screen .hand-card.combat-unavailable { opacity: 0.55; }
+/* The battle window's unavailable tiles are styled in Styles/Battle.uss (UI-116). */
+/* UI-124: a chosen action die dims the cards it cannot play; an unrolled card reads at full strength. */
+#board-screen .hand-card.card-unplayable { opacity: 0.5; }
+#board-screen .hand-card.card-unplayable.card-expanded { opacity: 1; }

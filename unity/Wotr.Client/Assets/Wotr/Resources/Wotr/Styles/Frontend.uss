@@ -1,0 +1,401 @@
+.frontend .status-message {
+    white-space: normal;
+    flex-shrink: 0;
+}
+.frontend .login-card {
+    max-width: 590px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+.frontend .login-card .row {
+    flex-wrap: wrap;
+}
+.frontend .login-card .row .action {
+    flex-grow: 1;
+}
+
+.frontend .menu-lists { flex-grow: 1; flex-shrink: 1; min-height: 0; flex-direction: row; }
+.frontend .menu-lists > VisualElement { flex-grow: 1; flex-basis: 50%; min-width: 0; min-height: 0; padding: 8px; }
+.frontend .row { flex-wrap: wrap; flex-shrink: 0; }
+.frontend .saved-games-panel { flex-grow: 1; min-height: 0; max-height: 95%; }
+.frontend .frontend-form { padding: 16px; }
+.frontend .frontend-form .unity-text-field { margin-bottom: 12px; }
+.frontend .action { white-space: normal; }
+
+/* MENU-16: the margin keeps the credit line clear under a tall waiting room. */
+.frontend .waiting-panel { max-width: 94%; max-height: 94%; margin-bottom: 20px; }
+.frontend .waiting-panel .unity-label { white-space: normal; }
+.frontend .waiting-panel .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* TEST-03: the test scenario list replaces the game lists like Host game; rows read like saved games. */
+.frontend .test-scenario-list { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.frontend .test-scenario-list .saved-games-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; max-height: none; }
+.frontend .test-scenario-hint { white-space: normal; margin-bottom: 8px; color: rgb(168, 186, 184); font-size: 14px; }
+.frontend .test-scenario-group { margin: 10px 0 4px 0; font-size: 14px; -unity-font-style: bold; color: rgb(231, 209, 160); }
+.frontend .test-scenario { flex-direction: column; align-items: stretch; margin: 2px 0; padding: 6px 10px; }
+.frontend .test-scenario-title { -unity-font-style: bold; -unity-text-align: middle-left; }
+.frontend .test-scenario-description { white-space: normal; -unity-text-align: middle-left; font-size: 13px; color: rgb(190, 204, 200); }
+
+
+/* MENU-11: the main menu — the dimmed map under a masthead, one framed window for the current list or form and a
+   framed column of actions on its right. Sizes are fixed (the window and the column never change size between
+   pages); only a screen too small for them lets the window shrink. Every action keeps its place. */
+.main-menu {
+    align-items: stretch;
+    justify-content: flex-start;
+    background-color: rgb(17, 15, 14);
+}
+/* MENU-15: every screen before the board (sign-in, the main menu, the waiting room) stands on the same map. */
+.frontend .frontend-backdrop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: resource("MapCanvas/terrain");
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-image-tint-color: rgb(88, 80, 66);
+}
+/* MENU-16: the original game's designers, one quiet line centred on the bottom edge, below every panel. */
+.frontend .frontend-credits {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 16px;
+    font-size: 12px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    color: rgb(196, 182, 148);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+}
+.main-menu .menu-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 16px 16px 20px 16px;
+    align-items: center;
+    justify-content: center;
+}
+.main-menu .menu-masthead {
+    flex-shrink: 0;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.main-menu .menu-title {
+    font-size: 40px;
+    letter-spacing: 8px;
+    color: rgb(241, 223, 166);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-center;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+}
+.main-menu .menu-player {
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+.main-menu .menu-body {
+    flex-direction: row;
+    width: 980px;
+    max-width: 100%;
+    height: 540px;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+/* The window: frames/panel with the header plate of the board windows. */
+.main-menu .menu-window {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    min-height: 0;
+    margin-right: 14px;
+    padding: 10px 16px 16px 16px;
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+.main-menu .menu-window-header {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 40px;
+    margin-bottom: 8px;
+    /* UI-203: the button stands inside the band's closed end. */
+    padding: 0 10px 0 14px;
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+.main-menu .menu-window-title {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: rgb(241, 223, 166);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.main-menu .menu-lists { flex-direction: column; flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.main-menu .menu-lists > .menu-list-page { flex-grow: 1; flex-shrink: 1; flex-basis: auto; min-height: 0; padding: 0; }
+.main-menu .menu-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; max-height: none; }
+.main-menu .menu-empty,
+.main-menu #public-games-empty {
+    margin: 12px 8px;
+    font-size: 16px;
+    color: rgb(190, 184, 160);
+    white-space: normal;
+}
+
+/* A list row: the entry frame, an emblem, the name over its detail and the seat or state on the right. */
+.main-menu .menu-row {
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+    min-height: 60px;
+    margin: 0 4px 6px 0;
+    padding: 0 16px 0 10px;
+    background-image: resource("Wotr/Art/UI/frames/entry");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+    -unity-text-align: middle-left;
+}
+.main-menu .menu-row:hover { background-image: resource("Wotr/Art/UI/frames/entry-hover"); }
+.main-menu .menu-row-emblem {
+    width: 34px;
+    height: 34px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.main-menu .menu-row-emblem.side-free { background-image: resource("Wotr/Art/UI/icons/ring"); }
+.main-menu .menu-row-emblem.side-shadow { background-image: resource("Wotr/Art/UI/dice/faces/eye"); }
+.main-menu .menu-row-text { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.main-menu .menu-row-title {
+    font-size: 17px;
+    color: rgb(245, 232, 196);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.main-menu .menu-row-detail {
+    font-size: 14px;
+    color: rgb(190, 184, 160);
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.main-menu .menu-row-action {
+    flex-shrink: 0;
+    margin-left: 12px;
+    font-size: 15px;
+    color: rgb(232, 204, 130);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.main-menu .own-room-row { font-size: 16px; padding-left: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* OBS-04: Play and Observe keep their places at the end of every open game's row. */
+.main-menu .public-room-row { flex-direction: row; align-items: center; }
+.main-menu .public-room-row:hover { background-image: resource("Wotr/Art/UI/frames/entry"); }
+.main-menu .public-room-action { width: 92px; height: 34px; min-height: 34px; margin-left: 8px; flex-shrink: 0; font-size: 15px; }
+
+/* Saved games keep their row (resume and Changes) in the window's frame and type. */
+.main-menu .saved-match { min-height: 76px; margin: 0 4px 6px 0; }
+.main-menu .saved-match .resume-match {
+    padding: 6px 14px;
+    background-image: resource("Wotr/Art/UI/frames/entry");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+}
+.main-menu .saved-match .resume-match:hover { background-image: resource("Wotr/Art/UI/frames/entry-hover"); }
+.main-menu .saved-match-heading { font-size: 17px; color: rgb(245, 232, 196); }
+.main-menu .saved-match-detail { font-size: 14px; color: rgb(190, 184, 160); }
+.main-menu .saved-match.your-decision .resume-match { border-left-width: 4px; border-left-color: rgb(232, 204, 130); }
+
+/* The test scenarios fill the same window. */
+.main-menu .menu-window > .frontend-form { flex-grow: 1; padding: 8px 12px; }
+.main-menu .menu-window > .frontend-form > .title { display: none; }
+.main-menu .menu-window > .frontend-form .row { margin-top: 8px; }
+
+/* MENU-30: Host a game, every control in a fixed place: the name row, the two side cards (as the waiting room's
+   seats), the visibility segments, two lines of notes and the footer with Back and Create game. */
+.main-menu .host-form { flex-grow: 1; padding: 6px 8px 0 8px; }
+.main-menu .host-field { flex-direction: row; align-items: center; flex-shrink: 0; height: 40px; margin-bottom: 10px; }
+.main-menu .host-label {
+    width: 150px;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-left;
+}
+.main-menu .host-heading { width: auto; height: 22px; margin-bottom: 6px; }
+.main-menu .host-control { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; }
+.main-menu #room-name.host-control { height: 36px; }
+.main-menu .host-segments { flex-direction: row; flex-grow: 0; }
+.main-menu .host-segments > .host-segment { width: 120px; height: 36px; min-height: 36px; margin: 0 6px 0 0; font-size: 16px; }
+.main-menu .host-note { flex-shrink: 0; height: 20px; margin: 0 0 4px 150px; padding: 0; font-size: 14px; color: rgb(190, 184, 160); }
+.main-menu .host-footer { flex-direction: row; align-items: center; flex-shrink: 0; height: 44px; margin-top: auto; margin-bottom: 4px; }
+.main-menu .host-footer > .host-back { width: 120px; height: 42px; min-height: 42px; margin: 0; font-size: 17px; }
+.main-menu .host-footer > .host-status {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0 12px;
+    font-size: 14px;
+    color: rgb(236, 160, 140);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+.main-menu .host-footer > .host-submit { width: 180px; height: 42px; min-height: 42px; margin: 0; font-size: 17px; }
+
+/* MENU-30/MENU-31: a side as a card in the menu's frame; the chosen one is lit and ringed in gilt. */
+.main-menu .side-choice { flex-direction: row; flex-shrink: 0; height: 112px; margin: 0 -4px 12px -4px; }
+.main-menu .side-choice > .side-card {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    height: auto;
+    margin: 0 4px;
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/entry");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+}
+.main-menu .side-choice > .side-card:hover { background-image: resource("Wotr/Art/UI/frames/entry-hover"); }
+.main-menu .side-choice > .side-card.selected {
+    background-image: resource("Wotr/Art/UI/frames/entry-hover");
+    border-width: 2px;
+    border-color: rgb(232, 204, 130);
+    border-radius: 6px;
+}
+.main-menu .side-card-heading { flex-direction: row; align-items: center; margin-bottom: 6px; }
+.main-menu .side-card-heading .menu-row-emblem { width: 36px; height: 36px; }
+.main-menu .side-card-name {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: rgb(241, 223, 166);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-left;
+}
+.main-menu .side-card-detail { margin: 0; padding: 0; font-size: 14px; color: rgb(214, 198, 160); white-space: normal; -unity-text-align: upper-left; }
+/* MENU-31: the demo page's lines above and below the side cards. */
+.main-menu .demo-note { flex-shrink: 0; margin: 0 0 12px 0; padding: 0; font-size: 15px; color: rgb(214, 198, 160); white-space: normal; }
+
+/* The action column: the same frame; the selected list action wears the selected button art. */
+.main-menu .menu-actions {
+    width: 250px;
+    flex-shrink: 0;
+    padding: 16px;
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+/* REPLAY-04: 38 px rows with 4 px between, so Replays fits in the column above Sign out and Quit game. */
+.main-menu .menu-action {
+    height: 38px;
+    min-height: 38px;
+    margin: 0 0 4px 0;
+    padding-left: 18px;
+    font-size: 17px;
+    -unity-text-align: middle-left;
+    flex-shrink: 0;
+}
+.main-menu .menu-action-badge {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    background-color: rgb(232, 204, 130);
+    color: rgb(30, 24, 16);
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+.main-menu .menu-join {
+    flex-shrink: 0;
+    margin: 2px 0 8px 0;
+    padding: 6px 0 8px 0;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-color: rgba(232, 204, 130, 0.3);
+    border-bottom-color: rgba(232, 204, 130, 0.3);
+}
+.main-menu .menu-join-title {
+    margin: 0 0 6px 2px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.main-menu .menu-join-line { flex-direction: row; align-items: center; }
+.main-menu .menu-join-code { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 36px; margin: 0 6px 0 0; }
+.main-menu .menu-join-submit { width: 64px; min-width: 64px; height: 36px; min-height: 36px; flex-shrink: 0; }
+.main-menu #observe-invitation { width: 78px; min-width: 78px; margin-left: 6px; }
+.main-menu .menu-actions-spacer { flex-grow: 1; }
+.main-menu .menu-action-quiet { color: rgb(214, 198, 160); }
+/* MENU-31: Sign out and Quit game side by side in the column's last row. */
+.main-menu .menu-actions-footer { flex-direction: row; flex-shrink: 0; }
+.main-menu .menu-actions-footer > .menu-action { flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0; padding: 0; -unity-text-align: middle-center; }
+.main-menu .menu-actions-footer > #sign-out { margin-right: 6px; }
+.main-menu .menu-status {
+    flex-shrink: 0;
+    width: 980px;
+    max-width: 100%;
+    height: 40px;
+    margin-top: 6px;
+    font-size: 15px;
+    -unity-text-align: middle-center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+
+/* REPLAY-04: the replay library in the menu's window (and before sign-in): rows with Play, Export and Delete in
+   fixed places, Import (and Back) at the foot, one status line. */
+.main-menu .replay-library { flex-grow: 1; padding: 6px 8px 0 8px; }
+.main-menu .replay-scroll { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.main-menu .replay-row { flex-direction: row; align-items: center; }
+.main-menu .replay-row:hover { background-image: resource("Wotr/Art/UI/frames/entry"); }
+.main-menu .replay-action { width: 78px; height: 34px; min-height: 34px; margin-left: 6px; flex-shrink: 0; font-size: 15px; }
+.main-menu .replay-footer { flex-direction: row; justify-content: flex-end; flex-shrink: 0; height: 44px; align-items: center; }
+.main-menu .replay-footer-action { width: 120px; height: 36px; min-height: 36px; margin-left: 8px; }
+.main-menu .replay-status { flex-shrink: 0; height: 22px; font-size: 14px; color: rgb(214, 198, 160); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.frontend .auth-replays { margin-top: 10px; align-self: center; width: 160px; }

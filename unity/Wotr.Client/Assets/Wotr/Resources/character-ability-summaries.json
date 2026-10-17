@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "scope": "UI-187: short tooltip forms of the base game's character abilities, by ability id. Each summarises the printed text of character-ability-text.json and adds no rule; the card keeps the full text.",
+  "summaries": {
+    "combat-strength-plus-one": "+1 Combat Strength in battle (max 5 dice)",
+    "politics-dwarves-at-erebor": "Any die in Erebor moves the Dwarves a step toward war",
+    "politics-gondor-at-city-or-stronghold": "Any die in a Gondor City or Stronghold moves Gondor a step toward war",
+    "politics-elves-at-stronghold": "Any die in an Elven Stronghold moves the Elves a step toward war",
+    "guide-draw-after-event-die-card": "Draws a card after an Event played with an Event die",
+    "may-transform-to-white": "Becomes Gandalf the White with a Will die once a Minion is in play",
+    "guide-hide-with-any-action-die": "Any die hides a revealed Fellowship",
+    "may-transform-to-aragorn": "Becomes Aragorn with a Will die in Minas Tirith, Dol Amroth or Pelargir",
+    "guide-separate-to-reduce-hunt-one": "Separates to reduce Hunt damage by 1",
+    "return-after-fellowship-elimination-except-mordor": "Returns separated if eliminated in the Fellowship (not in Mordor)",
+    "move-four-alone-or-with-one-hobbit": "Moves up to 4 regions alone or with one Hobbit",
+    "forfeit-leadership-to-cancel-nazgul-for-battle": "Forfeits his Leadership to cancel all Nazgûl Leadership in a battle",
+    "enter-and-guide-when-no-companions": "Joins the Fellowship when no Companions remain",
+    "ignore-standard-numbered-reveal": "Ignores Reveal on standard numbered tiles",
+    "voluntary-reveal-to-reduce-hunt-one": "Reveals the Fellowship to reduce Hunt damage by 1",
+    "add-gollum-when-no-companions": "Gollum becomes Guide when no Companions remain",
+    "cannot-leave-orthanc": "Never leaves Orthanc; may lead an attack from it",
+    "muster-each-isengard-settlement-or-upgrade-two": "Muster die: a Regular per Isengard Settlement, or upgrade 2 in Orthanc",
+    "isengard-elites-have-leadership": "Isengard Elites also count as Leaders",
+    "muster-as-army-once-per-turn": "Once per turn a Muster die acts as an Army die",
+    "entry-activates-all-free-peoples": "Entering play activates every Free Peoples Nation",
+    "draw-after-first-round-combat-card": "Draws a card if a Combat card was played in the first round"
+  }
+}

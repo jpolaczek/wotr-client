@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
+using Wotr.Contracts;
+
+namespace Wotr.Client
+{
+    public sealed class FellowshipControls
+    {
+        public VisualElement Root { get; } = new VisualElement { name = "fellowship-controls" };
+        public event Action<CommandKind> Selected;
+        // UI-98: some Fellowship action is legal now, so the top-bar plaque invites a look.
+        public bool Offers { get; private set; }
+        // UI-110: the move is the glowing track symbol (FellowshipStatus), not a button in this row.
+        public bool MoveOffered { get; private set; }
+        public string MoveDescription { get; private set; } = "";
+        private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
+        private readonly Label hint = new Label { name = "fellowship-action-hint" };
+        private readonly Label guideHint = new Label { name = "fellowship-guide-hint" };
+
+        public FellowshipControls()
+        {
+            var row = BoardScreen.Row("fellowship-actions");
+            Add(row, CommandKind.HideFellowship, "Hide ◇", "fellowship-state");
+            Add(row, CommandKind.DeclareFellowship, "Declare position", "fellowship-declare");
+            Add(row, CommandKind.SelectGuide, "Change guide", "fellowship-change-guide");
+            Add(row, CommandKind.EnterMordor, "Enter Mordor", "fellowship-enter");
+            Add(row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
+            Root.Add(row);
+            Root.Add(hint);
+            Root.Add(guideHint);
+        }
+
+        private void Add(VisualElement row, CommandKind kind, string text, string name)
+        {
+            var button = BoardScreen.Button(text, () => Selected?.Invoke(kind));
+            button.name = name;
+            actions.Add(kind, button);
+            row.Add(button);
+        }
+
+        public void Refresh(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled, bool route, bool docked = false)
+        {
+            var own = view.You == Side.FreePeoples;
+            Root.style.display = own ? DisplayStyle.Flex : DisplayStyle.None;
+            Root.SetEnabled(own);
+            var inActions = view.Phase == GamePhase.ActionResolution && view.Hunt == null && view.Winner == null &&
+                !FellowshipDraft.UsesRoute(draft.Kind) && draft.Kind != CommandKind.SelectGuide;
+            MoveOffered = own && !route && enabled && FellowshipActions.Option(view, context, CommandKind.MoveFellowship, draft) != null;
+            MoveDescription = Description(view, CommandKind.MoveFellowship);
+            Offers = MoveOffered;
+            foreach (var item in actions)
+            {
+                var legal = own && FellowshipActions.Option(view, context, item.Key, draft) != null;
+                Offers |= legal && enabled;
+                item.Value.SetEnabled(enabled && legal);
+                item.Value.EnableInClassList("legal-target", legal);
+                var basicAction = item.Key == CommandKind.HideFellowship;
+                var guideAction = item.Key == CommandKind.SelectGuide;
+                var guideVisible = !guideAction || view.Decision?.Kind == DecisionKind.FellowshipPhase && draft.Kind != CommandKind.SelectGuide;
+                item.Value.style.display = own && !route && guideVisible && (legal || basicAction && inActions && !docked) ? DisplayStyle.Flex : DisplayStyle.None;
+                item.Value.tooltip = Description(view, item.Key);
+            }
+            hint.text = FellowshipActions.ActionHint(view, draft, context);
+            hint.style.display = own && !route && inActions && !docked ? DisplayStyle.Flex : DisplayStyle.None;
+            guideHint.text = view.Decision?.Kind == DecisionKind.FellowshipPhase
+                ? "Choosing a guide ends the Fellowship phase" : "Choose the next Guide · The current action continues";
+            guideHint.style.display = own && !route && draft.Kind == CommandKind.SelectGuide ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private static string Description(PlayerView view, CommandKind kind) => kind switch
+        {
+            CommandKind.MoveFellowship when view.Fellowship.MordorStep.HasValue => "Attempt to move · No Hunt roll. Draw and resolve a Hunt tile before any advance, even with no dice in the Hunt.",
+            CommandKind.MoveFellowship => "Move the Fellowship · Progress +1 and resolve the Hunt; the last known region stays unchanged.",
+            CommandKind.HideFellowship => "Hide at the current position. No progress; this die does not enter the Hunt.",
+            CommandKind.DeclareFellowship => "Choose the actual route and declare the Fellowship’s position.",
+            CommandKind.SelectGuide => "Highlight legal candidates · Choosing a guide ends the Fellowship phase.",
+            CommandKind.EnterMordor => "Enter the Mordor track and prepare the Hunt pool.",
+            _ => "Keep the current Guide and finish the Fellowship phase."
+        };
+    }
+}

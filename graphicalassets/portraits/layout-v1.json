@@ -1,0 +1,188 @@
+{
+  "schema": "battle-portraits-1",
+  "columns": 5,
+  "rows": 4,
+  "coordinates": "normalized bottom-left; to be measured from alpha after generation",
+  "cells": [
+    {
+      "name": "gimli",
+      "row": 1,
+      "column": 1,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "boromir",
+      "row": 1,
+      "column": 2,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "legolas",
+      "row": 1,
+      "column": 3,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "gandalf-grey",
+      "row": 1,
+      "column": 4,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "gandalf-white",
+      "row": 1,
+      "column": 5,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "strider",
+      "row": 2,
+      "column": 1,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "aragorn",
+      "row": 2,
+      "column": 2,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "pippin",
+      "row": 2,
+      "column": 3,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "merry",
+      "row": 2,
+      "column": 4,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "gollum",
+      "row": 2,
+      "column": 5,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "smeagol",
+      "row": 3,
+      "column": 1,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "ring-bearers",
+      "row": 3,
+      "column": 2,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "elrond",
+      "row": 3,
+      "column": 3,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "galadriel",
+      "row": 3,
+      "column": 4,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "balrog",
+      "row": 3,
+      "column": 5,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "gothmog",
+      "row": 4,
+      "column": 1,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "saruman",
+      "row": 4,
+      "column": 2,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "mouth-of-sauron",
+      "row": 4,
+      "column": 3,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "witch-king",
+      "row": 4,
+      "column": 4,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    },
+    {
+      "name": "spare",
+      "row": 4,
+      "column": 5,
+      "x": null,
+      "y": null,
+      "width": null,
+      "height": null
+    }
+  ]
+}

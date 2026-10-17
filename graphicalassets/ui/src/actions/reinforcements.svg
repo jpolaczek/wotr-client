@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-138: Show the reserves and reinforcements. -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 26 V6 M10 7 H24 L20.5 11.5 L24 16 H10" style="stroke: var(--ink)" stroke-width="4.800000000000001"/>
+    <path d="M10 26 V6 M10 7 H24 L20.5 11.5 L24 16 H10" stroke="url(#gilt)" stroke-width="2.6"/>
+    <path d="M5.5 25 H14.5 V28 H5.5 Z" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="1.4"/>
+  </g>
+</svg>

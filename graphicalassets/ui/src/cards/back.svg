@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <!-- 9-slice card back of the draw decks: dark tooled leather with gilt rules and corner bosses. Slices (points): 14. -->
+  <defs>
+    <linearGradient id="back-leather" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--leather-top)"/>
+      <stop offset="1" style="stop-color: var(--leather-bottom)"/>
+    </linearGradient>
+    <filter id="back-grain" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="3" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 0 0.01  0 0 0 0.35 0"/>
+    </filter>
+    <g id="back-corner">
+      <path d="M5.5 13 C5.5 8.8 8.8 5.5 13 5.5" fill="none" stroke="url(#gilt)" stroke-width="0.9"/>
+      <circle cx="8.6" cy="8.6" r="1.6" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.35"/>
+    </g>
+  </defs>
+  <rect x="1" y="1" width="94" height="94" rx="3" fill="url(#back-leather)"/>
+  <rect x="1" y="1" width="94" height="94" rx="3" filter="url(#back-grain)"/>
+  <g fill="none" filter="url(#engrave)">
+    <rect x="1.6" y="1.6" width="92.8" height="92.8" rx="2.6" stroke="url(#gilt)" stroke-width="1"/>
+    <rect x="4.4" y="4.4" width="87.2" height="87.2" rx="1.6" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+  </g>
+  <use href="#back-corner"/>
+  <use href="#back-corner" transform="translate(96 0) scale(-1 1)"/>
+  <use href="#back-corner" transform="translate(0 96) scale(1 -1)"/>
+  <use href="#back-corner" transform="translate(96 96) scale(-1 -1)"/>
+</svg>

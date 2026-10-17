@@ -1,0 +1,141 @@
+{
+  "schema": "battle-portraits-1",
+  "width": 1000,
+  "height": 800,
+  "coordinates": "normalized bottom-left; separate non-overlapping bounds",
+  "cells": [
+    {
+      "name": "gimli",
+      "x": 0.012,
+      "y": 0.765,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "boromir",
+      "x": 0.212,
+      "y": 0.765,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "legolas",
+      "x": 0.412,
+      "y": 0.765,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "gandalf-grey",
+      "x": 0.612,
+      "y": 0.765,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "gandalf-white",
+      "x": 0.812,
+      "y": 0.765,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "strider",
+      "x": 0.012,
+      "y": 0.515,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "aragorn",
+      "x": 0.212,
+      "y": 0.515,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "pippin",
+      "x": 0.412,
+      "y": 0.515,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "merry",
+      "x": 0.612,
+      "y": 0.515,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "gollum",
+      "x": 0.812,
+      "y": 0.515,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "smeagol",
+      "x": 0.012,
+      "y": 0.265,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "ring-bearers",
+      "x": 0.212,
+      "y": 0.265,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "elrond",
+      "x": 0.412,
+      "y": 0.265,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "galadriel",
+      "x": 0.612,
+      "y": 0.265,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "balrog",
+      "x": 0.812,
+      "y": 0.265,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "gothmog",
+      "x": 0.012,
+      "y": 0.015,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "saruman",
+      "x": 0.212,
+      "y": 0.015,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "mouth-of-sauron",
+      "x": 0.412,
+      "y": 0.015,
+      "width": 0.176,
+      "height": 0.22
+    },
+    {
+      "name": "witch-king",
+      "x": 0.612,
+      "y": 0.015,
+      "width": 0.176,
+      "height": 0.22
+    }
+  ]
+}

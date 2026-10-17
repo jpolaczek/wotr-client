@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="94" height="66" viewBox="0 0 94 66">
+  <!-- UI-182: a left rail tab (Politics, Reserve, Characters, Effects) is only an enamel medallion ringed with gilt
+       beads, which holds the icon (drawn by USS at 35,10, 24x24); the label stands under it, drawn by USS. No plate,
+       frame, filigree or ribbon. The states show on the medallion's rim: hover brightens the gilt, selected rings it
+       with red lacquer and pressed darkens it. UI-193: an available tab glows gold round the medallion itself, a
+       soft disc of light and a bright ring hugging the beads (the label below stays clear of it). -->
+  <defs>
+    <radialGradient id="tab-halo" cx="47" cy="22" r="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0.74" style="stop-color: var(--tab-glow)" stop-opacity="0.95"/>
+      <stop offset="0.86" style="stop-color: var(--tab-glow)" stop-opacity="0.5"/>
+      <stop offset="1" style="stop-color: var(--tab-glow)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g style="opacity: var(--tab-glow-opacity)">
+    <circle cx="47" cy="22" r="22" fill="url(#tab-halo)"/>
+    <circle cx="47" cy="22" r="19" fill="none" style="stroke: var(--tab-glow)" stroke-width="2.2" filter="url(#glow)"/>
+    <circle cx="47" cy="22" r="18.9" fill="none" stroke="#fff3cc" stroke-width="0.7" opacity="0.9"/>
+  </g>
+  <g filter="url(#lift)">
+    <circle cx="47" cy="22" r="18.2" fill="url(#button-fill)" stroke="url(#gilt)" stroke-width="0.8"/>
+    <circle cx="47" cy="22" r="16.4" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
+    <g style="fill: var(--gilt-highlight)">
+      <circle cx="62.40" cy="22.00" r="0.55"/>
+      <circle cx="61.23" cy="27.89" r="0.55"/>
+      <circle cx="57.89" cy="32.89" r="0.55"/>
+      <circle cx="52.89" cy="36.23" r="0.55"/>
+      <circle cx="47.00" cy="37.40" r="0.55"/>
+      <circle cx="41.11" cy="36.23" r="0.55"/>
+      <circle cx="36.11" cy="32.89" r="0.55"/>
+      <circle cx="32.77" cy="27.89" r="0.55"/>
+      <circle cx="31.60" cy="22.00" r="0.55"/>
+      <circle cx="32.77" cy="16.11" r="0.55"/>
+      <circle cx="36.11" cy="11.11" r="0.55"/>
+      <circle cx="41.11" cy="7.77" r="0.55"/>
+      <circle cx="47.00" cy="6.60" r="0.55"/>
+      <circle cx="52.89" cy="7.77" r="0.55"/>
+      <circle cx="57.89" cy="11.11" r="0.55"/>
+      <circle cx="61.23" cy="16.11" r="0.55"/>
+    </g>
+    <circle cx="47" cy="22" r="14.2" fill="url(#gilt-bevel)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="47" cy="22" r="13" fill="url(#enamel-dome)" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+    <path d="M38.5 15.5 A 11 11 0 0 1 52 11.6" fill="none" stroke="#fff" stroke-width="0.9" opacity="0.18" stroke-linecap="round"/>
+  </g>
+</svg>

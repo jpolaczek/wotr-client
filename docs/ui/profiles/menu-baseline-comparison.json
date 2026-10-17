@@ -1,0 +1,38 @@
+{
+  "baseline_commit": "e2e8146",
+  "baseline": {
+    "id": "2",
+    "testcasecount": "11",
+    "result": "Failed(Child)",
+    "total": "11",
+    "passed": "9",
+    "failed": "2",
+    "inconclusive": "0",
+    "skipped": "0",
+    "asserts": "0",
+    "engine-version": "3.5.0.0",
+    "clr-version": "4.0.30319.42000",
+    "start-time": "2026-10-11 14:40:06Z",
+    "end-time": "2026-10-11 14:42:35Z",
+    "duration": "149.1878961"
+  },
+  "full_menu_report": ".artifacts/menu-all-play.xml",
+  "baseline_report": ".artifacts/menu-baseline-play.xml",
+  "cases": [
+    {
+      "test": "Wotr.PlayTests.ReturnDraftTests.OfflineDraftSurvivesClientRecreationAndReconcilesAnotherDevicesSpentCost",
+      "same_failure_message": true,
+      "baseline_message": "Expected: (-240.00, 32.00)\n  But was:  (-240.00, 0.00)"
+    },
+    {
+      "test": "Wotr.PlayTests.ReturnListTests.BothPlayersReturnToEverySaveFamilyWithCurrentPrivateViewAndNoReplay",
+      "same_failure_message": true,
+      "baseline_message": "Panel navigation preserves the camera: ring-paid\n  Expected: (-301.00, 48.00)\n  But was:  (-301.00, 0.00)"
+    }
+  ],
+  "remaining_full_failures_not_attributed": 112,
+  "full_run_rate_limited_failures": 36,
+  "baseline_passing_map_viewport_cases": 8,
+  "other_failures_not_attributed": 76,
+  "note": "The comparison includes 11 tests, it does not constitute a baseline of all 553 cases."
+}

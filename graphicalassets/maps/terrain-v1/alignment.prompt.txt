@@ -1,0 +1,13 @@
+Use case: precise-object-edit
+Asset type: terrain illustration for an existing Middle-earth board map; no labels.
+Input image 1: EDIT TARGET, the current map illustration.
+Input image 2: exact same illustration with ALIGNMENT GUIDES, not a style reference. Magenta filled shapes show the exact intended lake footprints. Red cross shows the center of the small white city. Green cross shows the center of the black tower.
+
+Primary request: Make only these local alignment corrections to image 1, preserving the rest of its composition and artwork:
+1. Match all THREE lakes exactly to the magenta silhouettes in image 2 (small Lake Evendim in the northwest, Sea of Rhun in the east, Sea of Nurnen in the southeast). Turn these magenta footprints into the same blue water as the original illustration, with thin ink shorelines. Restore dry natural ground wherever the old blue lake protrudes beyond the guide silhouette. Preserve each guide's irregular outline, location and scale. The very narrow eastern tail of the southeastern lake is part of that lake. Do not add any other lakes.
+2. Move the single small white tiered city to the RED CROSS center, at 62.3% across and 70.4% down the entire image. It should be a compact recognizable Minas Tirith against a low end-spur of the White Mountains, at most 3% of total image width. Remove the previous white city from its old position just northwest of this point and replace it with natural mountain foothills. No waterfall.
+3. Move the single tall black tower within Mordor to the GREEN CROSS center, at 85.8% across and 61.5% down the entire image. Remove its old copy to the southeast and restore volcanic ground. Keep Mount Doom in its current position.
+
+Invariants: keep exact framing, aspect ratio, coastline, other mountains, forests, rivers, marshes and all remaining objects unchanged. Preserve fine pen-and-ink hatching and muted natural colors on parchment. The pale upper-right cutout is empty parchment and stays unchanged. This is a flat map illustration, no perspective frame. The reference markers are instructions only: remove EVERY magenta shape, red or green cross, ring or construction mark in the result, replacing them with the actual requested terrain.
+Text: none.
+Avoid: any text, invented letters, numerals, legend, cartouche, compass, grid, political region boundaries, markers, watermark, duplicated city or tower.

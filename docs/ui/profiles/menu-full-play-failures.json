@@ -1,0 +1,572 @@
+[
+  {
+    "test": "Wotr.PlayTests.ActionLogNetworkTests.NewStepPreservesAnchorAndPinnedVersionWithoutChangingDraft",
+    "category": "assertion_or_other",
+    "message": "Expected: (-850.25, -1138.00)\n  But was:  (-850.25, -1145.76)"
+  },
+  {
+    "test": "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect",
+    "category": "timeout",
+    "message": "System.Threading.Tasks.TaskCanceledException : A task was canceled."
+  },
+  {
+    "test": "Wotr.PlayTests.BoardCompletionContextNetworkTests.NewHobbitDecisionsDuringMenuAndSettingsKeepOneHostCostAndFocus",
+    "category": "assertion_or_other",
+    "message": "The same decision ID must respect Close after refresh.\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.BoardCompletionContextNetworkTests.PrivateSetupAndPublicGuideKeepTheirHistoricalVersionsAndProperHost",
+    "category": "assertion_or_other",
+    "message": "Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.BoardCompletionLayoutTests.MenuSettingsAndHelpPreserveBattleAndHuntDraftsAcrossFourLayouts",
+    "category": "assertion_or_other",
+    "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+  },
+  {
+    "test": "Wotr.PlayTests.BoardProfileDriverTests.EveryBoardWorkloadUsesRealGesturesAndPreservesItsDecisionAcrossAllFourLayouts",
+    "category": "assertion_or_other",
+    "message": "System.InvalidOperationException : Board profile driver failed: characters-fp-1366-1.00-step-0\ngestures=0, character=, inspected=False, index=0\nUnavailable benchmark control: close-fellowship, enabled=True, bounds=(x:1022.00, y:92.00, width:0.00, height:0.00), handOpen=True\n  ----> System.InvalidOperationException : Unavailable benchmark control: close-fellowship, enabled=True, bounds=(x:1022.00, y:92.00, width:0.00, height:0.00), handOpen=True"
+  },
+  {
+    "test": "Wotr.PlayTests.CardGestureNetworkTests.CombatPlayAndDropKeepBothCardsSecretUntilReveal",
+    "category": "assertion_or_other",
+    "message": "Clicking the hand card pins its information without committing Combat.\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients",
+    "category": "assertion_or_other",
+    "message": "Hover does not open Hunt information.\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.CardViewportLayoutTests.ActionCardFitsBothEffectsAtFourLayoutsAndKeepsPinnedPositionAfterRefresh",
+    "category": "assertion_or_other",
+    "message": "victory-tab is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.CharacterRosterLayoutTests.FullOwnRostersAndPublicInspectorsFitFourLayoutsWithoutDecisionScroll",
+    "category": "assertion_or_other",
+    "message": "Automatic inspection must leave the complete roster readable: (x:92.50, y:146.00, width:350.83, height:224.00) / (x:422.00, y:244.00, width:420.00, height:236.00)\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+    "category": "assertion_or_other",
+    "message": "cards-tab initially closed\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.CompanionSetupPanelNetworkTests.NormalSetupUsesOnlyServerChoicesAcrossLordsCouncilFateAndKings",
+    "category": "assertion_or_other",
+    "message": "companion-setup-tab is covered by characters-tab (Button).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.ContextHelpNeighborTests.AutomaticHelpAvoidsEffectsWhileBothManuallyMovedWindowsKeepTheirPositions",
+    "category": "assertion_or_other",
+    "message": "victory-tab covered by map\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+    "category": "assertion_or_other",
+    "message": "fellowship-status is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.FateGimliUsesEitherHomelandWithOrWithoutNewCitiesAndNoNationIcon",
+    "category": "assertion_or_other",
+    "message": "No exposed terrain for ered-luin; zoom=1, pan=(0.00, 0.00), anchor=(192.00, 243.00), covered by=homeland-character-base.character.gimli"
+  },
+  {
+    "test": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.FivePortraitsAndTokenPreviewFitBothRolesAtFourLayoutsWithoutScrolling",
+    "category": "assertion_or_other",
+    "message": "No exposed terrain for ered-luin; zoom=1, pan=(0.00, 0.00), anchor=(192.00, 243.00), covered by=homeland-character-base.character.boromir"
+  },
+  {
+    "test": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.HomelandDraftAndBothReceiptsSurviveRestartsWithoutSkippingTheShadowChoice",
+    "category": "assertion_or_other",
+    "message": "No exposed terrain for ered-luin; zoom=1, pan=(0.00, 0.00), anchor=(192.00, 243.00), covered by=homeland-character-base.character.gimli"
+  },
+  {
+    "test": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.TwoAndFiveDeparturesShareClickDropUndoAndGrantBothTokensOnce",
+    "category": "assertion_or_other",
+    "message": "No exposed terrain for the-shire; zoom=1, pan=(0.00, 0.00), anchor=(337.00, 321.00), covered by="
+  },
+  {
+    "test": "Wotr.PlayTests.DecisionNoticeNetworkTests.ReconnectAtSameRevisionInvalidatesCapturedDeckPress",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.DesktopLayoutStabilityTests.LegacyBattleToCardAtLargeScaleStabilizesWithoutRecursiveLayout",
+    "category": "assertion_or_other",
+    "message": "System.InvalidOperationException : The hand click did not change the inspected card."
+  },
+  {
+    "test": "Wotr.PlayTests.EdgeBoardLayoutTests.EdgePanelsStayOrderedAndLeftTabsAreExclusiveInFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+    "category": "assertion_or_other",
+    "message": "System.ArgumentNullException : Value cannot be null.\nParameter name: e"
+  },
+  {
+    "test": "Wotr.PlayTests.ExpansionAbilityNetworkTests.AllCompanionsAndSovereignsCanPlanSeparateGroups",
+    "category": "timeout",
+    "message": "System.Threading.Tasks.TaskCanceledException : A task was canceled."
+  },
+  {
+    "test": "Wotr.PlayTests.ExpansionAbilityNetworkTests.NazgulAndAllMobileMinionsCanPlanSeparateGroups",
+    "category": "timeout",
+    "message": "System.Threading.Tasks.TaskCanceledException : A task was canceled."
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipGuideNetworkTests.CouncilVersionAppearsToTheOpponentOnlyAfterChoosingItsGuide",
+    "category": "assertion_or_other",
+    "message": "The same pending receipt must not reopen a window the player closed.\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipGuideNetworkTests.FinishPhaseKeepsTheGuideEvenAfterOpeningTheChoice",
+    "category": "assertion_or_other",
+    "message": "The same pending receipt must not reopen a window the player closed.\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipGuideNetworkTests.GuideModeRequiresAnExplicitChoiceAndRecoversOnlyOneCommand",
+    "category": "assertion_or_other",
+    "message": "The same pending receipt must not reopen a window the player closed.\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipMotionNetworkTests.DeclaredFellowshipFliesToItsRegionAndItsTrackMarkerGlides",
+    "category": "assertion_or_other",
+    "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipNetworkTests.DeclarationMovementSeparationAndIndependentGroupsUseTheServer",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipNetworkTests.RerollGuideRevealEmptyPoolAndBothFinalMordorOutcomesUseTheServer",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipPanelNetworkTests.MoveKeepsTheMapRegionAndRecoversTheExactWillDieReceipt",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipRoutesNetworkTests.ZeroProgressDeclarationPreviewsHealingAndActivationAndRecoversReceipt",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.FigureMotionNetworkTests.BothSidesSeeAcceptedArmiesMoveAndRejectedOrRetriedCommandsDoNotReplay",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.FigureMotionNetworkTests.HiddenProgressAndSeparationNeverInventTheSecretFellowshipPosition",
+    "category": "assertion_or_other",
+    "message": "Profiling must leave the pending Guide window closed.\n  Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.FloatingWindowTests.PersistentWindowsMoveClampAndKeepTheirPositionAcrossProjectionsAndCameraChanges",
+    "category": "assertion_or_other",
+    "message": "System.ArgumentNullException : Value cannot be null.\nParameter name: e"
+  },
+  {
+    "test": "Wotr.PlayTests.HandCardLayoutTests.FirstClickArmsAndOnlyTheSecondClickDiscards",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.HandDiscardDrawerTests.FreePeoplesCanCloseAndReopenExcessHandAcrossRefreshes",
+    "category": "assertion_or_other",
+    "message": "close-hand is covered by deck-character (Button).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.HandDiscardDrawerTests.OpponentDecisionDoesNotOpenTheHandAndNewViewerResetsAttention",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HandDiscardDrawerTests.ShadowCanCloseAndReopenExcessHandAcrossRefreshes",
+    "category": "assertion_or_other",
+    "message": "close-hand is covered by deck-character (Button).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.HandDrawerTests.KeyboardEscapeAndPointerExitKeepSelectionAndPinnedPreviewIndependent",
+    "category": "assertion_or_other",
+    "message": "Expected: None\n  But was:  Flex"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntActivityNetworkTests.AutomaticNoDiceMissAndCancelledTileRemainInLogWithoutOpeningHunt",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntAftermathNetworkTests.NewGuideAbilityEmptyPlacementAndStrongholdsKeepOnePaidContinuation",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship",
+    "category": "assertion_or_other",
+    "message": "A full hand must not cover the current Hunt decision.\n  Expected: greater than or equal to 433.600006f\n  But was:  432.799988f"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+    "category": "assertion_or_other",
+    "message": "hunt-tab is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntRecoveryNetworkTests.LostReplacementReceiptKeepsOneTileCardAndPaidContinuation",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntResponseNetworkTests.GuideClickDoubleAndDrop",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntResponseNetworkTests.RandomClickDoubleAndDropNeverSendAVictim",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.HuntResponseNetworkTests.RingClickDoubleAndDrop",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.InGameContextNetworkTests.PublicNoticeNeverRevealsPrivateTileAndAnotherDeviceInvalidatesItsPressedChoice",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts",
+    "category": "assertion_or_other",
+    "message": "close-fellowship is covered by  (VisualElement).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts",
+    "category": "assertion_or_other",
+    "message": "System.InvalidOperationException : Profile driver failed: effects-1366-1.00-step-0\nUnavailable benchmark control: close-fellowship, enabled=True, bounds=(x:1022.00, y:92.00, width:0.00, height:0.00), handOpen=True\n  ----> System.InvalidOperationException : Unavailable benchmark control: close-fellowship, enabled=True, bounds=(x:1022.00, y:92.00, width:0.00, height:0.00), handOpen=True"
+  },
+  {
+    "test": "Wotr.PlayTests.LayoutTests.LoginAndAllConfigurationOptionsFitWithoutScrolling",
+    "category": "assertion_or_other",
+    "message": "Expected: 9\n  But was:  0"
+  },
+  {
+    "test": "Wotr.PlayTests.LiveActivityNetworkTests.TwoMovesAttackCardsDiceRetreatAndAdvanceKeepNoticesAndArchivesConsistent",
+    "category": "timeout",
+    "message": "System.Threading.Tasks.TaskCanceledException : A task was canceled."
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourAcceptanceTests.DenseFieldAndGarrisonRemainDistinctDuringMouseAndFractionalWheelAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourInteractionTests.AnotherDeviceCommitCancelsCapturedArmyDropAtTheNewRevision",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourInteractionTests.BothSidesAttackOnTheEnemyContourWithoutAnotherConfirmation",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourInteractionTests.BothSidesClickAndDropOnContoursCommitTheSameArmyStep",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourInteractionTests.ReconnectCancelsCapturedArmyDropAtTheSameRevision",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourInteractionTests.WaterAndDistantTerrainNeverConsumeTheArmySelectionOrDie",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourNavigationTests.BothRolesInspectContoursAtFourLayoutsWithoutChangingProjectedState",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourRecoveryTests.BothRolesRenderServerOverridesAndRetainThemAcrossReconnect",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourRecoveryTests.RemovingWhiteHandChangesTwoBandsButRetainsCaptureAndItsPoints",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourRecoveryTests.SwitchingSavedGamesRestoresBaseMetadataForBothRoles",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapContourRenderingTests.LegendIsExplicitAndDoesNotChooseARegionOrChangeBorders",
+    "category": "assertion_or_other",
+    "message": "Expected: None\n  But was:  Flex"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.EdgesCornersControlsFocusAndDetachNeverChangeTheMatch",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.FixedOuterEdgesCornersAndHudPointsStayContinuousAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.ModalWindowsCaptureAndOneAxisLimitsKeepEdgeNavigationSafeAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.MovingArmyCannotStopNavigationUnderAStationaryEdgePointerAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.ReenteringTheViewportResumesEdgePanWithoutAnotherMoveAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.ScreenRoutingKeepsTheLastPixelAndExactEdgesMovingAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.ScreenSamplesRespectOutsideFocusButtonsCaptureAndModalUiAtFourLayouts",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapViewportTests.ZoomPanLocateAndResizeCoverTheViewportForBothPlayers",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MapVisibilityTests.FellowshipMarkerStaysUnderPointerWhenItsOwnPanelReplacesRegionInspection",
+    "category": "assertion_or_other",
+    "message": "Fellowship marker covered by hover-fellowship\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce",
+    "category": "assertion_or_other",
+    "message": "Expected: Flex\n  But was:  None"
+  },
+  {
+    "test": "Wotr.PlayTests.MordorNetworkTests.BothFinalReceiptsRecoverWithoutRepeatingTheTile",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MordorNetworkTests.BothGatesPreserveHiddenAndRevealedAndAllowDeclining",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.MusterNetworkTests.HoverIsReadOnlyAndCrestDragAdvancesOnlyLegalTrack",
+    "category": "assertion_or_other",
+    "message": "Expected: None\n  But was:  Flex"
+  },
+  {
+    "test": "Wotr.PlayTests.NetworkTests.TwoIndependentSessionsUseRealServerAndRecoverLobbyAndMap",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.PairedDecisionPanelNetworkTests.BothSidesReadHuntBesideFellowshipInFourLayoutsWithoutChangingTheDraft",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.PairedDecisionPanelNetworkTests.ExplicitWindowPositionSurvivesReconnectAndResetRestoresTheSharedRow",
+    "category": "rate_limit",
+    "message": "Wotr.Client.ApiException : TooManyRequests"
+  },
+  {
+    "test": "Wotr.PlayTests.PoliticalPanelTests.HoverTabTokenAndButtonShareSafeAreasAndNeverSelectOrMoveAnything",
+    "category": "assertion_or_other",
+    "message": "Expected: None\n  But was:  Flex"
+  },
+  {
+    "test": "Wotr.PlayTests.PoliticalPanelTests.KeyboardFocusAndEscapeWorkAndRevisionsReuseTokens",
+    "category": "assertion_or_other",
+    "message": "Expected: None\n  But was:  Flex"
+  },
+  {
+    "test": "Wotr.PlayTests.ResourcePanelNetworkTests.DismayTargetsTheOpponentsRetainedRulerAfterClosingAndReconnect",
+    "category": "assertion_or_other",
+    "message": "System.InvalidOperationException : Sequence contains no matching element"
+  },
+  {
+    "test": "Wotr.PlayTests.ResourcePanelNetworkTests.RulerTokenDropKeepsItsIdentityThroughBothDenethorDraws",
+    "category": "assertion_or_other",
+    "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+  },
+  {
+    "test": "Wotr.PlayTests.ResourcePanelNetworkTests.SpecialChoicesAndBothDiscardsStayAtThePoolAndReopenOnlyForNewDecisions",
+    "category": "assertion_or_other",
+    "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+  },
+  {
+    "test": "Wotr.PlayTests.ReturnDraftTests.OfflineDraftSurvivesClientRecreationAndReconcilesAnotherDevicesSpentCost",
+    "category": "assertion_or_other",
+    "message": "Expected: (-240.00, 32.00)\n  But was:  (-240.00, 0.00)"
+  },
+  {
+    "test": "Wotr.PlayTests.ReturnListTests.BothPlayersReturnToEverySaveFamilyWithCurrentPrivateViewAndNoReplay",
+    "category": "assertion_or_other",
+    "message": "Panel navigation preserves the camera: ring-paid\n  Expected: (-301.00, 48.00)\n  But was:  (-301.00, 0.00)"
+  },
+  {
+    "test": "Wotr.PlayTests.RightColumnLayoutTests.ActiveHuntKeepsItsBodyBelowTheIllustratedHeader",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint",
+    "category": "assertion_or_other",
+    "message": "Expected: Flex\n  But was:  None"
+  },
+  {
+    "test": "Wotr.PlayTests.Shadow03LayoutTests.ServerProjectedCardDecisionsFitBothSizesAndScales",
+    "category": "assertion_or_other",
+    "message": "close-fellowship is covered by  (VisualElement).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.Shadow03NetworkTests.TableBalrogIsAvailableInHandButCommitRemainsPrivate",
+    "category": "assertion_or_other",
+    "message": "Expected: String containing \"From the table\"\n  But was:  <string.Empty>"
+  },
+  {
+    "test": "Wotr.PlayTests.Shadow04LayoutTests.ServerProjectedChoicesAndTwoArmiesFitBothSizesAndScales",
+    "category": "assertion_or_other",
+    "message": "confirm-decision\n  Expected: less than or equal to 743.400024f\n  But was:  864.0f"
+  },
+  {
+    "test": "Wotr.PlayTests.ShadowStrategy02LayoutTests.ArmyRoutesLandingsAndCombatFitBothSizesAndScales",
+    "category": "assertion_or_other",
+    "message": "confirm-decision\n  Expected: less than or equal to 743.400024f\n  But was:  785.599976f"
+  },
+  {
+    "test": "Wotr.PlayTests.SovereignPanelNetworkTests.PublicReplacementAndKingsEndingStaySeparateFromOrdinaryHunt",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.SovereignPanelNetworkTests.SequentialVisibleDrawOffersOnlyTheLatestPrivateTileAndKeepsOneDecisionHost",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards",
+    "category": "assertion_or_other",
+    "message": "Expected: greater than or equal to 212.0f\n  But was:  200.0f"
+  },
+  {
+    "test": "Wotr.PlayTests.T22TurnNetworkTests.RingChangesChosenDieThenPoliticsSpendsThatExactCost",
+    "category": "assertion_or_other",
+    "message": "System.InvalidOperationException : Sequence contains no matching element"
+  },
+  {
+    "test": "Wotr.PlayTests.TravelGestureNetworkTests.FellowshipPortraitDropUsesTheSelectedCostAndKeepsTheGuideWindow",
+    "category": "assertion_or_other",
+    "message": "Expected: not null\n  But was:  null"
+  },
+  {
+    "test": "Wotr.PlayTests.TravelGestureNetworkTests.FellowshipRequiresClickAndStaysOpenAfterExitWithoutMovingTheCamera",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  },
+  {
+    "test": "Wotr.PlayTests.TravelGestureNetworkTests.FigureDropSavesOneGroupAndFinishKeepsTheExactPaidDie",
+    "category": "assertion_or_other",
+    "message": "Expected: not null\n  But was:  null"
+  },
+  {
+    "test": "Wotr.PlayTests.UI10NetworkTests.DelayedViewCannotUndoOpponentActionOrClosePinnedCard",
+    "category": "assertion_or_other",
+    "message": "Expected: (-260.00, 41.00)\n  But was:  (-260.00, 0.00)"
+  },
+  {
+    "test": "Wotr.PlayTests.VictoryPanelLayoutTests.BothScoresThresholdPagesAndFinalBannerFitAllFourLayouts",
+    "category": "assertion_or_other",
+    "message": "victory-tab is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.VictoryPanelLayoutTests.ClickAndKeyboardActivationInspectVictoryWithoutChangingCameraOrSelection",
+    "category": "assertion_or_other",
+    "message": "victory-tab is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.VictoryPanelLayoutTests.PermanentShortcutKeepsEveryHandCardReachableWithoutMovingASavedWindow",
+    "category": "assertion_or_other",
+    "message": "System.NullReferenceException : Object reference not set to an instance of an object"
+  },
+  {
+    "test": "Wotr.PlayTests.VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins",
+    "category": "assertion_or_other",
+    "message": "victory-tab is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.VictoryPanelNetworkTests.MilitaryThresholdsWaitForTurnEndAndShadowWinsTheTie",
+    "category": "assertion_or_other",
+    "message": "victory-tab is covered by map (MapCanvas).\n  Expected: True\n  But was:  False"
+  },
+  {
+    "test": "Wotr.PlayTests.VictoryPanelNetworkTests.RingEndingsTakePriorityAndKeepInspectionPrivateAfterRetryAndReconnect",
+    "category": "assertion_or_other",
+    "message": "Expected: False\n  But was:  True"
+  }
+]

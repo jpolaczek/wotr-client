@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 32 32">
+  <!-- Combat die showing 2: ivory d6 with ink pips. Variants: hit (ember glow, gilt rim), selected (gilt ring), rerolled (dimmed). -->
+  <circle cx="16" cy="16" r="15.5" style="fill: var(--ember-light); fill-opacity: var(--die-glow-opacity)"/>
+  <g filter="url(#lift)">
+    <rect x="3.5" y="3.5" width="25" height="25" rx="5" style="fill: var(--die-ivory); stroke: var(--die-rim)" stroke-width="1.6"/>
+    <rect x="5.2" y="5.2" width="21.6" height="10" rx="4" fill="#fff" opacity="0.35"/>
+    <g style="fill: var(--die-ink)"><circle cx="9" cy="9" r="2.6"/><circle cx="23" cy="23" r="2.6"/></g>
+  </g>
+  <rect x="2" y="2" width="28" height="28" rx="6.5" fill="none" style="stroke: var(--gilt-light); stroke-opacity: var(--die-ring-opacity)" stroke-width="2"/>
+</svg>

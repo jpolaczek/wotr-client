@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- UI-136: 9-slice halo around a control the chosen action die can use (Characters and Politics tabs,
+       the Fellowship plaque). Drawn 6 points outside the control; the centre stays transparent. Slices: 16. -->
+  <g fill="none" stroke="#9fe0bb">
+    <rect x="1.5" y="1.5" width="45" height="45" rx="9" stroke-width="3" opacity="0.22"/>
+    <rect x="2.6" y="2.6" width="42.8" height="42.8" rx="8" stroke-width="2.4" opacity="0.4"/>
+    <rect x="3.6" y="3.6" width="40.8" height="40.8" rx="7" stroke-width="1.8" opacity="0.62"/>
+    <rect x="4.5" y="4.5" width="39" height="39" rx="6" stroke-width="1.4" opacity="0.88"/>
+  </g>
+  <rect x="5.4" y="5.4" width="37.2" height="37.2" rx="5" fill="none" stroke="#e8fff0" stroke-width="0.9"/>
+</svg>

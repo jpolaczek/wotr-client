@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="40" viewBox="0 0 96 40">
+  <!-- 9-slice list entry (effects, characters) in enamel of its side. Slices (points): 10. -->
+  <rect x="2" y="2" width="92" height="35" rx="4" fill="none" style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)" stroke-width="1.6" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <rect x="1.5" y="1.5" width="93" height="36" rx="4" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <rect x="3" y="3" width="90" height="33" rx="3" style="fill: var(--ink)"/>
+    <rect x="3.5" y="3.5" width="89" height="32" rx="2.6" fill="url(#enamel-flat)"/>
+    <rect x="5" y="4.2" width="86" height="1" rx="0.5" fill="#fff" opacity="0.06"/>
+  </g>
+</svg>

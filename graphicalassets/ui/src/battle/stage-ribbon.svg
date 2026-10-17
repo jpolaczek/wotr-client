@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="22" viewBox="0 0 120 22">
+  <!-- 9-slice ribbon that carries the battle stages. Slices (points): left/right 10, top/bottom 6. -->
+  <defs>
+    <linearGradient id="ribbon-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--plate-top)"/>
+      <stop offset="1" style="stop-color: var(--plate-bottom)"/>
+    </linearGradient>
+  </defs>
+  <path d="M6 2 H114 L119 11 L114 20 H6 L1 11 Z" fill="url(#ribbon-fill)" style="stroke: var(--gilt-shadow)" stroke-width="0.8"/>
+  <path d="M7.5 3.6 H112.5 L117 11 L112.5 18.4 H7.5 L3 11 Z" fill="none" stroke="url(#gilt)" stroke-width="0.7" opacity="0.9"/>
+</svg>

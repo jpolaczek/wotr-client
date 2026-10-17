@@ -1,0 +1,22 @@
+Use case: compositing / style-transfer
+Asset type: a MINIMAL black-and-white pencil terrain layer for an existing Middle-earth region map, to be colored later.
+Primary request: Draw only the shared real geographic features of the reference maps, with sparse hand-drawn graphite/charcoal linework on PURE WHITE. The user explicitly rejects invented elements and the previous richly decorated, colored map.
+
+Input roles:
+1. layout-reference.png is the LOCKED CANVAS and exact spatial layout. Keep its full frame, orientation, coastline/lake positions, and 1632:1338 aspect ratio.
+2. source-layout-reference.png is PLACEMENT REFERENCE ONLY, in exactly the same viewport as image 1. Follow its mountain/forest/river positions. Ignore its text, icons, colored political halos, frame and game UI.
+3. s-l1600.webp, 4. 718b9hBS4AL._AC_SL1000_.jpg and 5. 71oBODdvMNL._AC_SL1500_.jpg are the CONTENT REFERENCES. Include only geographic features that agree across these three. Do NOT copy their labels, decorative motifs, paper color or stains. Do NOT copy their different projection.
+
+Style: very economical traditional hand-drawn map, light broken pencil lines, a few restrained charcoal hatch marks on one side of a mountain. Small angular peaks, simple tree crown outlines grouped into woods, thin gently irregular river lines, sparse reed marks for marshes. White is the dominant surface, at least 80 percent of the whole canvas. This is an uncolored line drawing ready for later coloring, not a shaded aerial landscape, not an engraved poster, and not a grayscale painting. No filled gray land, no dense shadow fields, no textured paper or vignette. Only neutral black and gray pencil marks on RGB 255,255,255 white: absolutely no sepia, blue, green, brown or other tint.
+
+Allowed content:
+- The Blue Mountains near the west coast; Misty Mountains down the center; Grey Mountains across the northern center; the separate Lonely Mountain and Iron Hills in their existing northeast positions; White Mountains above Gondor; the north/west/south mountain walls of Mordor. A small plain conical Mount Doom, without lava or a plume.
+- Established forest masses: Old Forest; Mirkwood; Lorien; Fangorn; the small woods in coastal Lindon and northeast of the Sea of Rhun where shared by the three content references. Use airy clusters, not continuous dark filled canopies.
+- Named established hill groups visible across the references, especially the North Downs/Weather Hills and Emyn Muil; only a few small hill strokes inside these locations. All other plains remain EMPTY WHITE.
+- The main river network as shown in the layout reference: western rivers, Anduin and its main tributaries, Isen, the Gondor rivers, Celduin/Carnen, Harnen. Do not invent additional tributaries. A small Long Lake only where shown by the content references.
+- A restrained small patch of reeds for the Dead Marshes, northeast of the Anduin near the northwest entrance to Mordor.
+
+We will overlay the ORIGINAL SVG REGION BOUNDARIES after generation. Therefore RETURN TERRAIN ONLY: do NOT copy or redraw any of image 1's administrative region lines or map-frame edges. Also leave the OCEAN, three large inland lake silhouettes (Evendim, Rhun, Nurnen) and the upper-right cutout PLAIN WHITE, with NO water shading or wave decoration. Their exact shore outlines will come from the original vector layer. Do not draw additional shore contours or invent islands. In image 2, colored region halos are NOT water.
+
+Absolute exclusions: NO castles, towers, towns, houses, ports, ruins, walls, bridges, ships, creatures, roads, farms, arbitrary rocks, scattered filler trees or hills. NO text of any kind, labels, runes, letters, numerals, compass, title, scale, legend, dots for settlements, icons, tokens, interface, watermark, border or ornamental cartouche.
+Everything not on the allowed content list stays blank white. Maintain the map's exact viewport and geographic registration. No crop, no new margin, no zoom, no rotation.

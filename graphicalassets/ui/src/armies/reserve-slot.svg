@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- 9-slice slot of a reserve figure in the Reinforcements panel (UI-125). Slices (points): 12.
+       Lacquered plate with a gilt rim; selected turns it to red lacquer, pressed darkens it. Code draws the figure and count. -->
+  <g filter="url(#lift)">
+    <rect x="2" y="2" width="44" height="44" rx="6" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <rect x="3.6" y="3.6" width="40.8" height="40.8" rx="4.6" fill="url(#button-fill)"/>
+    <rect x="5" y="5" width="38" height="38" rx="3.6" fill="none" style="stroke: var(--gilt-shadow)" stroke-width="0.6" opacity="0.8"/>
+  </g>
+  <rect x="2.6" y="2.6" width="42.8" height="42.8" rx="6" fill="none" style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)" stroke-width="1.2" filter="url(#glow)"/>
+</svg>

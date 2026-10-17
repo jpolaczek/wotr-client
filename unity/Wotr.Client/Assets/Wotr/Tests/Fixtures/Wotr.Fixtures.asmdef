@@ -1,0 +1,5 @@
+{
+  "name": "Wotr.Fixtures",
+  "references": ["Wotr.Client", "Wotr.Contracts"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

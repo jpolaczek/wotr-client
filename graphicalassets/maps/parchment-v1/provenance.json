@@ -1,0 +1,24 @@
+{
+  "task": "MAP-07",
+  "mode": "built-in imagegen",
+  "assets": [
+    {
+      "file": "minas-mountains.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-2829691f-a4cc-4871-a3f9-28e248ae895c.png",
+      "prompt": "minas-mountains.prompt.txt",
+      "input": "minas-target.png"
+    },
+    {
+      "file": "right-forest-clean.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-04843055-2aa2-4e96-853f-76e268b6c9f3.png",
+      "prompt": "right-forest-removal.prompt.txt",
+      "input": "right-forest-target.png"
+    },
+    {
+      "file": "aged-paper.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-4c8b5179-53b8-4d15-971d-52c4123c8337.png",
+      "prompt": "aged-paper.prompt.txt",
+      "input": null
+    }
+  ]
+}

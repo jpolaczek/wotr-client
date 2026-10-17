@@ -1,0 +1,54 @@
+{
+ "task": "UI-101",
+ "date": "2026-10-12",
+ "commits": {
+  "implementation": "5370bd5"
+ },
+ "environment": "Isolated checkout .artifacts/ui25/checkout (port 5098) and the pre-UI-101 baseline at f6b1633 in .artifacts/ui98/tree (port 5099); new scenario ui101-sovereigns built into the isolated server tree.",
+ "playmode": {
+  "ui101-final": {
+   "summary": ".artifacts/ui98/runs/ui101-final.json",
+   "sources": [
+    "ui101t.json",
+    "ui101u.json",
+    "ui101v.json",
+    "ui101w.json"
+   ],
+   "total": 38,
+   "passed": 31,
+   "failed_tests": [
+    "Wotr.PlayTests.CharacterRosterLayoutTests.FullOwnRostersAndPublicInspectorsFitFourLayoutsWithoutDecisionScroll",
+    "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+    "Wotr.PlayTests.DesktopLayoutStabilityTests.LegacyBattleToCardAtLargeScaleStabilizesWithoutRecursiveLayout",
+    "Wotr.PlayTests.InGameContextNetworkTests.PrivateCorruptionTileReceiptSurvivesRestartWithTheSameParentAndPublicBack",
+    "Wotr.PlayTests.InGameContextNetworkTests.RestartBeforeRingCommitRestoresTheExactUnsentCostAndWaitsForTheFinalFace",
+    "Wotr.PlayTests.InGameContextNetworkTests.RingReceiptSurvivesClientAndServerRestartWithoutChangingThePhysicalCost",
+    "Wotr.PlayTests.InGameContextNetworkTests.VictoryReceiptSurvivesRestartWithoutReplayingTheFinalAction"
+   ],
+   "baseline": "Every failure fails identically in base101.json (f6b1633). InGameDenseLayoutTests and InGameProfileDriverTests fail in the baseline and pass with UI-101."
+  }
+ },
+ "editmode": {
+  "result": "631/631",
+  "report": ".artifacts/ui100/runs/ui101-edit2.xml"
+ },
+ "builds": {
+  "BuildLocalMac": ".artifacts/ui101/macos/Wotr.app",
+  "BuildLocalWindows": ".artifacts/ui101/windows/Wotr.exe",
+  "commit": "5370bd5",
+  "tracked_inputs_matching_commit": 946,
+  "development": false
+ },
+ "smoke": {
+  "result": "PASS",
+  "identity": "com.wotr.ui101.smoke",
+  "runtime_files_checked": 949,
+  "original_profile_byte_identical": false,
+  "existing_app_profile_modified": false,
+  "report": ".artifacts/ui101/isolated-smoke/run/result.json",
+  "note": "The live game profile went from 20 to 19 files during the run; the smoke never renamed, cleared or restored it (another process, likely the open Unity editor, changed it)."
+ },
+ "notes": [
+  "Windows runtime and manual play not tested."
+ ]
+}

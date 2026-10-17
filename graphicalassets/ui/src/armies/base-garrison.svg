@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="76" height="28" viewBox="0 0 76 28">
+  <!-- Figure base of a garrison (UI-125): a battlemented wall in the enamel of its side (free/shadow).
+       Merlons rise from the front edge, so a garrison reads as standing on the walls at any zoom.
+       The selected and eligible states light the glow beneath it; moved veils it. -->
+  <defs>
+    <linearGradient id="base-garrison-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.55" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="20" rx="36" ry="7.4" style="fill: var(--army-glow); opacity: var(--glow-opacity)" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <path d="M4 10.5 L8.5 10.5 L8.5 6 L15.5 6 L15.5 10.5 L20.5 10.5 L20.5 6 L27.5 6 L27.5 10.5 L32.5 10.5 L32.5 6 L39.5 6 L39.5 10.5
+             L44.5 10.5 L44.5 6 L51.5 6 L51.5 10.5 L56.5 10.5 L56.5 6 L63.5 6 L63.5 10.5 L72 10.5 L72 22.5 Q72 25.4 68.6 25.4
+             L7.4 25.4 Q4 25.4 4 22.5 Z" fill="url(#base-garrison-wall)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <path d="M4.4 10.9 L8.9 10.9 L8.9 6.4 L15.1 6.4 L15.1 10.9 L20.9 10.9 L20.9 6.4 L27.1 6.4 L27.1 10.9 L32.9 10.9 L32.9 6.4 L39.1 6.4 L39.1 10.9
+             L44.9 10.9 L44.9 6.4 L51.1 6.4 L51.1 10.9 L56.9 10.9 L56.9 6.4 L63.1 6.4 L63.1 10.9 L71.6 10.9" fill="none" stroke="url(#gilt)" stroke-width="0.9"/>
+    <g style="stroke: var(--ink)" stroke-opacity="0.45" stroke-width="0.5" fill="none">
+      <path d="M5 15.5 L71 15.5 M5 20.5 L71 20.5"/>
+      <path d="M14 10.9 L14 15.5 M30 10.9 L30 15.5 M46 10.9 L46 15.5 M62 10.9 L62 15.5"/>
+      <path d="M22 15.5 L22 20.5 M38 15.5 L38 20.5 M54 15.5 L54 20.5"/>
+      <path d="M14 20.5 L14 25 M30 20.5 L30 25 M46 20.5 L46 25 M62 20.5 L62 25"/>
+    </g>
+    <path d="M4.6 22.6 Q5.2 24.7 7.4 24.7 L68.6 24.7 Q70.8 24.7 71.4 22.6" fill="none" stroke="url(#gilt)" stroke-width="1"/>
+  </g>
+  <path d="M3.6 10.2 L72.4 10.2 L72.4 25.8 L3.6 25.8 Z" style="fill: var(--ink); opacity: var(--army-veil-opacity)"/>
+</svg>

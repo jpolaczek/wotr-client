@@ -1,0 +1,7 @@
+Use case: stylized-concept. Asset type: four seamless horizontal landscape strips for a digital War of the Ring board game client.
+Create FOUR separate PNG images, each 336×88 pixels, that tile seamlessly left-to-right (the right edge continues into the left edge). Painted parchment-map style with muted colours, dusk sky in the upper half kept dark and calm so light text stays readable over it, terrain in the lower half, no text, no figures, no banners with heraldry, no frames.
+1. field: open rolling hills and grass under a dusk sky.
+2. siege: a crenellated stone wall running across the whole width, seen from outside, dark sky above.
+3. sortie: the same wall with an open gate at the centre and the field in front of it.
+4. relief: hills with a winding road and distant plain banners of an arriving host.
+Each file is delivered as RGB or RGBA PNG without transparency gaps, named field.png, siege.png, sortie.png and relief.png. This is replaceable placeholder artwork.

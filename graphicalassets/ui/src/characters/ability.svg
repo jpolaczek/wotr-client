@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-139: An ability of the character card: a parchment scroll with a red wax seal. -->
+  <g filter="url(#lift)">
+    <path d="M7 5 H24 C26 5 27 6.4 27 8 V24 C27 26 25.6 27 24 27 H9 C7.2 27 6 25.8 6 24 V8 C6 6.2 6.2 5 7 5 Z"
+      style="fill: var(--parchment-light); stroke: var(--card-rim)" stroke-width="0.9"/>
+    <path d="M10 10.5 H23 M10 14.5 H23 M10 18.5 H17" style="stroke: var(--card-ink)" stroke-width="1.1" opacity="0.6" stroke-linecap="round"/>
+    <circle cx="22" cy="22.4" r="4.2" style="fill: var(--wax); stroke: var(--seal-dark)" stroke-width="0.7"/>
+    <path d="M20.2 22.4 L22 20.6 L23.8 22.4 L22 24.2 Z" style="fill: var(--seal-mark)" opacity="0.85"/>
+  </g>
+</svg>

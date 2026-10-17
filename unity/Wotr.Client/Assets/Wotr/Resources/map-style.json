@@ -1,0 +1,22 @@
+{
+  "version": "map-style-1",
+  "source": "BASE-2.4.1 pp.9-10",
+  "land": "#C7B996",
+  "water": "#506C73",
+  "passage": "#FFF8E8",
+  "barrier": "#17191C",
+  "keyline": "#474943",
+  "passageWidth": 3.0,
+  "barrierWidth": 5.0,
+  "nationWidth": 2.3,
+  "nations": [
+    { "id": "dwarves", "name": "Dwarves", "colorName": "Brown", "color": "#80512E" },
+    { "id": "elves", "name": "Elves", "colorName": "Light green", "color": "#91BD69" },
+    { "id": "gondor", "name": "Gondor", "colorName": "Dark blue", "color": "#244D85" },
+    { "id": "north", "name": "The North", "colorName": "Light blue", "color": "#61A5C9" },
+    { "id": "rohan", "name": "Rohan", "colorName": "Dark green", "color": "#2C653C" },
+    { "id": "isengard", "name": "Isengard", "colorName": "Yellow", "color": "#D5B338" },
+    { "id": "sauron", "name": "Sauron", "colorName": "Red", "color": "#BA3938" },
+    { "id": "southrons", "name": "Southrons & Easterlings", "colorName": "Orange", "color": "#D0782B" }
+  ]
+}

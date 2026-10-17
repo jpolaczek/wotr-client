@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32">
+  <!-- Fellowship: the One Ring, a plain gold band with a faint fiery inscription (no stone, unlike the Elven Ring). -->
+  <defs>
+    <linearGradient id="fellowship-inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--gilt-shadow)"/>
+      <stop offset="0.65" style="stop-color: var(--gilt-mid)"/>
+      <stop offset="1" style="stop-color: var(--gilt-light)"/>
+    </linearGradient>
+    <mask id="fellowship-hole" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <rect width="32" height="32" fill="#fff"/>
+      <ellipse cx="16" cy="17.2" rx="8.6" ry="5.6" fill="#000"/>
+    </mask>
+  </defs>
+  <g filter="url(#lift)">
+    <g mask="url(#fellowship-hole)">
+      <ellipse cx="16" cy="16.4" rx="13" ry="9.6" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+      <ellipse cx="16" cy="15.2" rx="9.4" ry="6.4" fill="url(#fellowship-inner)"/>
+    </g>
+    <ellipse cx="16" cy="17.2" rx="8.6" ry="5.6" fill="none" style="stroke: var(--gilt-edge)" stroke-width="0.45"/>
+    <path id="fellowship-script" d="M7.6 21 C9.5 23.6 12.6 24.4 16 24.4 C19.4 24.4 22.5 23.6 24.4 21" fill="none"
+      style="stroke: var(--ember-light)" stroke-width="2.2" stroke-linecap="round" opacity="0.35"/>
+    <path d="M7.6 21 C9.5 23.6 12.6 24.4 16 24.4 C19.4 24.4 22.5 23.6 24.4 21" fill="none"
+      style="stroke: var(--ember)" stroke-width="1.15" stroke-dasharray="1.8 0.8 0.7 0.8" stroke-linecap="round"/>
+    <path d="M6.6 12.6 C8.4 9.4 12 7.6 16 7.4" fill="none" stroke="#fffbe8" stroke-width="1" stroke-linecap="round" opacity="0.85"/>
+  </g>
+</svg>

@@ -1,0 +1,254 @@
+# DIST-06: release players built with GameCI, packed into Velopack installers (scripts/package_velopack.py) and
+# smoke-tested on Windows and macOS runners: install, self-check, update to the next package, player data kept,
+# uninstall. Run by hand for an acceptance build; DIST-10's release workflow calls it for every tag. Artifacts:
+# installers-<version> (both platforms with SHA256SUMS) and evidence-windows / evidence-macos. Repository secrets:
+# UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD (Unity Personal). The pinned wotr-server
+# releases are public; the job token only raises the API rate limit.
+name: Installers
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      UNITY_LICENSE:
+        required: true
+      UNITY_EMAIL:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+    outputs:
+      version:
+        description: Client version from release/version.json
+        value: ${{ jobs.prepare.outputs.version }}
+env:
+  VPK_VERSION: 1.2.161
+# Read-only token.
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required repository secrets
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          missing=()
+          for name in UNITY_LICENSE UNITY_EMAIL UNITY_PASSWORD; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if (( ${#missing[@]} )); then
+            echo "::error::Missing repository secrets: ${missing[*]} (see release/README.md)"
+            exit 1
+          fi
+      # MENU-28: the hosts of the release come from repository variables, never from git.
+      - name: Required repository variables
+        env:
+          WOTR_SERVER_URL: ${{ vars.WOTR_SERVER_URL }}
+          WOTR_DOWNLOADS_URL: ${{ vars.WOTR_DOWNLOADS_URL }}
+        run: |
+          missing=()
+          for name in WOTR_SERVER_URL WOTR_DOWNLOADS_URL; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if (( ${#missing[@]} )); then
+            echo "::error::Missing repository variables: ${missing[*]} (see release/README.md)"
+            exit 1
+          fi
+      - name: Release version
+        id: version
+        run: echo "version=$(python3 -c 'import json; print(json.load(open("release/version.json"))["version"])')" >> "$GITHUB_OUTPUT"
+
+  unity:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: StandaloneOSX
+            method: BuildReleaseMac
+            folder: macos
+          - target: StandaloneWindows64
+            method: BuildReleaseWindows
+            folder: windows
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      # Release players build from a clean Library: with a restored Library cache the editor was killed (exit 137)
+      # while loading assemblies in 2 of 4 builds, also with 10 GB of swap; clean builds take ~2 minutes longer.
+      - name: Disk space and swap for the Unity image
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo fallocate -l 8G /mnt/wotr.swap && sudo chmod 600 /mnt/wotr.swap
+          sudo mkswap /mnt/wotr.swap >/dev/null && sudo swapon /mnt/wotr.swap
+          df -h / && free -h
+      - name: Pinned dependencies
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/bootstrap_deps.py fetch
+      - name: Server addresses for the build (MENU-28)
+        env:
+          WOTR_SERVER_URL: ${{ vars.WOTR_SERVER_URL }}
+          WOTR_DOWNLOADS_URL: ${{ vars.WOTR_DOWNLOADS_URL }}
+        run: printf 'WOTR_SERVER_URL=%s\nWOTR_DOWNLOADS_URL=%s\n' "$WOTR_SERVER_URL" "$WOTR_DOWNLOADS_URL" > .env
+      - name: Unity release build (GameCI)
+        uses: game-ci/unity-builder@eb1b9fba120c6e62c9fb7a7a81d6c107ce004c45 # v6.0.0
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          cliVersion: v0.1.72
+          unityVersion: 6000.6.0f1
+          targetPlatform: ${{ matrix.target }}
+          projectPath: unity/Wotr.Client
+          buildMethod: Wotr.Editor.BuildTasks.${{ matrix.method }}
+          customParameters: -wotrCommit ${{ github.sha }}
+          versioning: None
+          allowDirtyBuild: true
+      - name: Take ownership of the container output
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" .artifacts unity/Wotr.Client/Library || true
+      - name: Archive the player with executable bits
+        run: |
+          cat ".artifacts/releases/$VERSION/${{ matrix.folder }}/build-info.json"
+          tar -C ".artifacts/releases/$VERSION" --exclude='*_DoNotShip' -czf "player-${{ matrix.folder }}.tgz" "${{ matrix.folder }}"
+          ls -l "player-${{ matrix.folder }}.tgz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: player-${{ matrix.folder }}
+          path: player-${{ matrix.folder }}.tgz
+          retention-days: 3
+
+  pack-windows:
+    needs: [prepare, unity]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: player-windows
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Tools (mingw-w64, icoutils, vpk)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq gcc-mingw-w64-x86-64 icoutils
+          dotnet tool install --global vpk --version "$VPK_VERSION"
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Pack the release and the smoke package
+        run: |
+          mkdir -p ".artifacts/releases/$VERSION"
+          tar -C ".artifacts/releases/$VERSION" -xzf player-windows.tgz
+          python3 scripts/package_velopack.py pack --platform windows
+          python3 scripts/package_velopack.py pack --platform windows --smoke-output .artifacts/smoke/windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-windows-x64
+          path: .artifacts/releases/${{ env.VERSION }}/installers/windows-x64
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smoke-windows
+          path: .artifacts/smoke/windows
+          retention-days: 3
+
+  windows:
+    needs: [prepare, pack-windows]
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: installers-windows-x64
+          path: release
+      - uses: actions/download-artifact@v4
+        with:
+          name: smoke-windows
+          path: next
+      - name: Install, self-check, update, uninstall
+        shell: pwsh
+        run: ./scripts/smoke-installer-windows.ps1 -Release release -Next next -Out "$PWD\evidence"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-windows
+          path: evidence
+          retention-days: 14
+
+  # Packing and the smoke test share one macOS job: its minutes cost ten Linux minutes.
+  macos:
+    needs: [prepare, unity]
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: player-macos
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: vpk
+        run: |
+          dotnet tool install --global vpk --version "$VPK_VERSION"
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      - name: Pack the release and the smoke package
+        run: |
+          mkdir -p ".artifacts/releases/$VERSION"
+          tar -C ".artifacts/releases/$VERSION" -xzf player-macos.tgz
+          python3 scripts/package_velopack.py pack --platform macos
+          python3 scripts/package_velopack.py pack --platform macos --smoke-output .artifacts/smoke/macos
+      - name: Install, self-check, update
+        run: |
+          bash scripts/smoke-installer-macos.sh ".artifacts/releases/$VERSION/installers/macos-universal" \
+            .artifacts/smoke/macos evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-macos-universal
+          path: .artifacts/releases/${{ env.VERSION }}/installers/macos-universal
+          retention-days: 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-macos
+          path: evidence
+          retention-days: 14
+
+  verify:
+    needs: [prepare, pack-windows, macos]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: installers-windows-x64
+          path: .artifacts/releases/${{ env.VERSION }}/installers/windows-x64
+      - uses: actions/download-artifact@v4
+        with:
+          name: installers-macos-universal
+          path: .artifacts/releases/${{ env.VERSION }}/installers/macos-universal
+      - name: Sums and verification
+        run: |
+          python3 scripts/package_velopack.py sums
+          python3 scripts/package_velopack.py verify
+          cat ".artifacts/releases/$VERSION/installers/SHA256SUMS"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ env.VERSION }}
+          path: .artifacts/releases/${{ env.VERSION }}/installers
+          retention-days: 14

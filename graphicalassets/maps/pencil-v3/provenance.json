@@ -1,0 +1,26 @@
+{
+  "task": "MAP-05",
+  "generation_mode": "built-in imagegen",
+  "assets": [
+    {
+      "file": "mirkwood.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-150af23d-d262-464e-bece-448e44a3e47e.png",
+      "prompt": "mirkwood.prompt.txt"
+    },
+    {
+      "file": "fangorn.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-d629a06a-572a-470a-9c9f-c2b9eb7fc4d6.png",
+      "prompt": "fangorn.prompt.txt"
+    },
+    {
+      "file": "fangorn-cleanup.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-3d64362a-e4bd-4384-9dbf-5bfbf56c554c.png",
+      "prompt": "fangorn-cleanup.prompt.txt"
+    },
+    {
+      "file": "lorien.png",
+      "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-151a25f7-86fc-4673-ade6-6254b86cdb0b.png",
+      "prompt": "lorien.prompt.txt"
+    }
+  ]
+}

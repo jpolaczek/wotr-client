@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 32 32">
+  <!-- Elven Ring: gold band in perspective with a small set stone. -->
+  <defs>
+    <linearGradient id="ring-inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--gilt-shadow)"/>
+      <stop offset="0.6" style="stop-color: var(--gilt-mid)"/>
+      <stop offset="1" style="stop-color: var(--gilt-light)"/>
+    </linearGradient>
+    <radialGradient id="ring-stone" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="0.35" style="stop-color: var(--elven-stone)"/>
+      <stop offset="1" style="stop-color: var(--elven-stone-dark)"/>
+    </radialGradient>
+    <mask id="ring-hole" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <rect width="32" height="32" fill="#fff"/>
+      <ellipse cx="16" cy="18.4" rx="8.1" ry="4.7" fill="#000"/>
+    </mask>
+  </defs>
+  <g filter="url(#lift)">
+    <g mask="url(#ring-hole)">
+      <ellipse cx="16" cy="18" rx="12.4" ry="8.6" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.45"/>
+      <ellipse cx="16" cy="17" rx="8.6" ry="5.5" fill="url(#ring-inner)"/>
+    </g>
+    <ellipse cx="16" cy="18.4" rx="8.1" ry="4.7" fill="none" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <path d="M6.3 15.2 C7.6 11.9 11.2 10.2 15 10" fill="none" stroke="#fffbe8" stroke-width="1" stroke-linecap="round" opacity="0.85"/>
+    <path d="M23.8 23.4 C21.6 25.2 18.8 26 16 26" fill="none" stroke="#fff3cf" stroke-width="0.6" stroke-linecap="round" opacity="0.5"/>
+    <circle cx="16" cy="9.6" r="2.9" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="16" cy="9.6" r="2.05" fill="url(#ring-stone)"/>
+    <circle cx="15.3" cy="8.9" r="0.55" fill="#fff" opacity="0.9"/>
+  </g>
+</svg>

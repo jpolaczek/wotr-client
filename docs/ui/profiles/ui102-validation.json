@@ -1,0 +1,59 @@
+{
+ "task": "UI-102",
+ "date": "2026-10-12",
+ "commits": {
+  "implementation": "8451b50"
+ },
+ "environment": "Isolated checkout .artifacts/ui25/checkout (port 5098) and the pre-UI-102 baseline at cae8063 in .artifacts/ui98/tree (port 5099).",
+ "export": {
+  "script": "scripts/export_map_canvas.py",
+  "check": "PASS",
+  "report": "docs/sources/UI-102-MAP-CANVAS.json",
+  "terrain_check": "scripts/export_map_terrain.py --check PASS"
+ },
+ "playmode": {
+  "ui102-final": {
+   "summary": ".artifacts/ui98/runs/ui102-final.json",
+   "sources": [
+    "ui102t.json",
+    "ui102u.json"
+   ],
+   "total": 69,
+   "passed": 60,
+   "failed_tests": [
+    "Wotr.PlayTests.BoardProfileDriverTests.EveryBoardWorkloadUsesRealGesturesAndPreservesItsDecisionAcrossAllFourLayouts",
+    "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+    "Wotr.PlayTests.MapContourRecoveryTests.HistoricalPaidStepKeepsItsDraftAndRecoversUncertainCompletionAfterServerRestart",
+    "Wotr.PlayTests.MapContourRenderingTests.LegendIsExplicitAndDoesNotChooseARegionOrChangeBorders",
+    "Wotr.PlayTests.MapViewportTests.FixedOuterEdgesCornersAndHudPointsStayContinuousAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ScreenRoutingKeepsTheLastPixelAndExactEdgesMovingAtFourLayouts",
+    "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce",
+    "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards",
+    "Wotr.PlayTests.TravelGestureNetworkTests.FellowshipRequiresClickAndStaysOpenAfterExitWithoutMovingTheCamera"
+   ],
+   "baseline": "All nine failures also fail in base102.json/base102b.json (cae8063); MapViewportTests is 6/8 on both sides with the same two edge-sampling tests."
+  }
+ },
+ "editmode": {
+  "result": "631/631",
+  "report": ".artifacts/ui100/runs/ui102-edit.xml"
+ },
+ "builds": {
+  "BuildLocalMac": ".artifacts/ui102/macos/Wotr.app",
+  "BuildLocalWindows": ".artifacts/ui102/windows/Wotr.exe",
+  "commit": "8451b50",
+  "tracked_inputs_matching_commit": 953,
+  "development": false
+ },
+ "smoke": {
+  "result": "PASS",
+  "identity": "com.wotr.ui102.smoke",
+  "runtime_files_checked": 956,
+  "original_profile_byte_identical": true,
+  "report": ".artifacts/ui102/isolated-smoke/run/result.json"
+ },
+ "notes": [
+  "Windows runtime and manual play not tested.",
+  "Export needs Pillow, NumPy and SciPy (scripts/requirements-map-canvas.txt); about 5 GB peak memory, 40 s."
+ ]
+}

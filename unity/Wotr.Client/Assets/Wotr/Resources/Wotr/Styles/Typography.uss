@@ -1,0 +1,22 @@
+/* TYPO-01: the approved type families. Inherit body text; keep existing sizes and panel geometry. */
+.client-interface,
+.board-screen,
+.gateway {
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-Regular");
+}
+
+Button {
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
+.title,
+#card-event-heading,
+#card-combat-heading,
+#character-roster-title,
+#combat-card-preview-title,
+#combat-choice-title,
+#hand-card-title,
+#hand-card-full-title,
+.setup-version-title {
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}

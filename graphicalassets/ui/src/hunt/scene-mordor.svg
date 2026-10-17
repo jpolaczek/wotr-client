@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="44" viewBox="0 0 168 44">
+  <!-- UI-159: Hunt scene strip on the Mordor track: ash sky over a red glow, black crags and lava seams.
+       Seamless at x=0/168; stretched vertically, repeated horizontally. -->
+  <defs>
+    <linearGradient id="scene-mordor-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--scene-ash)"/>
+      <stop offset="0.65" style="stop-color: var(--scene-gaze-haze)"/>
+      <stop offset="1" style="stop-color: var(--scene-lava)"/>
+    </linearGradient>
+  </defs>
+  <rect width="168" height="44" fill="url(#scene-mordor-sky)"/>
+  <path d="M0 32 L8 26 L14 30 L24 22 L32 29 L44 25 L52 31 L66 23 L76 30 L88 24 L98 31 L110 22 L120 29 L134 24 L144 30 L156 25 L168 32 V44 H0 Z" style="fill: var(--ink)"/>
+  <g fill="none" style="stroke: var(--ember)" stroke-width="0.8" stroke-linecap="round" opacity="0.85">
+    <path d="M20 38 C26 36 30 40 36 38"/>
+    <path d="M78 40 C84 37 90 41 96 39"/>
+    <path d="M132 37 C138 35 142 39 148 37"/>
+  </g>
+</svg>

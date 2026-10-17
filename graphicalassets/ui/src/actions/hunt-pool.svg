@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-141: Show the Hunt pool: a stack of tiles. -->
+  <g filter="url(#lift)" stroke-linejoin="round">
+    <rect x="11" y="4.6" width="16" height="16" rx="3" style="fill: var(--ink)"/>
+    <rect x="12.2" y="5.8" width="13.6" height="13.6" rx="2.2" fill="url(#gilt)"/>
+    <rect x="5" y="11.4" width="16" height="16" rx="3" style="fill: var(--ink)"/>
+    <rect x="6.2" y="12.6" width="13.6" height="13.6" rx="2.2" fill="url(#gilt)"/>
+    <path d="M13 16.2 V22.6" style="stroke: var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+</svg>

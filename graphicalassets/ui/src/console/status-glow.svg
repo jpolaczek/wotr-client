@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <!-- UI-167: gold halo drawn 6 points around the console's status plaque while the player's action waits for
+       its first step ("your-turn"); the centre stays transparent. Slices: 16 (points). -->
+  <g fill="none" style="stroke: var(--ember-light)">
+    <rect x="1.5" y="1.5" width="45" height="45" rx="10" stroke-width="3" opacity="0.2"/>
+    <rect x="2.6" y="2.6" width="42.8" height="42.8" rx="9" stroke-width="2.4" opacity="0.38"/>
+    <rect x="3.6" y="3.6" width="40.8" height="40.8" rx="8" stroke-width="1.8" opacity="0.6"/>
+    <rect x="4.5" y="4.5" width="39" height="39" rx="7" stroke-width="1.4" opacity="0.88"/>
+  </g>
+  <rect x="5.4" y="5.4" width="37.2" height="37.2" rx="6" fill="none" style="stroke: var(--gilt-highlight)" stroke-width="0.9"/>
+</svg>

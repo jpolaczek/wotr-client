@@ -1,0 +1,16 @@
+Edit image 1, the complete white-territory outline map. Make ONE localized topology repair in Mordor, at the lower right. Preserve the rest of the entire map exactly.
+
+Image 2 is the correct printed Mordor close-up. Image 3 is the old erroneous outline close-up of the same place, useful for locating the erroneous lines. Image 4 is the original complete board for context.
+
+The previous edit correctly made the lake transparent but FAILED to remove the false boundaries from the portrait panel. This time actually ERASE those lines and MERGE the corresponding white cells into the true named territories.
+
+Use the 1492 x 1054 pixel coordinate system of image 1:
+- An erroneous curve descends through approximately (1350, 620), (1352, 655), (1388, 710) to (1466, 726). It traces the left/bottom edge of the character portrait panel from the original board. It is NOT a territorial border.
+- Another erroneous diagonal runs from approximately (1388, 710) southwest to (1352, 748) at the north edge of the transparent lake. This is NOT a territorial border either. REMOVE this diagonal completely, filling its pixels with the surrounding white land.
+These two erroneous lines create spurious eastern territories. REMOVE the panel-shaped subdivision.
+
+The genuine Barad-dur–Gorgoroth boundary arrives from the west at approximately (1350, 655). Continue that real boundary to the eastern map edge, maintaining the source's visible course. The portrait panel obscures its far eastern end in the printed source: do not use the panel's outline as the continuation and do not create an extra cell behind the panel. Barad-dur remains ONE territory above the real shared border; Gorgoroth becomes ONE uninterrupted broad territory below it, extending all the way to the eastern map edge and around the north/east of the lake.
+
+Keep the existing transparent lake's location and irregular shoreline. Preserve Morannon and Minas Morgul, and preserve Nurn below/west of the lake and Khand below the mountain divide. Keep Nurn's genuine border; only remove the spurious eastern cells. Ignore volcano artwork, counter circles, names and character panels in source image 2.
+
+Return the WHOLE map, at the same size, scale and framing, with this small Mordor correction. Do not modify Mirkwood, Erebor, Rhun, Rohan, Moria, Fangorn, coastlines, or any other region. Opaque flat WHITE land, thin BLACK shared borders, fully TRANSPARENT lakes and exterior. No text, terrain, labels, symbols, texture, markers or inset images.

@@ -1,0 +1,334 @@
+/* UI-99/UI-100: opponent notifications as small enamel pennants stacked newest in front (ActionNoticeStack),
+   the log and last battle icons, and the recorded action card on the parchment of the hand cards.
+   Pieces are rendered at 2x from graphicalassets/ui, so 9-slice values are texture pixels.
+   Rules carry #board-screen to win over the older Wotr.uss rules. */
+
+/* UI-103: no strip under the top bar. The notices hang by themselves just under the bar, over the map:
+   the bar is out of the layout flow and only as wide as its items, so the stage and the bar's shadow
+   start right at the bar's lower edge. */
+#board-screen .notification-bar {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: auto;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
+    margin: 0;
+    padding: 1px 8px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* UI-100: the log and last battle icons beside the stack, small square buttons with a glyph. */
+#board-screen .notification-bar .notice-icon-button {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    min-height: 28px;
+    margin: 0 4px 0 0;
+    padding: 0;
+    flex-shrink: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+    align-items: center;
+    justify-content: center;
+}
+#board-screen .notification-bar .notice-icon-button:hover,
+#board-screen .notification-bar .notice-icon-button:focus,
+#board-screen .notification-bar .notice-icon-button.selected { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+.notice-icon {
+    width: 20px;
+    height: 20px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.notice-log-icon { background-image: resource("Wotr/Art/UI/icons/log"); }
+.notice-battle-icon { width: 18px; height: 18px; background-image: resource("Wotr/Art/UI/dice/faces/army"); }
+
+/* The stack: the newest pennant in front, up to two pennants of older notices peeking out behind it,
+   and a wax seal with the count. Fixed-size icons, no text: the tooltip names the newest action. */
+#board-screen .notification-bar .notice-stack {
+    position: relative;
+    width: 42px;
+    min-width: 42px;
+    height: 30px;
+    min-height: 30px;
+    flex-shrink: 0;
+    margin: 0 4px 0 2px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    border-width: 0;
+    border-radius: 0;
+}
+.notice-pennant,
+.notice-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 28px;
+    background-image: resource("Wotr/Art/UI/frames/pennant-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.notice-free .notice-pennant,
+.notice-free .notice-layer { background-image: resource("Wotr/Art/UI/frames/pennant-free"); }
+.notice-shadow:hover .notice-pennant,
+.notice-shadow:focus .notice-pennant { background-image: resource("Wotr/Art/UI/frames/pennant-shadow-hover"); }
+.notice-free:hover .notice-pennant,
+.notice-free:focus .notice-pennant { background-image: resource("Wotr/Art/UI/frames/pennant-free-hover"); }
+.notice-layer-1 { left: 5px; top: 1px; -unity-background-image-tint-color: rgb(176, 164, 150); }
+.notice-layer-2 { left: 10px; top: 2px; -unity-background-image-tint-color: rgb(122, 113, 104); }
+.notice-seal {
+    position: absolute;
+    left: 25px;
+    top: 13px;
+    width: 16px;
+    height: 16px;
+    background-image: resource("Wotr/Art/UI/ornaments/wax-seal");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+#board-screen .notice-seal > #notice-count {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(250, 228, 205);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+/* The recorded action card on parchment, with the lacquer header of the board's panels. Its height follows
+   its content up to the earlier fixed height, so a short action leaves no empty parchment. */
+#board-screen .action-summary {
+    height: auto;
+    max-height: 460px;
+    padding: 8px 12px 12px 12px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .action-summary > .window-header {
+    height: 34px;
+    min-height: 34px;
+    flex-shrink: 0;
+    margin: 0 0 6px 0;
+    padding: 0 4px 0 18px;
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .action-summary > .window-header > .title {
+    font-size: 13px;
+    letter-spacing: 0.8px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+}
+#board-screen .action-summary > .window-header Button {
+    min-height: 0;
+    color: rgb(241, 227, 181);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .action-summary > .window-header Button:hover,
+#board-screen .action-summary > .window-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+/* UI-177: the pin and the close cross are large and clear, the cross in the top right corner of the card. */
+#board-screen .action-summary > .window-header .action.icon-button { width: 30px; min-width: 30px; height: 30px; min-height: 30px; margin: 0 0 0 4px; }
+#board-screen .action-summary > .window-header .icon-button > .icon-glyph { width: 22px; height: 22px; max-width: 22px; max-height: 22px; }
+#board-screen .action-summary .action-card { flex-grow: 0; flex-shrink: 1; }
+#board-screen .action-summary #action-card-steps { flex-grow: 0; flex-shrink: 1; }
+#board-screen .action-summary Label { color: rgb(58, 42, 24); }
+#board-screen .action-summary .action-card .title { font-size: 15px; -unity-font-style: bold; color: rgb(58, 42, 24); }
+#board-screen .action-summary #action-card-status,
+#board-screen .action-summary #action-card-message { color: rgb(122, 74, 30); }
+#board-screen .action-summary .action-card-step { border-top-color: rgba(140, 106, 51, 0.7); }
+#board-screen .action-summary .action-detail { color: rgb(58, 42, 24); white-space: normal; }
+/* UI-106: a played card shows the text of the part that was used, as a small inset on the parchment. */
+#board-screen .action-summary .action-card-played { flex-direction: column; flex-shrink: 0; margin: 4px 0 2px 0; }
+#board-screen .action-summary .action-played-card {
+    flex-shrink: 0;
+    margin: 0 0 4px 0;
+    padding: 5px 8px 6px 8px;
+    background-color: rgba(120, 86, 40, 0.12);
+    border-width: 1px;
+    border-color: rgba(140, 106, 51, 0.6);
+    border-radius: 3px;
+}
+#board-screen .action-summary .action-played-title { margin: 0; padding: 0; font-size: 14px; -unity-font-style: bold; white-space: normal; }
+#board-screen .action-summary .action-played-kind {
+    margin: 0 0 2px 0;
+    padding: 0;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    -unity-font-style: bold;
+    color: rgb(122, 26, 16);
+}
+#board-screen .action-summary .action-played-text { margin: 0; padding: 0; font-size: 13px; white-space: normal; }
+#board-screen .action-summary .unity-scroller { opacity: 0.6; }
+
+/* TEST-03: a test game is marked by an amber bar under the notices, centred over the map beside the
+   right column (the lane spans the same width as the notification bar may use). */
+#board-screen .test-session-lane {
+    position: absolute;
+    top: 82px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+}
+#board-screen.edge-board .test-session-lane,
+.edge-board .test-session-lane { right: 380px; }
+.compact-edge-board .test-session-lane { right: 350px; }
+#board-screen .test-session-bar {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+    height: 30px;
+    padding: 0 3px 0 10px;
+    background-color: rgba(48, 35, 12, 0.94);
+    border-width: 1px;
+    border-color: rgb(214, 168, 76);
+    border-radius: 3px;
+}
+#board-screen .test-session-title {
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 260px;
+    margin-right: 6px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(240, 206, 128);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#board-screen .test-session-control {
+    flex-shrink: 0;
+    height: 24px;
+    min-height: 24px;
+    margin: 0 2px;
+    padding: 0 8px;
+    font-size: 12px;
+}
+
+
+/* OBS-03: the observer's bar in the test bar's lane: "Observing · Viewing" and the two sides, the shown one marked. */
+#board-screen .viewing-lane {
+    position: absolute;
+    top: 82px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+}
+#board-screen.edge-board .viewing-lane,
+.edge-board .viewing-lane { right: 380px; }
+.compact-edge-board .viewing-lane { right: 350px; }
+#board-screen .viewing-bar {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    padding: 0 3px 0 10px;
+    background-color: rgba(30, 27, 24, 0.94);
+    border-width: 1px;
+    border-color: rgb(214, 168, 76);
+    border-radius: 3px;
+}
+#board-screen .viewing-title {
+    margin-right: 6px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(240, 206, 128);
+    white-space: nowrap;
+}
+#board-screen .viewing-choice {
+    flex-shrink: 0;
+    width: 104px;
+    height: 24px;
+    min-height: 24px;
+    margin: 0 2px;
+    padding: 0 8px;
+    font-size: 12px;
+}
+#board-screen .viewing-choice.selected {
+    color: rgb(30, 24, 14);
+    background-color: rgb(232, 204, 130);
+}
+
+/* REPLAY-05: the replay's controls in a lane under the viewing bar: steps and turns, Play, the timeline, the position
+   and the pace, every control in its place. */
+#board-screen .replay-lane {
+    position: absolute;
+    top: 116px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+}
+#board-screen.edge-board .replay-lane,
+.edge-board .replay-lane { right: 380px; }
+.compact-edge-board .replay-lane { right: 350px; }
+#board-screen .replay-bar {
+    flex-direction: row;
+    align-items: center;
+    height: 32px;
+    padding: 0 4px;
+    background-color: rgba(30, 27, 24, 0.94);
+    border-width: 1px;
+    border-color: rgb(214, 168, 76);
+    border-radius: 3px;
+}
+#board-screen .replay-control { flex-shrink: 0; height: 24px; min-height: 24px; margin: 0 2px; padding: 0 8px; font-size: 12px; }
+#board-screen #replay-play { width: 64px; }
+#board-screen .replay-speed { width: 58px; padding: 0 4px; }
+#board-screen .replay-speed.selected { color: rgb(30, 24, 14); background-color: rgb(232, 204, 130); }
+#board-screen .replay-timeline { width: 180px; margin: 0 6px; flex-shrink: 1; }
+#board-screen .replay-position { width: 190px; font-size: 12px; color: rgb(240, 206, 128); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* UI-166: the compact result card a notice opens — about 360 points wide and never scrolling: a heading in the
+   enamel of the side that acted with the kind of action (die face or card), up to three result lines, the played
+   card as one line and Full record, which opens the action in the Log. */
+#board-screen .action-summary.compact { width: 360px; }
+#board-screen .action-summary .action-card-title { flex-direction: row; align-items: center; flex-shrink: 0; }
+#board-screen .action-summary .action-card-title > .title { flex-shrink: 1; margin-bottom: 4px; white-space: normal; }
+#board-screen .action-summary .action-card-icon {
+    width: 20px;
+    height: 20px;
+    margin: 0 6px 4px 0;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .action-summary .action-card-icon-card { background-image: resource("Wotr/Art/UI/icons/cards"); }
+#board-screen .action-summary .action-card .title.side-free { color: rgb(28, 74, 96); }
+#board-screen .action-summary .action-card .title.side-shadow { color: rgb(122, 30, 30); }
+#board-screen .action-summary .action-result { flex-shrink: 0; }
+#board-screen .action-summary .action-result-line { margin: 2px 0; padding: 0; font-size: 14px; white-space: normal; }
+#board-screen .action-summary .action-result-card,
+#board-screen .action-summary .action-result-full { height: 30px; min-height: 30px; margin: 6px 0 0 0; font-size: 14px; }
+#board-screen .action-summary .action-result-card { -unity-text-align: middle-left; }
+#board-screen .action-summary .action-result-full { align-self: flex-end; }

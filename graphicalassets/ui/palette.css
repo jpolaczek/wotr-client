@@ -1,0 +1,108 @@
+/* Colour tokens shared by every UI art source. assets.json variants override them. */
+:root {
+  /* Gilt metal, from the lit face to the engraved edge. */
+  --gilt-highlight: #f8e8b2;
+  --gilt-light: #d7b464;
+  --gilt-mid: #a27d39;
+  --gilt-shadow: #6a4c1d;
+  --gilt-edge: #4a3310;
+  --gilt-dim: #a7843f;
+
+  /* Dark enamel behind dice symbols and on card faces; UI-200: warm charcoal instead of navy. */
+  --enamel-light: #4a4642;
+  --enamel-mid: #2a2724;
+  --enamel-dark: #161412;
+
+  /* Lacquered plate of the bars and buttons; UI-200/UI-203: deep warm charcoal, not black, softly mottled (frames/panel). */
+  --plate-top: #2a2825;
+  --plate-mid: #211f1d;
+  --plate-bottom: #171614;
+  --button-top: #2e2c29;
+  --button-bottom: #1b1a18;
+  --lacquer-red-top: #5c1b16;
+  --lacquer-red-bottom: #2b0c0a;
+  --ink: #070b0c;
+  --cast-shadow: #05080a;
+
+  /* Accents used by individual icons. */
+  --steel-light: #f4f6f3;
+  --steel-mid: #c3cacb;
+  --steel-dark: #596265;
+  --ember-light: #ffd27a;
+  --ember: #f06a1f;
+  --ember-dark: #8c1a0b;
+  --wax: #6b1c13;
+  --ivory: #f3e3b8;
+  --elven-stone: #a9d2ff;
+  --elven-stone-dark: #244a92;
+  --emblem-light: #ffffff;
+  --emblem-mid: #d3d9dc;
+  --emblem-dark: #7f8d94;
+  --emblem-outline: #141c21;
+
+  /* Card faces (UI-91): yellowed parchment, brown ink, and a glow for playable/armed states. */
+  --parchment-light: #f4e6bf;
+  --parchment-mid: #e4cf98;
+  --parchment-dark: #c9a868;
+  --parchment-burn: #8c6a33;
+  --card-ink: #3b2412;
+  --card-rim: #5d3b1c;
+  --card-glow: #ffd06a;
+  --card-glow-opacity: 0;
+  --leather-top: #4a2618;
+  --leather-bottom: #1e0e08;
+
+  /* Battle scene strips (UI-115): sky, haze, hills, stone and a road. */
+  --scene-sky-deep: #16262c;
+  --scene-sky: #2a4651;
+  --scene-haze: #4f6a6a;
+  --scene-hill: #4b5a34;
+  --scene-hill-dark: #2d3a22;
+  --scene-grass: #7f9a4a;
+  --scene-stone: #6e7177;
+  --scene-stone-dark: #3c3f45;
+  --scene-road: #8a7452;
+  /* Hunt window scene strips (UI-159): the searching gaze's red haze, Mordor's ash and lava glow. */
+  --scene-gaze-haze: #4a2a2a;
+  --scene-gaze: #7a2e1e;
+  --scene-ash: #2b2826;
+  --scene-lava: #a3361a;
+  /* Combat d6 (UI-117): ivory body, ink pips, rim; variants light the glow or the gilt ring, or dim the die. */
+  --die-ivory: #f3e3b8;
+  --die-ink: #1a1410;
+  --die-rim: #5a4420;
+  --die-glow-opacity: 0;
+  --die-ring-opacity: 0;
+
+  /* Hit seals of the loss set (UI-118); the spent variant flattens them. */
+  --seal-light: #b8362a;
+  --seal-dark: #5a1410;
+  --seal-mark: #f1cfa0;
+
+  /* Red ring on a character medallion whose abilities are cancelled; a variant turns it on. */
+  --cancel-opacity: 0;
+
+  /* Army bases and tokens (UI-125): the glow under a selected (gold) or eligible (legal green) force,
+     the veil over figures that already marched, and the coin of a spent recruitment point. */
+  --army-glow: #ffd06a;
+  --army-veil-opacity: 0;
+  --slot-fill-opacity: 0;
+
+  /* Mordor track (UI-153): flagstones in the warm ink of the pencil map; a variant fades a passed stone into
+     the paper or lights the legal green glow under the next one. */
+  --slab-stone-light: #ddd2b6;
+  --slab-stone-dark: #b3a587;
+  --slab-edge: #8f8064;
+  --slab-ink: #3a3934;
+  --slab-glow: #90cbac;
+  --slab-glow-opacity: 0;
+  --slab-veil: #efe4c6;
+  --slab-veil-opacity: 0;
+
+  /* Left rail tabs (UI-193): the gold glow round the medallion of an available tab; a variant turns it on. */
+  --tab-glow: #ffd06a;
+  --tab-glow-opacity: 0;
+
+  /* Hover glow, hidden unless a variant enables it. */
+  --glow-opacity: 0;
+}

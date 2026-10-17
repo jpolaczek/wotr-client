@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Card Draw result: a card with a plus. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="card-draw-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="5.4" y="5.6" width="15" height="21" rx="2" fill="url(#card-draw-ivory)" style="stroke: var(--ink)" stroke-width="1.4" opacity="0.75"/>
+    <rect x="10.2" y="3.6" width="15" height="21" rx="2" fill="url(#card-draw-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M17.7 9.4 V18.8 M13 14.1 H22.4" fill="none" style="stroke: var(--ink)" stroke-width="2.4"/>
+  </g>
+</svg>

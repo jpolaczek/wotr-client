@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="56" viewBox="0 0 300 56">
+  <!-- UI-169: the plate under the end-of-game title for the player who lost: a darkened iron band with pointed ends,
+       dulled gilt and a cracked middle rule; code writes DEFEAT over it. -->
+  <defs>
+    <linearGradient id="defeat-band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a1d18"/>
+      <stop offset="0.55" stop-color="#2a0f0c"/>
+      <stop offset="1" stop-color="#150706"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <path d="M24 8 H276 L294 28 L276 48 H24 L6 28 Z" fill="url(#defeat-band)" stroke="#2a1d14" stroke-width="1"/>
+    <path d="M26 11.5 H274 L289.5 28 L274 44.5 H26 L10.5 28 Z" fill="none" stroke="#7d6a4a" stroke-width="1.4" opacity="0.85"/>
+    <path d="M40 28 H120 M180 28 H260" stroke="#7d6a4a" stroke-width="0.8" opacity="0.35"/>
+    <path d="M150 9 L146 18 L153 24 L147 32 L152 40 L149 47" fill="none" stroke="#0b0403" stroke-width="1.6" opacity="0.8"/>
+    <g fill="#5e5852">
+      <circle cx="22" cy="28" r="3.2"/>
+      <circle cx="278" cy="28" r="3.2"/>
+    </g>
+  </g>
+</svg>

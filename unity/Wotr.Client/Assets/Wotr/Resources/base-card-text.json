@@ -1,0 +1,868 @@
+[
+  {
+    "id": "base.fp.character.01",
+    "event": "Put the Elven Cloaks special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "It Is a Gift",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.02",
+    "event": "Put the Elven Rope special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "It Is a Gift",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.03",
+    "event": "Put the Phial of Galadriel special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "It Is a Gift",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.04",
+    "event": "Put the Sméagol Helps Nice Master special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "It Is a Gift",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.05",
+    "event": "Keep this card on the table. After Shadow draws a Hunt tile, you may discard this card to draw a replacement. Resolve the second tile, then return the first tile to the Hunt Pool.",
+    "combatTitle": "Blade of Westernesse",
+    "combat": "Requires a Hobbit in the battle. Spend one hit from your Leader re-roll to eliminate a participating Minion of your choice.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.character.06",
+    "event": "Requires Gimli or Legolas in the Fellowship. Keep this card on the table. After a Hunt tile is drawn, you may discard it to reduce the damage by 1, to a minimum of 0. Resolve any remaining damage normally. Discard it immediately when neither Gimli nor Legolas remains in the Fellowship.",
+    "combatTitle": "Mighty Attack",
+    "combat": "Requires a Companion in the battle. Before the Leader re-roll, forfeit one participating Companion’s Leadership to turn one missed Combat die into a hit.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.fp.character.07",
+    "event": "Requires Boromir in the Fellowship. Keep this card on the table. After a Hunt tile is drawn, you may discard it to reduce the damage by 1, to a minimum of 0. Resolve any remaining damage normally. Discard it immediately when Boromir leaves the Fellowship.",
+    "combatTitle": "Mighty Attack",
+    "combat": "Requires a Companion in the battle. Before the Leader re-roll, forfeit one participating Companion’s Leadership to turn one missed Combat die into a hit.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.fp.character.08",
+    "event": "Requires Gandalf the Grey in the Fellowship. Keep this card on the table. Discard it to prevent a Hunt tile draw. Discard it immediately when Gandalf the Grey leaves the Fellowship.",
+    "combatTitle": "Servant of the Secret Fire",
+    "combat": "Requires Gandalf in the battle. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.09",
+    "event": "Roll 3 dice. Heal 1 Corruption per result of 5 or higher; if Strider is the Guide, heal on 3 or higher instead.",
+    "combatTitle": "Andúril",
+    "combat": "Requires Strider or Aragorn in the battle. Before the Leader re-roll, forfeit his Leadership to turn missed Combat dice into hits: one for Strider, or up to two for Aragorn.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.fp.character.10",
+    "event": "Heal 1 Corruption. If Gollum is the Guide, you may then hide the Fellowship or move it using the normal movement rules.",
+    "combatTitle": "Heroic Death",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. Before taking casualties from the enemy Combat roll and Leader re-roll, you may eliminate a Leader to cancel 1 hit, or a Companion to cancel up to its Level in hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.character.11",
+    "event": "Requires at least one Companion in the Fellowship. Separate one Companion or one group, allowing 1 additional region of movement. Then heal 1 Corruption.",
+    "combatTitle": "Daring Defiance",
+    "combat": "Requires a Companion in the battle. Forfeit all participating Companions’ Leadership to cancel the Shadow Combat card.",
+    "initiative": [
+      0
+    ]
+  },
+  {
+    "id": "base.fp.character.12",
+    "event": "Heal 1 Corruption, or 2 Corruption if Gollum is the Guide.",
+    "combatTitle": "Fateful Strike",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. If your Leader re-roll scores a hit, also eliminate a participating Nazgûl. With at least 2 re-roll hits, you may eliminate a participating Minion instead.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.character.13",
+    "event": "Change an unused Free Peoples Character result to Will of the West. Also heal 1 Corruption if the Fellowship is in unconquered Lórien.",
+    "combatTitle": "Heroic Death",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. Before taking casualties from the enemy Combat roll and Leader re-roll, you may eliminate a Leader to cancel 1 hit, or a Companion to cancel up to its Level in hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.character.14",
+    "event": "Requires Strider or Aragorn with a Free Peoples Army in Gondor or Rohan. Draw 3 Hunt tiles. If all 3 are Eyes, return them to the pool and eliminate Strider or Aragorn. Otherwise, permanently remove the drawn Eyes from this game. Return all other drawn tiles without effect.",
+    "combatTitle": "Sudden Strike",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. Before the Combat roll, make an extra attack using dice equal to your Leadership, up to 5, and apply its result immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "base.fp.character.15",
+    "event": "Separate or move one Companion or one group as though its Level were 4. This movement may finish inside a Stronghold under siege.",
+    "combatTitle": "Daring Defiance",
+    "combat": "Requires a Companion in the battle. Forfeit all participating Companions’ Leadership to cancel the Shadow Combat card.",
+    "initiative": [
+      0
+    ]
+  },
+  {
+    "id": "base.fp.character.16",
+    "event": "Separate or move one Companion or one group, allowing 2 additional regions of movement. This movement may finish inside a Stronghold under siege.",
+    "combatTitle": "Daring Defiance",
+    "combat": "Requires a Companion in the battle. Forfeit all participating Companions’ Leadership to cancel the Shadow Combat card.",
+    "initiative": [
+      0
+    ]
+  },
+  {
+    "id": "base.fp.character.17",
+    "event": "Separate one Companion or one group, allowing 1 additional region of movement. Then, if Gimli or Legolas is in Dale, Erebor or Woodland Realm, activate the Dwarves and the North, and advance the Dwarves, Elves and North by 1 political step each.",
+    "combatTitle": "Brave Stand",
+    "combat": "Requires a Companion in the battle. Shadow rolls one fewer Combat die per participating Companion, to a minimum of 1 die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.18",
+    "event": "Requires a Free Peoples Army with a Companion in or next to a region containing a Shadow Army with Nazgûl. Roll 1 die per Nazgûl there, up to 5 dice; each 5 or higher eliminates a Nazgûl. Move all survivors to a single unconquered Sauron Stronghold. The Witch-king is excluded from this effect.",
+    "combatTitle": "Heroic Death",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. Before taking casualties from the enemy Combat roll and Leader re-roll, you may eliminate a Leader to cancel 1 hit, or a Companion to cancel up to its Level in hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.character.19",
+    "event": "Requires Gandalf the White in play and a Companion in Fangorn. Roll 3 dice against a Shadow Army in Orthanc; each 4 or higher deals 1 hit. Destroying this Army also eliminates its Nazgûl and Minions. Eliminate Saruman if he is alone in Orthanc. If Gandalf the White is in Fangorn or Rohan, you may immediately play another Character Event from your hand without spending an Action die.",
+    "combatTitle": "Ents’ Rage",
+    "combat": "Requires the defending Army in Rohan, Fangorn or Orthanc. Give every die in your Combat roll +2.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.20",
+    "event": "Requires Gandalf the White in play and a Companion in Fangorn. Roll 3 dice against a Shadow Army in Orthanc; each 4 or higher deals 1 hit. Destroying this Army also eliminates its Nazgûl and Minions. Eliminate Saruman if he is alone in Orthanc. If Gandalf the White is in Fangorn or Rohan, you may immediately play another Character Event from your hand without spending an Action die.",
+    "combatTitle": "Huorn-dark",
+    "combat": "Requires the defending Army in Rohan, Fangorn or Orthanc. Shadow rolls at most 2 Combat dice.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.21",
+    "event": "Requires Gandalf the White in play and a Companion in Fangorn. Roll 3 dice against a Shadow Army in Orthanc; each 4 or higher deals 1 hit. Destroying this Army also eliminates its Nazgûl and Minions. Eliminate Saruman if he is alone in Orthanc. If Gandalf the White is in Fangorn or Rohan, you may immediately play another Character Event from your hand without spending an Action die.",
+    "combatTitle": "Nameless Wood",
+    "combat": "Requires the defending Army in Rohan, Fangorn or Orthanc. If your Combat roll or Leader re-roll scores a hit, add 2 hits.",
+    "initiative": [
+      5
+    ]
+  },
+  {
+    "id": "base.fp.character.22",
+    "event": "Requires Strider or Aragorn in Rohan, including a besieged Stronghold. Move him and any Companions you choose from that region to Erech, Lamedon or Pelargir. If a Shadow Army is there, roll 1 die: deal that many hits and force it to retreat. If retreat is impossible, destroy it. Destroying it also eliminates its Nazgûl and Minions. You may then recruit up to 3 Gondor Regulars there, taking control if needed.",
+    "combatTitle": "Sudden Strike",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. Before the Combat roll, make an extra attack using dice equal to your Leadership, up to 5, and apply its result immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "base.fp.character.23",
+    "event": "Requires Boromir in Gondor. Recruit a Gondor Regular or Elite in his region. Then draw 2 Strategy Events.",
+    "combatTitle": "Brave Stand",
+    "combat": "Requires a Companion in the battle. Shadow rolls one fewer Combat die per participating Companion, to a minimum of 1 die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.character.24",
+    "event": "Requires Strider or Aragorn with a Free Peoples Army. In that Army, eliminate a Regular and recruit an Elite of the same Nation. Then draw 2 Strategy Events.",
+    "combatTitle": "Brave Stand",
+    "combat": "Requires a Companion in the battle. Shadow rolls one fewer Combat die per participating Companion, to a minimum of 1 die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.01",
+    "event": "Requires Aragorn with a Free Peoples Army outside the borders of every Free Peoples Nation. Keep this card on the table. Action dice spent moving the Fellowship do not enter the Hunt Box. Discard this card as soon as the Fellowship is declared or revealed.",
+    "combatTitle": "Daylight",
+    "combat": "Shadow rolls at most 3 Combat dice.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.02",
+    "event": "Keep this card on the table and advance the Elves by 1 political step. Shadow cannot move an Army into, or attack, Lórien, Rivendell or Grey Havens, including siege attacks. Shadow may remove this card by spending any Action die and discarding both an Army Event and a Character Event from hand.",
+    "combatTitle": "No Quarter",
+    "combat": "If your Combat roll or Leader re-roll scores a hit, add 1 hit.",
+    "initiative": [
+      5
+    ]
+  },
+  {
+    "id": "base.fp.strategy.03",
+    "event": "Keep this card on the table and advance the North by 1 political step. Shadow cannot move an Army into, or attack, Old Forest, Shire or Buckland. Shadow may remove this card by spending any Action die and discarding both an Army Event and a Character Event from hand.",
+    "combatTitle": "Advantageous Position",
+    "combat": "Requires the defending Army within a Free Peoples Nation. Give every Shadow Combat die −1. An unmodified 6 still hits.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.04",
+    "event": "Move any or all Companions outside the Fellowship. Then, if a Companion is in Erebor or Ered Luin, activate the Dwarves and set their political position to At War.",
+    "combatTitle": "Advantageous Position",
+    "combat": "Requires the defending Army within a Free Peoples Nation. Give every Shadow Combat die −1. An unmodified 6 still hits.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.05",
+    "event": "Choose a Shadow Army containing Army units from at least 2 Shadow Nations. Roll 5 dice against it; each result of 5 or higher deals 1 hit.",
+    "combatTitle": "Scouts",
+    "combat": "Requires the Free Peoples Army defending in a field battle. Before the Combat roll, retreat to a free adjacent region or withdraw inside the Stronghold into a siege.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "base.fp.strategy.06",
+    "event": "Choose a Shadow Army in Osgiliath, South Ithilien or North Ithilien. Roll 3 dice against it; each result of 5 or higher deals 1 hit. Then, if a Free Peoples Army is in Osgiliath, recruit a Gondor Regular or Elite and a Gondor Leader there.",
+    "combatTitle": "Shield-wall",
+    "combat": "Before taking casualties from the enemy Combat roll and Leader re-roll, cancel 1 hit if the enemy scored at least 2 hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.strategy.07",
+    "event": "Move any or all Companions outside the Fellowship. Then, if a Companion is in Shire or Bree, activate the North and set its political position to At War.",
+    "combatTitle": "Shield-wall",
+    "combat": "Before taking casualties from the enemy Combat roll and Leader re-roll, cancel 1 hit if the enemy scored at least 2 hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.strategy.08",
+    "event": "Choose any Free Peoples Nation. Activate it and advance it by 1 political step.",
+    "combatTitle": "Confusion",
+    "combat": "Each unmodified 1 in Shadow’s Combat roll deals a hit against the Shadow Army and cannot be re-rolled in its Leader re-roll.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.fp.strategy.09",
+    "event": "Requires Gondor to be active. Advance Rohan by 1 political step. Then recruit a Rohan Regular or Elite and a Rohan Leader in Edoras.",
+    "combatTitle": "Scouts",
+    "combat": "Requires the Free Peoples Army defending in a field battle. Before the Combat roll, retreat to a free adjacent region or withdraw inside the Stronghold into a siege.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "base.fp.strategy.10",
+    "event": "Use a Free Peoples Army adjacent to a besieged Stronghold to attack the Shadow besiegers. Throughout this battle, reduce the number of Shadow Combat dice by the number of Free Peoples Army units inside the Stronghold, to a minimum of 1 die.",
+    "combatTitle": "No Quarter",
+    "combat": "If your Combat roll or Leader re-roll scores a hit, add 1 hit.",
+    "initiative": [
+      5
+    ]
+  },
+  {
+    "id": "base.fp.strategy.11",
+    "event": "Requires Rohan At War. Move a Free Peoples Army from Rohan, including a besieged Stronghold, directly to Minas Tirith. If Shadow controls or besieges Minas Tirith, choose an adjacent region instead. The destination must be free under Army movement rules.",
+    "combatTitle": "Sudden Strike",
+    "combat": "Requires a Free Peoples Leader or Companion in the battle. Before the Combat roll, make an extra attack using dice equal to your Leadership, up to 5, and apply its result immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "base.fp.strategy.12",
+    "event": "Choose a Free Peoples Army with a Companion. Move it up to 2 regions through regions free under Army movement rules. You may split the Army before moving, but may not pick up or leave units along the route.",
+    "combatTitle": "Confusion",
+    "combat": "Each unmodified 1 in Shadow’s Combat roll deals a hit against the Shadow Army and cannot be re-rolled in its Leader re-roll.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.fp.strategy.13",
+    "event": "Requires the Elves At War. Recruit 2 Elven units, Regulars or Elites, in a coastal region containing a Free Peoples Army.",
+    "combatTitle": "Charge",
+    "combat": "Requires a Free Peoples Elite in the battle. Before the Combat roll, make an extra attack using only your Elites, up to 5 dice, and apply its result immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "base.fp.strategy.14",
+    "event": "Recruit a Gondor Regular or Elite and a Gondor Leader in Minas Tirith.",
+    "combatTitle": "Charge",
+    "combat": "Requires a Free Peoples Elite in the battle. Before the Combat roll, make an extra attack using only your Elites, up to 5 dice, and apply its result immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "base.fp.strategy.15",
+    "event": "Recruit an Elven Regular or Elite in Lórien. Then draw 1 Strategy Event.",
+    "combatTitle": "Daylight",
+    "combat": "Shadow rolls at most 3 Combat dice.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.16",
+    "event": "Recruit a Rohan Regular or Elite and a Rohan Leader in Edoras, or in a Rohan region containing a Companion.",
+    "combatTitle": "Daylight",
+    "combat": "Shadow rolls at most 3 Combat dice.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.17",
+    "event": "Recruit a North Regular or Elite and a North Leader in Carrock.",
+    "combatTitle": "Scouts",
+    "combat": "Requires the Free Peoples Army defending in a field battle. Before the Combat roll, retreat to a free adjacent region or withdraw inside the Stronghold into a siege.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "base.fp.strategy.18",
+    "event": "Recruit a Gondor Regular or Elite and a Gondor Leader in Dol Amroth.",
+    "combatTitle": "Shield-wall",
+    "combat": "Before taking casualties from the enemy Combat roll and Leader re-roll, cancel 1 hit if the enemy scored at least 2 hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.strategy.19",
+    "event": "Recruit 2 North Regulars in Dale. Then draw 1 Strategy Event.",
+    "combatTitle": "Shield-wall",
+    "combat": "Before taking casualties from the enemy Combat roll and Leader re-roll, cancel 1 hit if the enemy scored at least 2 hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.fp.strategy.20",
+    "event": "Recruit a North Regular or Elite in Shire and a Dwarven Regular or Elite in Ered Luin. Then draw 1 Strategy Event.",
+    "combatTitle": "Advantageous Position",
+    "combat": "Requires the defending Army within a Free Peoples Nation. Give every Shadow Combat die −1. An unmodified 6 still hits.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.21",
+    "event": "Recruit an Elven Regular or Elite in Rivendell. Then draw 1 Strategy Event.",
+    "combatTitle": "Advantageous Position",
+    "combat": "Requires the defending Army within a Free Peoples Nation. Give every Shadow Combat die −1. An unmodified 6 still hits.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.22",
+    "event": "Recruit a Dwarven Regular or Elite and a Dwarven Leader in Erebor.",
+    "combatTitle": "Valour",
+    "combat": "Requires a Free Peoples Elite in the battle. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.23",
+    "event": "Recruit a Rohan Regular or Elite and a Rohan Leader in a free Rohan region with a Settlement.",
+    "combatTitle": "Valour",
+    "combat": "Requires a Free Peoples Elite in the battle. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.fp.strategy.24",
+    "event": "Recruit an Elven Regular or Elite in Woodland Realm. Then draw 1 Strategy Event.",
+    "combatTitle": "Valour",
+    "combat": "Requires a Free Peoples Elite in the battle. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.01",
+    "event": "Put the Shelob's Lair special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "One for the Dark Lord",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.02",
+    "event": "Put the The Ring Is Mine! special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "One for the Dark Lord",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.03",
+    "event": "Put the On, On They Went special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "One for the Dark Lord",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.04",
+    "event": "Put the Give It to Uss! special Hunt tile into play. Add it to the Hunt Pool when the Fellowship is on the Mordor Track.",
+    "combatTitle": "One for the Dark Lord",
+    "combat": "Requires the defending Army in the Fellowship’s region. Give every die in your Combat roll and Leader re-roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.05",
+    "event": "Requires the Fellowship outside any region with a Free Peoples Settlement. Draw a Hunt tile. Discard Eyes and Fellowship special tiles without effect; otherwise resolve a successful Hunt.",
+    "combatTitle": "Cruel as Death",
+    "combat": "Requires at least 2 Nazgûl Leadership. Forfeit 2 points of it to give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.06",
+    "event": "Requires the Fellowship outside any region with a Free Peoples Settlement. Draw a Hunt tile. Discard Eyes and Fellowship special tiles without effect; otherwise resolve a successful Hunt, but do not allow any damage reduction before the Ring is used.",
+    "combatTitle": "Cruel as Death",
+    "combat": "Requires at least 2 Nazgûl Leadership. Forfeit 2 points of it to give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.07",
+    "event": "Requires the Fellowship outside any region with a Free Peoples Settlement. Draw a Hunt tile. Discard Eyes and Fellowship special tiles without effect; otherwise resolve a successful Hunt. If there is damage and at least one Companion remains, Free Peoples must first eliminate a random Companion to reduce it, before using the Ring.",
+    "combatTitle": "They Are Terrible",
+    "combat": "Requires at least 1 Nazgûl Leadership. Forfeit 1 point of it to give every die in your Leader re-roll +1.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.sh.character.08",
+    "event": "Requires the Fellowship outside any region with a Free Peoples Settlement. Roll 3 dice and add 1 Corruption per result of 4 or higher. If Gollum is the Guide, only results of 6 add Corruption.",
+    "combatTitle": "Dread and Despair",
+    "combat": "Requires at least 1 Nazgûl Leadership. Before the Combat roll, forfeit one or more points of it. Free Peoples rolls one fewer Combat die per point forfeited, to a minimum of 1 die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.09",
+    "event": "Requires Fellowship progress of at least 1. Move any or all Nazgûl. Then reveal the Fellowship if a Nazgûl is in its region.",
+    "combatTitle": "Foul Stench",
+    "combat": "Requires at least 1 Nazgûl Leadership. Cancel the Free Peoples Leader re-roll if your Nazgûl Leadership is at least the total Free Peoples Leadership.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.10",
+    "event": "Requires Fellowship progress of at least 1. Move the Fellowship to an adjacent region.",
+    "combatTitle": "Cruel as Death",
+    "combat": "Requires at least 2 Nazgûl Leadership. Forfeit 2 points of it to give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.11",
+    "event": "Requires Fellowship progress of at least 1. Move any or all Nazgûl. If a Nazgûl is then in the Fellowship's region, you may either discard a Free Peoples Character Event from the table or make a Hunt roll as though the Fellowship had moved.",
+    "combatTitle": "Black Breath",
+    "combat": "Requires a Nazgûl in the battle. If your Leader re-roll scores at least 1 hit, also eliminate a participating Free Peoples Leader. Alternatively, eliminate a participating Companion whose Level is no greater than your number of re-roll hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.sh.character.12",
+    "event": "Requires the Fellowship revealed. Add 2 Corruption if its current Corruption is 3 or less; otherwise add 1.",
+    "combatTitle": "Black Breath",
+    "combat": "Requires a Nazgûl in the battle. If your Leader re-roll scores at least 1 hit, also eliminate a participating Free Peoples Leader. Alternatively, eliminate a participating Companion whose Level is no greater than your number of re-roll hits.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "base.sh.character.13",
+    "event": "Requires the Fellowship revealed. Draw a random Companion counter. Free Peoples must either eliminate that Companion or gain Corruption equal to its Level. If Gollum is the Guide, add 1 Corruption instead.",
+    "combatTitle": "They Are Terrible",
+    "combat": "Requires at least 1 Nazgûl Leadership. Forfeit 1 point of it to give every die in your Leader re-roll +1.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.sh.character.14",
+    "event": "Requires the Fellowship revealed. Draw a Hunt tile; discard Eyes and Fellowship special tiles without effect. Otherwise, Free Peoples must separate as many Companions as the tile's number, if possible, placing them in the Fellowship's region. Ignore Reveal and Stop icons. If Gollum is the Guide, add 1 Corruption instead.",
+    "combatTitle": "Dread and Despair",
+    "combat": "Requires at least 1 Nazgûl Leadership. Before the Combat roll, forfeit one or more points of it. Free Peoples rolls one fewer Combat die per point forfeited, to a minimum of 1 die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.15",
+    "event": "Keep this card on the table. Whenever a Companion in the Fellowship is taken as a casualty, you may also discard a random Character Event from the Free Peoples hand, or choose one on the table to discard. Discard this card immediately when the Fellowship is declared in an unconquered Free Peoples City or Stronghold.",
+    "combatTitle": "Words of Power",
+    "combat": "Requires a Nazgûl in the battle. Choose a participating Companion and cancel its Leadership and special abilities for this Combat round.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "base.sh.character.16",
+    "event": "Keep this card on the table. Before a Hunt roll, you may discard it to give that roll and its re-rolls +1 on every die. Discard it immediately when the Fellowship is declared in an unconquered Free Peoples City or Stronghold.",
+    "combatTitle": "They Are Terrible",
+    "combat": "Requires at least 1 Nazgûl Leadership. Forfeit 1 point of it to give every die in your Leader re-roll +1.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "base.sh.character.17",
+    "event": "Keep this card on the table. Discard it for an extra Hunt tile when a declaration or reveal takes the Fellowship into, out of or through Moria. Discard an Eye without effect; otherwise resolve a successful Hunt. Ignore Reveal if this declaration ends in a Free Peoples City or Stronghold. Alternatively, discard this card to use its Combat effect as though played from hand.",
+    "combatTitle": "Durin’s Bane",
+    "combat": "Requires the defending Army within 2 regions of Moria. Before the Combat roll, make an extra attack with 3 dice, hitting on 4 or higher, and apply its result immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "base.sh.character.18",
+    "event": "Change up to 3 unused Shadow Action dice to Eyes and immediately move them to the Hunt Box.",
+    "combatTitle": "Words of Power",
+    "combat": "Requires a Nazgûl in the battle. Choose a participating Companion and cancel its Leadership and special abilities for this Combat round.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "base.sh.character.19",
+    "event": "Requires a Shadow Army with Nazgûl in or next to a region containing a Free Peoples Army. Roll 1 die per Nazgûl, up to 5 dice, against the Free Peoples Army. Each result of 5 or higher deals 1 hit.",
+    "combatTitle": "Devilry of Orthanc",
+    "combat": "Requires an Isengard Army unit in the battle and the defending Army inside a Stronghold. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.20",
+    "event": "Requires the Witch-king with a Shadow Army besieging a Stronghold. Attack it. This siege attack lasts 3 Combat rounds instead of 1. In the first round, Free Peoples may play a Combat card only if a Companion participates.",
+    "combatTitle": "Dread and Despair",
+    "combat": "Requires at least 1 Nazgûl Leadership. Before the Combat roll, forfeit one or more points of it. Free Peoples rolls one fewer Combat die per point forfeited, to a minimum of 1 die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.21",
+    "event": "Requires Saruman in play. Keep this card on the table. After spending an Event result to play an Event card, draw a card from either of your decks. Free Peoples may remove this card using a Will of the West result, or any Action die together with an Elven Ring. Discard it if Saruman is eliminated.",
+    "combatTitle": "Cruel as Death",
+    "combat": "Requires at least 2 Nazgûl Leadership. Forfeit 2 points of it to give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.22",
+    "event": "Requires Saruman in play. Keep this card on the table. Rohan can become active only through an appropriate Companion, a Fellowship declaration in Edoras or Helm's Deep, or an attack on Edoras or Helm's Deep. Discard this card as soon as Rohan becomes active or Saruman is eliminated.",
+    "combatTitle": "Foul Stench",
+    "combat": "Requires at least 1 Nazgûl Leadership. Cancel the Free Peoples Leader re-roll if your Nazgûl Leadership is at least the total Free Peoples Leadership.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.character.23",
+    "event": "Move any or all Nazgûl. You may then move 2 Armies that each contain a Nazgûl, or attack with 1 Army containing a Nazgûl.",
+    "combatTitle": "Words of Power",
+    "combat": "Requires a Nazgûl in the battle. Choose a participating Companion and cancel its Leadership and special abilities for this Combat round.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "base.sh.character.24",
+    "event": "Requires the Witch-king in play. Either recruit 2 Nazgûl in his region or move any or all Nazgûl. Then you may move or attack with an Army containing the Witch-king.",
+    "combatTitle": "Foul Stench",
+    "combat": "Requires at least 1 Nazgûl Leadership. Cancel the Free Peoples Leader re-roll if your Nazgûl Leadership is at least the total Free Peoples Leadership.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.01",
+    "event": "Requires Shadow control of at least one Elven Stronghold. For every region containing an Elven Stronghold that is not under siege, roll 1 die per Elven Army unit there, up to 5 dice. Each result of 6 deals 1 hit against that Army.",
+    "combatTitle": "Deadly Strife",
+    "combat": "Both sides give every die in their Combat rolls and Leader re-rolls +2.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.02",
+    "event": "Requires Saruman in play and a besieging Army with an Isengard unit. Attack that Stronghold. This siege attack lasts 3 Combat rounds instead of 1. In the first round, Free Peoples may play a Combat card only if a Companion participates.",
+    "combatTitle": "Onslaught",
+    "combat": "After taking casualties from the Combat roll and Leader re-roll, you may apply up to 4 additional hits to your own units. Roll 1 die per hit you applied; each 4 or higher deals 1 hit to the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.03",
+    "event": "Requires Minas Tirith besieged by Shadow. Keep this card on the table and immediately eliminate a Free Peoples Leader there. Free Peoples cannot play Combat cards in battles in Minas Tirith. Free Peoples may remove this card by spending Will of the West, or any Action die if Gandalf or Aragorn is in Minas Tirith.",
+    "combatTitle": "Devilry of Orthanc",
+    "combat": "Requires an Isengard Army unit in the battle and the defending Army inside a Stronghold. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.04",
+    "event": "Requires every Shadow Nation At War. Discard all unused Free Peoples Will of the West Action dice.",
+    "combatTitle": "Relentless Assault",
+    "combat": "Before the Combat roll, you may apply up to 2 hits to your own units. Give every die in your Combat roll +1 per hit you applied.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.05",
+    "event": "Keep this card on the table. Free Peoples cannot use a Muster result to advance a passive Nation politically. Discard this card as soon as a Free Peoples Nation advances because of an attack or a Companion's special ability.",
+    "combatTitle": "Devilry of Orthanc",
+    "combat": "Requires an Isengard Army unit in the battle and the defending Army inside a Stronghold. Give every die in your Combat roll +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.06",
+    "event": "Requires the Fellowship or a Companion within a Free Peoples Nation that is not At War. Move that Nation back 1 political step. Free Peoples must then eliminate one of its Leaders or Army units, Regular or Elite.",
+    "combatTitle": "Great Host",
+    "combat": "After casualties from the Combat roll and Leader re-roll, deal 1 automatic hit if you have at least twice as many Army units as the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.07",
+    "event": "Move a Shadow Army up to 3 regions, ending with another Shadow Army that is not under siege. Each traversed region must be free under Army movement rules. You may split before moving, but may not pick up or leave units along the route.",
+    "combatTitle": "Mûmakil",
+    "combat": "Requires a Southrons & Easterlings Elite in the battle. Give every die in your Combat roll +1. After the Leader re-roll, add 1 hit if you scored more total hits than Free Peoples, counting any Free Peoples attack before combat from a Combat card.",
+    "initiative": [
+      3,
+      5
+    ]
+  },
+  {
+    "id": "base.sh.strategy.08",
+    "event": "Move 2 Shadow Armies up to 2 regions each, each ending with another Shadow Army that is not under siege. Each traversed region must be free under Army movement rules. You may split before moving, but may not pick up or leave units along the route.",
+    "combatTitle": "Mûmakil",
+    "combat": "Requires a Southrons & Easterlings Elite in the battle. Give every die in your Combat roll +1. After the Leader re-roll, add 1 hit if you scored more total hits than Free Peoples, counting any Free Peoples attack before combat from a Combat card.",
+    "initiative": [
+      3,
+      5
+    ]
+  },
+  {
+    "id": "base.sh.strategy.09",
+    "event": "Requires every Shadow Nation At War. Move up to 4 different Shadow Armies by 1 region each.",
+    "combatTitle": "Swarm of Bats",
+    "combat": "Cancel the Free Peoples Combat card. If Free Peoples played no card, give every die in your Leader re-roll +1 instead.",
+    "initiative": [
+      0
+    ]
+  },
+  {
+    "id": "base.sh.strategy.10",
+    "event": "Requires Southrons & Easterlings At War. Move a Shadow Army from Umbar to a Gondor coastal region. Check the stacking limit immediately if it merges with another Army. A Free Peoples Army there starts a battle. Shadow may not stop attacking unless the Free Peoples Army was already under siege.",
+    "combatTitle": "Deadly Strife",
+    "combat": "Both sides give every die in their Combat rolls and Leader re-rolls +2.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.11",
+    "event": "Requires Isengard At War. Recruit 2 Isengard Regulars in a free region next to North or South Dunland. You may also move up to 4 Isengard Army units, Regulars or Elites, from either or both Dunlands into that region.",
+    "combatTitle": "Relentless Assault",
+    "combat": "Before the Combat roll, you may apply up to 2 hits to your own units. Give every die in your Combat roll +1 per hit you applied.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.12",
+    "event": "Requires the Witch-king in play. Move him to Angmar, then recruit 2 Sauron Regulars and 1 Sauron Elite there.",
+    "combatTitle": "Swarm of Bats",
+    "combat": "Cancel the Free Peoples Combat card. If Free Peoples played no card, give every die in your Leader re-roll +1 instead.",
+    "initiative": [
+      0
+    ]
+  },
+  {
+    "id": "base.sh.strategy.13",
+    "event": "Requires Isengard At War. Recruit an Isengard Regular or Elite in a region containing a Shadow Army.",
+    "combatTitle": "We Come to Kill",
+    "combat": "Requires a Shadow Elite in the battle. After casualties from the Combat roll and Leader re-roll, make an extra attack with your surviving Elites, up to 5 dice, hitting on 5 or higher.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.14",
+    "event": "Requires Sauron At War. Recruit a Sauron Regular or Elite in a region containing a Shadow Army.",
+    "combatTitle": "We Come to Kill",
+    "combat": "Requires a Shadow Elite in the battle. After casualties from the Combat roll and Leader re-roll, make an extra attack with your surviving Elites, up to 5 dice, hitting on 5 or higher.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.15",
+    "event": "Requires Sauron At War. Replace 2 Sauron Regulars on the board with 2 Sauron Elites.",
+    "combatTitle": "We Come to Kill",
+    "combat": "Requires a Shadow Elite in the battle. After casualties from the Combat roll and Leader re-roll, make an extra attack with your surviving Elites, up to 5 dice, hitting on 5 or higher.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.16",
+    "event": "Requires Saruman in play. Recruit 2 Isengard Regulars in North Dunland, 2 in South Dunland, and 2 Isengard units, Regulars or Elites, in Orthanc.",
+    "combatTitle": "Great Host",
+    "combat": "After casualties from the Combat roll and Leader re-roll, deal 1 automatic hit if you have at least twice as many Army units as the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.17",
+    "event": "Choose 3 different Southrons & Easterlings Settlements. Recruit 2 Southrons & Easterlings Regulars in each.",
+    "combatTitle": "Great Host",
+    "combat": "After casualties from the Combat roll and Leader re-roll, deal 1 automatic hit if you have at least twice as many Army units as the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.18",
+    "event": "Requires Aragorn in play. Recruit 5 Sauron Regulars and 1 Nazgûl in Minas Morgul.",
+    "combatTitle": "Relentless Assault",
+    "combat": "Before the Combat roll, you may apply up to 2 hits to your own units. Give every die in your Combat roll +1 per hit you applied.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.19",
+    "event": "Choose Mount Gram or Moria. Recruit 2 Sauron units, Regulars or Elites, and 1 Nazgûl there.",
+    "combatTitle": "Onslaught",
+    "combat": "After taking casualties from the Combat roll and Leader re-roll, you may apply up to 4 additional hits to your own units. Roll 1 die per hit you applied; each 4 or higher deals 1 hit to the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.20",
+    "event": "Recruit 3 Sauron Regulars in Dol Guldur and 3 in Mount Gundabad.",
+    "combatTitle": "Onslaught",
+    "combat": "After taking casualties from the Combat roll and Leader re-roll, you may apply up to 4 additional hits to your own units. Roll 1 die per hit you applied; each 4 or higher deals 1 hit to the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "base.sh.strategy.21",
+    "event": "Requires Southrons & Easterlings At War. Recruit 5 Southrons & Easterlings Regulars in a free region of their Nation adjacent to the eastern map edge.",
+    "combatTitle": "Deadly Strife",
+    "combat": "Both sides give every die in their Combat rolls and Leader re-rolls +2.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.22",
+    "event": "Recruit 1 Sauron Regular in each of Angmar, Ettenmoors and Weather Hills, and 1 Sauron Elite in Trollshaws.",
+    "combatTitle": "Desperate Battle",
+    "combat": "Both sides give every die in their Combat rolls and Leader re-rolls +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.23",
+    "event": "Requires every Shadow Nation At War. Recruit 5 Southrons & Easterlings Regulars in Gorgoroth and 5 Sauron Regulars in Nurn.",
+    "combatTitle": "Desperate Battle",
+    "combat": "Both sides give every die in their Combat rolls and Leader re-rolls +1.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "base.sh.strategy.24",
+    "event": "Requires Sauron At War. Choose 3 different Sauron Strongholds and recruit 2 Sauron Regulars in each.",
+    "combatTitle": "Desperate Battle",
+    "combat": "Both sides give every die in their Combat rolls and Leader re-rolls +1.",
+    "initiative": [
+      3
+    ]
+  }
+]

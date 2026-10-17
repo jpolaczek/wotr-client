@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="36" viewBox="0 0 96 36">
+  <!-- 9-slice inset slot that holds a force's Combat card button. Slices (points): 12. -->
+  <defs>
+    <linearGradient id="slot-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--ink); stop-opacity: 0.78"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark); stop-opacity: 0.55"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="94" height="34" rx="2.5" fill="url(#slot-fill)"/>
+  <rect x="1.5" y="1.5" width="93" height="33" rx="2.5" fill="none" style="stroke: var(--gilt-shadow)" stroke-width="0.8"/>
+  <rect x="3" y="3" width="90" height="30" rx="2" fill="none" stroke="#000" stroke-width="0.8" opacity="0.5"/>
+  <g style="fill: var(--gilt-mid)" opacity="0.9">
+    <path d="M4.5 7.2 L6.7 5 L8.9 7.2 L6.7 9.4 Z"/><path d="M87.1 7.2 L89.3 5 L91.5 7.2 L89.3 9.4 Z"/>
+    <path d="M4.5 28.8 L6.7 26.6 L8.9 28.8 L6.7 31 Z"/><path d="M87.1 28.8 L89.3 26.6 L91.5 28.8 L89.3 31 Z"/>
+  </g>
+</svg>

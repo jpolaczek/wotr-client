@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Sauron: the red lidless eye. -->
+  <g filter="url(#lift)">
+    <path d="M1.6 16 C6.6 7.6 25.4 7.6 30.4 16 C25.4 24.4 6.6 24.4 1.6 16 Z" fill="url(#emblem-ember)" stroke="#2a0704" stroke-width="0.9"/>
+    <path d="M16 8.8 C18 12 18 20 16 23.2 C14 20 14 12 16 8.8 Z" fill="#0b0503"/>
+    <ellipse cx="11.6" cy="13.4" rx="1.3" ry="0.7" fill="#fff3c4" opacity="0.8"/>
+  </g>
+</svg>

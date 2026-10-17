@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: retreat, an arrow turning back. -->
+  <g filter="url(#lift)">
+    <path d="M26 10 H12 A6 6 0 0 0 12 22 H20" fill="none" style="stroke: var(--ink)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M26 10 H12 A6 6 0 0 0 12 22 H20" fill="none" style="stroke: var(--ivory)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 6 L26 10 L20 14 Z" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="1"/>
+  </g>
+</svg>

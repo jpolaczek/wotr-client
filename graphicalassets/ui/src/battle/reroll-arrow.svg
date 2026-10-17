@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="10" height="14" viewBox="0 0 20 28">
+  <!-- Small gilt arrow between the first roll and the Leader re-roll result. -->
+  <path d="M3 14 H15 M10 7 L17 14 L10 21" fill="none" style="stroke: var(--gilt-edge)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M3 14 H15 M10 7 L17 14 L10 21" fill="none" style="stroke: var(--gilt-light)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

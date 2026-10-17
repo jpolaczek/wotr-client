@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-139: On the board: a gilt map pin. -->
+  <g filter="url(#lift)">
+    <path d="M16 29 C11 22 7 17.6 7 12.4 C7 7.2 11 3.4 16 3.4 C21 3.4 25 7.2 25 12.4 C25 17.6 21 22 16 29 Z"
+      fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.9"/>
+    <circle cx="16" cy="12.4" r="4" fill="url(#lacquer-red)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
+  </g>
+</svg>

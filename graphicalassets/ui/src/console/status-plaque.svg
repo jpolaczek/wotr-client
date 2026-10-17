@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="30" viewBox="0 0 120 30">
+  <!-- UI-159: status plaque of the turn console: an enamel band (free or shadow variant) with a gilt rule and
+       pointed ends; code lays the side emblem and the status text over it. Slices (points): 8 top and bottom,
+       18 left and right. -->
+  <defs>
+    <linearGradient id="plaque-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.55" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <path d="M10 2 H110 L118 15 L110 28 H10 L2 15 Z" fill="url(#plaque-fill)" style="stroke: var(--gilt-edge)" stroke-width="0.8"/>
+    <path d="M11 4.2 H109 L115.6 15 L109 25.8 H11 L4.4 15 Z" fill="none" stroke="url(#gilt)" stroke-width="0.9"/>
+    <path d="M12 6 H108" stroke="#ffffff" stroke-width="0.6" opacity="0.18"/>
+  </g>
+</svg>

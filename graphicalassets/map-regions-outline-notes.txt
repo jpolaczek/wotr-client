@@ -1,0 +1,45 @@
+Region outlines — working material, 2026-10-05
+
+Source: highedfmap.jpeg  (board delivered in the project). Tool: built-in imagegen; without CLI/API. Working version for preview: map-regions-outline-v8.png. Following the approval of a separate cut, further complete attempts were made. v11 – v14. None has undergone conformity checks on all regions; details: map-regions-outline-v11-v14.notes.txt They do not replace earlier versions. Prompts of this series: map-regions-outline-v7.prompt.txt and map-regions-outline-v8.prompt.txt Previous versions v1 – v7 was retained along with the propts. map-regions-outline-v9-rejected.png; its prompt is recorded in map-regions-outline-v9-rejected.prompt.txt Do not use v9 as a successor v8.
+
+Newer local adjustment based on drop from 18:08:  mirkwood-regions-outline-v1.png — a separate section of the Dark Forest. The reading of the boundaries and the results of the inspection are described in mirkwood-regions-outline-v1.notes.txt. Seven different closed forest fields were confirmed in this cutout. An attempt to transfer it to the full map: map-regions-outline-v10-rejected.png It was rejected due to a change in the proportions and boundaries of the neighbours. The cutout was not properly integrated; v10 does not replace the map v8.
+
+Correction based on 12 user's drop from 17:17–17:21:
+- v4: Rohan (Westemnet/Folde/Edoras), Lamedon and Dale; full original and three approximations of
+  the correct areas.
+- v5: Rhûn, Moria and Fangorn; full original and three close-ups.
+- v6: additional correction of Morii/Fangorn with direct pairs of wrong cut and original cut.
+Generator takes up to five input paths per call; first call from 14 references were rejected without generating. Therefore, the amendments were divided into groups. All the generations made used built-in imagegen; transparency was retained.
+
+Correction results were viewed but not controlled tracing each common edge or assigned 105 names to closed fields. Subsequent generations also modify minor curvatures. The term "without errors" has not been verified and is not the status of these files. For the production masks, it is still necessary to check the 1:1 geometry.
+
+Next series — eight user drops from 17:39–17:45:
+- 17.39.53 / 17.39.43: Dol Guldur and Southern Mirkwood.
+- 17.43.00 / 17.42.57: Narrows of the Forest, Eastern Mirkwood,
+  Northern Rhovanion.
+- 17.43.51 / 17.43.47: Northern Mirkwood, Withered Heath, Erebor,
+  Iron Hills, Woodland Realm and Dale.
+- 17.45.27 / 17.45.24: Mordor and Lake Núrnen.
+In each pair the first drop represents a wrong outline, the second original. The drops are located on the Desktop under the names Screenshot 2026-10-05 at ...png.
+
+v7: attempt to correct three Dark Areas Forests/Ereboru At the same time; references: v6, full original and three colored approximations. The result changed the divisions but did not confirm their compatibility with the original. Generator also changed the course of the adjacent boundaries; do not consider all of these changes as amendments. v8: Mordor correction with v7, full original and direct pair of drops. The lake was cut as transparent water. However, there remained a false division on the east side of Gorgoroth. NIE is completed. v9-rejected: the attempt to remove this division also integrated the correct Mordor fields, including the blurred division of Barad-dûr/Gorgoroth. The result was rejected. In the area obscured by the character panel, the original does not show the full course of the boundaries; its addition is not a mapping of the visible line 1:1 .
+
+Checks made on this series:
+- Reviewing the results of all three generations relative to the references.
+- sips -g pixelWidth -g pixelHeight -g hasAlpha graphicalassets/map-regions-outline-v7.png
+  graphicalassets/map-regions-outline-v8.png Result: both PNG have 1492 × 1054 pixels and alpha
+  channel.
+- Reading PNG v8 by Swift/CoreGraphics/ImageIO, without editing the image: pixels inside Lake Núrnen
+  (1310,801), Lake Rhûn (1299,430) and outside the map (20,20) have RGBA [0,0,0,0]. This confirms
+  transparency at proven points, not correct of the entire lake contours.
+- 105 regions and geometry of all neighborhoods have not been verified.
+
+Status: partially improved working material, still with border errors. The next stage requiring separate order is controlled tracing common geometry of regions and comparison with the original; it was not made as part of the generation of raster corrections. No change was made to code or task registry main project thread.
+
+Historical control of first versions:
+
+PNG v3: 1492 × 1054, alpha channel; 603598 pixels completely transparent. The subtitles, sediment symbols, terrain illustrations, frame and track board were removed. In the third attempt, most of the double river lines replaced the single boundaries.
+
+The boundaries are not an approved 1:1 mapping. The generator simplifies the shapes and leaves fine artifacts of the coast. Control of the combined white areas (RGB > 170, alpha > 200, area > 200 pixels) gave 109 areas in v3 and 123 in v2. The game catalog includes 105 regions. The raster area is not automatically a region of the game: islands, breaks and artifacts affect the result. No assignment of each field to the name of the region or control of all common borders and neighborhoods has been performed. Do not use this file as a source of traffic rules or a ready set of masks of regions without this verification.
+
+The regions for separate animation should be created by dividing one verified geometry, with common edges and a fixed coordinate system. Separate regenerating of each region's shape can cause gaps and mismatches of elements.

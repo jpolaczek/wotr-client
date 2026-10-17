@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="8" viewBox="0 0 16 8">
+  <!-- Soft shadow cast by a bar onto the map below it; stretched horizontally. -->
+  <defs>
+    <linearGradient id="cast-shadow-fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--cast-shadow); stop-opacity: 0.62"/>
+      <stop offset="0.45" style="stop-color: var(--cast-shadow); stop-opacity: 0.22"/>
+      <stop offset="1" style="stop-color: var(--cast-shadow); stop-opacity: 0"/>
+    </linearGradient>
+  </defs>
+  <rect width="16" height="8" fill="url(#cast-shadow-fade)"/>
+</svg>

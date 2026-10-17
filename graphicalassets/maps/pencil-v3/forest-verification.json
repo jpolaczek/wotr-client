@@ -1,0 +1,150 @@
+{
+  "task": "MAP-05",
+  "locality": {
+    "outside_windows_maximum_gray_difference": 0,
+    "outside_windows_changed_pixels_above_1": 0,
+    "details_are_crops_of_final_png": true,
+    "detail_order": [
+      "lorien",
+      "mirkwood",
+      "fangorn"
+    ]
+  },
+  "forests": {
+    "mirkwood": {
+      "visible_ink_pixels": 666873,
+      "outside_regions": 0,
+      "region_coverage": {
+        "western-mirkwood": {
+          "dark_pixel_fraction": 0.7422,
+          "occupied_cells": 56,
+          "cells": 56
+        },
+        "woodland-realm": {
+          "dark_pixel_fraction": 0.7463,
+          "occupied_cells": 100,
+          "cells": 100
+        },
+        "old-forest-road": {
+          "dark_pixel_fraction": 0.7398,
+          "occupied_cells": 79,
+          "cells": 79
+        },
+        "narrows-of-the-forest": {
+          "dark_pixel_fraction": 0.7205,
+          "occupied_cells": 68,
+          "cells": 68
+        },
+        "eastern-mirkwood": {
+          "dark_pixel_fraction": 0.7861,
+          "occupied_cells": 76,
+          "cells": 76
+        },
+        "dol-guldur": {
+          "dark_pixel_fraction": 0.7184,
+          "occupied_cells": 134,
+          "cells": 134
+        },
+        "southern-mirkwood": {
+          "dark_pixel_fraction": 0.7448,
+          "occupied_cells": 100,
+          "cells": 100
+        }
+      },
+      "internal_boundaries": [
+        {
+          "regions": [
+            "woodland-realm",
+            "old-forest-road"
+          ],
+          "wooded_samples": 56,
+          "samples": 56
+        },
+        {
+          "regions": [
+            "woodland-realm",
+            "western-mirkwood"
+          ],
+          "wooded_samples": 22,
+          "samples": 22
+        },
+        {
+          "regions": [
+            "old-forest-road",
+            "western-mirkwood"
+          ],
+          "wooded_samples": 16,
+          "samples": 16
+        },
+        {
+          "regions": [
+            "old-forest-road",
+            "narrows-of-the-forest"
+          ],
+          "wooded_samples": 34,
+          "samples": 34
+        },
+        {
+          "regions": [
+            "old-forest-road",
+            "eastern-mirkwood"
+          ],
+          "wooded_samples": 25,
+          "samples": 25
+        },
+        {
+          "regions": [
+            "dol-guldur",
+            "southern-mirkwood"
+          ],
+          "wooded_samples": 43,
+          "samples": 43
+        },
+        {
+          "regions": [
+            "dol-guldur",
+            "narrows-of-the-forest"
+          ],
+          "wooded_samples": 11,
+          "samples": 11
+        },
+        {
+          "regions": [
+            "dol-guldur",
+            "eastern-mirkwood"
+          ],
+          "wooded_samples": 3,
+          "samples": 3
+        },
+        {
+          "regions": [
+            "southern-mirkwood",
+            "eastern-mirkwood"
+          ],
+          "wooded_samples": 11,
+          "samples": 11
+        },
+        {
+          "regions": [
+            "narrows-of-the-forest",
+            "eastern-mirkwood"
+          ],
+          "wooded_samples": 39,
+          "samples": 39
+        }
+      ]
+    },
+    "fangorn": {
+      "visible_ink_pixels": 117616,
+      "outside_regions": 0
+    },
+    "lorien": {
+      "visible_ink_pixels": 63306,
+      "outside_regions": 0,
+      "ink_gray_lower_quartile": {
+        "before": 127.0,
+        "after": 73.0
+      }
+    }
+  }
+}

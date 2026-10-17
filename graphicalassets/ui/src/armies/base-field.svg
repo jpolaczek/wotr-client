@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="76" height="22" viewBox="0 0 76 22">
+  <!-- Figure base of a field army (UI-125): gilt-rimmed plinth in the enamel of its side (free/shadow).
+       The selected and eligible states light the glow beneath it (gold or the legal green); moved veils it.
+       Code stands the figure silhouettes on the top face and draws the nation emblems and the count. -->
+  <defs>
+    <linearGradient id="base-field-front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="38" cy="14" rx="36" ry="7.4" style="fill: var(--army-glow); opacity: var(--glow-opacity)" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <path d="M4 9 L4 14.5 Q4 18.6 8.8 18.6 L67.2 18.6 Q72 18.6 72 14.5 L72 9 Z" fill="url(#base-field-front)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <path d="M4.6 14.8 Q5.2 17.9 8.8 17.9 L67.2 17.9 Q70.8 17.9 71.4 14.8" fill="none" stroke="url(#gilt)" stroke-width="1"/>
+    <rect x="3" y="3.4" width="70" height="11" rx="5.5" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <rect x="4.4" y="4.6" width="67.2" height="8.6" rx="4.3" fill="url(#enamel-flat)"/>
+    <path d="M9 6.4 L52 6.4" stroke="#fff" stroke-opacity="0.14" stroke-width="1.1" stroke-linecap="round"/>
+  </g>
+  <rect x="2.6" y="3" width="70.8" height="16" rx="5.6" style="fill: var(--ink); opacity: var(--army-veil-opacity)"/>
+</svg>

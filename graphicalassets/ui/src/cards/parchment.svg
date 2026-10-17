@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <!-- 9-slice card face: yellowed parchment with brown ink rules and corner curls. Slices (points): 14.
+       A 3-point margin holds the playable/armed glow (variants raise --card-glow-opacity). -->
+  <defs>
+    <radialGradient id="parchment-fill" cx="0.5" cy="0.45" r="0.75">
+      <stop offset="0" style="stop-color: var(--parchment-light)"/>
+      <stop offset="0.7" style="stop-color: var(--parchment-mid)"/>
+      <stop offset="1" style="stop-color: var(--parchment-dark)"/>
+    </radialGradient>
+    <linearGradient id="parchment-burn-x" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--parchment-burn)" stop-opacity="0.55"/>
+      <stop offset="0.09" style="stop-color: var(--parchment-burn)" stop-opacity="0"/>
+      <stop offset="0.91" style="stop-color: var(--parchment-burn)" stop-opacity="0"/>
+      <stop offset="1" style="stop-color: var(--parchment-burn)" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="parchment-burn-y" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--parchment-burn)" stop-opacity="0.5"/>
+      <stop offset="0.09" style="stop-color: var(--parchment-burn)" stop-opacity="0"/>
+      <stop offset="0.91" style="stop-color: var(--parchment-burn)" stop-opacity="0"/>
+      <stop offset="1" style="stop-color: var(--parchment-burn)" stop-opacity="0.6"/>
+    </linearGradient>
+    <filter id="parchment-fibres" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.35" numOctaves="2" seed="7" stitchTiles="stitch"/>
+      <feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.24  0 0 0 0 0.1  0 0 0 0.16 0"/>
+    </filter>
+    <clipPath id="parchment-body"><rect x="3" y="3" width="90" height="90" rx="3"/></clipPath>
+    <g id="parchment-curl" fill="none" style="stroke: var(--card-rim)" stroke-linecap="round">
+      <path d="M7.5 15.5 C7.5 10.8 10.8 7.5 15.5 7.5" stroke-width="0.6"/>
+      <path d="M9.6 12.2 C10.6 10.4 12.2 9.6 13.8 9.9 C12.4 10.6 11.6 11.7 11.7 13.2" stroke-width="0.55"/>
+      <circle cx="9.2" cy="9.2" r="0.8" stroke="none" style="fill: var(--card-rim)"/>
+    </g>
+  </defs>
+  <g style="opacity: var(--card-glow-opacity)" fill="none">
+    <rect x="1.4" y="1.4" width="93.2" height="93.2" rx="4.4" style="stroke: var(--card-glow)" stroke-width="2.8" opacity="0.35"/>
+    <rect x="2.4" y="2.4" width="91.2" height="91.2" rx="3.6" style="stroke: var(--card-glow)" stroke-width="1.4" opacity="0.8"/>
+  </g>
+  <rect x="3" y="3" width="90" height="90" rx="3" fill="url(#parchment-fill)"/>
+  <g clip-path="url(#parchment-body)">
+    <rect x="3" y="3" width="90" height="90" filter="url(#parchment-fibres)"/>
+    <rect x="3" y="3" width="90" height="90" fill="url(#parchment-burn-x)"/>
+    <rect x="3" y="3" width="90" height="90" fill="url(#parchment-burn-y)"/>
+  </g>
+  <rect x="3.3" y="3.3" width="89.4" height="89.4" rx="2.8" fill="none" style="stroke: var(--parchment-burn)" stroke-width="0.6" opacity="0.8"/>
+  <g fill="none" style="stroke: var(--card-rim)">
+    <rect x="5.5" y="5.5" width="85" height="85" rx="1.6" stroke-width="1.1"/>
+    <rect x="7.4" y="7.4" width="81.2" height="81.2" rx="1" stroke-width="0.45" opacity="0.8"/>
+  </g>
+  <use href="#parchment-curl"/>
+  <use href="#parchment-curl" transform="translate(96 0) scale(-1 1)"/>
+  <use href="#parchment-curl" transform="translate(0 96) scale(1 -1)"/>
+  <use href="#parchment-curl" transform="translate(96 96) scale(-1 -1)"/>
+</svg>

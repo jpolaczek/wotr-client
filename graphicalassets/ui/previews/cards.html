@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Review composition of the separate UI-91 card pieces; Unity USS (Styles/Cards.uss) is the real layout. -->
+<style>
+  html, body { margin: 0; width: 420px; height: 420px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; }
+  body { background: #0e1619; position: relative; }
+  .tray { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 226px; box-sizing: border-box; border-style: solid; border-width: 22px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/panel.png") 44 fill stretch; }
+  .decks { position: absolute; left: 10px; right: 10px; top: 6px; height: 30px; display: flex; gap: 6px; }
+  .deck { flex: 1; box-sizing: border-box; border-style: solid; border-width: 10px; display: flex; align-items: center; justify-content: center; margin: -4px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/back.png") 28 fill stretch; color: #f1dfa6; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
+  .card { position: absolute; width: 175px; height: 48px; box-sizing: border-box; border-style: solid; border-width: 10px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment.png") 28 fill stretch; color: #3b2412; }
+  .card.playable { border-image-source: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment-playable.png"); }
+  .card.armed { border-image-source: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment-armed.png"); }
+  .card .t { position: absolute; left: 22px; right: 18px; top: -2px; font-size: 12px; font-weight: bold; line-height: 14px; }
+  .card .i { position: absolute; left: -2px; top: -1px; width: 18px; height: 18px; border-radius: 9px; border: 1.5px solid #3b2412; box-sizing: border-box; }
+  .expanded { width: 356px; height: 214px; left: 32px; bottom: 196px; z-index: 2; }
+  .expanded .t { font-size: 13px; top: 0; }
+  .expanded .k { position: absolute; left: 22px; top: 18px; font-size: 9px; letter-spacing: 1.2px; color: #7a4a1e; }
+  .expanded p { position: absolute; left: 0; right: 0; margin: 0; font-size: 11.5px; line-height: 15px; color: #3a2a18; }
+  .expanded .e { top: 34px; }
+  .expanded .rule { position: absolute; left: 40px; right: 40px; top: 112px; border-top: 1px solid #8c6a33; }
+  .expanded .c { top: 120px; }
+  .expanded .ch { position: absolute; left: 0; top: 103px; font-size: 9px; letter-spacing: 1.2px; color: #7a1a10; background: transparent; }
+  .expanded .f { position: absolute; left: 0; right: 0; bottom: -2px; text-align: center; font-size: 11px; font-weight: bold; color: #7a1a10; letter-spacing: .5px; }
+</style>
+</head>
+<body>
+<div class="tray">
+  <div class="decks"><div class="deck">CHARACTER · 14</div><div class="deck">STRATEGY · 16</div></div>
+  <div class="card playable" style="left:10px; top:42px"><i class="i"></i><div class="t">The Power of Tom Bombadil</div></div>
+  <div class="card" style="left:191px; top:42px"><i class="i"></i><div class="t">Wizard's Staff</div></div>
+  <div class="card" style="left:10px; top:96px"><i class="i"></i><div class="t">Paths of the Woses</div></div>
+  <div class="card playable" style="left:191px; top:96px"><i class="i"></i><div class="t">A Power too Great</div></div>
+  <div class="card" style="left:10px; top:150px"><i class="i"></i><div class="t">Dead Men of Dunharrow</div></div>
+</div>
+<div class="card armed expanded"><i class="i"></i>
+  <div class="t">The Last Battle</div>
+  <div class="k">STRATEGY CARD · ARMY EVENT</div>
+  <p class="e">Play only if a Free Peoples Army is in a Stronghold under siege. Move one Free Peoples Army from an adjacent region into that Stronghold. Then you may add one Elite unit to it.</p>
+  <div class="ch">COMBAT · INITIATIVE 2 · VALOUR</div>
+  <p class="c">Requires a Leader in your Army. Add +1 to all dice in your Combat roll.</p>
+  <div class="f">CLICK AGAIN TO PLAY</div>
+</div>
+</body>
+</html>

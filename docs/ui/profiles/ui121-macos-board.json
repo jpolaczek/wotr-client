@@ -1,0 +1,2260 @@
+{
+  "RecordedAt": "2026-10-13T17:00:26.383717Z",
+  "Suite": "board",
+  "InputSha256": "81776b4f5e521282d4ee3fb57d0b01829b32d8a386b11c7da6fdcb2ca27e54a2",
+  "Unity": "6000.6.0f1",
+  "Development": true,
+  "Editor": false,
+  "Platform": "OSXPlayer",
+  "OS": "Mac OS X 15.6.1",
+  "CPU": "Apple M1 Pro",
+  "MemoryMB": 16384,
+  "GPU": "Apple M1 Pro",
+  "GraphicsAPI": "Metal",
+  "TargetFPS": 60,
+  "VSync": 1,
+  "Workload": "Offline presentation projections; no server commands. Render-end timing excludes display/input hardware latency.",
+  "Refresh": "Own character inspection, private local setup drafts and Menu over actual Battle/Hunt decisions; authoritative projections remain unchanged.",
+  "Results": [
+    {
+      "Kind": "characters-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 106.30952054656656,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4064952495197449,
+          "P95": 13.677749782800674,
+          "P99": 16.858872026205063,
+          "Max": 17.968587577342987
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.3998209416666736,
+          "P95": 13.669333,
+          "P99": 16.752708,
+          "Max": 18.354834
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 3695.1277777777777,
+          "P95": 7029.0,
+          "P99": 45828.0,
+          "Max": 52109.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.5462791666666671,
+          "P95": 3.0168,
+          "P99": 3.8969,
+          "Max": 3.8969
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.2607458333333335,
+          "P95": 5.9128,
+          "P99": 6.9761,
+          "Max": 6.9761
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-sh",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.22362874448488,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5035688460080152,
+          "P95": 14.244501478970051,
+          "P99": 16.684537753462791,
+          "Max": 17.106497660279274
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4991658527777787,
+          "P95": 14.390958,
+          "P99": 16.748917,
+          "Max": 19.066542
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2804.4416666666666,
+          "P95": 6352.0,
+          "P99": 32208.0,
+          "Max": 32449.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.6737416666666667,
+          "P95": 3.2399,
+          "P99": 3.9553,
+          "Max": 3.9553
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.3631208333333338,
+          "P95": 6.0026,
+          "P99": 6.2116,
+          "Max": 6.2116
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-lords-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.90970775218337,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4420050930542256,
+          "P95": 13.688088394701481,
+          "P99": 16.795415431261063,
+          "Max": 17.562039196491241
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4368750972222166,
+          "P95": 13.40775,
+          "P99": 16.401416,
+          "Max": 17.295458
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 4537.9777777777781,
+          "P95": 4083.0,
+          "P99": 73872.0,
+          "Max": 74819.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.0558,
+          "P95": 4.617,
+          "P99": 4.7975,
+          "Max": 4.7975
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.3424125,
+          "P95": 5.9586,
+          "P99": 6.6593,
+          "Max": 6.6593
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-council-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.81447217157519,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4505031256833014,
+          "P95": 14.276919886469841,
+          "P99": 17.179874703288078,
+          "Max": 18.2162057608366
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4544611222222219,
+          "P95": 13.449625,
+          "P99": 17.373084,
+          "Max": 18.464042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 6050.4111111111115,
+          "P95": 48529.0,
+          "P99": 80410.0,
+          "Max": 84539.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.4509,
+          "P95": 4.4286,
+          "P99": 4.5963,
+          "Max": 4.5963
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.3286791666666664,
+          "P95": 6.6785,
+          "P99": 7.094,
+          "Max": 7.094
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-fate-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 109.80637649742248,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1069392497754755,
+          "P95": 13.429500162601471,
+          "P99": 14.70992062240839,
+          "Max": 16.17562398314476
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1022089166666653,
+          "P95": 13.43375,
+          "P99": 14.961083,
+          "Max": 16.668667
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 5987.1166666666668,
+          "P95": 48014.0,
+          "P99": 79151.0,
+          "Max": 79658.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 3.0179500000000004,
+          "P95": 4.62,
+          "P99": 7.1739,
+          "Max": 7.1739
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.7240416666666656,
+          "P95": 7.02,
+          "P99": 8.6882,
+          "Max": 8.6882
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-waiting-sh",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 109.4508154787266,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.136523977698138,
+          "P95": 13.468331657350063,
+          "P99": 14.544748701155186,
+          "Max": 19.898582249879837
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.13298206666666,
+          "P95": 13.299333,
+          "P99": 15.454583,
+          "Max": 20.017083
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 680.7166666666667,
+          "P95": 2381.0,
+          "P99": 14849.0,
+          "Max": 29680.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.9683958333333331,
+          "P95": 4.1954,
+          "P99": 4.8718,
+          "Max": 4.8718
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.8680458333333334,
+          "P95": 7.7347,
+          "P99": 8.1691,
+          "Max": 8.1691
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 110.11255335130923,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.081616669168902,
+          "P95": 13.378245756030083,
+          "P99": 14.48329072445631,
+          "Max": 16.599830240011215
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.07724721388889,
+          "P95": 13.4195,
+          "P99": 14.720792,
+          "Max": 16.450542
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2040.1222222222223,
+          "P95": 2519.0,
+          "P99": 72381.0,
+          "Max": 72812.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.3985791666666667,
+          "P95": 2.4778,
+          "P99": 4.0317,
+          "Max": 4.0317
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.8139625,
+          "P95": 5.4164,
+          "P99": 6.7933,
+          "Max": 6.7933
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-sh",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.62873381177886,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4671209614413474,
+          "P95": 13.623412698507309,
+          "P99": 16.976417973637581,
+          "Max": 17.756709828972816
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4632283222222213,
+          "P95": 12.914917,
+          "P99": 17.691417,
+          "Max": 17.943791
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 580.06111111111113,
+          "P95": 2381.0,
+          "P99": 13896.0,
+          "Max": 18549.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.9107249999999996,
+          "P95": 3.8592,
+          "P99": 3.9282,
+          "Max": 3.9282
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.8788416666666663,
+          "P95": 7.4275,
+          "P99": 11.4351,
+          "Max": 11.4351
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-battle",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 108.76077614839566,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1944912073409384,
+          "P95": 13.418374583125114,
+          "P99": 15.639044344425201,
+          "Max": 17.076119780540466
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.18891771666667,
+          "P95": 13.170167,
+          "P99": 15.657208,
+          "Max": 17.405333
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 398.725,
+          "P95": 2480.0,
+          "P99": 6479.0,
+          "Max": 11582.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.7357874999999998,
+          "P95": 4.3786,
+          "P99": 5.0786,
+          "Max": 5.0786
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.0821374999999995,
+          "P95": 6.2229,
+          "P99": 6.4056,
+          "Max": 6.4056
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-hunt",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 104.49158010228544,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5701490878127515,
+          "P95": 14.049751684069633,
+          "P99": 16.912627965211868,
+          "Max": 17.872123047709465
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5641367972222291,
+          "P95": 13.610042,
+          "P99": 16.32775,
+          "Max": 17.986416
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 365.69444444444446,
+          "P95": 2461.0,
+          "P99": 6210.0,
+          "Max": 6707.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.3607083333333332,
+          "P95": 3.8582,
+          "P99": 4.137,
+          "Max": 4.137
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.4694458333333338,
+          "P95": 5.3661,
+          "P99": 6.299,
+          "Max": 6.299
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 111.42718110770888,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 8.9744709509735312,
+          "P95": 13.081207871437073,
+          "P99": 14.556001871824265,
+          "Max": 15.978500247001648
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 8.9663920277777756,
+          "P95": 12.916458,
+          "P99": 14.643583,
+          "Max": 16.202958
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 3578.4388888888889,
+          "P95": 7012.0,
+          "P99": 45207.0,
+          "Max": 45904.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.7095041666666668,
+          "P95": 3.6643,
+          "P99": 4.1792,
+          "Max": 4.1792
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.3728708333333337,
+          "P95": 6.0348,
+          "P99": 6.516,
+          "Max": 6.516
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-sh",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.70018334575394,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.46072152712279,
+          "P95": 13.824256137013435,
+          "P99": 16.649710014462471,
+          "Max": 16.867000609636307
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4493874916666663,
+          "P95": 13.208042,
+          "P99": 16.222083,
+          "Max": 17.026458
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2774.3166666666666,
+          "P95": 6337.0,
+          "P99": 31080.0,
+          "Max": 31532.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.5913041666666663,
+          "P95": 5.739,
+          "P99": 7.3678,
+          "Max": 7.3678
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.4425416666666679,
+          "P95": 7.3643,
+          "P99": 10.8139,
+          "Max": 10.8139
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-lords-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 110.45321083668186,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.0536073367628784,
+          "P95": 13.284417800605297,
+          "P99": 15.188081189990044,
+          "Max": 16.621874645352364
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.0493506055555635,
+          "P95": 12.984292,
+          "P99": 15.302209,
+          "Max": 16.372291
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 4534.6972222222221,
+          "P95": 4115.0,
+          "P99": 73744.0,
+          "Max": 74129.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.1198708333333331,
+          "P95": 4.4683,
+          "P99": 4.5471,
+          "Max": 4.5471
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.5158708333333339,
+          "P95": 6.0867,
+          "P99": 6.3207,
+          "Max": 6.3207
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-council-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.00107345366473,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5237121593931491,
+          "P95": 14.564335346221924,
+          "P99": 16.952082514762878,
+          "Max": 17.462337389588356
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5164954944444489,
+          "P95": 13.552334,
+          "P99": 16.645458,
+          "Max": 17.589292
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 6021.1166666666668,
+          "P95": 47761.0,
+          "P99": 80090.0,
+          "Max": 80522.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.3583333333333329,
+          "P95": 4.1695,
+          "P99": 4.3886,
+          "Max": 4.3886
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.3184375000000008,
+          "P95": 7.1817,
+          "P99": 7.3862,
+          "Max": 7.3862
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-fate-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 110.55388007903487,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.04536321371173,
+          "P95": 13.193629682064056,
+          "P99": 16.76395907998085,
+          "Max": 17.077919095754623
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.0402547583333419,
+          "P95": 13.1785,
+          "P99": 15.668666,
+          "Max": 17.053584
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 5986.9805555555558,
+          "P95": 48174.0,
+          "P99": 79179.0,
+          "Max": 79594.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.47825,
+          "P95": 5.0448,
+          "P99": 5.1897,
+          "Max": 5.1897
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.3185416666666674,
+          "P95": 7.3962,
+          "P99": 7.8612,
+          "Max": 7.8612
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-waiting-sh",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.21951256618198,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5039406248057876,
+          "P95": 13.790915720164776,
+          "P99": 16.889916732907295,
+          "Max": 17.258914187550545
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5000050972222141,
+          "P95": 13.695292,
+          "P99": 16.517375,
+          "Max": 17.122834
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 574.06944444444446,
+          "P95": 2396.0,
+          "P99": 13913.0,
+          "Max": 18653.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.8693374999999997,
+          "P95": 5.6564,
+          "P99": 5.7606,
+          "Max": 5.7606
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.1375874999999995,
+          "P95": 8.9673,
+          "P99": 8.9948,
+          "Max": 8.9948
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-fp",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 102.23255075854149,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.7816203604452312,
+          "P95": 14.749794267117977,
+          "P99": 17.778918147087097,
+          "Max": 19.435374066233635
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.774750352777783,
+          "P95": 14.557666,
+          "P99": 17.300667,
+          "Max": 19.573417
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2043.2444444444445,
+          "P95": 2502.0,
+          "P99": 72364.0,
+          "Max": 72812.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.6410000000000002,
+          "P95": 3.9374,
+          "P99": 4.0743,
+          "Max": 4.0743
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.4064458333333332,
+          "P95": 6.0943,
+          "P99": 6.3128,
+          "Max": 6.3128
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-sh",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 109.44727600226554,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.136819448839459,
+          "P95": 13.167169876396656,
+          "P99": 15.093246474862099,
+          "Max": 17.609331756830215
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.12948206111111,
+          "P95": 12.851084,
+          "P99": 15.525792,
+          "Max": 17.667542
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 576.0916666666667,
+          "P95": 2413.0,
+          "P99": 13896.0,
+          "Max": 18636.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.9816166666666664,
+          "P95": 4.367,
+          "P99": 5.8677,
+          "Max": 5.8677
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.7302166666666658,
+          "P95": 7.8424,
+          "P99": 7.9677,
+          "Max": 7.9677
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-battle",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.18907284270999,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5066908850438061,
+          "P95": 13.910253532230854,
+          "P99": 16.820833086967468,
+          "Max": 18.42595636844635
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5032060055555565,
+          "P95": 13.398958,
+          "P99": 16.533792,
+          "Max": 19.779084
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 388.43611111111113,
+          "P95": 2480.0,
+          "P99": 6447.0,
+          "Max": 7798.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.3878958333333331,
+          "P95": 2.3921,
+          "P99": 4.262,
+          "Max": 4.262
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.6736375,
+          "P95": 4.8961,
+          "P99": 6.3688,
+          "Max": 6.3688
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-hunt",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 111.1284478898272,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 8.9985959400008948,
+          "P95": 12.852877378463745,
+          "P99": 15.03729447722435,
+          "Max": 16.718622297048569
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 8.9940414583333332,
+          "P95": 12.653666,
+          "P99": 15.334375,
+          "Max": 16.709875
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 382.0888888888889,
+          "P95": 2461.0,
+          "P99": 6242.0,
+          "Max": 11627.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.1081625,
+          "P95": 5.5305,
+          "P99": 5.8183,
+          "Max": 5.8183
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.3791791666666668,
+          "P95": 7.4003,
+          "P99": 8.7149,
+          "Max": 8.7149
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.93207114709128,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4400117846412783,
+          "P95": 13.92517052590847,
+          "P99": 16.330583021044731,
+          "Max": 16.76141656935215
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4277452777777757,
+          "P95": 13.262542,
+          "P99": 16.167917,
+          "Max": 17.359291
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 3618.2944444444443,
+          "P95": 7012.0,
+          "P99": 46272.0,
+          "Max": 47684.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.227066666666667,
+          "P95": 4.3647,
+          "P99": 4.4442,
+          "Max": 4.4442
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.0377624999999995,
+          "P95": 5.9635,
+          "P99": 6.0911,
+          "Max": 6.0911
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-sh",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 111.63285287918447,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 8.957936433661315,
+          "P95": 13.234332203865051,
+          "P99": 14.765582047402859,
+          "Max": 18.546747043728828
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 8.95278064166667,
+          "P95": 13.135083,
+          "P99": 14.989667,
+          "Max": 18.719834
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2786.4583333333335,
+          "P95": 6337.0,
+          "P99": 31369.0,
+          "Max": 32014.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.5008375,
+          "P95": 4.7566,
+          "P99": 5.6334,
+          "Max": 5.6334
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.2828333333333335,
+          "P95": 6.644,
+          "P99": 7.9896,
+          "Max": 7.9896
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-lords-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.68668237915927,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4619300889058238,
+          "P95": 14.229960739612579,
+          "P99": 16.615249216556549,
+          "Max": 17.258623614907265
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.469114624999996,
+          "P95": 13.841834,
+          "P99": 15.652125,
+          "Max": 17.251208
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 4533.1611111111115,
+          "P95": 4083.0,
+          "P99": 73729.0,
+          "Max": 74017.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.4565791666666663,
+          "P95": 4.4374,
+          "P99": 4.87,
+          "Max": 4.87
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.9718458333333335,
+          "P95": 6.7462,
+          "P99": 6.7875,
+          "Max": 6.7875
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-council-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 109.80020856855428,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1074508239722078,
+          "P95": 13.51191196590662,
+          "P99": 14.584828168153763,
+          "Max": 16.601955518126488
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1028389972222143,
+          "P95": 13.197541,
+          "P99": 15.119333,
+          "Max": 16.342209
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 6023.3611111111113,
+          "P95": 47584.0,
+          "P99": 80143.0,
+          "Max": 80394.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.2700708333333339,
+          "P95": 4.5424,
+          "P99": 5.0848,
+          "Max": 5.0848
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.2043375,
+          "P95": 7.1489,
+          "P99": 7.8675,
+          "Max": 7.8675
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-fate-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 104.69434160785163,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5516145824351248,
+          "P95": 13.710835017263889,
+          "P99": 16.450000926852226,
+          "Max": 17.549000680446625
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.54675496388888,
+          "P95": 13.707333,
+          "P99": 16.538875,
+          "Max": 17.889416
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 5985.0944444444449,
+          "P95": 47726.0,
+          "P99": 79294.0,
+          "Max": 79659.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.4755875,
+          "P95": 4.2976,
+          "P99": 4.7785,
+          "Max": 4.7785
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.1452458333333331,
+          "P95": 7.236,
+          "P99": 7.8082,
+          "Max": 7.8082
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-waiting-sh",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 109.01219989734449,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.173285200571021,
+          "P95": 13.960834592580795,
+          "P99": 15.687663108110428,
+          "Max": 16.673915088176727
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1671399583333315,
+          "P95": 13.824042,
+          "P99": 16.220916,
+          "Max": 16.8915
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 595.71944444444443,
+          "P95": 2381.0,
+          "P99": 14112.0,
+          "Max": 20296.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.2834874999999997,
+          "P95": 5.399,
+          "P99": 6.3287,
+          "Max": 6.3287
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.9750791666666667,
+          "P95": 7.5339,
+          "P99": 8.1588,
+          "Max": 8.1588
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 107.478782901095,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.3041619285941124,
+          "P95": 13.604712672531605,
+          "P99": 16.057582572102547,
+          "Max": 16.89266599714756
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.292322419444444,
+          "P95": 13.034458,
+          "P99": 15.997583,
+          "Max": 16.383625
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2036.0222222222221,
+          "P95": 2519.0,
+          "P99": 72364.0,
+          "Max": 72541.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.5492291666666667,
+          "P95": 4.2243,
+          "P99": 4.2729,
+          "Max": 4.2729
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.0415583333333327,
+          "P95": 6.3941,
+          "P99": 7.8186,
+          "Max": 7.8186
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-sh",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.59326296969761,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4703011525173988,
+          "P95": 14.564285986125469,
+          "P99": 16.995960846543312,
+          "Max": 17.388207837939262
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4631073361111042,
+          "P95": 12.988042,
+          "P99": 14.931083,
+          "Max": 16.234166
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 576.15,
+          "P95": 2381.0,
+          "P99": 13913.0,
+          "Max": 18549.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.8009249999999997,
+          "P95": 3.8124,
+          "P99": 3.8642,
+          "Max": 3.8642
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.7068166666666671,
+          "P95": 6.4804,
+          "P99": 6.5177,
+          "Max": 6.5177
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-battle",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 109.84796118634556,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1034916734012459,
+          "P95": 13.039916753768921,
+          "P99": 14.896995387971401,
+          "Max": 19.640207290649414
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.0993934055555563,
+          "P95": 12.867042,
+          "P99": 14.912167,
+          "Max": 19.644666
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 397.12777777777779,
+          "P95": 2480.0,
+          "P99": 6462.0,
+          "Max": 12415.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.1315583333333334,
+          "P95": 1.819,
+          "P99": 2.9584,
+          "Max": 2.9584
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.0884208333333336,
+          "P95": 3.7822,
+          "P99": 4.1487,
+          "Max": 4.1487
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-hunt",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "ReducedMotion": false,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 103.84408432854835,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.6298215393390922,
+          "P95": 14.659537933766842,
+          "P99": 16.643211245536804,
+          "Max": 16.852125525474548
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.62648343611111,
+          "P95": 13.576458,
+          "P99": 15.824,
+          "Max": 16.931834
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 389.21111111111111,
+          "P95": 2476.0,
+          "P99": 6210.0,
+          "Max": 14059.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.5597958333333333,
+          "P95": 3.8699,
+          "P99": 5.083,
+          "Max": 5.083
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.6989333333333332,
+          "P95": 5.8256,
+          "P99": 6.966,
+          "Max": 6.966
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 104.26787346316894,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5906818350259631,
+          "P95": 14.268126338720322,
+          "P99": 16.745705157518387,
+          "Max": 17.082164064049721
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.593397541666663,
+          "P95": 13.831792,
+          "P99": 16.54475,
+          "Max": 17.354167
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 3575.2444444444445,
+          "P95": 7044.0,
+          "P99": 44941.0,
+          "Max": 45420.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.058945833333333,
+          "P95": 4.016,
+          "P99": 4.3082,
+          "Max": 4.3082
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.7591208333333337,
+          "P95": 5.9612,
+          "P99": 7.1656,
+          "Max": 7.1656
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "characters-sh",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.97918767003623,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4358149178636577,
+          "P95": 14.264044351875782,
+          "P99": 16.556752845644951,
+          "Max": 17.302537336945534
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4318311444444376,
+          "P95": 13.454208,
+          "P99": 15.876708,
+          "Max": 18.024584
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2774.7388888888891,
+          "P95": 6352.0,
+          "P99": 31014.0,
+          "Max": 31437.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.6862125000000001,
+          "P95": 2.9957,
+          "P99": 3.5093,
+          "Max": 3.5093
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.2140374999999994,
+          "P95": 5.7478,
+          "P99": 6.1444,
+          "Max": 6.1444
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-lords-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.18488303176565,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5070695633896527,
+          "P95": 14.243877492845058,
+          "P99": 16.580540686845779,
+          "Max": 20.174667239189148
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5096973194444363,
+          "P95": 13.794292,
+          "P99": 15.887541,
+          "Max": 19.395042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 4533.2972222222224,
+          "P95": 4098.0,
+          "P99": 73712.0,
+          "Max": 74017.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.4242875,
+          "P95": 4.1501,
+          "P99": 5.1137,
+          "Max": 5.1137
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.9538916666666659,
+          "P95": 6.9995,
+          "P99": 7.4102,
+          "Max": 7.4102
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-council-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 108.15642789573054,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.2458674852322371,
+          "P95": 14.089626260101795,
+          "P99": 16.806498169898987,
+          "Max": 17.307290807366371
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.2384898305555581,
+          "P95": 13.247709,
+          "P99": 15.759333,
+          "Max": 16.647125
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 6018.6583333333338,
+          "P95": 47601.0,
+          "P99": 80047.0,
+          "Max": 80315.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.0956875,
+          "P95": 3.8557,
+          "P99": 4.3347,
+          "Max": 4.3347
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.8002458333333333,
+          "P95": 5.4913,
+          "P99": 6.9131,
+          "Max": 6.9131
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-fate-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 106.32652761544077,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4049906681498712,
+          "P95": 13.811210170388222,
+          "P99": 16.280705109238625,
+          "Max": 16.697419807314873
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.3941563416666742,
+          "P95": 12.970709,
+          "P99": 15.69525,
+          "Max": 15.880541
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 5980.775,
+          "P95": 47726.0,
+          "P99": 79115.0,
+          "Max": 79387.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.429275,
+          "P95": 4.2038,
+          "P99": 4.4801,
+          "Max": 4.4801
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.3734166666666665,
+          "P95": 6.6616,
+          "P99": 7.0847,
+          "Max": 7.0847
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "setup-waiting-sh",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 108.90554388031934,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1822690045874982,
+          "P95": 13.767666183412075,
+          "P99": 15.065710060298443,
+          "Max": 17.239788547158241
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.1784835777777811,
+          "P95": 13.313209,
+          "P99": 15.692458,
+          "Max": 18.230583
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 621.36388888888894,
+          "P95": 2413.0,
+          "P99": 13913.0,
+          "Max": 28500.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.0982916666666669,
+          "P95": 5.3496,
+          "P99": 6.0105,
+          "Max": 6.0105
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.3783375,
+          "P95": 8.6789,
+          "P99": 12.2609,
+          "Max": 12.2609
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-fp",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 106.3476378238344,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4031237596128552,
+          "P95": 13.745791278779507,
+          "P99": 16.447208821773529,
+          "Max": 17.641957849264145
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.3985082361111161,
+          "P95": 13.392292,
+          "P99": 15.797709,
+          "Max": 17.880166
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 2036.2472222222223,
+          "P95": 2502.0,
+          "P99": 72381.0,
+          "Max": 72381.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.6428291666666663,
+          "P95": 4.2315,
+          "P99": 4.3082,
+          "Max": 4.3082
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 3.2698291666666663,
+          "P95": 6.3166,
+          "P99": 6.8763,
+          "Max": 6.8763
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "homelands-sh",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 104.58135322366719,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.5619340271999445,
+          "P95": 14.2679987475276,
+          "P99": 16.631130129098892,
+          "Max": 17.312875017523766
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.55945701666667,
+          "P95": 13.26225,
+          "P99": 16.593625,
+          "Max": 17.242875
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 584.625,
+          "P95": 2413.0,
+          "P99": 13913.0,
+          "Max": 18653.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 2.0413166666666664,
+          "P95": 4.8589,
+          "P99": 5.7557,
+          "Max": 5.7557
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 4.3197458333333332,
+          "P95": 9.1681,
+          "P99": 9.246,
+          "Max": 9.246
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-battle",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 105.37018305101419,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.4903507903735669,
+          "P95": 14.365958049893379,
+          "P99": 16.635706648230553,
+          "Max": 17.080789431929588
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.486591341666669,
+          "P95": 13.3845,
+          "P99": 16.291542,
+          "Max": 17.443125
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 369.10277777777776,
+          "P95": 2480.0,
+          "P99": 6462.0,
+          "Max": 6479.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.8408666666666667,
+          "P95": 5.1368,
+          "P99": 5.3223,
+          "Max": 5.3223
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.9741875000000007,
+          "P95": 6.5206,
+          "P99": 7.0828,
+          "Max": 7.0828
+        }
+      },
+      "MotionEvidence": null
+    },
+    {
+      "Kind": "menu-hunt",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "ReducedMotion": true,
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 107.14720845031937,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 9.33295430149883,
+          "P95": 14.254712499678135,
+          "P99": 16.764746978878975,
+          "Max": 17.073206603527069
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 9.3164378472222182,
+          "P95": 12.95925,
+          "P99": 15.774208,
+          "Max": 17.3215
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 366.6611111111111,
+          "P95": 2461.0,
+          "P99": 6210.0,
+          "Max": 6547.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 24,
+          "Mean": 1.3512333333333333,
+          "P95": 2.6743,
+          "P99": 5.5279,
+          "Max": 5.5279
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 24,
+          "Mean": 2.4277291666666665,
+          "P95": 3.8948,
+          "P99": 8.6363,
+          "Max": 8.6363
+        }
+      },
+      "MotionEvidence": null
+    }
+  ]
+}

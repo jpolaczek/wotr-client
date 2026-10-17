@@ -1,0 +1,11 @@
+{
+  "version": "mordor-track-1",
+  "source": "UI-153: drawn over MapCanvas/terrain.jpg in map units; step 5 sits on the crater of Orodruin",
+  "entrances": [
+    { "region": "morannon", "path": [[1256, 852], [1271, 869], [1286, 887]] },
+    { "region": "minas-morgul", "path": [[1250, 924], [1268, 905], [1286, 887]] }
+  ],
+  "steps": [[1286, 887], [1306, 904], [1330, 912], [1355, 906], [1372, 884], [1349, 851]],
+  "path": [[1286, 887], [1295, 897], [1306, 904], [1318, 910], [1330, 912], [1343, 911], [1355, 906], [1366, 897],
+    [1372, 884], [1366, 866], [1349, 851]]
+}

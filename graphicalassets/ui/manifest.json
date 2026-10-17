@@ -1,0 +1,4251 @@
+{
+  "task": "UI-86",
+  "renderer": "headless Google Chrome",
+  "shared_sha256": {
+    "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
+    "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
+    "assets.json": "e0745f33723a6f10f68efc0889aaa46a5c70573d2aed3c7d71e029cea33b335d"
+  },
+  "assets": [
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/surfaces/topbar-plate.png",
+      "source": "src/surfaces/topbar-plate.svg",
+      "variant": null,
+      "logical": [
+        168,
+        56
+      ],
+      "pixels": [
+        336,
+        112
+      ],
+      "alpha": false,
+      "source_sha256": "249c0d33106df71bf2266c1ac106d6cf4416f13750749aa9108a576b0e43bb5d",
+      "png_sha256": "d2e13af0b3621c129def1ae990b68e079c3cd717a63e7a12a187eef412478db6"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/surfaces/cast-shadow.png",
+      "source": "src/surfaces/cast-shadow.svg",
+      "variant": null,
+      "logical": [
+        16,
+        8
+      ],
+      "pixels": [
+        32,
+        16
+      ],
+      "alpha": true,
+      "source_sha256": "5750df1efdc7bec13d2a9e8f5ebe83f2a531224b8278ccf87492cea4a310b2ec",
+      "png_sha256": "abf53a0d53a273b8d93db5f10fa9d5ef0435a5ec6b9e402caf4f8670230afcbc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/topbar-frame.png",
+      "source": "src/frames/topbar-frame.svg",
+      "variant": null,
+      "logical": [
+        192,
+        44
+      ],
+      "pixels": [
+        384,
+        88
+      ],
+      "alpha": true,
+      "source_sha256": "a2c6a6959ec9927de5327db317010a3707d876a6d26582581aaec0245a4572a1",
+      "png_sha256": "11eea06b1ee7c25e33038b40b880ceebe3c4f6418fd4119a61ed47bcfd6355bf"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/pennant-free.png",
+      "source": "src/frames/pennant.svg",
+      "variant": "free",
+      "logical": [
+        22,
+        28
+      ],
+      "pixels": [
+        44,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "b2bbd84c1cb5c60527f990ac57b1cbe685d930f0201ed12b4be4725fffa30b87",
+      "png_sha256": "506fa61a486992f371584d8a54befb26ca1ff08a3920bb1dcfc8198090143290"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/pennant-free-hover.png",
+      "source": "src/frames/pennant.svg",
+      "variant": "free-hover",
+      "logical": [
+        22,
+        28
+      ],
+      "pixels": [
+        44,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "b2bbd84c1cb5c60527f990ac57b1cbe685d930f0201ed12b4be4725fffa30b87",
+      "png_sha256": "956f2b0a53891e3e4d061730ec689b43a8fbdcdaf134d980b075ae338895df27"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/pennant-shadow.png",
+      "source": "src/frames/pennant.svg",
+      "variant": "shadow",
+      "logical": [
+        22,
+        28
+      ],
+      "pixels": [
+        44,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "b2bbd84c1cb5c60527f990ac57b1cbe685d930f0201ed12b4be4725fffa30b87",
+      "png_sha256": "5c0aacd5b45eba17e07b72970b521378f1b6c93a61104bdd44f33d1c23e2fa05"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/pennant-shadow-hover.png",
+      "source": "src/frames/pennant.svg",
+      "variant": "shadow-hover",
+      "logical": [
+        22,
+        28
+      ],
+      "pixels": [
+        44,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "b2bbd84c1cb5c60527f990ac57b1cbe685d930f0201ed12b4be4725fffa30b87",
+      "png_sha256": "f5967de3025e33b7b77ba56fba50d90c74417ab3c864ebad3069c98fea59fd7e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/cartouche.png",
+      "source": "src/frames/cartouche.svg",
+      "variant": null,
+      "logical": [
+        64,
+        44
+      ],
+      "pixels": [
+        128,
+        88
+      ],
+      "alpha": true,
+      "source_sha256": "343ca4c99594397710f43b57d75bb55aa5fa2970335bd0a03bb8bac7b6b0e13a",
+      "png_sha256": "c62853e301e13e6e9110192ea1c306226bac30e3b2ba2d96ab4bef341aa9bacf"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button.png",
+      "source": "src/frames/button.svg",
+      "variant": null,
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "6f5d1371a0d79b30842ccb8e338bc5ad6b19041e64811708f69f6f9cd81ddf18",
+      "png_sha256": "5a112246399d4c7e2c7cffc2d5320d5a6eb97b4d9e9e82bf46c1eb7443d85225"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-hover.png",
+      "source": "src/frames/button.svg",
+      "variant": "hover",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "6f5d1371a0d79b30842ccb8e338bc5ad6b19041e64811708f69f6f9cd81ddf18",
+      "png_sha256": "471c502add6996e18c557bd465b606714acc6d736095d325e962a6e8622a4a01"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-selected.png",
+      "source": "src/frames/button.svg",
+      "variant": "selected",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "6f5d1371a0d79b30842ccb8e338bc5ad6b19041e64811708f69f6f9cd81ddf18",
+      "png_sha256": "72dee2750177ffa92087b38d17bbbe3de42a9a302a9725ac172c182dfb3cdf0f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-pressed.png",
+      "source": "src/frames/button.svg",
+      "variant": "pressed",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "6f5d1371a0d79b30842ccb8e338bc5ad6b19041e64811708f69f6f9cd81ddf18",
+      "png_sha256": "45f74087d8bad656891b7080c521f9f633e6febfb29f6bef75bc5615eed87d65"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab.png",
+      "source": "src/rail/edge-tab.svg",
+      "variant": null,
+      "logical": [
+        94,
+        66
+      ],
+      "pixels": [
+        188,
+        132
+      ],
+      "alpha": true,
+      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
+      "png_sha256": "24ef6f7deb5e5358202ce9889e160b654582267cba78fe3e6afcbad98b98a918"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-hover.png",
+      "source": "src/rail/edge-tab.svg",
+      "variant": "hover",
+      "logical": [
+        94,
+        66
+      ],
+      "pixels": [
+        188,
+        132
+      ],
+      "alpha": true,
+      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
+      "png_sha256": "ce4ea5cf9f9947ee63d48789e1def770a735df3382ac87dcaf780f24b9039505"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-selected.png",
+      "source": "src/rail/edge-tab.svg",
+      "variant": "selected",
+      "logical": [
+        94,
+        66
+      ],
+      "pixels": [
+        188,
+        132
+      ],
+      "alpha": true,
+      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
+      "png_sha256": "cc739d7fd36dd9ce854032cac51a22c5ec1ae5c9d6305771aed28185c6fc59a8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-pressed.png",
+      "source": "src/rail/edge-tab.svg",
+      "variant": "pressed",
+      "logical": [
+        94,
+        66
+      ],
+      "pixels": [
+        188,
+        132
+      ],
+      "alpha": true,
+      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
+      "png_sha256": "846be6d3bb6c0f691e62fb5ab2787322fef04257839bb2c30fe57f990d563bc3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-available.png",
+      "source": "src/rail/edge-tab.svg",
+      "variant": "available",
+      "logical": [
+        94,
+        66
+      ],
+      "pixels": [
+        188,
+        132
+      ],
+      "alpha": true,
+      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
+      "png_sha256": "eec2f70050595fa0067569d4fd6c5d99f93be6aec7cae19741b5281bc741c10a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rail/edge-tab-available-hover.png",
+      "source": "src/rail/edge-tab.svg",
+      "variant": "available-hover",
+      "logical": [
+        94,
+        66
+      ],
+      "pixels": [
+        188,
+        132
+      ],
+      "alpha": true,
+      "source_sha256": "8af76e8ec48f9223da4e16f5ebe5411ca7753865fd95846aacceb2cfda8717d1",
+      "png_sha256": "7ba6f264e6eb05620a9b4ea19d38b40246fae90cb4ca46923d3f32a5c37ca730"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/glow.png",
+      "source": "src/frames/glow.svg",
+      "variant": null,
+      "logical": [
+        48,
+        48
+      ],
+      "pixels": [
+        96,
+        96
+      ],
+      "alpha": true,
+      "source_sha256": "1647ec9385c89be4328494574a6a0f2c5f6e47dc0f16f82c95109a9d17f9734d",
+      "png_sha256": "764cd798d0701aac2239ceb2c995378b3c38ee2a74cd9f4f1aba6597f5910f62"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/panel.png",
+      "source": "src/frames/panel.svg",
+      "variant": null,
+      "logical": [
+        256,
+        256
+      ],
+      "pixels": [
+        512,
+        512
+      ],
+      "alpha": true,
+      "source_sha256": "4256719b1956877b0383cb6b6730cea3a5a8f3f14da4352b52c874c080ef5d61",
+      "png_sha256": "e055067942309f0d51e6cca1e89e7332cc01a59444f47fe1ea249f3fb5833ed7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/panel-header.png",
+      "source": "src/frames/panel-header.svg",
+      "variant": null,
+      "logical": [
+        120,
+        32
+      ],
+      "pixels": [
+        240,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "0467504e1ba496592208e96e0500d6a17de317872053a738d24c2d1de3cf4b67",
+      "png_sha256": "97cca4598c5e66f5cec5749f91b964164c0964d068fa10183eda4a8b3fb6f600"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-square.png",
+      "source": "src/frames/button-square.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "a9f1c54647cfbdb2e793861a05b3094b55bd12ed2c23d0d0176b2cca065172c9",
+      "png_sha256": "de1f0b46150526ebcfc75ce3556c10bfdba84ae356d60b81c26acdd5cc4b77d4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-square-hover.png",
+      "source": "src/frames/button-square.svg",
+      "variant": "hover",
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "a9f1c54647cfbdb2e793861a05b3094b55bd12ed2c23d0d0176b2cca065172c9",
+      "png_sha256": "e22cbd962b6b5a1bf920b100faf5d88336d6c45123bef80075af7d9b3315030a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-square-pressed.png",
+      "source": "src/frames/button-square.svg",
+      "variant": "pressed",
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "a9f1c54647cfbdb2e793861a05b3094b55bd12ed2c23d0d0176b2cca065172c9",
+      "png_sha256": "ae5057630b34f36eb6f18bfae025fddacc151019aa8671a366ad7194326814c7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/entry.png",
+      "source": "src/frames/entry.svg",
+      "variant": null,
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "c414a52abf40251c28f9839dc69678a58f8c75d049294aced60d6044ad2d5e14",
+      "png_sha256": "ba699998cd5d28fb660271557f95a4262d685785d6cd19ee4f75f20978c0cea7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/entry-hover.png",
+      "source": "src/frames/entry.svg",
+      "variant": "hover",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "c414a52abf40251c28f9839dc69678a58f8c75d049294aced60d6044ad2d5e14",
+      "png_sha256": "a4902c5945805d6929162e677245046ed9a59a8ac6bcbc5515d5d347f025cdef"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/entry-shadow.png",
+      "source": "src/frames/entry.svg",
+      "variant": "shadow",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "c414a52abf40251c28f9839dc69678a58f8c75d049294aced60d6044ad2d5e14",
+      "png_sha256": "7c061fc71a4b862145b9ee44ceb6530e30ed52ca521ecb807d5dca357b1b4ccb"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/entry-shadow-hover.png",
+      "source": "src/frames/entry.svg",
+      "variant": "shadow-hover",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "c414a52abf40251c28f9839dc69678a58f8c75d049294aced60d6044ad2d5e14",
+      "png_sha256": "f4eadf33ee83443ca56b7d9536cfbc696f3269d1a82e96a85328b9932b4ce858"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/ornaments/divider.png",
+      "source": "src/ornaments/divider.svg",
+      "variant": null,
+      "logical": [
+        12,
+        44
+      ],
+      "pixels": [
+        24,
+        88
+      ],
+      "alpha": true,
+      "source_sha256": "66c02c297f4429956cbf5e642b4884ed366874d4b4283163d610f8c2b795448a",
+      "png_sha256": "513196c5df008475701c8c6b3489d7f9ecb783d4cd1e9bde7f14ba2932ffd6a2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/ornaments/divider-small.png",
+      "source": "src/ornaments/divider-small.svg",
+      "variant": null,
+      "logical": [
+        8,
+        30
+      ],
+      "pixels": [
+        16,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "5b2c2659b270580acd73605cefb3c64881b60f78f573aa513288cfe1ab2d8cea",
+      "png_sha256": "8e0bf7322d6de58696f6b8d29f4f4e918fd7cb0d0108c36a956ade820efb8498"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/ornaments/wax-seal.png",
+      "source": "src/ornaments/wax-seal.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "27d5c8a4e9f0334a829a270a8151c7e0b3ceab573ea3db4084b2f15a75a5b1f0",
+      "png_sha256": "1be07d1146ba99afe06efad5b4cd375e7b7df1f947116ff0be82ff05774cf292"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/ornaments/move-glow.png",
+      "source": "src/ornaments/move-glow.svg",
+      "variant": null,
+      "logical": [
+        44,
+        44
+      ],
+      "pixels": [
+        88,
+        88
+      ],
+      "alpha": true,
+      "source_sha256": "dc092fe64b40fe0addb54522b4808d30e926ff66e2a30013a0089833211bbcbe",
+      "png_sha256": "66a9c7bcc2784be47c581397dec1b64ab9320d07558ce6410b3ed1dff64e8fb0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion.png",
+      "source": "src/dice/medallion.svg",
+      "variant": null,
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "75aa1e91510796b3dd43108b81f6c3bcbced353725fe8bad80f63f5eea2b5113"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-hover.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "a7cae9637ba47d231bf58db586d4bec6c5347b7eba225b7af2570e0821075d40"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-free.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "free",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "d30283048955cc73386ca724ab95ba70c7ad4ade4a57e6c171332d3ecdbc9657"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-free-hover.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "free-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "c2fa5a09410f9ec6eda0789063ba0d05ae60763919d8c0335a512d78b3db7c7b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-free-selected.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "free-selected",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "bb5c7d82518c860a6626540ab4ac04c9cd2a472e4bab4d80e430ba0a71c40dc2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-shadow.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "shadow",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "9126688901c990d27d24717b5d6735fbf0cc92f66b93a68bc11593c299393c29"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-shadow-hover.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "shadow-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "8c6c579ae36ceadccbe0141e58224fff0550640907e06b733197847437d1c61c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-shadow-selected.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "shadow-selected",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "9c84260c1f8e4162f94783ce712832392d59879cf53e77f2076f601895ba1437"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-pressed.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "e2c996389594336e503223596bf9c4100f6de75bcacdf44af588533035a5c1fe"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-free-pressed.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "free-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "2baa142187b6d3f12168ec316366ecaa6de6b09638ac0e61a2ab138532857400"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion-shadow-pressed.png",
+      "source": "src/dice/medallion.svg",
+      "variant": "shadow-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "cd81acecc86cd05aa1e834cac8b5f75f6fee43d90d024c16d153fe132a8b5a66",
+      "png_sha256": "43f605902c9fd5ceaaad3219405abda56e8498bd9ccd598f36eb4c2ebd3cc0b4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/tile.png",
+      "source": "src/dice/tile.svg",
+      "variant": null,
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "677205137359b474b66d4bbb9dff10ca6963ce0c8c6f6551bcfb9663548d8786",
+      "png_sha256": "7eb005f4627542353f4a462bc2c666ad6ace0aaaae91494552e7cb36aa237922"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/tile-hover.png",
+      "source": "src/dice/tile.svg",
+      "variant": "hover",
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "677205137359b474b66d4bbb9dff10ca6963ce0c8c6f6551bcfb9663548d8786",
+      "png_sha256": "deca592ee908465136d4f7df3b65e06cfc44173252684f2752212ba8831cbf78"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/character.png",
+      "source": "src/dice/faces/character.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "69eeb2de52e4c9ef8d8d3276b977ae14390b96ff6dfb71b91b13cf8495e42b75",
+      "png_sha256": "a3136804593fb919c8da90ab989260cb9e7cfb5ad488d65a71f076c9ce832a91"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/army.png",
+      "source": "src/dice/faces/army.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "21be2335020efd4434f0a7b9925c126779e008a71c83286fe00beeb8866c5ef1",
+      "png_sha256": "d8911a90456a7971d0029d6f9ac9223a0916e31c59094e87d693bcfc0a8b1f8a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/muster.png",
+      "source": "src/dice/faces/muster.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "610d16c17a98f6ee8d3b5892cb44bf9bb94215ac3004709103c21e798d8505f6",
+      "png_sha256": "2077e1e54208b66a05576f6a0e93254beb854d7b597cfcf84e7c1fa634f1e916"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/army-muster.png",
+      "source": "src/dice/faces/army-muster.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "3e0f5bcfeae35f69c61440392a20000684843a7ef79c615f9ccfa4fc41cb50d4",
+      "png_sha256": "3ca5c6a85fd0c6a787ba15accb5e41e6eaa8b268a576404eb6ea19dced59fc29"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/event.png",
+      "source": "src/dice/faces/event.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "660046a4afc39f87024265b1415847a1732ab22dd76eb507f19c2e10664bbff8",
+      "png_sha256": "4b0f8096d21780b691ef99b848b7c2f7ea3d82cab0c0452bb68b3ae0c6abdd23"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/will.png",
+      "source": "src/dice/faces/will.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "436760306506b148cae6a21abeae8b62bcd096e7a796aaea937f7ba922edd596",
+      "png_sha256": "d2e25a9c079bfba61fe02a4b2b10925be2bdf561211eacd023047872106aca75"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/eye.png",
+      "source": "src/dice/faces/eye.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "7b208031d6e10f12064cac30b0e2bdddfa2d511d2033fb3f154fed043e56b209",
+      "png_sha256": "4087b664a081039501f37f50bd411c65ee967bacdcec1e44f91da442ad5ed253"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/card-draw.png",
+      "source": "src/dice/faces/card-draw.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "8f6751f0c60772de14eadb253ccf17371f4f8d9de6ee6af414b9d6adae0cb80f",
+      "png_sha256": "2cfc0c2db81d91b515aec7c1ca3ea6d2021999d8b476312a61122299f35e8812"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/use-balrog.png",
+      "source": "src/dice/faces/use-balrog.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "31180ea05ff210ef6aa09a863f2e265db52d716c1389dfc98b5b007a185a3474",
+      "png_sha256": "9f77797763d91d282358136c63268652fd02a529634843d045b4993ff1fb4669"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png",
+      "source": "src/tokens/politics-token.svg",
+      "variant": "free",
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "40ac20e945d9a8fd74239efdc5fddc8144a551a7f3241925f32e68d96f49e342",
+      "png_sha256": "2a006bf6f87c359ae842463314eecc99d30acf0bfbe68c109b19645a0325847c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-shadow.png",
+      "source": "src/tokens/politics-token.svg",
+      "variant": "shadow",
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "40ac20e945d9a8fd74239efdc5fddc8144a551a7f3241925f32e68d96f49e342",
+      "png_sha256": "aede2f93d2c1bf64cbe0ffa96b47a1eec3f26f621d59b871bef7b24762ae78e2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment.png",
+      "source": "src/cards/parchment.svg",
+      "variant": null,
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "0bac5a6438e23e99207b633ca4813add964a1fd9b11a61d92da2bb7e403ce0d3",
+      "png_sha256": "4fd9225149c0c602e82d4111ef7408787eb911779f9189b691eb33b59b435df1"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment-playable.png",
+      "source": "src/cards/parchment.svg",
+      "variant": "playable",
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "0bac5a6438e23e99207b633ca4813add964a1fd9b11a61d92da2bb7e403ce0d3",
+      "png_sha256": "8d66df3e7b050d4e31153b08a0927d1236b9b52ad34dad9e88cb6bd551b7d8b1"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/parchment-armed.png",
+      "source": "src/cards/parchment.svg",
+      "variant": "armed",
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "0bac5a6438e23e99207b633ca4813add964a1fd9b11a61d92da2bb7e403ce0d3",
+      "png_sha256": "f56bf600f54084911b756ac444dfe6574f8b0b1866a3fc1f0b16e3d7605233d3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/back.png",
+      "source": "src/cards/back.svg",
+      "variant": null,
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "42e0d4d1bbc606095dbb2709294a312536cd80bd3c9bb2d186be4c1cec1a47a4",
+      "png_sha256": "44c092d07d38c23a49bee189c60141b298912b320d49744bcca4b36f90db2823"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/cards/back-hover.png",
+      "source": "src/cards/back.svg",
+      "variant": "hover",
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "42e0d4d1bbc606095dbb2709294a312536cd80bd3c9bb2d186be4c1cec1a47a4",
+      "png_sha256": "6e8a64147ab64ef1dbc54c155665b829f2a7b85999d428f23c6c290c6fd27ace"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/cards.png",
+      "source": "src/icons/cards.svg",
+      "variant": null,
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "aa0c6a46de3326a2322981d99230e73f8b82d6db41ac28677b060df725303a79",
+      "png_sha256": "9ba89219b40a1ae19dcbec5314b20f208c726c2e86b101a82356c28907806fd7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/ring.png",
+      "source": "src/icons/ring.svg",
+      "variant": null,
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "92f23fe9fbc4fac92c515753ce638d5ad20c0c385efd810ddcceb2f7fac9ac4d",
+      "png_sha256": "aba1e42df012ff3fa50fd827bbbeacc7265cfbf538f6837a7b3cc49d1f02206b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/ring-captured.png",
+      "source": "src/icons/ring.svg",
+      "variant": "captured",
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "92f23fe9fbc4fac92c515753ce638d5ad20c0c385efd810ddcceb2f7fac9ac4d",
+      "png_sha256": "ec8e88eafa42d8ab3dc6a35c74646e55d3c415e164e98f79c70e0c4d85922090"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/spent.png",
+      "source": "src/icons/spent.svg",
+      "variant": null,
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "a961a85ff2a7273dae28aee455d149e055890e996422b349de2f5ef337c06155",
+      "png_sha256": "683574ce82ca4a7becac2eac797a4006cbde0a10903682786daba48cbd62f0a3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/hunt.png",
+      "source": "src/icons/hunt.svg",
+      "variant": null,
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "22c18e5c1ad0d432de431b794e66bc5c4dd73b729dc1a45fbd9d12933119f882",
+      "png_sha256": "adb5fff8c8df1b6039889eb84515ab354472b3e3e6d44a9c19e93253447fb89b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/log.png",
+      "source": "src/icons/log.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "681f48a8fe2da2c64a12aafa31a2e0906e8e1c6967b6c509f319a99cb0018ecb",
+      "png_sha256": "5cdf1e03e8a2b944fd4d7be052134565cf1f2d06269a08cca7b84817d2d5729d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/out.png",
+      "source": "src/icons/out.svg",
+      "variant": null,
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "9df18ee448708410502df9da90cf3545fa3e38e6bdd6843865eed9e993433715",
+      "png_sha256": "8bbbd44b3c5d26b74ea0a743b75df5c8178ceecab35593a82a62ba8d893a6991"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/politics.png",
+      "source": "src/icons/politics.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "065856d7b9eb030b7389bb763906c110c25bd72d1d59baa1c334096d3b0e4864",
+      "png_sha256": "5d35709db006d8afba14ab21f18cefe49b473893beda3478da46ce4f13fd2b58"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/effects.png",
+      "source": "src/icons/effects.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "8bb6af5d667324fc1aa072b2c76fc3a32ff0cc1a6c56ade33e76aa78a81ee1f3",
+      "png_sha256": "a59fd8343519f678fc0d1e1e9ab7cec32e498d2cb1b9329c14897115b687444d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/characters.png",
+      "source": "src/icons/characters.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "65a02fb8e767e5e5d4ed8d01b51bdf9018c98661d9625f876e3d4734d5069ce1",
+      "png_sha256": "6ed8fa4e97a66ba83bf1121227a77eb86d9446e8b5e0656a69c4095ebb52135e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/fellowship.png",
+      "source": "src/icons/fellowship.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "99630cf919d79ff1e47ce269fa0bca4063bc5bf5573a9b765f6c510b88a001ef",
+      "png_sha256": "325d905353068849c4c9ea40b2673f60b3f8e581c038f513d729efacb5a5d7ec"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/dwarves.png",
+      "source": "src/icons/nations/dwarves.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "7d5e64f3746ed2e9fd2c551dd93388f8912128973391139160e1d3aeef4ac2fb",
+      "png_sha256": "d2fdb69a4c6c138b5339abae4a6af7a4e585b5ac2da8cd425c3ab81135e86160"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/elves.png",
+      "source": "src/icons/nations/elves.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "fd18ec3e0624185a6ac0d56805d4faf2cf658d96a3a708252de7bfe12851d83c",
+      "png_sha256": "dc8a595b27eb4183fffa68609eb747264fd789409a312f035fa894d5c00c2890"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/gondor.png",
+      "source": "src/icons/nations/gondor.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "4ccc6a309e959aacfa95eda9b01c05b643838945376438b3a775bf447abcf673",
+      "png_sha256": "eb5e1ebf51afa51db7ded617b526e699665fca74e6941f12c23963900a98bac4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/north.png",
+      "source": "src/icons/nations/north.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "37c6b427267720fb7082a3b4754da2ecf0ffd3e5c60591ab7d96d4311cb17fa3",
+      "png_sha256": "38b9007d7dd4bb99c797f2b3dfa5f14abc8ed1b192d748ecd2ba8cf857cb6f8f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/rohan.png",
+      "source": "src/icons/nations/rohan.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "ef63564d02dc2f21adfb04e56bc16e7ef1f4fbfcab9ff5cb9b945c352195f84c",
+      "png_sha256": "b5654bd31491386c7ce78a24e08903966cd59fcaceddff2a87a4bcef6c8231a7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/isengard.png",
+      "source": "src/icons/nations/isengard.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "de0fb99aae8d962a0deb729e673eb9cdb94665967dbb07eebeef395de83037a3",
+      "png_sha256": "b5482c92e4867e4494b906b84466b711e387d7ecfbb426b8d0a6d6343776d174"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/sauron.png",
+      "source": "src/icons/nations/sauron.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "4f7cad839c7186f984e5ce0f8d5ae7e02bab6cf3fb0b390047ca1a13cc0ec023",
+      "png_sha256": "6c548ba1af0cfba6c594cb700b0544f29544712315b11d13229e984f70ba71c4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/southrons.png",
+      "source": "src/icons/nations/southrons.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "5baf0e72d870ce0e776b2bd7bd64fb5196e5898cd3fe375efc570229f12fed76",
+      "png_sha256": "3fd732878ed42212c207c4baf05316b7c140f986c757c15873fa4d5642c9736c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-field.png",
+      "source": "src/battle/scene-field.svg",
+      "variant": null,
+      "logical": [
+        168,
+        44
+      ],
+      "pixels": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "source_sha256": "b9fef783198ec939685255eb93d47448eb569ee70398d2dfbf3f1dff58c040e9",
+      "png_sha256": "0fa1f2e0d9693b0111070ee0b698fce5edb055613b89b342b5b877f8742406c0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-siege.png",
+      "source": "src/battle/scene-siege.svg",
+      "variant": null,
+      "logical": [
+        168,
+        44
+      ],
+      "pixels": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "source_sha256": "0a9ec2dbf2b48956f25fde973c3ca75e3ef6e894280fc609507a1500ff5f4909",
+      "png_sha256": "8d5cd75a33ec16163b7acc85906d265f28bd5be9bf7e7628b9c51ca32113f354"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-sortie.png",
+      "source": "src/battle/scene-sortie.svg",
+      "variant": null,
+      "logical": [
+        168,
+        44
+      ],
+      "pixels": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "source_sha256": "ac6cbf1bfe24e64f81197c3d4ae7711da5514a68007ab26154eb576d22d8bd43",
+      "png_sha256": "bca452b35537698abd8d9f41aaff78bfebe5d7572e2efb7d56f78a5b49781b56"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-relief.png",
+      "source": "src/battle/scene-relief.svg",
+      "variant": null,
+      "logical": [
+        168,
+        44
+      ],
+      "pixels": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "source_sha256": "bb4dbf01373a9f437bd0b890a05824117a2979be7483368221cf7e2c9b425d93",
+      "png_sha256": "6b2a617a9d0b4e2e6c8eb4450f6f5204065d777eeb9c18a374433e1224161777"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/force-frame-free.png",
+      "source": "src/battle/force-frame.svg",
+      "variant": "free",
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "0dcf0142b468b1982dc0b3870016698fe7472c69ae829a7e99e3301a12e20859",
+      "png_sha256": "c22bd65e83bdc6bb7cea9d40a5a29de132d48bc419fc4ff7d2787c83360b3701"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/force-frame-shadow.png",
+      "source": "src/battle/force-frame.svg",
+      "variant": "shadow",
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": true,
+      "source_sha256": "0dcf0142b468b1982dc0b3870016698fe7472c69ae829a7e99e3301a12e20859",
+      "png_sha256": "ad0733745d636a83cee8967ac66f4a07781fa53fab9e999b5fb2b65327c1f248"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-free.png",
+      "source": "src/battle/portrait-medallion.svg",
+      "variant": "free",
+      "logical": [
+        36,
+        36
+      ],
+      "pixels": [
+        72,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "50a2550ed0ce5a89a86e381c3b2a818fed6175a2172f76611d02cb834cbcb82d",
+      "png_sha256": "ce66ec1cde9949eb305c6e62e850f4cc7fd4a32c94e235b1821e90f0f780f965"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-shadow.png",
+      "source": "src/battle/portrait-medallion.svg",
+      "variant": "shadow",
+      "logical": [
+        36,
+        36
+      ],
+      "pixels": [
+        72,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "50a2550ed0ce5a89a86e381c3b2a818fed6175a2172f76611d02cb834cbcb82d",
+      "png_sha256": "30e57e150419fe183dc5827451d8a66d6e39da2e630f1261d9826c06bcf24b7c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-free-cancelled.png",
+      "source": "src/battle/portrait-medallion.svg",
+      "variant": "free-cancelled",
+      "logical": [
+        36,
+        36
+      ],
+      "pixels": [
+        72,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "50a2550ed0ce5a89a86e381c3b2a818fed6175a2172f76611d02cb834cbcb82d",
+      "png_sha256": "2142801199e82fbd2835e2206f465471a3ef672eaecf7d8aff2f7e1b8e974978"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-shadow-cancelled.png",
+      "source": "src/battle/portrait-medallion.svg",
+      "variant": "shadow-cancelled",
+      "logical": [
+        36,
+        36
+      ],
+      "pixels": [
+        72,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "50a2550ed0ce5a89a86e381c3b2a818fed6175a2172f76611d02cb834cbcb82d",
+      "png_sha256": "04affb2fb78a208f175105ec90e433f2f9a600267841e8856d5f67008d6608d7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/card-slot.png",
+      "source": "src/battle/card-slot.svg",
+      "variant": null,
+      "logical": [
+        96,
+        36
+      ],
+      "pixels": [
+        192,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "a944e86b2269c8620031295fb1da91d11c77bba80a6953387e2aa789b7ad524b",
+      "png_sha256": "ee34e122d06823c310d99da8c36fef2b4d73ef8c7d7a1e1fb718489e87d12504"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/garrison-shelf.png",
+      "source": "src/battle/garrison-shelf.svg",
+      "variant": null,
+      "logical": [
+        96,
+        28
+      ],
+      "pixels": [
+        192,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "fd2f408eb7037142cbaed7667540c26b0980ea2a4e3b0be2279909288966e725",
+      "png_sha256": "3e1b863856d07ca9f9da4f77d47a6ef21a43e2b1f70adcaea6cb0209c06cca9b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/strength.png",
+      "source": "src/battle/strength.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "8e066270e5c649392bbf2129d5f53e4feaaf825736f530523639968d6525044f",
+      "png_sha256": "d5c4526221e40385c75e9282ece0d94b112c04733a4bbc0f29b82eda07d86358"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/leadership.png",
+      "source": "src/battle/leadership.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "3fae43c4d2b1cccd9659c79eb7db758091e162d64088f32ebea9b01738370731",
+      "png_sha256": "645bd3dc76f66d5e4a57df2b7a72bfc7b59c2f85ff2ce1288ff7a3a011f8a3fa"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/dice.png",
+      "source": "src/battle/dice.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "e4db465678bb6db6a9d9d2ac62efb71b6c48499bec21bceb2401acc5a2c652aa",
+      "png_sha256": "e5f48bd1991ce48702c91bd2dd7ed3886eda607f2b69350791c23ad99fbae6c2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/hit.png",
+      "source": "src/battle/hit.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "b7d58842a921775eb46a9f4be26a115153c9fb4a87fc1d345ce8bf35bcaa1f65",
+      "png_sha256": "5f6ddcf44bf5c2880f30fcb390f21c3a347af91abb498447e460b328ecf34890"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/garrison.png",
+      "source": "src/battle/garrison.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "78213e7b4820a612389b57978beab79475e4199da8a1a79db4722f6aa46a52e1",
+      "png_sha256": "5a5ff6b53b52b3d14e193bb6410ebf0d24d28bb5edc242737e039764fc6cf67e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-ribbon.png",
+      "source": "src/battle/stage-ribbon.svg",
+      "variant": null,
+      "logical": [
+        120,
+        22
+      ],
+      "pixels": [
+        240,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "49cedcfea01a85bcb62941eb06e2e6dd1cb5e0675695bf852f274cfbe326a549",
+      "png_sha256": "1578f8ba6747319118c3ec86cfdbbeedaad5a0c80c84c3cf821cf8683884b246"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-marker.png",
+      "source": "src/battle/stage-marker.svg",
+      "variant": null,
+      "logical": [
+        24,
+        24
+      ],
+      "pixels": [
+        48,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "3c91db9814113ebd0b4e07ad6dcc62207ed24a4663857081c7e1f792d46e3f9e",
+      "png_sha256": "11641732be7c95d27f4ba36c1456cb1a1fe8c75e14c78d02423e9121c35bd601"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-cards.png",
+      "source": "src/battle/stage-cards.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "6f138bed00abb94f4dcc1d15e7a9d3077cdebcc04cea97510700add6c08cf9de",
+      "png_sha256": "3855e1dac75ac6d87e5ee44e964c436fb06d907b424f923f46b6e89b2c484439"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-roll.png",
+      "source": "src/battle/stage-roll.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "8dd267c37393379860a408b942b79ff27ae90bb5a8b3f0240a479df33ba90d92",
+      "png_sha256": "f10dbd409fff6efb86d1ea778b789a5d311e829407ed69713ad9de927e8529dd"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-reroll.png",
+      "source": "src/battle/stage-reroll.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "9683634b5f20f5b702eae1273c817732522a479980bfb05af7e1f15e4f9b540d",
+      "png_sha256": "11b9382a3a18bade832e8e39964d333b9446071541ed57b886ca815cf245695b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-losses.png",
+      "source": "src/battle/stage-losses.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "ae868a4b5d899b0f7d3936afc54c2e44146436e2a61c4dd94963a87d9dcf03a8",
+      "png_sha256": "514206f009215eb7744843114feace77ccf69f525c4fb8d0eda5037e98048f76"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-next.png",
+      "source": "src/battle/stage-next.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "732b22ec1aed773ca8e44b5ee6e63602ac38056abf81c77bf0a077185b9a1902",
+      "png_sha256": "4a9a9a178b20b0b389b5f8fdfffd97136c7ac7b228076abada50f009936a0457"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/no-card.png",
+      "source": "src/battle/no-card.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "313eb688a4f6068e7308608e901d773e6d8e53ca16622f21cfef591f01963219",
+      "png_sha256": "1aa8787adb1c06eab6badcf7f0c539d6829d6b8e16337a988f0f87609a0f8a75"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/skip-cards.png",
+      "source": "src/battle/skip-cards.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "43e9d31e3ddf06614e925dd289feb80a9e23e18def6489895fa86603ca25bc19",
+      "png_sha256": "9e2023c86f77e9fe282f999d4522ea3f824d8443e4e3d51a8160d2ebb06ad90c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-1.png",
+      "source": "src/battle/die-1.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "1b756da77272722c26ccce902fddce803330c4b4126715d0457e9b9faed8aaae",
+      "png_sha256": "8132627c406040cbc1e5a5f693d40eb6cdb3c257e3236f3e73ef0e44094d677d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-1-hit.png",
+      "source": "src/battle/die-1.svg",
+      "variant": "hit",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "1b756da77272722c26ccce902fddce803330c4b4126715d0457e9b9faed8aaae",
+      "png_sha256": "4b081b2df6e979103e2d6f5049e71225b0e97874f7fbabf1a53e5ba81306e84e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-1-rerolled.png",
+      "source": "src/battle/die-1.svg",
+      "variant": "rerolled",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "1b756da77272722c26ccce902fddce803330c4b4126715d0457e9b9faed8aaae",
+      "png_sha256": "a1cca7127d4d292a961aea43377c2b9c527d88eb4b9b05d8287883a26751e10e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-1-die-selected.png",
+      "source": "src/battle/die-1.svg",
+      "variant": "die-selected",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "1b756da77272722c26ccce902fddce803330c4b4126715d0457e9b9faed8aaae",
+      "png_sha256": "b23e71204ce09755d15f309a7218dd8cd79623f3fa187deb0b60dbfe27df3904"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-1-die-pressed.png",
+      "source": "src/battle/die-1.svg",
+      "variant": "die-pressed",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "1b756da77272722c26ccce902fddce803330c4b4126715d0457e9b9faed8aaae",
+      "png_sha256": "ee074d23c240fad6dabad063ba7101e35eb9ecd585b1afa95cfc39f6d9104f5d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-2.png",
+      "source": "src/battle/die-2.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "0a7f925db0f851603ea879095efc48070d15294222716cc396a4be6c2a381ba8",
+      "png_sha256": "791a75e7b7f04b2e782d235450bdb503069fc7b27da394b204013cf03309cc02"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-2-hit.png",
+      "source": "src/battle/die-2.svg",
+      "variant": "hit",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "0a7f925db0f851603ea879095efc48070d15294222716cc396a4be6c2a381ba8",
+      "png_sha256": "e3babff68a357c6b685ee8290aa8abe1fcfa2c9f38f3593c27e5e86add038fdc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-2-rerolled.png",
+      "source": "src/battle/die-2.svg",
+      "variant": "rerolled",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "0a7f925db0f851603ea879095efc48070d15294222716cc396a4be6c2a381ba8",
+      "png_sha256": "7c86fd76335799e423be20054dad5ad45e3077042ad66f2d2146b8e91c4d5940"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-2-die-selected.png",
+      "source": "src/battle/die-2.svg",
+      "variant": "die-selected",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "0a7f925db0f851603ea879095efc48070d15294222716cc396a4be6c2a381ba8",
+      "png_sha256": "74c8d5ca205f14a84f9771f08344c83bdc489a46cc919ec5b825bf25f9fa5761"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-2-die-pressed.png",
+      "source": "src/battle/die-2.svg",
+      "variant": "die-pressed",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "0a7f925db0f851603ea879095efc48070d15294222716cc396a4be6c2a381ba8",
+      "png_sha256": "d745f09d2b34b70824d0943c1435b5d70e7ca0df3bc6a32ba4bb3e200ce60b0d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-3.png",
+      "source": "src/battle/die-3.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "af3e88a4a5ab2bcef8138f10c6e4148b257cd2ae2336178a6f8fab870ebeb518",
+      "png_sha256": "9f7f244ebd95685be91fbfa9d1a1f648e722318365bd86ee4015ea76e32c72fc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-3-hit.png",
+      "source": "src/battle/die-3.svg",
+      "variant": "hit",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "af3e88a4a5ab2bcef8138f10c6e4148b257cd2ae2336178a6f8fab870ebeb518",
+      "png_sha256": "8137e955ba2de7931a185941096939c5bcf0ca72f25f36cd91b6ba38cc5f8330"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-3-rerolled.png",
+      "source": "src/battle/die-3.svg",
+      "variant": "rerolled",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "af3e88a4a5ab2bcef8138f10c6e4148b257cd2ae2336178a6f8fab870ebeb518",
+      "png_sha256": "359e0527302625ea1bc43eea85b706cffde73dcb1618020ae2629dbcf2a9dad9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-3-die-selected.png",
+      "source": "src/battle/die-3.svg",
+      "variant": "die-selected",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "af3e88a4a5ab2bcef8138f10c6e4148b257cd2ae2336178a6f8fab870ebeb518",
+      "png_sha256": "389922c86c3135e9d81a955e8f6748a54e935be82a1cf3fc8889fc65578f6bbb"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-3-die-pressed.png",
+      "source": "src/battle/die-3.svg",
+      "variant": "die-pressed",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "af3e88a4a5ab2bcef8138f10c6e4148b257cd2ae2336178a6f8fab870ebeb518",
+      "png_sha256": "0a5f468b3d510ab5dc5327bc6b390705945a64b79a597acd2138fa6f727d192f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-4.png",
+      "source": "src/battle/die-4.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "4c629d5b8145313ad4f895bf593a6609b3aedac342118d7fd12b837aa278ded3",
+      "png_sha256": "bc339c5094070a418cbd4e0aa06069fc75975f3ab124fb9c29855943db4b5430"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-4-hit.png",
+      "source": "src/battle/die-4.svg",
+      "variant": "hit",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "4c629d5b8145313ad4f895bf593a6609b3aedac342118d7fd12b837aa278ded3",
+      "png_sha256": "42da06857e444ba26f2eec4f32206cea78bb06463be7285c84aa4a949569c5de"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-4-rerolled.png",
+      "source": "src/battle/die-4.svg",
+      "variant": "rerolled",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "4c629d5b8145313ad4f895bf593a6609b3aedac342118d7fd12b837aa278ded3",
+      "png_sha256": "114ed04d057d1b6588064aa28d287c77b5955d8643b9c5833b512607cc5139ff"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-4-die-selected.png",
+      "source": "src/battle/die-4.svg",
+      "variant": "die-selected",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "4c629d5b8145313ad4f895bf593a6609b3aedac342118d7fd12b837aa278ded3",
+      "png_sha256": "1a61e43fd1f8d99fc161918697cc62dbbb823acc55303607d51a585c38654e46"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-4-die-pressed.png",
+      "source": "src/battle/die-4.svg",
+      "variant": "die-pressed",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "4c629d5b8145313ad4f895bf593a6609b3aedac342118d7fd12b837aa278ded3",
+      "png_sha256": "132b8433f8410bdb39f139680df94745b5fbffe83a85f8aa894cae3f4e99da8e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-5.png",
+      "source": "src/battle/die-5.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "a274bf700a7beb996d4167bf84bff4367baf5ab8c07f078f0c571d8627885565",
+      "png_sha256": "249d9d2d801c957bf4d069d40a77ac520d3d6e302366df65bb06e10adc33c3b0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-5-hit.png",
+      "source": "src/battle/die-5.svg",
+      "variant": "hit",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "a274bf700a7beb996d4167bf84bff4367baf5ab8c07f078f0c571d8627885565",
+      "png_sha256": "f991d09f543efd8c8f04c272f094dc8e7d3e9d587afd38f57ef93cd706c0fa72"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-5-rerolled.png",
+      "source": "src/battle/die-5.svg",
+      "variant": "rerolled",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "a274bf700a7beb996d4167bf84bff4367baf5ab8c07f078f0c571d8627885565",
+      "png_sha256": "79b42c7749bd9fb432cf48f3e6468f7450166aa4bdf3770b9d57e7dca2557f23"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-5-die-selected.png",
+      "source": "src/battle/die-5.svg",
+      "variant": "die-selected",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "a274bf700a7beb996d4167bf84bff4367baf5ab8c07f078f0c571d8627885565",
+      "png_sha256": "b26dc4d5376753632476886248cb9e9bf6ed605ca112cdded73bc2fcdc9e4bd9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-5-die-pressed.png",
+      "source": "src/battle/die-5.svg",
+      "variant": "die-pressed",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "a274bf700a7beb996d4167bf84bff4367baf5ab8c07f078f0c571d8627885565",
+      "png_sha256": "d7e0259d58ec55333665c0e08bde52eca8efb818ca06caade43e57253403e726"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-6.png",
+      "source": "src/battle/die-6.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "5cc2d4096c9153d4fbb3e6f361d889d1c8ed8d7523f9229c7a585dd4bf2dcf03",
+      "png_sha256": "6094ac47ba5ce3c3d3938d72342ad2a08210598c1fd8c2771f37427c28e88138"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-6-hit.png",
+      "source": "src/battle/die-6.svg",
+      "variant": "hit",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "5cc2d4096c9153d4fbb3e6f361d889d1c8ed8d7523f9229c7a585dd4bf2dcf03",
+      "png_sha256": "95a7c2730a6c99f7dba9bc86ae2237733918fbbe652f8db0c16cd9adcdeff373"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-6-rerolled.png",
+      "source": "src/battle/die-6.svg",
+      "variant": "rerolled",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "5cc2d4096c9153d4fbb3e6f361d889d1c8ed8d7523f9229c7a585dd4bf2dcf03",
+      "png_sha256": "649219f6cffebd504abad8f936bdaca3cf087199562382b5cea03659d1bf46a5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-6-die-selected.png",
+      "source": "src/battle/die-6.svg",
+      "variant": "die-selected",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "5cc2d4096c9153d4fbb3e6f361d889d1c8ed8d7523f9229c7a585dd4bf2dcf03",
+      "png_sha256": "3476b36018148b7026e76d36eff4ab8ea38eda4107b5655709a42d5a68749fb4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/die-6-die-pressed.png",
+      "source": "src/battle/die-6.svg",
+      "variant": "die-pressed",
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "5cc2d4096c9153d4fbb3e6f361d889d1c8ed8d7523f9229c7a585dd4bf2dcf03",
+      "png_sha256": "6b8e4a27e6b0a52e7d26dfa90933ea8d8f9c5dce28fcd2f3d86cc0eca7dd185b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/reroll-arrow.png",
+      "source": "src/battle/reroll-arrow.svg",
+      "variant": null,
+      "logical": [
+        10,
+        14
+      ],
+      "pixels": [
+        20,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "aa47a887d4124c46bea3ae60d2bf04034b906bdefa6a18dac3aa622b8c6fe761",
+      "png_sha256": "ee9bda036b790c252caba17851cf3c56d73a26f99a8b0808777be89e78ad94dc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/loss-downgrade.png",
+      "source": "src/battle/loss-downgrade.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "8b548a4a87a30001ce7d8af923552fa9d8e2186f71e26a75a1a63cf85fb368bd",
+      "png_sha256": "12761962cca5fe90e6c76af1b1435d532a2bf438dd9163847d3327c65f007104"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/loss-remove.png",
+      "source": "src/battle/loss-remove.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "8c2740ef23f30ce182403fc4e433750fa4ec4361118176256c571659193c0766",
+      "png_sha256": "de332b31f6459a4234262ccae671f469fdac341da02f6f73ae838808ab2c4f69"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/hit-seal.png",
+      "source": "src/battle/hit-seal.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "b5fcd095a58350feeb5eaeb6cb2b7d17ebb3f709b8a300b39ea7453ff597ae0f",
+      "png_sha256": "a6cc8ec4ed4620a89305e1052460a8ac796f8421462dac9639f403ca305e86f0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/hit-seal-spent.png",
+      "source": "src/battle/hit-seal.svg",
+      "variant": "spent",
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "b5fcd095a58350feeb5eaeb6cb2b7d17ebb3f709b8a300b39ea7453ff597ae0f",
+      "png_sha256": "f1a22896558e5d4da118288990d651d0dce1874a3d4a4ae123d5779cfd7e19ad"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/continue.png",
+      "source": "src/battle/continue.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "b3ea86c4ab0209be1ccb5dcbc75304f46f53b89b97b0912fbf79dc03ba65287b",
+      "png_sha256": "a1d9cc483df30005622473416bc1b112bf5dfe85ce0be4c2dfe40274b1ea5d3c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stop.png",
+      "source": "src/battle/stop.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "b519a53d49ad4ed7f3e37edcf4808e410f10d432162787aa505b4d25fc7ae431",
+      "png_sha256": "52041ffe545dfd6f1c019ed3db1db7494724cebac55c54905a1e71bde73c9ca7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/hold.png",
+      "source": "src/battle/hold.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "35a84b178545d90e8f805321b5902ab80b82d7db84084c562067db4762c110aa",
+      "png_sha256": "edde3abebdc0491e13de4730dbb950e5010d1565d48a45988e4a2a9ae2bea575"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/retreat.png",
+      "source": "src/battle/retreat.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "3072e80061d8b8273cee06c7a5006d3392d327aabdbc422e80ae05ca2c8e4111",
+      "png_sha256": "f3534eb731d5ba173a89fbe85d0f71b59a7ca9641503ddbec7c7b6296725fa8b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/advance.png",
+      "source": "src/battle/advance.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "ef96aa442e8331b1dce969f3a9c38830d8fe98a1ac6c38493a4fe4de96d55b6a",
+      "png_sha256": "8b14cdd315394b0993723287e8e632e45895ef4752871e7b7b3810537b1e37ee"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/extend-siege.png",
+      "source": "src/battle/extend-siege.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "ab8a415df723ef5d23f7446a6aa24c9fb1030a163c2940bc6735996924adf198",
+      "png_sha256": "33e98caf6d2b0258b002cd3b760af036bc7893b1eacb45aece4476ff036933a7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/round-tab.png",
+      "source": "src/battle/round-tab.svg",
+      "variant": null,
+      "logical": [
+        96,
+        24
+      ],
+      "pixels": [
+        192,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "16fda047affb2414bc87d29d39c6768e7b50168158d2eac6e1f06adcf5d9110e",
+      "png_sha256": "3e05dc9279ca00abc59b27b80fc9a3e44a1baaca806cfec26ce004b4a4e15f42"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "free",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "1e90efc964a357f57a7992fc894638ea4735772fd9158ce9cdbbaabda0298e5b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "shadow",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "052c9caeb57a37a1d458ca7724cdb015c89c70338ed921bbd7f90f37b132ddd7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-selected.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "free-selected",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "a7f3ccceb53bdbab67787bb338fdbedc7af6213e046541c0ad53c0da160db94a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-selected.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "shadow-selected",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "0ff66c2207f0aebbf9d50307cfb400c799b821a91b8360d1ace1d3279b26c653"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-eligible.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "free-eligible",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "aab2b8ed1878e298c39a7e8c3e22303a47511af8c846bf587993d45c7bae05d7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-eligible.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "shadow-eligible",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "d32f90a6a2f1f1a123ca3a6add51d123b93852346e868a4ca0f7d735b5f03636"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-pressed.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "free-pressed",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "267e3c957213b49051d9dfa159e83755daef32d339c52d46fde1f54fb9920e4c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-pressed.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "shadow-pressed",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "5c5fcf642c563ff4b1334a0747263dff6bdf5d30521ad47a65808e1362fdfa4e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-moved.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "free-moved",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "699eb9131194df2cacb399874253bc89f87fb878cd87ae4915f00d9ebbb01265"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-moved.png",
+      "source": "src/armies/base-field.svg",
+      "variant": "shadow-moved",
+      "logical": [
+        76,
+        22
+      ],
+      "pixels": [
+        152,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
+      "png_sha256": "305b06bb0ff2aaab353080a69bee7366ad4e38e34566d36c9d3f0503ac433a20"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "free",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "c98233507483e8772b0c0691fed04ac00912c1deac4702999828ec982c798c4e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "shadow",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "a8a9928a98b23961d8a0b4720458966dcd4598b5e198aabe10f6e7bfae81c187"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-selected.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "free-selected",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "08483f2eee7666565cef1c2dd97d5de91bda73d8d1f24df549ba496da19bc589"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-selected.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "shadow-selected",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "288f464d365e1e897ba0461315c9077e92b0d273f4ac5905dbf2d9a5bed5c840"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-eligible.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "free-eligible",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "8d7a5d4b29907aa85e41dced2970237994b6af4adc5f321b97b5dcf114192304"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-eligible.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "shadow-eligible",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "f7dabcfe3094bc91adea3e1105ff23e6b2dba73c5be1367c43d0d824ba87cb4e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-pressed.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "free-pressed",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "a207268c028d1853933c84b6d777040fde5833ee29e716cfe9f62aca23cc33c3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-pressed.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "shadow-pressed",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "0981c0741f31248d77e417935ed179c2768eadd1b55f79e357368a23713e4875"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-moved.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "free-moved",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "8517072566854b533c2a88451cd074ded3c8d8e9b6438d6bc5a2546acf9682db"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-moved.png",
+      "source": "src/armies/base-garrison.svg",
+      "variant": "shadow-moved",
+      "logical": [
+        76,
+        28
+      ],
+      "pixels": [
+        152,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
+      "png_sha256": "1cf1e9f82e4c8e320866afc64c525c7bceb7c5b34ba171eca0114e2b30d64b13"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "free",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "80e7d4a3d04867330b575e05949d24c7489ad10d30d91d3b7209c031cfcfc80b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "shadow",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "d4363a07fc3e536a79430a26b337efb70097b76cb58e3e4d645082dea6159155"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-selected.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "free-selected",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "0308084bb03689b0ada5ae9465483759ebcfc0df8b701c122bc452a6d989fd86"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-selected.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "shadow-selected",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "74ecf0bb9d408d684b2fe7deaa1b5b1ec0b19116edfb71930a322f8e1a3e611e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-eligible.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "free-eligible",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "230852ddcf044ee581dc5bc4bf4c1bac77ee7274517711b52b4a356456b02a8c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-eligible.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "shadow-eligible",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "8d9d71a3b30458b48085366b85cd2c3364e2fded83951eef6d94dfb4536b1656"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-pressed.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "free-pressed",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "1606ee55c63db3c5b38ca03a83a73ad285f79a4c07a8835d72c8a209c7f9b0b6"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-pressed.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "shadow-pressed",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "5c4819b9caeb4134794eef9899bdd9a9a2ea990171d06ebf42bede101c6262a9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-moved.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "free-moved",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "4cd8670e2bded9be1ef37ddb9ea76eb5df71f4a288527108eadd40a9dd9fb60f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-moved.png",
+      "source": "src/armies/token-field.svg",
+      "variant": "shadow-moved",
+      "logical": [
+        30,
+        30
+      ],
+      "pixels": [
+        60,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
+      "png_sha256": "54b6fe6da7a04d7aa063e7ada3f1d5dcd2a292f870643bf423a31a678f294c3a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "free",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "905246156940cce7e62fc3c5af9e175cd9adede5d9f5aef8d813ad4e1801db42"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "shadow",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "ae58dd0797987bea9aa63a2106026607dd8642993ce8e4cb6ba1d5abc03369e5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-selected.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "free-selected",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "35959b7d6f3c37850d41e706ebda36adb66b730f6428294c967f78e23e99a76c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-selected.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "shadow-selected",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "eba2845d5020a29844f07cb33e4ca2ab2961fdc0a8a775281c95b37c0234346c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-eligible.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "free-eligible",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "b2e7f4c9a642028ad8251d4873f062c4554dbd6fb985f867a2ae8a93c4580d14"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-eligible.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "shadow-eligible",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "3e68ce3871e5f572c9abb42ae28fe06c43ded586cd344ac9d878556bca8c42fe"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-pressed.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "free-pressed",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "5cbee75fe62d80e85a4f5bb743888adbd7aab0fd3105a60a8bd12266042e6f54"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-pressed.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "shadow-pressed",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "3adcdab8cac2783367c3db692220db28845bb77f79ba3c22b2c1edeb16a7bd5d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-moved.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "free-moved",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "0d8ee844a9f1510488654004aa675b52614238eed5081572972e94483baac335"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-moved.png",
+      "source": "src/armies/token-garrison.svg",
+      "variant": "shadow-moved",
+      "logical": [
+        30,
+        34
+      ],
+      "pixels": [
+        60,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
+      "png_sha256": "84273df1f2bedc6255c2dd65698f3df89a61f09fccccfb48ca43781b0d38c3b4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/moved-check.png",
+      "source": "src/armies/moved-check.svg",
+      "variant": null,
+      "logical": [
+        14,
+        14
+      ],
+      "pixels": [
+        28,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "b225f5817d9024e40132cf4520460e21a0416c281c360c241154b9d351ce95a4",
+      "png_sha256": "5ee2c58cf67fa75d1c826f8dd4ed724ffd35b664b8d8e9da6d11f550fed9693d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/ghost-outline.png",
+      "source": "src/armies/ghost-outline.svg",
+      "variant": null,
+      "logical": [
+        48,
+        48
+      ],
+      "pixels": [
+        96,
+        96
+      ],
+      "alpha": true,
+      "source_sha256": "a95936eb0abfdaca3d10d853bf93d308ffdffe30bcf0df478b7b1dd47736de8a",
+      "png_sha256": "fe67d9d771b9245f20374456fc38811e757f38a8a9794fe68d87fc607a795ad4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/reserve-slot.png",
+      "source": "src/armies/reserve-slot.svg",
+      "variant": null,
+      "logical": [
+        48,
+        48
+      ],
+      "pixels": [
+        96,
+        96
+      ],
+      "alpha": true,
+      "source_sha256": "40911f541f995497bb2db2af58fb6a8b259c2565b3582ca86248440db7b66751",
+      "png_sha256": "5cda0ae11191810773cc9e9dbc71ce7018d4afa41e1cf8a7cf448f92f2351cdf"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/reserve-slot-selected.png",
+      "source": "src/armies/reserve-slot.svg",
+      "variant": "selected",
+      "logical": [
+        48,
+        48
+      ],
+      "pixels": [
+        96,
+        96
+      ],
+      "alpha": true,
+      "source_sha256": "40911f541f995497bb2db2af58fb6a8b259c2565b3582ca86248440db7b66751",
+      "png_sha256": "c6c5fa7c4cd2aa5ee13a013991b5ddad18296b2e1a6fd8d4e0a66e094880578a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/reserve-slot-pressed.png",
+      "source": "src/armies/reserve-slot.svg",
+      "variant": "pressed",
+      "logical": [
+        48,
+        48
+      ],
+      "pixels": [
+        96,
+        96
+      ],
+      "alpha": true,
+      "source_sha256": "40911f541f995497bb2db2af58fb6a8b259c2565b3582ca86248440db7b66751",
+      "png_sha256": "6d0dfdfbd75112f1a5468b0468510854175a38e5e90836d1eeff5207a7f8ec32"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/budget-slot.png",
+      "source": "src/armies/budget-slot.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "3db35fe696229f56858cfb687eb396facedb46be15ec9a0a564b9ba9a82c367b",
+      "png_sha256": "d1d92aa004c37f9307759886293285d130ddcb923bb7355e2255fe1ebf10c586"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/budget-slot-filled.png",
+      "source": "src/armies/budget-slot.svg",
+      "variant": "filled",
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "3db35fe696229f56858cfb687eb396facedb46be15ec9a0a564b9ba9a82c367b",
+      "png_sha256": "26f7499ea00c99b660956654f7c8c45f64374cdd8014d95c7d1c965cc1bfcd4c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/back.png",
+      "source": "src/actions/back.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "188edd0af13502c1d1efc96dd8b873fbffbf173ada7d9e864c5cb1b2b14a5f4b",
+      "png_sha256": "230750cbf2846896530e2049f7bed7369dab69f9e8686927fe7c3653869bb758"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/battle.png",
+      "source": "src/actions/battle.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "becb5a8c7416d1224a32b2b306ee34048701aedd1954965763c962bb1991fed2",
+      "png_sha256": "4c292eb05066bbd3fe3e40cfdf4e703cd7207d3d589867dd0b985d9345f6ab58"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/close.png",
+      "source": "src/actions/close.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "ca862646234e96a969ce0606c11339ba3bd47347206449ede96300eb6d6bad92",
+      "png_sha256": "ddcbb6fde75399f3790b55b30a42c85f18eef28d77737ee54e5916b27ed404fe"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/confirm.png",
+      "source": "src/actions/confirm.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "9fe7a1f82bd588ab5edafaa44c647202a92c47f766ffb8ff616c3a987d7b67a6",
+      "png_sha256": "1adb0ee43c954a81367c51bfe965af51c90e32034fb8b5bbd5dae64b280fbbfc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/deselect-all.png",
+      "source": "src/actions/deselect-all.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "7706157a9947add091fa76c4e664f6e8c01be34a3b28bd193e4a7c5e999b8064",
+      "png_sha256": "9960c7bb966b4644b27ce83b1cdd93bdc1bb83e8cd0418538159b3bacf343897"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/expand.png",
+      "source": "src/actions/expand.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "cbfcd3bad92f3ec565675d17f007745677c6cc59c119e8a73fb65ba9b0c20867",
+      "png_sha256": "0517eb9df073718735789ed313a2de46e36eed280d5238a36da706e73570fad3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/help.png",
+      "source": "src/actions/help.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "d38026444802c09a2b85a094cdc475174d8ebe9c0e2ec98ab5c99989d90df8d9",
+      "png_sha256": "565a6ef1682c5c9eff69a3b8ac005f80fa83ff57d02e3e57651873c973544ba0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/locate.png",
+      "source": "src/actions/locate.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "bee51a12ace8b58606c53f17ce7a0031373b4de3238dbe00bb30f461eda6a67e",
+      "png_sha256": "b2aa066611654e511a79c2437bb132da6a84038f9d5474eff7d5a9a560177603"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/next.png",
+      "source": "src/actions/next.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "55ae6120c47f6d9f70ddd107c393bf50e983b72dd3af9a0e4d3e222b002b8000",
+      "png_sha256": "0133c3dbbc3fdf5552644985a32d8e79fa5fa1b1479febbc79fd47f651a0e64e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/pin.png",
+      "source": "src/actions/pin.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "55261a9fb444897bbe29df1d1db9224e3beafde3702ca42b360a4d1d42684162",
+      "png_sha256": "70a1a02bb05d0a736d28b8ccf967218fd79f896e29f20350036292c7b997b82b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/pinned.png",
+      "source": "src/actions/pinned.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "04ceab5a68ed02ae718678170b28c6220071e5e18572305ffbfce7f10ab0abaa",
+      "png_sha256": "b64e313b3a2cab89a03ad31872e5c3fbdaf0b9124dd053cf5d18d3334ccdab0d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/refresh.png",
+      "source": "src/actions/refresh.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "c52bced611106eda61cbf46905b25cae049cf4af1414e43f7899e08027f1f7fe",
+      "png_sha256": "03c1f1b00ffa68a51f99c1eeb380986e72afa4dbba3cc726600d4cfa67eafcd7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/reinforcements.png",
+      "source": "src/actions/reinforcements.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "2241267e1b16babf710f7855095c5c68d968f96296afe9276826efc023d9f112",
+      "png_sha256": "851b05d7257fc79706ecc893e1f5f3f367e9805c73aeb3de443a7256ee44a806"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/select-all.png",
+      "source": "src/actions/select-all.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "930e7fb11b6b3d904a05884b89ca16e7f6fa6d911b1b2b3a962700e3b368c4c0",
+      "png_sha256": "4c36b50791b05b17827b9d7d209d826428330f42433d5b75e08f71d1d2f936cc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/why.png",
+      "source": "src/actions/why.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "a1bda10ccab10318dd88791ae14421708c6a1cbdeaa8f1437bc9e23b3b99731a",
+      "png_sha256": "2f3a47744a2600c6997dc1531203bd30c1a1174769f90c3ebeb30b076cbfa129"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/collapse.png",
+      "source": "src/actions/collapse.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "2223bafcf2d1048772f314296a281c0921e0f215e31fe928f4297632960d1938",
+      "png_sha256": "338b72b46df11b59b69713c69d27e6e21e4e52790e7c84eb2a25989fb92fdb3b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/discard.png",
+      "source": "src/actions/discard.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "3deb19a18e2600839eb901a29bef4375eb188f10536c5056432afdc8dc9970bb",
+      "png_sha256": "8ecd3ba5b08f116bb581e31c47fcb2361cf19b4843be45b96c2bbefa03a8326a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/pass.png",
+      "source": "src/actions/pass.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "0f58957cbf42ef6066b81faf553d338dbf7b4ef5a7ebd2d189e2f4223293106f",
+      "png_sha256": "805b30eb0b57c8ef7ed092c87d0ed3344c470a382022b69e59a865bc5e5e686f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/level.png",
+      "source": "src/characters/level.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "f3ec0e298c1247fa8f35d05ae2fbce0ab1be69602df32c7b6387a923140a9f56",
+      "png_sha256": "df3cea6c9532032cc4e4c3996d294de729efea0fe21eefc906c63ab5545c5621"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/movement.png",
+      "source": "src/characters/movement.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "b50366f105a117d74a3a683240ae032612ed91923ef582666d2d16638a9de169",
+      "png_sha256": "0810fb9d34c4c4640292fc2b977c8cc8653dba8e22db5e9bed828434adad0413"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/flight.png",
+      "source": "src/characters/flight.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "e55a9cdc5d0e9c157bf1266a634ed18ee548b333d63d8f0adf4d45f4b1d674dd",
+      "png_sha256": "58764ae55c1f620ece605901719774f0ebb13d25ddd4c74a55c946ead4630b62"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/combat.png",
+      "source": "src/characters/combat.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "aaf88857061ed4a52fc2caeb1347e8841d18b1ab8f100dc59db9b67d133e7737",
+      "png_sha256": "b07e9d14aa037cd316812e8b43aa2510aaa31de5a2287d67bd895e0b8e3a2d48"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/ability.png",
+      "source": "src/characters/ability.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "9e8bc19e0deb89d5194f628ab223223537a37db3abfe9d72684d99cdffb9e49e",
+      "png_sha256": "271e2cc65205d459ac49ead531fa9af6b5bbd995e80356fec843e4eb674c6125"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/free-peoples.png",
+      "source": "src/characters/free-peoples.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "05b94f91d5ea0df8363e35a40e70b1100f3cc2fc69dc222e746a14139a7428e2",
+      "png_sha256": "eb05995fa212f8be86ac207b63d6faf8ee6686427bdab13b3d4ff5dfe68d4f32"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/on-board.png",
+      "source": "src/characters/on-board.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "a024210e2af63d5bae7686a112d9268fd5a7629ee9964d6a7d531913d27b3676",
+      "png_sha256": "01b46efd3743a8c45d876d4b44877c4c7e3263e1b0731db6e96c9b25ac2333c9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/waiting.png",
+      "source": "src/characters/waiting.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "fb8861d9090e9a80599905f0eb57b0a676ad7d28a62a853de5ccf531e15392e1",
+      "png_sha256": "f7bf43b150b7fa85a7db0e142dd5a091cce455a54788fec4d3417e0d54d632e3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/removed.png",
+      "source": "src/characters/removed.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "aa03b6e38ef2a373bccc66e792b7ac43c5a12b04e62c716a9be1a0e4bd4284f7",
+      "png_sha256": "48020cbc378f2afca00aaa52eed74c13438bb2004b888a09e6a4055d36e56796"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/characters/may-return.png",
+      "source": "src/characters/may-return.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "1f9348e346005c9a922eb2e0b2ca009999054f944a7eb33fb935dcd1803a4bc4",
+      "png_sha256": "f0ef630fe8e501a3c7c4a718a4c2f91bba8f068c124b3c0ba71c091a313e831a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/tile-standard.png",
+      "source": "src/hunt/tile-standard.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "889f89e0e9fa0fcd5dee6f471a87eafee239feb012a77a7fb218a103d30a733b",
+      "png_sha256": "93c9eee68fb74aa650d8aee82dd83c0780d30400274e1172c39e9592d43b1ae5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/tile-special-fp.png",
+      "source": "src/hunt/tile-special-fp.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "0d0c6119df39a03312137cc805dbeb2e443f0508269402faabfdc3c6cc168e83",
+      "png_sha256": "82a5ff89445bdaec6bfff5fed1a7e24d6e4a18273ccc31cdc55fbfb92fd785a0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/tile-special-sh.png",
+      "source": "src/hunt/tile-special-sh.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "1742c3226502035d27c83ca8ba11df9314fdd9bd0f2228d868d1715fcb511128",
+      "png_sha256": "0cb4d6f16b4ac942abb10bb8d0a670a358e4765bfe733a7503e707e25c2302a8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/tile-smeagol.png",
+      "source": "src/hunt/tile-smeagol.svg",
+      "variant": null,
+      "logical": [
+        28,
+        28
+      ],
+      "pixels": [
+        56,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "89b445a113121a73fa61abfea7906b87abb90f7337dde14feab7a8ffa9009118",
+      "png_sha256": "4d27e37fccb8133af0ddb9415646cfa6875b5bd38ab6041f64997e2ec0f3c135"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/eye.png",
+      "source": "src/hunt/eye.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "938a3d3c8e8a306a9034936a2733faa5cb8d3d6cc094952e07d3354da40fbfd5",
+      "png_sha256": "9b991afa856cb963f1d4e79e5467dc831e64a5ee7719aebd784fa3f1e95256e9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/die.png",
+      "source": "src/hunt/die.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "11ff3a5e90e51d2c6095de7a59d202695f6846a946723b82bd33ba53ced1c730",
+      "png_sha256": "bf761e24732b752be44808bee6c5473aa06ddfbd1db12afe5146678bafbdec27"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/smeagol.png",
+      "source": "src/hunt/smeagol.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "c2dd1a32207fe8e7829efbb17467ce01021c1e9e362b4e17d44ca841c2004241",
+      "png_sha256": "10d2253c0f6fd0ac1fce3a6bdcf8dcece20525d6062cfcf15e31f5df150fb3bb"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/reveal.png",
+      "source": "src/hunt/reveal.svg",
+      "variant": null,
+      "logical": [
+        10,
+        10
+      ],
+      "pixels": [
+        20,
+        20
+      ],
+      "alpha": true,
+      "source_sha256": "5f88280b7fc5753bc3edb9bd42abd28e92c7a783a56d1070dcb0c03ef935e2da",
+      "png_sha256": "d7d8987a9bb8fc4b60d7eaa45e5343ca50f42853165735bafbe01faa29ba5b39"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/stop.png",
+      "source": "src/hunt/stop.svg",
+      "variant": null,
+      "logical": [
+        10,
+        10
+      ],
+      "pixels": [
+        20,
+        20
+      ],
+      "alpha": true,
+      "source_sha256": "84b8439d921dcd293eff1088d8649ee76059d2b5b4f1a0b24c8540c00a268e74",
+      "png_sha256": "b4501b12b05ab23c6aaf4013b668a77086f8afd443160dd953b55999d8ae9426"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/kings.png",
+      "source": "src/hunt/kings.svg",
+      "variant": null,
+      "logical": [
+        10,
+        10
+      ],
+      "pixels": [
+        20,
+        20
+      ],
+      "alpha": true,
+      "source_sha256": "90b7bc8af264319a4b7d4b12ed4b892a9342928c5eca31ead1d4309ebfb20221",
+      "png_sha256": "bcd54bc1142f5f979163f8dc68e673b12ef1e9f25794c9d0ca4790e3505bda18"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/hunt-pool.png",
+      "source": "src/actions/hunt-pool.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "2bd0bc2d5cd5231720315e3dd8aec168ea830b26203f6d876e47814a2055d920",
+      "png_sha256": "6f0f4889240c4daa4acb77d66887d0448042238f2b5065f0f324e210f9541a1a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/slab.png",
+      "source": "src/mordor/slab.svg",
+      "variant": null,
+      "logical": [
+        24,
+        18
+      ],
+      "pixels": [
+        48,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "c138345aeb1809b1028da8ddc9f6b0d7c9a11ed188d80353159210d3b750f591",
+      "png_sha256": "9a75742f1a6c97706cc2dcd440e75c3211294e7ab555feae36503d691b04022e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/slab-passed.png",
+      "source": "src/mordor/slab.svg",
+      "variant": "passed",
+      "logical": [
+        24,
+        18
+      ],
+      "pixels": [
+        48,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "c138345aeb1809b1028da8ddc9f6b0d7c9a11ed188d80353159210d3b750f591",
+      "png_sha256": "2a97904119ff974d85aaeb9da7ca347637dd818a3621986d957f937695039ba7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/slab-next.png",
+      "source": "src/mordor/slab.svg",
+      "variant": "next",
+      "logical": [
+        24,
+        18
+      ],
+      "pixels": [
+        48,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "c138345aeb1809b1028da8ddc9f6b0d7c9a11ed188d80353159210d3b750f591",
+      "png_sha256": "70aca36c0629ed68cbe9e8caa58151f0e5eb03f74130c283039cbf5575d3bd3e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/crack-of-doom.png",
+      "source": "src/mordor/crack-of-doom.svg",
+      "variant": null,
+      "logical": [
+        34,
+        28
+      ],
+      "pixels": [
+        68,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "e425aa2077c456e161d239f6e62da9efb60f9645618bcd5dea890915dbe054b2",
+      "png_sha256": "a52900b3755374bfe43add1721df8a59f89847424800ec19b8f349e79102b408"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/crack-of-doom-next.png",
+      "source": "src/mordor/crack-of-doom.svg",
+      "variant": "next",
+      "logical": [
+        34,
+        28
+      ],
+      "pixels": [
+        68,
+        56
+      ],
+      "alpha": true,
+      "source_sha256": "e425aa2077c456e161d239f6e62da9efb60f9645618bcd5dea890915dbe054b2",
+      "png_sha256": "08fd4aeb3d2fb5cb375c5218b160e2a3a4bd7dacd46a0f1bd04685347d6f24b8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/gate.png",
+      "source": "src/mordor/gate.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "23d0c82d1aa78f1d60bf1d609ecc5726f497e9f8b175c219adb249c54abd811b",
+      "png_sha256": "33e2d62f6c78bcf0fa4701c65e9f6efef6703297360441f2bf0d4cbbbb9dc145"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/mordor/gate-next.png",
+      "source": "src/mordor/gate.svg",
+      "variant": "next",
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "23d0c82d1aa78f1d60bf1d609ecc5726f497e9f8b175c219adb249c54abd811b",
+      "png_sha256": "5db86167de33a146a923a28ce0b636c37981f88ad89d1f33b34af24149b02892"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/frame.png",
+      "source": "src/console/frame.svg",
+      "variant": null,
+      "logical": [
+        96,
+        96
+      ],
+      "pixels": [
+        192,
+        192
+      ],
+      "alpha": false,
+      "source_sha256": "b1f21de111d507786b44c845c7c1cf73d21c2c55f6f48db45ee8dd44496750fc",
+      "png_sha256": "84edbf98913adcd7c3bbdb1ca82b6390cf07235985c1d987f96da0f11267594f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/status-plaque-free.png",
+      "source": "src/console/status-plaque.svg",
+      "variant": "free",
+      "logical": [
+        120,
+        30
+      ],
+      "pixels": [
+        240,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "4c47f2e2be4d75805c2c08ac13845c9bdd68fac6183e3ff93083c03332b1bc18",
+      "png_sha256": "7e2339253f7e47cd783d98a0828f8ad98c7dad3653c8c6ed88724e207cbacec0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/status-plaque-shadow.png",
+      "source": "src/console/status-plaque.svg",
+      "variant": "shadow",
+      "logical": [
+        120,
+        30
+      ],
+      "pixels": [
+        240,
+        60
+      ],
+      "alpha": true,
+      "source_sha256": "4c47f2e2be4d75805c2c08ac13845c9bdd68fac6183e3ff93083c03332b1bc18",
+      "png_sha256": "53e66aa73de2e248d6d5efd42f65c66101c4cf9d3c8aaa927b7b42af29f94110"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/hunt-box.png",
+      "source": "src/console/hunt-box.svg",
+      "variant": null,
+      "logical": [
+        64,
+        40
+      ],
+      "pixels": [
+        128,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "e7a204c87fcc18dad13e1f03806ce9cd87561880ea62806e56a41c89bbb400dc",
+      "png_sha256": "87cad254feaaeb0ccc7ada5e5bd7258514196c2a720192b56ce8f9b7e9c581b9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/hunt-box-eligible.png",
+      "source": "src/console/hunt-box.svg",
+      "variant": "eligible",
+      "logical": [
+        64,
+        40
+      ],
+      "pixels": [
+        128,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "e7a204c87fcc18dad13e1f03806ce9cd87561880ea62806e56a41c89bbb400dc",
+      "png_sha256": "29667479cf983d5dca33ea4533fd1b63dbaca587040ff100f05b1021f710b8da"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/picker.png",
+      "source": "src/console/picker.svg",
+      "variant": null,
+      "logical": [
+        64,
+        44
+      ],
+      "pixels": [
+        128,
+        88
+      ],
+      "alpha": true,
+      "source_sha256": "c6a906c3138e2cf058806ba617cd94442b1c53a5ff1ee66ab96cc06343427505",
+      "png_sha256": "033e956e82bb49ba57ebb4dcb2753c4bc5f60bf694652fd276fddc05eca23495"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/picker-tail.png",
+      "source": "src/console/picker-tail.svg",
+      "variant": null,
+      "logical": [
+        18,
+        9
+      ],
+      "pixels": [
+        36,
+        18
+      ],
+      "alpha": true,
+      "source_sha256": "6b348edb645fc69a5e3e95ea1b248cadf723de1e2e7d11e71caad6c145c01b92",
+      "png_sha256": "351cf9752d0385d1bd622486357c55eb50da445af18afe6c07777dda172902e0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ribbon-free.png",
+      "source": "src/console/ribbon.svg",
+      "variant": "free",
+      "logical": [
+        300,
+        40
+      ],
+      "pixels": [
+        600,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "d5f7b50f2f46dc08f08dc09a7976f6b3a88ba27dbe100383a547aea462f9cede",
+      "png_sha256": "95119a1a6f61b486dfba66568561703224cdd6dafc91235d3095dcd24983df11"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ribbon-shadow.png",
+      "source": "src/console/ribbon.svg",
+      "variant": "shadow",
+      "logical": [
+        300,
+        40
+      ],
+      "pixels": [
+        600,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "d5f7b50f2f46dc08f08dc09a7976f6b3a88ba27dbe100383a547aea462f9cede",
+      "png_sha256": "87b31b65934ee46a64403c260c9a07e63448b6cbdb7697779e253463608d4de7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/status-glow.png",
+      "source": "src/console/status-glow.svg",
+      "variant": null,
+      "logical": [
+        48,
+        48
+      ],
+      "pixels": [
+        96,
+        96
+      ],
+      "alpha": true,
+      "source_sha256": "203de6a8bc4d75d48b96f2d5bd41eeefdcc831372972107639ad629fa5364e70",
+      "png_sha256": "3e080299e0275c424b48cf4b6f60d14ea9c6fe424b098c885eaa80cca3d54f77"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/stage-tile.png",
+      "source": "src/hunt/stage-tile.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "3945b91d44259bc4616053f23f6a1b900503461ba05e04c09261ad43ed10eb87",
+      "png_sha256": "bb248c258664241c2eedd2cf295f3a046c09b52e0b56c71ec26b763afbb479b7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/stage-damage.png",
+      "source": "src/hunt/stage-damage.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "1b5025808f4bfccd89e96ac39d9ba4d8f9c16285d1ba2858996d92ae01c0fd54",
+      "png_sha256": "25bb540c9c28eba153f80df890ad1c71b8ca8a838473c9ea4ad5ececc4d548f3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/stage-result.png",
+      "source": "src/hunt/stage-result.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "669a84fa6c2614b3264c378cf3b0716bd02865b07b8b05bcb27bcd457b0ddb1b",
+      "png_sha256": "d8756130a55da098708d0e6049fb553dc2a994553a10e45e7fcff808bab764c1"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/stage-step.png",
+      "source": "src/hunt/stage-step.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "eb49405b1fe230308cb13247c80e7ecb82f50569c869396915496c95e590c1f6",
+      "png_sha256": "6ca599f9a8f170f322277c7bb6e74f557c3c48d5c340f74a50e94c411900fbc6"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/scene-hunt.png",
+      "source": "src/hunt/scene-hunt.svg",
+      "variant": null,
+      "logical": [
+        168,
+        44
+      ],
+      "pixels": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "source_sha256": "fd18a6f495773f7e89d266ee890f6fa4b7074c5dd3d5d6632452fe513ab5ee5e",
+      "png_sha256": "0aaa1de2f5200b59ea2cc07814c855a9db48807386b04ff01d1670ddccb35011"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/scene-mordor.png",
+      "source": "src/hunt/scene-mordor.svg",
+      "variant": null,
+      "logical": [
+        168,
+        44
+      ],
+      "pixels": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "source_sha256": "169604bf41149b163c1365425d2da6e3223c50318be908fa5ff1e766ddf503a6",
+      "png_sha256": "8435755f67dc8638b44fb020d687bdd56718f6384a053ac71bc9d6e6c1147bf0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/choice-corruption.png",
+      "source": "src/hunt/choice-corruption.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "b6177ada9e9d4ba33e217245bd6bf846828add01f1b3f3e4eccfd699b4c9dbb0",
+      "png_sha256": "bb66dcbc8fec9ccb82608657952f4bf986b9388c67d1fec69bd7d94777f2610d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/choice-random.png",
+      "source": "src/hunt/choice-random.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "83570fccc92ce286819106192fe765b75130727f9cf65d731da18406542cbe3e",
+      "png_sha256": "b981e452f97f87e6b3a43191737316d0e50ede8cf932abeea1a92fd6bda8a7c2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/end/scene-ring-destroyed.png",
+      "source": "src/end/scene-ring-destroyed.svg",
+      "variant": null,
+      "logical": [
+        480,
+        120
+      ],
+      "pixels": [
+        960,
+        240
+      ],
+      "alpha": true,
+      "source_sha256": "d76efe95c365b838da31a34bcfc16efced8a4d1e03f1ca99ad27b9b105f7aee6",
+      "png_sha256": "a01dacf47cbbcdd4732d3cb74e2c450d88db91939f48514766c0c6cc9cea2e61"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/end/scene-ring-corrupted.png",
+      "source": "src/end/scene-ring-corrupted.svg",
+      "variant": null,
+      "logical": [
+        480,
+        120
+      ],
+      "pixels": [
+        960,
+        240
+      ],
+      "alpha": true,
+      "source_sha256": "8530ec428a288d3fc7437f00b17f85fd2aeec8002984173363e6908e61379ed4",
+      "png_sha256": "adf174b091d78b8dd0f56fc9a92b25bfd297ffd5a996a4dc490a5a688b1028ea"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/end/scene-military-free.png",
+      "source": "src/end/scene-military.svg",
+      "variant": "free",
+      "logical": [
+        480,
+        120
+      ],
+      "pixels": [
+        960,
+        240
+      ],
+      "alpha": true,
+      "source_sha256": "32a1caa4e9a2bd73bd8c86860e0dd5f5f00326f50ffda760472d56407c92c764",
+      "png_sha256": "f1a4c082473775521d6dc108c4983ed57dd7d91a098f95170f1ebceab4328f95"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/end/scene-military-shadow.png",
+      "source": "src/end/scene-military.svg",
+      "variant": "shadow",
+      "logical": [
+        480,
+        120
+      ],
+      "pixels": [
+        960,
+        240
+      ],
+      "alpha": true,
+      "source_sha256": "32a1caa4e9a2bd73bd8c86860e0dd5f5f00326f50ffda760472d56407c92c764",
+      "png_sha256": "d923fd7626654cc50f0f31cb44f062e2f01ebc0be94e456affb3924427d34e4a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/end/title-victory.png",
+      "source": "src/end/title-victory.svg",
+      "variant": null,
+      "logical": [
+        300,
+        56
+      ],
+      "pixels": [
+        600,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "8639e68148f8585ce395793f562b860251deec43fd9fea4c2d55240bd97b6eee",
+      "png_sha256": "47de2aedbca34f2331113d6780886805f11c707e2ed68567055a2777b77315ac"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/end/title-defeat.png",
+      "source": "src/end/title-defeat.svg",
+      "variant": null,
+      "logical": [
+        300,
+        56
+      ],
+      "pixels": [
+        600,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "007eb6be5ce9be5f8c2cff9462a11f985bc1ba4a88d5b0946555fc8af789aa3d",
+      "png_sha256": "97241732ee254a07b22505c7a778fd20990b710d42fe8a7b04e4bebaed12262b"
+    }
+  ]
+}

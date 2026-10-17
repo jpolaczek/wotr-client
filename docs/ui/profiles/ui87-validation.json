@@ -1,0 +1,187 @@
+{
+  "task": "UI-87",
+  "date": "2026-10-10",
+  "commits": {
+    "implementation": "db7f656",
+    "documentation": "9216f3a"
+  },
+  "reports": {
+    "editor_art_and_topbar": {
+      "report": ".artifacts/ui87/editor-art2.xml",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "0e08b4042d8516331f354df505218c1d42511b50aa02f173405c56408231ac80"
+    },
+    "editor_full": {
+      "report": ".artifacts/ui87/editor5.xml",
+      "total": 614,
+      "passed": 614,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "2af209f8e3f2d6b3434f879bc717fd8ca08e0adbcd31db6591d6fbc1612c75e7"
+    },
+    "play_left_rail_first": {
+      "report": ".artifacts/ui87/left1.xml",
+      "total": 2,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.LeftRailLayoutTests.IllustratedRailAndPanelsKeepTheirTargetsInFourLayouts"
+      ],
+      "sha256": "b22783eb25306cbfc239f77811dcd105b28ac71a376086fec65f8fa3c71c55b3"
+    },
+    "play_left_rail_after_fix": {
+      "report": ".artifacts/ui87/left2.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "d48b32a0b46edd063a0657c661b9da199be80fd064413dbb97a94d1cd520abd8"
+    },
+    "play_regression": {
+      "report": ".artifacts/ui87/regression6.xml",
+      "total": 78,
+      "passed": 68,
+      "failed": 10,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+        "Wotr.PlayTests.ContextHelpNeighborTests.AutomaticHelpAvoidsEffectsWhileBothManuallyMovedWindowsKeepTheirPositions",
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+        "Wotr.PlayTests.FloatingWindowTests.PersistentWindowsMoveClampAndKeepTheirPositionAcrossProjectionsAndCameraChanges",
+        "Wotr.PlayTests.InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered",
+        "Wotr.PlayTests.MapVisibilityTests.FellowshipMarkerStaysUnderPointerWhenItsOwnPanelReplacesRegionInspection",
+        "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce",
+        "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint"
+      ],
+      "sha256": "0b0c31bdca0053a9a908302b9785d294bebbdddd4543d3eb90f188ead096c849"
+    },
+    "baseline_f5a9161_four": {
+      "report": ".artifacts/ui87/baseline-four.xml",
+      "total": 4,
+      "passed": 0,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ContextHelpNeighborTests.AutomaticHelpAvoidsEffectsWhileBothManuallyMovedWindowsKeepTheirPositions",
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+        "Wotr.PlayTests.FloatingWindowTests.PersistentWindowsMoveClampAndKeepTheirPositionAcrossProjectionsAndCameraChanges",
+        "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint"
+      ],
+      "sha256": "2cfc925c77118e39d235dfcce10f7b592bbd3301f925e4696fdf2560f9829ba2"
+    }
+  },
+  "regression_attribution": {
+    "introduced_by_ui87_and_fixed": [
+      "LeftRailLayoutTests (first run): Characters close button 36 pt from the generic .action minimum overflowed the 32-point header; header buttons now drop that minimum and keep their declared size."
+    ],
+    "preexisting_identical_on_a2bf1f6_in_ui86": [
+      "BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+      "ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+      "ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+      "InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered",
+      "MapVisibilityTests.FellowshipMarkerStaysUnderPointerWhenItsOwnPanelReplacesRegionInspection",
+      "MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce"
+    ],
+    "preexisting_identical_on_f5a9161": [
+      "ContextHelpNeighborTests.AutomaticHelpAvoidsEffectsWhileBothManuallyMovedWindowsKeepTheirPositions",
+      "EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+      "FloatingWindowTests.PersistentWindowsMoveClampAndKeepTheirPositionAcrossProjectionsAndCameraChanges",
+      "RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint"
+    ],
+    "method": "Same isolated checkout mirrored to the earlier commit with .artifacts/ui86/use-tree.sh, then back to the worktree."
+  },
+  "imports": {
+    "import-1.json": "90483b287c93cf5f4830e1ad219e3c85c062707cff1df57024c5004856b78fc2",
+    "import-2.json": "e5cf99eb47a5e13425b430a3d4d1ab4977f6afcc827f75c541bdfb704d789d55",
+    "import-3.json": "e5cf99eb47a5e13425b430a3d4d1ab4977f6afcc827f75c541bdfb704d789d55",
+    "import-4.json": "e5cf99eb47a5e13425b430a3d4d1ab4977f6afcc827f75c541bdfb704d789d55",
+    "import-5.json": "e5cf99eb47a5e13425b430a3d4d1ab4977f6afcc827f75c541bdfb704d789d55"
+  },
+  "screenshots": {
+    "folder": ".artifacts/ui25/checkout/.artifacts/screenshots",
+    "files": [
+      "ui87-left-FreePeoples-characters-1366-1.00.png",
+      "ui87-left-FreePeoples-characters-1366-1.25.png",
+      "ui87-left-FreePeoples-characters-1920-1.00.png",
+      "ui87-left-FreePeoples-characters-1920-1.25.png",
+      "ui87-left-FreePeoples-effects-1366-1.00.png",
+      "ui87-left-FreePeoples-effects-1366-1.25.png",
+      "ui87-left-FreePeoples-effects-1920-1.00.png",
+      "ui87-left-FreePeoples-effects-1920-1.25.png",
+      "ui87-left-FreePeoples-politics-1366-1.00.png",
+      "ui87-left-FreePeoples-politics-1366-1.25.png",
+      "ui87-left-FreePeoples-politics-1920-1.00.png",
+      "ui87-left-FreePeoples-politics-1920-1.25.png",
+      "ui87-left-Shadow-characters-1366-1.00.png",
+      "ui87-left-Shadow-characters-1366-1.25.png",
+      "ui87-left-Shadow-characters-1920-1.00.png",
+      "ui87-left-Shadow-characters-1920-1.25.png",
+      "ui87-left-Shadow-effects-1366-1.00.png",
+      "ui87-left-Shadow-effects-1366-1.25.png",
+      "ui87-left-Shadow-effects-1920-1.00.png",
+      "ui87-left-Shadow-effects-1920-1.25.png",
+      "ui87-left-Shadow-politics-1366-1.00.png",
+      "ui87-left-Shadow-politics-1366-1.25.png",
+      "ui87-left-Shadow-politics-1920-1.00.png",
+      "ui87-left-Shadow-politics-1920-1.25.png"
+    ],
+    "reviewed": [
+      "ui87-left-FreePeoples-politics-1920-1.00.png",
+      "ui87-left-FreePeoples-effects-1920-1.00.png",
+      "ui87-left-FreePeoples-characters-1920-1.00.png"
+    ]
+  },
+  "art": {
+    "manifest": "graphicalassets/ui/manifest.json",
+    "manifest_sha256": "d529d7c7ed4adb29d935a21472ff49deb655fb7be54856952bac97d84ed64cbf",
+    "textures": 39,
+    "new_textures": 22
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "source": ".artifacts/ui87/BuildLocalMac-source.json",
+      "sha256": "10fab34ad445268046bd0b323e9b54f9b90eef70f48390aacfb52b0ac93f8d3b",
+      "commit": "9216f3a65c397390173ff821b4dbe26c3ed93eec",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui87/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui87/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui87/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64",
+      "output_files": 158,
+      "runtime_resources_files": 851
+    },
+    "BuildLocalWindows": {
+      "source": ".artifacts/ui87/BuildLocalWindows-source.json",
+      "sha256": "f2d1b48357b872cc199f3e024d572845a909317d16cbee33b1b584060f9f8e1d",
+      "commit": "9216f3a65c397390173ff821b4dbe26c3ed93eec",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui87/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows",
+      "output_files": 157,
+      "runtime_resources_files": 851
+    }
+  },
+  "macos_smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui87.smoke",
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 851,
+    "original_profile_byte_identical": true,
+    "login_tested": false,
+    "windows_runtime_tested": false,
+    "screenshot": ".artifacts/ui87/isolated-smoke/run/login.png (reviewed: login screen, no exceptions)"
+  },
+  "environment": [
+    "Disk filled during the first attempt; with the user's consent 2.19 GB of old closed-task binaries were removed (.artifacts/ui87/cleanup-2026-10-10.json). After a restart the shell locale had LC_CTYPE=UTF-8, which stops PostgreSQL 17 ('postmaster became multithreaded'); test commands ran with LC_ALL=en_US.UTF-8 without changing project scripts."
+  ],
+  "limits": [
+    "Windows runtime, Intel Mac and a manual match were not run.",
+    "Smoke reaches the login screen; the rail was reviewed in Editor Play screenshots.",
+    "This one. Play failures predate UI-87 (UI-80/UI-85 consequences) and are not accepted here."
+  ]
+}

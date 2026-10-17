@@ -1,0 +1,9 @@
+{
+  "task": "MAP-08",
+  "sha256": {
+    "graphicalassets/maps/parchment-v1/map-composition.svg": "362cebca36499c79b5d933f0f3bae5b63f53d66e770956f5b943e16a507fdfd0",
+    "graphicalassets/maps/middle-earth-parchment-v1.png": "87551dee3fd2b809249808ec6e8cbbe2d8eccbbc5abcf59d8db720ac53d3fd0a",
+    "graphicalassets/maps/parchment-v1/aged-paper.png": "c15da79b34124431409079c3a0a3f361e04865b7e2980d360c1d4cf0ecb3046b",
+    "graphicalassets/region-map/map-regions.svg": "bff49f0e67035b931f7e6013ae3b0792ccbd3fb8b70f37ae7f4502ce051389e5"
+  }
+}

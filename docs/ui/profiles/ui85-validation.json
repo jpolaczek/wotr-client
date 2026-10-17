@@ -1,0 +1,175 @@
+{
+  "task": "UI-85",
+  "date": "2026-10-09",
+  "implementation_commit": "ce24178",
+  "reports": {
+    "layout-menu8.xml": {
+      "result": "Passed",
+      "passed": "11",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-09 15:30:02Z",
+      "end-time": "2026-10-09 15:30:31Z",
+      "sha256": "67199df59586e793f296e0ed9579ce175713357e8a3263a18917218da0a8a4ba"
+    },
+    "cards8.xml": {
+      "result": "Passed",
+      "passed": "2",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-09 15:32:47Z",
+      "end-time": "2026-10-09 15:33:17Z",
+      "sha256": "6b53223c7ea43d35afeba657b6255714a158bdb7f7dc2226f43bc845d74404a2"
+    },
+    "map9.xml": {
+      "result": "Passed",
+      "passed": "8",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-09 15:34:24Z",
+      "end-time": "2026-10-09 15:36:50Z",
+      "sha256": "ebd651a3bf54c04f42c696c7bef84fafd0fe2fb431f25dc91d7426c63cf0e7e5"
+    },
+    "fellowship9.xml": {
+      "result": "Passed",
+      "passed": "2",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-09 15:38:19Z",
+      "end-time": "2026-10-09 15:38:23Z",
+      "sha256": "7d3f5cf933ebdc18d5ca7ce664c9b0341ee669e78c6d3ef1630672bb24a3e65b"
+    },
+    "editor9.xml": {
+      "result": "Passed",
+      "passed": "608",
+      "failed": "0",
+      "skipped": "0",
+      "start-time": "2026-10-09 15:38:47Z",
+      "end-time": "2026-10-09 15:39:02Z",
+      "sha256": "1d2133aa3f269efab6857964441cd8f4a6db9489aa4e2d386dc64041059a9dd7"
+    }
+  },
+  "unique_play_methods": 23,
+  "play_methods": [
+    "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsMapPanAndCaptureWithoutClosingInspectionOrUndoingTheDie",
+    "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft",
+    "Wotr.PlayTests.BoardMenuLayoutTests.MenuFitsFourLayoutsAndOutsideReleaseCannotReachTheMap",
+    "Wotr.PlayTests.BoardMenuLayoutTests.OneEscapeClosesOneWindowThenOneSelectionThenOpensMenuAndPreservesFocus",
+    "Wotr.PlayTests.BoardMenuLayoutTests.SettingsEscapeRemainsOwnedUntilReleaseAfterFocusReturnsToBoard",
+    "Wotr.PlayTests.BoardMenuLayoutTests.SettingsKeyboardObservationDoesNotConsumeOtherScreensAndDetachesWithBoard",
+    "Wotr.PlayTests.EdgeBoardLayoutTests.EdgePanelsStayOrderedAndLeftTabsAreExclusiveInFourLayouts",
+    "Wotr.PlayTests.EngineHandDiscardNetworkTests.MiniatureDoubleClicksAfterAnotherControlDiscardBothHandsAtFourLayouts",
+    "Wotr.PlayTests.EngineHandDiscardNetworkTests.PreviewContentDoubleClicksDiscardBothHandsAtFourLayouts",
+    "Wotr.PlayTests.FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce",
+    "Wotr.PlayTests.FellowshipPanelNetworkTests.MoveKeepsTheMapRegionAndRecoversTheExactWillDieReceipt",
+    "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship",
+    "Wotr.PlayTests.HuntLayoutTests.DockedHuntSurvivesCloseRefreshAndKeepsChoicesUntilANewOwnDecision",
+    "Wotr.PlayTests.HuntLayoutTests.MissingAndAutomaticReportsDoNotOpenOrAdvertiseAnUnrelatedChoice",
+    "Wotr.PlayTests.HuntLayoutTests.ThreeKnownStepsCanBeInspectedWithoutLosingTheLiveChoice",
+    "Wotr.PlayTests.MapViewportTests.EdgesCornersControlsFocusAndDetachNeverChangeTheMatch",
+    "Wotr.PlayTests.MapViewportTests.FixedOuterEdgesCornersAndHudPointsStayContinuousAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ModalWindowsCaptureAndOneAxisLimitsKeepEdgeNavigationSafeAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.MovingArmyCannotStopNavigationUnderAStationaryEdgePointerAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ReenteringTheViewportResumesEdgePanWithoutAnotherMoveAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ScreenRoutingKeepsTheLastPixelAndExactEdgesMovingAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ScreenSamplesRespectOutsideFocusButtonsCaptureAndModalUiAtFourLayouts",
+    "Wotr.PlayTests.MapViewportTests.ZoomPanLocateAndResizeCoverTheViewportForBothPlayers"
+  ],
+  "imports": {
+    "8": "4ba19cdb7da57df00c5f3ce50fdc28475584e34172fb325632734360441a13df",
+    "9": "1f23a95b1e653a22356f008d6f2ced0470c82bc31521ea34e50bde9e210f13e4",
+    "changed_between_imports": [
+      "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportEdgeTests.cs",
+      "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportScreenSafetyTests.cs",
+      "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportScreenTests.cs"
+    ],
+    "runtime_identical_between_imports": true,
+    "workspace_matches_import9": true
+  },
+  "screenshots": {
+    "folder": ".artifacts/ui85/screenshots",
+    "files_sha256": {
+      "ui34-hunt-AllocateHunt-1366-1.00.png": "6a43c1b5d679f16f0ecdaf7f2bb60612a2d8eac63c79e1f69d5454d9d9af558f",
+      "ui34-hunt-AllocateHunt-1366-1.25.png": "420473fd85c8f0f31d601a826d2c26bbb24dc80cc051208405a74cbc730576ba",
+      "ui34-hunt-AllocateHunt-1920-1.00.png": "d359728592075dd4d65fd055b5a2516f5b6ccc33c45029b24530535e8989da87",
+      "ui34-hunt-AllocateHunt-1920-1.25.png": "fa112c25318bf1df6639ef300ebccbf09ee84d3579767d9d16a7bffda9dd87d8",
+      "ui34-hunt-RerollHunt-1366-1.00.png": "b39a56808dd32c779db1e199dc12b9dcbd2cb3fa94796fbfa3fb1c0d65e10701",
+      "ui34-hunt-RerollHunt-1366-1.25.png": "378be66966f0c33941cde4306f22d45ff8daf8b4cb590c136394e5ac1621fe40",
+      "ui34-hunt-RerollHunt-1920-1.00.png": "57f69b5831b088785ecf4e5f07c12d5db3b64fcb8058d84f9d60f09887d4e3b9",
+      "ui34-hunt-RerollHunt-1920-1.25.png": "0f6028f511aa25a94f6c5a729c54bd5c63e48547e214b15f2872f757a10f6686",
+      "ui34-hunt-ResolveHuntDamage-1366-1.00.png": "6b1ab2a9c40c680d8088b9945c7cc8b9f3795ae8466f85d42f079583071df0ba",
+      "ui34-hunt-ResolveHuntDamage-1366-1.25.png": "95737b31dd74cd5568cc3594c0d19e9b871697f83efa68fd8c8efe20a1671d10",
+      "ui34-hunt-ResolveHuntDamage-1920-1.00.png": "20ccdde9ed051058012fad542ea71f935f288482a8dfaea9af6986a5bb65fdfa",
+      "ui34-hunt-ResolveHuntDamage-1920-1.25.png": "ed8e555188638edb3c74f37fcb885747aa6c2a645ec92313667bfafd02fb6a73",
+      "ui34-hunt-RespondEffect-1366-1.00.png": "af04672692a5e6570cbbee4014e884304b8b191b0d48ee119a18de0800172a14",
+      "ui34-hunt-RespondEffect-1366-1.25.png": "1180804fa715c5891016504eaae105c5cec82430a5b84fd0fadc398f21aaa38c",
+      "ui34-hunt-RespondEffect-1920-1.00.png": "ab2bea6895ab7f0ffee2b821dbf7601d3b090706b39a5125bd28690722a624e5",
+      "ui34-hunt-RespondEffect-1920-1.25.png": "f4630c56b2fca892205d77ebb6354f2e70575505931b585caad1a82efa379598",
+      "ui34-hunt-SelectGuide-1366-1.00.png": "d232b732f17bedfa571191760b9c805def04d42caa3cb452e6f0be9052595cd1",
+      "ui34-hunt-SelectGuide-1366-1.25.png": "61e9fe6698424bd71899acc457703449a691740b2ce231559acef58e5f6bf235",
+      "ui34-hunt-SelectGuide-1920-1.00.png": "0ac3e8cd49240e1f66ade829cc1cd4b039d24a15ac2371a8b8c74dd8c8fecb3d",
+      "ui34-hunt-SelectGuide-1920-1.25.png": "1e859cfa5bfa89384cf55c6fca6326d9277b203428a3a22dc1eb0a3ee2a86c55",
+      "ui85-board-FreePeoples-1366-1.00.png": "3f4db5d7c0341092661dc63b4e12cf85e1266b30a6054956ec6756a4e5089e93",
+      "ui85-board-FreePeoples-1366-1.25.png": "76f69bc7c6db46443574ebf23628758ef002bab03f64c691e587c877c9f25593",
+      "ui85-board-FreePeoples-1920-1.00.png": "7e724f7ea97bb40fba4d054c0d0d0bbe525035b9619182b723b43541c1f90e8b",
+      "ui85-board-FreePeoples-1920-1.25.png": "e99a0804b22cc0e3e9c0d941d96dba7f98984bab00d1b37da878b9b4074b3d65",
+      "ui85-board-Shadow-1366-1.00.png": "3145a6816ad8a4dbeba0f1114fe451e5bf4484a478d544997b4ada7b37366e46",
+      "ui85-board-Shadow-1366-1.25.png": "1ea0c50233bb8f395640e10f7afdaefec4970a11d6d93e389d0757fd26affe9f",
+      "ui85-board-Shadow-1920-1.00.png": "0abc23e691c01e2e930d6c7c330b23241f63dea57a5d2261f89a4093c346ae7c",
+      "ui85-board-Shadow-1920-1.25.png": "beabca8afd34ddb1cd291921212e39d5196b6f7a53baac704d6076d82aec08c9"
+    },
+    "reviewed": [
+      "ui85-board-FreePeoples-1366-1.25.png",
+      "ui85-board-Shadow-1366-1.00.png",
+      "ui85-board-FreePeoples-1920-1.00.png",
+      "ui85-board-Shadow-1920-1.25.png",
+      "ui34-hunt-RespondEffect-1366-1.25.png",
+      "ui34-hunt-AllocateHunt-1366-1.25.png"
+    ]
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "output": ".artifacts/ui85/macos",
+      "inputs_sha256": "4c95601cd0e6649dcd6bffcb0e7f5abf1abdcf84ce988e0a99e1729fb013d54a",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui85/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui85/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui85/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64",
+      "provenance_report_sha256": "339d937b863d8810adf8934358956cd92e3bb744c9277761795d61a4e2ba26a0",
+      "runtime_matches_test_import_and_workspace": true,
+      "matched_import_runtime_files": 695,
+      "verified_output_files": 158
+    },
+    "BuildLocalWindows": {
+      "output": ".artifacts/ui85/windows",
+      "inputs_sha256": "4c95601cd0e6649dcd6bffcb0e7f5abf1abdcf84ce988e0a99e1729fb013d54a",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui85/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows",
+      "provenance_report_sha256": "da285d1e6ce66801609cd98010f9d6bf3eb2d65b8e5ea8004441c99bd9b84b7a",
+      "runtime_matches_test_import_and_workspace": true,
+      "matched_import_runtime_files": 695,
+      "verified_output_files": 157
+    }
+  },
+  "macos_smoke": {
+    "result": "PASS",
+    "report": ".artifacts/ui85/isolated-smoke/run/result.json",
+    "report_sha256": "30036bb5be974e6e230c286104d1bd4b59bc8dda88b7c7bd3e1335a2443fe937",
+    "login_screenshot_reviewed": true,
+    "login_screenshot_sha256": "d6cfa23ced3b4e55bf88a85d7056776056bd5c79f5a700f50467eacc558f3093",
+    "application_identity": "com.wotr.ui85.smoke",
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 753,
+    "same_exact_binary_as_main": false,
+    "original_player_still_running": true,
+    "live_profile_renamed_cleared_or_restored": false,
+    "protected_profile_fingerprint_equal": false,
+    "profile_preservation_report_sha256": "a1db9cc6c1506945304b415714364664fd34604746157bd1c988334211eaf7b1",
+    "profile_verification_note": "Combined before/after fingerprint differs while the existing player and Editor are active; no byte-preservation claim. The smoke runner uses a separate company/product/bundle and denies direct access to live profile paths."
+  },
+  "limits": [
+    "Windows and Intel runtime not executed.",
+    "No manual game acceptance or FPS benchmark.",
+    "No new native OS edge-input trial; this change uses engine-routing regression; UI84 retains its separate native evidence.",
+    "Smoke starts a separate-identity nonDevelopment build of the same runtime, not the exact main binary; no account login.",
+    "No claim that all files of the concurrently active user profile remained byte identical."
+  ]
+}

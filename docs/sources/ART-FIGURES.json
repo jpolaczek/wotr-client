@@ -1,0 +1,95 @@
+{
+  "version": "art-figures-1",
+  "tasks": [
+    "ART-01",
+    "ART-02"
+  ],
+  "sources": {
+    "graphicalassets/figures/v3/raw/gondor-regular.png": "258b983bcdd5cef282d4c459012480d33871b7f925e23db4f3441fdee55d7e2b",
+    "graphicalassets/figures/v3/raw/gondor-elite.png": "fc8dfefc3bf63716078aa896a052164a84e9eab596f0b11cd83b9cceb9b0a1e8",
+    "graphicalassets/figures/v3/raw/gondor-leader.png": "be167e1f6d4489d9c2390cc76cc9b1ef33c28a3e73082017729a723a527e4aca",
+    "graphicalassets/figures/v3/raw/rohan-regular.png": "5a4f59fa943b5903d6629b9f8504e82ed8c91ec53f4ff38280e22fd8e3977f7e",
+    "graphicalassets/figures/v3/raw/rohan-elite.png": "99178f09ae580162fffa2801dc66d04703ba1696fc0ddf829ae550f1363ca799",
+    "graphicalassets/figures/v3/raw/rohan-leader.png": "623c916346ffb1d25f91af569f328af90d88e9279b911ef96a468df173d689cb",
+    "graphicalassets/figures/v3/raw/elves-regular.png": "f2ee8cb07bac443ca5a20892902cb45909b1c390bd50a5ef1071ac730aadcc77",
+    "graphicalassets/figures/v3/raw/elves-elite.png": "c6cfd30807872e490223f5d93d4835edc5169505476f3bb92eb85c81ae0fab4d",
+    "graphicalassets/figures/v3/raw/elves-leader.png": "652abad75c0e0c51696d8832844b6d09763cce57505d30755d6a77144075e837",
+    "graphicalassets/figures/v3/raw/dwarves-regular.png": "ef7a82ec1d5607153b48e3767fa81ed8e63094d0dad16eccc4c814a891670bb7",
+    "graphicalassets/figures/v3/raw/dwarves-elite.png": "4e8b1876331100c4e8117fd1646ecb2fbda7d0d91e15c244fe6b65155ed485af",
+    "graphicalassets/figures/v3/raw/dwarves-leader.png": "e60c58ff06c16d9c447ee28900bc94b6a0877a33dd85ad97518d6f4f3163d654",
+    "graphicalassets/figures/v3/raw/north-regular.png": "6072d476c40eb01006864a51a0ccd18f74585c4ff1684d122171f7ecc35d65a7",
+    "graphicalassets/figures/v3/raw/north-elite.png": "e734ebd79d37cd738edb21135c731de0ef99bcf457dc862fcdc03aeac2868ff9",
+    "graphicalassets/figures/v3/raw/north-leader.png": "6d92ef3d820284eb2ae4d45c148e9d275939836f8c7d0d1f9f56c8a3be59b42b",
+    "graphicalassets/figures/v3/raw/sauron-regular.png": "7f70b7f8cdd5dc6e6c8f21d1a782a7036d68c1f76737a529db14fcf5ba013936",
+    "graphicalassets/figures/v3/raw/sauron-elite.png": "23c840e2ecae65abf0f8fa06b5db14b2ebec52b4527de9985953dd1bb802ff29",
+    "graphicalassets/figures/v3/raw/sauron-nazgul.png": "a4727740bef9cf46cbbf778f5017c59f7926a2a72fe5cbd304943212047b933e",
+    "graphicalassets/figures/v3/raw/isengard-regular.png": "a60e99cd9b060cb3f0c0befdad27e85e8cb9d3b35e82279ba875ba5b5515b011",
+    "graphicalassets/figures/v3/raw/isengard-elite.png": "e2ef27cba5a518be986d35028fec7f917009ff31c2a706a433617ff1d4f285a7",
+    "graphicalassets/figures/v3/raw/southrons-regular.png": "dd108be8d03ce768efaf54f1ddec396d8bae2db9a494558b61f0d93e0b574b84",
+    "graphicalassets/figures/v3/raw/southrons-elite.png": "5b35546bba415f7a32ba51dd6b8d82a9888ce66349c08d3acb710408f260a16c",
+    "graphicalassets/figures/v3/raw/gandalf-grey.png": "2a4bd83cd4679d614c4c210d0223c6fe786bce1d8dd6933ada6d103107a0c274",
+    "graphicalassets/figures/v3/raw/strider.png": "a7275c2b738296b0153079b4ccd9577e37e74796d36fc9554cd4078bbc59b19f",
+    "graphicalassets/figures/v3/raw/boromir.png": "691a70ccc94041969bf0ae9401be00d037d9d30642001f634212f86866ba4dd8",
+    "graphicalassets/figures/v3/raw/legolas.png": "d108a2b006c309c7005183d268c585231473bb253674b02edccb16d9ad4fc10a",
+    "graphicalassets/figures/v3/raw/gimli.png": "f270e02c7729f973db2ea130e7e163b01671d81a393828fc5b2de52d97d786d4",
+    "graphicalassets/figures/v3/raw/merry.png": "b4136588e2f230f42c82a6241b5fdf8918afe130db5fa09cdc75ecd0120a6f67",
+    "graphicalassets/figures/v3/raw/pippin.png": "e3eb129c923eb36d09b0a69edd86a88c074c04d051a5684ce574d48b5c19efc9",
+    "graphicalassets/figures/v3/raw/gandalf-white.png": "36185e74017b6bdd17ccf6e240a09837b333ede366f31d5941b5eb77f51ef109",
+    "graphicalassets/figures/v3/raw/aragorn.png": "b3eed3d939c480ff7d264048e46f1ceebf3e7da3284bbaab0e6da1b016452efa",
+    "graphicalassets/figures/v3/raw/gollum.png": "bec13037ec12ae09013ec1bf02da73bd52da5e3ff3a8bd80dd529a8761aa0c0c",
+    "graphicalassets/figures/v3/raw/ring-bearers.png": "c757dd9615cdc7720174f277aa3b69ae7afc7a86f10de1ef503aa47ddaae4c65",
+    "graphicalassets/figures/v3/raw/saruman.png": "e010ec193d5e45803c8461016e028ffccc53791278906363931a35ab9eb3abb0",
+    "graphicalassets/figures/v3/raw/mouth-of-sauron.png": "eeadbc8264acfd8dda7c716f1e7147e92e521cac52339682452cf289ecdb4ec8",
+    "graphicalassets/figures/v3/raw/witch-king.png": "d260edc3c3029729032ba65574ece202d136843ab286dbd5635f44ca9c9187ea",
+    "graphicalassets/figures/v3/raw/gandalf-grey-portrait.png": "740404f31f47eee411fc8119e5c6e863a99f37f442c5976692cb64b1791a030b",
+    "graphicalassets/figures/v3/raw/strider-portrait.png": "a3e1bfc087cb510cf27a0ff2dc03196b4532d6dfefb18933f3f92364bc98e11e",
+    "graphicalassets/figures/v3/raw/boromir-portrait.png": "5dc9a0738bef27304f58ab564d0e777c0d3e9cfc8119fa3ccf4a7aa06c6de9b4",
+    "graphicalassets/figures/v3/raw/legolas-portrait.png": "deacd6d2a3d85f9d776ee067886312eee0fd662efdb8dc08370a5e2a93d3e261",
+    "graphicalassets/figures/v3/raw/gimli-portrait.png": "3ad6e364438a6a306ac1da0c67f87d3c11fc41fb8b411d75aa9be9f6ed0051c2",
+    "graphicalassets/figures/v3/raw/merry-portrait.png": "21a2bba602493682b2dd23a1276a2c1bbad9d6e634b94dde6427fab7a29a5724",
+    "graphicalassets/figures/v3/raw/pippin-portrait.png": "0ebc3fc7b0ae592dbd18d0ffaa6dd5f8564a17a312fc1f97fd7e12d75348c30f",
+    "graphicalassets/figures/v3/raw/gandalf-white-portrait.png": "51ef171815c3d4d8a50b916435b2c5f6193982ed889ce4172b636eec43074ff9",
+    "graphicalassets/figures/v3/raw/aragorn-portrait.png": "78ba1809ed2c5abf40d9da325c648c33a25ea114c16f1cdbb14df50a52f907a4",
+    "graphicalassets/figures/v3/raw/gollum-portrait.png": "e78c23ddb3296662a0321d819c44b2945b068723ba35ef106038baf62f1c6a52",
+    "graphicalassets/figures/v3/raw/ring-bearers-portrait.png": "cc3c79be4951394ff31bc793880b9dd12fffefd7d035babd2217ae03b98bd94c",
+    "graphicalassets/figures/v3/raw/saruman-portrait.png": "f86572395c5fbb87189d398961228a86fc78226a5298822950088fad05af0835",
+    "graphicalassets/figures/v3/raw/mouth-of-sauron-portrait.png": "4e792a7b8abd05e80526973a08b008351bee46715c851ee39fc64e8f7789c10c",
+    "graphicalassets/figures/v3/raw/witch-king-portrait.png": "9b3435f6bd4810159b61e9b65ccbc9bd00eeadec6bc70a3b514bd42f700e0719",
+    "graphicalassets/figures/v3/prompts.json": "ab1e280b1dd461b4529fa80652b4861f8eb975f36c5313ffeae9c838a8212372",
+    "scripts/build_figure_art.py": "b3cdb81d734f6953cd0cb0468a0f666d34bd36cd15c94420a7630fa2b980b291"
+  },
+  "tools": {
+    "Pillow": "12.3.0"
+  },
+  "atlases": {
+    "units-v3": {
+      "cellHeight": 240,
+      "widestCell": 400
+    },
+    "characters-v1": {
+      "cellHeight": 240,
+      "widestCell": 320
+    },
+    "battle-portraits-v2": {
+      "cellHeight": 160,
+      "widestCell": 160
+    }
+  },
+  "stature": {
+    "-regular": 0.78,
+    "-leader": 0.88,
+    "merry": 0.62,
+    "pippin": 0.62,
+    "ring-bearers": 0.64,
+    "gollum": 0.55,
+    "gimli": 0.74
+  },
+  "outputs": {
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.json": "4c417a023536cef3216a850f7659f4ef64b3104a0d68051ec5af31e81b129122",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.png": "831b35d7a57e55dfbec6a280ce5c0c5a1d013934a3a2a8f67a70b59d3107197c",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.json": "28d35b40a32473af28d1a91f12a9f2f9b4268fa659fe6a9721112497a2d1f42b",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.png": "30ef00dc1cf11e9f95ac327e5081d35e38a37d08e1838125420a743b3df54852",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/units-v3.json": "6600b61512a36b8ab5b01fd0dfcb08d7f20260980e22b5366eff23f6282f662a",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/units-v3.png": "54b8f5ba811821a39297a691ca987447ec705afd1e5beebb45c7738afa14bfc0"
+  }
+}

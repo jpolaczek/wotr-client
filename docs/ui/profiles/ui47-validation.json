@@ -1,0 +1,179 @@
+{
+  "task": "UI-47",
+  "implementation_commit": "09c68d3dd45f6d1f11bab15b4e2214681bcee5d8",
+  "recorded_at": "2026-10-08T03:20:09.686945Z",
+  "dotnet": {
+    "total": 3651,
+    "passed": 3651,
+    "failed": 0,
+    "skipped": 0,
+    "report": {
+      "path": ".artifacts/test-results/ui47-full.trx",
+      "sha256": "b94511a2cb97e725e16c61560d487a5c9ccc48e5f033d481d28d1ace53c31a1d",
+      "bytes": 15892911
+    }
+  },
+  "unity_editmode": {
+    "id": "2",
+    "testcasecount": "346",
+    "result": "Passed",
+    "total": "346",
+    "passed": "346",
+    "failed": "0",
+    "inconclusive": "0",
+    "skipped": "0",
+    "asserts": "0",
+    "engine-version": "3.5.0.0",
+    "clr-version": "4.0.30319.42000",
+    "start-time": "2026-10-08 03:15:04Z",
+    "end-time": "2026-10-08 03:15:14Z",
+    "duration": "10.1660204",
+    "report": {
+      "path": ".artifacts/ui47-editor.xml",
+      "sha256": "33db39286caa65611ed6bbb5bee7cb28310b33c7877bc7606e1f510d4e58f8f2",
+      "bytes": 295812
+    }
+  },
+  "unity_playmode": {
+    "total": 376,
+    "passed": 376,
+    "failed": 0,
+    "skipped": 0,
+    "classes": 118,
+    "groups": 21,
+    "report": {
+      "path": "docs/ui/profiles/ui47-play-tests.json",
+      "sha256": "6db21ebb6d476c6f42519be9feef91deb3449b2fc9e72609831ddfaff2297fe1",
+      "bytes": 52893
+    }
+  },
+  "performance": {
+    "cases": 56,
+    "minimum_mean_fps": 96.87186504427139,
+    "maximum_to_render_end_ms": 20.6465,
+    "report": {
+      "path": "docs/ui/profiles/ui47-macos.json",
+      "sha256": "b405e0d6ebfabd17ef2694e2c491a4034746d653cb34d856e18b2925cb068e18",
+      "bytes": 69446
+    },
+    "input_views": {
+      "path": ".artifacts/ui25/checkout/.artifacts/ui13-profile-views.json",
+      "sha256": "1806bbf319bea2f32df0124e56a5026ca816bda3f9b167931e8954d49388ec19",
+      "bytes": 218733
+    },
+    "input_history": {
+      "path": ".artifacts/ui25/checkout/.artifacts/ui47-profile-actions.json",
+      "sha256": "614250bd79a52a1416e39d996976c61c40334e8c57acefc9ecab698d216d2a3f",
+      "bytes": 10420216
+    }
+  },
+  "build_source": {
+    "path": "docs/ui/profiles/ui47-build-source.json",
+    "sha256": "c96f143e0baad3395500c2a001b6f2212f125aed232c1fa0e6fb6da85ae1e568",
+    "bytes": 82028
+  },
+  "builds": [
+    {
+      "method": "BuildLocalMac",
+      "development": false,
+      "architecture": "x86_64+arm64",
+      "executable": {
+        "path": ".artifacts/ui47/macos/Wotr.app/Contents/MacOS/War of the Ring Online",
+        "sha256": "949d329ff1aa279256e3bfc0297756ea26d9ac39377d3ba9c418f3b59f40e5c0",
+        "bytes": 66952
+      },
+      "log": {
+        "path": ".artifacts/ui47/BuildLocalMac.log",
+        "sha256": "b1be32e78427627432be652cd7158e35e2c0fd5e4fffcdb5c9b7ae9fdef48d22",
+        "bytes": 313389
+      },
+      "complete_build": {
+        "path": ".artifacts/ui47/macos",
+        "files": 158,
+        "bytes": 112647059,
+        "tree_sha256": "751b553740e3cec8e79c90896a7077b866065fc3368372744ea2f7d9bfd4da82",
+        "hash_format": "SHA-256 of UTF-8 json.dumps(relative_path_to_file_sha256, sort_keys=True, separators=(\",\", \":\"))"
+      }
+    },
+    {
+      "method": "BuildMac",
+      "development": true,
+      "architecture": "x86_64+arm64",
+      "executable": {
+        "path": ".artifacts/ui47/profile/Wotr.app/Contents/MacOS/War of the Ring Online",
+        "sha256": "7059777dbb130e6ed59b3981bc7dbeacdf0aac21666c3e6632565e5e39ba6931",
+        "bytes": 67928
+      },
+      "log": {
+        "path": ".artifacts/ui47/BuildMac.log",
+        "sha256": "daf0060918ce701069cb7dc01136ef69ab9df68b96ea2430f3fa6d6c779b25a0",
+        "bytes": 204628
+      },
+      "complete_build": {
+        "path": ".artifacts/ui47/profile",
+        "files": 247,
+        "bytes": 295018312,
+        "tree_sha256": "4b310f498cc3e43e1f7ae38c1385172b4a4f3bb6add6a5f228a63b3ae6b933d8",
+        "hash_format": "SHA-256 of UTF-8 json.dumps(relative_path_to_file_sha256, sort_keys=True, separators=(\",\", \":\"))"
+      }
+    },
+    {
+      "method": "BuildLocalWindows",
+      "development": false,
+      "architecture": "x86_64",
+      "executable": {
+        "path": ".artifacts/ui47/windows/Wotr.exe",
+        "sha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d",
+        "bytes": 667136
+      },
+      "log": {
+        "path": ".artifacts/ui47/BuildLocalWindows.log",
+        "sha256": "8830d8ee8e7836cd112e650a43c0438c92e8cbefcfe980d63e675f710eca730a",
+        "bytes": 426002
+      },
+      "complete_build": {
+        "path": ".artifacts/ui47/windows",
+        "files": 157,
+        "bytes": 98496235,
+        "tree_sha256": "8a29adb7827890d13810a1dc1e0a40f2605726b6f08a0ef7c8892e7d3d9586e8",
+        "hash_format": "SHA-256 of UTF-8 json.dumps(relative_path_to_file_sha256, sort_keys=True, separators=(\",\", \":\"))"
+      }
+    }
+  ],
+  "macos_smoke": {
+    "window": {
+      "id": 74811,
+      "bounds": {
+        "X": 414,
+        "Height": 412,
+        "Y": 50,
+        "Width": 683
+      }
+    },
+    "screenshot_captured": true,
+    "result": "PASS",
+    "clean_app_profile": true,
+    "previous_profile_restored": true,
+    "login_tested": false,
+    "windows_tested": false,
+    "login_screenshot_reviewed": true,
+    "screenshot": {
+      "path": ".artifacts/ui47/smoke/login.png",
+      "sha256": "41607d2fd839548854ddf76c35c4a84f9c08814798e40d6f88132250b6c5c4fa",
+      "bytes": 159968
+    },
+    "log": {
+      "path": ".artifacts/ui47/smoke/player.log",
+      "sha256": "a8187995d0279ccfddfd5794ed5a43481ff004af1ecfe60c404d2ae15a7f61b5",
+      "bytes": 1529
+    }
+  },
+  "not_tested": [
+    "Startup Windows",
+    "Start to Intel",
+    "Windows–macOS independent client party",
+    "Manual acceptance user",
+    "Target host implementation"
+  ],
+  "scope": "UI-38-UI-47 and UI-47-CONTEXT; new UI-49+ and MAP-12+ out of range"
+}

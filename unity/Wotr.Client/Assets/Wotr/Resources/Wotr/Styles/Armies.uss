@@ -1,0 +1,175 @@
+/* UI-126: army markers on the map. Every force is always shown: a token on the whole map (army-token), or up to
+   three figures standing on a base when zoomed in (army-figures). The garrison has battlements, the field force a
+   plain plinth; the picture follows the side and the state, so it needs no text or border. Art: armies/ (UI-125). */
+#board-screen .army.illustrated-army,
+.army.illustrated-army {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+/* UI-185: about 30% larger than UI-126, UI-192: about 15% larger again; MapArmyArtwork.Size gives the same sizes to
+   the map's placement. */
+.army.army-figures { width: 116px; height: 84px; }
+.army.army-figures.garrison { height: 90px; }
+.army.army-token { width: 44px; height: 44px; }
+.army.army-token.garrison { height: 48px; }
+.army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
+
+.army-artwork { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.army-artwork .army-part-unused { display: none; }
+.army-plinth { position: absolute; left: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures .army-plinth { height: 32px; }
+.army-figures.garrison .army-plinth { height: 42px; }
+.army-token .army-plinth { top: 0; height: auto; }
+
+.army-silhouette { position: absolute; top: 6px; width: 50px; height: 60px; }
+.army-figures.garrison .army-silhouette { top: 5px; }
+.army-token .army-silhouette { display: none; }
+.army-silhouette-shadow { position: absolute; top: 7.5px; width: 50px; height: 60px; }
+.army-figures.garrison .army-silhouette-shadow { top: 6.5px; }
+.army-token .army-silhouette-shadow { display: none; }
+
+.army-emblems { position: absolute; flex-direction: row; align-items: center; }
+.army-emblem { width: 15px; height: 15px; margin: 0 2px 0 0; -unity-background-scale-mode: scale-to-fit; }
+.army-more-nations { margin: 0; padding: 0; font-size: 12px; -unity-font-style: bold; color: rgb(247, 236, 209); }
+.army-figures .army-emblems { left: 12px; bottom: 5px; height: 15px; }
+.army-figures.garrison .army-emblems { bottom: 8px; height: 17px; }
+.army-figures.garrison .army-emblem { width: 17px; height: 17px; }
+.army-token .army-emblems { left: 7px; top: 8px; }
+.army-token.garrison .army-emblems { top: 11px; }
+.army-token .army-emblem { width: 16px; height: 16px; margin: 0; }
+.army-token #army-emblem-1, .army-token .army-more-nations { display: none; }
+
+.army-count {
+    position: absolute;
+    right: 8px;
+    bottom: 5px;
+    min-width: 20px;
+    margin: 0;
+    padding: 0 5px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-radius: 10px;
+    color: rgb(247, 236, 209);
+    background-color: rgba(25, 23, 22, 0.94);
+}
+.army-figures.garrison .army-count { bottom: 8px; }
+.army-token .army-count { right: 0; bottom: 0; min-width: 17px; height: 19px; padding: 0 3px; font-size: 14px; border-radius: 9px; }
+/* TYPO-01's Alegreya sets a taller line: the token's count has a fixed height, so it stays clear of the emblem. */
+
+.army-moved { position: absolute; right: 2px; top: 2px; width: 20px; height: 20px; display: none; background-image: resource("Wotr/Art/UI/armies/moved-check"); }
+.army-token .army-moved { right: 0; top: 0; width: 17px; height: 17px; }
+.army.moved .army-moved { display: flex; }
+
+/* Base and token pictures. Every rule has the same weight; later states win: moved, eligible, owner, selected, pressed. */
+.army.army-figures.field-force.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free"); }
+.army.army-figures.field-force.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow"); }
+.army.army-figures.garrison.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free"); }
+.army.army-figures.garrison.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow"); }
+.army.army-token.field-force.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free"); }
+.army.army-token.field-force.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow"); }
+.army.army-token.garrison.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free"); }
+.army.army-token.garrison.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow"); }
+.army.army-figures.field-force.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-moved"); }
+.army.army-figures.field-force.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-moved"); }
+.army.army-figures.garrison.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-moved"); }
+.army.army-figures.garrison.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-moved"); }
+.army.army-token.field-force.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-moved"); }
+.army.army-token.field-force.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-moved"); }
+.army.army-token.garrison.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-moved"); }
+.army.army-token.garrison.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-moved"); }
+.army.army-figures.field-force.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-eligible"); }
+.army.army-figures.field-force.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-eligible"); }
+.army.army-figures.garrison.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-eligible"); }
+.army.army-figures.garrison.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-eligible"); }
+.army.army-token.field-force.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-eligible"); }
+.army.army-token.field-force.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-eligible"); }
+.army.army-token.garrison.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-eligible"); }
+.army.army-token.garrison.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-eligible"); }
+.army.army-figures.field-force.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
+.army.army-figures.field-force.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
+.army.army-figures.garrison.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }
+.army.army-figures.garrison.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-selected"); }
+.army.army-token.field-force.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-selected"); }
+.army.army-token.field-force.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-selected"); }
+.army.army-token.garrison.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-selected"); }
+.army.army-token.garrison.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-selected"); }
+.army.army-figures.field-force.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
+.army.army-figures.field-force.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
+.army.army-figures.garrison.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }
+.army.army-figures.garrison.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-selected"); }
+.army.army-token.field-force.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-selected"); }
+.army.army-token.field-force.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-selected"); }
+.army.army-token.garrison.fp.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-selected"); }
+.army.army-token.garrison.sh.selected-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-selected"); }
+/* UI-212: the source a card's Nazgûl flights are armed at. */
+.army.army-figures.field-force.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
+.army.army-figures.field-force.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
+.army.army-figures.garrison.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }
+.army.army-figures.garrison.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-selected"); }
+.army.army-token.field-force.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-selected"); }
+.army.army-token.field-force.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-selected"); }
+.army.army-token.garrison.fp.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-selected"); }
+.army.army-token.garrison.sh.armed-force .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-selected"); }
+.army.army-figures.field-force.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-pressed"); }
+.army.army-figures.field-force.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-pressed"); }
+.army.army-figures.garrison.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-pressed"); }
+.army.army-figures.garrison.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-pressed"); }
+.army.army-token.field-force.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-pressed"); }
+.army.army-token.field-force.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-pressed"); }
+.army.army-token.garrison.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-pressed"); }
+.army.army-token.garrison.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-pressed"); }
+
+/* UI-127: the planned move ghost, figures of the selection at a hovered target; never interactive. */
+.army.army-ghost { opacity: 0.5; }
+.army-ghost-caption {
+    position: absolute;
+    width: 120px;
+    margin: 0;
+    padding: 1px 6px;
+    font-size: 11px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-radius: 8px;
+    color: rgb(250, 236, 196);
+    background-color: rgba(25, 23, 22, 0.9);
+}
+
+/* UI-127: a figure in the region panel that already marched in this action: dimmed, with the gilt tick. */
+.region-hover .hover-figure.moved,
+.region-hover .hover-portrait.moved {
+    opacity: 0.55;
+    background-image: resource("Wotr/Art/UI/armies/moved-check");
+    background-size: 12px 12px;
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-position-y: top;
+}
+
+/* UI-131: a reinforcement planned by a card or an ability: the faint ghost of its figures with a close icon
+   (UI-138) to return them. The small enamel disc replaces the square frame of other icon buttons. */
+.army.army-ghost.planned-recruit { opacity: 0.6; }
+#board-screen .planned-recruit-remove {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    margin: 0;
+    padding: 0;
+    border-radius: 9px;
+    border-width: 1px;
+    border-color: rgb(212, 175, 55);
+    background-color: rgba(70, 20, 16, 0.95);
+    background-image: none;
+}
+#board-screen .planned-recruit-remove:hover { background-color: rgba(112, 34, 26, 0.98); }
+#board-screen .unity-button.action.icon-button.planned-recruit-remove.pressed { background-image: none; background-color: rgba(48, 14, 11, 0.98); }
+#board-screen .planned-recruit-remove > .icon-glyph { width: 13px; height: 13px; }

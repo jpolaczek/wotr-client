@@ -1,0 +1,64 @@
+{
+ "task": "UI-100",
+ "date": "2026-10-12",
+ "commits": {
+  "implementation": "8308b66",
+  "fixes": "6fcda4c"
+ },
+ "environment": "Isolated checkout .artifacts/ui25/checkout (port 5098, DB wotr_claude_test) and the pre-UI-100 baseline in .artifacts/ui98/tree (port 5099, DB wotr_claude2_test); scripts .artifacts/ui98/run.sh, regress.py, .artifacts/ui100/sync.sh and edit.sh.",
+ "playmode": {
+  "ui100-final": {
+   "summary": ".artifacts/ui98/runs/ui100-final.json",
+   "sources": [
+    "ui100t.json",
+    "ui100v.json",
+    "ui100w.xml"
+   ],
+   "total": 101,
+   "passed": 83,
+   "failed_tests": [
+    "Wotr.PlayTests.BoardCompletionContextNetworkTests.CouncilEntryDraftAndLostReceiptSurviveGamesAndBothProcessRestarts",
+    "Wotr.PlayTests.BoardCompletionContextNetworkTests.PrivateSetupAndPublicGuideKeepTheirHistoricalVersionsAndProperHost",
+    "Wotr.PlayTests.BoardProfileDriverTests.EveryBoardWorkloadUsesRealGesturesAndPreservesItsDecisionAcrossAllFourLayouts",
+    "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+    "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+    "Wotr.PlayTests.DesktopLayoutStabilityTests.LegacyBattleToCardAtLargeScaleStabilizesWithoutRecursiveLayout",
+    "Wotr.PlayTests.HuntActivityNetworkTests.AutomaticNoDiceMissAndCancelledTileRemainInLogWithoutOpeningHunt",
+    "Wotr.PlayTests.InGameContextNetworkTests.PrivateCorruptionTileReceiptSurvivesRestartWithTheSameParentAndPublicBack",
+    "Wotr.PlayTests.InGameContextNetworkTests.RestartBeforeRingCommitRestoresTheExactUnsentCostAndWaitsForTheFinalFace",
+    "Wotr.PlayTests.InGameContextNetworkTests.RingReceiptSurvivesClientAndServerRestartWithoutChangingThePhysicalCost",
+    "Wotr.PlayTests.InGameContextNetworkTests.VictoryReceiptSurvivesRestartWithoutReplayingTheFinalAction",
+    "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts",
+    "Wotr.PlayTests.LiveActivityNetworkTests.TwoMovesAttackCardsDiceRetreatAndAdvanceKeepNoticesAndArchivesConsistent",
+    "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce",
+    "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint",
+    "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards",
+    "Wotr.PlayTests.VictoryPanelNetworkTests.MilitaryThresholdsWaitForTurnEndAndShadowWinsTheTie",
+    "Wotr.PlayTests.VictoryPanelNetworkTests.RingEndingsTakePriorityAndKeepInspectionPrivateAfterRetryAndReconnect"
+   ],
+   "baseline": "Every failure also fails with the same message in base100*.json (4e12bb7, without UI-100) or in the UI-98/UI-99 runs final.json/ui99reg.json."
+  }
+ },
+ "editmode": {
+  "result": "630/630",
+  "report": ".artifacts/ui100/runs/ui100-edit2.xml"
+ },
+ "builds": {
+  "BuildLocalMac": ".artifacts/ui100/macos/Wotr.app",
+  "BuildLocalWindows": ".artifacts/ui100/windows/Wotr.exe",
+  "commit": "6fcda4c",
+  "tracked_inputs_matching_commit": 946,
+  "development": false
+ },
+ "smoke": {
+  "result": "PASS",
+  "identity": "com.wotr.ui100.smoke",
+  "runtime_files_checked": 949,
+  "original_profile_byte_identical": true,
+  "report": ".artifacts/ui100/isolated-smoke/run/result.json"
+ },
+ "notes": [
+  "Windows runtime and manual play not tested.",
+  "Right-click inspection replaces the Inspect toggle; synthetic test events must target uncovered terrain because UI Toolkit picks the element under the pointer."
+ ]
+}

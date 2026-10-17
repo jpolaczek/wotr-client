@@ -1,0 +1,2276 @@
+{
+ "purpose": "map17 before/after for UI-143 (nation bands, barrier ink) and UI-156 (Mordor track); every player carries the profile tools of cbdc3de",
+ "recorded": "2026-10-14, Development Player, Apple M1 Pro, macOS 15.6.1, Metal, Unity 6000.6.0f1; external 1080p 75 Hz monitor, 1920x1080 as a full-screen window",
+ "input": "map17-profile.json from the wotr-seeder dc3e6d61abc0 fixture (same file for every run)",
+ "commits": {
+  "e71a226": "before UI-143 (public content 1.0.3, nationWidth 3.0)",
+  "b2aca35": "UI-143 two-tone bands",
+  "dec3387": "UI-145 (after UI-144)",
+  "7c1c5c4": "UI-143 barrier ink",
+  "2bb4442": "before the Mordor track UI-153",
+  "69e752f": "after UI-157 (Mordor track)"
+ },
+ "decision": "2026-10-14: the user accepted the measured cost (R23 met; strict not-worse not met for light workloads)",
+ "runs": [
+  {
+   "run": "base-1",
+   "client": "e71a226",
+   "recorded_at": "2026-10-14T13:35:02.0529Z",
+   "peak_vertices": 915028,
+   "minimum_fps": 170.87,
+   "maximum_to_render_ms": 15.72,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1205.3,
+     "frame_mean_ms": 0.83,
+     "frame_p99_ms": 1.509,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1056.4,
+     "frame_mean_ms": 0.947,
+     "frame_p99_ms": 2.168,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1126.4,
+     "frame_mean_ms": 0.888,
+     "frame_p99_ms": 1.194,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1201.8,
+     "frame_mean_ms": 0.832,
+     "frame_p99_ms": 1.373,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 258.0,
+     "frame_mean_ms": 3.876,
+     "frame_p99_ms": 7.513,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 178.3,
+     "frame_mean_ms": 5.608,
+     "frame_p99_ms": 9.27,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 174.4,
+     "frame_mean_ms": 5.732,
+     "frame_p99_ms": 9.976,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1211.0,
+     "frame_mean_ms": 0.826,
+     "frame_p99_ms": 1.189,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1401.5,
+     "frame_mean_ms": 0.714,
+     "frame_p99_ms": 1.699,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1177.7,
+     "frame_mean_ms": 0.849,
+     "frame_p99_ms": 2.305,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 980.1,
+     "frame_mean_ms": 1.02,
+     "frame_p99_ms": 2.496,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1096.9,
+     "frame_mean_ms": 0.912,
+     "frame_p99_ms": 1.209,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 1186.6,
+     "frame_mean_ms": 0.843,
+     "frame_p99_ms": 1.585,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 251.4,
+     "frame_mean_ms": 3.978,
+     "frame_p99_ms": 7.671,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 175.3,
+     "frame_mean_ms": 5.704,
+     "frame_p99_ms": 9.266,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 170.9,
+     "frame_mean_ms": 5.852,
+     "frame_p99_ms": 10.515,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1299.6,
+     "frame_mean_ms": 0.769,
+     "frame_p99_ms": 1.114,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1409.5,
+     "frame_mean_ms": 0.709,
+     "frame_p99_ms": 1.346,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 775.9,
+     "frame_mean_ms": 1.289,
+     "frame_p99_ms": 1.715,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 806.6,
+     "frame_mean_ms": 1.24,
+     "frame_p99_ms": 2.619,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 796.3,
+     "frame_mean_ms": 1.256,
+     "frame_p99_ms": 1.402,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 789.9,
+     "frame_mean_ms": 1.266,
+     "frame_p99_ms": 1.733,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 250.6,
+     "frame_mean_ms": 3.991,
+     "frame_p99_ms": 8.144,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 175.5,
+     "frame_mean_ms": 5.696,
+     "frame_p99_ms": 9.741,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 174.2,
+     "frame_mean_ms": 5.739,
+     "frame_p99_ms": 10.057,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 882.4,
+     "frame_mean_ms": 1.133,
+     "frame_p99_ms": 1.611,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 868.2,
+     "frame_mean_ms": 1.152,
+     "frame_p99_ms": 1.565,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 766.2,
+     "frame_mean_ms": 1.305,
+     "frame_p99_ms": 1.907,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 881.5,
+     "frame_mean_ms": 1.134,
+     "frame_p99_ms": 2.5,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 769.5,
+     "frame_mean_ms": 1.3,
+     "frame_p99_ms": 1.775,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 763.1,
+     "frame_mean_ms": 1.31,
+     "frame_p99_ms": 1.808,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 248.8,
+     "frame_mean_ms": 4.019,
+     "frame_p99_ms": 7.836,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 175.6,
+     "frame_mean_ms": 5.696,
+     "frame_p99_ms": 9.792,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 172.7,
+     "frame_mean_ms": 5.789,
+     "frame_p99_ms": 9.757,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 861.3,
+     "frame_mean_ms": 1.161,
+     "frame_p99_ms": 1.691,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 873.2,
+     "frame_mean_ms": 1.145,
+     "frame_p99_ms": 1.56,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "head-1",
+   "client": "69e752f",
+   "recorded_at": "2026-10-14T13:35:58.646046Z",
+   "peak_vertices": 1055183,
+   "minimum_fps": 173.36,
+   "maximum_to_render_ms": 14.74,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1075.7,
+     "frame_mean_ms": 0.93,
+     "frame_p99_ms": 1.801,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 981.8,
+     "frame_mean_ms": 1.019,
+     "frame_p99_ms": 2.517,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1073.7,
+     "frame_mean_ms": 0.931,
+     "frame_p99_ms": 1.508,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1029.3,
+     "frame_mean_ms": 0.972,
+     "frame_p99_ms": 5.194,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 260.6,
+     "frame_mean_ms": 3.837,
+     "frame_p99_ms": 7.505,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 183.7,
+     "frame_mean_ms": 5.442,
+     "frame_p99_ms": 9.387,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 178.1,
+     "frame_mean_ms": 5.615,
+     "frame_p99_ms": 9.735,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1248.3,
+     "frame_mean_ms": 0.801,
+     "frame_p99_ms": 1.212,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1286.2,
+     "frame_mean_ms": 0.777,
+     "frame_p99_ms": 1.246,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1041.7,
+     "frame_mean_ms": 0.96,
+     "frame_p99_ms": 1.561,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 786.5,
+     "frame_mean_ms": 1.272,
+     "frame_p99_ms": 2.803,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1037.5,
+     "frame_mean_ms": 0.964,
+     "frame_p99_ms": 1.236,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 983.7,
+     "frame_mean_ms": 1.017,
+     "frame_p99_ms": 6.312,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 251.2,
+     "frame_mean_ms": 3.98,
+     "frame_p99_ms": 7.602,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 179.3,
+     "frame_mean_ms": 5.578,
+     "frame_p99_ms": 9.009,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 173.4,
+     "frame_mean_ms": 5.769,
+     "frame_p99_ms": 10.77,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1186.1,
+     "frame_mean_ms": 0.843,
+     "frame_p99_ms": 1.387,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1331.0,
+     "frame_mean_ms": 0.751,
+     "frame_p99_ms": 1.353,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 708.8,
+     "frame_mean_ms": 1.411,
+     "frame_p99_ms": 2.215,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 768.4,
+     "frame_mean_ms": 1.301,
+     "frame_p99_ms": 2.604,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 730.0,
+     "frame_mean_ms": 1.37,
+     "frame_p99_ms": 1.844,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 729.4,
+     "frame_mean_ms": 1.371,
+     "frame_p99_ms": 1.893,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 252.7,
+     "frame_mean_ms": 3.957,
+     "frame_p99_ms": 7.857,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 180.4,
+     "frame_mean_ms": 5.543,
+     "frame_p99_ms": 9.724,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 175.9,
+     "frame_mean_ms": 5.686,
+     "frame_p99_ms": 10.34,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 832.6,
+     "frame_mean_ms": 1.201,
+     "frame_p99_ms": 1.677,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 816.9,
+     "frame_mean_ms": 1.224,
+     "frame_p99_ms": 1.612,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 704.4,
+     "frame_mean_ms": 1.42,
+     "frame_p99_ms": 1.923,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 826.7,
+     "frame_mean_ms": 1.21,
+     "frame_p99_ms": 2.695,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 707.4,
+     "frame_mean_ms": 1.414,
+     "frame_p99_ms": 1.953,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 709.1,
+     "frame_mean_ms": 1.41,
+     "frame_p99_ms": 1.849,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 248.6,
+     "frame_mean_ms": 4.022,
+     "frame_p99_ms": 7.974,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 178.2,
+     "frame_mean_ms": 5.612,
+     "frame_p99_ms": 9.757,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 174.5,
+     "frame_mean_ms": 5.73,
+     "frame_p99_ms": 10.12,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 826.3,
+     "frame_mean_ms": 1.21,
+     "frame_p99_ms": 1.745,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 834.3,
+     "frame_mean_ms": 1.199,
+     "frame_p99_ms": 1.671,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "base-2",
+   "client": "e71a226",
+   "recorded_at": "2026-10-14T13:36:54.417088Z",
+   "peak_vertices": 915028,
+   "minimum_fps": 169.4,
+   "maximum_to_render_ms": 15.8,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1202.3,
+     "frame_mean_ms": 0.832,
+     "frame_p99_ms": 1.306,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1078.5,
+     "frame_mean_ms": 0.927,
+     "frame_p99_ms": 2.101,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1159.8,
+     "frame_mean_ms": 0.862,
+     "frame_p99_ms": 1.145,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1200.2,
+     "frame_mean_ms": 0.833,
+     "frame_p99_ms": 1.362,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 258.8,
+     "frame_mean_ms": 3.864,
+     "frame_p99_ms": 7.387,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 178.9,
+     "frame_mean_ms": 5.591,
+     "frame_p99_ms": 9.276,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 174.5,
+     "frame_mean_ms": 5.731,
+     "frame_p99_ms": 9.581,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1327.9,
+     "frame_mean_ms": 0.753,
+     "frame_p99_ms": 1.102,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1413.3,
+     "frame_mean_ms": 0.708,
+     "frame_p99_ms": 0.966,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1173.7,
+     "frame_mean_ms": 0.852,
+     "frame_p99_ms": 1.53,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 872.2,
+     "frame_mean_ms": 1.146,
+     "frame_p99_ms": 2.674,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1045.5,
+     "frame_mean_ms": 0.956,
+     "frame_p99_ms": 1.276,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 1168.8,
+     "frame_mean_ms": 0.856,
+     "frame_p99_ms": 1.776,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 242.4,
+     "frame_mean_ms": 4.126,
+     "frame_p99_ms": 8.659,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 174.1,
+     "frame_mean_ms": 5.744,
+     "frame_p99_ms": 9.657,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 169.4,
+     "frame_mean_ms": 5.903,
+     "frame_p99_ms": 10.596,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1315.4,
+     "frame_mean_ms": 0.76,
+     "frame_p99_ms": 1.19,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1426.1,
+     "frame_mean_ms": 0.701,
+     "frame_p99_ms": 1.059,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 774.1,
+     "frame_mean_ms": 1.292,
+     "frame_p99_ms": 2.005,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 854.8,
+     "frame_mean_ms": 1.17,
+     "frame_p99_ms": 2.494,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 789.2,
+     "frame_mean_ms": 1.267,
+     "frame_p99_ms": 1.833,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 792.8,
+     "frame_mean_ms": 1.261,
+     "frame_p99_ms": 1.607,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 251.5,
+     "frame_mean_ms": 3.976,
+     "frame_p99_ms": 7.526,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 175.9,
+     "frame_mean_ms": 5.686,
+     "frame_p99_ms": 9.889,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 172.3,
+     "frame_mean_ms": 5.803,
+     "frame_p99_ms": 9.952,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 882.5,
+     "frame_mean_ms": 1.133,
+     "frame_p99_ms": 1.562,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 873.5,
+     "frame_mean_ms": 1.145,
+     "frame_p99_ms": 1.524,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 770.4,
+     "frame_mean_ms": 1.298,
+     "frame_p99_ms": 1.668,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 891.6,
+     "frame_mean_ms": 1.122,
+     "frame_p99_ms": 2.594,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 767.4,
+     "frame_mean_ms": 1.303,
+     "frame_p99_ms": 1.873,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 766.9,
+     "frame_mean_ms": 1.304,
+     "frame_p99_ms": 1.878,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 245.6,
+     "frame_mean_ms": 4.072,
+     "frame_p99_ms": 8.198,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 175.4,
+     "frame_mean_ms": 5.701,
+     "frame_p99_ms": 9.589,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 170.5,
+     "frame_mean_ms": 5.866,
+     "frame_p99_ms": 9.825,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 869.5,
+     "frame_mean_ms": 1.15,
+     "frame_p99_ms": 1.762,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 875.5,
+     "frame_mean_ms": 1.142,
+     "frame_p99_ms": 1.521,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "head-2",
+   "client": "69e752f",
+   "recorded_at": "2026-10-14T13:37:50.617983Z",
+   "peak_vertices": 1055183,
+   "minimum_fps": 168.08,
+   "maximum_to_render_ms": 15.5,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1090.6,
+     "frame_mean_ms": 0.917,
+     "frame_p99_ms": 2.387,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 978.8,
+     "frame_mean_ms": 1.022,
+     "frame_p99_ms": 2.508,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1086.9,
+     "frame_mean_ms": 0.92,
+     "frame_p99_ms": 1.287,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1044.6,
+     "frame_mean_ms": 0.957,
+     "frame_p99_ms": 4.454,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 254.7,
+     "frame_mean_ms": 3.927,
+     "frame_p99_ms": 7.513,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 179.1,
+     "frame_mean_ms": 5.585,
+     "frame_p99_ms": 9.298,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 171.7,
+     "frame_mean_ms": 5.824,
+     "frame_p99_ms": 9.788,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1167.6,
+     "frame_mean_ms": 0.856,
+     "frame_p99_ms": 1.402,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1288.5,
+     "frame_mean_ms": 0.776,
+     "frame_p99_ms": 1.063,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1052.4,
+     "frame_mean_ms": 0.95,
+     "frame_p99_ms": 1.411,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 828.0,
+     "frame_mean_ms": 1.208,
+     "frame_p99_ms": 2.898,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1052.3,
+     "frame_mean_ms": 0.95,
+     "frame_p99_ms": 1.285,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 969.5,
+     "frame_mean_ms": 1.031,
+     "frame_p99_ms": 6.154,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 231.2,
+     "frame_mean_ms": 4.324,
+     "frame_p99_ms": 8.953,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 173.9,
+     "frame_mean_ms": 5.75,
+     "frame_p99_ms": 9.498,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 168.1,
+     "frame_mean_ms": 5.949,
+     "frame_p99_ms": 10.559,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1201.9,
+     "frame_mean_ms": 0.832,
+     "frame_p99_ms": 1.299,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1339.9,
+     "frame_mean_ms": 0.746,
+     "frame_p99_ms": 1.283,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 697.7,
+     "frame_mean_ms": 1.433,
+     "frame_p99_ms": 4.395,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 700.9,
+     "frame_mean_ms": 1.427,
+     "frame_p99_ms": 3.116,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 728.3,
+     "frame_mean_ms": 1.373,
+     "frame_p99_ms": 2.046,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 726.8,
+     "frame_mean_ms": 1.376,
+     "frame_p99_ms": 1.902,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 246.6,
+     "frame_mean_ms": 4.056,
+     "frame_p99_ms": 8.084,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 174.8,
+     "frame_mean_ms": 5.722,
+     "frame_p99_ms": 9.762,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 169.5,
+     "frame_mean_ms": 5.901,
+     "frame_p99_ms": 10.121,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 834.6,
+     "frame_mean_ms": 1.198,
+     "frame_p99_ms": 1.597,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 813.9,
+     "frame_mean_ms": 1.229,
+     "frame_p99_ms": 1.759,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 697.1,
+     "frame_mean_ms": 1.434,
+     "frame_p99_ms": 2.392,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 811.2,
+     "frame_mean_ms": 1.233,
+     "frame_p99_ms": 2.796,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 707.2,
+     "frame_mean_ms": 1.414,
+     "frame_p99_ms": 1.982,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 709.1,
+     "frame_mean_ms": 1.41,
+     "frame_p99_ms": 1.844,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 244.4,
+     "frame_mean_ms": 4.091,
+     "frame_p99_ms": 8.129,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 175.1,
+     "frame_mean_ms": 5.711,
+     "frame_p99_ms": 9.782,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 169.9,
+     "frame_mean_ms": 5.887,
+     "frame_p99_ms": 10.365,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 825.1,
+     "frame_mean_ms": 1.212,
+     "frame_p99_ms": 1.807,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 832.7,
+     "frame_mean_ms": 1.201,
+     "frame_p99_ms": 1.619,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "bands",
+   "client": "b2aca35",
+   "recorded_at": "2026-10-14T13:44:01.674391Z",
+   "peak_vertices": 999248,
+   "minimum_fps": 171.7,
+   "maximum_to_render_ms": 15.16,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1118.2,
+     "frame_mean_ms": 0.894,
+     "frame_p99_ms": 1.73,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 973.2,
+     "frame_mean_ms": 1.028,
+     "frame_p99_ms": 2.213,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1081.3,
+     "frame_mean_ms": 0.925,
+     "frame_p99_ms": 1.2,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1122.4,
+     "frame_mean_ms": 0.891,
+     "frame_p99_ms": 1.44,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 261.3,
+     "frame_mean_ms": 3.827,
+     "frame_p99_ms": 7.783,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 183.9,
+     "frame_mean_ms": 5.439,
+     "frame_p99_ms": 8.947,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 177.0,
+     "frame_mean_ms": 5.651,
+     "frame_p99_ms": 9.442,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1270.3,
+     "frame_mean_ms": 0.787,
+     "frame_p99_ms": 1.191,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1335.9,
+     "frame_mean_ms": 0.749,
+     "frame_p99_ms": 1.357,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1084.1,
+     "frame_mean_ms": 0.922,
+     "frame_p99_ms": 2.353,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 928.6,
+     "frame_mean_ms": 1.077,
+     "frame_p99_ms": 2.512,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1047.4,
+     "frame_mean_ms": 0.955,
+     "frame_p99_ms": 1.296,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 1046.5,
+     "frame_mean_ms": 0.956,
+     "frame_p99_ms": 4.892,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 248.6,
+     "frame_mean_ms": 4.022,
+     "frame_p99_ms": 8.009,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 178.1,
+     "frame_mean_ms": 5.614,
+     "frame_p99_ms": 9.243,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 171.7,
+     "frame_mean_ms": 5.824,
+     "frame_p99_ms": 10.813,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1273.3,
+     "frame_mean_ms": 0.785,
+     "frame_p99_ms": 1.16,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1371.7,
+     "frame_mean_ms": 0.729,
+     "frame_p99_ms": 1.212,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 733.3,
+     "frame_mean_ms": 1.364,
+     "frame_p99_ms": 1.786,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 824.6,
+     "frame_mean_ms": 1.213,
+     "frame_p99_ms": 2.606,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 747.6,
+     "frame_mean_ms": 1.338,
+     "frame_p99_ms": 1.919,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 746.4,
+     "frame_mean_ms": 1.34,
+     "frame_p99_ms": 2.128,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 254.3,
+     "frame_mean_ms": 3.933,
+     "frame_p99_ms": 7.842,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 180.3,
+     "frame_mean_ms": 5.546,
+     "frame_p99_ms": 9.576,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 176.0,
+     "frame_mean_ms": 5.683,
+     "frame_p99_ms": 9.35,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 848.5,
+     "frame_mean_ms": 1.178,
+     "frame_p99_ms": 1.668,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 847.2,
+     "frame_mean_ms": 1.18,
+     "frame_p99_ms": 1.762,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 722.0,
+     "frame_mean_ms": 1.385,
+     "frame_p99_ms": 2.02,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 873.6,
+     "frame_mean_ms": 1.145,
+     "frame_p99_ms": 2.597,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 725.4,
+     "frame_mean_ms": 1.379,
+     "frame_p99_ms": 1.997,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 727.2,
+     "frame_mean_ms": 1.375,
+     "frame_p99_ms": 1.876,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 251.5,
+     "frame_mean_ms": 3.977,
+     "frame_p99_ms": 7.801,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 180.7,
+     "frame_mean_ms": 5.533,
+     "frame_p99_ms": 9.827,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 172.2,
+     "frame_mean_ms": 5.808,
+     "frame_p99_ms": 10.096,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 840.0,
+     "frame_mean_ms": 1.19,
+     "frame_p99_ms": 1.744,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 850.2,
+     "frame_mean_ms": 1.176,
+     "frame_p99_ms": 1.638,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "barriers",
+   "client": "7c1c5c4",
+   "recorded_at": "2026-10-14T13:45:24.12157Z",
+   "peak_vertices": 1052090,
+   "minimum_fps": 168.03,
+   "maximum_to_render_ms": 18.33,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1075.2,
+     "frame_mean_ms": 0.93,
+     "frame_p99_ms": 1.635,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1046.3,
+     "frame_mean_ms": 0.956,
+     "frame_p99_ms": 2.2,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1076.3,
+     "frame_mean_ms": 0.929,
+     "frame_p99_ms": 1.317,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1001.7,
+     "frame_mean_ms": 0.998,
+     "frame_p99_ms": 6.399,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 254.2,
+     "frame_mean_ms": 3.933,
+     "frame_p99_ms": 7.551,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 181.1,
+     "frame_mean_ms": 5.521,
+     "frame_p99_ms": 8.8,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 173.7,
+     "frame_mean_ms": 5.757,
+     "frame_p99_ms": 10.195,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1222.3,
+     "frame_mean_ms": 0.818,
+     "frame_p99_ms": 1.294,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1294.0,
+     "frame_mean_ms": 0.773,
+     "frame_p99_ms": 1.379,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1050.3,
+     "frame_mean_ms": 0.952,
+     "frame_p99_ms": 1.873,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 936.1,
+     "frame_mean_ms": 1.068,
+     "frame_p99_ms": 2.606,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1042.6,
+     "frame_mean_ms": 0.959,
+     "frame_p99_ms": 2.228,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 997.2,
+     "frame_mean_ms": 1.003,
+     "frame_p99_ms": 5.815,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 245.2,
+     "frame_mean_ms": 4.078,
+     "frame_p99_ms": 7.775,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 176.6,
+     "frame_mean_ms": 5.662,
+     "frame_p99_ms": 10.208,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 168.0,
+     "frame_mean_ms": 5.951,
+     "frame_p99_ms": 9.891,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1269.3,
+     "frame_mean_ms": 0.788,
+     "frame_p99_ms": 1.206,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1342.6,
+     "frame_mean_ms": 0.745,
+     "frame_p99_ms": 1.201,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 706.2,
+     "frame_mean_ms": 1.416,
+     "frame_p99_ms": 2.702,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 809.9,
+     "frame_mean_ms": 1.235,
+     "frame_p99_ms": 2.503,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 731.2,
+     "frame_mean_ms": 1.368,
+     "frame_p99_ms": 1.829,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 731.2,
+     "frame_mean_ms": 1.368,
+     "frame_p99_ms": 1.724,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 247.1,
+     "frame_mean_ms": 4.048,
+     "frame_p99_ms": 8.022,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 177.7,
+     "frame_mean_ms": 5.627,
+     "frame_p99_ms": 9.198,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 171.3,
+     "frame_mean_ms": 5.837,
+     "frame_p99_ms": 10.471,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 831.8,
+     "frame_mean_ms": 1.202,
+     "frame_p99_ms": 1.633,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 822.0,
+     "frame_mean_ms": 1.217,
+     "frame_p99_ms": 1.627,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 710.8,
+     "frame_mean_ms": 1.407,
+     "frame_p99_ms": 1.828,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 882.9,
+     "frame_mean_ms": 1.133,
+     "frame_p99_ms": 2.546,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 709.4,
+     "frame_mean_ms": 1.41,
+     "frame_p99_ms": 1.905,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 705.8,
+     "frame_mean_ms": 1.417,
+     "frame_p99_ms": 2.105,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 246.7,
+     "frame_mean_ms": 4.054,
+     "frame_p99_ms": 7.738,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 175.2,
+     "frame_mean_ms": 5.708,
+     "frame_p99_ms": 9.76,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 170.8,
+     "frame_mean_ms": 5.856,
+     "frame_p99_ms": 10.422,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 825.3,
+     "frame_mean_ms": 1.212,
+     "frame_p99_ms": 1.737,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 831.9,
+     "frame_mean_ms": 1.202,
+     "frame_p99_ms": 1.629,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "ui145",
+   "client": "dec3387",
+   "recorded_at": "2026-10-14T13:46:42.877362Z",
+   "peak_vertices": 999248,
+   "minimum_fps": 173.85,
+   "maximum_to_render_ms": 16.14,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1125.5,
+     "frame_mean_ms": 0.889,
+     "frame_p99_ms": 1.512,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1117.0,
+     "frame_mean_ms": 0.895,
+     "frame_p99_ms": 2.093,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1070.4,
+     "frame_mean_ms": 0.934,
+     "frame_p99_ms": 1.208,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1120.0,
+     "frame_mean_ms": 0.893,
+     "frame_p99_ms": 1.35,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 260.1,
+     "frame_mean_ms": 3.845,
+     "frame_p99_ms": 7.472,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 183.7,
+     "frame_mean_ms": 5.444,
+     "frame_p99_ms": 9.097,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 178.6,
+     "frame_mean_ms": 5.599,
+     "frame_p99_ms": 9.502,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1284.4,
+     "frame_mean_ms": 0.779,
+     "frame_p99_ms": 1.157,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1342.3,
+     "frame_mean_ms": 0.745,
+     "frame_p99_ms": 1.359,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1078.9,
+     "frame_mean_ms": 0.927,
+     "frame_p99_ms": 1.474,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 928.5,
+     "frame_mean_ms": 1.077,
+     "frame_p99_ms": 2.603,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1072.0,
+     "frame_mean_ms": 0.933,
+     "frame_p99_ms": 1.204,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 1043.8,
+     "frame_mean_ms": 0.958,
+     "frame_p99_ms": 6.546,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 254.5,
+     "frame_mean_ms": 3.929,
+     "frame_p99_ms": 7.549,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 179.8,
+     "frame_mean_ms": 5.562,
+     "frame_p99_ms": 9.114,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 173.9,
+     "frame_mean_ms": 5.752,
+     "frame_p99_ms": 10.59,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1316.9,
+     "frame_mean_ms": 0.759,
+     "frame_p99_ms": 1.122,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1371.4,
+     "frame_mean_ms": 0.729,
+     "frame_p99_ms": 1.062,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 726.1,
+     "frame_mean_ms": 1.377,
+     "frame_p99_ms": 2.205,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 760.6,
+     "frame_mean_ms": 1.315,
+     "frame_p99_ms": 2.501,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 744.4,
+     "frame_mean_ms": 1.343,
+     "frame_p99_ms": 1.859,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 745.2,
+     "frame_mean_ms": 1.342,
+     "frame_p99_ms": 1.918,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 251.0,
+     "frame_mean_ms": 3.984,
+     "frame_p99_ms": 8.59,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 181.4,
+     "frame_mean_ms": 5.511,
+     "frame_p99_ms": 9.377,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 176.8,
+     "frame_mean_ms": 5.656,
+     "frame_p99_ms": 9.728,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 844.0,
+     "frame_mean_ms": 1.185,
+     "frame_p99_ms": 1.743,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 841.1,
+     "frame_mean_ms": 1.189,
+     "frame_p99_ms": 1.619,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 723.8,
+     "frame_mean_ms": 1.382,
+     "frame_p99_ms": 1.906,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 896.8,
+     "frame_mean_ms": 1.115,
+     "frame_p99_ms": 2.49,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 725.2,
+     "frame_mean_ms": 1.379,
+     "frame_p99_ms": 1.883,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 721.6,
+     "frame_mean_ms": 1.386,
+     "frame_p99_ms": 1.94,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 255.2,
+     "frame_mean_ms": 3.919,
+     "frame_p99_ms": 7.508,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 180.3,
+     "frame_mean_ms": 5.546,
+     "frame_p99_ms": 9.192,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 174.5,
+     "frame_mean_ms": 5.732,
+     "frame_p99_ms": 10.209,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 837.1,
+     "frame_mean_ms": 1.195,
+     "frame_p99_ms": 1.759,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 847.3,
+     "frame_mean_ms": 1.18,
+     "frame_p99_ms": 1.678,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "mid-1",
+   "client": "2bb4442",
+   "recorded_at": "2026-10-14T13:39:53.288621Z",
+   "peak_vertices": 1052090,
+   "minimum_fps": 171.2,
+   "maximum_to_render_ms": 13.02,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1093.8,
+     "frame_mean_ms": 0.914,
+     "frame_p99_ms": 1.453,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1099.3,
+     "frame_mean_ms": 0.91,
+     "frame_p99_ms": 2.089,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1075.6,
+     "frame_mean_ms": 0.93,
+     "frame_p99_ms": 1.652,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1045.9,
+     "frame_mean_ms": 0.956,
+     "frame_p99_ms": 4.834,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 263.7,
+     "frame_mean_ms": 3.792,
+     "frame_p99_ms": 7.6,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 184.9,
+     "frame_mean_ms": 5.407,
+     "frame_p99_ms": 8.997,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 177.3,
+     "frame_mean_ms": 5.64,
+     "frame_p99_ms": 9.803,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1128.5,
+     "frame_mean_ms": 0.886,
+     "frame_p99_ms": 1.532,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1273.7,
+     "frame_mean_ms": 0.785,
+     "frame_p99_ms": 1.421,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1060.7,
+     "frame_mean_ms": 0.943,
+     "frame_p99_ms": 1.518,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 1001.2,
+     "frame_mean_ms": 0.999,
+     "frame_p99_ms": 2.491,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1043.8,
+     "frame_mean_ms": 0.958,
+     "frame_p99_ms": 1.315,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 983.9,
+     "frame_mean_ms": 1.016,
+     "frame_p99_ms": 6.457,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 253.7,
+     "frame_mean_ms": 3.942,
+     "frame_p99_ms": 7.888,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 179.0,
+     "frame_mean_ms": 5.587,
+     "frame_p99_ms": 9.46,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 173.0,
+     "frame_mean_ms": 5.78,
+     "frame_p99_ms": 10.448,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1283.5,
+     "frame_mean_ms": 0.779,
+     "frame_p99_ms": 1.157,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1334.6,
+     "frame_mean_ms": 0.749,
+     "frame_p99_ms": 1.355,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 710.3,
+     "frame_mean_ms": 1.408,
+     "frame_p99_ms": 2.11,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 831.3,
+     "frame_mean_ms": 1.203,
+     "frame_p99_ms": 2.481,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 729.6,
+     "frame_mean_ms": 1.371,
+     "frame_p99_ms": 1.97,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 728.0,
+     "frame_mean_ms": 1.374,
+     "frame_p99_ms": 1.86,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 253.1,
+     "frame_mean_ms": 3.951,
+     "frame_p99_ms": 7.727,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 179.9,
+     "frame_mean_ms": 5.558,
+     "frame_p99_ms": 9.47,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 176.1,
+     "frame_mean_ms": 5.677,
+     "frame_p99_ms": 10.27,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 832.0,
+     "frame_mean_ms": 1.202,
+     "frame_p99_ms": 1.708,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 818.6,
+     "frame_mean_ms": 1.222,
+     "frame_p99_ms": 1.622,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 710.0,
+     "frame_mean_ms": 1.408,
+     "frame_p99_ms": 1.839,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 881.2,
+     "frame_mean_ms": 1.135,
+     "frame_p99_ms": 2.493,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 711.6,
+     "frame_mean_ms": 1.405,
+     "frame_p99_ms": 1.823,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 708.8,
+     "frame_mean_ms": 1.411,
+     "frame_p99_ms": 1.981,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 251.5,
+     "frame_mean_ms": 3.976,
+     "frame_p99_ms": 8.388,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 179.8,
+     "frame_mean_ms": 5.563,
+     "frame_p99_ms": 9.387,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 171.2,
+     "frame_mean_ms": 5.841,
+     "frame_p99_ms": 10.677,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 828.4,
+     "frame_mean_ms": 1.207,
+     "frame_p99_ms": 1.547,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 829.5,
+     "frame_mean_ms": 1.205,
+     "frame_p99_ms": 1.702,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "head-3",
+   "client": "69e752f",
+   "recorded_at": "2026-10-14T13:40:49.655267Z",
+   "peak_vertices": 1055180,
+   "minimum_fps": 170.87,
+   "maximum_to_render_ms": 19.27,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1098.0,
+     "frame_mean_ms": 0.911,
+     "frame_p99_ms": 1.51,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1051.7,
+     "frame_mean_ms": 0.951,
+     "frame_p99_ms": 2.206,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1078.2,
+     "frame_mean_ms": 0.927,
+     "frame_p99_ms": 1.216,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1027.7,
+     "frame_mean_ms": 0.973,
+     "frame_p99_ms": 6.733,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 255.9,
+     "frame_mean_ms": 3.908,
+     "frame_p99_ms": 7.334,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 182.0,
+     "frame_mean_ms": 5.496,
+     "frame_p99_ms": 9.371,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 176.0,
+     "frame_mean_ms": 5.682,
+     "frame_p99_ms": 9.491,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1241.9,
+     "frame_mean_ms": 0.805,
+     "frame_p99_ms": 1.291,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1285.7,
+     "frame_mean_ms": 0.778,
+     "frame_p99_ms": 1.307,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1060.2,
+     "frame_mean_ms": 0.943,
+     "frame_p99_ms": 1.511,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 840.9,
+     "frame_mean_ms": 1.189,
+     "frame_p99_ms": 2.803,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1057.0,
+     "frame_mean_ms": 0.946,
+     "frame_p99_ms": 1.26,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 972.1,
+     "frame_mean_ms": 1.029,
+     "frame_p99_ms": 6.568,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 250.1,
+     "frame_mean_ms": 3.998,
+     "frame_p99_ms": 7.845,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 176.9,
+     "frame_mean_ms": 5.654,
+     "frame_p99_ms": 9.509,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 172.0,
+     "frame_mean_ms": 5.813,
+     "frame_p99_ms": 10.601,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1208.4,
+     "frame_mean_ms": 0.828,
+     "frame_p99_ms": 1.417,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1333.6,
+     "frame_mean_ms": 0.75,
+     "frame_p99_ms": 1.232,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 716.5,
+     "frame_mean_ms": 1.396,
+     "frame_p99_ms": 1.934,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 774.0,
+     "frame_mean_ms": 1.292,
+     "frame_p99_ms": 2.694,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 716.5,
+     "frame_mean_ms": 1.396,
+     "frame_p99_ms": 2.063,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 727.5,
+     "frame_mean_ms": 1.375,
+     "frame_p99_ms": 1.868,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 252.1,
+     "frame_mean_ms": 3.967,
+     "frame_p99_ms": 8.254,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 178.1,
+     "frame_mean_ms": 5.615,
+     "frame_p99_ms": 9.452,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 173.9,
+     "frame_mean_ms": 5.749,
+     "frame_p99_ms": 10.501,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 831.4,
+     "frame_mean_ms": 1.203,
+     "frame_p99_ms": 1.734,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 814.0,
+     "frame_mean_ms": 1.228,
+     "frame_p99_ms": 1.717,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 707.7,
+     "frame_mean_ms": 1.413,
+     "frame_p99_ms": 1.838,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 828.2,
+     "frame_mean_ms": 1.207,
+     "frame_p99_ms": 2.603,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 708.0,
+     "frame_mean_ms": 1.412,
+     "frame_p99_ms": 1.999,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 706.2,
+     "frame_mean_ms": 1.416,
+     "frame_p99_ms": 1.98,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 250.7,
+     "frame_mean_ms": 3.99,
+     "frame_p99_ms": 8.62,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 179.0,
+     "frame_mean_ms": 5.588,
+     "frame_p99_ms": 9.776,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 170.9,
+     "frame_mean_ms": 5.852,
+     "frame_p99_ms": 10.615,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 827.0,
+     "frame_mean_ms": 1.209,
+     "frame_p99_ms": 1.771,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 834.3,
+     "frame_mean_ms": 1.199,
+     "frame_p99_ms": 1.498,
+     "window": "FullScreenWindow"
+    }
+   }
+  },
+  {
+   "run": "mid-2",
+   "client": "2bb4442",
+   "recorded_at": "2026-10-14T13:41:45.645152Z",
+   "peak_vertices": 1052090,
+   "minimum_fps": 172.64,
+   "maximum_to_render_ms": 10.85,
+   "workloads": {
+    "idle 1366x768@1.0": {
+     "fps": 1095.7,
+     "frame_mean_ms": 0.913,
+     "frame_p99_ms": 1.473,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.0": {
+     "fps": 1040.2,
+     "frame_mean_ms": 0.961,
+     "frame_p99_ms": 2.11,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.0": {
+     "fps": 1072.7,
+     "frame_mean_ms": 0.932,
+     "frame_p99_ms": 1.458,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.0": {
+     "fps": 1023.9,
+     "frame_mean_ms": 0.977,
+     "frame_p99_ms": 5.932,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.0": {
+     "fps": 238.9,
+     "frame_mean_ms": 4.186,
+     "frame_p99_ms": 7.907,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.0": {
+     "fps": 182.3,
+     "frame_mean_ms": 5.486,
+     "frame_p99_ms": 9.039,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.0": {
+     "fps": 178.4,
+     "frame_mean_ms": 5.607,
+     "frame_p99_ms": 9.798,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.0": {
+     "fps": 1252.2,
+     "frame_mean_ms": 0.799,
+     "frame_p99_ms": 1.2,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.0": {
+     "fps": 1289.9,
+     "frame_mean_ms": 0.775,
+     "frame_p99_ms": 1.406,
+     "window": "Windowed"
+    },
+    "idle 1366x768@1.25": {
+     "fps": 1044.3,
+     "frame_mean_ms": 0.958,
+     "frame_p99_ms": 1.522,
+     "window": "Windowed"
+    },
+    "pan-zoom 1366x768@1.25": {
+     "fps": 975.9,
+     "frame_mean_ms": 1.025,
+     "frame_p99_ms": 2.606,
+     "window": "Windowed"
+    },
+    "highlight 1366x768@1.25": {
+     "fps": 1042.2,
+     "frame_mean_ms": 0.959,
+     "frame_p99_ms": 1.308,
+     "window": "Windowed"
+    },
+    "pointer 1366x768@1.25": {
+     "fps": 980.1,
+     "frame_mean_ms": 1.02,
+     "frame_p99_ms": 6.7,
+     "window": "Windowed"
+    },
+    "projection 1366x768@1.25": {
+     "fps": 252.3,
+     "frame_mean_ms": 3.963,
+     "frame_p99_ms": 7.794,
+     "window": "Windowed"
+    },
+    "override-fate 1366x768@1.25": {
+     "fps": 178.7,
+     "frame_mean_ms": 5.596,
+     "frame_p99_ms": 9.272,
+     "window": "Windowed"
+    },
+    "override-whitehand 1366x768@1.25": {
+     "fps": 172.6,
+     "frame_mean_ms": 5.792,
+     "frame_p99_ms": 9.727,
+     "window": "Windowed"
+    },
+    "stress-pan 1366x768@1.25": {
+     "fps": 1286.7,
+     "frame_mean_ms": 0.777,
+     "frame_p99_ms": 1.11,
+     "window": "Windowed"
+    },
+    "stress-hover 1366x768@1.25": {
+     "fps": 1339.3,
+     "frame_mean_ms": 0.747,
+     "frame_p99_ms": 1.326,
+     "window": "Windowed"
+    },
+    "idle 1920x1080@1.0": {
+     "fps": 717.7,
+     "frame_mean_ms": 1.393,
+     "frame_p99_ms": 1.842,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.0": {
+     "fps": 839.3,
+     "frame_mean_ms": 1.191,
+     "frame_p99_ms": 2.394,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.0": {
+     "fps": 729.3,
+     "frame_mean_ms": 1.371,
+     "frame_p99_ms": 2.0,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.0": {
+     "fps": 729.7,
+     "frame_mean_ms": 1.37,
+     "frame_p99_ms": 1.791,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.0": {
+     "fps": 253.6,
+     "frame_mean_ms": 3.944,
+     "frame_p99_ms": 7.91,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.0": {
+     "fps": 180.5,
+     "frame_mean_ms": 5.539,
+     "frame_p99_ms": 9.489,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.0": {
+     "fps": 176.5,
+     "frame_mean_ms": 5.664,
+     "frame_p99_ms": 9.544,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.0": {
+     "fps": 832.9,
+     "frame_mean_ms": 1.201,
+     "frame_p99_ms": 1.74,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.0": {
+     "fps": 818.6,
+     "frame_mean_ms": 1.222,
+     "frame_p99_ms": 1.685,
+     "window": "FullScreenWindow"
+    },
+    "idle 1920x1080@1.25": {
+     "fps": 710.8,
+     "frame_mean_ms": 1.407,
+     "frame_p99_ms": 1.84,
+     "window": "FullScreenWindow"
+    },
+    "pan-zoom 1920x1080@1.25": {
+     "fps": 874.6,
+     "frame_mean_ms": 1.143,
+     "frame_p99_ms": 2.5,
+     "window": "FullScreenWindow"
+    },
+    "highlight 1920x1080@1.25": {
+     "fps": 709.7,
+     "frame_mean_ms": 1.409,
+     "frame_p99_ms": 1.882,
+     "window": "FullScreenWindow"
+    },
+    "pointer 1920x1080@1.25": {
+     "fps": 704.8,
+     "frame_mean_ms": 1.419,
+     "frame_p99_ms": 1.997,
+     "window": "FullScreenWindow"
+    },
+    "projection 1920x1080@1.25": {
+     "fps": 252.0,
+     "frame_mean_ms": 3.969,
+     "frame_p99_ms": 8.006,
+     "window": "FullScreenWindow"
+    },
+    "override-fate 1920x1080@1.25": {
+     "fps": 181.0,
+     "frame_mean_ms": 5.525,
+     "frame_p99_ms": 9.591,
+     "window": "FullScreenWindow"
+    },
+    "override-whitehand 1920x1080@1.25": {
+     "fps": 174.2,
+     "frame_mean_ms": 5.741,
+     "frame_p99_ms": 10.44,
+     "window": "FullScreenWindow"
+    },
+    "stress-pan 1920x1080@1.25": {
+     "fps": 826.8,
+     "frame_mean_ms": 1.209,
+     "frame_p99_ms": 1.843,
+     "window": "FullScreenWindow"
+    },
+    "stress-hover 1920x1080@1.25": {
+     "fps": 836.6,
+     "frame_mean_ms": 1.195,
+     "frame_p99_ms": 1.617,
+     "window": "FullScreenWindow"
+    }
+   }
+  }
+ ]
+}

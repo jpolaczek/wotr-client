@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 32 32">
+  <!-- Hunt: the flaming lidless eye. -->
+  <defs>
+    <radialGradient id="hunt-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" style="stop-color: var(--ember-light); stop-opacity: 0.85"/>
+      <stop offset="0.55" style="stop-color: var(--ember); stop-opacity: 0.5"/>
+      <stop offset="1" style="stop-color: var(--ember-dark); stop-opacity: 0"/>
+    </radialGradient>
+    <radialGradient id="hunt-iris" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#fff0a8"/>
+      <stop offset="0.3" style="stop-color: var(--ember-light)"/>
+      <stop offset="0.7" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-dark)"/>
+    </radialGradient>
+    <linearGradient id="hunt-flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-light)"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="16" cy="16" rx="15.4" ry="11.6" fill="url(#hunt-halo)"/>
+  <g filter="url(#lift)">
+    <path d="M9.6 10.2 C10.4 7.4 12.6 6.4 12.2 3.6 C14.6 5.8 15 7.8 14.4 9.4 Z" fill="url(#hunt-flame)"/>
+    <path d="M17.2 9.2 C17.6 6.6 19.6 5.2 19.4 2.6 C21.8 5 22.2 7.2 21.4 9.8 Z" fill="url(#hunt-flame)"/>
+    <path d="M6.2 12.4 C5.6 9.8 6.4 8.2 5.6 6.2 C8.2 7.6 9.2 9.4 9 11.2 Z" fill="url(#hunt-flame)" opacity="0.9"/>
+    <path d="M25.8 12.4 C26.4 9.8 25.6 8.2 26.4 6.2 C23.8 7.6 22.8 9.4 23 11.2 Z" fill="url(#hunt-flame)" opacity="0.9"/>
+    <path d="M2.2 16 C6.8 8.4 25.2 8.4 29.8 16 C25.2 23.6 6.8 23.6 2.2 16 Z" fill="url(#hunt-iris)" stroke="#3a0b05" stroke-width="0.8"/>
+    <path d="M16 9.4 C17.9 12.4 17.9 19.6 16 22.6 C14.1 19.6 14.1 12.4 16 9.4 Z" fill="#0b0503"/>
+    <ellipse cx="12.2" cy="13.6" rx="1.2" ry="0.7" fill="#fff6cf" opacity="0.75"/>
+  </g>
+</svg>

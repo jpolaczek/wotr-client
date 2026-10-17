@@ -1,0 +1,4 @@
+Use case: precise-object-edit
+Asset type: clean local background for an existing pencil map.
+The input image is the exact edit target. Erase ONLY the LARGE LOWER CENTRAL FOREST, all its tree crowns, tiny trunks and shadows, returning its footprint to white paper. The removed grove extends approximately from x=180 to 760, y=410 to 940 in this 1000x1042 image. Remove every trace of those trees, including the lower-right tail and left edge.
+Preserve the entire mountain chain on the left, ALL rivers, the small forest fragment at the top, and the entire surrounding drawing in exactly the same locations, line weights and style. Where a river passes behind the erased trees, continue that river with the same quiet gray pencil stroke. Do not draw any replacement trees or new objects. Do not shift, crop, resize or redraw the scene. Keep the exact same canvas, composition, neutral grayscale pencil style and white background. No text, symbols, borders, color or decoration.

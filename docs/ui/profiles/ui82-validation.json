@@ -1,0 +1,373 @@
+{
+  "schema": "ui81-ui82-acceptance-v1",
+  "recorded_at_utc": "2026-10-09T08:17:29.883302+00:00",
+  "status_authority": "docs/tasks/tasks.json",
+  "source_commit": "ffd24d0c8196be51fd250e4edc074688d10eae55",
+  "snapshot": {
+    "path": ".artifacts/ui82/import-13.json",
+    "sha256": "410fa4b9f9931cc21a2df5d73f791f1c6006ae36ef08d3ac20bb41aabb7ac66b",
+    "files": 1361,
+    "all_current_source_hashes_match": true
+  },
+  "editor": {
+    "path": ".artifacts/ui82/final-editor13.xml",
+    "sha256": "318796560ee8109a5cf7d819535b14fa3ddc52225d74699277a04fd757f39a01",
+    "attributes": {
+      "id": "2",
+      "testcasecount": "608",
+      "result": "Passed",
+      "total": "608",
+      "passed": "608",
+      "failed": "0",
+      "inconclusive": "0",
+      "skipped": "0",
+      "asserts": "0",
+      "engine-version": "3.5.0.0",
+      "clr-version": "4.0.30319.42000",
+      "start-time": "2026-10-09 08:14:24Z",
+      "end-time": "2026-10-09 08:14:39Z",
+      "duration": "15.3583162"
+    }
+  },
+  "play": {
+    "distinct_cases": 52,
+    "latest_results": {
+      "Wotr.PlayTests.DraftInputTests.CapturedButtonPressRequiresTheOriginalScopeAndReleasesCleanly": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.DraftInputTests.EscapeCancelsCapturedDragAndDoubleClickCannotCrossScope": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.DraftInputTests.HeldEnterCannotSubmitNextSetWhileDelayedPreviewIsPending": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.ASelectedFigureCanStartADragOnTheNextNativePress": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.DifferentActionTokensWithEmptyIdsAreDistinctClickTargets": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.EngineCountsConsecutiveMousePressesAcrossDifferentControls": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.MovingOutAndBackDuringTheSecondPressCancelsTheDoubleClick": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.NeutralClickThenCardDoubleClickWithSmallMotionCompletesTheCardGesture": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.RapidClicksCannotActivateANewDecisionEvenWithoutAToken": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.RemovedCardCannotTurnAThirdClickIntoTheNextCardsGesture": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineDoubleClickTests.RepeatedFigureClicksKeepLocalCyclesAndChangedScopeCancelsAPressedPair": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.EngineHandDiscardNetworkTests.MiniatureDoubleClicksAfterAnotherControlDiscardBothHandsAtFourLayouts": {
+        "result": "Passed",
+        "report": "cards13.xml"
+      },
+      "Wotr.PlayTests.EngineHandDiscardNetworkTests.PreviewContentDoubleClicksDiscardBothHandsAtFourLayouts": {
+        "result": "Passed",
+        "report": "cards13.xml"
+      },
+      "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision": {
+        "result": "Passed",
+        "report": "card-map8.xml"
+      },
+      "Wotr.PlayTests.MapViewportTests.FixedOuterEdgesCornersAndHudPointsStayContinuousAtFourLayouts": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.ArmyContextNetworkTests.EnemyClickAttacksWithFreePeoples": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.ArmyContextNetworkTests.EnemyClickAttacksWithShadow": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.ArmyContextNetworkTests.FinishOpensRealExcessDecision": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.ArmyContextNetworkTests.FirstMarchPersistsAndMergedFiguresCannotMoveTwice": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.ArmyContextNetworkTests.GarrisonCanSortieButHasNoMarchTargets": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.ArmyContextNetworkTests.SourceCorrectionAndFinishDoNotUndoTheSavedMove": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.MovementNetworkTests.TwoMountedMatchClientsMoveRecruitAndRecoverWithoutPayingTwice": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.TravelGestureNetworkTests.FellowshipPortraitDropUsesTheSelectedCostAndKeepsTheGuideWindow": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.TravelGestureNetworkTests.FellowshipRequiresClickAndStaysOpenAfterExitWithoutMovingTheCamera": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.TravelGestureNetworkTests.FigureDropSavesOneGroupAndFinishKeepsTheExactPaidDie": {
+        "result": "Passed",
+        "report": "army-travel8.xml"
+      },
+      "Wotr.PlayTests.MapViewportTests.EdgesCornersControlsFocusAndDetachNeverChangeTheMatch": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.MapViewportTests.ModalWindowsCaptureAndOneAxisLimitsKeepEdgeNavigationSafeAtFourLayouts": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.MapViewportTests.MovingArmyCannotStopNavigationUnderAStationaryEdgePointerAtFourLayouts": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.MapViewportTests.ReenteringTheViewportResumesEdgePanWithoutAnotherMoveAtFourLayouts": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.MapViewportTests.ZoomPanLocateAndResizeCoverTheViewportForBothPlayers": {
+        "result": "Passed",
+        "report": "map-correction10.xml"
+      },
+      "Wotr.PlayTests.BattleNetworkTests.ContinuingRetreatingAndAdvancingUseOneTrayAndKeepTheCamera": {
+        "result": "Passed",
+        "report": "hunt-battle11.xml"
+      },
+      "Wotr.PlayTests.BattleNetworkTests.LossPreviewExplainsMissingRegularAndCommanderDeathAndCyclesElitesWithoutChangingLossOrder": {
+        "result": "Passed",
+        "report": "muster-battle10.xml"
+      },
+      "Wotr.PlayTests.BattleNetworkTests.TwoClientsAttackResolveRealDiceAndReopenTheSavedReport": {
+        "result": "Passed",
+        "report": "hunt-battle11.xml"
+      },
+      "Wotr.PlayTests.MusterNetworkTests.EliteDropSpendsBothRecruitmentPoints": {
+        "result": "Passed",
+        "report": "muster-battle10.xml"
+      },
+      "Wotr.PlayTests.MusterNetworkTests.HoverIsReadOnlyAndCrestDragAdvancesOnlyLegalTrack": {
+        "result": "Passed",
+        "report": "muster-battle10.xml"
+      },
+      "Wotr.PlayTests.MusterNetworkTests.LoneLeaderIsLegalWarnedRemovedAndFinishKeepsPaidStep": {
+        "result": "Passed",
+        "report": "muster-battle10.xml"
+      },
+      "Wotr.PlayTests.MusterNetworkTests.RecruitmentOverflowWaitsForFinishAndExactFigureReturn": {
+        "result": "Passed",
+        "report": "muster-battle10.xml"
+      },
+      "Wotr.PlayTests.HuntResponseNetworkTests.GuideClickDoubleAndDrop": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.HuntResponseNetworkTests.RandomClickDoubleAndDropNeverSendAVictim": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.HuntResponseNetworkTests.RingClickDoubleAndDrop": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.BoardMenuNetworkTests.OfflineMenuPreservesTheDraftAndAllowsGamesAfterOnlyLocalWrites": {
+        "result": "Passed",
+        "report": "card-menu11.xml"
+      },
+      "Wotr.PlayTests.BoardMenuNetworkTests.TravelCardBattleHuntAndSetupDraftsSurviveSettingsHelpAndGamesWithoutSubmission": {
+        "result": "Passed",
+        "report": "placement-menu12.xml"
+      },
+      "Wotr.PlayTests.CardNetworkTests.CardChoicesDrawDiscardAndTableEffectsUseTheProductionServer": {
+        "result": "Passed",
+        "report": "card-menu11.xml"
+      },
+      "Wotr.PlayTests.FellowshipLayoutTests.FellowshipGroupsHuntAndMordorFitBothSizesAndScalesWithoutScrolling": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.FellowshipLayoutTests.GuideModeShowsItsConsequenceAndKeepsAllPortraitsReachable": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.FellowshipLayoutTests.NamedStatusAndActionsRemainStableAndReadableAtEveryLayout": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.FellowshipLayoutTests.RegionalRouteKeepsAllEightNeighborsReachableBesidePinnedCard": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.FellowshipLayoutTests.RevealRouteKeepsDistinctPathsAndHuntContextWhileInspectingTheMap": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.HuntLayoutTests.ClickInspectsAndCloseSurvivesRefreshUntilANewOwnDecision": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.HuntLayoutTests.MissingAndAutomaticReportsDoNotOpenOrAdvertiseAnUnrelatedChoice": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      },
+      "Wotr.PlayTests.HuntLayoutTests.ThreeKnownStepsCanBeInspectedWithoutLosingTheLiveChoice": {
+        "result": "Passed",
+        "report": "hunt-layout13.xml"
+      }
+    },
+    "reports": [
+      {
+        "path": ".artifacts/ui82/card-map8.xml",
+        "sha256": "6f959e1a8d791a3cd69d8e17ea1405af65c7e03e69a516b97da963da9a8eeea9",
+        "total": 15,
+        "passed": 14,
+        "failed": 1,
+        "start": "2026-10-09 07:43:55Z",
+        "end": "2026-10-09 07:44:40Z"
+      },
+      {
+        "path": ".artifacts/ui82/army-travel8.xml",
+        "sha256": "0b3964cfef65f65243bb83d3fd261b746ef4ee164edc93f9c9a9450199ea88f2",
+        "total": 10,
+        "passed": 9,
+        "failed": 1,
+        "start": "2026-10-09 07:46:17Z",
+        "end": "2026-10-09 07:47:35Z"
+      },
+      {
+        "path": ".artifacts/ui82/map-correction10.xml",
+        "sha256": "3e5848cd548a8ecd987235fdedaae5dac982c3d0aa24ee6337b7ece48cf125f3",
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "start": "2026-10-09 07:51:09Z",
+        "end": "2026-10-09 07:52:25Z"
+      },
+      {
+        "path": ".artifacts/ui82/muster-battle10.xml",
+        "sha256": "592091a2259c81b4fec7a9f9fd7997d8d1d7a113390c97b8fb24fde5e68b8777",
+        "total": 7,
+        "passed": 5,
+        "failed": 2,
+        "start": "2026-10-09 07:53:20Z",
+        "end": "2026-10-09 07:53:37Z"
+      },
+      {
+        "path": ".artifacts/ui82/hunt-battle11.xml",
+        "sha256": "18dbf90cce5de4928d4d8def8f6ef2c534602cf6073972f1493d45831f2fc160",
+        "total": 5,
+        "passed": 2,
+        "failed": 3,
+        "start": "2026-10-09 08:03:19Z",
+        "end": "2026-10-09 08:03:45Z"
+      },
+      {
+        "path": ".artifacts/ui82/card-menu11.xml",
+        "sha256": "f178ca0a19e9d926cf71ff6f5a44eeba55d8d5051448b3f93c9b85d766adb9e7",
+        "total": 3,
+        "passed": 2,
+        "failed": 1,
+        "start": "2026-10-09 08:04:28Z",
+        "end": "2026-10-09 08:07:10Z"
+      },
+      {
+        "path": ".artifacts/ui82/placement-menu12.xml",
+        "sha256": "dfe5e6a47b491ae0618847a48668e5e8ff6eb4cdbe0fdce0fe92e3c820502d89",
+        "total": 2,
+        "passed": 1,
+        "failed": 1,
+        "start": "2026-10-09 08:09:27Z",
+        "end": "2026-10-09 08:09:49Z"
+      },
+      {
+        "path": ".artifacts/ui82/hunt-layout13.xml",
+        "sha256": "257c5f131bb2827cab6fe87a317a77775471d6a7b997ce5b0ce9ee6e0f8bc477",
+        "total": 12,
+        "passed": 12,
+        "failed": 0,
+        "start": "2026-10-09 08:11:56Z",
+        "end": "2026-10-09 08:12:53Z"
+      },
+      {
+        "path": ".artifacts/ui82/cards13.xml",
+        "sha256": "3b28a0a9396c8207bbf1d6be099902f93e4cfd9019074922816b29968d084377",
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "start": "2026-10-09 08:13:24Z",
+        "end": "2026-10-09 08:13:54Z"
+      }
+    ],
+    "note": "Latest result per method across the listed actual runs; not one run on a single snapshot."
+  },
+  "input_scope": "Unity 6000.6.0f1 PointerState/InputForUI to UI Toolkit with real Pick, capture and ClickDetector; no OS mouse injection. Network scenarios use HTTP/WebSocket/PostgreSQL.",
+  "limitations": [
+    "No Windows or Intel runtime test",
+    "No physical mouse/trackpad acceptance or manual game",
+    "No new native FPS benchmark",
+    "No deployment, push or publication"
+  ],
+  "artifacts": {
+    "BuildLocalMac-source.json": {
+      "path": ".artifacts/ui82/BuildLocalMac-source.json",
+      "sha256": "30439f6e06cb4092e8d9e47f165dc595910ee443aaa9d1c7d56bc50ac0bcc66c",
+      "runtime_files_matching_tested_snapshot": 303,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui82/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui82/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui82/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64",
+      "output": ".artifacts/ui82/macos"
+    },
+    "BuildLocalWindows-source.json": {
+      "path": ".artifacts/ui82/BuildLocalWindows-source.json",
+      "sha256": "cb9643f9bb2efa178ef6b34fc773f540f7928d625c5dd5e4202bc6456248908f",
+      "runtime_files_matching_tested_snapshot": 303,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui82/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows",
+      "output": ".artifacts/ui82/windows"
+    },
+    "smoke-final/result.json": {
+      "path": ".artifacts/ui82/smoke-final/result.json",
+      "sha256": "41abd21808eeb41a91a12fc64436211edeed752c4036ae8adcab7556758fcdc2",
+      "result": "PASS",
+      "previous_profile_restored": true,
+      "login_tested": false,
+      "windows_tested": false
+    }
+  },
+  "visual_review": {
+    "initial_cards_reviewed": 8,
+    "final_card_spot_checks": 2,
+    "final_hunt_pngs_reviewed": 24,
+    "hunt_scope": "Both sides and four layouts; expanded Hunt with Fellowship tab collapsed. Simultaneously expanded panels covered by layout tests.",
+    "smoke_login_reviewed": true
+  },
+  "environment": {
+    "unity": "6000.6.0f1",
+    "hardware": "Apple M1 Pro, 16 GB",
+    "os": "macOS 15.6.1",
+    "graphics": "Metal"
+  }
+}

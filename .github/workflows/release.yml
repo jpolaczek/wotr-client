@@ -1,0 +1,83 @@
+# DIST-10: a tag v<version> builds a client release into a draft GitHub Release. The tag must name
+# release/version.json and release/notes/<version>.md must exist (scripts/release.py check-tag). EditMode runs in
+# GameCI while installers.yml builds, packs and smoke-tests both platforms; the draft gets flat files (packages,
+# installers, build-info-<platform>.json, RELEASE-NOTES.md, SHA256SUMS) for the publisher's release command
+# (DIST-11). Nothing reaches players from here. Secrets: as installers.yml.
+name: Release
+on:
+  push:
+    tags: ['v*']
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Required repository secrets
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          missing=()
+          for name in UNITY_LICENSE UNITY_EMAIL UNITY_PASSWORD; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+          if (( ${#missing[@]} )); then
+            echo "::error::Missing repository secrets: ${missing[*]} (see release/README.md)"
+            exit 1
+          fi
+      - name: Tag, version and release notes
+        id: tag
+        run: |
+          python3 scripts/release.py check-tag "$GITHUB_REF_NAME"
+          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Release tooling tests
+        run: python3 -m unittest discover -s tests/release -p 'test_*.py'
+
+  editmode:
+    needs: check
+    uses: ./.github/workflows/editmode.yml
+    secrets: inherit
+
+  installers:
+    needs: check
+    uses: ./.github/workflows/installers.yml
+    secrets: inherit
+
+  draft:
+    needs: [check, editmode, installers]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: installers-${{ needs.check.outputs.version }}
+          path: .artifacts/releases/${{ needs.check.outputs.version }}/installers
+      - name: Verify and collect the release files
+        run: |
+          python3 scripts/package_velopack.py verify
+          python3 scripts/package_velopack.py assets --output .artifacts/release-assets
+      # A re-run replaces this tag's earlier draft; a published release is never touched.
+      - name: Draft GitHub Release
+        run: |
+          if [[ "$(gh release view "$GITHUB_REF_NAME" --json isDraft -q .isDraft 2>/dev/null)" == false ]]; then
+            echo "::error::$GITHUB_REF_NAME is already published; release a higher version instead."
+            exit 1
+          fi
+          gh release delete "$GITHUB_REF_NAME" --yes 2>/dev/null || true
+          prerelease=()
+          [[ "$VERSION" == *-* ]] && prerelease=(--prerelease)
+          gh release create "$GITHUB_REF_NAME" --draft --verify-tag "${prerelease[@]}" \
+            --title "War of the Ring Online $VERSION" --notes-file "release/notes/$VERSION.md" \
+            .artifacts/release-assets/*
+          gh release view "$GITHUB_REF_NAME" --json assets -q '.assets[] | "\(.name) \(.size)"'

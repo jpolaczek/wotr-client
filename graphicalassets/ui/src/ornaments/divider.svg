@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="44" viewBox="0 0 12 44">
+  <!-- Vertical separator between bar sections; scaled down between counters. -->
+  <defs>
+    <linearGradient id="divider-fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--gilt-light); stop-opacity: 0"/>
+      <stop offset="0.3" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.7" style="stop-color: var(--gilt-light)"/>
+      <stop offset="1" style="stop-color: var(--gilt-light); stop-opacity: 0"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#engrave)">
+    <rect x="5.5" y="2" width="1" height="40" fill="url(#divider-fade)"/>
+    <path d="M6 15.6 L9.4 22 L6 28.4 L2.6 22 Z" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="6" cy="22" r="1.15" style="fill: var(--ink)"/>
+    <circle cx="6" cy="11" r="0.95" style="fill: var(--gilt-light)"/>
+    <circle cx="6" cy="33" r="0.95" style="fill: var(--gilt-light)"/>
+  </g>
+</svg>

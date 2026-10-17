@@ -1,0 +1,3165 @@
+{
+  "version": "base-setup-1",
+  "source": "BASE pp.4–7,14–21,40; BOARD-2E; T04-DATA-AUDIT",
+  "regions": [
+    {
+      "id": "andrast",
+      "name": "Andrast",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "anfalas",
+        "druwaith-iaur"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "anfalas",
+      "name": "Anfalas",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "andrast",
+        "dol-amroth",
+        "erech"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "angmar",
+      "name": "Angmar",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "City",
+      "victoryPoints": 1,
+      "neighbors": [
+        "arnor",
+        "ettenmoors",
+        "mount-gram"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "arnor",
+      "name": "Arnor",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "angmar",
+        "ettenmoors",
+        "evendim",
+        "north-downs"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "ash-mountains",
+      "name": "Ash Mountains",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dagorlad",
+        "noman-lands",
+        "south-rhun",
+        "southern-dorwinion"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "barad-dur",
+      "name": "Barad-dûr",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "gorgoroth"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "bree",
+      "name": "Bree",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "buckland",
+        "north-downs",
+        "south-downs",
+        "weather-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "buckland",
+      "name": "Buckland",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "bree",
+        "cardolan",
+        "evendim",
+        "north-downs",
+        "old-forest",
+        "south-downs",
+        "the-shire"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "cardolan",
+      "name": "Cardolan",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "buckland",
+        "minhiriath",
+        "north-dunland",
+        "old-forest",
+        "south-downs",
+        "south-ered-luin",
+        "tharbad"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "carrock",
+      "name": "Carrock",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "eagles-eyrie",
+        "northern-mirkwood",
+        "old-ford",
+        "old-forest-road",
+        "rhosgobel",
+        "western-mirkwood"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "dagorlad",
+      "name": "Dagorlad",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "ash-mountains",
+        "eastern-emyn-muil",
+        "morannon",
+        "noman-lands",
+        "north-ithilien"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "dale",
+      "name": "Dale",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": "City",
+      "victoryPoints": 1,
+      "neighbors": [
+        "erebor",
+        "iron-hills",
+        "northern-rhovanion",
+        "old-forest-road",
+        "vale-of-the-carnen",
+        "withered-heath",
+        "woodland-realm"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "dead-marshes",
+      "name": "Dead Marshes",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "druadan-forest",
+        "eastern-emyn-muil",
+        "north-ithilien",
+        "osgiliath",
+        "western-emyn-muil"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "dimrill-dale",
+      "name": "Dimrill Dale",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "gladden-fields",
+        "lorien",
+        "moria",
+        "north-anduin-vale",
+        "parth-celebrant",
+        "south-anduin-vale"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "dol-amroth",
+      "name": "Dol Amroth",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "anfalas",
+        "erech",
+        "lamedon"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "dol-guldur",
+      "name": "Dol Guldur",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "eastern-brown-lands",
+        "eastern-mirkwood",
+        "narrows-of-the-forest",
+        "north-anduin-vale",
+        "south-anduin-vale",
+        "southern-mirkwood",
+        "western-brown-lands"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "druadan-forest",
+      "name": "Drúadan Forest",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dead-marshes",
+        "eastemnet",
+        "folde",
+        "minas-tirith",
+        "osgiliath",
+        "western-emyn-muil"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "druwaith-iaur",
+      "name": "Drúwaith Iaur",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "andrast",
+        "enedwaith",
+        "fords-of-isen",
+        "gap-of-rohan"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "eagles-eyrie",
+      "name": "Eagles' Eyrie",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "carrock",
+        "mount-gundabad",
+        "old-ford"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "east-harondor",
+      "name": "East Harondor",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "near-harad",
+        "south-ithilien",
+        "west-harondor"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "east-rhun",
+      "name": "East Rhûn",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "iron-hills",
+        "north-rhun",
+        "south-rhun",
+        "vale-of-the-carnen"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "eastemnet",
+      "name": "Eastemnet",
+      "nation": "rohan",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "druadan-forest",
+        "fangorn",
+        "folde",
+        "parth-celebrant",
+        "westemnet",
+        "western-brown-lands",
+        "western-emyn-muil"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "eastern-brown-lands",
+      "name": "Eastern Brown Lands",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dol-guldur",
+        "eastern-emyn-muil",
+        "noman-lands",
+        "southern-mirkwood",
+        "southern-rhovanion",
+        "western-brown-lands",
+        "western-emyn-muil"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "eastern-emyn-muil",
+      "name": "Eastern Emyn Muil",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dagorlad",
+        "dead-marshes",
+        "eastern-brown-lands",
+        "noman-lands",
+        "north-ithilien",
+        "western-emyn-muil"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "eastern-mirkwood",
+      "name": "Eastern Mirkwood",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dol-guldur",
+        "narrows-of-the-forest",
+        "northern-rhovanion",
+        "old-forest-road",
+        "southern-mirkwood"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "edoras",
+      "name": "Edoras",
+      "nation": "rohan",
+      "originalOwner": "FreePeoples",
+      "settlement": "City",
+      "victoryPoints": 1,
+      "neighbors": [
+        "folde",
+        "westemnet"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "enedwaith",
+      "name": "Enedwaith",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "druwaith-iaur",
+        "gap-of-rohan",
+        "minhiriath",
+        "south-dunland",
+        "tharbad"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "erebor",
+      "name": "Erebor",
+      "nation": "dwarves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "dale",
+        "iron-hills",
+        "withered-heath"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "erech",
+      "name": "Erech",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "anfalas",
+        "dol-amroth",
+        "lamedon"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "ered-luin",
+      "name": "Ered Luin",
+      "nation": "dwarves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "evendim",
+        "grey-havens",
+        "north-ered-luin",
+        "tower-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "ettenmoors",
+      "name": "Ettenmoors",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "angmar",
+        "arnor",
+        "mount-gram",
+        "north-downs",
+        "trollshaws",
+        "weather-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "evendim",
+      "name": "Evendim",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "arnor",
+        "buckland",
+        "ered-luin",
+        "north-downs",
+        "north-ered-luin",
+        "the-shire",
+        "tower-hills"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "fangorn",
+      "name": "Fangorn",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "eastemnet",
+        "fords-of-isen",
+        "parth-celebrant",
+        "westemnet"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "far-harad",
+      "name": "Far Harad",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": "City",
+      "victoryPoints": 1,
+      "neighbors": [
+        "khand",
+        "near-harad"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "folde",
+      "name": "Folde",
+      "nation": "rohan",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "druadan-forest",
+        "eastemnet",
+        "edoras",
+        "westemnet"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "fords-of-bruinen",
+      "name": "Fords of Bruinen",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "high-pass",
+        "hollin",
+        "rivendell",
+        "trollshaws"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "fords-of-isen",
+      "name": "Fords of Isen",
+      "nation": "rohan",
+      "originalOwner": "FreePeoples",
+      "settlement": "Fortification",
+      "victoryPoints": 0,
+      "neighbors": [
+        "druwaith-iaur",
+        "fangorn",
+        "gap-of-rohan",
+        "helms-deep",
+        "orthanc",
+        "westemnet"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "forlindon",
+      "name": "Forlindon",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "grey-havens"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "gap-of-rohan",
+      "name": "Gap of Rohan",
+      "nation": "isengard",
+      "originalOwner": "Shadow",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "druwaith-iaur",
+        "enedwaith",
+        "fords-of-isen",
+        "orthanc",
+        "south-dunland"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "gladden-fields",
+      "name": "Gladden Fields",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dimrill-dale",
+        "north-anduin-vale",
+        "old-ford",
+        "rhosgobel"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "goblins-gate",
+      "name": "Goblin's Gate",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "high-pass",
+        "old-ford"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "gorgoroth",
+      "name": "Gorgoroth",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "barad-dur",
+        "minas-morgul",
+        "morannon",
+        "nurn"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "grey-havens",
+      "name": "Grey Havens",
+      "nation": "elves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "ered-luin",
+        "forlindon",
+        "harlindon",
+        "tower-hills"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "harlindon",
+      "name": "Harlindon",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "grey-havens",
+        "south-ered-luin"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "helms-deep",
+      "name": "Helm's Deep",
+      "nation": "rohan",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "fords-of-isen",
+        "westemnet"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "high-pass",
+      "name": "High Pass",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "fords-of-bruinen",
+        "goblins-gate"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "hollin",
+      "name": "Hollin",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "fords-of-bruinen",
+        "moria",
+        "north-dunland",
+        "south-downs",
+        "trollshaws"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "iron-hills",
+      "name": "Iron Hills",
+      "nation": "dwarves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "dale",
+        "east-rhun",
+        "erebor",
+        "vale-of-the-carnen"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "khand",
+      "name": "Khand",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "far-harad",
+        "near-harad"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "lamedon",
+      "name": "Lamedon",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "dol-amroth",
+        "erech",
+        "pelargir"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "lorien",
+      "name": "Lórien",
+      "nation": "elves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "dimrill-dale",
+        "parth-celebrant"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "lossarnach",
+      "name": "Lossarnach",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "minas-tirith",
+        "osgiliath",
+        "pelargir"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "minas-morgul",
+      "name": "Minas Morgul",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "gorgoroth",
+        "north-ithilien",
+        "south-ithilien"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "minas-tirith",
+      "name": "Minas Tirith",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "druadan-forest",
+        "lossarnach",
+        "osgiliath"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "minhiriath",
+      "name": "Minhiriath",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "cardolan",
+        "enedwaith",
+        "south-ered-luin",
+        "tharbad"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "morannon",
+      "name": "Morannon",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "dagorlad",
+        "gorgoroth"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "moria",
+      "name": "Moria",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "dimrill-dale",
+        "hollin",
+        "north-dunland"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "mount-gram",
+      "name": "Mount Gram",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "angmar",
+        "ettenmoors",
+        "mount-gundabad"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "mount-gundabad",
+      "name": "Mount Gundabad",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "eagles-eyrie",
+        "mount-gram"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "narrows-of-the-forest",
+      "name": "Narrows of the Forest",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dol-guldur",
+        "eastern-mirkwood",
+        "north-anduin-vale",
+        "old-forest-road",
+        "rhosgobel"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "near-harad",
+      "name": "Near Harad",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "east-harondor",
+        "far-harad",
+        "khand",
+        "umbar",
+        "west-harondor"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "noman-lands",
+      "name": "Noman-Lands",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "ash-mountains",
+        "dagorlad",
+        "eastern-brown-lands",
+        "eastern-emyn-muil",
+        "southern-dorwinion",
+        "southern-rhovanion"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "north-anduin-vale",
+      "name": "North Anduin Vale",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dimrill-dale",
+        "dol-guldur",
+        "gladden-fields",
+        "narrows-of-the-forest",
+        "rhosgobel",
+        "south-anduin-vale"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "north-downs",
+      "name": "North Downs",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "arnor",
+        "bree",
+        "buckland",
+        "ettenmoors",
+        "evendim",
+        "weather-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "north-dunland",
+      "name": "North Dunland",
+      "nation": "isengard",
+      "originalOwner": "Shadow",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "cardolan",
+        "hollin",
+        "moria",
+        "south-downs",
+        "south-dunland",
+        "tharbad"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "north-ered-luin",
+      "name": "North Ered Luin",
+      "nation": "dwarves",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "ered-luin",
+        "evendim"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "north-ithilien",
+      "name": "North Ithilien",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dagorlad",
+        "dead-marshes",
+        "eastern-emyn-muil",
+        "minas-morgul",
+        "osgiliath",
+        "south-ithilien"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "north-rhun",
+      "name": "North Rhûn",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "east-rhun",
+        "northern-dorwinion",
+        "vale-of-the-carnen",
+        "vale-of-the-celduin"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "northern-dorwinion",
+      "name": "Northern Dorwinion",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "north-rhun",
+        "southern-dorwinion",
+        "southern-rhovanion",
+        "vale-of-the-celduin"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "northern-mirkwood",
+      "name": "Northern Mirkwood",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "carrock",
+        "western-mirkwood",
+        "withered-heath",
+        "woodland-realm"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "northern-rhovanion",
+      "name": "Northern Rhovanion",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dale",
+        "eastern-mirkwood",
+        "old-forest-road",
+        "southern-mirkwood",
+        "southern-rhovanion",
+        "vale-of-the-carnen",
+        "vale-of-the-celduin"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "nurn",
+      "name": "Nurn",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "gorgoroth"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "old-ford",
+      "name": "Old Ford",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "carrock",
+        "eagles-eyrie",
+        "gladden-fields",
+        "goblins-gate",
+        "rhosgobel"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "old-forest",
+      "name": "Old Forest",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "buckland",
+        "cardolan",
+        "south-ered-luin",
+        "the-shire"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "old-forest-road",
+      "name": "Old Forest Road",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "carrock",
+        "dale",
+        "eastern-mirkwood",
+        "narrows-of-the-forest",
+        "northern-rhovanion",
+        "rhosgobel",
+        "western-mirkwood",
+        "woodland-realm"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "orthanc",
+      "name": "Orthanc",
+      "nation": "isengard",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "fords-of-isen",
+        "gap-of-rohan"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "osgiliath",
+      "name": "Osgiliath",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": "Fortification",
+      "victoryPoints": 0,
+      "neighbors": [
+        "dead-marshes",
+        "druadan-forest",
+        "lossarnach",
+        "minas-tirith",
+        "north-ithilien",
+        "pelargir",
+        "south-ithilien",
+        "west-harondor"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "parth-celebrant",
+      "name": "Parth Celebrant",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dimrill-dale",
+        "eastemnet",
+        "fangorn",
+        "lorien",
+        "south-anduin-vale",
+        "western-brown-lands"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "pelargir",
+      "name": "Pelargir",
+      "nation": "gondor",
+      "originalOwner": "FreePeoples",
+      "settlement": "City",
+      "victoryPoints": 1,
+      "neighbors": [
+        "lamedon",
+        "lossarnach",
+        "osgiliath",
+        "west-harondor"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "rhosgobel",
+      "name": "Rhosgobel",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "carrock",
+        "gladden-fields",
+        "narrows-of-the-forest",
+        "north-anduin-vale",
+        "old-ford",
+        "old-forest-road"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "rivendell",
+      "name": "Rivendell",
+      "nation": "elves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "fords-of-bruinen",
+        "trollshaws"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "south-anduin-vale",
+      "name": "South Anduin Vale",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dimrill-dale",
+        "dol-guldur",
+        "north-anduin-vale",
+        "parth-celebrant",
+        "western-brown-lands"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "south-downs",
+      "name": "South Downs",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "bree",
+        "buckland",
+        "cardolan",
+        "hollin",
+        "north-dunland",
+        "trollshaws",
+        "weather-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "south-dunland",
+      "name": "South Dunland",
+      "nation": "isengard",
+      "originalOwner": "Shadow",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "enedwaith",
+        "gap-of-rohan",
+        "north-dunland",
+        "tharbad"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "south-ered-luin",
+      "name": "South Ered Luin",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "cardolan",
+        "harlindon",
+        "minhiriath",
+        "old-forest",
+        "the-shire",
+        "tower-hills"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "south-ithilien",
+      "name": "South Ithilien",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "east-harondor",
+        "minas-morgul",
+        "north-ithilien",
+        "osgiliath",
+        "west-harondor"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "south-rhun",
+      "name": "South Rhûn",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "ash-mountains",
+        "east-rhun",
+        "southern-dorwinion"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "southern-dorwinion",
+      "name": "Southern Dorwinion",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "ash-mountains",
+        "noman-lands",
+        "northern-dorwinion",
+        "south-rhun",
+        "southern-rhovanion"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "southern-mirkwood",
+      "name": "Southern Mirkwood",
+      "nation": "sauron",
+      "originalOwner": "Shadow",
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dol-guldur",
+        "eastern-brown-lands",
+        "eastern-mirkwood",
+        "northern-rhovanion",
+        "southern-rhovanion"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "southern-rhovanion",
+      "name": "Southern Rhovanion",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "eastern-brown-lands",
+        "noman-lands",
+        "northern-dorwinion",
+        "northern-rhovanion",
+        "southern-dorwinion",
+        "southern-mirkwood",
+        "vale-of-the-celduin"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "tharbad",
+      "name": "Tharbad",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "cardolan",
+        "enedwaith",
+        "minhiriath",
+        "north-dunland",
+        "south-dunland"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "the-shire",
+      "name": "The Shire",
+      "nation": "north",
+      "originalOwner": "FreePeoples",
+      "settlement": "City",
+      "victoryPoints": 1,
+      "neighbors": [
+        "buckland",
+        "evendim",
+        "old-forest",
+        "south-ered-luin",
+        "tower-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "tower-hills",
+      "name": "Tower Hills",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "ered-luin",
+        "evendim",
+        "grey-havens",
+        "south-ered-luin",
+        "the-shire"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "trollshaws",
+      "name": "Trollshaws",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "ettenmoors",
+        "fords-of-bruinen",
+        "hollin",
+        "rivendell",
+        "south-downs",
+        "weather-hills"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "umbar",
+      "name": "Umbar",
+      "nation": "southrons",
+      "originalOwner": "Shadow",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "near-harad",
+        "west-harondor"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "vale-of-the-carnen",
+      "name": "Vale of the Carnen",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dale",
+        "east-rhun",
+        "iron-hills",
+        "north-rhun",
+        "northern-rhovanion",
+        "vale-of-the-celduin"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "vale-of-the-celduin",
+      "name": "Vale of the Celduin",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "north-rhun",
+        "northern-dorwinion",
+        "northern-rhovanion",
+        "southern-rhovanion",
+        "vale-of-the-carnen"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "weather-hills",
+      "name": "Weather Hills",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "bree",
+        "ettenmoors",
+        "north-downs",
+        "south-downs",
+        "trollshaws"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "west-harondor",
+      "name": "West Harondor",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "east-harondor",
+        "near-harad",
+        "osgiliath",
+        "pelargir",
+        "south-ithilien",
+        "umbar"
+      ],
+      "coastal": true
+    },
+    {
+      "id": "westemnet",
+      "name": "Westemnet",
+      "nation": "rohan",
+      "originalOwner": "FreePeoples",
+      "settlement": "Town",
+      "victoryPoints": 0,
+      "neighbors": [
+        "eastemnet",
+        "edoras",
+        "fangorn",
+        "folde",
+        "fords-of-isen",
+        "helms-deep"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "western-brown-lands",
+      "name": "Western Brown Lands",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dol-guldur",
+        "eastemnet",
+        "eastern-brown-lands",
+        "parth-celebrant",
+        "south-anduin-vale",
+        "western-emyn-muil"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "western-emyn-muil",
+      "name": "Western Emyn Muil",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dead-marshes",
+        "druadan-forest",
+        "eastemnet",
+        "eastern-brown-lands",
+        "eastern-emyn-muil",
+        "western-brown-lands"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "western-mirkwood",
+      "name": "Western Mirkwood",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "carrock",
+        "northern-mirkwood",
+        "old-forest-road",
+        "woodland-realm"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "withered-heath",
+      "name": "Withered Heath",
+      "nation": null,
+      "originalOwner": null,
+      "settlement": null,
+      "victoryPoints": 0,
+      "neighbors": [
+        "dale",
+        "erebor",
+        "northern-mirkwood",
+        "woodland-realm"
+      ],
+      "coastal": false
+    },
+    {
+      "id": "woodland-realm",
+      "name": "Woodland Realm",
+      "nation": "elves",
+      "originalOwner": "FreePeoples",
+      "settlement": "Stronghold",
+      "victoryPoints": 2,
+      "neighbors": [
+        "dale",
+        "northern-mirkwood",
+        "old-forest-road",
+        "western-mirkwood",
+        "withered-heath"
+      ],
+      "coastal": false
+    }
+  ],
+  "nations": [
+    {
+      "id": "dwarves",
+      "side": "FreePeoples",
+      "active": false,
+      "stepsToWar": 3
+    },
+    {
+      "id": "elves",
+      "side": "FreePeoples",
+      "active": true,
+      "stepsToWar": 3
+    },
+    {
+      "id": "gondor",
+      "side": "FreePeoples",
+      "active": false,
+      "stepsToWar": 2
+    },
+    {
+      "id": "north",
+      "side": "FreePeoples",
+      "active": false,
+      "stepsToWar": 3
+    },
+    {
+      "id": "rohan",
+      "side": "FreePeoples",
+      "active": false,
+      "stepsToWar": 3
+    },
+    {
+      "id": "isengard",
+      "side": "Shadow",
+      "active": true,
+      "stepsToWar": 1
+    },
+    {
+      "id": "sauron",
+      "side": "Shadow",
+      "active": true,
+      "stepsToWar": 1
+    },
+    {
+      "id": "southrons",
+      "side": "Shadow",
+      "active": true,
+      "stepsToWar": 2
+    }
+  ],
+  "units": [
+    {
+      "id": "base.sauron.regular.01",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "barad-dur"
+    },
+    {
+      "id": "base.sauron.regular.02",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "barad-dur"
+    },
+    {
+      "id": "base.sauron.regular.03",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "barad-dur"
+    },
+    {
+      "id": "base.sauron.regular.04",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "barad-dur"
+    },
+    {
+      "id": "base.sauron.elite.01",
+      "nation": "sauron",
+      "kind": "Elite",
+      "location": "barad-dur"
+    },
+    {
+      "id": "base.sauron.nazgul.01",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "barad-dur"
+    },
+    {
+      "id": "base.north.regular.01",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "bree"
+    },
+    {
+      "id": "base.north.regular.02",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "carrock"
+    },
+    {
+      "id": "base.north.regular.03",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "dale"
+    },
+    {
+      "id": "base.north.leader.01",
+      "nation": "north",
+      "kind": "Leader",
+      "location": "dale"
+    },
+    {
+      "id": "base.gondor.regular.01",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "dol-amroth"
+    },
+    {
+      "id": "base.gondor.regular.02",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "dol-amroth"
+    },
+    {
+      "id": "base.gondor.regular.03",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "dol-amroth"
+    },
+    {
+      "id": "base.sauron.regular.05",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.sauron.regular.06",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.sauron.regular.07",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.sauron.regular.08",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.sauron.regular.09",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.sauron.elite.02",
+      "nation": "sauron",
+      "kind": "Elite",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.sauron.nazgul.02",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "dol-guldur"
+    },
+    {
+      "id": "base.rohan.regular.01",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "edoras"
+    },
+    {
+      "id": "base.rohan.elite.01",
+      "nation": "rohan",
+      "kind": "Elite",
+      "location": "edoras"
+    },
+    {
+      "id": "base.dwarves.regular.01",
+      "nation": "dwarves",
+      "kind": "Regular",
+      "location": "erebor"
+    },
+    {
+      "id": "base.dwarves.elite.01",
+      "nation": "dwarves",
+      "kind": "Elite",
+      "location": "erebor"
+    },
+    {
+      "id": "base.dwarves.elite.02",
+      "nation": "dwarves",
+      "kind": "Elite",
+      "location": "erebor"
+    },
+    {
+      "id": "base.dwarves.leader.01",
+      "nation": "dwarves",
+      "kind": "Leader",
+      "location": "erebor"
+    },
+    {
+      "id": "base.dwarves.regular.02",
+      "nation": "dwarves",
+      "kind": "Regular",
+      "location": "ered-luin"
+    },
+    {
+      "id": "base.southrons.regular.01",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "far-harad"
+    },
+    {
+      "id": "base.southrons.regular.02",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "far-harad"
+    },
+    {
+      "id": "base.southrons.regular.03",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "far-harad"
+    },
+    {
+      "id": "base.southrons.elite.01",
+      "nation": "southrons",
+      "kind": "Elite",
+      "location": "far-harad"
+    },
+    {
+      "id": "base.rohan.regular.02",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "fords-of-isen"
+    },
+    {
+      "id": "base.rohan.regular.03",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "fords-of-isen"
+    },
+    {
+      "id": "base.rohan.leader.01",
+      "nation": "rohan",
+      "kind": "Leader",
+      "location": "fords-of-isen"
+    },
+    {
+      "id": "base.sauron.regular.10",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "gorgoroth"
+    },
+    {
+      "id": "base.sauron.regular.11",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "gorgoroth"
+    },
+    {
+      "id": "base.sauron.regular.12",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "gorgoroth"
+    },
+    {
+      "id": "base.elves.regular.01",
+      "nation": "elves",
+      "kind": "Regular",
+      "location": "grey-havens"
+    },
+    {
+      "id": "base.elves.elite.01",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "grey-havens"
+    },
+    {
+      "id": "base.elves.leader.01",
+      "nation": "elves",
+      "kind": "Leader",
+      "location": "grey-havens"
+    },
+    {
+      "id": "base.rohan.regular.04",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "helms-deep"
+    },
+    {
+      "id": "base.dwarves.regular.03",
+      "nation": "dwarves",
+      "kind": "Regular",
+      "location": "iron-hills"
+    },
+    {
+      "id": "base.elves.regular.02",
+      "nation": "elves",
+      "kind": "Regular",
+      "location": "lorien"
+    },
+    {
+      "id": "base.elves.elite.02",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "lorien"
+    },
+    {
+      "id": "base.elves.elite.03",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "lorien"
+    },
+    {
+      "id": "base.elves.leader.02",
+      "nation": "elves",
+      "kind": "Leader",
+      "location": "lorien"
+    },
+    {
+      "id": "base.sauron.regular.13",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "minas-morgul"
+    },
+    {
+      "id": "base.sauron.regular.14",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "minas-morgul"
+    },
+    {
+      "id": "base.sauron.regular.15",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "minas-morgul"
+    },
+    {
+      "id": "base.sauron.regular.16",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "minas-morgul"
+    },
+    {
+      "id": "base.sauron.regular.17",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "minas-morgul"
+    },
+    {
+      "id": "base.sauron.nazgul.03",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "minas-morgul"
+    },
+    {
+      "id": "base.gondor.regular.04",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "minas-tirith"
+    },
+    {
+      "id": "base.gondor.regular.05",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "minas-tirith"
+    },
+    {
+      "id": "base.gondor.regular.06",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "minas-tirith"
+    },
+    {
+      "id": "base.gondor.elite.01",
+      "nation": "gondor",
+      "kind": "Elite",
+      "location": "minas-tirith"
+    },
+    {
+      "id": "base.gondor.leader.01",
+      "nation": "gondor",
+      "kind": "Leader",
+      "location": "minas-tirith"
+    },
+    {
+      "id": "base.sauron.regular.18",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "morannon"
+    },
+    {
+      "id": "base.sauron.regular.19",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "morannon"
+    },
+    {
+      "id": "base.sauron.regular.20",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "morannon"
+    },
+    {
+      "id": "base.sauron.regular.21",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "morannon"
+    },
+    {
+      "id": "base.sauron.regular.22",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "morannon"
+    },
+    {
+      "id": "base.sauron.nazgul.04",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "morannon"
+    },
+    {
+      "id": "base.sauron.regular.23",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "moria"
+    },
+    {
+      "id": "base.sauron.regular.24",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "moria"
+    },
+    {
+      "id": "base.sauron.regular.25",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "mount-gundabad"
+    },
+    {
+      "id": "base.sauron.regular.26",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "mount-gundabad"
+    },
+    {
+      "id": "base.southrons.regular.04",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "near-harad"
+    },
+    {
+      "id": "base.southrons.regular.05",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "near-harad"
+    },
+    {
+      "id": "base.southrons.regular.06",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "near-harad"
+    },
+    {
+      "id": "base.southrons.elite.02",
+      "nation": "southrons",
+      "kind": "Elite",
+      "location": "near-harad"
+    },
+    {
+      "id": "base.north.elite.01",
+      "nation": "north",
+      "kind": "Elite",
+      "location": "north-downs"
+    },
+    {
+      "id": "base.isengard.regular.01",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "north-dunland"
+    },
+    {
+      "id": "base.southrons.regular.07",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "north-rhun"
+    },
+    {
+      "id": "base.southrons.regular.08",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "north-rhun"
+    },
+    {
+      "id": "base.sauron.regular.27",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "nurn"
+    },
+    {
+      "id": "base.sauron.regular.28",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "nurn"
+    },
+    {
+      "id": "base.isengard.regular.02",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "orthanc"
+    },
+    {
+      "id": "base.isengard.regular.03",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "orthanc"
+    },
+    {
+      "id": "base.isengard.regular.04",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "orthanc"
+    },
+    {
+      "id": "base.isengard.regular.05",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "orthanc"
+    },
+    {
+      "id": "base.isengard.elite.01",
+      "nation": "isengard",
+      "kind": "Elite",
+      "location": "orthanc"
+    },
+    {
+      "id": "base.gondor.regular.07",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "osgiliath"
+    },
+    {
+      "id": "base.gondor.regular.08",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "osgiliath"
+    },
+    {
+      "id": "base.gondor.regular.09",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "pelargir"
+    },
+    {
+      "id": "base.elves.elite.04",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "rivendell"
+    },
+    {
+      "id": "base.elves.elite.05",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "rivendell"
+    },
+    {
+      "id": "base.elves.leader.03",
+      "nation": "elves",
+      "kind": "Leader",
+      "location": "rivendell"
+    },
+    {
+      "id": "base.isengard.regular.06",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "south-dunland"
+    },
+    {
+      "id": "base.southrons.regular.09",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "south-rhun"
+    },
+    {
+      "id": "base.southrons.regular.10",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "south-rhun"
+    },
+    {
+      "id": "base.southrons.regular.11",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "south-rhun"
+    },
+    {
+      "id": "base.southrons.elite.03",
+      "nation": "southrons",
+      "kind": "Elite",
+      "location": "south-rhun"
+    },
+    {
+      "id": "base.north.regular.04",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "the-shire"
+    },
+    {
+      "id": "base.southrons.regular.12",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "umbar"
+    },
+    {
+      "id": "base.southrons.regular.13",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "umbar"
+    },
+    {
+      "id": "base.southrons.regular.14",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "umbar"
+    },
+    {
+      "id": "base.elves.regular.03",
+      "nation": "elves",
+      "kind": "Regular",
+      "location": "woodland-realm"
+    },
+    {
+      "id": "base.elves.elite.06",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "woodland-realm"
+    },
+    {
+      "id": "base.elves.leader.04",
+      "nation": "elves",
+      "kind": "Leader",
+      "location": "woodland-realm"
+    },
+    {
+      "id": "base.dwarves.regular.04",
+      "nation": "dwarves",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.regular.05",
+      "nation": "dwarves",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.elite.03",
+      "nation": "dwarves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.elite.04",
+      "nation": "dwarves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.elite.05",
+      "nation": "dwarves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.leader.02",
+      "nation": "dwarves",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.leader.03",
+      "nation": "dwarves",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.dwarves.leader.04",
+      "nation": "dwarves",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.elves.regular.04",
+      "nation": "elves",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.elves.regular.05",
+      "nation": "elves",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.elves.elite.07",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.elves.elite.08",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.elves.elite.09",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.elves.elite.10",
+      "nation": "elves",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.regular.10",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.regular.11",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.regular.12",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.regular.13",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.regular.14",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.regular.15",
+      "nation": "gondor",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.elite.02",
+      "nation": "gondor",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.elite.03",
+      "nation": "gondor",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.elite.04",
+      "nation": "gondor",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.elite.05",
+      "nation": "gondor",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.leader.02",
+      "nation": "gondor",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.leader.03",
+      "nation": "gondor",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.gondor.leader.04",
+      "nation": "gondor",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.regular.05",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.regular.06",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.regular.07",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.regular.08",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.regular.09",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.regular.10",
+      "nation": "north",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.elite.02",
+      "nation": "north",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.elite.03",
+      "nation": "north",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.elite.04",
+      "nation": "north",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.elite.05",
+      "nation": "north",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.leader.02",
+      "nation": "north",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.leader.03",
+      "nation": "north",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.north.leader.04",
+      "nation": "north",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.regular.05",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.regular.06",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.regular.07",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.regular.08",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.regular.09",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.regular.10",
+      "nation": "rohan",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.elite.02",
+      "nation": "rohan",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.elite.03",
+      "nation": "rohan",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.elite.04",
+      "nation": "rohan",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.elite.05",
+      "nation": "rohan",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.leader.02",
+      "nation": "rohan",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.leader.03",
+      "nation": "rohan",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.rohan.leader.04",
+      "nation": "rohan",
+      "kind": "Leader",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.regular.07",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.regular.08",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.regular.09",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.regular.10",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.regular.11",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.regular.12",
+      "nation": "isengard",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.elite.02",
+      "nation": "isengard",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.elite.03",
+      "nation": "isengard",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.elite.04",
+      "nation": "isengard",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.elite.05",
+      "nation": "isengard",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.isengard.elite.06",
+      "nation": "isengard",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.29",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.30",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.31",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.32",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.33",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.34",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.35",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.regular.36",
+      "nation": "sauron",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.elite.03",
+      "nation": "sauron",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.elite.04",
+      "nation": "sauron",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.elite.05",
+      "nation": "sauron",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.elite.06",
+      "nation": "sauron",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.nazgul.05",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.nazgul.06",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.nazgul.07",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "reserve"
+    },
+    {
+      "id": "base.sauron.nazgul.08",
+      "nation": "sauron",
+      "kind": "Nazgul",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.15",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.16",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.17",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.18",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.19",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.20",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.21",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.22",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.23",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.regular.24",
+      "nation": "southrons",
+      "kind": "Regular",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.elite.04",
+      "nation": "southrons",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.elite.05",
+      "nation": "southrons",
+      "kind": "Elite",
+      "location": "reserve"
+    },
+    {
+      "id": "base.southrons.elite.06",
+      "nation": "southrons",
+      "kind": "Elite",
+      "location": "reserve"
+    }
+  ],
+  "impassableBorders": [
+    {
+      "a": "rivendell",
+      "b": "high-pass"
+    },
+    {
+      "a": "old-ford",
+      "b": "high-pass"
+    },
+    {
+      "a": "dimrill-dale",
+      "b": "hollin"
+    },
+    {
+      "a": "gorgoroth",
+      "b": "north-ithilien"
+    }
+  ],
+  "dice": [
+    {
+      "side": "FreePeoples",
+      "initialCount": 4,
+      "maximumCount": 6,
+      "faces": [
+        "Character",
+        "Character",
+        "ArmyMuster",
+        "Muster",
+        "Event",
+        "WillOfTheWest"
+      ]
+    },
+    {
+      "side": "Shadow",
+      "initialCount": 7,
+      "maximumCount": 10,
+      "faces": [
+        "Character",
+        "Army",
+        "ArmyMuster",
+        "Muster",
+        "Event",
+        "Eye"
+      ]
+    }
+  ],
+  "cards": [
+    "base.fp.character.01",
+    "base.fp.character.02",
+    "base.fp.character.03",
+    "base.fp.character.04",
+    "base.fp.character.05",
+    "base.fp.character.06",
+    "base.fp.character.07",
+    "base.fp.character.08",
+    "base.fp.character.09",
+    "base.fp.character.10",
+    "base.fp.character.11",
+    "base.fp.character.12",
+    "base.fp.character.13",
+    "base.fp.character.14",
+    "base.fp.character.15",
+    "base.fp.character.16",
+    "base.fp.character.17",
+    "base.fp.character.18",
+    "base.fp.character.19",
+    "base.fp.character.20",
+    "base.fp.character.21",
+    "base.fp.character.22",
+    "base.fp.character.23",
+    "base.fp.character.24",
+    "base.fp.strategy.01",
+    "base.fp.strategy.02",
+    "base.fp.strategy.03",
+    "base.fp.strategy.04",
+    "base.fp.strategy.05",
+    "base.fp.strategy.06",
+    "base.fp.strategy.07",
+    "base.fp.strategy.08",
+    "base.fp.strategy.09",
+    "base.fp.strategy.10",
+    "base.fp.strategy.11",
+    "base.fp.strategy.12",
+    "base.fp.strategy.13",
+    "base.fp.strategy.14",
+    "base.fp.strategy.15",
+    "base.fp.strategy.16",
+    "base.fp.strategy.17",
+    "base.fp.strategy.18",
+    "base.fp.strategy.19",
+    "base.fp.strategy.20",
+    "base.fp.strategy.21",
+    "base.fp.strategy.22",
+    "base.fp.strategy.23",
+    "base.fp.strategy.24",
+    "base.sh.character.01",
+    "base.sh.character.02",
+    "base.sh.character.03",
+    "base.sh.character.04",
+    "base.sh.character.05",
+    "base.sh.character.06",
+    "base.sh.character.07",
+    "base.sh.character.08",
+    "base.sh.character.09",
+    "base.sh.character.10",
+    "base.sh.character.11",
+    "base.sh.character.12",
+    "base.sh.character.13",
+    "base.sh.character.14",
+    "base.sh.character.15",
+    "base.sh.character.16",
+    "base.sh.character.17",
+    "base.sh.character.18",
+    "base.sh.character.19",
+    "base.sh.character.20",
+    "base.sh.character.21",
+    "base.sh.character.22",
+    "base.sh.character.23",
+    "base.sh.character.24",
+    "base.sh.strategy.01",
+    "base.sh.strategy.02",
+    "base.sh.strategy.03",
+    "base.sh.strategy.04",
+    "base.sh.strategy.05",
+    "base.sh.strategy.06",
+    "base.sh.strategy.07",
+    "base.sh.strategy.08",
+    "base.sh.strategy.09",
+    "base.sh.strategy.10",
+    "base.sh.strategy.11",
+    "base.sh.strategy.12",
+    "base.sh.strategy.13",
+    "base.sh.strategy.14",
+    "base.sh.strategy.15",
+    "base.sh.strategy.16",
+    "base.sh.strategy.17",
+    "base.sh.strategy.18",
+    "base.sh.strategy.19",
+    "base.sh.strategy.20",
+    "base.sh.strategy.21",
+    "base.sh.strategy.22",
+    "base.sh.strategy.23",
+    "base.sh.strategy.24"
+  ],
+  "characterDefinitions": [
+    "base.character.ringbearers",
+    "base.character.gandalf-grey",
+    "base.character.gandalf-white",
+    "base.character.strider",
+    "base.character.aragorn",
+    "base.character.boromir",
+    "base.character.gimli",
+    "base.character.legolas",
+    "base.character.merry",
+    "base.character.pippin",
+    "base.character.gollum",
+    "base.character.saruman",
+    "base.character.witch-king",
+    "base.character.mouth-of-sauron"
+  ],
+  "huntTiles": [
+    {
+      "id": "base.hunt.standard.eye.1.1",
+      "pool": "standard",
+      "value": "eye",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.eye.1.2",
+      "pool": "standard",
+      "value": "eye",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.eye.1.3",
+      "pool": "standard",
+      "value": "eye",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.eye.1.4",
+      "pool": "standard",
+      "value": "eye",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.3.0.1",
+      "pool": "standard",
+      "value": "3",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.3.0.2",
+      "pool": "standard",
+      "value": "3",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.3.0.3",
+      "pool": "standard",
+      "value": "3",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.2.0.1",
+      "pool": "standard",
+      "value": "2",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.2.0.2",
+      "pool": "standard",
+      "value": "2",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.2.1.1",
+      "pool": "standard",
+      "value": "2",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.1.0.1",
+      "pool": "standard",
+      "value": "1",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.1.0.2",
+      "pool": "standard",
+      "value": "1",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.1.1.1",
+      "pool": "standard",
+      "value": "1",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.1.1.2",
+      "pool": "standard",
+      "value": "1",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.0.1.1",
+      "pool": "standard",
+      "value": "0",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.standard.0.1.2",
+      "pool": "standard",
+      "value": "0",
+      "reveal": true,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.special-fp.0.0.1",
+      "pool": "special-fp",
+      "value": "0",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.special-fp.0.0.2",
+      "pool": "special-fp",
+      "value": "0",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.special-fp.-2.0.1",
+      "pool": "special-fp",
+      "value": "-2",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.special-fp.-1.0.1",
+      "pool": "special-fp",
+      "value": "-1",
+      "reveal": false,
+      "stop": false
+    },
+    {
+      "id": "base.hunt.special-sh.die.0.1",
+      "pool": "special-sh",
+      "value": "die",
+      "reveal": false,
+      "stop": true
+    },
+    {
+      "id": "base.hunt.special-sh.eye.1.1",
+      "pool": "special-sh",
+      "value": "eye",
+      "reveal": true,
+      "stop": true
+    },
+    {
+      "id": "base.hunt.special-sh.3.0.1",
+      "pool": "special-sh",
+      "value": "3",
+      "reveal": false,
+      "stop": true
+    },
+    {
+      "id": "base.hunt.special-sh.1.1.1",
+      "pool": "special-sh",
+      "value": "1",
+      "reveal": true,
+      "stop": true
+    }
+  ]
+}

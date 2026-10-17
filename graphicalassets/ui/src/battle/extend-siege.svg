@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: extend the siege, a tower with a sand-glass. -->
+  <g filter="url(#lift)">
+    <rect x="5" y="12" width="12" height="16" style="fill: var(--scene-stone); stroke: var(--emblem-outline)" stroke-width="0.8"/>
+    <g style="fill: var(--scene-stone)"><rect x="5" y="8" width="3" height="4"/><rect x="9.5" y="8" width="3" height="4"/><rect x="14" y="8" width="3" height="4"/></g>
+    <path d="M20 6 H29 L23 15 L29 24 H20 L26 15 Z" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="1" stroke-linejoin="round"/>
+    <path d="M22.5 22 H26.5" style="stroke: var(--gilt-mid)" stroke-width="2"/>
+  </g>
+</svg>

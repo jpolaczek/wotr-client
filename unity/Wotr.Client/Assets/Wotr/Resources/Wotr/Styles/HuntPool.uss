@@ -1,0 +1,101 @@
+/* UI-141: printed Hunt tiles (graphicalassets/ui/src/hunt): the tile of the pool, the value as a number or a symbol
+   and the Reveal, Stop and Kings marks; the pool list in the Hunt panel and the drawn tile's artwork. */
+
+.hunt-face { flex-shrink: 0; align-items: center; justify-content: center; -unity-background-scale-mode: scale-to-fit; }
+.hunt-face-small { width: 28px; height: 28px; }
+.hunt-face-large { width: 46px; height: 46px; }
+.hunt-face-pool-standard { background-image: resource("Wotr/Art/UI/hunt/tile-standard"); }
+.hunt-face-pool-special-fp { background-image: resource("Wotr/Art/UI/hunt/tile-special-fp"); }
+.hunt-face-pool-special-sh { background-image: resource("Wotr/Art/UI/hunt/tile-special-sh"); }
+.hunt-face-pool-smeagol { background-image: resource("Wotr/Art/UI/hunt/tile-smeagol"); }
+
+.hunt-face-number { margin: 0; padding: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(52, 34, 18); }
+.hunt-face-small .hunt-face-number { font-size: 14px; }
+.hunt-face-large .hunt-face-number { font-size: 22px; }
+.hunt-face-pool-special-fp .hunt-face-number,
+.hunt-face-pool-special-sh .hunt-face-number { color: rgb(250, 238, 206); text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85); }
+
+.hunt-face-symbol { -unity-background-scale-mode: scale-to-fit; }
+.hunt-face-small .hunt-face-symbol { width: 18px; height: 18px; }
+.hunt-face-large .hunt-face-symbol { width: 30px; height: 30px; }
+.hunt-face-symbol-eye .hunt-face-symbol { background-image: resource("Wotr/Art/UI/hunt/eye"); }
+.hunt-face-symbol-die .hunt-face-symbol { background-image: resource("Wotr/Art/UI/hunt/die"); }
+.hunt-face-symbol-smeagol .hunt-face-symbol { background-image: resource("Wotr/Art/UI/hunt/smeagol"); }
+
+.hunt-face-mark { position: absolute; -unity-background-scale-mode: scale-to-fit; }
+.hunt-face-small .hunt-face-mark { width: 10px; height: 10px; }
+.hunt-face-large .hunt-face-mark { width: 15px; height: 15px; }
+.hunt-face-reveal { right: 1px; bottom: 1px; background-image: resource("Wotr/Art/UI/hunt/reveal"); }
+.hunt-face-stop { right: 1px; top: 1px; background-image: resource("Wotr/Art/UI/hunt/stop"); }
+.hunt-face-kings { left: 1px; top: 1px; background-image: resource("Wotr/Art/UI/hunt/kings"); }
+
+/* The pool list. UI-184: the heading on a line of its own above a grid of equal cells (a 34-point tile and its count);
+   nothing in the list shrinks when the window is short, so the tiles never ride over the heading. */
+#board-screen .hunt-panel .hunt-pool {
+    flex-shrink: 0;
+    margin: 3px 0 4px 0;
+    padding: 4px 6px 5px 6px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.28);
+}
+/* UI-184: while a Hunt is under way the list drops from the header's pool icon over the window's content (HuntPanel
+   puts it last), so opening it never moves the current decision or pushes the window over the console. At rest it
+   stands in the window under the Hunt Box. */
+#board-screen .hunt-panel.hunt-underway .hunt-pool {
+    position: absolute;
+    right: 10px;
+    top: 30px;
+    width: 300px;
+    margin: 0;
+    padding: 7px 12px 10px 12px;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .hunt-panel .hunt-pool-heading {
+    flex-shrink: 0;
+    margin: 0 0 4px 0;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 209, 160);
+}
+.hunt-pool-body { flex-direction: column; flex-shrink: 0; }
+.hunt-pool-tiles { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; }
+.hunt-pool-prepared-line { flex-direction: row; align-items: center; flex-shrink: 0; margin: 3px 0 0 0; }
+.hunt-pool-tile { flex-direction: row; align-items: center; flex-shrink: 0; width: 64px; margin: 2px 4px 2px 0; }
+.hunt-pool .hunt-face-small { width: 34px; height: 34px; }
+.hunt-pool .hunt-face-small .hunt-face-number { font-size: 17px; }
+.hunt-pool .hunt-face-small .hunt-face-symbol { width: 22px; height: 22px; }
+.hunt-pool .hunt-face-small .hunt-face-mark { width: 11px; height: 11px; }
+#board-screen .hunt-panel .hunt-pool-count {
+    min-width: 24px;
+    margin: 0 0 0 4px;
+    padding: 0;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(246, 236, 206);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+#board-screen .hunt-panel .hunt-pool-prepared-heading {
+    margin: 0 8px 0 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(231, 209, 160);
+}
+/* A short viewport keeps the same grid with smaller cells. */
+#board-screen.short-viewport .hunt-pool-tile { width: 56px; margin: 1px 4px 1px 0; }
+#board-screen.short-viewport .hunt-pool .hunt-face-small { width: 28px; height: 28px; }
+#board-screen.short-viewport .hunt-pool .hunt-face-small .hunt-face-number { font-size: 14px; }
+#board-screen.short-viewport .hunt-pool .hunt-face-small .hunt-face-symbol { width: 18px; height: 18px; }
+#board-screen.short-viewport .hunt-pool .hunt-face-small .hunt-face-mark { width: 9px; height: 9px; }
+#board-screen.short-viewport .hunt-panel .hunt-pool-count { font-size: 13px; }
+#board-screen.short-viewport .hunt-panel .hunt-pool-tile { margin: 0 6px 1px 0; }
+
+/* The drawn tile: its artwork beside the damage, Reveal and Stop. */
+#board-screen .hunt-panel .hunt-tile-card { height: 56px; min-height: 56px; flex-direction: row; justify-content: center; }
+#board-screen .hunt-panel .hunt-tile-card > .hunt-face { margin-right: 8px; }

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <!-- Round medallion for a named character: enamel dome in a gilt bezel. The portrait or figure silhouette is drawn by code. -->
+  <g filter="url(#lift)">
+    <circle cx="18" cy="18" r="16.6" fill="url(#gilt-bevel)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
+    <circle cx="18" cy="18" r="13.8" fill="url(#enamel-dome)" style="stroke: var(--gilt-shadow)" stroke-width="0.7"/>
+    <circle cx="18" cy="18" r="12.4" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.08"/>
+  </g>
+  <g style="fill: var(--gilt-light)">
+    <circle cx="18" cy="2.6" r="1"/><circle cx="18" cy="33.4" r="1"/><circle cx="2.6" cy="18" r="1"/><circle cx="33.4" cy="18" r="1"/>
+  </g>
+  <circle cx="18" cy="18" r="15.4" fill="none" style="stroke: var(--lacquer-red-top); stroke-opacity: var(--cancel-opacity)" stroke-width="2.2"/>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="44" viewBox="0 0 168 44">
+  <!-- Sortie: the gate opens onto the field. Seamless at x=0/168; stretched vertically, repeated horizontally. -->
+  <defs>
+    <linearGradient id="scene-sortie-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--scene-sky-deep)"/>
+      <stop offset="0.62" style="stop-color: var(--scene-sky)"/>
+      <stop offset="1" style="stop-color: var(--scene-haze)"/>
+    </linearGradient>
+    <linearGradient id="scene-sortie-ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--scene-hill)"/>
+      <stop offset="1" style="stop-color: var(--scene-hill-dark)"/>
+    </linearGradient>
+    <linearGradient id="scene-sortie-stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--scene-stone)"/>
+      <stop offset="1" style="stop-color: var(--scene-stone-dark)"/>
+    </linearGradient>
+    <linearGradient id="scene-sortie-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.45"/>
+    </linearGradient>
+  </defs>
+  <rect width="168" height="44" fill="url(#scene-sortie-sky)"/>
+  <path d="M0 36 C30 32 60 32 84 35 C108 38 140 32 168 36 V44 H0 Z" style="fill: var(--scene-hill-dark)"/>
+  <rect y="22" width="168" height="16" fill="url(#scene-sortie-stone)"/>
+  <g style="fill: var(--scene-stone)">
+    <rect x="0" y="18" width="10" height="5"/><rect x="18" y="18" width="10" height="5"/><rect x="36" y="18" width="10" height="5"/>
+    <rect x="54" y="18" width="10" height="5"/><rect x="100" y="18" width="10" height="5"/><rect x="118" y="18" width="10" height="5"/>
+    <rect x="136" y="18" width="10" height="5"/><rect x="154" y="18" width="10" height="5"/>
+  </g>
+  <path d="M72 38 V26 Q84 16 96 26 V38 Z" style="fill: var(--ink)"/>
+  <path d="M72 38 V26 Q84 16 96 26 V38" fill="none" style="stroke: var(--scene-stone-dark)" stroke-width="1.2"/>
+  <path d="M75 38 V27 Q84 20 93 27 V38 Z" style="fill: var(--scene-haze)" opacity="0.5"/>
+  <g style="stroke: var(--scene-stone-dark)" stroke-width="0.6" opacity="0.7" fill="none"><path d="M0 27 H70 M98 27 H168 M0 32 H70 M98 32 H168"/></g>
+  <rect y="37" width="168" height="2" style="fill: var(--scene-stone-dark)"/>
+  <rect y="30" width="168" height="14" fill="url(#scene-sortie-shade)"/>
+</svg>

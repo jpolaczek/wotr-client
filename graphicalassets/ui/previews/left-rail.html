@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Review composition of the separate UI-87 pieces; Unity USS (Styles/LeftRail.uss) is the real layout. -->
+<style>
+  html, body { margin: 0; width: 520px; height: 620px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; color: #e9e3cf; }
+  body { background: url("../../maps/terrain-map14/MapTerrain.png") -600px -500px; position: relative; }
+  .art { --root: "../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/"; }
+  .rail { position: absolute; left: 0; top: 0; width: 94px; }
+  .tab { position: relative; width: 94px; height: 66px; margin-bottom: 4px; box-sizing: border-box; border-style: solid; border-width: 12px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button.png") 24 fill stretch;
+    display: flex; align-items: flex-end; justify-content: center; font-size: 13px; color: #f1e3b5; }
+  .tab span { margin-bottom: -4px; }
+  .tab.selected { border-image-source: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-selected.png"); }
+  .tab i { position: absolute; left: 21px; top: -5px; width: 28px; height: 28px; background: center / 28px 28px no-repeat; }
+  .panel { position: absolute; left: 94px; top: 0; width: 350px; box-sizing: border-box; border-style: solid; border-width: 22px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/panel.png") 44 fill stretch; padding: 0; }
+  .inner { margin: -16px; }
+  .header { height: 32px; box-sizing: border-box; border-style: solid; border-width: 8px 16px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/panel-header.png") 16 32 fill stretch;
+    display: flex; align-items: center; margin: 0 0 6px; }
+  .header i { width: 22px; height: 22px; margin: -4px 6px 0 -2px; background: center / 22px 22px no-repeat; }
+  .header b { flex: 1; font-size: 15px; letter-spacing: 1.5px; color: #f1dfa6; margin-top: -2px; }
+  .square { width: 26px; height: 26px; margin: -5px 0 -5px 4px; box-sizing: border-box; border-style: solid; border-width: 8px; font-size: 13px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-square.png") 16 fill stretch;
+    display: flex; align-items: center; justify-content: center; }
+  .row { display: flex; align-items: center; height: 28px; border-bottom: 1px solid rgba(0,0,0,.4); }
+  .row.fp { background: rgba(26, 50, 72, .62); }
+  .row.sh { background: rgba(74, 22, 18, .62); }
+  .name { width: 82px; position: relative; padding-left: 24px; box-sizing: border-box; font-size: 12px; }
+  .name i { position: absolute; left: 2px; top: -10px; width: 20px; height: 20px; background: center / 20px 20px no-repeat; }
+  .slot { width: 40px; text-align: center; color: #9eaba6; font-size: 16px; position: relative; }
+  .token { position: absolute; left: 7px; top: -14px; width: 26px; height: 26px; background: center / 26px 26px no-repeat; text-align: center; line-height: 26px; color: #f2f5ef; font-size: 15px; }
+  .entry { height: 36px; margin: 4px 0; box-sizing: border-box; border-style: solid; border-width: 10px;
+    border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/entry.png") 20 fill stretch;
+    display: flex; align-items: center; font-size: 12px; }
+  .entry.sh { border-image-source: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/entry-shadow.png"); }
+  .entry small { width: 36px; color: #e6c87a; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="rail">
+  <div class="tab selected"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/politics.png')"></i><span>Politics</span></div>
+  <div class="tab"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/effects.png')"></i><span>Effects · 2</span></div>
+  <div class="tab"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/characters.png')"></i><span>Characters</span></div>
+</div>
+<div class="panel"><div class="inner">
+  <div class="header"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/politics.png')"></i><b>POLITICS</b><div class="square">?</div><div class="square">×</div></div>
+  <div class="row fp"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/dwarves.png')"></i>Dwarves</div><div class="slot">·</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png')">○</div></div><div class="slot">⚔</div></div>
+  <div class="row fp"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/elves.png')"></i>Elves</div><div class="slot">·</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png')">●</div></div><div class="slot">⚔</div></div>
+  <div class="row fp"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/gondor.png')"></i>Gondor</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png')">●</div></div><div class="slot">·</div><div class="slot">⚔</div></div>
+  <div class="row fp"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/north.png')"></i>North</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png')">○</div></div><div class="slot">·</div><div class="slot">·</div><div class="slot">⚔</div></div>
+  <div class="row fp"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/rohan.png')"></i>Rohan</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-free.png')">○</div></div><div class="slot">·</div><div class="slot">⚔</div></div>
+  <div class="row sh"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/isengard.png')"></i>Isengard</div><div class="slot">·</div><div class="slot">·</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-shadow.png')">●</div></div></div>
+  <div class="row sh"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/sauron.png')"></i>Sauron</div><div class="slot">·</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-shadow.png')">●</div></div><div class="slot">⚔</div></div>
+  <div class="row sh"><div class="name"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/nations/southrons.png')"></i>S &amp; E</div><div class="slot">·</div><div class="slot"><div class="token" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/politics-token-shadow.png')">●</div></div><div class="slot">·</div><div class="slot">⚔</div></div>
+</div></div>
+<div class="panel" style="top: 330px;"><div class="inner">
+  <div class="header"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/effects.png')"></i><b>EFFECTS</b><div class="square">‹</div><div class="square">›</div><div class="square">×</div></div>
+  <div class="entry sh"><small>SH ◆</small>The Lore of the Elven Rings</div>
+  <div class="entry"><small>FP ◆</small>Gandalf the White · Ability</div>
+  <div class="header" style="margin-top: 10px;"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/characters.png')"></i><b>CHARACTERS</b><div class="square">×</div></div>
+  <div class="entry"><small>♙</small>Gimli · Trollshaws</div>
+</div></div>
+</body>
+</html>

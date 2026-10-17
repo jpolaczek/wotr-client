@@ -1,0 +1,9 @@
+Use case: precise-object-edit
+Edit the supplied minimalist pencil map with these small corrections. Keep the mountains, rivers, existing woods and all their positions, scale, framing and sparse line style unchanged.
+
+1. Replace the CYAN oval with a small, airy patch of loosely outlined trees: the missing Old Forest. Fit the entire forest within the oval's exact footprint. No buildings. Remove every trace of cyan.
+2. Replace each of the TWO MAGENTA ovals with just three or four low pencil hill strokes, marking the two small Emyn Muil hill groups. Keep them within their small oval footprints, do not turn them into tall mountain ranges. Remove every trace of magenta.
+3. ERASE the thin outer map contour: the straight top/right/bottom frame, the upper-right curved cutout line, the west/south coastline outline, and the closed outlines of the three inland lakes. Leave white paper in their place. Their accurate outlines are supplied later by a separate original vector layer, so this raster must contain only terrain and river strokes. Do not erase or relocate any rivers.
+4. Strict neutral BLACK AND WHITE ONLY. Remove any colored tint from the pencil strokes and background. Use neutral gray with equal red, green and blue channel values, and pure white paper; no blue-gray or sepia. No paper texture or wash.
+
+Preserve the full 1385:1136 composition with no crop, margin, zoom or rotation. Do not introduce anything else. No new forests except Old Forest, no extra hills except the two marked groups, no buildings, settlement dots, labels, letters, numbers, compass, symbols, UI, ornament or boundary grid. White spaces remain blank and uncolored.

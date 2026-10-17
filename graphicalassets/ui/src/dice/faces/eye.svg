@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Eye result: a lidless eye of fire. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="eye-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+    <radialGradient id="eye-fire" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" style="stop-color: var(--ember-light)"/>
+      <stop offset="0.55" style="stop-color: var(--ember)"/>
+      <stop offset="1" style="stop-color: var(--ember-dark)"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M2.8 16 C7.8 7.6 24.2 7.6 29.2 16 C24.2 24.4 7.8 24.4 2.8 16 Z" fill="url(#eye-fire)" style="stroke: var(--ink)" stroke-width="1.5"/>
+    <ellipse cx="16" cy="16" rx="2.1" ry="6.6" style="fill: var(--ink)"/>
+    <path d="M6.6 16 C10.6 11.6 21.4 11.6 25.4 16" fill="none" style="stroke: var(--ember-light)" stroke-width="0.9" opacity="0.7"/>
+  </g>
+</svg>

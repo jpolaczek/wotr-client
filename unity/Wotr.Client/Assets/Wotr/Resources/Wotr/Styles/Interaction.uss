@@ -1,0 +1,42 @@
+/* UI-114: every clickable control presses in while the pointer (or Enter/Space) is held on it and acts only
+   when the button is released inside it (docs/ui/BATTLE_WINDOW_UX.md). PressFeedback marks the held control
+   with .pressed; these rules draw it. Imported last by Wotr.uss, so equal-specificity rules here win. */
+
+.motion-enabled .unity-button,
+.motion-enabled .pressable {
+    transition-property: background-color, translate, -unity-background-image-tint-color;
+    transition-duration: 70ms;
+    transition-timing-function: ease-out;
+}
+.reduced-motion .unity-button,
+.reduced-motion .pressable {
+    transition-duration: 0s;
+    transition-delay: 0s;
+}
+
+/* The held control sinks by a point; image-framed controls also darken. */
+.unity-button.pressed,
+.pressable.pressed { translate: 0 1px; -unity-background-image-tint-color: rgb(206, 196, 172); }
+/* UI-138: framed text and icon buttons press with their pressed art; the flat colour of old buttons is gone. */
+.unity-button.action.pressed { background-color: rgba(0, 0, 0, 0); }
+#board-screen .unity-button.action.icon-button.pressed,
+.unity-button.action.icon-button.pressed {
+    background-image: resource("Wotr/Art/UI/frames/button-square-pressed");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+/* Framed art has a pressed rendering of its own (graphicalassets/ui/assets.json variants). */
+.board-left-tabs .edge-tab.pressed,
+.board-left-tabs .edge-tab.pressed:hover { background-image: resource("Wotr/Art/UI/rail/edge-tab-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+#board-screen #open-board-menu.pressed { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/frames/button-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+.dice-panel .die.die-free.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-free-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+.dice-panel .die.die-shadow.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+#opponent-dice .die.pressed { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/dice/medallion-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+
+/* A hand card keeps its slot in place; every effect belongs to the parchment face (UI-93). */
+.hand-card.pressed { translate: 0 0; -unity-background-image-tint-color: rgb(255, 255, 255); }
+.hand-card.pressed > #hand-card-face { translate: 0 1px; -unity-background-image-tint-color: rgb(214, 204, 180); }
+.motion-enabled .hand-card > #hand-card-face {
+    transition-property: height, width, left, translate, -unity-background-image-tint-color;
+    transition-duration: 140ms, 140ms, 140ms, 70ms, 70ms;
+}

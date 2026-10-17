@@ -1,0 +1,45 @@
+{
+  "task": "MAP-07",
+  "locality": {
+    "changed_pixels": 369611,
+    "outside_windows_changed_pixels": 0,
+    "mountain_spur_darker_pixels": 6604,
+    "antialias_tolerance_in_working_units": 0.75
+  },
+  "forest_removal": {
+    "ink_pixels_before": 151518,
+    "ink_pixels_after": 0,
+    "minimum_gray_after": 250,
+    "original_region_boundaries_excluded": true
+  },
+  "paper": {
+    "warm_pixel_fraction": 1.0,
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "mean_rgb": [
+      229.66,
+      201.82,
+      147.59
+    ]
+  },
+  "details": {
+    "crops": {
+      "minas-tirith": [
+        1200,
+        835,
+        245,
+        245
+      ],
+      "east": [
+        1695,
+        460,
+        272,
+        305
+      ]
+    },
+    "source": "graphicalassets/maps/middle-earth-parchment-v1.png"
+  },
+  "mountain_patch_inside_minas_tirith": true
+}

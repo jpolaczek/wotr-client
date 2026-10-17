@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "channel": "github:jpolaczek/wotr-server",
+  "packages": [
+    {
+      "name": "com.wotr.contracts",
+      "version": "0.9.0",
+      "archive": "com.wotr.contracts-0.9.0.tgz",
+      "sha256": "0c3ea450b858a5ce6df9027e7db99ef2a0c032d0d4a4a53c7fbc32be3633c459",
+      "size": 19498,
+      "commit": "777d590353667fe7b7a7b6f96f7498f7da3c1540"
+    },
+    {
+      "name": "com.wotr.public-content",
+      "version": "1.0.10",
+      "archive": "com.wotr.public-content-1.0.10.tgz",
+      "sha256": "0c935dbe3f23682a44624696ac2ea0c9fa1910b8bd33e248ba667ba810c77d18",
+      "size": 651412,
+      "commit": "777d590353667fe7b7a7b6f96f7498f7da3c1540",
+      "requires": {
+        "com.wotr.contracts": "0.9.0"
+      },
+      "contentVersion": "base-setup-1",
+      "fingerprint": "15e85801b8690cd20cced167464dde453e3582ea4b400d4fb1405f5444f49136",
+      "public": [
+        {
+          "name": "base-board.json",
+          "sha256": "b6b0575404de0a0d8d209244a7f1ec5c299383b0b4dd1267c7561f154f8fe6d4"
+        },
+        {
+          "name": "base-card-text.json",
+          "sha256": "b349d3619bf2da96f3ddbf25545adbcadcc6467f5a08d4a6fbb786fc539668a7"
+        },
+        {
+          "name": "base-cards.json",
+          "sha256": "c2858351f27202755906d0b1a611b7947a20770465b54e77b2250d8b6e9c6073"
+        },
+        {
+          "name": "base-characters.json",
+          "sha256": "3c9aa767ae085ea976122dc00858742fe64b8ce573ad7c68f02208db8039366d"
+        },
+        {
+          "name": "character-ability-text.json",
+          "sha256": "03e9ebe8856e4d998e79321a1c71d5e8dd266145afa1ef0f63fe326713d830f6"
+        },
+        {
+          "name": "fate-card-text.json",
+          "sha256": "a39fa6c67723bdf3eae96f075fa5fd71f235d1baf23286f725ef0425037e4b65"
+        },
+        {
+          "name": "fate-cards.json",
+          "sha256": "b505e8c696a9778780b2015044441cd91c6ecc93e22c5290047c7b56161adca3"
+        },
+        {
+          "name": "fate-characters.json",
+          "sha256": "aabef0a946390c1c10250fb86b30126f50c70d3ae874dd2b1fa132390494a991"
+        },
+        {
+          "name": "kings-card-text.json",
+          "sha256": "78e96738061e77046939c8f304d955beefe6856891406851ee2a247d8e75a69b"
+        },
+        {
+          "name": "kings-cards.json",
+          "sha256": "ad789d05831e558eb6b4d67c7df05607a061ed6d29a5475e9c6c0ff323a6e7b0"
+        },
+        {
+          "name": "kings-characters.json",
+          "sha256": "4a286d34ab8f071e3406a04c38a8659efd4a4d5da327bfca91dd999d67a6e26e"
+        },
+        {
+          "name": "lords-card-text.json",
+          "sha256": "8b2165bf6c38630788808e61f59dc9a50b604382ced58f2c5adaf520a7f510a2"
+        },
+        {
+          "name": "lords-cards.json",
+          "sha256": "b1f05b261f0e4bebe28a468ffd7f9649be2d08e356268a07d370acfd146d0061"
+        },
+        {
+          "name": "lords-characters.json",
+          "sha256": "2962001fd1cdc96f561c7867c9ecdada1375c999ec892b67561b2100e037027d"
+        },
+        {
+          "name": "map-border-bands.json",
+          "sha256": "233bf8bfd5e6f75e44e33cd4692c256ec1f522981faf47facc4956f6a93acdac"
+        },
+        {
+          "name": "map-boundaries.json",
+          "sha256": "8ac6b56a609efc3eb7bba62454a51d0f41e3d29235daa6c22c61aa32f0689dd5"
+        },
+        {
+          "name": "map-geometry.json",
+          "sha256": "b1ed10e22091b22ea602df1d1b017387f7c5bf071d8ec5c1140a2c8721f4801a"
+        },
+        {
+          "name": "map-style.json",
+          "sha256": "a333568e12474ceee66ce1480977a6ebc0f037bc2e863b5d986d9f050c1a2800"
+        }
+      ]
+    }
+  ],
+  "testPackages": [
+    {
+      "name": "wotr-seeder",
+      "version": "777d59035366",
+      "archive": "wotr-seeder-777d59035366.tgz",
+      "sha256": "e9e253d0576375c2ce3942450a516cdde725887fb47f54380daf62fcc81ce4ba",
+      "size": 4366761,
+      "commit": "777d590353667fe7b7a7b6f96f7498f7da3c1540",
+      "entry": "wotr-seeder/Wotr.Scenarios.dll"
+    },
+    {
+      "name": "wotr-server",
+      "version": "777d59035366",
+      "archive": "wotr-server-777d59035366.tgz",
+      "sha256": "4bcfa88b3b5b7c25034c3d6f1109e4a60e79a6b48c5ffc485ec52cfca6903759",
+      "size": 4091023,
+      "commit": "777d590353667fe7b7a7b6f96f7498f7da3c1540",
+      "entry": "wotr-server/Wotr.Server.dll"
+    }
+  ]
+}

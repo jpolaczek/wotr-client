@@ -1,0 +1,5 @@
+Use case: precise-object-edit
+Asset type: Fangorn forest illustration to composite into an existing pencil map.
+Image 1 is the exact silhouette and position guide; image 2 is a geographical and tree-shape reference, not the edit target. Replace only the gray shape in image 1 with a compact grove of individually legible, upright, tapered old deciduous trees. Approximately 7 overlapping rows, 5–7 crowns across the widest part. Fill this shape with one coherent grove, matching its exact size and position with a natural scalloped edge. Preserve the white margin. Do not copy the broad map or text from image 2.
+Style: minimalist hand drawing in graphite pencil, firm dark contours, modest diagonal hatching on one side of each crown, white highlights, a few small trunks at the lower edge. Medium gray shading, never a solid black mass. This is an understated black-and-white cartographic grove, matching a map drawn by hand.
+Constraints: pure white background, neutral grayscale only, no remaining gray shape, no words, no icons, no mountains, no rivers, no buildings, no ground shadows or unrelated details. Keep every tree and pencil mark inside the silhouette.

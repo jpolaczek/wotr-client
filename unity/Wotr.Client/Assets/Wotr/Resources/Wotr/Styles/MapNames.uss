@@ -1,0 +1,18 @@
+/* UI-186: region names on the map in the board's lettering: Cinzel capitals in dark ink with a soft parchment glow and a
+   little air between the letters. MapRegionNames scales each name with the zoom from this reading size. */
+.map-region-names { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.map-region-name {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    font-size: 15px;
+    letter-spacing: 1.2px;
+    -unity-text-align: middle-center;
+    white-space: pre;
+    color: rgb(52, 31, 13);
+    text-shadow: 0 0 3px rgba(252, 241, 212, 0.95);
+}
+.map-region-name.map-region-name-major { color: rgb(46, 22, 8); letter-spacing: 1.6px; }

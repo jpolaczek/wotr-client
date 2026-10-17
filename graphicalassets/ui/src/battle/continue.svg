@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: continue the battle, crossed swords in ivory. -->
+  <g filter="url(#lift)">
+    <path d="M7 7 L25 25 M25 7 L7 25" style="stroke: var(--ink)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M7 7 L25 25 M25 7 L7 25" style="stroke: var(--ivory)" stroke-width="2.6" stroke-linecap="round"/>
+    <g style="fill: var(--gilt-light); stroke: var(--gilt-edge)" stroke-width="0.5"><circle cx="7" cy="25" r="2.4"/><circle cx="25" cy="25" r="2.4"/></g>
+  </g>
+</svg>

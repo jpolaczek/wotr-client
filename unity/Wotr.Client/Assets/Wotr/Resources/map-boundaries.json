@@ -1,0 +1,4392 @@
+{
+  "version": "borders-1",
+  "geometryVersion": "contours-2",
+  "geometryHash": "b1ed10e22091b22ea602df1d1b017387f7c5bf071d8ec5c1140a2c8721f4801a",
+  "auditHash": "ddc423213c456ac22fb4554dc850fe5e3b18ade0152bfba6ae7eff800354e835",
+  "paths": [
+    {
+      "id": "boundary-0000",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "grey-havens",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0000",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 70,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0001",
+      "positiveNormalOwner": "north-ered-luin",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0001",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 63,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0002",
+      "positiveNormalOwner": "iron-hills",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0002",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 200,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0003",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "anfalas",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0003",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 115,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0004",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "dol-amroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0004",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 134,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0005",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "lamedon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0005",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 11,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0006",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "pelargir",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0006",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 46,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0007",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "north-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0007",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 11,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0008",
+      "positiveNormalOwner": "angmar",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0008",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0009",
+      "positiveNormalOwner": "mount-gram",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0009",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0010",
+      "positiveNormalOwner": "mount-gundabad",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0010",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0011",
+      "positiveNormalOwner": "nurn",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0011",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 42,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0012",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "gorgoroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0012",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 110,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0013",
+      "positiveNormalOwner": "gorgoroth",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0013",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0014",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "gorgoroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0014",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 38,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0015",
+      "positiveNormalOwner": "gorgoroth",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0015",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0016",
+      "positiveNormalOwner": "barad-dur",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0016",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0017",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "umbar",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0017",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 43,
+          "kind": "Coast"
+        },
+        {
+          "fromSegment": 43,
+          "toSegment": 44,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0018",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "near-harad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0018",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0019",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "far-harad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0019",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 2,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0020",
+      "positiveNormalOwner": "khand",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0020",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0021",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "north-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0021",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0022",
+      "positiveNormalOwner": "south-rhun",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0022",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 63,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0023",
+      "positiveNormalOwner": "south-rhun",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0023",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0024",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "east-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0024",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0025",
+      "positiveNormalOwner": "east-rhun",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0025",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 42,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0026",
+      "positiveNormalOwner": "forlindon",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0026",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 171,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0027",
+      "positiveNormalOwner": "evendim",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0027",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 38,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0028",
+      "positiveNormalOwner": "evendim",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0028",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 67,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0029",
+      "positiveNormalOwner": "arnor",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0029",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 3,
+          "kind": "Coast"
+        },
+        {
+          "fromSegment": 3,
+          "toSegment": 4,
+          "kind": "Frame"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0030",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "harlindon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0030",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 109,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0031",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "south-ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0031",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 54,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0032",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "minhiriath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0032",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 141,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0033",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "enedwaith",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0033",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 66,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0034",
+      "positiveNormalOwner": "druwaith-iaur",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0034",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0035",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "andrast",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0035",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 250,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0036",
+      "positiveNormalOwner": "west-harondor",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0036",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 43,
+          "kind": "Coast"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0037",
+      "positiveNormalOwner": null,
+      "negativeNormalOwner": "northern-dorwinion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0037",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 47,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0038",
+      "positiveNormalOwner": "southern-dorwinion",
+      "negativeNormalOwner": null,
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0038",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 102,
+          "kind": "Lake"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0039",
+      "positiveNormalOwner": "grey-havens",
+      "negativeNormalOwner": "ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0039",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 24,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 24,
+          "toSegment": 75,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0040",
+      "positiveNormalOwner": "grey-havens",
+      "negativeNormalOwner": "forlindon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0040",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 30,
+          "toSegment": 38,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0041",
+      "positiveNormalOwner": "tower-hills",
+      "negativeNormalOwner": "grey-havens",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0041",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 127,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0042",
+      "positiveNormalOwner": "harlindon",
+      "negativeNormalOwner": "grey-havens",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0042",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 25,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 25,
+          "toSegment": 66,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0043",
+      "positiveNormalOwner": "south-ered-luin",
+      "negativeNormalOwner": "grey-havens",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0043",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 7,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0044",
+      "positiveNormalOwner": "rivendell",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0044",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 72,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0045",
+      "positiveNormalOwner": "rivendell",
+      "negativeNormalOwner": "ettenmoors",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0045",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 3,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0046",
+      "positiveNormalOwner": "trollshaws",
+      "negativeNormalOwner": "rivendell",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0046",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 8,
+          "toSegment": 47,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0047",
+      "positiveNormalOwner": "fords-of-bruinen",
+      "negativeNormalOwner": "rivendell",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0047",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 20,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 20,
+          "toSegment": 23,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0048",
+      "positiveNormalOwner": "rivendell",
+      "negativeNormalOwner": "eagles-eyrie",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0048",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 42,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0049",
+      "positiveNormalOwner": "goblins-gate",
+      "negativeNormalOwner": "rivendell",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0049",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 3,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0050",
+      "positiveNormalOwner": "high-pass",
+      "negativeNormalOwner": "rivendell",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0050",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 56,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0051",
+      "positiveNormalOwner": "north-dunland",
+      "negativeNormalOwner": "lorien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0051",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 33,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0052",
+      "positiveNormalOwner": "lorien",
+      "negativeNormalOwner": "moria",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0052",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 62,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0053",
+      "positiveNormalOwner": "lorien",
+      "negativeNormalOwner": "dimrill-dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0053",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 68,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0054",
+      "positiveNormalOwner": "parth-celebrant",
+      "negativeNormalOwner": "lorien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0054",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 14,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 14,
+          "toSegment": 65,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0055",
+      "positiveNormalOwner": "old-forest-road",
+      "negativeNormalOwner": "woodland-realm",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0055",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 74,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0056",
+      "positiveNormalOwner": "woodland-realm",
+      "negativeNormalOwner": "dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0056",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 25,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0057",
+      "positiveNormalOwner": "woodland-realm",
+      "negativeNormalOwner": "northern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0057",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 10,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0058",
+      "positiveNormalOwner": "woodland-realm",
+      "negativeNormalOwner": "withered-heath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0058",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 37,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0059",
+      "positiveNormalOwner": "woodland-realm",
+      "negativeNormalOwner": "western-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0059",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 31,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0060",
+      "positiveNormalOwner": "ered-luin",
+      "negativeNormalOwner": "north-ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0060",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 45,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 45,
+          "toSegment": 82,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0061",
+      "positiveNormalOwner": "forlindon",
+      "negativeNormalOwner": "north-ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0061",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 11,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0062",
+      "positiveNormalOwner": "north-ered-luin",
+      "negativeNormalOwner": "evendim",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0062",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 85,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0063",
+      "positiveNormalOwner": "ered-luin",
+      "negativeNormalOwner": "forlindon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0063",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 52,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0064",
+      "positiveNormalOwner": "evendim",
+      "negativeNormalOwner": "ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0064",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0065",
+      "positiveNormalOwner": "tower-hills",
+      "negativeNormalOwner": "ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0065",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0066",
+      "positiveNormalOwner": "iron-hills",
+      "negativeNormalOwner": "erebor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0066",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 82,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0067",
+      "positiveNormalOwner": "dale",
+      "negativeNormalOwner": "erebor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0067",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 23,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0068",
+      "positiveNormalOwner": "erebor",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0068",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 86,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0069",
+      "positiveNormalOwner": "withered-heath",
+      "negativeNormalOwner": "erebor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0069",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 102,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0070",
+      "positiveNormalOwner": "dale",
+      "negativeNormalOwner": "iron-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0070",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 22,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0071",
+      "positiveNormalOwner": "iron-hills",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0071",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 13,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0072",
+      "positiveNormalOwner": "east-rhun",
+      "negativeNormalOwner": "iron-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0072",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 128,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0073",
+      "positiveNormalOwner": "vale-of-the-carnen",
+      "negativeNormalOwner": "iron-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0073",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 28,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0074",
+      "positiveNormalOwner": "anfalas",
+      "negativeNormalOwner": "erech",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0074",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 87,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0075",
+      "positiveNormalOwner": "dol-amroth",
+      "negativeNormalOwner": "anfalas",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0075",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 16,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0076",
+      "positiveNormalOwner": "anfalas",
+      "negativeNormalOwner": "druwaith-iaur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0076",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0077",
+      "positiveNormalOwner": "anfalas",
+      "negativeNormalOwner": "andrast",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0077",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 163,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0078",
+      "positiveNormalOwner": "dol-amroth",
+      "negativeNormalOwner": "erech",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0078",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 34,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0079",
+      "positiveNormalOwner": "lamedon",
+      "negativeNormalOwner": "erech",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0079",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 8,
+          "toSegment": 41,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0080",
+      "positiveNormalOwner": "erech",
+      "negativeNormalOwner": "fords-of-isen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0080",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 7,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0081",
+      "positiveNormalOwner": "erech",
+      "negativeNormalOwner": "helms-deep",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0081",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 77,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0082",
+      "positiveNormalOwner": "erech",
+      "negativeNormalOwner": "westemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0082",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 14,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0083",
+      "positiveNormalOwner": "erech",
+      "negativeNormalOwner": "edoras",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0083",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0084",
+      "positiveNormalOwner": "erech",
+      "negativeNormalOwner": "druwaith-iaur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0084",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 5,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0085",
+      "positiveNormalOwner": "dol-amroth",
+      "negativeNormalOwner": "lamedon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0085",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 66,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0086",
+      "positiveNormalOwner": "pelargir",
+      "negativeNormalOwner": "lamedon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0086",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 76,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0087",
+      "positiveNormalOwner": "lossarnach",
+      "negativeNormalOwner": "lamedon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0087",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 23,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0088",
+      "positiveNormalOwner": "lamedon",
+      "negativeNormalOwner": "minas-tirith",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0088",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 43,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0089",
+      "positiveNormalOwner": "lamedon",
+      "negativeNormalOwner": "edoras",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0089",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 38,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0090",
+      "positiveNormalOwner": "lamedon",
+      "negativeNormalOwner": "folde",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0090",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 13,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0091",
+      "positiveNormalOwner": "pelargir",
+      "negativeNormalOwner": "lossarnach",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0091",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 63,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0092",
+      "positiveNormalOwner": "pelargir",
+      "negativeNormalOwner": "osgiliath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0092",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 19,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0093",
+      "positiveNormalOwner": "west-harondor",
+      "negativeNormalOwner": "pelargir",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0093",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 94,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0094",
+      "positiveNormalOwner": "lossarnach",
+      "negativeNormalOwner": "minas-tirith",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0094",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 5,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 5,
+          "toSegment": 51,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0095",
+      "positiveNormalOwner": "osgiliath",
+      "negativeNormalOwner": "lossarnach",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0095",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 9,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0096",
+      "positiveNormalOwner": "minas-tirith",
+      "negativeNormalOwner": "druadan-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0096",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 32,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 32,
+          "toSegment": 77,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0097",
+      "positiveNormalOwner": "minas-tirith",
+      "negativeNormalOwner": "folde",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0097",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0098",
+      "positiveNormalOwner": "osgiliath",
+      "negativeNormalOwner": "minas-tirith",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0098",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 119,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0099",
+      "positiveNormalOwner": "druadan-forest",
+      "negativeNormalOwner": "eastemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0099",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 12,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0100",
+      "positiveNormalOwner": "druadan-forest",
+      "negativeNormalOwner": "folde",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0100",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 55,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0101",
+      "positiveNormalOwner": "druadan-forest",
+      "negativeNormalOwner": "western-emyn-muil",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0101",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 19,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0102",
+      "positiveNormalOwner": "druadan-forest",
+      "negativeNormalOwner": "dead-marshes",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0102",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 35,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0103",
+      "positiveNormalOwner": "osgiliath",
+      "negativeNormalOwner": "druadan-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0103",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 23,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0104",
+      "positiveNormalOwner": "the-shire",
+      "negativeNormalOwner": "buckland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0104",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 13,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0105",
+      "positiveNormalOwner": "the-shire",
+      "negativeNormalOwner": "evendim",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0105",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 53,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0106",
+      "positiveNormalOwner": "tower-hills",
+      "negativeNormalOwner": "the-shire",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0106",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0107",
+      "positiveNormalOwner": "south-ered-luin",
+      "negativeNormalOwner": "the-shire",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0107",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 29,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0108",
+      "positiveNormalOwner": "old-forest",
+      "negativeNormalOwner": "the-shire",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0108",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 19,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0109",
+      "positiveNormalOwner": "buckland",
+      "negativeNormalOwner": "bree",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0109",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 36,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0110",
+      "positiveNormalOwner": "buckland",
+      "negativeNormalOwner": "north-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0110",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 11,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0111",
+      "positiveNormalOwner": "buckland",
+      "negativeNormalOwner": "evendim",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0111",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0112",
+      "positiveNormalOwner": "buckland",
+      "negativeNormalOwner": "south-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0112",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0113",
+      "positiveNormalOwner": "old-forest",
+      "negativeNormalOwner": "buckland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0113",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 31,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0114",
+      "positiveNormalOwner": "cardolan",
+      "negativeNormalOwner": "buckland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0114",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0115",
+      "positiveNormalOwner": "bree",
+      "negativeNormalOwner": "north-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0115",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 50,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0116",
+      "positiveNormalOwner": "bree",
+      "negativeNormalOwner": "weather-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0116",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 51,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0117",
+      "positiveNormalOwner": "south-downs",
+      "negativeNormalOwner": "bree",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0117",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 37,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0118",
+      "positiveNormalOwner": "north-downs",
+      "negativeNormalOwner": "evendim",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0118",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0119",
+      "positiveNormalOwner": "evendim",
+      "negativeNormalOwner": "north-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0119",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 14,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0120",
+      "positiveNormalOwner": "north-downs",
+      "negativeNormalOwner": "arnor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0120",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0121",
+      "positiveNormalOwner": "north-downs",
+      "negativeNormalOwner": "ettenmoors",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0121",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 26,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0122",
+      "positiveNormalOwner": "weather-hills",
+      "negativeNormalOwner": "north-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0122",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 14,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0123",
+      "positiveNormalOwner": "rhosgobel",
+      "negativeNormalOwner": "carrock",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0123",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0124",
+      "positiveNormalOwner": "carrock",
+      "negativeNormalOwner": "old-forest-road",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0124",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 5,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0125",
+      "positiveNormalOwner": "carrock",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0125",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 48,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0126",
+      "positiveNormalOwner": "eagles-eyrie",
+      "negativeNormalOwner": "carrock",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0126",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 59,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0127",
+      "positiveNormalOwner": "old-ford",
+      "negativeNormalOwner": "carrock",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0127",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0128",
+      "positiveNormalOwner": "carrock",
+      "negativeNormalOwner": "northern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0128",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 43,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0129",
+      "positiveNormalOwner": "carrock",
+      "negativeNormalOwner": "western-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0129",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 40,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0130",
+      "positiveNormalOwner": "rhosgobel",
+      "negativeNormalOwner": "old-forest-road",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0130",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0131",
+      "positiveNormalOwner": "old-ford",
+      "negativeNormalOwner": "rhosgobel",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0131",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 20,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0132",
+      "positiveNormalOwner": "rhosgobel",
+      "negativeNormalOwner": "gladden-fields",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0132",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0133",
+      "positiveNormalOwner": "rhosgobel",
+      "negativeNormalOwner": "narrows-of-the-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0133",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0134",
+      "positiveNormalOwner": "north-anduin-vale",
+      "negativeNormalOwner": "rhosgobel",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0134",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 53,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0135",
+      "positiveNormalOwner": "old-forest-road",
+      "negativeNormalOwner": "dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0135",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 24,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0136",
+      "positiveNormalOwner": "old-forest-road",
+      "negativeNormalOwner": "western-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0136",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0137",
+      "positiveNormalOwner": "narrows-of-the-forest",
+      "negativeNormalOwner": "old-forest-road",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0137",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 57,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0138",
+      "positiveNormalOwner": "eastern-mirkwood",
+      "negativeNormalOwner": "old-forest-road",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0138",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 35,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0139",
+      "positiveNormalOwner": "northern-rhovanion",
+      "negativeNormalOwner": "old-forest-road",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0139",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 12,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0140",
+      "positiveNormalOwner": "dale",
+      "negativeNormalOwner": "withered-heath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0140",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 5,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0141",
+      "positiveNormalOwner": "northern-rhovanion",
+      "negativeNormalOwner": "dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0141",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0142",
+      "positiveNormalOwner": "vale-of-the-carnen",
+      "negativeNormalOwner": "dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0142",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 47,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0143",
+      "positiveNormalOwner": "helms-deep",
+      "negativeNormalOwner": "fords-of-isen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0143",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 74,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0144",
+      "positiveNormalOwner": "westemnet",
+      "negativeNormalOwner": "fords-of-isen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0144",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 51,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0145",
+      "positiveNormalOwner": "fords-of-isen",
+      "negativeNormalOwner": "gap-of-rohan",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0145",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 32,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0146",
+      "positiveNormalOwner": "fords-of-isen",
+      "negativeNormalOwner": "orthanc",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0146",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 68,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0147",
+      "positiveNormalOwner": "druwaith-iaur",
+      "negativeNormalOwner": "fords-of-isen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0147",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 71,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0148",
+      "positiveNormalOwner": "fords-of-isen",
+      "negativeNormalOwner": "fangorn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0148",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0149",
+      "positiveNormalOwner": "helms-deep",
+      "negativeNormalOwner": "westemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0149",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 11,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0150",
+      "positiveNormalOwner": "edoras",
+      "negativeNormalOwner": "westemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0150",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 57,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0151",
+      "positiveNormalOwner": "westemnet",
+      "negativeNormalOwner": "eastemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0151",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 54,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0152",
+      "positiveNormalOwner": "folde",
+      "negativeNormalOwner": "westemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0152",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 19,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0153",
+      "positiveNormalOwner": "westemnet",
+      "negativeNormalOwner": "fangorn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0153",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0154",
+      "positiveNormalOwner": "edoras",
+      "negativeNormalOwner": "folde",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0154",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 53,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0155",
+      "positiveNormalOwner": "folde",
+      "negativeNormalOwner": "eastemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0155",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "River"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0156",
+      "positiveNormalOwner": "eastemnet",
+      "negativeNormalOwner": "fangorn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0156",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0157",
+      "positiveNormalOwner": "eastemnet",
+      "negativeNormalOwner": "parth-celebrant",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0157",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 74,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0158",
+      "positiveNormalOwner": "eastemnet",
+      "negativeNormalOwner": "western-brown-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0158",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0159",
+      "positiveNormalOwner": "western-emyn-muil",
+      "negativeNormalOwner": "eastemnet",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0159",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 62,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0160",
+      "positiveNormalOwner": "south-dunland",
+      "negativeNormalOwner": "north-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0160",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 45,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 45,
+          "toSegment": 51,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0161",
+      "positiveNormalOwner": "north-dunland",
+      "negativeNormalOwner": "moria",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0161",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 15,
+          "toSegment": 21,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0162",
+      "positiveNormalOwner": "north-dunland",
+      "negativeNormalOwner": "south-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0162",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 25,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0163",
+      "positiveNormalOwner": "north-dunland",
+      "negativeNormalOwner": "cardolan",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0163",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0164",
+      "positiveNormalOwner": "tharbad",
+      "negativeNormalOwner": "north-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0164",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 34,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0165",
+      "positiveNormalOwner": "north-dunland",
+      "negativeNormalOwner": "hollin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0165",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 71,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0166",
+      "positiveNormalOwner": "fangorn",
+      "negativeNormalOwner": "north-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0166",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0167",
+      "positiveNormalOwner": "parth-celebrant",
+      "negativeNormalOwner": "north-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0167",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 12,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0168",
+      "positiveNormalOwner": "gap-of-rohan",
+      "negativeNormalOwner": "south-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0168",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 42,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0169",
+      "positiveNormalOwner": "orthanc",
+      "negativeNormalOwner": "south-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0169",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 47,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0170",
+      "positiveNormalOwner": "south-dunland",
+      "negativeNormalOwner": "tharbad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0170",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 62,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0171",
+      "positiveNormalOwner": "enedwaith",
+      "negativeNormalOwner": "south-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0171",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0172",
+      "positiveNormalOwner": "fangorn",
+      "negativeNormalOwner": "south-dunland",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0172",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 22,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0173",
+      "positiveNormalOwner": "gap-of-rohan",
+      "negativeNormalOwner": "orthanc",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0173",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0174",
+      "positiveNormalOwner": "gap-of-rohan",
+      "negativeNormalOwner": "enedwaith",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0174",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 59,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0175",
+      "positiveNormalOwner": "druwaith-iaur",
+      "negativeNormalOwner": "gap-of-rohan",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0175",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0176",
+      "positiveNormalOwner": "orthanc",
+      "negativeNormalOwner": "fangorn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0176",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 60,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0177",
+      "positiveNormalOwner": "angmar",
+      "negativeNormalOwner": "mount-gram",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0177",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0178",
+      "positiveNormalOwner": "arnor",
+      "negativeNormalOwner": "angmar",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0178",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 56,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0179",
+      "positiveNormalOwner": "ettenmoors",
+      "negativeNormalOwner": "angmar",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0179",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0180",
+      "positiveNormalOwner": "mount-gundabad",
+      "negativeNormalOwner": "mount-gram",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0180",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 15,
+          "toSegment": 51,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0181",
+      "positiveNormalOwner": "ettenmoors",
+      "negativeNormalOwner": "mount-gram",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0181",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 35,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 35,
+          "toSegment": 68,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0182",
+      "positiveNormalOwner": "ettenmoors",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0182",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0183",
+      "positiveNormalOwner": "eagles-eyrie",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0183",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 8,
+          "toSegment": 23,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 23,
+          "toSegment": 39,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0184",
+      "positiveNormalOwner": "northern-mirkwood",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0184",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 64,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0185",
+      "positiveNormalOwner": "withered-heath",
+      "negativeNormalOwner": "mount-gundabad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0185",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 35,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0186",
+      "positiveNormalOwner": "moria",
+      "negativeNormalOwner": "hollin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0186",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 51,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0187",
+      "positiveNormalOwner": "moria",
+      "negativeNormalOwner": "fords-of-bruinen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0187",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0188",
+      "positiveNormalOwner": "moria",
+      "negativeNormalOwner": "old-ford",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0188",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 19,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0189",
+      "positiveNormalOwner": "moria",
+      "negativeNormalOwner": "goblins-gate",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0189",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 7,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0190",
+      "positiveNormalOwner": "moria",
+      "negativeNormalOwner": "high-pass",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0190",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 44,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0191",
+      "positiveNormalOwner": "moria",
+      "negativeNormalOwner": "gladden-fields",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0191",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 34,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0192",
+      "positiveNormalOwner": "dimrill-dale",
+      "negativeNormalOwner": "moria",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0192",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 6,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 6,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0193",
+      "positiveNormalOwner": "dol-guldur",
+      "negativeNormalOwner": "southern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0193",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0194",
+      "positiveNormalOwner": "dol-guldur",
+      "negativeNormalOwner": "narrows-of-the-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0194",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 17,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0195",
+      "positiveNormalOwner": "dol-guldur",
+      "negativeNormalOwner": "eastern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0195",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0196",
+      "positiveNormalOwner": "dol-guldur",
+      "negativeNormalOwner": "north-anduin-vale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0196",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 24,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0197",
+      "positiveNormalOwner": "dol-guldur",
+      "negativeNormalOwner": "south-anduin-vale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0197",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 45,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0198",
+      "positiveNormalOwner": "western-brown-lands",
+      "negativeNormalOwner": "dol-guldur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0198",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 35,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0199",
+      "positiveNormalOwner": "eastern-brown-lands",
+      "negativeNormalOwner": "dol-guldur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0199",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0200",
+      "positiveNormalOwner": "southern-mirkwood",
+      "negativeNormalOwner": "eastern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0200",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 17,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0201",
+      "positiveNormalOwner": "eastern-brown-lands",
+      "negativeNormalOwner": "southern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0201",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0202",
+      "positiveNormalOwner": "southern-mirkwood",
+      "negativeNormalOwner": "northern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0202",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0203",
+      "positiveNormalOwner": "southern-mirkwood",
+      "negativeNormalOwner": "southern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0203",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0204",
+      "positiveNormalOwner": "minas-morgul",
+      "negativeNormalOwner": "morannon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0204",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 9,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0205",
+      "positiveNormalOwner": "gorgoroth",
+      "negativeNormalOwner": "morannon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0205",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 63,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0206",
+      "positiveNormalOwner": "morannon",
+      "negativeNormalOwner": "barad-dur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0206",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 38,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0207",
+      "positiveNormalOwner": "north-ithilien",
+      "negativeNormalOwner": "morannon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0207",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 71,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0208",
+      "positiveNormalOwner": "morannon",
+      "negativeNormalOwner": "dagorlad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0208",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 32,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 32,
+          "toSegment": 55,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 55,
+          "toSegment": 59,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0209",
+      "positiveNormalOwner": "minas-morgul",
+      "negativeNormalOwner": "gorgoroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0209",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 49,
+          "toSegment": 63,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0210",
+      "positiveNormalOwner": "minas-morgul",
+      "negativeNormalOwner": "north-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0210",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 26,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 26,
+          "toSegment": 29,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0211",
+      "positiveNormalOwner": "south-ithilien",
+      "negativeNormalOwner": "minas-morgul",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0211",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 8,
+          "toSegment": 78,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0212",
+      "positiveNormalOwner": "nurn",
+      "negativeNormalOwner": "gorgoroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0212",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0213",
+      "positiveNormalOwner": "gorgoroth",
+      "negativeNormalOwner": "nurn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0213",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 23,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0214",
+      "positiveNormalOwner": "near-harad",
+      "negativeNormalOwner": "nurn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0214",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0215",
+      "positiveNormalOwner": "khand",
+      "negativeNormalOwner": "nurn",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0215",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 137,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0216",
+      "positiveNormalOwner": "nurn",
+      "negativeNormalOwner": "south-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0216",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 42,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0217",
+      "positiveNormalOwner": "gorgoroth",
+      "negativeNormalOwner": "barad-dur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0217",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 100,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0218",
+      "positiveNormalOwner": "khand",
+      "negativeNormalOwner": "gorgoroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0218",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 123,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0219",
+      "positiveNormalOwner": "south-ithilien",
+      "negativeNormalOwner": "gorgoroth",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0219",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0220",
+      "positiveNormalOwner": "barad-dur",
+      "negativeNormalOwner": "south-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0220",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 31,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0221",
+      "positiveNormalOwner": "barad-dur",
+      "negativeNormalOwner": "dagorlad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0221",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 7,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0222",
+      "positiveNormalOwner": "barad-dur",
+      "negativeNormalOwner": "ash-mountains",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0222",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 95,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0223",
+      "positiveNormalOwner": "umbar",
+      "negativeNormalOwner": "near-harad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0223",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0224",
+      "positiveNormalOwner": "umbar",
+      "negativeNormalOwner": "west-harondor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0224",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 54,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0225",
+      "positiveNormalOwner": "far-harad",
+      "negativeNormalOwner": "near-harad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0225",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 57,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0226",
+      "positiveNormalOwner": "khand",
+      "negativeNormalOwner": "near-harad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0226",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 21,
+          "toSegment": 27,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0227",
+      "positiveNormalOwner": "near-harad",
+      "negativeNormalOwner": "west-harondor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0227",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 26,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0228",
+      "positiveNormalOwner": "near-harad",
+      "negativeNormalOwner": "east-harondor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0228",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 76,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0229",
+      "positiveNormalOwner": "near-harad",
+      "negativeNormalOwner": "south-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0229",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 20,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0230",
+      "positiveNormalOwner": "far-harad",
+      "negativeNormalOwner": "khand",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0230",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 143,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0231",
+      "positiveNormalOwner": "north-rhun",
+      "negativeNormalOwner": "east-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0231",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 167,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0232",
+      "positiveNormalOwner": "north-rhun",
+      "negativeNormalOwner": "vale-of-the-carnen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0232",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 9,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0233",
+      "positiveNormalOwner": "vale-of-the-celduin",
+      "negativeNormalOwner": "north-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0233",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0234",
+      "positiveNormalOwner": "northern-dorwinion",
+      "negativeNormalOwner": "north-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0234",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0235",
+      "positiveNormalOwner": "south-rhun",
+      "negativeNormalOwner": "east-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0235",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 24,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 24,
+          "toSegment": 74,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0236",
+      "positiveNormalOwner": "south-rhun",
+      "negativeNormalOwner": "southern-dorwinion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0236",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 16,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 16,
+          "toSegment": 25,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0237",
+      "positiveNormalOwner": "ash-mountains",
+      "negativeNormalOwner": "south-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0237",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0238",
+      "positiveNormalOwner": "vale-of-the-carnen",
+      "negativeNormalOwner": "east-rhun",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0238",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 92,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0239",
+      "positiveNormalOwner": "evendim",
+      "negativeNormalOwner": "arnor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0239",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 94,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0240",
+      "positiveNormalOwner": "tower-hills",
+      "negativeNormalOwner": "evendim",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0240",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 14,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0241",
+      "positiveNormalOwner": "ettenmoors",
+      "negativeNormalOwner": "arnor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0241",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0242",
+      "positiveNormalOwner": "weather-hills",
+      "negativeNormalOwner": "ettenmoors",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0242",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 42,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0243",
+      "positiveNormalOwner": "trollshaws",
+      "negativeNormalOwner": "ettenmoors",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0243",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 18,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 18,
+          "toSegment": 25,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0244",
+      "positiveNormalOwner": "trollshaws",
+      "negativeNormalOwner": "weather-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0244",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 53,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0245",
+      "positiveNormalOwner": "south-downs",
+      "negativeNormalOwner": "weather-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0245",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 45,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0246",
+      "positiveNormalOwner": "south-downs",
+      "negativeNormalOwner": "trollshaws",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0246",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 32,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0247",
+      "positiveNormalOwner": "hollin",
+      "negativeNormalOwner": "trollshaws",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0247",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 5,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0248",
+      "positiveNormalOwner": "fords-of-bruinen",
+      "negativeNormalOwner": "trollshaws",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0248",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 65,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0249",
+      "positiveNormalOwner": "cardolan",
+      "negativeNormalOwner": "south-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0249",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 83,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0250",
+      "positiveNormalOwner": "hollin",
+      "negativeNormalOwner": "south-downs",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0250",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 44,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0251",
+      "positiveNormalOwner": "south-ered-luin",
+      "negativeNormalOwner": "tower-hills",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0251",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 20,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 20,
+          "toSegment": 104,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0252",
+      "positiveNormalOwner": "south-ered-luin",
+      "negativeNormalOwner": "harlindon",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0252",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 48,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 48,
+          "toSegment": 71,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0253",
+      "positiveNormalOwner": "south-ered-luin",
+      "negativeNormalOwner": "old-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0253",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 20,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0254",
+      "positiveNormalOwner": "cardolan",
+      "negativeNormalOwner": "south-ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0254",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 32,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0255",
+      "positiveNormalOwner": "minhiriath",
+      "negativeNormalOwner": "south-ered-luin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0255",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 81,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0256",
+      "positiveNormalOwner": "cardolan",
+      "negativeNormalOwner": "old-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0256",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 64,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0257",
+      "positiveNormalOwner": "minhiriath",
+      "negativeNormalOwner": "cardolan",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0257",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 87,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0258",
+      "positiveNormalOwner": "tharbad",
+      "negativeNormalOwner": "cardolan",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0258",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 51,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0259",
+      "positiveNormalOwner": "tharbad",
+      "negativeNormalOwner": "minhiriath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0259",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0260",
+      "positiveNormalOwner": "enedwaith",
+      "negativeNormalOwner": "minhiriath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0260",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 60,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0261",
+      "positiveNormalOwner": "enedwaith",
+      "negativeNormalOwner": "tharbad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0261",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 47,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0262",
+      "positiveNormalOwner": "druwaith-iaur",
+      "negativeNormalOwner": "enedwaith",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0262",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 67,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0263",
+      "positiveNormalOwner": "andrast",
+      "negativeNormalOwner": "druwaith-iaur",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0263",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 111,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0264",
+      "positiveNormalOwner": "hollin",
+      "negativeNormalOwner": "fords-of-bruinen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0264",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0265",
+      "positiveNormalOwner": "high-pass",
+      "negativeNormalOwner": "fords-of-bruinen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0265",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 4,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 4,
+          "toSegment": 31,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 31,
+          "toSegment": 34,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0266",
+      "positiveNormalOwner": "old-ford",
+      "negativeNormalOwner": "eagles-eyrie",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0266",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 31,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0267",
+      "positiveNormalOwner": "goblins-gate",
+      "negativeNormalOwner": "eagles-eyrie",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0267",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0268",
+      "positiveNormalOwner": "old-ford",
+      "negativeNormalOwner": "goblins-gate",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0268",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 80,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0269",
+      "positiveNormalOwner": "gladden-fields",
+      "negativeNormalOwner": "old-ford",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0269",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 49,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0270",
+      "positiveNormalOwner": "goblins-gate",
+      "negativeNormalOwner": "high-pass",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0270",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 1,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 1,
+          "toSegment": 17,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 17,
+          "toSegment": 31,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0271",
+      "positiveNormalOwner": "dimrill-dale",
+      "negativeNormalOwner": "gladden-fields",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0271",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 32,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0272",
+      "positiveNormalOwner": "north-anduin-vale",
+      "negativeNormalOwner": "gladden-fields",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0272",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 11,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0273",
+      "positiveNormalOwner": "parth-celebrant",
+      "negativeNormalOwner": "dimrill-dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0273",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 10,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0274",
+      "positiveNormalOwner": "north-anduin-vale",
+      "negativeNormalOwner": "dimrill-dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0274",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0275",
+      "positiveNormalOwner": "south-anduin-vale",
+      "negativeNormalOwner": "dimrill-dale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0275",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 33,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0276",
+      "positiveNormalOwner": "fangorn",
+      "negativeNormalOwner": "parth-celebrant",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0276",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 14,
+          "kind": "Impassable"
+        },
+        {
+          "fromSegment": 14,
+          "toSegment": 64,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0277",
+      "positiveNormalOwner": "parth-celebrant",
+      "negativeNormalOwner": "south-anduin-vale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0277",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 36,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0278",
+      "positiveNormalOwner": "parth-celebrant",
+      "negativeNormalOwner": "western-brown-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0278",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 36,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0279",
+      "positiveNormalOwner": "northern-mirkwood",
+      "negativeNormalOwner": "withered-heath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0279",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0280",
+      "positiveNormalOwner": "western-mirkwood",
+      "negativeNormalOwner": "northern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0280",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 43,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0281",
+      "positiveNormalOwner": "eastern-mirkwood",
+      "negativeNormalOwner": "narrows-of-the-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0281",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 37,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0282",
+      "positiveNormalOwner": "north-anduin-vale",
+      "negativeNormalOwner": "narrows-of-the-forest",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0282",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 33,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0283",
+      "positiveNormalOwner": "northern-rhovanion",
+      "negativeNormalOwner": "eastern-mirkwood",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0283",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 61,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0284",
+      "positiveNormalOwner": "south-anduin-vale",
+      "negativeNormalOwner": "north-anduin-vale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0284",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 37,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0285",
+      "positiveNormalOwner": "western-brown-lands",
+      "negativeNormalOwner": "south-anduin-vale",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0285",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 23,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0286",
+      "positiveNormalOwner": "western-brown-lands",
+      "negativeNormalOwner": "eastern-brown-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0286",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 37,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0287",
+      "positiveNormalOwner": "western-emyn-muil",
+      "negativeNormalOwner": "western-brown-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0287",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0288",
+      "positiveNormalOwner": "western-emyn-muil",
+      "negativeNormalOwner": "eastern-brown-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0288",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 8,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0289",
+      "positiveNormalOwner": "eastern-emyn-muil",
+      "negativeNormalOwner": "eastern-brown-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0289",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0290",
+      "positiveNormalOwner": "eastern-brown-lands",
+      "negativeNormalOwner": "southern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0290",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 24,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0291",
+      "positiveNormalOwner": "eastern-brown-lands",
+      "negativeNormalOwner": "noman-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0291",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0292",
+      "positiveNormalOwner": "eastern-emyn-muil",
+      "negativeNormalOwner": "western-emyn-muil",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0292",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 41,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0293",
+      "positiveNormalOwner": "dead-marshes",
+      "negativeNormalOwner": "western-emyn-muil",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0293",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 72,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0294",
+      "positiveNormalOwner": "dead-marshes",
+      "negativeNormalOwner": "eastern-emyn-muil",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0294",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 37,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0295",
+      "positiveNormalOwner": "north-ithilien",
+      "negativeNormalOwner": "eastern-emyn-muil",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0295",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0296",
+      "positiveNormalOwner": "eastern-emyn-muil",
+      "negativeNormalOwner": "noman-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0296",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 36,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0297",
+      "positiveNormalOwner": "dagorlad",
+      "negativeNormalOwner": "eastern-emyn-muil",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0297",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 28,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0298",
+      "positiveNormalOwner": "osgiliath",
+      "negativeNormalOwner": "dead-marshes",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0298",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 33,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0299",
+      "positiveNormalOwner": "north-ithilien",
+      "negativeNormalOwner": "dead-marshes",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0299",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 77,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0300",
+      "positiveNormalOwner": "west-harondor",
+      "negativeNormalOwner": "osgiliath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0300",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 21,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0301",
+      "positiveNormalOwner": "osgiliath",
+      "negativeNormalOwner": "north-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0301",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 27,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0302",
+      "positiveNormalOwner": "south-ithilien",
+      "negativeNormalOwner": "osgiliath",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0302",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 109,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0303",
+      "positiveNormalOwner": "west-harondor",
+      "negativeNormalOwner": "east-harondor",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0303",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 59,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0304",
+      "positiveNormalOwner": "west-harondor",
+      "negativeNormalOwner": "south-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0304",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 33,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0305",
+      "positiveNormalOwner": "east-harondor",
+      "negativeNormalOwner": "south-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0305",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 36,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 36,
+          "toSegment": 45,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0306",
+      "positiveNormalOwner": "south-ithilien",
+      "negativeNormalOwner": "north-ithilien",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0306",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 31,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0307",
+      "positiveNormalOwner": "north-ithilien",
+      "negativeNormalOwner": "dagorlad",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0307",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 34,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0308",
+      "positiveNormalOwner": "northern-rhovanion",
+      "negativeNormalOwner": "vale-of-the-carnen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0308",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 19,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0309",
+      "positiveNormalOwner": "vale-of-the-celduin",
+      "negativeNormalOwner": "northern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0309",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0310",
+      "positiveNormalOwner": "southern-rhovanion",
+      "negativeNormalOwner": "northern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0310",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 47,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0311",
+      "positiveNormalOwner": "vale-of-the-celduin",
+      "negativeNormalOwner": "vale-of-the-carnen",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0311",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 51,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0312",
+      "positiveNormalOwner": "southern-rhovanion",
+      "negativeNormalOwner": "vale-of-the-celduin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0312",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 29,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0313",
+      "positiveNormalOwner": "northern-dorwinion",
+      "negativeNormalOwner": "vale-of-the-celduin",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0313",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 40,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0314",
+      "positiveNormalOwner": "southern-rhovanion",
+      "negativeNormalOwner": "northern-dorwinion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0314",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 31,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0315",
+      "positiveNormalOwner": "southern-dorwinion",
+      "negativeNormalOwner": "southern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0315",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 15,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0316",
+      "positiveNormalOwner": "noman-lands",
+      "negativeNormalOwner": "southern-rhovanion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0316",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 39,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0317",
+      "positiveNormalOwner": "southern-dorwinion",
+      "negativeNormalOwner": "northern-dorwinion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0317",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 30,
+          "kind": "Passage"
+        },
+        {
+          "fromSegment": 30,
+          "toSegment": 58,
+          "kind": "Impassable"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0318",
+      "positiveNormalOwner": "noman-lands",
+      "negativeNormalOwner": "southern-dorwinion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0318",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 79,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0319",
+      "positiveNormalOwner": "ash-mountains",
+      "negativeNormalOwner": "southern-dorwinion",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0319",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 43,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0320",
+      "positiveNormalOwner": "dagorlad",
+      "negativeNormalOwner": "noman-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0320",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 29,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0321",
+      "positiveNormalOwner": "ash-mountains",
+      "negativeNormalOwner": "noman-lands",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0321",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 7,
+          "kind": "Passage"
+        }
+      ]
+    },
+    {
+      "id": "boundary-0322",
+      "positiveNormalOwner": "dagorlad",
+      "negativeNormalOwner": "ash-mountains",
+      "sourceReference": "MAP-13-BORDER-AUDIT/boundary-0322",
+      "parts": [
+        {
+          "fromSegment": 0,
+          "toSegment": 58,
+          "kind": "Passage"
+        }
+      ]
+    }
+  ]
+}

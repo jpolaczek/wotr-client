@@ -1,0 +1,2698 @@
+{
+  "Version": "map-profile-2",
+  "RecordedAt": "2026-10-14T11:57:53.432598Z",
+  "Unity": "6000.6.0f1",
+  "Development": true,
+  "Editor": false,
+  "Platform": "OSXPlayer",
+  "OS": "Mac OS X 15.6.1",
+  "CPU": "Apple M1 Pro",
+  "GPU": "Apple M1 Pro",
+  "MemoryMB": 16384,
+  "GraphicsAPI": "Metal",
+  "TargetFPS": -1,
+  "VSync": 0,
+  "Geometry": "contours-2",
+  "Borders": "borders-1",
+  "Texture": {
+    "width": 4096,
+    "height": 4096,
+    "Format": "DXT1",
+    "GraphicsFormat": "RGBA_DXT1_UNorm",
+    "Bytes": 11185272,
+    "mipmapCount": 13
+  },
+  "BorderCount": 233,
+  "InputPoints": 142997,
+  "GeometryMemory": {
+    "BoardContoursAndIndexesRetainedManagedBytes": 4685824,
+    "RenderBandsRetainedManagedBytes": 7471104,
+    "CoordinatePayloadBytes": 1143976,
+    "SourcePoints": 41232,
+    "BandPoints": 101765,
+    "Scope": "First-load retained managed heap deltas; coordinate payload excludes object/array headers. Native UIR buffers are not isolated by Unity's public API."
+  },
+  "Workload": "Real offline Player UI and TurnInteraction with server-generated safe projections, dense field/garrison, pointer and projection/metadata refresh. Only match ID and revision use a monotonic replay envelope; game data and legal options are unchanged. Network behavior is verified separately. Uncapped FPS is not monitor refresh; input-to-render excludes display latency.",
+  "Results": [
+    {
+      "Kind": "idle",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 888.87571358706373,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1250166752385364,
+          "P95": 2.0895833149552345,
+          "P99": 4.5494120568037033,
+          "Max": 7.4317106045782566
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1234378416666668,
+          "P95": 2.086917,
+          "P99": 5.173375,
+          "Max": 7.441459
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 34.944444444444443,
+          "P95": 51.0,
+          "P99": 51.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0138,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1033724
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 289552885,
+        "UnityAllocatedPeakBytes": 182794658,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 890.44158742039963,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1230382926037743,
+          "P95": 1.5000425046309829,
+          "P99": 2.5096726603806019,
+          "Max": 2.9978316742926836
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.12159258611111,
+          "P95": 1.49575,
+          "P99": 2.51225,
+          "Max": 2.953958
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1189.3888888888889,
+          "P95": 2578.0,
+          "P99": 9930.0,
+          "Max": 13386.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.19970027777777763,
+          "P95": 0.2573,
+          "P99": 0.2972,
+          "Max": 0.3149
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.9608708333333329,
+          "P95": 1.3081,
+          "P99": 2.3198,
+          "Max": 2.7353
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0233,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1035574
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 232425973,
+        "UnityAllocatedPeakBytes": 192807908,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 855.98126256367379,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1682498715041827,
+          "P95": 2.0447492133826017,
+          "P99": 6.6757937893271446,
+          "Max": 8.3009563386440277
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1669398972222225,
+          "P95": 2.059625,
+          "P99": 6.677125,
+          "Max": 8.3075
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 830.99166666666667,
+          "P95": 850.0,
+          "P99": 867.0,
+          "Max": 867.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.165256111111111,
+          "P95": 0.1979,
+          "P99": 0.2124,
+          "Max": 0.2343
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.86522166666666667,
+          "P95": 0.9767,
+          "P99": 6.4898,
+          "Max": 8.1092
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0385,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1035695
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 257593749,
+        "UnityAllocatedPeakBytes": 190271456,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pointer",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 869.71402164164476,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1498032400494493,
+          "P95": 2.1662486251443624,
+          "P99": 6.7390804179012775,
+          "Max": 7.5942957773804665
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1483947861111115,
+          "P95": 2.166917,
+          "P99": 6.742083,
+          "Max": 7.601625
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 76.544444444444451,
+          "P95": 131.0,
+          "P99": 290.0,
+          "Max": 1882.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.047634166666666707,
+          "P95": 0.0875,
+          "P99": 0.1107,
+          "Max": 0.1335
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.51152277777777766,
+          "P95": 0.9505,
+          "P99": 6.5812,
+          "Max": 7.2876
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0261,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1042464
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 247050645,
+        "UnityAllocatedPeakBytes": 185359736,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "projection",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 242.49179183186536,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 4.1238509247907338,
+          "P95": 6.8451245315372944,
+          "P99": 8.2116713747382164,
+          "Max": 14.038081280887127
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 4.1218964416666681,
+          "P95": 6.846041,
+          "P99": 8.207209,
+          "Max": 14.026125
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 281820.27222222224,
+          "P95": 296168.0,
+          "P99": 296168.0,
+          "Max": 345824.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 1.9959697222222215,
+          "P95": 4.4559,
+          "P99": 5.4583,
+          "Max": 6.3949
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 3.8558227777777772,
+          "P95": 6.3555,
+          "P99": 8.0288,
+          "Max": 13.7684
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0154,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1032776
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 229989013,
+        "UnityAllocatedPeakBytes": 187423920,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-fate",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 178.5712511425113,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6000055641763744,
+          "P95": 8.4426654502749443,
+          "P99": 9.21016838401556,
+          "Max": 10.682086460292339
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.5980977944444428,
+          "P95": 8.4335,
+          "P99": 9.213416,
+          "Max": 10.676458
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 405639.03611111111,
+          "P95": 414246.0,
+          "P99": 414246.0,
+          "Max": 414294.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 2.7416597222222219,
+          "P95": 5.4002,
+          "P99": 6.0519,
+          "Max": 7.7574
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.2865430555555539,
+          "P95": 7.952,
+          "P99": 8.6932,
+          "Max": 10.439
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0146,
+      "BorderRepaints": 4320,
+      "BorderBuilds": 4320,
+      "ExpectedBorderBuilds": 4320,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1040666
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 137382373,
+        "UnityAllocatedPeakBytes": 193953016,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-whitehand",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 173.01070971638262,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.7799890055321157,
+          "P95": 8.69133323431015,
+          "P99": 10.699001140892506,
+          "Max": 12.92283833026886
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.7780952166666681,
+          "P95": 8.697917,
+          "P99": 10.692084,
+          "Max": 12.922583
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 484627.31111111114,
+          "P95": 487740.0,
+          "P99": 487740.0,
+          "Max": 487740.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 3.0900313888888888,
+          "P95": 5.7285,
+          "P99": 6.5977,
+          "Max": 9.0738
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.47058611111111,
+          "P95": 8.116,
+          "P99": 10.4212,
+          "Max": 12.7283
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0154,
+      "BorderRepaints": 960,
+      "BorderBuilds": 960,
+      "ExpectedBorderBuilds": 960,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1047688
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 138492389,
+        "UnityAllocatedPeakBytes": 194508919,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-pan",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1068.3164909112331,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.93605219848945531,
+          "P95": 1.4202522579580545,
+          "P99": 2.1179139148443937,
+          "Max": 3.3773314207792282
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.93463461666666658,
+          "P95": 1.433416,
+          "P99": 2.117375,
+          "Max": 3.381625
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1161.6027777777779,
+          "P95": 2578.0,
+          "P99": 2650.0,
+          "Max": 2779.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.099634444444444484,
+          "P95": 0.1345,
+          "P99": 0.1489,
+          "Max": 0.216
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.69618111111111092,
+          "P95": 0.9393,
+          "P99": 1.0891,
+          "Max": 1.1842
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0273,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1052024
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 243821461,
+        "UnityAllocatedPeakBytes": 198243845,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-hover",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.0,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1084.8048757635715,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.9218247653027194,
+          "P95": 1.9383715698495507,
+          "P99": 2.1750000305473804,
+          "Max": 3.4944585058838129
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.92027163611111162,
+          "P95": 1.937875,
+          "P99": 2.169208,
+          "Max": 3.4875
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 38.169444444444444,
+          "P95": 66.0,
+          "P99": 66.0,
+          "Max": 382.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.018095555555555563,
+          "P95": 0.0426,
+          "P99": 0.0558,
+          "Max": 0.0661
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.18281527777777778,
+          "P95": 0.3663,
+          "P99": 0.5127,
+          "Max": 0.5648
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0211,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1042632
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 268991253,
+        "UnityAllocatedPeakBytes": 196151506,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "idle",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 861.10316410481471,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1613010399742052,
+          "P95": 2.0717545412480831,
+          "P99": 5.9610400348901749,
+          "Max": 11.504337191581726
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1598076777777777,
+          "P95": 2.071792,
+          "P99": 6.00975,
+          "Max": 11.517167
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 34.991666666666667,
+          "P95": 51.0,
+          "P99": 51.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0149,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1042526
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 253733205,
+        "UnityAllocatedPeakBytes": 234250074,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 773.53562536919537,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.2927652808785852,
+          "P95": 1.6979520441964269,
+          "P99": 2.7077877894043922,
+          "Max": 3.0089570209383965
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.2912643388888896,
+          "P95": 1.70125,
+          "P99": 2.708209,
+          "Max": 3.010958
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1813.6638888888888,
+          "P95": 3474.0,
+          "P99": 6290.0,
+          "Max": 19358.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.18049027777777787,
+          "P95": 0.2356,
+          "P99": 0.2656,
+          "Max": 0.2984
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1372683333333331,
+          "P95": 1.5374,
+          "P99": 2.5858,
+          "Max": 2.8682
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0301,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1041393
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 240965957,
+        "UnityAllocatedPeakBytes": 210618402,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 832.76531123258121,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.2008185097430315,
+          "P95": 2.1932539530098438,
+          "P99": 7.4286633171141148,
+          "Max": 8.6953304708004
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1995069388888893,
+          "P95": 2.198917,
+          "P99": 7.435542,
+          "Max": 8.7015
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 830.99166666666667,
+          "P95": 850.0,
+          "P99": 867.0,
+          "Max": 867.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.16765166666666684,
+          "P95": 0.2049,
+          "P99": 0.2203,
+          "Max": 0.2782
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.89005305555555492,
+          "P95": 0.9812,
+          "P99": 7.2215,
+          "Max": 8.5518
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0186,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1044533
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 258873349,
+        "UnityAllocatedPeakBytes": 211758698,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pointer",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 830.16703733679617,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.2045768562529702,
+          "P95": 2.2746245376765728,
+          "P99": 8.2257864996790886,
+          "Max": 11.418254114687443
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.2029962722222232,
+          "P95": 2.276,
+          "P99": 8.230375,
+          "Max": 11.424958
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 96.569444444444443,
+          "P95": 146.0,
+          "P99": 1810.0,
+          "Max": 1882.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.046230277777777773,
+          "P95": 0.0896,
+          "P99": 0.1182,
+          "Max": 0.1344
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.56673944444444446,
+          "P95": 1.0452,
+          "P99": 8.0977,
+          "Max": 11.2889
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.025,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1051302
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 248233045,
+        "UnityAllocatedPeakBytes": 207156066,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "projection",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 246.30528503544343,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 4.0600022035909609,
+          "P95": 7.0528769865632057,
+          "P99": 7.8332126140594482,
+          "Max": 8.7035363540053368
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 4.0583940833333347,
+          "P95": 7.055917,
+          "P99": 7.825458,
+          "Max": 8.708083
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 282323.51388888888,
+          "P95": 296652.0,
+          "P99": 296707.0,
+          "Max": 296923.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 1.9319383333333329,
+          "P95": 4.396,
+          "P99": 5.224,
+          "Max": 6.1515
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 3.7827491666666675,
+          "P95": 6.1929,
+          "P99": 7.3359,
+          "Max": 8.0884
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.015,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1042656
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 249323717,
+        "UnityAllocatedPeakBytes": 208765934,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-fate",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 176.23837224376243,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6741332053206861,
+          "P95": 8.5180411115288734,
+          "P99": 9.21899825334549,
+          "Max": 10.492333211004734
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6722110749999972,
+          "P95": 8.5285,
+          "P99": 9.225375,
+          "Max": 10.485917
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 406467.08333333331,
+          "P95": 415074.0,
+          "P99": 415074.0,
+          "Max": 415105.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 2.7172594444444425,
+          "P95": 5.3602,
+          "P99": 5.9702,
+          "Max": 7.4496
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.33880611111111,
+          "P95": 7.9558,
+          "P99": 8.5955,
+          "Max": 10.2658
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0148,
+      "BorderRepaints": 4320,
+      "BorderBuilds": 4320,
+      "ExpectedBorderBuilds": 4320,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1044558
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 143109093,
+        "UnityAllocatedPeakBytes": 212317710,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-whitehand",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 168.610537440462,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.9308274273967578,
+          "P95": 8.9515447616577148,
+          "P99": 10.247165337204933,
+          "Max": 11.686705984175205
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.9288486444444475,
+          "P95": 8.950125,
+          "P99": 10.23975,
+          "Max": 11.682792
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 485451.4527777778,
+          "P95": 488564.0,
+          "P99": 488564.0,
+          "Max": 488595.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 3.1302886111111117,
+          "P95": 5.8832,
+          "P99": 6.7911,
+          "Max": 8.7227
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.57120888888889,
+          "P95": 8.3985,
+          "P99": 10.0538,
+          "Max": 11.4426
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0149,
+      "BorderRepaints": 960,
+      "BorderBuilds": 960,
+      "ExpectedBorderBuilds": 960,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1050590
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 143194037,
+        "UnityAllocatedPeakBytes": 212368793,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-pan",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1085.5981693285696,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.92115114805185128,
+          "P95": 1.400503097102046,
+          "P99": 1.9394628470763564,
+          "Max": 2.0637116394937038
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.9200036194444452,
+          "P95": 1.39575,
+          "P99": 1.942334,
+          "Max": 2.063417
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1136.0111111111112,
+          "P95": 2762.0,
+          "P99": 2794.0,
+          "Max": 2843.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.096029722222222211,
+          "P95": 0.1294,
+          "P99": 0.1385,
+          "Max": 0.1621
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.70421000000000022,
+          "P95": 1.0003,
+          "P99": 1.1192,
+          "Max": 1.2769
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0391,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1049404
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 223353285,
+        "UnityAllocatedPeakBytes": 210223825,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-hover",
+      "Width": 1366,
+      "Height": 768,
+      "Scale": 1.25,
+      "WindowMode": "Windowed",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 1117.8606856746051,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 0.89456585495402885,
+          "P95": 1.9550807774066925,
+          "P99": 2.3742488119751215,
+          "Max": 3.1259567476809025
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 0.89298195277777725,
+          "P95": 1.956333,
+          "P99": 2.371958,
+          "Max": 3.135042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 36.977777777777774,
+          "P95": 66.0,
+          "P99": 66.0,
+          "Max": 66.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.020703888888888883,
+          "P95": 0.0489,
+          "P99": 0.0624,
+          "Max": 0.0725
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.20119111111111118,
+          "P95": 0.3831,
+          "P99": 0.5376,
+          "Max": 0.7123
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0203,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1040794
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 268548757,
+        "UnityAllocatedPeakBytes": 210191377,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "idle",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 584.37708560733108,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.7112238392453745,
+          "P95": 2.757249167189002,
+          "P99": 3.823540173470974,
+          "Max": 5.1015801727771759
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.7096334583333332,
+          "P95": 2.758167,
+          "P99": 3.81925,
+          "Max": 5.050041
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 35.463888888888889,
+          "P95": 51.0,
+          "P99": 51.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0156,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1043626
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 229315461,
+        "UnityAllocatedPeakBytes": 254465161,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 704.58703782361556,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4192710713056538,
+          "P95": 2.0542517304420471,
+          "P99": 2.6987458113580942,
+          "Max": 5.3917090408504009
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4182770499999995,
+          "P95": 2.054875,
+          "P99": 2.696791,
+          "Max": 5.391042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1702.5388888888888,
+          "P95": 3346.0,
+          "P99": 3658.0,
+          "Max": 7490.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.18951027777777776,
+          "P95": 0.2428,
+          "P99": 0.2662,
+          "Max": 0.2819
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1677672222222226,
+          "P95": 1.5264,
+          "P99": 2.5502,
+          "Max": 5.218
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0295,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1044996
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 157801749,
+        "UnityAllocatedPeakBytes": 237315861,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 611.60988163087052,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.6350291746978958,
+          "P95": 2.497208071872592,
+          "P99": 2.6043721009045839,
+          "Max": 2.7849560137838125
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.6342665611111105,
+          "P95": 2.4975,
+          "P99": 2.603625,
+          "Max": 2.78425
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 831.36944444444441,
+          "P95": 850.0,
+          "P99": 867.0,
+          "Max": 867.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.15621694444444445,
+          "P95": 0.1785,
+          "P99": 0.2,
+          "Max": 0.2056
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.76254250000000023,
+          "P95": 0.9098,
+          "P99": 0.9831,
+          "Max": 1.0541
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0203,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1044849
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 156373605,
+        "UnityAllocatedPeakBytes": 235875405,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pointer",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 609.392776368872,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.6409777712801263,
+          "P95": 2.5053359568119049,
+          "P99": 2.6658729184418917,
+          "Max": 2.7303288225084543
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.6402025472222215,
+          "P95": 2.512417,
+          "P99": 2.67525,
+          "Max": 2.727708
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 76.525,
+          "P95": 131.0,
+          "P99": 307.0,
+          "Max": 1882.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.044422222222222245,
+          "P95": 0.0851,
+          "P99": 0.0996,
+          "Max": 0.1134
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.4358255555555553,
+          "P95": 1.0598,
+          "P99": 1.2052,
+          "Max": 1.2597
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0218,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1051618
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 150997029,
+        "UnityAllocatedPeakBytes": 230339709,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "projection",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 248.09081215016153,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 4.03078208069524,
+          "P95": 7.0668295957148075,
+          "P99": 8.2220025360584259,
+          "Max": 9.29174479097128
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 4.0294562555555542,
+          "P95": 7.043083,
+          "P99": 8.229625,
+          "Max": 9.289541
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 282355.9138888889,
+          "P95": 296684.0,
+          "P99": 296739.0,
+          "Max": 296811.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 1.8794558333333347,
+          "P95": 2.8707,
+          "P99": 5.1344,
+          "Max": 6.5226
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 3.7284074999999972,
+          "P95": 4.9039,
+          "P99": 7.2767,
+          "Max": 8.4957
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0146,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1043893
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 151774821,
+        "UnityAllocatedPeakBytes": 231316681,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-fate",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 176.29752418749246,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6722294008876712,
+          "P95": 8.6051654070615768,
+          "P99": 9.4514172524213791,
+          "Max": 10.374659672379494
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6704522055555557,
+          "P95": 8.605458,
+          "P99": 9.451334,
+          "Max": 10.37525
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 406467.08333333331,
+          "P95": 415074.0,
+          "P99": 415074.0,
+          "Max": 415074.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 2.7034147222222238,
+          "P95": 5.2718,
+          "P99": 5.6497,
+          "Max": 6.3599
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.31483361111111,
+          "P95": 7.9038,
+          "P99": 8.4403,
+          "Max": 8.8599
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0148,
+      "BorderRepaints": 4320,
+      "BorderBuilds": 4320,
+      "ExpectedBorderBuilds": 4320,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1048248
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 156030389,
+        "UnityAllocatedPeakBytes": 235749005,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-whitehand",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 170.9820842931135,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.8485659718927412,
+          "P95": 9.022335521876812,
+          "P99": 10.440248996019363,
+          "Max": 11.461125686764717
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.84684425,
+          "P95": 9.021583,
+          "P99": 10.444292,
+          "Max": 11.45
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 485451.40555555554,
+          "P95": 488564.0,
+          "P99": 488564.0,
+          "Max": 488612.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 3.0442600000000004,
+          "P95": 5.7021,
+          "P99": 6.6598,
+          "Max": 8.6356
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.4743641666666649,
+          "P95": 8.1667,
+          "P99": 9.1851,
+          "Max": 11.3085
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0147,
+      "BorderRepaints": 960,
+      "BorderBuilds": 960,
+      "ExpectedBorderBuilds": 960,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1052196
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 155984261,
+        "UnityAllocatedPeakBytes": 235763689,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-pan",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 695.92920430052084,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.436927770555485,
+          "P95": 2.37970519810915,
+          "P99": 2.4907100014388561,
+          "Max": 2.5658730883151293
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4359783694444446,
+          "P95": 2.384791,
+          "P99": 2.497666,
+          "Max": 2.575291
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1258.9805555555556,
+          "P95": 2738.0,
+          "P99": 2834.0,
+          "Max": 2875.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.10180722222222222,
+          "P95": 0.1331,
+          "P99": 0.1559,
+          "Max": 0.1722
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.75081083333333443,
+          "P95": 1.0446,
+          "P99": 1.1418,
+          "Max": 1.2264
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.034,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1055180
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 159253765,
+        "UnityAllocatedPeakBytes": 238958965,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-hover",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.0,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 683.17553259821977,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4637526554805744,
+          "P95": 2.30783736333251,
+          "P99": 3.2507511787116528,
+          "Max": 3.3049958292394876
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4628439694444457,
+          "P95": 2.316834,
+          "P99": 3.25075,
+          "Max": 3.304958
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 36.608333333333334,
+          "P95": 51.0,
+          "P99": 66.0,
+          "Max": 83.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.019332777777777775,
+          "P95": 0.0412,
+          "P99": 0.0705,
+          "Max": 0.1167
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.21654861111111109,
+          "P95": 0.4025,
+          "P99": 0.7295,
+          "Max": 0.797
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0215,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1045238
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 157173589,
+        "UnityAllocatedPeakBytes": 236864233,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "idle",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 570.0968732915461,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.7540878521685954,
+          "P95": 2.7955782134085894,
+          "P99": 4.7183320857584476,
+          "Max": 6.6592544317245483
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.7529510722222221,
+          "P95": 2.845209,
+          "P99": 4.684458,
+          "Max": 6.628458
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 35.463888888888889,
+          "P95": 51.0,
+          "P99": 51.0,
+          "Max": 51.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": null,
+        "ToRenderEndMilliseconds": null
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0148,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1040860
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 174110997,
+        "UnityAllocatedPeakBytes": 254386541,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pan-zoom",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 722.04591839867953,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.3849534697429691,
+          "P95": 2.0544147118926048,
+          "P99": 2.9007936827838421,
+          "Max": 3.681292524561286
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.3838221111111098,
+          "P95": 2.060125,
+          "P99": 2.899917,
+          "Max": 3.686917
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1768.0694444444443,
+          "P95": 3410.0,
+          "P99": 6050.0,
+          "Max": 8058.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.17889194444444448,
+          "P95": 0.2299,
+          "P99": 0.2618,
+          "Max": 0.3014
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 1.1066022222222229,
+          "P95": 1.4421,
+          "P99": 2.6379,
+          "Max": 2.9252
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0368,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1039812
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 155235941,
+        "UnityAllocatedPeakBytes": 235211429,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "highlight",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 592.34257580871576,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.6882122623630695,
+          "P95": 2.5462515186518431,
+          "P99": 2.6442459784448147,
+          "Max": 2.8173753526061773
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.687459980555555,
+          "P95": 2.546042,
+          "P99": 2.64425,
+          "Max": 2.8125
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 831.41666666666663,
+          "P95": 850.0,
+          "P99": 867.0,
+          "Max": 867.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.16012805555555554,
+          "P95": 0.1853,
+          "P99": 0.198,
+          "Max": 0.2167
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.73747583333333366,
+          "P95": 0.8615,
+          "P99": 0.9442,
+          "Max": 0.9813
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0179,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1043001
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 156370053,
+        "UnityAllocatedPeakBytes": 236349053,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "pointer",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 586.70796492296461,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.7044254719318512,
+          "P95": 2.5682894047349691,
+          "P99": 2.8232922777533531,
+          "Max": 3.0609196983277798
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.7034340083333332,
+          "P95": 2.567959,
+          "P99": 2.735125,
+          "Max": 3.245833
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 96.841666666666669,
+          "P95": 146.0,
+          "P99": 1810.0,
+          "Max": 1899.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.056862222222222224,
+          "P95": 0.1166,
+          "P99": 0.14,
+          "Max": 0.2984
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.56406055555555545,
+          "P95": 1.5473,
+          "P99": 1.8825,
+          "Max": 2.5676
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0393,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1049770
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 151409413,
+        "UnityAllocatedPeakBytes": 231596265,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "projection",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 245.83440091561258,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 4.0677789449950472,
+          "P95": 6.9736680015921593,
+          "P99": 8.6411638185381889,
+          "Max": 9.7367484122514725
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 4.0665085666666672,
+          "P95": 6.981875,
+          "P99": 8.651625,
+          "Max": 9.737792
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 282321.71388888889,
+          "P95": 296652.0,
+          "P99": 296652.0,
+          "Max": 296700.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 1.8887141666666667,
+          "P95": 2.6557,
+          "P99": 4.8683,
+          "Max": 7.1108
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 3.7525311111111117,
+          "P95": 4.5216,
+          "P99": 6.8547,
+          "Max": 9.2489
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0146,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1040235
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 152531013,
+        "UnityAllocatedPeakBytes": 233209109,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-fate",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 175.93515459361902,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6839123614028928,
+          "P95": 8.57099611312151,
+          "P99": 9.6377478912472725,
+          "Max": 10.562415234744549
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.6819957527777776,
+          "P95": 8.577208,
+          "P99": 9.641334,
+          "Max": 10.562042
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 406467.08333333331,
+          "P95": 415074.0,
+          "P99": 415074.0,
+          "Max": 415122.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 2.658383888888888,
+          "P95": 5.3359,
+          "P99": 5.6523,
+          "Max": 5.701
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.2974424999999981,
+          "P95": 7.8786,
+          "P99": 8.3458,
+          "Max": 8.6044
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0148,
+      "BorderRepaints": 4320,
+      "BorderBuilds": 4320,
+      "ExpectedBorderBuilds": 4320,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1045547
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 156023653,
+        "UnityAllocatedPeakBytes": 236733941,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "override-whitehand",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 170.21927455023322,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 5.87477536044187,
+          "P95": 8.9813778176903725,
+          "P99": 9.74304135888815,
+          "Max": 11.39041967689991
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 5.8729957055555566,
+          "P95": 8.9805,
+          "P99": 9.74525,
+          "Max": 11.378041
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 485451.40555555554,
+          "P95": 488564.0,
+          "P99": 488564.0,
+          "Max": 488564.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 3.0564375000000008,
+          "P95": 5.6977,
+          "P99": 6.6961,
+          "Max": 8.5673
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 5.526005,
+          "P95": 8.1974,
+          "P99": 9.1794,
+          "Max": 11.1671
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0148,
+      "BorderRepaints": 960,
+      "BorderBuilds": 960,
+      "ExpectedBorderBuilds": 960,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1050026
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 155977525,
+        "UnityAllocatedPeakBytes": 236699169,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-pan",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 692.05133688752778,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4449795075860392,
+          "P95": 2.4083759635686874,
+          "P99": 2.5212513282895088,
+          "Max": 2.5872094556689262
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.444224533333333,
+          "P95": 2.414042,
+          "P99": 2.521834,
+          "Max": 2.585334
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 1134.5055555555555,
+          "P95": 2738.0,
+          "P99": 2794.0,
+          "Max": 2922.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.09541444444444451,
+          "P95": 0.1212,
+          "P99": 0.1345,
+          "Max": 0.1473
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.6811986111111108,
+          "P95": 0.9425,
+          "P99": 1.0172,
+          "Max": 1.1806
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.0294,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1049633
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 153833909,
+        "UnityAllocatedPeakBytes": 234459609,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    },
+    {
+      "Kind": "stress-hover",
+      "Width": 1920,
+      "Height": 1080,
+      "Scale": 1.25,
+      "WindowMode": "FullScreenWindow",
+      "Metrics": {
+        "WarmupFrames": 120,
+        "SampleFrames": 360,
+        "Fps": 692.780869810766,
+        "FrameMilliseconds": {
+          "Count": 360,
+          "Mean": 1.4434578718565818,
+          "P95": 2.3526714649051428,
+          "P99": 3.2186650205403566,
+          "Max": 3.6370465531945229
+        },
+        "MainThreadMilliseconds": {
+          "Count": 360,
+          "Mean": 1.442335530555557,
+          "P95": 2.35075,
+          "P99": 3.221917,
+          "Max": 3.676333
+        },
+        "GcBytesPerFrame": {
+          "Count": 360,
+          "Mean": 37.805555555555557,
+          "P95": 66.0,
+          "P99": 66.0,
+          "Max": 83.0
+        },
+        "MainThreadCounter": {
+          "Valid": true,
+          "Unit": "TimeNanoseconds"
+        },
+        "AllocationCounter": {
+          "Valid": true,
+          "Unit": "Bytes"
+        },
+        "HandlerMilliseconds": {
+          "Count": 360,
+          "Mean": 0.024773055555555555,
+          "P95": 0.0636,
+          "P99": 0.0982,
+          "Max": 0.1811
+        },
+        "ToRenderEndMilliseconds": {
+          "Count": 360,
+          "Mean": 0.28049416666666682,
+          "P95": 0.5797,
+          "P99": 0.817,
+          "Max": 2.6271
+        }
+      },
+      "InputPoints": 142997,
+      "LastUpdateMilliseconds": 0.02,
+      "BorderRepaints": 0,
+      "BorderBuilds": 0,
+      "ExpectedBorderBuilds": 0,
+      "GraphicsVertices": {
+        "CounterValid": true,
+        "Peak": 1040876
+      },
+      "Memory": {
+        "MeshMemory": {
+          "CounterValid": true,
+          "PeakBytes": 0,
+          "Scope": "Global Unity mesh counter, not map-only; unavailable when CounterValid is false."
+        },
+        "GraphicsDriverEstimatedPeakBytes": 153823557,
+        "UnityAllocatedPeakBytes": 234447701,
+        "Scope": "Whole Player memory including UI, resources and render buffers. Graphics driver bytes are an estimate, not exact map geometry allocation."
+      }
+    }
+  ],
+  "Screenshots": [
+    "whole-1366-1.00.png",
+    "override-fate-1366-1.00.png",
+    "override-whitehand-1366-1.00.png",
+    "stress-pan-1366-1.00.png",
+    "stress-hover-1366-1.00.png",
+    "maximum-zoom-1366-1.00.png",
+    "legend-1366-1.00.png",
+    "whole-1366-1.25.png",
+    "override-fate-1366-1.25.png",
+    "override-whitehand-1366-1.25.png",
+    "stress-pan-1366-1.25.png",
+    "stress-hover-1366-1.25.png",
+    "maximum-zoom-1366-1.25.png",
+    "legend-1366-1.25.png",
+    "whole-1920-1.00.png",
+    "override-fate-1920-1.00.png",
+    "override-whitehand-1920-1.00.png",
+    "stress-pan-1920-1.00.png",
+    "stress-hover-1920-1.00.png",
+    "maximum-zoom-1920-1.00.png",
+    "legend-1920-1.00.png",
+    "whole-1920-1.25.png",
+    "override-fate-1920-1.25.png",
+    "override-whitehand-1920-1.25.png",
+    "stress-pan-1920-1.25.png",
+    "stress-hover-1920-1.25.png",
+    "maximum-zoom-1920-1.25.png",
+    "legend-1920-1.25.png",
+    "morannon-before.png",
+    "morannon-after.png",
+    "minas-morgul-before.png",
+    "minas-morgul-after.png",
+    "erebor-before.png",
+    "erebor-after.png",
+    "moria-before.png",
+    "moria-after.png",
+    "high-pass-before.png",
+    "high-pass-after.png",
+    "grey-havens-before.png",
+    "grey-havens-after.png",
+    "nurn-before.png",
+    "nurn-after.png"
+  ]
+}

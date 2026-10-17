@@ -1,0 +1,155 @@
+/* UI-139: character cards in symbols. The roster row carries the level on the portrait and a status symbol with
+   the region; the inspector is a framed window with a status line, a strip of statistic symbols (level, move or
+   flight, combat level, leadership, nation), ability chips and, after a click, the ability's text on parchment.
+   Art: graphicalassets/ui/src/characters. Each symbol explains itself in its tooltip. */
+
+/* The inspector window, framed like the other board windows (frames/panel, header plate). */
+#board-screen .character-inspector {
+    padding: 6px 12px 12px 12px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .character-inspector > .character-header {
+    min-height: 30px;
+    margin: 0 0 4px 0;
+    padding: 0 2px 0 12px;
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .character-inspector > .character-header > .title {
+    font-size: 15px;
+    letter-spacing: 0.4px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#board-screen .character-inspector .character-header .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
+#board-screen .character-inspector .character-edition {
+    flex-shrink: 0;
+    margin: 0 6px 0 4px;
+    padding: 0 5px;
+    font-size: 11px;
+    color: rgb(229, 210, 158);
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgb(150, 124, 70);
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Status: symbol, region or short state, Locate. */
+.character-status { flex-direction: row; align-items: center; min-height: 26px; }
+.character-status-icon { width: 16px; height: 16px; flex-shrink: 0; margin-right: 5px; -unity-background-scale-mode: scale-to-fit; }
+.character-status-on-board { background-image: resource("Wotr/Art/UI/characters/on-board"); }
+.character-status-waiting { background-image: resource("Wotr/Art/UI/characters/waiting"); }
+.character-status-removed { background-image: resource("Wotr/Art/UI/characters/removed"); }
+.character-status-may-return { background-image: resource("Wotr/Art/UI/characters/may-return"); }
+.character-status-fellowship { background-image: resource("Wotr/Art/UI/icons/fellowship"); }
+#board-screen .character-inspector #character-state { font-size: 13px; color: rgb(236, 224, 190); }
+#board-screen .character-inspector .character-status .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; margin: 0; }
+
+/* Statistics: one recessed band of symbols with their numbers. */
+#board-screen .character-inspector .character-statistics {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 3px 0 5px 0;
+    padding: 4px 6px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.28);
+}
+.character-fact { flex-direction: row; align-items: center; margin-right: 12px; }
+.character-fact-icon { width: 20px; height: 20px; flex-shrink: 0; margin-right: 3px; -unity-background-scale-mode: scale-to-fit; }
+.character-fact-level .character-fact-icon { background-image: resource("Wotr/Art/UI/characters/level"); }
+.character-fact-movement .character-fact-icon { background-image: resource("Wotr/Art/UI/characters/movement"); }
+.character-fact-flight .character-fact-icon { background-image: resource("Wotr/Art/UI/characters/flight"); }
+.character-fact-combat .character-fact-icon { background-image: resource("Wotr/Art/UI/characters/combat"); }
+.character-fact-leadership .character-fact-icon { background-image: resource("Wotr/Art/UI/battle/leadership"); }
+.character-fact-nation .character-fact-icon { width: 22px; height: 22px; }
+.nation-emblem-free-peoples { background-image: resource("Wotr/Art/UI/characters/free-peoples"); }
+#board-screen .character-inspector .character-fact-value {
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(246, 236, 206);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+/* Abilities: chips with a scroll symbol; the chosen one unrolls its text on parchment. */
+.character-abilities { flex-direction: row; flex-wrap: wrap; align-items: center; }
+/* A chip is as wide as its symbol and title (children, so the title never elides). */
+#board-screen .character-inspector .character-ability {
+    flex-direction: row;
+    align-items: center;
+    height: 28px;
+    min-height: 28px;
+    margin: 1px 4px 2px 0;
+    padding: 0 9px 0 6px;
+    flex-shrink: 0;
+}
+.character-ability-icon { width: 16px; height: 16px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/characters/ability"); }
+#board-screen .character-inspector .character-ability-title {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    color: rgb(241, 227, 181);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+#board-screen .character-inspector .character-ability-text {
+    width: 100%;
+    margin: 3px 0 4px 0;
+    padding: 7px 10px 8px 10px;
+    font-size: 12px;
+    color: rgb(52, 36, 22);
+    white-space: normal;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .character-inspector .character-ability-pages .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
+
+/* Limits: the "why" symbol and a short word; the word's tooltip explains the actions and limits. */
+.character-limits-row { flex-direction: row; align-items: center; margin: 2px 0; }
+#board-screen .character-inspector #character-limits { margin: 0; padding: 0; font-size: 12px; color: rgb(223, 208, 168); }
+.character-limits-icon { width: 16px; height: 16px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/actions/why"); }
+
+/* Roster row: the level on the portrait, a status symbol beside the region or short state. */
+.character-roster-portrait { overflow: visible; }
+.character-roster-level {
+    position: absolute;
+    right: -4px;
+    bottom: -3px;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 0;
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(48, 30, 10);
+    background-image: resource("Wotr/Art/UI/characters/level");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.character-roster-line { flex-direction: row; align-items: center; height: 12px; }
+.character-roster-line > .character-status-icon { width: 11px; height: 11px; margin-right: 2px; }
+.character-roster-line > .character-roster-detail { flex-shrink: 1; min-width: 0; }

@@ -1,0 +1,81 @@
+/* DIST-07: the update notice over every screen — a lane under the notices (and under the test bar) that never
+   takes the pointer, with a compact bar centred in it. */
+.update-lane {
+    position: absolute;
+    top: 116px;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+}
+.update-notice {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 720px;
+    min-height: 40px;
+    padding: 2px 4px 2px 12px;
+    background-color: rgba(36, 33, 31, 0.96);
+    border-width: 1px;
+    border-color: rgb(172, 162, 122);
+    border-radius: 3px;
+    color: rgb(231, 228, 215);
+}
+.update-notice-text {
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 8px;
+    font-size: 15px;
+    white-space: normal;
+}
+.update-notice-control {
+    flex-shrink: 0;
+    height: 34px;
+    min-height: 34px;
+    margin: 0 2px;
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+/* The required-update window keeps the quit window's look; three actions in fixed places. */
+.update-window {
+    width: 560px;
+}
+.update-window .update-status {
+    white-space: normal;
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    color: rgb(240, 206, 128);
+}
+.update-window .quit-actions .action {
+    width: auto;
+    min-width: 128px;
+    padding: 0 12px;
+}
+
+/* Settings: the Updates section spans both columns under them. */
+.interface-settings-panel .settings-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-top-color: rgba(172, 162, 122, 0.5);
+}
+.interface-settings-panel .update-status {
+    margin: 4px 0 8px 0;
+    color: rgb(240, 206, 128);
+}
+.interface-settings-panel .update-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+}
+.interface-settings-panel .update-control {
+    min-width: 128px;
+    height: 36px;
+    min-height: 36px;
+    margin: 0 8px 6px 0;
+    padding: 0 12px;
+    font-size: 15px;
+}

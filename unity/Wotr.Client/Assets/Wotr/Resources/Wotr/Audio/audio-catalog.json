@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "cues": {
+    "UiClick": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/ui-click-1",
+        "Wotr/Audio/ui-click-2",
+        "Wotr/Audio/ui-click-3"
+      ],
+      "longestSeconds": 0.12
+    },
+    "CardInspect": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/card-inspect-1",
+        "Wotr/Audio/card-inspect-2",
+        "Wotr/Audio/card-inspect-3"
+      ],
+      "longestSeconds": 0.25
+    },
+    "CardMove": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/card-move-1",
+        "Wotr/Audio/card-move-2",
+        "Wotr/Audio/card-move-3"
+      ],
+      "longestSeconds": 0.32
+    },
+    "DiceRoll": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/dice-roll-1",
+        "Wotr/Audio/dice-roll-2"
+      ],
+      "longestSeconds": 0.55
+    },
+    "ActionAccepted": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/action-accepted-1",
+        "Wotr/Audio/action-accepted-2"
+      ],
+      "longestSeconds": 0.22
+    },
+    "BattleStarted": {
+      "channel": "Alerts",
+      "clips": [
+        "Wotr/Audio/battle-started-1",
+        "Wotr/Audio/battle-started-2"
+      ],
+      "longestSeconds": 0.9
+    },
+    "FellowshipAdvanced": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/fellowship-advanced-1",
+        "Wotr/Audio/fellowship-advanced-2",
+        "Wotr/Audio/fellowship-advanced-3"
+      ],
+      "longestSeconds": 0.4
+    },
+    "CorruptionChanged": {
+      "channel": "Effects",
+      "clips": [
+        "Wotr/Audio/corruption-changed-1",
+        "Wotr/Audio/corruption-changed-2",
+        "Wotr/Audio/corruption-changed-3"
+      ],
+      "longestSeconds": 0.4
+    },
+    "DecisionRequired": {
+      "channel": "Alerts",
+      "clips": [
+        "Wotr/Audio/decision-required-1"
+      ],
+      "longestSeconds": 0.75
+    },
+    "ActionFailed": {
+      "channel": "Alerts",
+      "clips": [
+        "Wotr/Audio/action-failed-1"
+      ],
+      "longestSeconds": 0.3
+    },
+    "Victory": {
+      "channel": "Alerts",
+      "clips": [
+        "Wotr/Audio/victory-1"
+      ],
+      "longestSeconds": 1.0
+    },
+    "Defeat": {
+      "channel": "Alerts",
+      "clips": [
+        "Wotr/Audio/defeat-1"
+      ],
+      "longestSeconds": 1.0
+    }
+  }
+}

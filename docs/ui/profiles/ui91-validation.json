@@ -1,0 +1,377 @@
+{
+  "task": "UI-91",
+  "date": "2026-10-10",
+  "commits": {
+    "checkpoint": "8abde8c",
+    "pointer": "32ea486",
+    "tests_and_docs": "5a9a35b"
+  },
+  "reports": {
+    "base-c1": {
+      "report": ".artifacts/ui91/base-c1.xml",
+      "total": 7,
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardGestureNetworkTests.CombatPlayAndDropKeepBothCardsSecretUntilReveal",
+        "Wotr.PlayTests.CardInteractionTests.AllCardTextsAndExcessHandFitWithoutScrollingAtBothSizesAndScales",
+        "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie",
+        "Wotr.PlayTests.HandDrawerTests.KeyboardEscapeAndPointerExitKeepSelectionAndPinnedPreviewIndependent"
+      ],
+      "sha256": "bbb44f70ddf11cda02ef814017ce0892edc220618237bf8b92f3a420abf67444"
+    },
+    "base-c2": {
+      "report": ".artifacts/ui91/base-c2.xml",
+      "total": 8,
+      "passed": 4,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HandDiscardDrawerTests.FreePeoplesCanCloseAndReopenExcessHandAcrossRefreshes",
+        "Wotr.PlayTests.HandDiscardDrawerTests.OpponentDecisionDoesNotOpenTheHandAndNewViewerResetsAttention",
+        "Wotr.PlayTests.HandDiscardDrawerTests.ShadowCanCloseAndReopenExcessHandAcrossRefreshes",
+        "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision"
+      ],
+      "sha256": "ce78e47b46c576eca6eb7782947df64399d0282e05f0ccf615d18f62a90a46d0"
+    },
+    "base-c3": {
+      "report": ".artifacts/ui91/base-c3.xml",
+      "total": 5,
+      "passed": 4,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect"
+      ],
+      "sha256": "8a621803458c4a82fe12c3a280b80f631886c3a1784a4cfc30b154014da8c107"
+    },
+    "base-c4": {
+      "report": ".artifacts/ui91/base-c4.xml",
+      "total": 9,
+      "passed": 8,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint"
+      ],
+      "sha256": "e92f00bbfdd2c4f7e3ba4b60c39c1765a018dff386e2b51b9488f0544b8a6fbb"
+    },
+    "base-c5": {
+      "report": ".artifacts/ui91/base-c5.xml",
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "5f1348cf4b0fd2fe68d2954922fdb1fd39dfc561e100eb19e1d1cb604a4f5243"
+    },
+    "base-c6": {
+      "report": ".artifacts/ui91/base-c6.xml",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "6859b704c9bd0a7dc61cf37b58fbe34e16d4509e4465727e920b6a64c34dfc46"
+    },
+    "base-c7": {
+      "report": ".artifacts/ui91/base-c7.xml",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients"
+      ],
+      "sha256": "95fbd6a7cce62a99fbb1b69152f6c0bb8e7cfa67340a72f249194ac87d462708"
+    },
+    "editor-art1": {
+      "report": ".artifacts/ui91/editor-art1.xml",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "28965f882944bba2c6ff9ed75b11406598244856f4bd893714a07f4f2f09ed71"
+    },
+    "editor-full": {
+      "report": ".artifacts/ui91/editor-full.xml",
+      "total": 619,
+      "passed": 619,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "9c2798b907c6f80c7c6901d4338b12ee84bd2cdf6e8e1777b1aa079b23f1af99"
+    },
+    "hand-debug": {
+      "report": ".artifacts/ui91/hand-debug.xml",
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HandCardLayoutTests.FirstClickArmsAndOnlyTheSecondClickDiscards"
+      ],
+      "sha256": "40f1ccd432843323d9f0bfb9d20bb457bd2c96bbe5d51a9c9700cf9872118322"
+    },
+    "hand1": {
+      "report": ".artifacts/ui91/hand1.xml",
+      "total": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HandCardLayoutTests.CardsUnrollUpwardOverTheOthersWithoutMovingThemInFourLayouts",
+        "Wotr.PlayTests.HandCardLayoutTests.FirstClickArmsAndOnlyTheSecondClickDiscards"
+      ],
+      "sha256": "f0541141c455b389abbf5388083aff4e5fb7b145b251160eade20905ad692cf2"
+    },
+    "hand2": {
+      "report": ".artifacts/ui91/hand2.xml",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "3dbfb9866e7730e065728a44698be06f3165e25119e50fc3b3dba1262db21df5"
+    },
+    "hand3": {
+      "report": ".artifacts/ui91/hand3.xml",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "20d0668dbdddeba1bcdee2b61b384f823334ae85333f56ef31991bd739dee48f"
+    },
+    "reg1-c1": {
+      "report": ".artifacts/ui91/reg1-c1.xml",
+      "total": 7,
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardGestureNetworkTests.CombatPlayAndDropKeepBothCardsSecretUntilReveal",
+        "Wotr.PlayTests.CardInteractionTests.AllCardTextsAndExcessHandFitWithoutScrollingAtBothSizesAndScales",
+        "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie",
+        "Wotr.PlayTests.HandDrawerTests.KeyboardEscapeAndPointerExitKeepSelectionAndPinnedPreviewIndependent"
+      ],
+      "sha256": "5f4653f43d4d5704c5f0dc755a88cd27ac61fa75c8405e0a4466b69eea1de590"
+    },
+    "reg1-c2": {
+      "report": ".artifacts/ui91/reg1-c2.xml",
+      "total": 8,
+      "passed": 1,
+      "failed": 7,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardServerCompatibilityTests.LegacyDiscardOptionExplainsBothDoubleClickSurfacesWithoutPosting",
+        "Wotr.PlayTests.EngineHandDiscardNetworkTests.MiniatureDoubleClicksAfterAnotherControlDiscardBothHandsAtFourLayouts",
+        "Wotr.PlayTests.EngineHandDiscardNetworkTests.PreviewContentDoubleClicksDiscardBothHandsAtFourLayouts",
+        "Wotr.PlayTests.HandDiscardDrawerTests.FreePeoplesCanCloseAndReopenExcessHandAcrossRefreshes",
+        "Wotr.PlayTests.HandDiscardDrawerTests.OpponentDecisionDoesNotOpenTheHandAndNewViewerResetsAttention",
+        "Wotr.PlayTests.HandDiscardDrawerTests.ShadowCanCloseAndReopenExcessHandAcrossRefreshes",
+        "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision"
+      ],
+      "sha256": "42ff483cd305e18c7c05f9ee6e6142d42758c3714eb15434b0fbaed63786f046"
+    },
+    "reg1-c3": {
+      "report": ".artifacts/ui91/reg1-c3.xml",
+      "total": 5,
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect",
+        "Wotr.PlayTests.MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics"
+      ],
+      "sha256": "693d053b4ab9b7da509154b54afa69cf46f386ae5815928d3775baa74679a503"
+    },
+    "reg1-c4": {
+      "report": ".artifacts/ui91/reg1-c4.xml",
+      "total": 9,
+      "passed": 7,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint",
+        "Wotr.PlayTests.RuntimeTooltipTests.RichSourcesExposeMetadataWhileTerrainAndTextFieldsStaySilent"
+      ],
+      "sha256": "d600e4c531a41536745d06775f01f9b4975783a996f6bab40f91492a92d2639a"
+    },
+    "reg1-c5": {
+      "report": ".artifacts/ui91/reg1-c5.xml",
+      "total": 14,
+      "passed": 11,
+      "failed": 3,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BoardMenuNetworkTests.GamesDuringLostReceiptReturnsWithTheExactCommandAndNoSecondCost",
+        "Wotr.PlayTests.BoardMenuNetworkTests.TravelCardBattleHuntAndSetupDraftsSurviveSettingsHelpAndGamesWithoutSubmission",
+        "Wotr.PlayTests.ReturnRecoveryTests.NewClientRecoversLostReplyAfterServerProcessRestartWithoutSpendingAgain"
+      ],
+      "sha256": "f9eb0f3abb07415cd3e76334604826b256cfc906e315aedd2080b719c620c58c"
+    },
+    "reg1-c6": {
+      "report": ".artifacts/ui91/reg1-c6.xml",
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.TurnLayoutTests.RingHuntAndEightCardsFitWithTenDiceAndNoScroll"
+      ],
+      "sha256": "580113924d088b1950aaaf34ffb3667d94d29084bd22e16da734d0c1be3133be"
+    },
+    "reg1-c7": {
+      "report": ".artifacts/ui91/reg1-c7.xml",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients"
+      ],
+      "sha256": "f7b188828267b3e0f413e67044f4454e709a717b81ec5102d02fb70b59e1dfb7"
+    },
+    "reg2-c1": {
+      "report": ".artifacts/ui91/reg2-c1.xml",
+      "total": 7,
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardGestureNetworkTests.CombatPlayAndDropKeepBothCardsSecretUntilReveal",
+        "Wotr.PlayTests.CardInteractionTests.AllCardTextsAndExcessHandFitWithoutScrollingAtBothSizesAndScales",
+        "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie",
+        "Wotr.PlayTests.HandDrawerTests.KeyboardEscapeAndPointerExitKeepSelectionAndPinnedPreviewIndependent"
+      ],
+      "sha256": "f1198e2bf2de08832080752bcffab3fa7ed65d8b641fc4150951ba1cf2bf3995"
+    },
+    "reg2-c2": {
+      "report": ".artifacts/ui91/reg2-c2.xml",
+      "total": 8,
+      "passed": 3,
+      "failed": 5,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EngineHandDiscardNetworkTests.MiniatureDoubleClicksAfterAnotherControlDiscardBothHandsAtFourLayouts",
+        "Wotr.PlayTests.HandDiscardDrawerTests.FreePeoplesCanCloseAndReopenExcessHandAcrossRefreshes",
+        "Wotr.PlayTests.HandDiscardDrawerTests.OpponentDecisionDoesNotOpenTheHandAndNewViewerResetsAttention",
+        "Wotr.PlayTests.HandDiscardDrawerTests.ShadowCanCloseAndReopenExcessHandAcrossRefreshes",
+        "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision"
+      ],
+      "sha256": "9d2bc9b49a22125b405c85148986bab9860637b82b4fdfc01a74f1842440cc98"
+    },
+    "reg2-c3": {
+      "report": ".artifacts/ui91/reg2-c3.xml",
+      "total": 5,
+      "passed": 4,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect"
+      ],
+      "sha256": "6bf28fe116cd7f23589150f27ca6f28a2aaee7236607fbb3b4c3000391668b61"
+    },
+    "reg2-c4": {
+      "report": ".artifacts/ui91/reg2-c4.xml",
+      "total": 9,
+      "passed": 8,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint"
+      ],
+      "sha256": "4ec7ecd6eb5029d94ebacbb4081494da7a7f379c801ba66e9f309564f9940a59"
+    },
+    "reg2-c5": {
+      "report": ".artifacts/ui91/reg2-c5.xml",
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "bc93a78c193d081f10bf6ba5f633154600a3c55e03147c1f7aa1fb178bc89ca0"
+    },
+    "reg2-c6": {
+      "report": ".artifacts/ui91/reg2-c6.xml",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "f0b2f151afaa55900fe219d0d980883050fb577707328be37cad4b2236b194ad"
+    },
+    "reg2-c7": {
+      "report": ".artifacts/ui91/reg2-c7.xml",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients"
+      ],
+      "sha256": "37f13b292501f7fc92c2090f46775828e33616ece5275772354904e80f371d0f"
+    },
+    "reg2-c8": {
+      "report": ".artifacts/ui91/reg2-c8.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "9ea97795bb8db20dd5feab692c3d5271b1a16e13b62fb469908ec56dff4d0de8"
+    },
+    "reg3-a": {
+      "report": ".artifacts/ui91/reg3-a.xml",
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie"
+      ],
+      "sha256": "3dc9ced61ac8be53d389b4a8bbb357f7fb772aa9037a6422ca7fff76c5f3e64b"
+    },
+    "reg3-b": {
+      "report": ".artifacts/ui91/reg3-b.xml",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect"
+      ],
+      "sha256": "71cfb4d1fe4b0bac8059d07767a961c63fab9933e93168100a28bffa75156095"
+    }
+  },
+  "notes": {
+    "hand1": "Help link check counted the hidden drawer header; armed second click lost to VisualElement.Contains excluding the slot itself (fixed).",
+    "hand-debug": "Diagnostic run with temporary logging, removed afterwards.",
+    "reg1/reg2": "New failures came from tests relying on the removed Cards tab, the click-opened preview or the card tooltip; adapted. Deck backs overflowed by margins (TurnLayout), fixed.",
+    "pre_existing": "Remaining failures match base-c*.xml on c9a67f2 (same message or same failure point)."
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "inputs_sha256": "a7482a0809438f03162e7d810fae94e87833e54fadd0dc4545b7ec181584c48b",
+      "repository_commit_at_build": "5a9a35b8a2c16d656c957276e79da7742b887447",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui91/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui91/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui91/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    },
+    "BuildLocalWindows": {
+      "inputs_sha256": "a7482a0809438f03162e7d810fae94e87833e54fadd0dc4545b7ec181584c48b",
+      "repository_commit_at_build": "5a9a35b8a2c16d656c957276e79da7742b887447",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui91/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows"
+    }
+  },
+  "smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui91.smoke",
+    "original_profile_byte_identical": true,
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 872
+  }
+}

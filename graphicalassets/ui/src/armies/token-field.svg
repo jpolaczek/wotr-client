@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+  <!-- Whole-map token of a field army (UI-125): gilt-rimmed enamel disc of its side (free/shadow).
+       Code draws the nation emblem and the count on it. Selected and eligible light the outer ring; moved veils it. -->
+  <circle cx="15" cy="15" r="14.2" fill="none" style="stroke: var(--army-glow); opacity: var(--glow-opacity)" stroke-width="1.6" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <circle cx="15" cy="15" r="12.6" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="15" cy="15" r="11" fill="url(#gilt-bevel)"/>
+    <circle cx="15" cy="15" r="10.2" style="fill: var(--ink)"/>
+    <circle cx="15" cy="15" r="9.7" fill="url(#enamel-dome)"/>
+    <path d="M8.2 11.8 A7.7 7.7 0 0 1 18.4 6.4" fill="none" stroke="#fff" stroke-opacity="0.12" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+  <circle cx="15" cy="15" r="12.8" style="fill: var(--ink); opacity: var(--army-veil-opacity)"/>
+</svg>

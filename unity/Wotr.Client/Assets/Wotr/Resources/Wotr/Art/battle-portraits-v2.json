@@ -1,0 +1,106 @@
+{
+  "schema": "board-figures-1",
+  "width": 2048,
+  "height": 512,
+  "coordinates": "normalized bottom-left; separate non-overlapping bounds",
+  "cells": [
+    {
+      "name": "gandalf-grey",
+      "x": 0.0,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "strider",
+      "x": 0.080078125,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "boromir",
+      "x": 0.16015625,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "legolas",
+      "x": 0.240234375,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "gimli",
+      "x": 0.3203125,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "merry",
+      "x": 0.400390625,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "pippin",
+      "x": 0.48046875,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "gandalf-white",
+      "x": 0.560546875,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "aragorn",
+      "x": 0.640625,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "gollum",
+      "x": 0.720703125,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "ring-bearers",
+      "x": 0.80078125,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "saruman",
+      "x": 0.880859375,
+      "y": 0.6875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "mouth-of-sauron",
+      "x": 0.0,
+      "y": 0.3671875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "witch-king",
+      "x": 0.080078125,
+      "y": 0.3671875,
+      "width": 0.078125,
+      "height": 0.3125
+    }
+  ]
+}

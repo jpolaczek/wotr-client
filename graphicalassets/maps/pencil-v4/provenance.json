@@ -1,0 +1,39 @@
+{
+  "task": "MAP-06",
+  "mode": "built-in imagegen",
+  "selected": {
+    "file": "background-clean.png",
+    "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-41c41e13-ac2d-4a2a-9106-53cc135cc17e.png",
+    "prompt": "background-cleanup.prompt.txt",
+    "input": "background-target.png"
+  },
+  "first_trial": {
+    "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-998ee25b-a0cf-416d-b93c-54c44a690ad4.png",
+    "prompt": "remove-rivers.prompt.txt",
+    "input": "terrain-target.png",
+    "used": false,
+    "reason": "Final edit uses background without the four separate forest layers to preserve those layers exactly."
+  },
+  "local_cleanup": {
+    "file": "rhun-clean.png",
+    "source": "/Users/developer/.codex/generated_images/01a10e07-6926-7ba0-a2d1-0b6a57120f06/exec-73672259-a250-47f0-a165-765ddab7f20a.png",
+    "prompt": "rhun-cleanup.prompt.txt",
+    "input": "rhun-target.png",
+    "input_crop_from_terrain_target": [
+      1410,
+      500,
+      210,
+      210
+    ],
+    "input_resized_to": [
+      840,
+      840
+    ],
+    "placement_in_svg": [
+      1745,
+      540,
+      210,
+      210
+    ]
+  }
+}

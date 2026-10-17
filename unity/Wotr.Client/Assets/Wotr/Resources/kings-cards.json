@@ -1,0 +1,192 @@
+[
+  {
+    "id": "kings.fp.character.23",
+    "title": "House of the Stewards",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "KINGS 1.0; 23*/24",
+    "replaces": "base.fp.character.23",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.character.25",
+    "title": "Aid in Time of Need",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "KINGS 1.0; KM 25/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.character.26",
+    "title": "It Is Not So Dark Here",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "KINGS 1.0; KM 26/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.strategy.08",
+    "title": "Wisdom of Elrond",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 8*/24",
+    "replaces": "base.fp.strategy.08",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.strategy.16",
+    "title": "Riders of Théoden",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 16*/24",
+    "replaces": "base.fp.strategy.16",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.strategy.19",
+    "title": "King Brand’s Men",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 19*/24",
+    "replaces": "base.fp.strategy.19",
+    "excludedWithFate": true
+  },
+  {
+    "id": "kings.fp.strategy.22",
+    "title": "Dáin Ironfoot’s Guard",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 22*/24",
+    "replaces": "base.fp.strategy.22",
+    "excludedWithFate": true
+  },
+  {
+    "id": "kings.fp.strategy.24",
+    "title": "Thranduil’s Archers",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 24*/24",
+    "replaces": "base.fp.strategy.24",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.strategy.25",
+    "title": "Ever at Your Service",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; KM 25/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.fp.strategy.26",
+    "title": "Men of Little Villages",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; KM 26/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.character.25",
+    "title": "Your Welcome Is Doubtful",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "KINGS 1.0; KM 25/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.character.26",
+    "title": "The West Has Failed",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "KINGS 1.0; KM 26/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.01",
+    "title": "Return to Valinor",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "KINGS 1.0; 1*/24",
+    "replaces": "base.sh.strategy.01",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.03",
+    "title": "Denethor’s Folly",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "KINGS 1.0; 3*/24",
+    "replaces": "base.sh.strategy.03",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.05",
+    "title": "Threats and Promises",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 5*/24",
+    "replaces": "base.sh.strategy.05",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.06",
+    "title": "Stormcrow",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 6*/24",
+    "replaces": "base.sh.strategy.06",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.18",
+    "title": "The King Is Revealed",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; 18*/24",
+    "replaces": "base.sh.strategy.18",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.25",
+    "title": "The Palantír of Barad-dûr",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; KM 25/24",
+    "replaces": "",
+    "excludedWithFate": false
+  },
+  {
+    "id": "kings.sh.strategy.26",
+    "title": "Work of the Enemy",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "KINGS 1.0; KM 26/24",
+    "replaces": "",
+    "excludedWithFate": false
+  }
+]

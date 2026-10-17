@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="44" viewBox="0 0 64 44">
+  <!-- 9-slice inset panel for grouped counters. Slices (points): 14 on every side. -->
+  <defs>
+    <linearGradient id="cartouche-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--ink); stop-opacity: 0.82"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark); stop-opacity: 0.74"/>
+    </linearGradient>
+  </defs>
+  <path d="M6 1 H58 L63 6 V38 L58 43 H6 L1 38 V6 Z" fill="url(#cartouche-fill)"/>
+  <g filter="url(#engrave)" fill="none">
+    <path d="M6 1 H58 L63 6 V38 L58 43 H6 L1 38 V6 Z" stroke="url(#gilt)" stroke-width="1.2"/>
+    <path d="M7.4 4 H56.6 L60 7.4 V36.6 L56.6 40 H7.4 L4 36.6 V7.4 Z" style="stroke: var(--gilt-mid)" stroke-width="0.7"/>
+    <g style="fill: var(--gilt-light); stroke: var(--gilt-edge)" stroke-width="0.3">
+      <path d="M4.2 1.4 L6 3.2 L4.2 5 L2.4 3.2 Z"/>
+      <path d="M59.8 1.4 L61.6 3.2 L59.8 5 L58 3.2 Z"/>
+      <path d="M4.2 39 L6 40.8 L4.2 42.6 L2.4 40.8 Z"/>
+      <path d="M59.8 39 L61.6 40.8 L59.8 42.6 L58 40.8 Z"/>
+    </g>
+  </g>
+</svg>

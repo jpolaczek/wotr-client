@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="336" height="88" viewBox="0 0 336 88">
+  <!-- UI-120 painted-style strip for the relief battle: seamless at x=0/336, displayed 168x44 pt, repeated horizontally. -->
+  <defs>
+    <linearGradient id="relief-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121e24"/><stop offset="0.55" stop-color="#27434f"/><stop offset="1" stop-color="#5d7571"/></linearGradient>
+    <linearGradient id="relief-far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c4f49"/><stop offset="1" stop-color="#2b3a33"/></linearGradient>
+    <linearGradient id="relief-ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55653a"/><stop offset="1" stop-color="#2d3a22"/></linearGradient>
+    <linearGradient id="relief-stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c7f84"/><stop offset="1" stop-color="#43464c"/></linearGradient>
+    <linearGradient id="relief-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.5"/></linearGradient>
+  </defs>
+  <rect width="336" height="88" fill="url(#relief-sky)"/>
+  <g fill="#f4ecd0" opacity="0.5"><circle cx="40" cy="12" r="1"/><circle cx="110" cy="20" r="0.8"/><circle cx="190" cy="9" r="1.1"/><circle cx="260" cy="18" r="0.8"/><circle cx="310" cy="11" r="1"/></g>
+  <path d="M0 40 C30 30 60 34 90 38 C130 44 160 26 200 32 C240 38 280 28 336 40 V88 H0 Z" fill="url(#relief-far)" opacity="0.9"/>
+  <g fill="#e9e3cf" opacity="0.10"><ellipse cx="70" cy="22" rx="26" ry="5"/><ellipse cx="230" cy="16" rx="34" ry="6"/></g>
+  <path d="M0 62 C40 52 70 54 110 60 C150 66 190 48 230 56 C270 64 300 52 336 62 V88 H0 Z" fill="#3b4a2b"/>
+  <path d="M18 62 L23 46 L28 62 Z M19 56 L23 42 L27 56 Z" fill="#1f2d1c"/><path d="M96 62 L101 46 L106 62 Z M97 56 L101 42 L105 56 Z" fill="#1f2d1c"/><path d="M150 62 L155 46 L160 62 Z M151 56 L155 42 L159 56 Z" fill="#1f2d1c"/><path d="M250 62 L255 46 L260 62 Z M251 56 L255 42 L259 56 Z" fill="#1f2d1c"/><path d="M300 62 L305 46 L310 62 Z M301 56 L305 42 L309 56 Z" fill="#1f2d1c"/>
+  <path d="M0 74 C46 66 90 68 126 76 C166 84 206 66 252 72 C292 78 316 70 336 74 V88 H0 Z" fill="url(#scene-relief-ground)"/>
+  <path d="M0 84 C50 78 110 82 170 74 C230 66 280 70 336 66" fill="none" stroke="#8a7452" stroke-width="4" opacity="0.85"/>
+  <rect x="60" y="48" width="1.4" height="16" fill="#f0e0b0"/><path d="M61.4 48 L70 51 L61.4 54 Z" fill="#e8b85a"/><rect x="130" y="44" width="1.4" height="18" fill="#f0e0b0"/><path d="M131.4 44 L140 47 L131.4 50 Z" fill="#e8b85a"/><rect x="205" y="50" width="1.4" height="14" fill="#f0e0b0"/><path d="M206.4 50 L215 53 L206.4 56 Z" fill="#e8b85a"/><rect x="290" y="46" width="1.4" height="16" fill="#f0e0b0"/><path d="M291.4 46 L300 49 L291.4 52 Z" fill="#e8b85a"/>
+  <rect y="58" width="336" height="30" fill="url(#relief-shade)"/>
+</svg>

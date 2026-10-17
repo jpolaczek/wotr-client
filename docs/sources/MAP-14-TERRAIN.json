@@ -1,0 +1,30 @@
+{
+  "version": "terrain-2",
+  "source": "graphicalassets/maps/parchment-v4/map-composition.svg",
+  "sourceHash": "78131c840820d11c1c7760b6c92a568f26b7c71faf9d4f20c76acf1051661913",
+  "compositionHash": "66c36db0dcf07e3f33d8015bf65bc6583b17b80ec9012ef20a40fb01e9d035a4",
+  "removedLayers": {
+    "regions": 105,
+    "boundaries": 323
+  },
+  "preservedMap10Patches": [
+    "black-gate",
+    "erebor"
+  ],
+  "paperAndTerrainUnchanged": true,
+  "sourceViewBox": [
+    335,
+    40,
+    1632,
+    1338
+  ],
+  "pngSize": [4096, 4096],
+  "pngScale": [2.5098039215686274, 3.0612855007473843],
+  "pngOffset": [0, 0],
+  "preserveAspectRatio": "none (restored by the runtime map quad)",
+  "output": "graphicalassets/maps/terrain-map14/MapTerrain.png",
+  "outputHash": "025f5dab6fd8ad221bf9a255155f7e2029a4c14a35264a22553cab2b860e159c",
+  "pngBytes": 26349812,
+  "renderer": "@resvg/resvg-js (existing pencil-v2/render_svg.cjs)",
+  "newGeography": false
+}

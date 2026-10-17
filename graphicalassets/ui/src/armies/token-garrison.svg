@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="34" viewBox="0 0 30 34">
+  <!-- Whole-map token of a garrison (UI-125): the field token crowned with three merlons, in the enamel of its side.
+       Code draws the nation emblem and the count on the disc. Selected and eligible light the outer ring; moved veils it. -->
+  <circle cx="15" cy="19" r="14.2" fill="none" style="stroke: var(--army-glow); opacity: var(--glow-opacity)" stroke-width="1.6" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <path d="M6.4 9.6 L6.4 3.2 L10.6 3.2 L10.6 6.2 L12.9 6.2 L12.9 2.2 L17.1 2.2 L17.1 6.2 L19.4 6.2 L19.4 3.2 L23.6 3.2 L23.6 9.6 Z"
+          fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="15" cy="19" r="12.6" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="15" cy="19" r="11" fill="url(#gilt-bevel)"/>
+    <circle cx="15" cy="19" r="10.2" style="fill: var(--ink)"/>
+    <circle cx="15" cy="19" r="9.7" fill="url(#enamel-dome)"/>
+    <path d="M8.2 15.8 A7.7 7.7 0 0 1 18.4 10.4" fill="none" stroke="#fff" stroke-opacity="0.12" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+  <path d="M6 9.8 L6 2 L24 2 L24 9.8 A12.8 12.8 0 1 1 6 9.8 Z" style="fill: var(--ink); opacity: var(--army-veil-opacity)"/>
+</svg>

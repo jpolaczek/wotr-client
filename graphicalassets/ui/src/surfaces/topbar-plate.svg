@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="56" viewBox="0 0 168 56">
+  <!-- Seamless horizontal tile of dark lacquered wood; stretched to the bar height. -->
+  <defs>
+    <linearGradient id="plate-base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--plate-top)"/>
+      <stop offset="0.5" style="stop-color: var(--plate-mid)"/>
+      <stop offset="1" style="stop-color: var(--plate-bottom)"/>
+    </linearGradient>
+    <linearGradient id="plate-lower-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.32"/>
+    </linearGradient>
+    <!-- Noise tiles stitch at the 168 x 56 boundary so the plate repeats without seams. -->
+    <filter id="plate-fibers-dark" x="0" y="0" width="168" height="56" filterUnits="userSpaceOnUse">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0179 0.31" numOctaves="2" seed="5" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.02  0 0 0 0 0.04  0 0 0 0 0.05  -0.9 0 0 0 0.42"/>
+    </filter>
+    <filter id="plate-fibers-light" x="0" y="0" width="168" height="56" filterUnits="userSpaceOnUse">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0238 0.42" numOctaves="3" seed="11" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.86  0 0 0 0 0.80  0 0 0 0 0.62  0.55 0 0 0 -0.30"/>
+    </filter>
+    <filter id="plate-speckle" x="0" y="0" width="168" height="56" filterUnits="userSpaceOnUse">
+      <feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="1" seed="3" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.9  0 0 0 0 0.86  0 0 0 0 0.7  0.35 0 0 0 -0.14"/>
+    </filter>
+  </defs>
+  <rect width="168" height="56" fill="url(#plate-base)"/>
+  <rect width="168" height="56" filter="url(#plate-fibers-dark)"/>
+  <rect width="168" height="56" filter="url(#plate-fibers-light)"/>
+  <rect width="168" height="56" filter="url(#plate-speckle)"/>
+  <rect y="34" width="168" height="22" fill="url(#plate-lower-shade)"/>
+</svg>

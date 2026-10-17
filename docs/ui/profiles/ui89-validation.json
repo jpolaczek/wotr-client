@@ -1,0 +1,164 @@
+{
+  "task": "UI-89",
+  "date": "2026-10-10",
+  "commits": {
+    "implementation": "c566d2f"
+  },
+  "reports": {
+    "editor-family1": {
+      "report": ".artifacts/ui89/editor-family1.xml",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "b98b9412144e1ba167e6d28c6b867cf35c03af12cd27169d1f3553018b5de1dc"
+    },
+    "editor-full": {
+      "report": ".artifacts/ui89/editor-full.xml",
+      "total": 619,
+      "passed": 619,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "2df487667b4f1342e9637159b006e1e4b4b7d4e4b386f1571ceefebe400d78a6"
+    },
+    "family1": {
+      "report": ".artifacts/ui89/family1.xml",
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.WindowFamilyNetworkTests.ClosingAWindowClosesThePreviewAndHelpItOpened"
+      ],
+      "sha256": "319dde3fd83906488831e0dea1980f54d842839863337c3308cfeefcc9c3374f"
+    },
+    "family2": {
+      "report": ".artifacts/ui89/family2.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "7bc5c09e0bb41bab0b7385311e98e03e84afd6261710e1b0b40a05ea7e7df0ba"
+    },
+    "family3": {
+      "report": ".artifacts/ui89/family3.xml",
+      "total": 2,
+      "passed": 1,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.WindowFamilyNetworkTests.BattleReportFromALogEntryClosesWithThatEntryUnlessReopenedOnItsOwn"
+      ],
+      "sha256": "625450dc83b92ef3b3275af2865e64cea10a002cc4b167a6292af7a51aabab7b"
+    },
+    "family4": {
+      "report": ".artifacts/ui89/family4.xml",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "6a23665587150a67eeb043b6b48ef6adf0541820328a05893aeda374234d7469"
+    },
+    "reg-help": {
+      "report": ".artifacts/ui89/reg-help.xml",
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ContextHelpNeighborTests.AutomaticHelpAvoidsEffectsWhileBothManuallyMovedWindowsKeepTheirPositions"
+      ],
+      "sha256": "6259535804d2dc550fd20e4cf6d530c0a4077739ab9826c853eac4185000515b"
+    },
+    "reg-effects": {
+      "report": ".artifacts/ui89/reg-effects.xml",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "4e17be1e08553c6243850b325d5c82d5c94347bfed3175008ffe919931094e85"
+    },
+    "reg-layout": {
+      "report": ".artifacts/ui89/reg-layout.xml",
+      "total": 8,
+      "passed": 6,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+        "Wotr.PlayTests.FloatingWindowTests.PersistentWindowsMoveClampAndKeepTheirPositionAcrossProjectionsAndCameraChanges"
+      ],
+      "sha256": "6e8ae1623a59ad48ffda1cce3028054fc051877faf2599f0b4e83217a6ae4b94"
+    },
+    "reg-menu": {
+      "report": ".artifacts/ui89/reg-menu.xml",
+      "total": 8,
+      "passed": 7,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+      ],
+      "sha256": "3d4a514d4e8f1ed8f51e7e63e96f43eb99e2d9263efa91614d30405a6ca5e189"
+    },
+    "reg-characters": {
+      "report": ".artifacts/ui89/reg-characters.xml",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "540d4d414daf3c34294270b40f95be361ee692915698c72f9487edd41e3f793c"
+    },
+    "reg-log": {
+      "report": ".artifacts/ui89/reg-log.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "fd9b4c43442bbbbddd9d878887709f8ffd2851849c56a3ccd615547f9dc1bfb4"
+    },
+    "reg-log2": {
+      "report": ".artifacts/ui89/reg-log2.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "dd5f56b7d261ea71ab8a0dbab8eb012dddef1f8de0478e44de8dfdcddfa2750e"
+    }
+  },
+  "notes": {
+    "family1": "Help closed by its pre-existing outside-press rule when the test clicked × on Effects; test restructured to close owners without an outside press.",
+    "family3": "The hidden ⚔ button could not receive a submit event; battle report moved to the OpenedFrom pattern (ShowFrom) and retested in family4.",
+    "regression_code": "reg-help/effects/layout/menu/characters ran on sync 2 (before the BattleReport.ShowFrom refactor); reg-log2, family4 and editor-full ran on the final code.",
+    "pre_existing": "ContextHelpNeighbor (victory-tab covered), EffectsLayout drawer and FloatingWindow persistent (ArgumentNullException), ClickInspection (cards-tab initially closed): identical messages in UI-87 regression6.xml."
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "inputs_sha256": "2483ba023ec64fa22756ae45da39556ac667f1eba3d09152318d34bb2286ec5a",
+      "repository_commit_at_build": "c566d2f7e56968ad9383067e351e8b1b5cfe3814",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui89/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui89/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui89/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    },
+    "BuildLocalWindows": {
+      "inputs_sha256": "2483ba023ec64fa22756ae45da39556ac667f1eba3d09152318d34bb2286ec5a",
+      "repository_commit_at_build": "c566d2f7e56968ad9383067e351e8b1b5cfe3814",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui89/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows"
+    }
+  },
+  "smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui89.smoke",
+    "original_profile_byte_identical": true,
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 853
+  }
+}

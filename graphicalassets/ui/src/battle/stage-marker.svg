@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- Gilt pin behind the current stage icon. -->
+  <g filter="url(#lift)">
+    <circle cx="12" cy="12" r="10.5" fill="url(#gilt-bevel)" style="stroke: var(--gilt-edge)" stroke-width="0.6"/>
+    <circle cx="12" cy="12" r="8.2" style="fill: var(--lacquer-red-top); stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+  </g>
+</svg>

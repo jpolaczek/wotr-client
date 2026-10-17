@@ -1,0 +1,299 @@
+{
+  "task": "UI-92",
+  "date": "2026-10-10",
+  "commits": {
+    "implementation": "d612ea9"
+  },
+  "reports": {
+    "base-l1": {
+      "report": ".artifacts/ui92/base-l1.xml",
+      "total": 10,
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt"
+      ],
+      "sha256": "47f48b776337c70112fae2d7d4ccf1800a7447443b34f289f21488d712a04ee4"
+    },
+    "base-l2": {
+      "report": ".artifacts/ui92/base-l2.xml",
+      "total": 7,
+      "passed": 6,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EffectsNetworkTests.EnemyProtectionRequiresItsWholeCostAndOneCommitAfterReconnect"
+      ],
+      "sha256": "bdcae0a034aaeee97f7f979b909595868e45298edbbc799b0601da8869d517a2"
+    },
+    "base-l3": {
+      "report": ".artifacts/ui92/base-l3.xml",
+      "total": 8,
+      "passed": 7,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+      ],
+      "sha256": "0674533ef54795641daccadd09dc84de675b4bce4f3e808cdfe0020fba39c2c7"
+    },
+    "base-l4": {
+      "report": ".artifacts/ui92/base-l4.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "7da13cb7186adfc64a41192eb075f834b5f1097d8236d6a901baf3cb661c7623"
+    },
+    "base-l5": {
+      "report": ".artifacts/ui92/base-l5.xml",
+      "total": 10,
+      "passed": 8,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ContextHoverTests.ClickedCardSurvivesPointerAndFocusExitAndClosesExplicitly",
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame"
+      ],
+      "sha256": "cdef76739ada0fa049e92ae54c3df8269a16b376f0f0843dc1a042a1dafa1fc9"
+    },
+    "editor-full": {
+      "report": ".artifacts/ui92/editor-full.xml",
+      "total": 619,
+      "passed": 619,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "964894b4f3441c298a274c12f0fe34cac96035ddb69a22926e5d6e90e057eb31"
+    },
+    "preview1": {
+      "report": ".artifacts/ui92/preview1.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "4643bf0dc719322345382414d20cee00a6443315fbe4f0359b78a42617babbc7"
+    },
+    "reg1-l1": {
+      "report": ".artifacts/ui92/reg1-l1.xml",
+      "total": 10,
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt"
+      ],
+      "sha256": "a76cd093cf029db8484e0073e76b597a881c645a0e45d97e1cf3f9e852b80dea"
+    },
+    "reg1-l2": {
+      "report": ".artifacts/ui92/reg1-l2.xml",
+      "total": 7,
+      "passed": 5,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EffectsNetworkTests.EmptyRegionEffectDoesNotInterceptTheFinalArmyTarget",
+        "Wotr.PlayTests.EffectsNetworkTests.PublicEffectsRequireClickAndNeverMoveTheCameraDuringInspection"
+      ],
+      "sha256": "02a2a466a3446b15522972048d28963bbba34fcc4400d0326c895623036052cf"
+    },
+    "reg1-l3": {
+      "report": ".artifacts/ui92/reg1-l3.xml",
+      "total": 8,
+      "passed": 6,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+        "Wotr.PlayTests.ClickInspectionTests.EffectsAndTheirCardsStayClosedUntilClicked"
+      ],
+      "sha256": "8d48fef7cbf14cda33a71548db09002af7994ff753b8b0785925444e1cd1c521"
+    },
+    "reg1-l4": {
+      "report": ".artifacts/ui92/reg1-l4.xml",
+      "total": 7,
+      "passed": 6,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent"
+      ],
+      "sha256": "b824815e1fccb31e50c4ccd455464ecd89a3bfe6bbe52a958f5b276c7293b165"
+    },
+    "reg1-l5": {
+      "report": ".artifacts/ui92/reg1-l5.xml",
+      "total": 10,
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame"
+      ],
+      "sha256": "f3f1dbb208715aa113a793bd1237b2675e4bcaec94c6af9cc3f62ae1c60bdb98"
+    },
+    "reg1-l6": {
+      "report": ".artifacts/ui92/reg1-l6.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "e8684a837600183e0a3e273ce06149d0636db4503225524d59c780ccd597862c"
+    },
+    "reg2-a": {
+      "report": ".artifacts/ui92/reg2-a.xml",
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "d37e6df515a17bcb0f4139d00b4119428473d993999b65b4edc76f4d1ee205ef"
+    },
+    "reg2-b": {
+      "report": ".artifacts/ui92/reg2-b.xml",
+      "total": 6,
+      "passed": 4,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent",
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+      ],
+      "sha256": "fb3aa332f991fc3024bde2bd3945cc3dcfc7516c07eaa4b492b401eba3989ac3"
+    },
+    "reg3": {
+      "report": ".artifacts/ui92/reg3.xml",
+      "total": 4,
+      "passed": 3,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent"
+      ],
+      "sha256": "8582e5a8e8e31f8d3b2bde896e6fa1ba6ee99b3b7778b03708351ae59191919e"
+    },
+    "reg4": {
+      "report": ".artifacts/ui92/reg4.xml",
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent"
+      ],
+      "sha256": "90d90c7bd1326974379a854000170f857160ff783816370590932fce2fe54bf4"
+    },
+    "reg5": {
+      "report": ".artifacts/ui92/reg5.xml",
+      "total": 6,
+      "passed": 3,
+      "failed": 3,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent",
+        "Wotr.PlayTests.HandCardLayoutTests.FirstClickArmsAndOnlyTheSecondClickDiscards",
+        "Wotr.PlayTests.LeftRailPreviewTests.HoverPreviewsATabPanelAndAClickPinsItInFourLayouts"
+      ],
+      "sha256": "8e238d070482ff8981245ced3e3391f3d2551f682b39f1551cbe9557c82c09b4"
+    },
+    "reg6": {
+      "report": ".artifacts/ui92/reg6.xml",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "73bd3170a0919c7053539f36c675df290b941e33799730ded25deee3fce1b7c6"
+    },
+    "reg7-l1": {
+      "report": ".artifacts/ui92/reg7-l1.xml",
+      "total": 10,
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt"
+      ],
+      "sha256": "b4f2eb68cacf63e658c844dff4f18b7043bd602edb6af5247aae7f310774b99c"
+    },
+    "reg7-l2": {
+      "report": ".artifacts/ui92/reg7-l2.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "cce3425298bcc2f3121adb57bd7597f2d10c743bfdd4183e2cb8f9e331769a59"
+    },
+    "reg7-l3": {
+      "report": ".artifacts/ui92/reg7-l3.xml",
+      "total": 8,
+      "passed": 7,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+      ],
+      "sha256": "6ecdce5fab7fd78719e42265a4cde8ec3d20ce11c78dc7ea06626b74ca210174"
+    },
+    "reg7-l4": {
+      "report": ".artifacts/ui92/reg7-l4.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "e98235b38526cad33848b1a2b938948507703740668204f3d563cfc9bdfcc76b"
+    },
+    "reg7-l5": {
+      "report": ".artifacts/ui92/reg7-l5.xml",
+      "total": 10,
+      "passed": 9,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame"
+      ],
+      "sha256": "28fd86bd4cf3344f57181c5abe5029030a5ecfa260f594fbaf35204ca74d6e76"
+    },
+    "reg7-l6": {
+      "report": ".artifacts/ui92/reg7-l6.xml",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "e2228c9004f5aabf9c3b07a0c47128941f8cb9666dda89b3dce1bc8d49d015ee"
+    }
+  },
+  "notes": {
+    "base-l2/l5": "Two failures introduced by UI-91 (EnemyProtection cost cards under an unrolled card, ContextHover click-opened preview); fixed in UI-92.",
+    "reg1": "Tests encoding the old click-only rule for tabs adapted (EffectsNetwork x2, ClickInspection, CharacterRosterPanel).",
+    "reg3-reg5": "CharacterRosterPanel pan test showed the preview opening while the map pans; pressed-button tracking failed under pointer capture, replaced by MapCanvas.Panning.",
+    "pre_existing": "EffectsLayout payment (ArgumentNullException), ClickInspection board families (cards-tab initially closed), ContextHover real projections: identical in base-l*.xml on aef89ec."
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "inputs_sha256": "307a56ebc4f5b118c3b3d5b1e4c56133094f6a55dc672f65df3865f95c2aaae9",
+      "repository_commit_at_build": "d612ea922c4fbcc692044bbae64309dfa874f22e",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui92/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui92/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui92/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    },
+    "BuildLocalWindows": {
+      "inputs_sha256": "307a56ebc4f5b118c3b3d5b1e4c56133094f6a55dc672f65df3865f95c2aaae9",
+      "repository_commit_at_build": "d612ea922c4fbcc692044bbae64309dfa874f22e",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui92/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows"
+    }
+  },
+  "smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui92.smoke",
+    "original_profile_byte_identical": true,
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 874
+  }
+}

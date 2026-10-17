@@ -1,0 +1,173 @@
+[
+  {
+    "id": "kings.fp.character.23",
+    "event": "Requires Boromir in Gondor. Choose: recruit one Gondor Regular or Elite in his region, or return one randomly chosen hidden Corruption tile from Denethor to the Hunt Pool. Then draw two Strategy Event cards.",
+    "combatTitle": "Brave Stand",
+    "combat": "Requires a participating Companion. Shadow rolls one fewer Combat die per participating Companion, to a minimum of one die.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.fp.character.25",
+    "event": "Move any or all Companions outside the Fellowship. Then awaken one initial, uncorrupted Sovereign sharing a region with a Companion. The Sovereign awakens in that region.",
+    "combatTitle": "The King’s Banner",
+    "combat": "Requires participating Aragorn or an Awakened Sovereign. Before your Leader re-roll, forfeit all Leadership of Aragorn or one participating Sovereign to cancel Shadow’s Leader re-roll.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "kings.fp.character.26",
+    "event": "Advance one Free Peoples Nation one step on the Political Track. Then inspect one uncorrupted Sovereign’s Corruption tiles and choose one to return to the Hunt Pool. This does not activate the Nation.",
+    "combatTitle": "Like a God of Old",
+    "combat": "Requires a participating Awakened Sovereign. Before the Combat roll, make a special attack with dice equal to that Sovereign’s Leadership. Each 3 or higher hits the Shadow Army.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.08",
+    "event": "Choose one: activate a Free Peoples Nation and advance it one step on the Political Track; or inspect one uncorrupted Sovereign’s Corruption tiles and optionally return one to the Hunt Pool.",
+    "combatTitle": "Confusion",
+    "combat": "Each natural 1 in Shadow’s Combat roll inflicts one hit on the Shadow Army. Those dice cannot be rolled again during Shadow’s Leader re-roll.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.16",
+    "event": "If Corrupted Théoden is in play, remove him. Otherwise, choose: recruit one Rohan Regular or Elite and one Rohan Leader together in Edoras or a Rohan region with a Companion; or return a randomly chosen hidden Corruption tile from Théoden to the Hunt Pool. After either choice in the Otherwise branch, draw one Strategy Event card.",
+    "combatTitle": "Daylight",
+    "combat": "Shadow rolls at most three dice in its Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.19",
+    "event": "If Corrupted Brand is in play, remove him. Otherwise, choose: recruit two North Regulars in Dale; or return one randomly chosen hidden Corruption tile from Brand to the Hunt Pool. After either of these choices, draw one Strategy Event card. Do not use this card with Fate of Erebor.",
+    "combatTitle": "Shield-Wall",
+    "combat": "Before normal casualties, cancel one opponent hit if the opponent scored at least two hits from the Combat roll and Leader re-roll.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.22",
+    "event": "If Corrupted Dáin is in play, remove him. Otherwise choose: recruit one Dwarven Regular or Elite and one Dwarven Leader in Erebor; or return a random hidden Corruption tile from Dáin. Then draw one Strategy Event card. Do not use with Fate of Erebor.",
+    "combatTitle": "Valour",
+    "combat": "Requires a participating Free Peoples Elite. Add +1 to your Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.24",
+    "event": "If Corrupted Thranduil is in play, remove him. Otherwise choose: recruit one Elven Regular or Elite in the Woodland Realm; or return a random hidden Corruption tile from Thranduil. Then draw one Strategy Event card.",
+    "combatTitle": "Valour",
+    "combat": "Requires a participating Free Peoples Elite. Add +1 to your Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.25",
+    "event": "Choose a non-Corrupted Sovereign. Recruit one Regular or Elite of his Nation in his region. Then, if he has hidden Corruption tiles, return one at random to the Hunt Pool.",
+    "combatTitle": "There Is Hope for Victory",
+    "combat": "Requires a participating non-Corrupted Sovereign. If he is not Awakened, awaken him in his current region. Add +1 to your Leader re-roll.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "kings.fp.strategy.26",
+    "event": "Recruit one Regular or Leader from each of four different Free Peoples Nations, each in a free region containing a Settlement in that Nation.",
+    "combatTitle": "There Is Hope for Victory",
+    "combat": "Requires a participating non-Corrupted Sovereign. If he is not Awakened, awaken him in his current region. Add +1 to your Leader re-roll.",
+    "initiative": [
+      4
+    ]
+  },
+  {
+    "id": "kings.sh.character.25",
+    "event": "Keep on the table. Free Peoples cannot remove Corruption from Sovereigns and can awaken them only if their Nation is At War. Free Peoples may discard this card with a Will of the West result, or a Character result if a non-Corrupted Sovereign and a Companion share a region.",
+    "combatTitle": "Servant of the Shadow",
+    "combat": "Requires a participating Minion. Before the Combat roll, forfeit all Leadership of one Minion. Free Peoples roll that many fewer Combat dice, to a minimum of one.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.sh.character.26",
+    "event": "Attempt to corrupt an initial Sovereign in or adjacent to a region with a Nazgûl. Do not spend an Eye from the Hunt Box. The attempt is allowed even if Free Peoples have no unused Action dice.",
+    "combatTitle": "The Battle Is Vain",
+    "combat": "Requires at least one Nazgûl Leadership. Forfeit up to five Nazgûl Leadership points to reduce Free Peoples Leadership by the same amount for this round.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.01",
+    "event": "Requires a Shadow-controlled Elven Stronghold or a Corrupted Sovereign in play. For each unconquered, unbesieged Elven Stronghold, roll for its Elven Army units, at most five dice. Each 6 hits that Army; hit on 5+ if two or more Sovereigns are Corrupted.",
+    "combatTitle": "Deadly Strife",
+    "combat": "Both Armies add +2 to Combat and Leader re-roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.03",
+    "event": "Requires Denethor in play and not Awakened. Keep on the table: Denethor cannot awaken, and Free Peoples cannot play Combat cards in Minas Tirith or his region. Free Peoples may discard this with Will of the West, or any Action die if Gandalf, Boromir or Aragorn shares Denethor’s region.",
+    "combatTitle": "Devilry of Orthanc",
+    "combat": "Requires a participating Isengard Army unit and the defending Army inside a Stronghold. Add +1 to your Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.05",
+    "event": "Keep on the table. Free Peoples cannot use a Muster action to advance a passive Nation or awaken a Sovereign. Discard when a Sovereign becomes Corrupted, or a Free Peoples Nation advances because of an attack or a Companion’s special ability.",
+    "combatTitle": "Devilry of Orthanc",
+    "combat": "Requires a participating Isengard Army unit and the defending Army inside a Stronghold. Add +1 to your Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.06",
+    "event": "Requires the Fellowship or a Companion inside a Free Peoples Nation not At War. Move that Nation one step back on the Political Track. If its Sovereign is not Awakened, add one drawn Corruption tile to him, then Free Peoples eliminates one Regular or Elite of that Nation anywhere on the board.",
+    "combatTitle": "Great Host",
+    "combat": "After ordinary Combat and Leader re-roll casualties, if your remaining Army units number at least twice the enemy’s, inflict one automatic hit.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.18",
+    "event": "Requires Aragorn or Awakened Denethor in play. Recruit five Sauron Regulars and one Nazgûl in Minas Morgul, plus one Sauron Regular or Nazgûl of your choice for each Awakened Sovereign in play.",
+    "combatTitle": "Relentless Assault",
+    "combat": "Before Combat, optionally apply up to two hits to your own Army. Each hit actually taken adds +1 to your Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.25",
+    "event": "Keep on the table. Once each turn, Shadow may use a Muster die result as Event. Free Peoples may discard this with Will of the West, or any Action die plus one Elven Ring.",
+    "combatTitle": "His Power Waxes",
+    "combat": "Requires a Sovereign in the defending Army’s region. If Corrupted, add +1 to your Combat and Leader re-roll; otherwise both Armies gain +1 to both rolls.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "kings.sh.strategy.26",
+    "event": "Choose a region with a Sovereign. Roll three dice: each 5+ inflicts one hit on a Free Peoples Army there, or each 4+ if that Sovereign is Corrupted.",
+    "combatTitle": "His Power Waxes",
+    "combat": "Requires a Sovereign in the defending Army’s region. If Corrupted, add +1 to your Combat and Leader re-roll; otherwise both Armies gain +1 to both rolls.",
+    "initiative": [
+      3
+    ]
+  }
+]

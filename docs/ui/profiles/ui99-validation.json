@@ -1,0 +1,87 @@
+{
+ "task": "UI-99",
+ "date": "2026-10-12",
+ "commits": {
+  "implementation": "629aa31"
+ },
+ "environment": "Same isolated projects, servers and databases as UI-98 (.artifacts/ui98/run.sh).",
+ "playmode": {
+  "ui99reg": {
+   "summary": ".artifacts/ui98/runs/ui99reg.json",
+   "total": 50,
+   "passed": 38,
+   "failed_tests": [
+    "Wotr.PlayTests.BoardCompletionContextNetworkTests.CouncilEntryDraftAndLostReceiptSurviveGamesAndBothProcessRestarts",
+    "Wotr.PlayTests.BoardCompletionContextNetworkTests.NewHobbitDecisionsDuringMenuAndSettingsKeepOneHostCostAndFocus",
+    "Wotr.PlayTests.CardViewportLayoutTests.ActionCardFitsBothEffectsAtFourLayoutsAndKeepsPinnedPositionAfterRefresh",
+    "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+    "Wotr.PlayTests.HuntActivityNetworkTests.AutomaticNoDiceMissAndCancelledTileRemainInLogWithoutOpeningHunt",
+    "Wotr.PlayTests.InGameContextNetworkTests.PrivateCorruptionTileReceiptSurvivesRestartWithTheSameParentAndPublicBack",
+    "Wotr.PlayTests.InGameContextNetworkTests.RestartBeforeRingCommitRestoresTheExactUnsentCostAndWaitsForTheFinalFace",
+    "Wotr.PlayTests.InGameContextNetworkTests.RingReceiptSurvivesClientAndServerRestartWithoutChangingThePhysicalCost",
+    "Wotr.PlayTests.InGameContextNetworkTests.VictoryReceiptSurvivesRestartWithoutReplayingTheFinalAction",
+    "Wotr.PlayTests.LayoutTests.LoginAndAllConfigurationOptionsFitWithoutScrolling",
+    "Wotr.PlayTests.LiveActivityNetworkTests.TwoMovesAttackCardsDiceRetreatAndAdvanceKeepNoticesAndArchivesConsistent",
+    "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards"
+   ],
+   "sha256": "d899b68d2f58c0ab3932e381815e0045b0d4b94bbd021124393c97e0e137f5b3"
+  },
+  "baseline_final_ui98": {
+   "summary": ".artifacts/ui98/runs/final.json",
+   "note": "Full PlayMode on b877b1a (UI-98), compared class by class."
+  },
+  "n4": {
+   "report": ".artifacts/ui98/runs/n4.xml",
+   "total": 4,
+   "passed": 3,
+   "failed": 1,
+   "sha256": "039322c5918d38bef184de6e5806d5e44d22667faeb450a6ab84e9ac5baf2943"
+  },
+  "n6": {
+   "report": ".artifacts/ui98/runs/n6.xml",
+   "total": 1,
+   "passed": 1,
+   "failed": 0,
+   "sha256": "efe79677e89a4a352d8ebfc7b84e9c94292add2c7d4a875e82621a67c69af1fa"
+  }
+ },
+ "editmode": {
+  "editor-ui99": {
+   "report": ".artifacts/ui98/runs/editor-ui99.xml",
+   "total": 630,
+   "passed": 630,
+   "failed": 0,
+   "sha256": "9cae323585e77231d34b705f234cb6eeac704df23404d7bcb373918af017ead7"
+  }
+ },
+ "builds": {
+  "BuildLocalMac": {
+   "repository_commit_at_build": "629aa3117f8b9e6c150451d6c745346629509705",
+   "development": false,
+   "inputs": 1023,
+   "tracked_inputs": 1011,
+   "mismatch": 0
+  },
+  "BuildLocalWindows": {
+   "repository_commit_at_build": "629aa3117f8b9e6c150451d6c745346629509705",
+   "development": false,
+   "inputs": 1023,
+   "tracked_inputs": 1011,
+   "mismatch": 0
+  }
+ },
+ "smoke": {
+  "result": "PASS",
+  "application_identity": "com.wotr.ui99.smoke",
+  "original_profile_byte_identical": true,
+  "runtime_matches_main_build": true,
+  "runtime_files_checked": 949,
+  "development": false
+ },
+ "notes": {
+  "regression": "20 classes that read notifications, the action card or the log (ui99reg) against the same classes in the UI-98 full run: no new or changed failures, MapContourNavigation two cases fixed; remaining failures (BattleEnding, BoardCompletionContext, CardViewportLayout, ClickInspection cards-tab, HuntActivity, InGameContext, LiveActivity, T22Information, LayoutTests) are identical to the UI-98 run and its baseline.",
+  "found": "ActionNoticeNetwork exposed that a local dismissal by group id hid a later step of the same action; dismissals are keyed by group and newest step.",
+  "tests": "ActionNoticeLayoutTests rewritten for the stack (one stack, newest on top, seal count, layers, opponent enamel, hover reads nothing, click removes the banner at once and opens the card, a second click replaces the card, parchment card with dark ink, viewport unchanged); UiArtKitTests lists the six new textures.",
+  "art": "graphicalassets/ui/render.py --preview: frames/banner (free, free-hover, shadow, shadow-hover; slices 8/18/8/10), ornaments/wax-seal, previews/topbar.png with the stack."
+ }
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32">
+  <!-- Characters: a company of three hooded figures. -->
+  <defs>
+    <path id="characters-figure" d="M16 5 C19.2 5 20.8 7.6 20.8 10.2 C20.8 11.8 20.2 13 19.5 13.8 C22.2 15 23.8 18 24.3 21.6 L25.2 28 H6.8 L7.7 21.6 C8.2 18 9.8 15 12.5 13.8 C11.8 13 11.2 11.8 11.2 10.2 C11.2 7.6 12.8 5 16 5 Z"/>
+  </defs>
+  <g filter="url(#lift)" style="stroke: var(--gilt-edge)" stroke-width="0.6" stroke-linejoin="round">
+    <use href="#characters-figure" transform="translate(-5.2 4.6) scale(0.82)" fill="url(#gilt)"/>
+    <use href="#characters-figure" transform="translate(10.9 4.6) scale(0.82)" fill="url(#gilt)"/>
+    <use href="#characters-figure" transform="translate(0 0.4)" fill="url(#gilt-diagonal)"/>
+  </g>
+</svg>

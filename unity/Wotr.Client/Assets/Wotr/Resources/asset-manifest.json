@@ -1,0 +1,19 @@
+{
+  "symbols": {
+    "die.Character": "C",
+    "die.Army": "A",
+    "die.Muster": "M",
+    "die.ArmyMuster": "A/M",
+    "die.Event": "P",
+    "die.WillOfTheWest": "W",
+    "die.Eye": "Eye",
+    "die.CardDraw": "Draw",
+    "die.UseBalrog": "Balrog",
+    "ring": "O",
+    "unit.Regular": "R",
+    "unit.Elite": "E",
+    "unit.Leader": "L",
+    "unit.Nazgul": "N"
+  },
+  "sprites": {}
+}

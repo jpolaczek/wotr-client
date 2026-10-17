@@ -1,0 +1,17 @@
+{
+  "generator": "Built-in image_gen.imagegen",
+  "generated_utc_date": "2026-10-08",
+  "source_filename": "exec-f6f81e87-82ae-4cf0-b2d2-ad3860d96759.png",
+  "runtime": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/fellowship-symbols-v1.png",
+  "sha256": "49da8524bf6b69be7b8ca84f3188e6196880ae1a34945574edb13d353e37b6e6",
+  "size": [
+    1774,
+    887
+  ],
+  "mode": "RGBA",
+  "alpha_zero_percent": 75.25607897616709,
+  "pixels_modified": false,
+  "bounds_method": "alpha > 8 plus 4px padding; metadata only, unmodified PNG",
+  "purpose": "Replaceable generated placeholder artwork; not scanned official components",
+  "prompt": "prompt-v1.txt"
+}

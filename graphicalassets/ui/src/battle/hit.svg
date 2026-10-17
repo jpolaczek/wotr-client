@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Hit target: a bullseye with an arrow. -->
+  <g filter="url(#lift)">
+    <circle cx="15" cy="17" r="11" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="1"/>
+    <circle cx="15" cy="17" r="7.2" style="fill: var(--ember); stroke: var(--ink)" stroke-width="0.6"/>
+    <circle cx="15" cy="17" r="3.2" style="fill: var(--ink)"/>
+    <path d="M15 17 L28 4" style="stroke: var(--steel-dark)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M28 4 L22.5 5.2 M28 4 L26.8 9.5" style="stroke: var(--ember-dark)" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+</svg>

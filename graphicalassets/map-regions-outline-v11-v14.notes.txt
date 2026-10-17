@@ -1,0 +1,36 @@
+Full map after acceptance — samples v11–v14, 2026-10-05
+
+Order: User accepted mirkwood-regions-outline-v1.png And he asked for a full map with all the right regions.
+
+Four attempts were made with a built-in imagegen:
+- v11-strraft: reread full board with accepted cutout, close-up of Mordor and Rohan and list of 105
+  names with content/base-board.json. Error: white fill of land is missing; there are also double
+  lines.
+- v12-strraft: restoration of the filling and correction of the line. In the Dark Forest a system
+  similar to the cutout was obtained, but there were coastal errors and artificial hole inside Old
+  Forest. This map was not considered correct.
+- v13-rejected: local integration of the Dark Forest with the earlier map v8, with specific
+  positions of seven regions, and the attempt to correct Mordor. The generator changed the divisions
+  of the accepted cutout again.
+- v14-rejected: canvas expansion around the accepted fragment; the 0,20 scale and the location of
+  the entire clipping in the full map are given. The generator changed both the fragment and the
+  proportion of the full map.
+
+The files of all attempts and the exact prompty were preserved next to this note. Names: map-regions-outline-v11-draft.png  /.prompt.txt   map-regions-outline-v12-draft.png  /.prompt.txt   map-regions-outline-v13-rejected.png  /.prompt.txt   map-regions-outline-v14-rejected.png  /.prompt.txt
+
+Checks carried out:
+- An overview of each generation relative to the original and accepted passage.
+- sips -g pixelWidth -g pixelHeight -g hasAlpha for all four PNG: ka The score has 1492 ×
+  1054 pixels and alpha channel. Demanding more resolution in the prompte did not increase the size.
+- Image reading by Swift/CoreGraphics/ImageIO; analysis of clear coherent fields, four neighbours,
+  RGB > 170, alpha > 200. Fields with surface > 200 pixels: 100 in v8 and 139 in v12-stretch. This
+  is the number of raster areas, unverified game regions. Islands, slots and coastal outlines affect
+  the score.
+- A list of names in content/base-board.json: 105 regions has been read. No full sample has been
+  assigned to all these names.
+
+Result: No map was created with valid all regions. The accepted local cutout remains unchanged. Do not replace the earlier materials with any of the rejected attempts.
+
+Transfer: You have been asked to switch to the technical tracing and submit geometry to SVG and the large PNG, with control of 105 regions. Such change of method has not yet been done. The code, rule data or task registry have not been changed from the main thread.
+
+Further verification of geometry should assign each field to the name, check common edges and distinguish the boundaries of territories from the legal crossings.

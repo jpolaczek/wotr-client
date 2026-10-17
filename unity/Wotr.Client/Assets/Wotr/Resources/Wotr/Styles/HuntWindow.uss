@@ -1,0 +1,73 @@
+/* UI-162: the Hunt window in the gilt frame and lacquered header of the battle window (Styles/Battle.uss), with the
+   same stage ribbon. 9-slice values are texture pixels (2x the points in graphicalassets/ui/assets.json). */
+#board-screen .hunt-panel.hunt-window {
+    width: 500px;
+    max-width: 92%;
+    padding: 6px 12px 12px 12px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .hunt-panel.hunt-window.hunt-reaction-panel { width: 640px; }
+#board-screen .hunt-window > .window-header {
+    height: 26px;
+    min-height: 26px;
+    margin: 0 0 3px 0;
+    padding: 0 2px 0 12px;
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .hunt-window > .window-header > .title {
+    flex-grow: 1;
+    font-size: 13px;
+    letter-spacing: 0.6px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+#board-screen .hunt-window > .window-header .action { width: 24px; min-width: 24px; height: 24px; min-height: 24px; padding: 0; margin: 0 0 0 3px; }
+
+/* The stage ribbon reuses the battle's markers; the Hunt's own stages take the hunt/stage-* icons. */
+.hunt-window .hunt-stages { flex-direction: row; justify-content: space-between; height: 22px; min-height: 22px; margin: 0 0 3px 0; padding: 0 6px; }
+.hunt-window .hunt-stages .unity-label { padding: 0; margin: 0; font-size: 10px; color: rgb(175, 180, 170); }
+.hunt-window .hunt-stages .current-stage .unity-label { color: rgb(249, 223, 157); -unity-font-style: bold; }
+.hunt-stage-icon-roll { background-image: resource("Wotr/Art/UI/battle/stage-roll"); }
+.hunt-stage-icon-reroll { background-image: resource("Wotr/Art/UI/battle/stage-reroll"); }
+.hunt-stage-icon-tile { background-image: resource("Wotr/Art/UI/hunt/stage-tile"); }
+.hunt-stage-icon-damage { background-image: resource("Wotr/Art/UI/hunt/stage-damage"); }
+.hunt-stage-icon-result { background-image: resource("Wotr/Art/UI/hunt/stage-result"); }
+.hunt-stage-icon-step { background-image: resource("Wotr/Art/UI/hunt/stage-step"); }
+
+/* At rest the window is the Hunt Box (UI-109); a Hunt's result stays until the window is closed. */
+.hunt-window.hunt-idle #hunt-main,
+.hunt-window.hunt-idle .hunt-heading { display: none; }
+
+/* Short screens (1366 × 768 at 125%) keep every Hunt step above the console and clear of the hand: tighter rows and
+   a narrower reaction window, click targets still ≥ 32. */
+#board-screen.short-viewport .hunt-panel.hunt-window { padding: 4px 10px 8px 10px; }
+#board-screen.short-viewport .hunt-panel.hunt-window.hunt-reaction-panel { width: 600px; }
+#board-screen.short-viewport .hunt-window .hunt-stages { margin-bottom: 1px; }
+#board-screen.short-viewport .hunt-window #hunt-source { margin: 0 0 2px 0; }
+#board-screen.short-viewport .hunt-window #hunt-main { margin: 1px 0; padding-top: 2px; }
+#board-screen.short-viewport .hunt-window .hunt-report-strip { margin: 1px 0; }
+#board-screen.short-viewport .hunt-window .hunt-tile-card { height: 44px; min-height: 44px; }
+#board-screen.short-viewport .hunt-window .hunt-response-object { height: 56px; min-height: 56px; }
+/* UI-184: in the 56-point response the symbol, the name and two lines of consequence fit without squeezing the name. */
+#board-screen.short-viewport .hunt-window .hunt-response-icon { width: 20px; height: 20px; }
+#board-screen.short-viewport .hunt-window .hunt-response-object #hunt-response-symbol { font-size: 14px; }
+#board-screen.short-viewport .hunt-window .hunt-response-heading { flex-shrink: 0; }
+#board-screen.short-viewport .hunt-window .hunt-response-object #hunt-response-consequence { font-size: 11px; }
+#board-screen.short-viewport .hunt-window .hunt-random-stack #hunt-response-symbol { width: 15px; height: 20px; font-size: 13px; }
+#board-screen.short-viewport .hunt-window .hunt-roll-die { height: 46px; min-height: 46px; }

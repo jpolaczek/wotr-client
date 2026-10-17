@@ -1,0 +1,297 @@
+/* UI-87: illustrated left rail (Politics, Effects, Characters) and its docked panels.
+   Pieces are rendered at 2x from graphicalassets/ui; 9-slice values are texture pixels.
+   #board-screen keeps panel rules ahead of the panels' own Wotr.uss rules (imports lose ties). */
+
+/* UI-182: each tab is an enamel medallion ringed with gilt beads (art: rail/edge-tab, fixed 94x66 points, no plate,
+   frame or ribbon) with its icon inside and a plain label centred under it on one line. Hover brightens the gilt,
+   the selected tab's rim turns to red lacquer. UI-193: an available tab (a legal target, or usable by the chosen
+   action die, UI-136) glows gold round its medallion; the tab has no rectangle of its own to light. */
+.board-left-tabs { position: absolute; left: 0; top: 58px; width: 94px; }
+.board-left-tabs .edge-tab {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 94px;
+    min-width: 94px;
+    height: 66px;
+    min-height: 66px;
+    margin: 0 0 4px 0;
+    padding: 0 2px 5px 2px;
+    font-size: 13px;
+    letter-spacing: 0;
+    -unity-font-style: normal;
+    -unity-text-align: lower-center;
+    white-space: nowrap;
+    color: rgb(244, 230, 186);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 1);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/rail/edge-tab");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-slice-top: 0;
+    -unity-slice-right: 0;
+    -unity-slice-bottom: 0;
+    -unity-slice-left: 0;
+    border-width: 0;
+    border-radius: 0;
+}
+.board-left-tabs .edge-tab:hover,
+.board-left-tabs .edge-tab:focus {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/rail/edge-tab-hover");
+    color: rgb(255, 245, 214);
+}
+.board-left-tabs .edge-tab.legal-target,
+.board-left-tabs .edge-tab.die-option { border-width: 0; background-image: resource("Wotr/Art/UI/rail/edge-tab-available"); }
+.board-left-tabs .edge-tab.legal-target:hover,
+.board-left-tabs .edge-tab.legal-target:focus,
+.board-left-tabs .edge-tab.die-option:hover,
+.board-left-tabs .edge-tab.die-option:focus { background-image: resource("Wotr/Art/UI/rail/edge-tab-available-hover"); }
+.board-left-tabs .edge-tab.selected,
+.board-left-tabs .edge-tab.selected:hover,
+.board-left-tabs .edge-tab.selected:focus { background-image: resource("Wotr/Art/UI/rail/edge-tab-selected"); }
+.edge-tab-icon {
+    position: absolute;
+    left: 35px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.edge-tab-icon-politics, .panel-header-icon-politics { background-image: resource("Wotr/Art/UI/icons/politics"); }
+.edge-tab-icon-effects, .panel-header-icon-effects { background-image: resource("Wotr/Art/UI/icons/effects"); }
+.edge-tab-icon-characters, .panel-header-icon-characters { background-image: resource("Wotr/Art/UI/icons/characters"); }
+.edge-tab-icon-reinforcements, .panel-header-icon-reinforcements { background-image: resource("Wotr/Art/UI/actions/reinforcements"); }
+
+/* Panels beside the rail: dark plate in a gilt frame. */
+#board-screen .edge-left-panel {
+    position: absolute;
+    left: 94px;
+    top: 58px;
+    right: auto;
+    bottom: auto;
+    width: 350px;
+    max-width: 45%;
+    padding: 7px 8px 9px 8px;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .characters-panel.edge-left-panel { width: 352px; }
+/* UI-178: Politics is as wide as its rows: name, track and the step arrow, no empty column. */
+#board-screen .politics-panel.edge-left-panel { width: 256px; }
+.edge-left-panel .character-roster-grid .action { width: 108px; min-width: 108px; margin: 1px; }
+
+/* Header band in red lacquer with the panel's icon and gilt title. */
+#board-screen .edge-left-panel .panel-header {
+    height: 32px;
+    min-height: 32px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 0 6px 0;
+    padding: 0 8px 0 10px;
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+.panel-header-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin: 0 6px 0 4px;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+#board-screen .edge-left-panel .panel-header > Label {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+}
+#board-screen .edge-left-panel .panel-header .unity-toggle__label { color: rgb(236, 224, 196); }
+
+/* Small square buttons in headers: close and paging. Each keeps its panel's declared size;
+   the generic 36-point minimum of .action would overflow the 32-point band. */
+#board-screen .edge-left-panel .panel-header Button {
+    min-height: 0;
+    color: rgb(241, 227, 181);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .edge-left-panel .panel-header Button:hover,
+#board-screen .edge-left-panel .panel-header Button:focus {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square-hover");
+}
+
+/* Politics: rows in the colours of their side; UI-197: each nation's crest rides its side medallion along the track
+   over a soft gilt glow (bright when active, dim when passive), so the name column carries no crest. */
+#board-screen .nation-track {
+    background-color: rgba(28, 54, 78, 0.55);
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0, 0, 0, 0.45);
+}
+#board-screen .nation-track.shadow-nation { background-color: rgba(80, 24, 19, 0.6); }
+#board-screen .nation-track .nation-name { padding-left: 6px; }
+.icon-glow {
+    position: absolute;
+    background-image: resource("Wotr/Art/UI/ornaments/move-glow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.nation-emblem {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    width: 20px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.nation-emblem-dwarves { background-image: resource("Wotr/Art/UI/icons/nations/dwarves"); }
+.nation-emblem-elves { background-image: resource("Wotr/Art/UI/icons/nations/elves"); }
+.nation-emblem-gondor { background-image: resource("Wotr/Art/UI/icons/nations/gondor"); }
+.nation-emblem-north { background-image: resource("Wotr/Art/UI/icons/nations/north"); }
+.nation-emblem-rohan { background-image: resource("Wotr/Art/UI/icons/nations/rohan"); }
+.nation-emblem-isengard { background-image: resource("Wotr/Art/UI/icons/nations/isengard"); }
+.nation-emblem-sauron { background-image: resource("Wotr/Art/UI/icons/nations/sauron"); }
+.nation-emblem-southrons { background-image: resource("Wotr/Art/UI/icons/nations/southrons"); }
+#board-screen .politics-panel .nation-token {
+    color: rgb(240, 244, 236);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/tokens/politics-token-free");
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 0;
+}
+#board-screen .politics-panel .shadow-nation .nation-token { background-image: resource("Wotr/Art/UI/tokens/politics-token-shadow"); }
+#board-screen .politics-panel .nation-token.legal-target { border-width: 2px; border-color: rgb(247, 213, 120); }
+#board-screen .politics-panel .nation-token.selected { border-width: 3px; border-color: rgb(255, 255, 255); }
+.politics-panel .nation-token > .nation-emblem,
+.politics-legend-token > .nation-emblem { left: 4px; right: 4px; top: 4px; bottom: 4px; width: auto; }
+.politics-panel .nation-token.passive-nation > .nation-emblem,
+.politics-legend-token.passive-nation > .nation-emblem { -unity-background-image-tint-color: rgb(150, 146, 136); opacity: 0.7; }
+.politics-panel .nation-slots > .icon-glow { opacity: 0.4; }
+.politics-panel .nation-slots > .icon-glow.active-nation-glow { opacity: 0.95; }
+/* The axis legend: a passive and an active medallion, as the crests look on the track. */
+.politics-legend { flex-direction: row; align-items: center; padding-left: 6px; }
+.politics-legend-token {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background-image: resource("Wotr/Art/UI/tokens/politics-token-free");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.politics-legend-token > .nation-emblem { left: 3px; right: 3px; top: 3px; bottom: 3px; }
+/* The legend stays narrower than the name column it heads (60 points), or it would widen the axis row. */
+#politics-legend-passive-nation { margin-right: 6px; }
+
+/* Effects and Characters entries in the enamel of their side. */
+#board-screen .edge-left-panel .effect-entry,
+#board-screen .edge-left-panel .character-roster-grid .action {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/entry");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 4px;
+}
+#board-screen .edge-left-panel .effect-entry:hover,
+#board-screen .edge-left-panel .character-roster-grid .action:hover {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/entry-hover");
+}
+#board-screen .edge-left-panel .effect-entry.shadow-effect { background-image: resource("Wotr/Art/UI/frames/entry-shadow"); }
+#board-screen .edge-left-panel .effect-entry.shadow-effect:hover { background-image: resource("Wotr/Art/UI/frames/entry-shadow-hover"); }
+#board-screen .edge-left-panel .effect-entry.selected-effect { border-width: 2px; border-color: rgb(228, 197, 127); }
+#board-screen .edge-left-panel .character-roster-grid .action.selected { border-width: 2px; border-color: rgb(245, 212, 133); }
+#board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+/* UI-101: the sovereign portraits sit in one compact row under the characters, keeping their marks. */
+#board-screen .edge-left-panel .sovereign-strip.character-roster-grid { flex-wrap: nowrap; }
+#board-screen .edge-left-panel .sovereign-strip.character-roster-grid .action {
+    width: 64px;
+    min-width: 64px;
+    height: 38px;
+    min-height: 38px;
+    margin: 1px;
+    padding: 0;
+    font-size: 10px;
+    flex-shrink: 1;
+}
+#board-screen .edge-left-panel .sovereign-strip .action.corrupted-sovereign { border-bottom-width: 3px; border-color: rgb(206, 118, 130); }
+#board-screen .edge-left-panel .sovereign-strip .action.inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
+#board-screen .edge-left-panel .effect-entry > Label { color: rgb(230, 200, 122); }
+
+/* UI-94: a selected card source shows its complete text on the parchment of an unrolled hand card
+   (graphicalassets/ui/src/cards), under the source's scopes. The title stays in the details heading. */
+#board-screen #effects-source-details #effect-card {
+    margin: 5px 0 0 0;
+    padding: 7px 10px 8px 10px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen #effects-source-details #effect-card.effect-card-ended { opacity: 0.8; }
+/* Above the card text a scope keeps only its targets and expiry, on one wrapping row. */
+#board-screen #effects-source-details .effect-scope-compact { padding: 2px 5px; }
+#board-screen #effects-source-details .effect-targets > .effect-expiry { flex-shrink: 1; margin: 1px 0 1px 2px; font-size: 11px; color: rgb(214, 205, 180); }
+/* EffectsReadingWidth widens the panel only when a card's text would pass the bottom bar; the wider
+   entries then hold their titles on one line. */
+#board-screen .edge-left-panel.effects-wide-reading .effect-entry { min-height: 30px; margin-bottom: 2px; }
+#board-screen .edge-left-panel.effects-wide-reading .effect-source { min-height: 24px; }
+#board-screen .edge-left-panel.effects-wide-reading .effect-entry > Label { width: 36px; }
+/* While a removal is being paid the decision needs the room; the payment layout stays as before UI-94. */
+#board-screen .preparing-effect-removal #effects-source-details #effect-card { display: none; }
+#board-screen #effect-card .effect-card-heading { flex-direction: row; align-items: center; margin: 0 0 4px 0; }
+#board-screen #effect-card .action-symbol { position: relative; left: 0; top: 0; width: 15px; height: 15px; margin: 0 6px 0 0; flex-shrink: 0; }
+#board-screen #effects-source-details #effect-card Label { margin: 0; padding: 0; white-space: normal; -unity-text-align: upper-left; color: rgb(58, 42, 24); }
+#board-screen #effects-source-details #effect-card #effect-card-kind { flex-shrink: 1; font-size: 9px; letter-spacing: 1.2px; color: rgb(122, 74, 30); }
+#board-screen #effects-source-details #effect-card #effect-card-event { font-size: 11.5px; }
+#board-screen #effect-card #effect-card-combat { margin: 6px 0 0 0; padding: 4px 0 0 0; border-top-width: 1px; border-top-color: rgba(140, 106, 51, 0.7); }
+/* QUAL-19: a compact Effects panel docked under the rail keeps its whole card readable above the console with less
+   vertical spacing. */
+#board-screen .effects-panel.edge-left-panel.compact-effects { padding-top: 4px; padding-bottom: 5px; }
+#board-screen .compact-effects #effect-card #effect-card-combat { margin-top: 3px; padding-top: 3px; }
+#board-screen #effects-source-details #effect-card #effect-card-combat-heading { margin: 0 0 2px 0; font-size: 9px; letter-spacing: 1.2px; -unity-font-style: bold; color: rgb(122, 26, 16); }
+#board-screen #effects-source-details #effect-card #effect-card-combat-text { font-size: 11px; }
+
+/* Short viewports keep the earlier compact panel padding. */
+#board-screen.short-viewport .edge-left-panel { padding: 5px 6px 6px 6px; }
+#board-screen.short-viewport .edge-left-panel .panel-header { margin-bottom: 4px; }
+
+/* UI-92: left panels unroll from their tab like a hand card (opacity, slide and a slight stretch).
+   UI-98: a hovered panel is interactive at once; nothing is pinned by a click. */
+.motion-enabled #board-screen .edge-left-panel {
+    transform-origin: left top;
+    transition-property: opacity, translate, scale;
+    transition-duration: 140ms;
+    transition-timing-function: ease-out-cubic;
+}
+#board-screen .edge-left-panel.edge-panel-entering { opacity: 0; translate: -18px 0; scale: 0.96 1; }

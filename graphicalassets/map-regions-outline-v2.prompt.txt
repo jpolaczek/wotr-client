@@ -1,0 +1,12 @@
+Use case: precise-object-edit.
+Asset type: technical region-boundary map, transparent PNG, preparation for separate game-region sprites.
+
+Image 1 is the ORIGINAL board photograph and the authority for every geographic contour and region. Image 2 is a first extraction attempt to correct. Image 2 currently contains unwanted DOUBLE borders around rivers, tiny noisy coastal outlines, and inaccuracies in some region shapes. Refine the extraction using Image 1.
+
+Make a strict black-and-white geographic tracing of the playable map in Image 1: exactly the original region partition, with the original coast, original proportions, original placement and relative sizes. Source geometry takes priority over Image 2 wherever they differ. There are 105 named game regions in the source; use the printed names to locate them, but show NO names in the final result. Preserve small narrow regions. Do not invent, merge, omit, enlarge or move regions.
+
+Most important correction: EVERY internal region boundary must be ONE continuous thin black stroke separating two flat opaque white region interiors. Rivers that coincide with borders become one single centerline, with no parallel lines and no narrow river-shaped additional cell. Rivers that are not regional borders disappear. No double borders anywhere. Eliminate the redundant thin coastal outline bands and speckled fringe; use one clean accurate coastline with genuinely transparent ocean outside. Lakes and the space outside the map are transparent. Region interiors are uniform pure white.
+
+Keep all 105 territories as distinct closed white cells, touching at shared coincident single black boundaries. Remove mountains, forests, terrain lines, hatching, texture, shading, settlement icons, names, numbers, labels, all game tracks, board frame, portraits and the title. Mountain ranges that are regional boundaries are represented only by the actual single dividing contour. Do not turn the former mountain drawings into new territories.
+
+Match the original photograph's geographic proportions without stretching or simplification. North stays at top. Show the full map extent with a small transparent margin; no cropping of playable regions. Plain clean technical line work; precise contour extraction, not artistic reinterpretation. High resolution, no decoration, no checkerboard baked into the image.

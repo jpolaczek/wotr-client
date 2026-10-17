@@ -1,0 +1,56 @@
+[
+  {
+    "id": "fate.fp.character.17",
+    "event": "Separate one Companion or one group from the Fellowship, adding one region to their movement range. Afterwards, if Gimli or Legolas is in Carrock, Iron Hills or Woodland Realm, activate the North and advance Dwarves, Elves and North by one political step each.",
+    "combatTitle": "Brave Stand",
+    "combat": "Requires a Companion in the battle. Reduce the Shadow Combat roll by one die per participating Companion; at least one die remains.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "fate.fp.strategy.04",
+    "event": "Move any number of Companions who are outside the Fellowship. Afterwards, if a Companion is in Iron Hills or Ered Luin, bring the Dwarves directly to At War and recruit one Dwarven Regular or Elite in that region.",
+    "combatTitle": "Advantageous Position",
+    "combat": "Requires the defending Army to be within a Free Peoples nation. Apply -1 to every Shadow Combat die. Natural sixes still hit.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "fate.fp.strategy.19",
+    "event": "Choose a region next to Dale, or Dale itself if it contains a Free Peoples Army. Recruit one North Regular or Elite and one North Leader together there. Then draw one Strategy Event card.",
+    "combatTitle": "Shield-wall",
+    "combat": "If the enemy scored at least two hits from its Combat roll and Leader re-roll, cancel one of those hits before applying casualties.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "fate.fp.strategy.22",
+    "event": "Choose a region next to Dale, or Dale itself if it contains a Free Peoples Army. Recruit one Dwarven Regular or Elite and one Dwarven Leader together there. Then draw one Strategy Event card.",
+    "combatTitle": "Valour",
+    "combat": "Requires a participating Free Peoples Elite. Apply +1 to every die in your Combat roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "fate.sh.strategy.20",
+    "event": "Recruit three Sauron Regulars in Dol Guldur, plus three in either Mount Gundabad or Erebor. Choose one of those two destinations; distribute a limited reserve between the legal regions.",
+    "combatTitle": "Onslaught",
+    "combat": "After ordinary Combat and Leader re-roll casualties, you may take up to four additional hits on your own units. For each hit taken, roll one separate die: each result of 4 or higher inflicts one hit on the enemy.",
+    "initiative": [
+      7
+    ]
+  },
+  {
+    "id": "fate.sh.strategy.22",
+    "event": "Choose one plan. West: one Sauron Regular each in Angmar, Ettenmoors and Weather Hills, plus one Sauron Elite in Trollshaws. East: one Sauron Regular each in Western Mirkwood, Northern Mirkwood and Withered Heath, plus one Sauron Elite in any one of those three regions.",
+    "combatTitle": "Desperate Battle",
+    "combat": "Both armies gain +1 on all Combat dice and Leader re-rolls.",
+    "initiative": [
+      3
+    ]
+  }
+]

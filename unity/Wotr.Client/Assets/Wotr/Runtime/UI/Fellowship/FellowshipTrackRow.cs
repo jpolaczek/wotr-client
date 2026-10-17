@@ -1,0 +1,143 @@
+using System;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace Wotr.Client
+{
+    // A read-only track. UI-110: its symbol is also the Fellowship's move, glowing while a click on it can move.
+    public sealed class FellowshipTrackRow
+    {
+        // UI-95: the marker lives in the lane and glides between cells instead of jumping.
+        public const string GlidingClass = "track-marker-gliding";
+        public const string MoveClass = "track-move";
+        private const string BrightClass = "track-move-bright";
+        private const long PulseMilliseconds = 700;
+        private const float OverflowWidth = 9;
+        public VisualElement Root { get; }
+        public Label Value { get; }
+        // UI-110: the symbol's button; enabled and glowing only while the chosen die can move the Fellowship.
+        public Button Move { get; }
+        public event Action Activated;
+        private readonly Label[] cells;
+        private readonly VisualElement lane;
+        private readonly Image marker;
+        private readonly Label overflow = new Label("+") { pickingMode = PickingMode.Ignore };
+        private int selected = -1;
+        private readonly IVisualElementScheduledItem pulse;
+
+        public FellowshipTrackRow(string name, string icon, int maximum, string cellPrefix, string valueName)
+        {
+            Root = new VisualElement { name = name, focusable = true };
+            Root.AddToClassList("fellowship-track");
+            Root.AddToClassList(name);
+            var symbol = FellowshipArtwork.Image(icon);
+            symbol.AddToClassList("fellowship-track-symbol");
+            symbol.pickingMode = PickingMode.Ignore;
+            Move = new Button(() => Activated?.Invoke()) { name = name + "-move" };
+            Move.AddToClassList("fellowship-track-move");
+            var glow = new VisualElement { name = name + "-glow", pickingMode = PickingMode.Ignore };
+            glow.AddToClassList("track-move-glow");
+            Move.Add(glow);
+            Move.Add(symbol);
+            Move.SetEnabled(false);
+            Root.Add(Move);
+            pulse = Move.schedule.Execute(() => Move.ToggleInClassList(BrightClass)).Every(PulseMilliseconds);
+            pulse.Pause();
+            lane = new VisualElement { name = name + "-lane", pickingMode = PickingMode.Ignore };
+            lane.AddToClassList("fellowship-track-lane");
+            Root.Add(lane);
+            cells = new Label[maximum + 1];
+            for (var i = 0; i < cells.Length; i++)
+            {
+                var checkpoint = i == 0 || i == maximum || maximum == 12 && i % 3 == 0;
+                var cell = new Label { name = cellPrefix + i, pickingMode = PickingMode.Ignore };
+                cell.AddToClassList("fellowship-track-cell");
+                var tick = new Label(checkpoint ? i.ToString() : "") { pickingMode = PickingMode.Ignore };
+                tick.AddToClassList("fellowship-track-tick");
+                cell.Add(tick);
+                if (maximum == 5 && i == maximum)
+                {
+                    var fire = FellowshipArtwork.Image("crack-of-doom");
+                    fire.AddToClassList("fellowship-track-end");
+                    cell.Add(fire);
+                }
+                cells[i] = cell;
+                lane.Add(cell);
+            }
+            marker = FellowshipArtwork.Image(icon);
+            marker.name = name + "-marker";
+            marker.AddToClassList("fellowship-track-marker");
+            lane.Add(marker);
+            lane.RegisterCallback<GeometryChangedEvent>(_ => Place(false));
+            overflow.AddToClassList("fellowship-track-overflow");
+            lane.Add(overflow);
+            Value = new Label { name = valueName, pickingMode = PickingMode.Ignore };
+            Value.AddToClassList("fellowship-track-value");
+            Root.Add(Value);
+        }
+
+        // Only the visible track carries the move; its name stays the Fellowship's progress action.
+        public void Offer(bool offered, string name, string tooltip)
+        {
+            Move.name = name;
+            Move.SetEnabled(offered);
+            Move.EnableInClassList(MoveClass, offered);
+            Move.tooltip = offered ? tooltip : "";
+            if (offered)
+                pulse.Resume();
+            else
+            {
+                pulse.Pause();
+                Move.RemoveFromClassList(BrightClass);
+            }
+        }
+
+        public void Apply(FellowshipTrackState state)
+        {
+            Root.tooltip = state.Description;
+            Value.text = state.Value.ToString();
+            Value.tooltip = state.Description;
+            Root.EnableInClassList("track-overflow", state.BeyondTrack);
+            if (selected != state.Position)
+            {
+                if (selected >= 0)
+                    cells[selected].RemoveFromClassList("selected");
+                var moved = selected >= 0;
+                selected = state.Position;
+                cells[selected].AddToClassList("selected");
+                Place(true);
+                if (moved)
+                    Flash();
+            }
+            marker.sprite = FellowshipArtwork.Sprite(state.Symbol);
+            overflow.style.display = state.BeyondTrack ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        // AUDIO-06: a moved marker is briefly marked; with Reduced motion it stands for the glide (Wotr.uss).
+        public const string ChangedClass = "track-changed";
+
+        private void Flash()
+        {
+            Root.AddToClassList(ChangedClass);
+            Root.schedule.Execute(() => Root.RemoveFromClassList(ChangedClass)).StartingIn(300);
+        }
+
+        // Only a new position glides; a first or resized layout places the marker at once,
+        // so a loaded board or a scale change never replays travel.
+        private void Place(bool glide)
+        {
+            if (selected < 0)
+                return;
+            var cell = cells[selected].layout;
+            if (float.IsNaN(cell.width) || cell.width <= 0)
+                return;
+            if (!glide)
+                marker.RemoveFromClassList(GlidingClass);
+            marker.style.left = cell.x;
+            marker.style.width = cell.width;
+            overflow.style.left = cell.xMax - OverflowWidth;
+            if (!marker.ClassListContains(GlidingClass))
+                marker.schedule.Execute(() => marker.AddToClassList(GlidingClass));
+        }
+    }
+}

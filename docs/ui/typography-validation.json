@@ -1,0 +1,187 @@
+{
+  "task": "TYPO-01",
+  "unity": "6000.6.0f1",
+  "runtime_test_platform": "macOS ARM64",
+  "source_base_commit": "f0c590f6ed26056c7e09e9568e00dd4c7d991e73",
+  "source_files": {
+    "unity/Wotr.Client/Assets/Wotr/Editor/TypographyAssets.cs": "fcf94c76d568b5cf59dca58d2cda3ae05d5fde888ff8df41d874b20c79746a45",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr.uss": "84db52bffb439873d3c4a56c7cac8c42ffe5329799b327ea23a209adbe1635bd",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Styles/Typography.uss": "1837757bb55206efb6d1e6be15e1e268d34ac676d52dbbc177c720872c30708a",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/sources.json": "8ef126d6860b0ffef01427dd860bcb11c13c7495c76464b6c368b81b4c718320",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-SemiBold.ttf": "a996050cfcdab1b75d2b5fbd636d48e7453eb966ec0c285df8549547adc5f9f1",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-SemiBold.ttf.meta": "d913ce032847155b62fa271c27f5fab722939009b59a928d7ce0349debd772e7",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Cinzel-SemiBold.ttf": "e3547d5168f281d6cc77a23138337d33fe651b1277567f466ab4074cc70fd8ef",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Cinzel-SemiBold.ttf.meta": "7018febe0f81415fa72032fe936c5ed3ef959f29becc74cace36fb7352253144",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Cinzel-SemiBold.asset.meta": "23f3f9d6ef351af455d488ef479c9fbf34eb26b8245b9929940bfc0d7c6fc3d8",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-Regular.asset.meta": "91c37a957d4faef27321ed203ce3124b1fdb563c42e2f814113391e5a8318cc9",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-Regular.asset": "7a494038c412d3f1cad2a23599a114f30ff755eefb0e1e4780064d835e771a02",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-SemiBold.asset.meta": "2a9dccb27435acbbfb3c7c1fd23ab8aa848c7a5db6a0accd853963e63605902b",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-Regular.ttf.meta": "ef381a9073cee78bca337cfe0f7e7434c610e21c2e4bdc83b844f7f0f5a2f680",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Cinzel-SemiBold.asset": "fdc75533e142b55b1260c57955bdde097054fb162a081a51fb70d44c3505f1d9",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/sources.json.meta": "fbdf916d254abefaf165cb015bb70dfc759f7b33588857e75850dc10365fcb52",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-SemiBold.asset": "a4457a601cf853284dfa3e5b8e603fe7bffd8d26661cd022af62e56345809169",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Fonts/Alegreya-Regular.ttf": "16fa28707d565b1c215743b212e970ab3e900375b0077ccf1d364f02a9b08948"
+  },
+  "fonts": {
+    "license": "SIL OFL 1.1",
+    "fonts": [
+      {
+        "file": "Cinzel-SemiBold.ttf",
+        "family": "Cinzel",
+        "weight": 600,
+        "source_url": "https://raw.githubusercontent.com/google/fonts/67bc647ce1910e92f461bcc82aae30f21d21a9cc/ofl/cinzel/Cinzel%5Bwght%5D.ttf",
+        "source_sha256": "f4d83d34d1f6c741193e4acf4b3dff9531e5a67b6aa65228d00a7db72a4e0f34",
+        "sha256": "e3547d5168f281d6cc77a23138337d33fe651b1277567f466ab4074cc70fd8ef",
+        "conversion": "fontTools 4.67.0; instantiateVariableFont wght=600; English static family/style/full/PostScript names; recalcTimestamp=False",
+        "license": "Assets/StreamingAssets/ThirdPartyLicenses/cinzel-OFL.txt"
+      },
+      {
+        "file": "Alegreya-Regular.ttf",
+        "family": "Alegreya",
+        "weight": 400,
+        "source_url": "https://raw.githubusercontent.com/google/fonts/67bc647ce1910e92f461bcc82aae30f21d21a9cc/ofl/alegreya/Alegreya%5Bwght%5D.ttf",
+        "source_sha256": "ba5564634b93a8f8ba57b48cd4f1ae7417d2b4656fbac779028679b00de3cf12",
+        "sha256": "16fa28707d565b1c215743b212e970ab3e900375b0077ccf1d364f02a9b08948",
+        "conversion": "fontTools 4.67.0; instantiateVariableFont wght=400; English static family/style/full/PostScript names; recalcTimestamp=False",
+        "license": "Assets/StreamingAssets/ThirdPartyLicenses/alegreya-OFL.txt"
+      },
+      {
+        "file": "Alegreya-SemiBold.ttf",
+        "family": "Alegreya",
+        "weight": 600,
+        "source_url": "https://raw.githubusercontent.com/google/fonts/67bc647ce1910e92f461bcc82aae30f21d21a9cc/ofl/alegreya/Alegreya%5Bwght%5D.ttf",
+        "source_sha256": "ba5564634b93a8f8ba57b48cd4f1ae7417d2b4656fbac779028679b00de3cf12",
+        "sha256": "a996050cfcdab1b75d2b5fbd636d48e7453eb966ec0c285df8549547adc5f9f1",
+        "conversion": "fontTools 4.67.0; instantiateVariableFont wght=600; English static family/style/full/PostScript names; recalcTimestamp=False",
+        "license": "Assets/StreamingAssets/ThirdPartyLicenses/alegreya-OFL.txt"
+      }
+    ]
+  },
+  "editmode": {
+    "passed": 728,
+    "failed": 0,
+    "skipped": 0,
+    "report": ".artifacts/typography-edit-integrated.xml",
+    "sha256": "1e5deaea378fbfbccd53b4cf665d6d5f98e6168951a1e5655a5cd87fb3c5f3a0"
+  },
+  "playmode": {
+    "unique_cases": 17,
+    "latest_passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "note": "Aggregation of the latest results of targeted cases, not full PlayMode. The first run with the correct font was 1 FAIL; repaired and re-established in typography-network.",
+    "runs": [
+      {
+        "report": ".artifacts/typography-layout-verified.xml",
+        "sha256": "6bd360981ea5da4c9c11153d923fd2932ea7129a8ab64b225dba5945add62bd4",
+        "source_base": "fb0e39f",
+        "passed": 9,
+        "failed": 1,
+        "skipped": 0,
+        "start": "2026-10-14 21:43:52Z",
+        "end": "2026-10-14 21:44:27Z",
+        "cases": {
+          "Wotr.PlayTests.AuthScreenLayoutTests.RegistrationRequirementsErrorsAndFocusFitAtBothSizesAndScales": "Passed",
+          "Wotr.PlayTests.BattleLayoutTests.AllBattleWindowsKeepTheMapVisibleAndFitWithoutScrollOrNumericFields": "Passed",
+          "Wotr.PlayTests.BattleLayoutTests.IncomingBattleDoesNotOpenOrPanAndExplicitPanelKeepsLosses": "Passed",
+          "Wotr.PlayTests.BattleLayoutTests.RevealChangesBackToInspectedCombatTextAndReportKeepsActualRerolls": "Passed",
+          "Wotr.PlayTests.CardViewportLayoutTests.ActionCardFitsBothEffectsAtFourLayoutsAndKeepsPinnedPositionAfterRefresh": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.FellowshipGroupsHuntAndMordorFitBothSizesAndScalesWithoutScrolling": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.GuideModeShowsItsConsequenceAndKeepsAllPortraitsReachable": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.NamedStatusAndActionsRemainStableAndReadableAtEveryLayout": "Failed",
+          "Wotr.PlayTests.FellowshipLayoutTests.RegionalRouteKeepsAllEightNeighborsReachableBesidePinnedCard": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.RevealRouteKeepsDistinctPathsAndHuntContextWhileInspectingTheMap": "Passed"
+        }
+      },
+      {
+        "report": ".artifacts/typography-network.xml",
+        "sha256": "500426ac5362af7cd2823339754ef75668751499319a1a3762ca3011a0737a9e",
+        "source_base": "fb0e39f",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "start": "2026-10-14 21:46:34Z",
+        "end": "2026-10-14 21:47:15Z",
+        "cases": {
+          "Wotr.PlayTests.FellowshipLayoutTests.FellowshipGroupsHuntAndMordorFitBothSizesAndScalesWithoutScrolling": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.GuideModeShowsItsConsequenceAndKeepsAllPortraitsReachable": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.NamedStatusAndActionsRemainStableAndReadableAtEveryLayout": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.RegionalRouteKeepsAllEightNeighborsReachableBesidePinnedCard": "Passed",
+          "Wotr.PlayTests.FellowshipLayoutTests.RevealRouteKeepsDistinctPathsAndHuntContextWhileInspectingTheMap": "Passed",
+          "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts": "Passed"
+        }
+      },
+      {
+        "report": ".artifacts/typography-menu-hand.xml",
+        "sha256": "f1762f03e24130fad5d68bb8a195643fa960c6cc980c51fd5850fbf431660f1d",
+        "source_base": "fb0e39f",
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "start": "2026-10-14 21:47:58Z",
+        "end": "2026-10-14 21:48:14Z",
+        "cases": {
+          "Wotr.PlayTests.HandCardLayoutTests.CardsUnrollUpwardOverTheOthersWithoutMovingThemInFourLayouts": "Passed",
+          "Wotr.PlayTests.HandCardLayoutTests.OneClickOnTheUnrolledCardDiscardsIt": "Passed",
+          "Wotr.PlayTests.MainMenuLayoutTests.EntryMenuHostWaitingAndSettingsFitBothSizesAndScales": "Passed"
+        }
+      },
+      {
+        "report": ".artifacts/typography-hunt-final.xml",
+        "sha256": "68df0a6f6014c0491e47d2c9d75e7de85989df80e1eaf2cd9ba6fc2b05c2fb59",
+        "source_base": "f0c590f6ed26056c7e09e9568e00dd4c7d991e73",
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "start": "2026-10-14 21:52:25Z",
+        "end": "2026-10-14 21:52:35Z",
+        "cases": {
+          "Wotr.PlayTests.HuntNetworkTests.LegalZeroAllocationRollsWithoutChoosingAnyDie": "Passed",
+          "Wotr.PlayTests.HuntNetworkTests.RequiredAllocationKeepsTheExactDieAtItsLimit": "Passed",
+          "Wotr.PlayTests.HuntNetworkTests.SeveralDiceAllocateByClicksAndDragWithOneRecoverableCommand": "Passed"
+        }
+      }
+    ]
+  },
+  "builds": {
+    "macos_universal": "Success",
+    "windows_x64": "Success",
+    "windows_runtime_tested": false
+  },
+  "plain_text_license_packaging": [
+    {
+      "platform": "macos",
+      "file": "alegreya-OFL.txt",
+      "sha256": "f6f60d5d4cf4f4b1fc4e41353c897a2f5a16e6396c0cd8fa8bdfd2f4586a9a68"
+    },
+    {
+      "platform": "macos",
+      "file": "cinzel-OFL.txt",
+      "sha256": "f2b3029aba64c378bf0963b62945eee15e564fe4330b934c8f2eb058282b5e83"
+    },
+    {
+      "platform": "macos",
+      "file": "FONT-NOTICES.txt",
+      "sha256": "eb5adf391ef748ec8c26fdcdd548f92f8bb50b87ea9787acfedebfea81c18407"
+    },
+    {
+      "platform": "windows",
+      "file": "alegreya-OFL.txt",
+      "sha256": "f6f60d5d4cf4f4b1fc4e41353c897a2f5a16e6396c0cd8fa8bdfd2f4586a9a68"
+    },
+    {
+      "platform": "windows",
+      "file": "cinzel-OFL.txt",
+      "sha256": "f2b3029aba64c378bf0963b62945eee15e564fe4330b934c8f2eb058282b5e83"
+    },
+    {
+      "platform": "windows",
+      "file": "FONT-NOTICES.txt",
+      "sha256": "eb5adf391ef748ec8c26fdcdd548f92f8bb50b87ea9787acfedebfea81c18407"
+    }
+  ],
+  "superseded_checks": [
+    "The first run used a fallback due to missing references USS; it does not constitute verification of typography.",
+    "Typography-layout-verified: 9/10, cut track digit Fellowship. Increased small text fields, repeat 6/6 in typography-network."
+  ]
+}

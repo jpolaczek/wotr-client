@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="28" viewBox="-1 0 22 28">
+  <!-- UI-100: one opponent notification as a small pennant hung from a gilt rod; it replaces the long UI-99 ribbon.
+       Variants free/shadow carry the enamel of the side whose action it announces. Fixed-size icon, not 9-sliced. -->
+  <defs>
+    <linearGradient id="pennant-enamel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.55" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <!-- Pennant body with a swallowtail foot. -->
+    <path d="M3.2 3.6 H16.8 V25.4 L10 21.2 L3.2 25.4 Z" fill="url(#pennant-enamel)"/>
+    <path d="M4 4.4 H9 V20.4 L4 23.6 Z" fill="#ffffff" opacity="0.07"/>
+    <path d="M3.2 3.6 H16.8 V25.4 L10 21.2 L3.2 25.4 Z" fill="none" stroke="url(#gilt)" stroke-width="1" stroke-linejoin="miter"/>
+    <path d="M5.2 5.6 H14.8 V21.8 L10 18.9 L5.2 21.8 Z" fill="none" style="stroke: var(--gilt-dim)" stroke-width="0.55" opacity="0.9"/>
+    <!-- Gilt four-pointed star. -->
+    <path d="M10 7.6 L11.1 11 L14.4 12.1 L11.1 13.2 L10 16.6 L8.9 13.2 L5.6 12.1 L8.9 11 Z"
+          fill="url(#gilt-diagonal)" style="stroke: var(--gilt-shadow)" stroke-width="0.4" stroke-linejoin="round"/>
+    <!-- Rod with round finials. -->
+    <rect x="1.4" y="2" width="17.2" height="2.2" rx="1.1" fill="url(#gilt)" style="stroke: var(--gilt-shadow)" stroke-width="0.45"/>
+    <circle cx="1.9" cy="3.1" r="1.35" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-shadow)" stroke-width="0.4"/>
+    <circle cx="18.1" cy="3.1" r="1.35" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-shadow)" stroke-width="0.4"/>
+  </g>
+</svg>

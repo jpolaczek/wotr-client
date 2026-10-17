@@ -1,0 +1,25 @@
+Use case: compositing
+Asset type: terrain illustration layer for a Middle-earth strategy board map, to be combined with an existing authoritative SVG region grid.
+
+Primary request: Create a new complete, text-free terrain map in the EXACT viewport and geographic layout of input image 1. Replace the printed board presentation with clean illustrated terrain suitable for later restyling. This must be an edit of the supplied spatial layout, not a newly arranged Tolkien map.
+
+Input images:
+1. source-layout-reference.png: PRIMARY spatial edit target. This has the precise current crop and corrected region outlines in magenta. Retain its coastline, relative feature positions, proportions and full framing. The purple paths are alignment guides only, to omit from the terrain layer.
+2. map-regions.png: locked territorial geometry for the same viewport. The white region cells and exterior coastline establish exact positions. Do not reinterpret or rearrange these cells. The exterior black/transparent portions in the west/south are ocean; the curved excluded upper-right corner is a board UI cutout, NOT a sea or bay.
+3. s-l1600.webp: reference for the geographical inventory, small ink mountains, tree clusters, river network, marshes and minor hills. Use the target's layout, not this reference's projection.
+4. 718b9hBS4AL._AC_SL1000_.jpg: supporting terrain drawing reference only.
+5. 71oBODdvMNL._AC_SL1500_.jpg: supporting terrain drawing reference only.
+
+What to draw: clear mountain chains and foothills; dense but individually legible forest stands; thin winding blue rivers and tributaries; blue lakes; open western and southern sea with restrained wave contours; marsh reeds and channels; grasslands and sparse hills; small recognizable architectural illustrations for the main strongholds, towns, ruins and harbors in the printed source. Each landmark should be small and subordinate to terrain, not a giant icon.
+
+Placement: follow input 1 exactly. The Blue Mountains run near the western coast. Misty Mountains run roughly down the middle from the northern highlands to Isengard; their east-side forests are Lorien and Fangorn. Mirkwood is the long forest east of Anduin. The White Mountains run west-east above Gondor. Mordor has a north and west mountain wall, southern mountains, a volcanic interior and its inland lake. Preserve the western gulf, southern capes, Lake Evendim, Sea of Rhun, Sea of Nurnen, and Anduin outlet as in the target. Do not confuse politically colored halos in the source with water.
+
+Approximate landmark centers as PERCENT of this exact output frame (x from left, y from top), for alignment only, DO NOT print these coordinates:
+Grey Havens (8,23), Rivendell (44,16), Erebor (70,12), Iron Hills (80,13), Old Forest (26,28), Lorien (49,37), southern Mirkwood/Dol Guldur (61,39), Fangorn (48,48), Orthanc (42,52), Helm's Deep (43,63), Minas Tirith (62,70), Dead Marshes (65,59), Morannon (76,62), Minas Morgul (75,70), Barad-dur (86,62). Mount Doom is a single small volcano inside northwest Mordor near (83,69). The Mirkwood forest occupies about x57-67%, y17-43%. Keep the forests in their appropriate region footprints.
+
+Style: detailed traditional cartographic pen-and-ink terrain on a very light warm ivory land base, restrained natural washes (muted olive forests, pale slate-blue water, warm gray mountains), even clarity, fine outlines and delicate hatching. A practical clean geography base, not a finished decorated poster. Keep open plains spacious. No heavy parchment stains or ornate borders. Consistent top-down map view with conventional small pictorial relief mountains and trees.
+
+Remove ALL text and gameplay graphics from input 1: every place label, title, number, rune, letter, scale, legend, compass letter, logo, colored political glow, round counter, token, dice symbol, faction banner, printed settlement square, portrait, card area and decorative frame. Reconstruct quiet matching terrain where these were removed. The upper-right UI cutout becomes quiet pale parchment, without inventing a new coast.
+
+CRITICAL: The final terrain layer must have NO administrative/region boundary lines (black, white, magenta or colored). We will overlay the ORIGINAL vector paths separately. Rivers and true shorelines remain. Do not convert every region edge into a river or mountain chain. Do not add any text, pseudo-writing, grid, compass, watermark or inset map.
+Keep the full source aspect ratio 6144:5037 (approximately 1.22:1), all landmarks aligned to the existing composition, no crop, no zoom, no rotation, no perspective tilt. Render at the highest practical resolution, with detailed terrain at close inspection.

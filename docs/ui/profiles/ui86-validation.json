@@ -1,0 +1,176 @@
+{
+  "task": "UI-86",
+  "date": "2026-10-09",
+  "commits": {
+    "art_kit": "1a0b038",
+    "implementation": "ba0dcbc"
+  },
+  "reports": {
+    "editor_topbar": {
+      "report": ".artifacts/ui86/editor-topbar1.xml",
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "41d7d9d71fec427df317be4badfdbdf2135d0f382bf4c3d2bfc8972423a1f444"
+    },
+    "editor_full": {
+      "report": ".artifacts/ui86/editor4.xml",
+      "total": 613,
+      "passed": 613,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "e6be6b8d6e0d13d19f7fdbdd322c1d394cc31876ae97a8d521e727a3674e976e"
+    },
+    "play_topbar_first": {
+      "report": ".artifacts/ui86/topbar1.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "2dc73831dddea02285ea2c071d23071b99da7244749e115ebdcad3b37af47c5f"
+    },
+    "play_regression_before_fix": {
+      "report": ".artifacts/ui86/regression2.xml",
+      "total": 63,
+      "passed": 58,
+      "failed": 5,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+        "Wotr.PlayTests.HuntLayoutTests.DockedHuntSurvivesCloseRefreshAndKeepsChoicesUntilANewOwnDecision",
+        "Wotr.PlayTests.InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered"
+      ],
+      "sha256": "6f478f639940bdbf49e541eb0542caf5945e4a60128812387bbf10c9bbf9e5e1"
+    },
+    "play_regression_final": {
+      "report": ".artifacts/ui86/regression3.xml",
+      "total": 65,
+      "passed": 59,
+      "failed": 6,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+        "Wotr.PlayTests.InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered",
+        "Wotr.PlayTests.MapVisibilityTests.FellowshipMarkerStaysUnderPointerWhenItsOwnPanelReplacesRegionInspection",
+        "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce"
+      ],
+      "sha256": "905f2a4bf0bffc16b728a46156284232ea2dfa2daa7fb527691203637d9388a7"
+    },
+    "baseline_a2bf1f6_five": {
+      "report": ".artifacts/ui86/baseline-five.xml",
+      "total": 5,
+      "passed": 1,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+        "Wotr.PlayTests.InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered"
+      ],
+      "sha256": "233b61e22283bff739856c0df4538d4a603b1ed2e8c2dcd824a989be8f2b514e"
+    },
+    "baseline_a2bf1f6_map_visibility": {
+      "report": ".artifacts/ui86/baseline-mapvisibility.xml",
+      "total": 2,
+      "passed": 0,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.MapVisibilityTests.FellowshipMarkerStaysUnderPointerWhenItsOwnPanelReplacesRegionInspection",
+        "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce"
+      ],
+      "sha256": "ca396415db1e8fd427e22d7ce5cbc3d5a14bb6cc3d3f104818d2a5ff5ccbccdc"
+    }
+  },
+  "regression_attribution": {
+    "introduced_by_ui86_and_fixed": [
+      "Wotr.PlayTests.HuntLayoutTests.DockedHuntSurvivesCloseRefreshAndKeepsChoicesUntilANewOwnDecision: phase label centre fell 25 pt from the top, inside the 26 pt edge-pan band; content is now centred at 28 pt and TopBarLayoutTests asserts zero edge-pan velocity there."
+    ],
+    "preexisting_on_a2bf1f6_identical_messages": [
+      "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+      "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+      "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame",
+      "Wotr.PlayTests.InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered",
+      "Wotr.PlayTests.MapVisibilityTests.FellowshipMarkerStaysUnderPointerWhenItsOwnPanelReplacesRegionInspection",
+      "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce"
+    ],
+    "method": "Same isolated checkout mirrored to git a2bf1f6 with .artifacts/ui86/use-tree.sh, then back to the worktree."
+  },
+  "imports": {
+    "import-1.json": "3106727e246115f3ab3c13ea4c12226acadf5b425e92a12c6299e9a494f018e2",
+    "import-2.json": "74d42bd7a3cfabb21e2639a3848c6ef63a9dac404acef74a0671fde65ad24eff",
+    "import-3.json": "8a4e66e6c0ca60b64384162db16b9bfba03adc3bb1584b05a2fbcadc1c57bd91",
+    "import-4.json": "8a4e66e6c0ca60b64384162db16b9bfba03adc3bb1584b05a2fbcadc1c57bd91"
+  },
+  "screenshots": {
+    "folder": ".artifacts/ui25/checkout/.artifacts/screenshots",
+    "files": [
+      "ui86-topbar-unrolled-FreePeoples-1366-1.00.png",
+      "ui86-topbar-unrolled-FreePeoples-1366-1.25.png",
+      "ui86-topbar-unrolled-FreePeoples-1920-1.00.png",
+      "ui86-topbar-unrolled-FreePeoples-1920-1.25.png",
+      "ui86-topbar-unrolled-Shadow-1366-1.00.png",
+      "ui86-topbar-unrolled-Shadow-1366-1.25.png",
+      "ui86-topbar-unrolled-Shadow-1920-1.00.png",
+      "ui86-topbar-unrolled-Shadow-1920-1.25.png"
+    ],
+    "reviewed": [
+      "ui86-topbar-unrolled-FreePeoples-1920-1.00.png",
+      "ui86-topbar-unrolled-FreePeoples-1366-1.25.png",
+      "ui86-topbar-unrolled-Shadow-1920-1.25.png",
+      "ui86-topbar-unrolled-Shadow-1366-1.00.png",
+      "ui86-topbar-unrolled-Shadow-1366-1.25.png"
+    ]
+  },
+  "art": {
+    "manifest": "graphicalassets/ui/manifest.json",
+    "manifest_sha256": "277af00e4a10e6daac684d6d9bb7dea86b458ef9116dc788ec084d5bfd9304f3",
+    "textures": 17,
+    "deterministic_rerender": "render.py rerun left all 17 PNG and manifest byte-identical; only the preview changed with the layout."
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "source": ".artifacts/ui86/BuildLocalMac-source.json",
+      "sha256": "dc0b6631ee6a7fe895f81eb8a2c515db3963e023a1f3df5310e3a279616c00e1",
+      "commit": "ba0dcbc6c9170df3dde6ce25220a51c5140e6dec",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui86/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui86/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui86/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64",
+      "output_files": 158,
+      "runtime_resources_files_matching_workspace": 803
+    },
+    "BuildLocalWindows": {
+      "source": ".artifacts/ui86/BuildLocalWindows-source.json",
+      "sha256": "bf68149cc8885baa7091c45d8aeb35b731510048effc6259057914ed54bc1659",
+      "commit": "ba0dcbc6c9170df3dde6ce25220a51c5140e6dec",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui86/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows",
+      "output_files": 157,
+      "runtime_resources_files_matching_workspace": 803
+    }
+  },
+  "macos_smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui86.smoke",
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 803,
+    "original_profile_byte_identical": false,
+    "login_tested": false,
+    "windows_runtime_tested": false,
+    "screenshot": ".artifacts/ui86/isolated-smoke/run/login.png (reviewed: login screen, no exceptions)"
+  },
+  "limits": [
+    "Windows runtime, Intel Mac and a manual match were not run.",
+    "Smoke reaches the login screen; the board top bar was reviewed in Editor Play screenshots, not in the Player.",
+    "Live client preference file is not claimed byte-identical: Editor PlayMode tests write test.interface.* keys to the same PlayerPrefs domain (pre-existing harness behaviour, also noted in UI-85).",
+    "Six Play failures predate UI-86 (see regression_attribution); they are not accepted here."
+  ]
+}

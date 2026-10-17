@@ -1,0 +1,241 @@
+[
+  {
+    "id": "base.character.gimli",
+    "title": "Gimli",
+    "identity": "gimli",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "dwarves",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "combat-strength-plus-one",
+      "politics-dwarves-at-erebor"
+    ]
+  },
+  {
+    "id": "base.character.boromir",
+    "title": "Boromir",
+    "identity": "boromir",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "gondor",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "combat-strength-plus-one",
+      "politics-gondor-at-city-or-stronghold"
+    ]
+  },
+  {
+    "id": "base.character.legolas",
+    "title": "Legolas",
+    "identity": "legolas",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "elves",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "combat-strength-plus-one",
+      "politics-elves-at-stronghold"
+    ]
+  },
+  {
+    "id": "base.character.gandalf-grey",
+    "title": "Gandalf the Grey",
+    "identity": "gandalf",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 3,
+    "leadership": 1,
+    "nationIcon": "free-peoples",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "guide-draw-after-event-die-card",
+      "combat-strength-plus-one",
+      "may-transform-to-white"
+    ]
+  },
+  {
+    "id": "base.character.strider",
+    "title": "Strider",
+    "identity": "aragorn",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 3,
+    "leadership": 1,
+    "nationIcon": "north",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "guide-hide-with-any-action-die",
+      "combat-strength-plus-one",
+      "may-transform-to-aragorn"
+    ]
+  },
+  {
+    "id": "base.character.pippin",
+    "title": "Peregrin Took",
+    "identity": "pippin",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 1,
+    "leadership": 1,
+    "nationIcon": "free-peoples",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "guide-separate-to-reduce-hunt-one",
+      "return-after-fellowship-elimination-except-mordor"
+    ]
+  },
+  {
+    "id": "base.character.merry",
+    "title": "Meriadoc Brandybuck",
+    "identity": "merry",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 1,
+    "leadership": 1,
+    "nationIcon": "free-peoples",
+    "initial": true,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "guide-separate-to-reduce-hunt-one",
+      "return-after-fellowship-elimination-except-mordor"
+    ]
+  },
+  {
+    "id": "base.character.gandalf-white",
+    "title": "Gandalf the White",
+    "identity": "gandalf",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 3,
+    "leadership": 1,
+    "nationIcon": "free-peoples",
+    "initial": false,
+    "extraActionDice": 1,
+    "unlimitedMovement": false,
+    "abilities": [
+      "move-four-alone-or-with-one-hobbit",
+      "forfeit-leadership-to-cancel-nazgul-for-battle"
+    ]
+  },
+  {
+    "id": "base.character.aragorn",
+    "title": "Aragorn",
+    "identity": "aragorn",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 3,
+    "leadership": 2,
+    "nationIcon": "free-peoples",
+    "initial": false,
+    "extraActionDice": 1,
+    "unlimitedMovement": false,
+    "abilities": [
+      "combat-strength-plus-one"
+    ]
+  },
+  {
+    "id": "base.character.gollum",
+    "title": "Gollum",
+    "identity": "gollum",
+    "side": "FreePeoples",
+    "role": "Guide",
+    "level": null,
+    "leadership": null,
+    "nationIcon": null,
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "enter-and-guide-when-no-companions",
+      "ignore-standard-numbered-reveal",
+      "voluntary-reveal-to-reduce-hunt-one"
+    ]
+  },
+  {
+    "id": "base.character.ring-bearers",
+    "title": "The Ring-bearers",
+    "identity": "ring-bearers",
+    "side": "FreePeoples",
+    "role": "Fellowship",
+    "level": null,
+    "leadership": null,
+    "nationIcon": "free-peoples",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "add-gollum-when-no-companions"
+    ]
+  },
+  {
+    "id": "base.character.saruman",
+    "title": "Saruman",
+    "identity": "saruman",
+    "side": "Shadow",
+    "role": "Minion",
+    "level": 0,
+    "leadership": 1,
+    "nationIcon": "isengard",
+    "initial": false,
+    "extraActionDice": 1,
+    "unlimitedMovement": false,
+    "abilities": [
+      "cannot-leave-orthanc",
+      "muster-each-isengard-settlement-or-upgrade-two",
+      "isengard-elites-have-leadership"
+    ]
+  },
+  {
+    "id": "base.character.mouth-of-sauron",
+    "title": "The Mouth of Sauron",
+    "identity": "mouth-of-sauron",
+    "side": "Shadow",
+    "role": "Minion",
+    "level": 3,
+    "leadership": 2,
+    "nationIcon": "sauron",
+    "initial": false,
+    "extraActionDice": 1,
+    "unlimitedMovement": false,
+    "abilities": [
+      "muster-as-army-once-per-turn"
+    ]
+  },
+  {
+    "id": "base.character.witch-king",
+    "title": "The Witch-king",
+    "identity": "witch-king",
+    "side": "Shadow",
+    "role": "Minion",
+    "level": null,
+    "leadership": 2,
+    "nationIcon": "sauron",
+    "initial": false,
+    "extraActionDice": 1,
+    "unlimitedMovement": true,
+    "abilities": [
+      "entry-activates-all-free-peoples",
+      "draw-after-first-round-combat-card"
+    ]
+  }
+]

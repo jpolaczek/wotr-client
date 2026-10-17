@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="336" height="88" viewBox="0 0 336 88">
+  <!-- UI-120 painted-style strip for the field battle: seamless at x=0/336, displayed 168x44 pt, repeated horizontally. -->
+  <defs>
+    <linearGradient id="field-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121e24"/><stop offset="0.55" stop-color="#27434f"/><stop offset="1" stop-color="#5d7571"/></linearGradient>
+    <linearGradient id="field-far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c4f49"/><stop offset="1" stop-color="#2b3a33"/></linearGradient>
+    <linearGradient id="field-ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55653a"/><stop offset="1" stop-color="#2d3a22"/></linearGradient>
+    <linearGradient id="field-stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c7f84"/><stop offset="1" stop-color="#43464c"/></linearGradient>
+    <linearGradient id="field-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.5"/></linearGradient>
+  </defs>
+  <rect width="336" height="88" fill="url(#field-sky)"/>
+  <g fill="#f4ecd0" opacity="0.5"><circle cx="40" cy="12" r="1"/><circle cx="110" cy="20" r="0.8"/><circle cx="190" cy="9" r="1.1"/><circle cx="260" cy="18" r="0.8"/><circle cx="310" cy="11" r="1"/></g>
+  <path d="M0 40 C30 30 60 34 90 38 C130 44 160 26 200 32 C240 38 280 28 336 40 V88 H0 Z" fill="url(#field-far)" opacity="0.9"/>
+  <g fill="#e9e3cf" opacity="0.10"><ellipse cx="70" cy="22" rx="26" ry="5"/><ellipse cx="230" cy="16" rx="34" ry="6"/></g>
+  <path d="M0 64 C40 54 70 56 110 62 C150 68 190 50 230 58 C270 66 300 54 336 64 V88 H0 Z" fill="#3b4a2b"/>
+  <path d="M18 62 L23 46 L28 62 Z M19 56 L23 42 L27 56 Z" fill="#1f2d1c"/><path d="M96 62 L101 46 L106 62 Z M97 56 L101 42 L105 56 Z" fill="#1f2d1c"/><path d="M150 62 L155 46 L160 62 Z M151 56 L155 42 L159 56 Z" fill="#1f2d1c"/><path d="M250 62 L255 46 L260 62 Z M251 56 L255 42 L259 56 Z" fill="#1f2d1c"/><path d="M300 62 L305 46 L310 62 Z M301 56 L305 42 L309 56 Z" fill="#1f2d1c"/>
+  <path d="M0 72 C46 64 90 66 126 74 C166 82 206 64 252 70 C292 76 316 68 336 72 V88 H0 Z" fill="url(#scene-field-ground)"/>
+  <g stroke="#8aa655" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.85">
+    <path d="M30 76 l2 -6 M34 76 l3 -5 M38 76 l1 -6"/><path d="M140 78 l2 -6 M144 78 l3 -5 M148 78 l1 -6"/><path d="M236 75 l2 -6 M240 75 l3 -5 M244 75 l1 -6"/><path d="M300 78 l2 -6 M304 78 l3 -5 M308 78 l1 -6"/>
+  </g>
+  <rect y="58" width="336" height="30" fill="url(#field-shade)"/>
+</svg>

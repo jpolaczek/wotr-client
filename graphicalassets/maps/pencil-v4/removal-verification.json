@@ -1,0 +1,153 @@
+{
+  "task": "MAP-06",
+  "locality": {
+    "changed_pixels": 1991176,
+    "outside_corridors_changed_pixels": 0,
+    "outside_corridors_maximum_gray_difference": 0,
+    "antialias_tolerance_in_working_units": 0.75
+  },
+  "river_probes": [
+    {
+      "id": "northwest",
+      "minimum_gray_before": 157,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "western-main",
+      "minimum_gray_before": 96,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "western-tributary",
+      "minimum_gray_before": 95,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "central-west-north",
+      "minimum_gray_before": 93,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "central-west-east-branch",
+      "minimum_gray_before": 60,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "central-west-main",
+      "minimum_gray_before": 101,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "southwest-loop",
+      "minimum_gray_before": 50,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "southwest-south-branch",
+      "minimum_gray_before": 126,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "gondor-west",
+      "minimum_gray_before": 83,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "gondor-center-west",
+      "minimum_gray_before": 111,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "gondor-center-east",
+      "minimum_gray_before": 101,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "gondor-east",
+      "minimum_gray_before": 111,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "gondor-east-branch",
+      "minimum_gray_before": 106,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "anduin-north",
+      "minimum_gray_before": 208,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "anduin-north-east",
+      "minimum_gray_before": 69,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "misty-tributary",
+      "minimum_gray_before": 123,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "lorien-tributary",
+      "minimum_gray_before": 137,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "fangorn-tributary",
+      "minimum_gray_before": 118,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "anduin-south",
+      "minimum_gray_before": 62,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "south-loop",
+      "minimum_gray_before": 52,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "east-north",
+      "minimum_gray_before": 122,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "mirkwood-east-branch",
+      "minimum_gray_before": 122,
+      "minimum_gray_after": 249
+    },
+    {
+      "id": "east-main",
+      "minimum_gray_before": 59,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "east-south",
+      "minimum_gray_before": 109,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "rohan-middle",
+      "minimum_gray_before": 107,
+      "minimum_gray_after": 250
+    },
+    {
+      "id": "anduin-small-residue",
+      "minimum_gray_before": 182,
+      "minimum_gray_after": 251
+    },
+    {
+      "id": "rhun-forest-gap",
+      "minimum_gray_before": 170,
+      "minimum_gray_after": 251
+    }
+  ],
+  "detail_order": [
+    "west",
+    "anduin",
+    "east",
+    "gondor"
+  ],
+  "details_are_crops_of_final_png": true
+}

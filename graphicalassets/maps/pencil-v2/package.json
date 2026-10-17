@@ -1,0 +1,7 @@
+{
+  "name": "wotr-pencil-v2-assets",
+  "private": true,
+  "dependencies": {
+    "@resvg/resvg-js": "2.6.2"
+  }
+}

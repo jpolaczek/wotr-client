@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-159: Hunt stage on the Mordor track: the Fellowship's step; a flagstone with an arrow. -->
+  <path d="M5 22 L9 12 H23 L27 22 Z" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M12 18 H19 M16.6 14.8 L20 18 L16.6 21.2" fill="none" style="stroke: var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,770 @@
+[
+  {
+    "id": "base.fp.character.01",
+    "title": "Elven Cloaks",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.02",
+    "title": "Elven Rope",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.03",
+    "title": "Phial of Galadriel",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.04",
+    "title": "Sméagol Helps Nice Master",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.05",
+    "title": "Mithril Coat and Sting",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.06",
+    "title": "Axe and Bow",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.07",
+    "title": "Horn of Gondor",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.08",
+    "title": "Wizard's Staff",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.09",
+    "title": "Athelas",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.10",
+    "title": "There is Another Way",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.11",
+    "title": "I Will Go Alone",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.12",
+    "title": "Bilbo's Song",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.13",
+    "title": "Mirror of Galadriel",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.14",
+    "title": "Challenge of the King",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.15",
+    "title": "Gwaihir the Windlord",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.16",
+    "title": "We Prove the Swifter",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.17",
+    "title": "There and Back Again",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.18",
+    "title": "The Eagles are Coming!",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.19",
+    "title": "The Ents Awake: Treebeard",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.20",
+    "title": "The Ents Awake: Huorns",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.21",
+    "title": "The Ents Awake: Entmoot",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.22",
+    "title": "Dead Men of Dunharrow",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.23",
+    "title": "House of the Stewards",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.character.24",
+    "title": "The Grey Company",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-AAA4252F"
+  },
+  {
+    "id": "base.fp.strategy.01",
+    "title": "The Last Battle",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.02",
+    "title": "A Power too Great",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.03",
+    "title": "The Power of Tom Bombadil",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.04",
+    "title": "Book of Mazarbul",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.05",
+    "title": "The Spirit of Mordor",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.06",
+    "title": "Faramir's Rangers",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.07",
+    "title": "Fear! Fire! Foes!",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.08",
+    "title": "Wisdom of Elrond",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.09",
+    "title": "The Red Arrow",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.10",
+    "title": "Help Unlooked For",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.11",
+    "title": "Paths of the Woses",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.12",
+    "title": "Through a Day and a Night",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.13",
+    "title": "Círdan’s Ships",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.14",
+    "title": "Guards of the Citadel",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.15",
+    "title": "Celeborn's Galadhrim",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.16",
+    "title": "Riders of Théoden",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.17",
+    "title": "Grimbeorn the Old, Son of Beorn",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.18",
+    "title": "Imrahil of Dol Amroth",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.19",
+    "title": "King Brand's Men",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.20",
+    "title": "Swords in Eriador",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.21",
+    "title": "Kindred of Glorfindel",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.22",
+    "title": "Dain Ironfoot's Guard",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.23",
+    "title": "Éomer, Son of Éomund",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.fp.strategy.24",
+    "title": "Thranduil's Archers",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-CC8441E3"
+  },
+  {
+    "id": "base.sh.character.01",
+    "title": "Shelob's Lair",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.02",
+    "title": "The Ring is Mine!",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.03",
+    "title": "On, On They Went",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.04",
+    "title": "Give it to Uss!",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.05",
+    "title": "Orc Patrol",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.06",
+    "title": "Isildur's Bane",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.07",
+    "title": "Foul Thing from the Deep",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.08",
+    "title": "Candles of Corpses",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.09",
+    "title": "Nazgûl Search",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.10",
+    "title": "Cruel Weather",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.11",
+    "title": "The Nazgûl Strike!",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.12",
+    "title": "Morgul Wound",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.13",
+    "title": "Lure of the Ring",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.14",
+    "title": "The Breaking of the Fellowship",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.15",
+    "title": "Worn with Sorrow and Toil",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.16",
+    "title": "Flocks of Crebain",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.17",
+    "title": "Balrog of Moria",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.18",
+    "title": "The Lidless Eye",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.19",
+    "title": "Dreadful Spells",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.20",
+    "title": "Grond, Hammer of the Underworld",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.21",
+    "title": "The Palantír of Orthanc",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.22",
+    "title": "Wormtongue",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.23",
+    "title": "The Ringwraiths Are Abroad",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.character.24",
+    "title": "The Black Captain Commands",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "BASE-CARD-SHEET-72634326"
+  },
+  {
+    "id": "base.sh.strategy.01",
+    "title": "Return to Valinor",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.02",
+    "title": "The Fighting Uruk-hai",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.03",
+    "title": "Denethor's Folly",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.04",
+    "title": "The Day Without Dawn",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.05",
+    "title": "Threats and Promises",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.06",
+    "title": "Stormcrow",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.07",
+    "title": "Shadows Gather",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.08",
+    "title": "The Shadow Lengthens",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.09",
+    "title": "The Shadow is Moving",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.10",
+    "title": "Corsairs of Umbar",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.11",
+    "title": "Rage of the Dunlendings",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.12",
+    "title": "Return of the Witch-king",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.13",
+    "title": "Half-orcs and Goblin-men",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.14",
+    "title": "Olog-hai",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.15",
+    "title": "Hill-Trolls",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.16",
+    "title": "A New Power is Rising",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.17",
+    "title": "Many Kings to the Service of Mordor",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.18",
+    "title": "The King is Revealed",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.19",
+    "title": "Shadows on the Misty Mountains",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.20",
+    "title": "Orcs Multiplying Again",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.21",
+    "title": "Horde from the East",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.22",
+    "title": "Monsters Roused",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.23",
+    "title": "Musterings of Long-planned War",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  },
+  {
+    "id": "base.sh.strategy.24",
+    "title": "Pits of Mordor",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "BASE-CARD-SHEET-40183E02"
+  }
+]

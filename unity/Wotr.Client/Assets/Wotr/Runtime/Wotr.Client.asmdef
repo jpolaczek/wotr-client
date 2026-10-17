@@ -1,0 +1,5 @@
+{
+  "name": "Wotr.Client",
+  "rootNamespace": "Wotr.Client",
+  "references": ["Wotr.Contracts", "Unity.Newtonsoft.Json"]
+}

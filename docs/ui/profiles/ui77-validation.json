@@ -1,0 +1,2645 @@
+{
+  "schema": "ui77-final-acceptance-v1",
+  "recorded_at_utc": "2026-10-09T07:01:04.844123+00:00",
+  "task": "UI-77",
+  "status_authority": "docs/tasks/tasks.json; this file records evidence, not workflow status",
+  "code_commit": "53ff2021f71dc15faa733a67cbc4ae9dab8d982b",
+  "product_runtime_commit": "dd1a1684a6e4b2688bcd7f5e284d6293f06e08cf",
+  "source_continuity": {
+    "non_development_product_unchanged_from_import25": true,
+    "changed_files": [
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Diagnostics/DesktopProfileScene.cs",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Diagnostics/FigureMotionProfileScene.cs",
+      "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardProfileDriverTests.cs",
+      "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FigureMotionNetworkTests.cs"
+    ],
+    "diagnostics_guard": "UNITY_EDITOR || DEVELOPMENT_BUILD",
+    "tested_import_files": 1349,
+    "import28_sha256": "6e233c671f74283fbcfd1d17c4ff4108435de7b764ca8a4e3868a54401c2e77a",
+    "code_commit": "53ff202",
+    "release_build_commit": "dd1a168",
+    "legacy_suite_unchanged": true
+  },
+  "final_tests": {
+    "editor": {
+      "path": ".artifacts/ui77/final-edit28.xml",
+      "sha256": "9985d8ad8d62d785eedd0d0d81216b00922bdf369a9e8e134449bdb703c25380",
+      "attributes": {
+        "id": "2",
+        "testcasecount": "600",
+        "result": "Passed",
+        "total": "600",
+        "passed": "600",
+        "failed": "0",
+        "inconclusive": "0",
+        "skipped": "0",
+        "asserts": "0",
+        "engine-version": "3.5.0.0",
+        "clr-version": "4.0.30319.42000",
+        "start-time": "2026-10-09 06:51:27Z",
+        "end-time": "2026-10-09 06:51:42Z",
+        "duration": "15.0537863"
+      }
+    },
+    "play": {
+      "distinct_cases": 60,
+      "latest_results": {
+        "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsMapPanAndCaptureWithoutClosingInspectionOrUndoingTheDie": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "source_sha256": "06f566bc5e36a3a97f624008d30eaf2b79fd30dcc2db9536e60eb913334bfe22"
+        },
+        "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "source_sha256": "06f566bc5e36a3a97f624008d30eaf2b79fd30dcc2db9536e60eb913334bfe22"
+        },
+        "Wotr.PlayTests.BoardMenuLayoutTests.MenuFitsFourLayoutsAndOutsideReleaseCannotReachTheMap": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "source_sha256": "06f566bc5e36a3a97f624008d30eaf2b79fd30dcc2db9536e60eb913334bfe22"
+        },
+        "Wotr.PlayTests.BoardMenuLayoutTests.OneEscapeClosesOneWindowThenOneSelectionThenOpensMenuAndPreservesFocus": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "source_sha256": "06f566bc5e36a3a97f624008d30eaf2b79fd30dcc2db9536e60eb913334bfe22"
+        },
+        "Wotr.PlayTests.BoardMenuLayoutTests.SettingsEscapeRemainsOwnedUntilReleaseAfterFocusReturnsToBoard": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "source_sha256": "06f566bc5e36a3a97f624008d30eaf2b79fd30dcc2db9536e60eb913334bfe22"
+        },
+        "Wotr.PlayTests.BoardMenuLayoutTests.SettingsKeyboardObservationDoesNotConsumeOtherScreensAndDetachesWithBoard": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "source_sha256": "06f566bc5e36a3a97f624008d30eaf2b79fd30dcc2db9536e60eb913334bfe22"
+        },
+        "Wotr.PlayTests.ContextHoverTests.ClickedCardSurvivesPointerAndFocusExitAndClosesExplicitly": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.ContextHoverTests.ClickedInspectionIsInteractiveStableAndFitsDenseRegionsAtBothScales": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-stability-25.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.ContextHoverTests.DoubleClickCannotCrossDecisionBoundary": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.ContextHoverTests.InspectionOnRealProjectionsNeverChangesTheGame": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.ContextHoverTests.KeyboardActivationShowsInformationAndPanningDoesNotOpenCrossedRegions": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.ContextHoverTests.MapKeyboardActivationDoesNotAlsoConfirmTheNextDraftStep": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.ContextHoverTests.PressingAnInspectedArmyMarkerKeepsItVisibleUntilItsSingleClickCompletes": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "source_sha256": "6bf2f62638162584e39505ef67c672edc203241514f156697f56d26735053bc7"
+        },
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.BeyondPrintedProgressAndFinalMordorKeepExactValuesAndSpritesInBounds": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FellowshipTrackLayoutTests.cs",
+          "source_sha256": "fc94ac22833f3e63fde790312e4e8fcccedf8e1ab438de402c077e90a636a066"
+        },
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FellowshipTrackLayoutTests.cs",
+          "source_sha256": "fc94ac22833f3e63fde790312e4e8fcccedf8e1ab438de402c077e90a636a066"
+        },
+        "Wotr.PlayTests.HandDrawerTests.KeyboardEscapeAndPointerExitKeepSelectionAndPinnedPreviewIndependent": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/HandDrawerTests.cs",
+          "source_sha256": "96c4c1e7426d0d80fc23253f345479e4f08063f3ec8666eade7d1eb17fdd17b1"
+        },
+        "Wotr.PlayTests.PoliticalPanelTests.AllTracksAlignAndRemainClickableWithoutScrollingAtBothScales": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/PoliticalPanelTests.cs",
+          "source_sha256": "b4d8e37017993686a8ee7b19c1df3303d47c2c4fddf7151fe62cdc317d6ca52c"
+        },
+        "Wotr.PlayTests.PoliticalPanelTests.HoverTabTokenAndButtonShareSafeAreasAndNeverSelectOrMoveAnything": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/PoliticalPanelTests.cs",
+          "source_sha256": "b4d8e37017993686a8ee7b19c1df3303d47c2c4fddf7151fe62cdc317d6ca52c"
+        },
+        "Wotr.PlayTests.PoliticalPanelTests.KeyboardFocusAndEscapeWorkAndRevisionsReuseTokens": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/PoliticalPanelTests.cs",
+          "source_sha256": "b4d8e37017993686a8ee7b19c1df3303d47c2c4fddf7151fe62cdc317d6ca52c"
+        },
+        "Wotr.PlayTests.RegionInspectionTests.EmptySettlementsRequireClickInBothPerspectivesAndAllLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RegionInspectionTests.cs",
+          "source_sha256": "dcf3d7744119631a02fdd55b04f8115ea7d808794047a6689211073bf9d72b9c"
+        },
+        "Wotr.PlayTests.RegionInspectionTests.OccupiedRegionsNeverOpenOnHoverAndClickedContentsFollowTheProjection": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RegionInspectionTests.cs",
+          "source_sha256": "dcf3d7744119631a02fdd55b04f8115ea7d808794047a6689211073bf9d72b9c"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.CompanionHintsDisplayOnlyThePlayersServerProjection": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.DisabledOwnActivationExplainsItsStateWithoutEnablingOrChoosingAnAction": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.DragCancelAndRemovedActionSourcesNeverLeaveDescriptions": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.EmptyScreenClicksDoNotDisableLaterHints": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.EveryMouseButtonAndWheelSuppressHintsUntilAFreshIdleHover": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.HoverAndFocusExplainWithoutActingAndActivationDismissesTheDescription": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.LongHintsFitEveryCornerAtBothSizesAndScales": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.RuntimeTooltipTests.RichSourcesExposeMetadataWhileTerrainAndTextFieldsStaySilent": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "source_sha256": "0eaa7cd23988a5ff6e974c74b630454c877a81f71715681938b8922db6ca7465"
+        },
+        "Wotr.PlayTests.CardInteractionTests.PressingAReactionKeepsItsSingleCommitWhileHoverAndFocusStaySilent": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CardInteractionTests.cs",
+          "source_sha256": "932a9a7d7621bc060b4beb317112123e436d5ed58dc81bacaaf9d2c4690826e0"
+        },
+        "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ClickInspectionTests.cs",
+          "source_sha256": "f62b6b3a41cbbc9a36a2fbc7ca080f12ac8bdfccb03c639cb727e81ea8d40e5b"
+        },
+        "Wotr.PlayTests.ClickInspectionTests.EffectsAndTheirCardsStayClosedUntilClicked": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ClickInspectionTests.cs",
+          "source_sha256": "f62b6b3a41cbbc9a36a2fbc7ca080f12ac8bdfccb03c639cb727e81ea8d40e5b"
+        },
+        "Wotr.PlayTests.ClickInspectionTests.HistoryHoverAndFocusDoNotLoadDetailsOrAcknowledgeActions": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ClickInspectionTests.cs",
+          "source_sha256": "f62b6b3a41cbbc9a36a2fbc7ca080f12ac8bdfccb03c639cb727e81ea8d40e5b"
+        },
+        "Wotr.PlayTests.ContextHelpLayoutTests.BothRolesCanNavigateFocusPinAndMoveHelpInAllFourLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHelpLayoutTests.cs",
+          "source_sha256": "08ba6c9f8ba1ffbdd389f1d95106af776688cfe68545e2ac3db8a9a697a9612c"
+        },
+        "Wotr.PlayTests.InterfaceSettingsTests.ChangingSizeAndMotionPreservesTheMoveAndEscapeOnlyClosesSettings": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/InterfaceSettingsTests.cs",
+          "source_sha256": "877bbae603f2f22f55d18668c07c93cb2eb0bdb71dae855f6ad73ccd42c61845"
+        },
+        "Wotr.PlayTests.InterfaceSettingsTests.CoveredControlKeepsFocusAndRestoresItsOutlineWhenUncovered": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/InterfaceSettingsTests.cs",
+          "source_sha256": "877bbae603f2f22f55d18668c07c93cb2eb0bdb71dae855f6ad73ccd42c61845"
+        },
+        "Wotr.PlayTests.InterfaceSettingsTests.FocusOutlineHandlesOffscreenHiddenAndDetachedSourcesWithoutExceptions": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/InterfaceSettingsTests.cs",
+          "source_sha256": "877bbae603f2f22f55d18668c07c93cb2eb0bdb71dae855f6ad73ccd42c61845"
+        },
+        "Wotr.PlayTests.InterfaceSettingsTests.SettingsFocusAndDenseHeaderFitAtBothSizesAndScales": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-inspection-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/InterfaceSettingsTests.cs",
+          "source_sha256": "877bbae603f2f22f55d18668c07c93cb2eb0bdb71dae855f6ad73ccd42c61845"
+        },
+        "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-actions-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BattleWindowNetworkTests.cs",
+          "source_sha256": "b858bc4f5c191e4442a2a4c9b1b03dcb8cf131feae00d2b55bac9d44a9e09533"
+        },
+        "Wotr.PlayTests.CardGestureNetworkTests.CombatPlayAndDropKeepBothCardsSecretUntilReveal": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-actions-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CardGestureNetworkTests.cs",
+          "source_sha256": "198fa01e098a8905d513b3e6e8ceb085a134965ee670a84591ce5c3ac2e9d265"
+        },
+        "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-actions-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CharacterRosterPanelNetworkTests.cs",
+          "source_sha256": "1c1c44d926ecd5dd485e399c237333797713584a4499ddb02b28655cbebcfb7d"
+        },
+        "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-actions-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/HandDiscardNetworkTests.cs",
+          "source_sha256": "b4c650775152fa2b52bafaeaf1703be7433aab3c56f79c40722d8248fe809e73"
+        },
+        "Wotr.PlayTests.MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-actions-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MultiUseDiceNetworkTests.cs",
+          "source_sha256": "15406ec2205c23e8947d8aa92c034294799b9117323ee12c5955ed066e28ccdd"
+        },
+        "Wotr.PlayTests.MusterNetworkTests.HoverIsReadOnlyAndCrestDragAdvancesOnlyLegalTrack": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-actions-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MusterNetworkTests.cs",
+          "source_sha256": "48c8768285dce1d8491750e40535d859a5a1852c0a5556c7cbdfd458cd743394"
+        },
+        "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-rosters-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardCompletionLayoutTests.cs",
+          "source_sha256": "f9769fd71fe663ad23bd6e100ba7e4321ea69bdd92fb57caec36b7b5a535c971"
+        },
+        "Wotr.PlayTests.BoardCompletionLayoutTests.MenuSettingsAndHelpPreserveBattleAndHuntDraftsAcrossFourLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-menu-22.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardCompletionMenuLayoutTests.cs",
+          "source_sha256": "9e2a970c0c19ae0ea62d3ae7431e118841f136f8ef6f947bbf0fe3da19160794"
+        },
+        "Wotr.PlayTests.BoardProfileDriverTests.EveryBoardWorkloadUsesRealGesturesAndPreservesItsDecisionAcrossAllFourLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-profile-drivers-26.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardProfileDriverTests.cs",
+          "source_sha256": "7341f9049bb76e65af81982b6ec72882316e16662e671edda2f3ea967868ce06"
+        },
+        "Wotr.PlayTests.DesktopLayoutStabilityTests.LegacyBattleToCardAtLargeScaleStabilizesWithoutRecursiveLayout": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-profile-drivers-26.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/DesktopLayoutStabilityTests.cs",
+          "source_sha256": "db89c5bc22263490ae8e5d51bd5a94b6fb81a99c12c55fd2f7ade3b859793507"
+        },
+        "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-profile-drivers-26.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/InGameProfileDriverTests.cs",
+          "source_sha256": "56a97ec98abf5361b1d5d0c7a04a0d35144267424cc223867067955e08435d5d"
+        },
+        "Wotr.PlayTests.CompactBoardLayoutTests.SimplePanelsUseTheirContentSizeAndKeepControlsReachableInFourLayouts": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-map-motion-28.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CompactBoardLayoutTests.cs",
+          "source_sha256": "ecaee48cb747cf286e95aeda1369194429a86580f2ff66cc221fb63e747829ec"
+        },
+        "Wotr.PlayTests.FigureMotionNetworkTests.BothSidesSeeAcceptedArmiesMoveAndRejectedOrRetriedCommandsDoNotReplay": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-map-motion-28.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FigureMotionNetworkTests.cs",
+          "source_sha256": "9baedc0d5785ce9b41c42a0e8297391508429b6159ce5ce123dd4002cc72faaf"
+        },
+        "Wotr.PlayTests.FigureMotionNetworkTests.HiddenProgressAndSeparationNeverInventTheSecretFellowshipPosition": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-map-motion-28.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FigureMotionNetworkTests.cs",
+          "source_sha256": "9baedc0d5785ce9b41c42a0e8297391508429b6159ce5ce123dd4002cc72faaf"
+        },
+        "Wotr.PlayTests.FigureMotionNetworkTests.PublicCharacterJourneyMovesTheSameFigureOnBothClients": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-map-motion-28.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FigureMotionNetworkTests.cs",
+          "source_sha256": "9baedc0d5785ce9b41c42a0e8297391508429b6159ce5ce123dd4002cc72faaf"
+        },
+        "Wotr.PlayTests.MapViewportTests.EdgesCornersControlsFocusAndDetachNeverChangeTheMatch": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-map-motion-28.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportTests.cs",
+          "source_sha256": "25c29cb7dc3a06084f7bd969e0ace2fb0fc9ada1255f811a0fcffb97f7d8d2e8"
+        },
+        "Wotr.PlayTests.MapViewportTests.ZoomPanLocateAndResizeCoverTheViewportForBothPlayers": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-map-motion-28.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportTests.cs",
+          "source_sha256": "25c29cb7dc3a06084f7bd969e0ace2fb0fc9ada1255f811a0fcffb97f7d8d2e8"
+        },
+        "Wotr.PlayTests.MultiUseDiceNetworkTests.WillDrawsOrMovesACompanionWithoutChoosingASymbol": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-recruitment-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MultiUseDiceNetworkTests.cs",
+          "source_sha256": "15406ec2205c23e8947d8aa92c034294799b9117323ee12c5955ed066e28ccdd"
+        },
+        "Wotr.PlayTests.MusterNetworkTests.EliteDropSpendsBothRecruitmentPoints": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-recruitment-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MusterNetworkTests.cs",
+          "source_sha256": "48c8768285dce1d8491750e40535d859a5a1852c0a5556c7cbdfd458cd743394"
+        },
+        "Wotr.PlayTests.MusterNetworkTests.LoneLeaderIsLegalWarnedRemovedAndFinishKeepsPaidStep": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-recruitment-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MusterNetworkTests.cs",
+          "source_sha256": "48c8768285dce1d8491750e40535d859a5a1852c0a5556c7cbdfd458cd743394"
+        },
+        "Wotr.PlayTests.MusterNetworkTests.RecruitmentOverflowWaitsForFinishAndExactFigureReturn": {
+          "result": "Passed",
+          "report": ".artifacts/ui77/ui80-recruitment-24.xml",
+          "source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MusterNetworkTests.cs",
+          "source_sha256": "48c8768285dce1d8491750e40535d859a5a1852c0a5556c7cbdfd458cd743394"
+        }
+      },
+      "reports": {
+        ".artifacts/ui77/ui80-tooltips-22.xml": "750ab290ce6fa9214c8f0d68069927027398a2896ffa399d311d84a02b600bdb",
+        ".artifacts/ui77/ui80-inspection-22.xml": "2342423c1325261cdd36a8024a694b464682e49bf3da56b56e374fed2d394567",
+        ".artifacts/ui77/ui80-actions-22.xml": "189d227e84f4f6fcaffafc0655ce5df5efcda727d4871497c2b73e72cf9ec13a",
+        ".artifacts/ui77/ui80-rosters-22.xml": "2ef7a6bfc9fbfa49a4d300d898195fc195dee0590d495368a0bc1a744685e42e",
+        ".artifacts/ui77/ui80-menu-22.xml": "980ec1fb193aa56902af5b785ca377366411395094cf216d7abe5d855a73a2e0",
+        ".artifacts/ui77/ui80-profile-drivers-23.xml": "af1096eb47aefebea958a1bf8bf566993e01f80deda4321ab6105ac0dd1caf69",
+        ".artifacts/ui77/ui80-diagnostic-23.xml": "2872c7798ad215b123ea9c00bf717911b4199745b48495ca280f24e3bbe9889b",
+        ".artifacts/ui77/ui80-tooltips-24.xml": "66ae58113c898ffb15c2a6d720434fb137c164bbf22c6cd2092b171f5729ed64",
+        ".artifacts/ui77/ui80-actions-24.xml": "3aec7be43d7f17aa2fc258e90f591b7b2168659c388112fe7270821e243ac352",
+        ".artifacts/ui77/ui80-profile-drivers-24.xml": "a554a9b1c6406a19d0a16501e0b1e2c96e1137aa31aadb24e86741f1d4f5b1d4",
+        ".artifacts/ui77/ui80-map-motion-24.xml": "42687b57a1de580443af7d6790f4199925cdad9165f2b6ac685a449c2443b8e7",
+        ".artifacts/ui77/ui80-recruitment-24.xml": "f753618d34799f1dba1691d8ca0c3f423e0867a6f8033a97449fdede8adc0a21",
+        ".artifacts/ui77/ui80-stability-25.xml": "7dff893f1e851433a2c55b6991d224a7d3951be6231e80ece3a230efd81b0cd8"
+      },
+      "note": "Latest of multiple runs (imports22–28), not one60-test run. New figure driver is covered by real separation28; shared adapter by profile-drivers26."
+    },
+    "play_reports": {
+      "method_count": 60,
+      "reports": {
+        ".artifacts/ui77/ui80-tooltips-24.xml": {
+          "xml_sha256": "66ae58113c898ffb15c2a6d720434fb137c164bbf22c6cd2092b171f5729ed64",
+          "passed": "29",
+          "failed": "1",
+          "start_utc": "2026-10-08 23:06:26Z",
+          "end_utc": "2026-10-08 23:07:31Z"
+        },
+        ".artifacts/ui77/ui80-stability-25.xml": {
+          "xml_sha256": "7dff893f1e851433a2c55b6991d224a7d3951be6231e80ece3a230efd81b0cd8",
+          "passed": "1",
+          "failed": "0",
+          "start_utc": "2026-10-08 23:13:18Z",
+          "end_utc": "2026-10-08 23:13:27Z"
+        },
+        ".artifacts/ui77/ui80-inspection-22.xml": {
+          "xml_sha256": "2342423c1325261cdd36a8024a694b464682e49bf3da56b56e374fed2d394567",
+          "passed": "9",
+          "failed": "0",
+          "start_utc": "2026-10-08 22:53:35Z",
+          "end_utc": "2026-10-08 22:54:12Z"
+        },
+        ".artifacts/ui77/ui80-actions-24.xml": {
+          "xml_sha256": "3aec7be43d7f17aa2fc258e90f591b7b2168659c388112fe7270821e243ac352",
+          "passed": "6",
+          "failed": "0",
+          "start_utc": "2026-10-08 23:07:50Z",
+          "end_utc": "2026-10-08 23:08:27Z"
+        },
+        ".artifacts/ui77/ui80-rosters-22.xml": {
+          "xml_sha256": "2ef7a6bfc9fbfa49a4d300d898195fc195dee0590d495368a0bc1a744685e42e",
+          "passed": "1",
+          "failed": "0",
+          "start_utc": "2026-10-08 22:55:30Z",
+          "end_utc": "2026-10-08 22:56:49Z"
+        },
+        ".artifacts/ui77/ui80-menu-22.xml": {
+          "xml_sha256": "980ec1fb193aa56902af5b785ca377366411395094cf216d7abe5d855a73a2e0",
+          "passed": "1",
+          "failed": "0",
+          "start_utc": "2026-10-08 22:57:07Z",
+          "end_utc": "2026-10-08 22:57:31Z"
+        },
+        ".artifacts/ui77/ui80-profile-drivers-26.xml": {
+          "xml_sha256": "3a8ae1b36fb600fdb5798bbb5dbdfc0f69ef1a58a41eb3d0d83ba86b2d87d40b",
+          "passed": "3",
+          "failed": "0",
+          "start_utc": "2026-10-09 06:42:47Z",
+          "end_utc": "2026-10-09 06:45:20Z"
+        },
+        ".artifacts/ui77/ui80-map-motion-28.xml": {
+          "xml_sha256": "39dc8112ab3f6f2d2af745a625425d614a861aaa407349407e57b54212be48e3",
+          "passed": "6",
+          "failed": "0",
+          "start_utc": "2026-10-09 06:50:35Z",
+          "end_utc": "2026-10-09 06:50:56Z"
+        },
+        ".artifacts/ui77/ui80-recruitment-24.xml": {
+          "xml_sha256": "f753618d34799f1dba1691d8ca0c3f423e0867a6f8033a97449fdede8adc0a21",
+          "passed": "4",
+          "failed": "0",
+          "start_utc": "2026-10-08 23:12:17Z",
+          "end_utc": "2026-10-08 23:12:24Z"
+        }
+      },
+      "note": "Only cited latest methods are counted; partial earlier sessions retain their real failure totals."
+    },
+    "fresh_shared_driver_cases": 3,
+    "fresh_motion_cases": 6,
+    "note": "60 is the number of distinct latest passing methods, not one run. The 3 and 6 reruns overlap that set. Component history counts191/96/51 are not added."
+  },
+  "criteria": [
+    {
+      "id": "BI01",
+      "condition": "Cover, pan/zoom/resize/Locate without external background",
+      "evidence": [
+        {
+          "test": "Wotr.PlayTests.MapViewportTests.ZoomPanLocateAndResizeCoverTheViewportForBothPlayers",
+          "xml": ".artifacts/ui77/ui80-map-motion-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:11:56Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        }
+      ],
+      "earlier_evidence": [
+        {
+          "test": "Wotr.PlayTests.MapContourNavigationTests.BothRolesInspectContoursAtFourLayoutsWithoutChangingProjectedState",
+          "xml": ".artifacts/ui77/terrain-navigation.xml",
+          "result": "Passed",
+          "import": 13,
+          "start_utc": "2026-10-08 21:18:56Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.ActionMapLayoutTests.RecordedMovementAndAttackFitFourLayoutsAndAllowPan",
+          "xml": ".artifacts/ui77/play16.xml",
+          "result": "Passed",
+          "import": 16,
+          "start_utc": "2026-10-08 22:08:45Z",
+          "era": "historical_implementation_acceptance"
+        }
+      ],
+      "assessment": "Final runtime: both sides, four systems, extreme zoom/pan, Location five extreme regions, full bounces Root, no commands. Earlier test history/pinned card remains a separate proof; the Frame math has been re-established in the final Editor25.",
+      "remaining_acceptance_work": []
+    },
+    {
+      "id": "BI02",
+      "condition": "Edge pan, horns, UI, focus and boundaries",
+      "evidence": [
+        {
+          "test": "Wotr.PlayTests.MapViewportTests.EdgesCornersControlsFocusAndDetachNeverChangeTheMatch",
+          "xml": ".artifacts/ui77/ui80-map-motion-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:11:53Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MapViewportTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsMapPanAndCaptureWithoutClosingInspectionOrUndoingTheDie",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:06:27Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardMenuLayoutTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        }
+      ],
+      "earlier_evidence": [],
+      "assessment": "Final runtime: four directions and two opposite corners, actual pick controls, reparated tray, right/ the middle man, cancel/focus Loss, rastra and detach boundaries. No change in projection or command.",
+      "remaining_acceptance_work": []
+    },
+    {
+      "id": "BI03",
+      "condition": "Hover region exclusively highlight",
+      "evidence": [
+        {
+          "test": "Wotr.PlayTests.RegionInspectionTests.EmptySettlementsRequireClickInBothPerspectivesAndAllLayouts",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:04Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RegionInspectionTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RegionInspectionTests.OccupiedRegionsNeverOpenOnHoverAndClickedContentsFollowTheProjection",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:12Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RegionInspectionTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.RichSourcesExposeMetadataWhileTerrainAndTextFieldsStaySilent",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:30Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ContextHoverTests.KeyboardActivationShowsInformationAndPanningDoesNotOpenCrossedRegions",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:06:43Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "test_source_matches_final_import": false,
+          "coverage_record_source_sha_matches_final_import": true
+        }
+      ],
+      "earlier_evidence": [],
+      "assessment": "Final runtime: empty and busy region, units/characters/Druynia and the former region after Mordor. Terrain metadata does not give tooltipu, click gives the current lineup; pan/fokus does not open the region. Final Editor25 confirms the priority of the hiver < selection < legal target/attack.",
+      "remaining_acceptance_work": []
+    },
+    {
+      "id": "BI04",
+      "condition": "Information hover/fokus; interactive panels of all families click/Enter/Space",
+      "evidence": [
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.HoverAndFocusExplainWithoutActingAndActivationDismissesTheDescription",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:22Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.DisabledOwnActivationExplainsItsStateWithoutEnablingOrChoosingAnAction",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:15Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.LongHintsFitEveryCornerAtBothSizesAndScales",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:23Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ContextHoverTests.ClickedCardSurvivesPointerAndFocusExitAndClosesExplicitly",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:06:33Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "test_source_matches_final_import": false,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ContextHoverTests.ClickedInspectionIsInteractiveStableAndFitsDenseRegionsAtBothScales",
+          "xml": ".artifacts/ui77/ui80-stability-25.xml",
+          "result": "Passed",
+          "import": 25,
+          "start_utc": "2026-10-08 23:13:18Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.PoliticalPanelTests.KeyboardFocusAndEscapeWorkAndRevisionsReuseTokens",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:03Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/PoliticalPanelTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:08:03Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CharacterRosterPanelNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:51Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BattleWindowNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.BoardProfileDriverTests.EveryBoardWorkloadUsesRealGesturesAndPreservesItsDecisionAcrossAllFourLayouts",
+          "xml": ".artifacts/ui77/ui80-profile-drivers-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:08:46Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardProfileDriverTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts",
+          "xml": ".artifacts/ui77/ui80-profile-drivers-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:10:47Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/InGameProfileDriverTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation",
+          "xml": ".artifacts/ui77/ui80-inspection-22.xml",
+          "result": "Passed",
+          "import": 22,
+          "start_utc": "2026-10-08 22:53:37Z",
+          "era": "ui80_before_budget_layout_fix",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ClickInspectionTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ClickInspectionTests.EffectsAndTheirCardsStayClosedUntilClicked",
+          "xml": ".artifacts/ui77/ui80-inspection-22.xml",
+          "result": "Passed",
+          "import": 22,
+          "start_utc": "2026-10-08 22:53:53Z",
+          "era": "ui80_before_budget_layout_fix",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ClickInspectionTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ContextHelpLayoutTests.BothRolesCanNavigateFocusPinAndMoveHelpInAllFourLayouts",
+          "xml": ".artifacts/ui77/ui80-inspection-22.xml",
+          "result": "Passed",
+          "import": 22,
+          "start_utc": "2026-10-08 22:54:00Z",
+          "era": "ui80_before_budget_layout_fix",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHelpLayoutTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts",
+          "xml": ".artifacts/ui77/ui80-rosters-22.xml",
+          "result": "Passed",
+          "import": 22,
+          "start_utc": "2026-10-08 22:55:30Z",
+          "era": "ui80_before_budget_layout_fix",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardCompletionLayoutTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        }
+      ],
+      "earlier_evidence": [],
+      "assessment": "Final tests 24/25 cover text description, four systems, stability figures/trays/stage and representatives klik/keyboard. A Exhausting Family Passage Cards/Politics/Characters/Effects/Victory/Fellowship/Hunt/sovereign Help and full form directory has XML22 : tooltip is already final, but the deal is pre-budget booking. Do not call these XML 25. Later drivers24 check the geometry and gestures of all their 40 + 32 options.",
+      "remaining_acceptance_work": []
+    },
+    {
+      "id": "BI05",
+      "condition": "Tooltip does not capture gesture; priority action, no additional Confirm/GET/POST, privacy",
+      "evidence": [
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.DragCancelAndRemovedActionSourcesNeverLeaveDescriptions",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:16Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.EveryMouseButtonAndWheelSuppressHintsUntilAFreshIdleHover",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:18Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.EscapeClosesTheFocusedWindowWithoutConsumingAnExtraPressForItsHint",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:18Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.RuntimeTooltipTests.CompanionHintsDisplayOnlyThePlayersServerProjection",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:14Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/RuntimeTooltipTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:08:07Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/HandDiscardNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.CardGestureNetworkTests.CombatPlayAndDropKeepBothCardsSecretUntilReveal",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:57Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CardGestureNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:08:12Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MultiUseDiceNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.MusterNetworkTests.HoverIsReadOnlyAndCrestDragAdvancesOnlyLegalTrack",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:08:25Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MusterNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ContextHoverTests.MapKeyboardActivationDoesNotAlsoConfirmTheNextDraftStep",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:06:44Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "test_source_matches_final_import": false,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ClickInspectionTests.HistoryHoverAndFocusDoNotLoadDetailsOrAcknowledgeActions",
+          "xml": ".artifacts/ui77/ui80-inspection-22.xml",
+          "result": "Passed",
+          "import": 22,
+          "start_utc": "2026-10-08 22:53:56Z",
+          "era": "ui80_before_budget_layout_fix",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ClickInspectionTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.CardInteractionTests.PressingAReactionKeepsItsSingleCommitWhileHoverAndFocusStaySilent",
+          "xml": ".artifacts/ui77/ui80-inspection-22.xml",
+          "result": "Passed",
+          "import": 22,
+          "start_utc": "2026-10-08 22:53:36Z",
+          "era": "ui80_before_budget_layout_fix",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/CardInteractionTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        }
+      ],
+      "earlier_evidence": [
+        {
+          "test": "Wotr.PlayTests.MapContourInteractionTests.AnotherDeviceCommitCancelsCapturedArmyDropAtTheNewRevision",
+          "xml": ".artifacts/ui77/terrain-interaction.xml",
+          "result": "Passed",
+          "import": 13,
+          "start_utc": "2026-10-08 21:20:00Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.MapContourInteractionTests.ReconnectCancelsCapturedArmyDropAtTheSameRevision",
+          "xml": ".artifacts/ui77/terrain-interaction.xml",
+          "result": "Passed",
+          "import": 13,
+          "start_utc": "2026-10-08 21:20:09Z",
+          "era": "historical_implementation_acceptance"
+        }
+      ],
+      "assessment": "Final runtime: physical double-click of both roles, one POST/receipt, privacy cards and Fellowship, cancel/capture/wheel and one Esc. The GET countdown is with XML22, which RuntimeTooltip is identical to the final; the repeat tests24 do not change its contract. Full cancellation of the map drag at the new revisions/reconnect is the earlier XML13, not the new run.",
+      "remaining_acceptance_work": []
+    },
+    {
+      "id": "BI06",
+      "condition": "Targets without arrows/options, armies/attack/routes and their final",
+      "evidence": [
+        {
+          "test": "Wotr.PlayTests.MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:08:12Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MultiUseDiceNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.MultiUseDiceNetworkTests.WillDrawsOrMovesACompanionWithoutChoosingASymbol",
+          "xml": ".artifacts/ui77/ui80-recruitment-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:12:17Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/MultiUseDiceNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect",
+          "xml": ".artifacts/ui77/ui80-actions-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:07:51Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BattleWindowNetworkTests.cs",
+          "test_source_matches_final_import": true,
+          "coverage_record_source_sha_matches_final_import": true
+        },
+        {
+          "test": "Wotr.PlayTests.ContextHoverTests.MapKeyboardActivationDoesNotAlsoConfirmTheNextDraftStep",
+          "xml": ".artifacts/ui77/ui80-tooltips-24.xml",
+          "result": "Passed",
+          "import": 24,
+          "start_utc": "2026-10-08 23:06:44Z",
+          "era": "final_runtime",
+          "test_source": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/ContextHoverTests.cs",
+          "test_source_matches_final_import": false,
+          "coverage_record_source_sha_matches_final_import": true
+        }
+      ],
+      "earlier_evidence": [
+        {
+          "test": "Wotr.PlayTests.MapContourInteractionTests.BothSidesClickAndDropOnContoursCommitTheSameArmyStep",
+          "xml": ".artifacts/ui77/terrain-interaction.xml",
+          "result": "Passed",
+          "import": 13,
+          "start_utc": "2026-10-08 21:20:05Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.MapContourInteractionTests.BothSidesAttackOnTheEnemyContourWithoutAnotherConfirmation",
+          "xml": ".artifacts/ui77/terrain-interaction.xml",
+          "result": "Passed",
+          "import": 13,
+          "start_utc": "2026-10-08 21:20:02Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.MapContourInteractionTests.WaterAndDistantTerrainNeverConsumeTheArmySelectionOrDie",
+          "xml": ".artifacts/ui77/terrain-interaction.xml",
+          "result": "Passed",
+          "import": 13,
+          "start_utc": "2026-10-08 21:20:11Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.TravelGestureNetworkTests.FigureDropSavesOneGroupAndFinishKeepsTheExactPaidDie",
+          "xml": ".artifacts/ui77/retry14-terrain-armies-travel.xml",
+          "result": "Passed",
+          "import": 14,
+          "start_utc": "2026-10-08 21:41:56Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.TravelGestureNetworkTests.FellowshipPortraitDropUsesTheSelectedCostAndKeepsTheGuideWindow",
+          "xml": ".artifacts/ui77/retry14-terrain-armies-travel.xml",
+          "result": "Passed",
+          "import": 14,
+          "start_utc": "2026-10-08 21:41:53Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.FellowshipRoutesNetworkTests.ZeroProgressDeclarationPreviewsHealingAndActivationAndRecoversReceipt",
+          "xml": ".artifacts/ui77/retry14-terrain-armies-travel.xml",
+          "result": "Passed",
+          "import": 14,
+          "start_utc": "2026-10-08 21:41:39Z",
+          "era": "historical_implementation_acceptance"
+        },
+        {
+          "test": "Wotr.PlayTests.ActionMapLayoutTests.RecordedMovementAndAttackFitFourLayoutsAndAllowPan",
+          "xml": ".artifacts/ui77/play16.xml",
+          "result": "Passed",
+          "import": 16,
+          "start_utc": "2026-10-08 22:08:45Z",
+          "era": "historical_implementation_acceptance"
+        }
+      ],
+      "assessment": "Final runtime confirms march, actual attack by ArmyGestures .Target and Strider's journey with two clicks of the same terrain (choice/final) with the exact cost. XML13/14/16 covers both sides, click/drop , press without command , illegal target, no map-target/placement-ghost/Confirm and history without labels/button s. MapDraftOverlay/MapRenderer and controllers army/dr dice/ Fellowship are unchanged from13; however, this is not a re-uptake of all these tests. FigureMotionNetworkTests they use the Post and are proof of animation, not the new gesture of the tour.",
+      "remaining_acceptance_work": [
+        "Final visual inspection of native build/profile UI-77 should confirm the absence of arrows; they were not included in this audit."
+      ]
+    },
+    {
+      "id": "BI07",
+      "requirement": "Both panels without collision in four systems",
+      "status": "component_evidence_verified",
+      "evidence": [
+        "Wotr.PlayTests.PairedDecisionPanelNetworkTests.BothSidesReadHuntBesideFellowshipInFourLayoutsWithoutChangingTheDraft@ui79-paired-travel5-21.xml",
+        "Wotr.PlayTests.FellowshipLayoutTests.FellowshipGroupsHuntAndMordorFitBothSizesAndScalesWithoutScrolling@ui79-layout21.xml",
+        "Wotr.PlayTests.FellowshipLayoutTests.GuideModeShowsItsConsequenceAndKeepsAllPortraitsReachable@ui79-layout21.xml",
+        "Wotr.PlayTests.FellowshipLayoutTests.NamedStatusAndActionsRemainStableAndReadableAtEveryLayout@ui79-layout21.xml",
+        "Wotr.PlayTests.FellowshipLayoutTests.RegionalRouteKeepsAllEightNeighborsReachableBesidePinnedCard@ui79-layout21.xml",
+        "Wotr.PlayTests.FellowshipLayoutTests.RevealRouteKeepsDistinctPathsAndHuntContextWhileInspectingTheMap@ui79-layout21.xml",
+        "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship@ui79-layout21.xml",
+        "Wotr.PlayTests.HuntLayoutTests.ClickInspectsAndCloseSurvivesRefreshUntilANewOwnDecision@ui79-layout21.xml",
+        "Wotr.PlayTests.HuntLayoutTests.MissingAndAutomaticReportsDoNotOpenOrAdvertiseAnUnrelatedChoice@ui79-layout21.xml",
+        "Wotr.PlayTests.HuntLayoutTests.ThreeKnownStepsCanBeInspectedWithoutLosingTheLiveChoice@ui79-layout21.xml",
+        "Wotr.PlayTests.MordorLayoutTests.GuideAndForcedRemovalKeepOneVisibleHostBesideTheTrackInFourLayouts@ui79-layout21.xml",
+        "Wotr.PlayTests.MordorLayoutTests.TrackActivityAndTileFitFourLayoutsWithoutScrollingOrMovingTheCamera@ui79-layout21.xml",
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.BeyondPrintedProgressAndFinalMordorKeepExactValuesAndSpritesInBounds@ui80-tooltips-24.xml",
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection@ui80-tooltips-24.xml",
+        "Wotr.PlayTests.CompactBoardLayoutTests.SimplePanelsUseTheirContentSizeAndKeepControlsReachableInFourLayouts@ui80-map-motion-24.xml",
+        "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1366,768,1.0f)@final-edit25.xml",
+        "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1366,768,1.25f)@final-edit25.xml",
+        "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1920,1080,1.0f)@final-edit25.xml",
+        "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1920,1080,1.25f)@final-edit25.xml",
+        "Wotr.EditorTests.PairedPanelPlacementTests.UnmeasuredOrTooWideWindowsDoNotGenerateInvalidPositions@final-edit25.xml"
+      ],
+      "finding": "The Fellowship/Hunt pair has a common upper edge, separate areas and accessible controls; current public tracks have re-imported24 after tooltip revision. The geometry of the panels and USS import21 remain identical in import25."
+    },
+    {
+      "id": "BI08",
+      "requirement": "Close, positions, new decisions and reconnect",
+      "status": "component_evidence_verified",
+      "evidence": [
+        "Wotr.PlayTests.PairedDecisionPanelNetworkTests.ExplicitWindowPositionSurvivesReconnectAndResetRestoresTheSharedRow@ui79-paired-travel5-21.xml",
+        "Wotr.PlayTests.HuntLayoutTests.ClickInspectsAndCloseSurvivesRefreshUntilANewOwnDecision@ui79-layout21.xml",
+        "Wotr.PlayTests.HuntLayoutTests.MissingAndAutomaticReportsDoNotOpenOrAdvertiseAnUnrelatedChoice@ui79-layout21.xml",
+        "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft@ui80-tooltips-24.xml",
+        "Wotr.PlayTests.InterfaceSettingsTests.ChangingSizeAndMotionPreservesTheMoveAndEscapeOnlyClosesSettings@ui80-inspection-22.xml"
+      ],
+      "finding": "Manual position survives reconnect, reset restores pair, Close survives refresh, new own decision retains proper auto-open; costs and draft are not changed by inspection."
+    },
+    {
+      "id": "BI09",
+      "requirement": "Exchangeable rasters, readable Types/piles and stable ID",
+      "status": "component_evidence_verified_native_images_pending",
+      "evidence": [
+        "Wotr.PlayTests.MapArmyArtworkTests.FullAndCompactStacksKeepTheirPicturesAndCompleteCountsInsideTheClickableMarker@ui78-integrated14.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.AllAtlasSpritesHaveDistinctNonOverlappingCellsAndATransparentTexture@final-edit25.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.SnapshotCopiesPublicPhysicalIdsAndIgnoresPrivateVersionsAndReservePieces@final-edit25.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.TransformationKeepsThePhysicalIdAndOnlyLaterLocationChangesTravel@final-edit25.xml",
+        "Wotr.EditorTests.FellowshipArtworkTests.NamedSpritesAreCachedDisjointAndContainOpaqueSymbolsWithTransparentSurrounds@final-edit25.xml",
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.BeyondPrintedProgressAndFinalMordorKeepExactValuesAndSpritesInBounds@ui80-tooltips-24.xml",
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection@ui80-tooltips-24.xml"
+      ],
+      "finding": "The board atlas has 12 named interchangeable sprites; Fellowship atlas 8. The model uses unit:/character: + public ID; graphics and counters have separate geometry. UI76 documents the actual viewing of both scales; in this audience no images were re-viewed and no new PNG Player was counted."
+    },
+    {
+      "id": "BI10",
+      "requirement": "Approved movement, intermediate position, split/merge",
+      "status": "component_evidence_verified_native_measurement_pending",
+      "evidence": [
+        "Wotr.PlayTests.FigureMotionNetworkTests.BothSidesSeeAcceptedArmiesMoveAndRejectedOrRetriedCommandsDoNotReplay@ui80-map-motion-24.xml",
+        "Wotr.PlayTests.FigureMotionNetworkTests.PublicCharacterJourneyMovesTheSameFigureOnBothClients@ui80-map-motion-24.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.SplitAndMergeTrackIndividualIdsAndNeverMoveTheArmyLeftBehind@final-edit25.xml"
+      ],
+      "finding": "The actual accepted movement is seen by both players, the test measures a different intermediate position and checks the target true marker after completion at FitZoom. Split/merge is concerned with the exact ID and retains the left army. Time/FPS the final native Player has not yet been measured."
+    },
+    {
+      "id": "BI11",
+      "requirement": "Hidden Fellowship, reconnect, new projection, Reduced motion",
+      "status": "component_evidence_verified_native_measurement_pending",
+      "evidence": [
+        "Wotr.PlayTests.FigureMotionNetworkTests.HiddenProgressAndSeparationNeverInventTheSecretFellowshipPosition@ui80-map-motion-24.xml",
+        "Wotr.PlayTests.FigureMotionNetworkTests.BothSidesSeeAcceptedArmiesMoveAndRejectedOrRetriedCommandsDoNotReplay@ui80-map-motion-24.xml",
+        "Wotr.PlayTests.FigureMotionTests.PublicCharacterMovesButHiddenProgressDoesNotAndNewProjectionClearsTheOldFlight@ui79-layout21.xml",
+        "Wotr.PlayTests.FigureMotionTests.ReducedMotionReconnectAndRevisionGapsShowResultsWithoutReplayingTravel@ui79-layout21.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.FirstDuplicateStaleGapDifferentViewerAndNewMatchDoNotReplay@final-edit25.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.DisconnectResetsBaselineAndLaterLiveChangesResume@final-edit25.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.HiddenProgressAndMordorDoNotInventRegionalTravel@final-edit25.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.SeparationUsesPublicIdentityAndOnlyAKnownOrigin(0,False)@final-edit25.xml",
+        "Wotr.EditorTests.BoardFigureChangesTests.SeparationUsesPublicIdentityAndOnlyAKnownOrigin(2,True)@final-edit25.xml"
+      ],
+      "finding": "No regional movement at hidden Progress; separation at unknown position is only an accent of the revealed target. Reruns, continuity of revisions, reconnect and new snapshot do not reproduce the old route. Reduced motion has no translation. Full final native proof still awaits."
+    },
+    {
+      "id": "BI12",
+      "condition": "Final regression, builds, Player performance and visual review",
+      "evidence": [
+        "final_tests",
+        "builds",
+        "native_profiles",
+        "visual_review"
+      ],
+      "assessment": "All required local checks completed; Windows/Intel/manual play/deployment remain explicitly deferred."
+    }
+  ],
+  "component_evidence_note": "The following component audits predate final profiling. Their XML versions and historical notes are preserved; final_tests and native_profiles give the completed aggregate evidence.",
+  "component_evidence": {
+    "Wotr.PlayTests.PairedDecisionPanelNetworkTests.BothSidesReadHuntBesideFellowshipInFourLayoutsWithoutChangingTheDraft@ui79-paired-travel5-21.xml": {
+      "test": "Wotr.PlayTests.PairedDecisionPanelNetworkTests.BothSidesReadHuntBesideFellowshipInFourLayoutsWithoutChangingTheDraft",
+      "report": ".artifacts/ui77/ui79-paired-travel5-21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:33:42Z",
+      "ended_utc": "2026-10-08 22:33:47Z",
+      "scope": "Two actual HTTP/WS/PostgreSQL clients; both views and four layouts, preserved draft, five-point Pick, pozycja/reconnect/reset/Close."
+    },
+    "Wotr.PlayTests.PairedDecisionPanelNetworkTests.ExplicitWindowPositionSurvivesReconnectAndResetRestoresTheSharedRow@ui79-paired-travel5-21.xml": {
+      "test": "Wotr.PlayTests.PairedDecisionPanelNetworkTests.ExplicitWindowPositionSurvivesReconnectAndResetRestoresTheSharedRow",
+      "report": ".artifacts/ui77/ui79-paired-travel5-21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:33:47Z",
+      "ended_utc": "2026-10-08 22:33:50Z",
+      "scope": "Two actual HTTP/WS/PostgreSQL clients; both views and four layouts, preserved draft, five-point Pick, pozycja/reconnect/reset/Close."
+    },
+    "Wotr.PlayTests.FellowshipLayoutTests.FellowshipGroupsHuntAndMordorFitBothSizesAndScalesWithoutScrolling@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FellowshipLayoutTests.FellowshipGroupsHuntAndMordorFitBothSizesAndScalesWithoutScrolling",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:27Z",
+      "ended_utc": "2026-10-08 22:31:34Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.FellowshipLayoutTests.GuideModeShowsItsConsequenceAndKeepsAllPortraitsReachable@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FellowshipLayoutTests.GuideModeShowsItsConsequenceAndKeepsAllPortraitsReachable",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:34Z",
+      "ended_utc": "2026-10-08 22:31:35Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.FellowshipLayoutTests.NamedStatusAndActionsRemainStableAndReadableAtEveryLayout@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FellowshipLayoutTests.NamedStatusAndActionsRemainStableAndReadableAtEveryLayout",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:35Z",
+      "ended_utc": "2026-10-08 22:31:36Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.FellowshipLayoutTests.RegionalRouteKeepsAllEightNeighborsReachableBesidePinnedCard@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FellowshipLayoutTests.RegionalRouteKeepsAllEightNeighborsReachableBesidePinnedCard",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:36Z",
+      "ended_utc": "2026-10-08 22:31:40Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.FellowshipLayoutTests.RevealRouteKeepsDistinctPathsAndHuntContextWhileInspectingTheMap@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FellowshipLayoutTests.RevealRouteKeepsDistinctPathsAndHuntContextWhileInspectingTheMap",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:40Z",
+      "ended_utc": "2026-10-08 22:31:41Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:48Z",
+      "ended_utc": "2026-10-08 22:31:56Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.HuntLayoutTests.ClickInspectsAndCloseSurvivesRefreshUntilANewOwnDecision@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.HuntLayoutTests.ClickInspectsAndCloseSurvivesRefreshUntilANewOwnDecision",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:56Z",
+      "ended_utc": "2026-10-08 22:31:57Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.HuntLayoutTests.MissingAndAutomaticReportsDoNotOpenOrAdvertiseAnUnrelatedChoice@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.HuntLayoutTests.MissingAndAutomaticReportsDoNotOpenOrAdvertiseAnUnrelatedChoice",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:57Z",
+      "ended_utc": "2026-10-08 22:31:58Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.HuntLayoutTests.ThreeKnownStepsCanBeInspectedWithoutLosingTheLiveChoice@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.HuntLayoutTests.ThreeKnownStepsCanBeInspectedWithoutLosingTheLiveChoice",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:58Z",
+      "ended_utc": "2026-10-08 22:31:58Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.MordorLayoutTests.GuideAndForcedRemovalKeepOneVisibleHostBesideTheTrackInFourLayouts@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.MordorLayoutTests.GuideAndForcedRemovalKeepOneVisibleHostBesideTheTrackInFourLayouts",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:32:32Z",
+      "ended_utc": "2026-10-08 22:32:37Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.MordorLayoutTests.TrackActivityAndTileFitFourLayoutsWithoutScrollingOrMovingTheCamera@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.MordorLayoutTests.TrackActivityAndTileFitFourLayoutsWithoutScrollingOrMovingTheCamera",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:32:37Z",
+      "ended_utc": "2026-10-08 22:32:44Z",
+      "scope": "Local layouts and interactions of existing scenarios; full names, no required scroll, targets and one decision host."
+    },
+    "Wotr.PlayTests.FellowshipTrackLayoutTests.BeyondPrintedProgressAndFinalMordorKeepExactValuesAndSpritesInBounds@ui80-tooltips-24.xml": {
+      "test": "Wotr.PlayTests.FellowshipTrackLayoutTests.BeyondPrintedProgressAndFinalMordorKeepExactValuesAndSpritesInBounds",
+      "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:06:44Z",
+      "ended_utc": "2026-10-08 23:06:46Z",
+      "scope": "Local border status and two real projections in four systems; accurate 20/12/5, sprites, read without commands, passive tooltip UI80."
+    },
+    "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection@ui80-tooltips-24.xml": {
+      "test": "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection",
+      "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:06:46Z",
+      "ended_utc": "2026-10-08 23:06:54Z",
+      "scope": "Local border status and two real projections in four systems; accurate 20/12/5, sprites, read without commands, passive tooltip UI80."
+    },
+    "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft@ui80-tooltips-24.xml": {
+      "test": "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft",
+      "report": ".artifacts/ui77/ui80-tooltips-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:06:28Z",
+      "ended_utc": "2026-10-08 23:06:29Z",
+      "scope": "Esc cancels the actual drag of the window without closing the remaining panel or changing draft."
+    },
+    "Wotr.PlayTests.InterfaceSettingsTests.ChangingSizeAndMotionPreservesTheMoveAndEscapeOnlyClosesSettings@ui80-inspection-22.xml": {
+      "test": "Wotr.PlayTests.InterfaceSettingsTests.ChangingSizeAndMotionPreservesTheMoveAndEscapeOnlyClosesSettings",
+      "report": ".artifacts/ui77/ui80-inspection-22.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:54:07Z",
+      "ended_utc": "2026-10-08 22:54:09Z",
+      "scope": "Scale change and Reduced motion retains local motion; Esc closes the appropriate Settings."
+    },
+    "Wotr.PlayTests.CompactBoardLayoutTests.SimplePanelsUseTheirContentSizeAndKeepControlsReachableInFourLayouts@ui80-map-motion-24.xml": {
+      "test": "Wotr.PlayTests.CompactBoardLayoutTests.SimplePanelsUseTheirContentSizeAndKeepControlsReachableInFourLayouts",
+      "report": ".artifacts/ui77/ui80-map-motion-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:11:41Z",
+      "ended_utc": "2026-10-08 23:11:48Z",
+      "scope": "Natural sizes after UI78, both sides × four circuits; the appropriate controls and the actual Pick."
+    },
+    "Wotr.PlayTests.FigureMotionNetworkTests.BothSidesSeeAcceptedArmiesMoveAndRejectedOrRetriedCommandsDoNotReplay@ui80-map-motion-24.xml": {
+      "test": "Wotr.PlayTests.FigureMotionNetworkTests.BothSidesSeeAcceptedArmiesMoveAndRejectedOrRetriedCommandsDoNotReplay",
+      "report": ".artifacts/ui77/ui80-map-motion-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:11:48Z",
+      "ended_utc": "2026-10-08 23:11:51Z",
+      "scope": "Three actual scenarios HTTP/WS/PostgreSQL: approved armies/Post, intermediate position, target marker at FitZoom, rejection/retry/reconnect, hidden Progress and separation as arrival."
+    },
+    "Wotr.PlayTests.FigureMotionNetworkTests.HiddenProgressAndSeparationNeverInventTheSecretFellowshipPosition@ui80-map-motion-24.xml": {
+      "test": "Wotr.PlayTests.FigureMotionNetworkTests.HiddenProgressAndSeparationNeverInventTheSecretFellowshipPosition",
+      "report": ".artifacts/ui77/ui80-map-motion-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:11:51Z",
+      "ended_utc": "2026-10-08 23:11:53Z",
+      "scope": "Three actual scenarios HTTP/WS/PostgreSQL: approved armies/Post, intermediate position, target marker at FitZoom, rejection/retry/reconnect, hidden Progress and separation as arrival."
+    },
+    "Wotr.PlayTests.FigureMotionNetworkTests.PublicCharacterJourneyMovesTheSameFigureOnBothClients@ui80-map-motion-24.xml": {
+      "test": "Wotr.PlayTests.FigureMotionNetworkTests.PublicCharacterJourneyMovesTheSameFigureOnBothClients",
+      "report": ".artifacts/ui77/ui80-map-motion-24.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:11:53Z",
+      "ended_utc": "2026-10-08 23:11:53Z",
+      "scope": "Three actual scenarios HTTP/WS/PostgreSQL: approved armies/Post, intermediate position, target marker at FitZoom, rejection/retry/reconnect, hidden Progress and separation as arrival."
+    },
+    "Wotr.PlayTests.FigureMotionTests.PublicCharacterMovesButHiddenProgressDoesNotAndNewProjectionClearsTheOldFlight@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FigureMotionTests.PublicCharacterMovesButHiddenProgressDoesNotAndNewProjectionClearsTheOldFlight",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:47Z",
+      "ended_utc": "2026-10-08 22:31:48Z",
+      "scope": "Local presentation: a new revision removes old flight; hidden Progress, reduced motion, reset/reconnect and revision gaps."
+    },
+    "Wotr.PlayTests.FigureMotionTests.ReducedMotionReconnectAndRevisionGapsShowResultsWithoutReplayingTravel@ui79-layout21.xml": {
+      "test": "Wotr.PlayTests.FigureMotionTests.ReducedMotionReconnectAndRevisionGapsShowResultsWithoutReplayingTravel",
+      "report": ".artifacts/ui77/ui79-layout21.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 22:31:48Z",
+      "ended_utc": "2026-10-08 22:31:48Z",
+      "scope": "Local presentation: a new revision removes old flight; hidden Progress, reduced motion, reset/reconnect and revision gaps."
+    },
+    "Wotr.PlayTests.MapArmyArtworkTests.FullAndCompactStacksKeepTheirPicturesAndCompleteCountsInsideTheClickableMarker@ui78-integrated14.xml": {
+      "test": "Wotr.PlayTests.MapArmyArtworkTests.FullAndCompactStacksKeepTheirPicturesAndCompleteCountsInsideTheClickableMarker",
+      "report": ".artifacts/ui77/ui78-integrated14.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 21:39:02Z",
+      "ended_utc": "2026-10-08 21:39:03Z",
+      "scope": "Production artwork: single, three silhouettes, garrison 10; both sides × two scales, each image inside the hitbox, full text and Pick."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.AllAtlasSpritesHaveDistinctNonOverlappingCellsAndATransparentTexture@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.AllAtlasSpritesHaveDistinctNonOverlappingCellsAndATransparentTexture",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.DisconnectResetsBaselineAndLaterLiveChangesResume@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.DisconnectResetsBaselineAndLaterLiveChangesResume",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.FirstDuplicateStaleGapDifferentViewerAndNewMatchDoNotReplay@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.FirstDuplicateStaleGapDifferentViewerAndNewMatchDoNotReplay",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.HiddenProgressAndMordorDoNotInventRegionalTravel@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.HiddenProgressAndMordorDoNotInventRegionalTravel",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.SeparationUsesPublicIdentityAndOnlyAKnownOrigin(0,False)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.SeparationUsesPublicIdentityAndOnlyAKnownOrigin(0,False)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.SeparationUsesPublicIdentityAndOnlyAKnownOrigin(2,True)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.SeparationUsesPublicIdentityAndOnlyAKnownOrigin(2,True)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.SnapshotCopiesPublicPhysicalIdsAndIgnoresPrivateVersionsAndReservePieces@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.SnapshotCopiesPublicPhysicalIdsAndIgnoresPrivateVersionsAndReservePieces",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.SplitAndMergeTrackIndividualIdsAndNeverMoveTheArmyLeftBehind@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.SplitAndMergeTrackIndividualIdsAndNeverMoveTheArmyLeftBehind",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.BoardFigureChangesTests.TransformationKeepsThePhysicalIdAndOnlyLaterLocationChangesTravel@final-edit25.xml": {
+      "test": "Wotr.EditorTests.BoardFigureChangesTests.TransformationKeepsThePhysicalIdAndOnlyLaterLocationChangesTravel",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:13Z",
+      "ended_utc": "2026-10-08 23:14:13Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipArtworkTests.NamedSpritesAreCachedDisjointAndContainOpaqueSymbolsWithTransparentSurrounds@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipArtworkTests.NamedSpritesAreCachedDisjointAndContainOpaqueSymbolsWithTransparentSurrounds",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.MordorReplacesOnlyJourneyAndDoesNotPredictVictory(0,True,0)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.MordorReplacesOnlyJourneyAndDoesNotPredictVictory(0,True,0)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.MordorReplacesOnlyJourneyAndDoesNotPredictVictory(4,False,11)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.MordorReplacesOnlyJourneyAndDoesNotPredictVictory(4,False,11)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.MordorReplacesOnlyJourneyAndDoesNotPredictVictory(5,False,12)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.MordorReplacesOnlyJourneyAndDoesNotPredictVictory(5,False,12)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(0,0)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(0,0)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(1,1)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(1,1)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(11,11)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(11,11)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(12,12)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(12,12)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(13,12)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(13,12)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(20,12)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PrintedProgressRangeNeverChangesTheExactProjectedDistance(20,12)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.PublicStatusDoesNotInferUnrevealedCouncilVersionsOrSendAnAction@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.PublicStatusDoesNotInferUnrevealedCouncilVersionsOrSendAnAction",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.FellowshipTrackTests.StatusUpdatesExistingCellsAndKeepsBothTracksVisibleDuringRoutesAndHunt@final-edit25.xml": {
+      "test": "Wotr.EditorTests.FellowshipTrackTests.StatusUpdatesExistingCellsAndKeepsBothTracksVisibleDuringRoutesAndHunt",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:17Z",
+      "ended_utc": "2026-10-08 23:14:17Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1366,768,1.0f)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1366,768,1.0f)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:22Z",
+      "ended_utc": "2026-10-08 23:14:22Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1366,768,1.25f)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1366,768,1.25f)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:22Z",
+      "ended_utc": "2026-10-08 23:14:22Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1920,1080,1.0f)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1920,1080,1.0f)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:22Z",
+      "ended_utc": "2026-10-08 23:14:22Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1920,1080,1.25f)@final-edit25.xml": {
+      "test": "Wotr.EditorTests.PairedPanelPlacementTests.BothDecisionWindowsFitAtOneTopEdgeEvenWhenTheirAnchorIsOutsideTheMap(1920,1080,1.25f)",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:22Z",
+      "ended_utc": "2026-10-08 23:14:22Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    },
+    "Wotr.EditorTests.PairedPanelPlacementTests.UnmeasuredOrTooWideWindowsDoNotGenerateInvalidPositions@final-edit25.xml": {
+      "test": "Wotr.EditorTests.PairedPanelPlacementTests.UnmeasuredOrTooWideWindowsDoNotGenerateInvalidPositions",
+      "report": ".artifacts/ui77/final-edit25.xml",
+      "result": "Passed",
+      "started_utc": "2026-10-08 23:14:22Z",
+      "ended_utc": "2026-10-08 23:14:22Z",
+      "scope": "Final EditMode au UI80 : stable public ID and a copy of the snapshot, split/merge , privacy/reset limits, alfa/roz Total recty/cached sprites, steam math, and accurate public tracks."
+    }
+  },
+  "component_audits": [
+    {
+      "path": ".artifacts/ui77/bi01-06-review.json",
+      "sha256": "0dc1686ec48b24ab9f01bb518cc8be13560cc0b7f9d999e52a09efed19ece191"
+    },
+    {
+      "path": ".artifacts/ui77/bi07-11-review.json",
+      "sha256": "34a342a5f8393ccf886ff9c193508ab906941b214d595a97be8ffbfccc467737"
+    }
+  ],
+  "builds": [
+    {
+      "path": ".artifacts/ui77/BuildLocalMac-source.json",
+      "sha256": "1fcf994e8b6c007e87e114e0bdac70da6e2f92ed7f930baec8259c130f20b438",
+      "method": "BuildLocalMac",
+      "development": false,
+      "source_commit": "dd1a1684a6e4b2688bcd7f5e284d6293f06e08cf",
+      "inputs_sha256": "1fdb51efd2f75794ecc362c2989289ccea2799274e30fa524e4a31485e571b1c",
+      "output_file_count": 158,
+      "format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    },
+    {
+      "path": ".artifacts/ui77/BuildLocalWindows-source.json",
+      "sha256": "49af7aeab16287812cfe0e92d68859672f2fb42aeb7929cfd612153e1ca5f560",
+      "method": "BuildLocalWindows",
+      "development": false,
+      "source_commit": "dd1a1684a6e4b2688bcd7f5e284d6293f06e08cf",
+      "inputs_sha256": "1fdb51efd2f75794ecc362c2989289ccea2799274e30fa524e4a31485e571b1c",
+      "output_file_count": 157,
+      "format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows"
+    },
+    {
+      "path": ".artifacts/ui77/BuildMac-source.json",
+      "sha256": "be9c282e3e898a8e88e757b206f67bb3efa255dc26d43bf15cd10a6c482d184b",
+      "method": "BuildMac",
+      "development": true,
+      "source_commit": "53ff2021f71dc15faa733a67cbc4ae9dab8d982b",
+      "inputs_sha256": "45b249fa21a52950100388a331b0048ee13ed9bd3056d6a3390b4518f20683ee",
+      "output_file_count": 247,
+      "format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/profile/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/profile/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui77/profile/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    }
+  ],
+  "smoke": {
+    "path": ".artifacts/ui77/smoke-final/result.json",
+    "sha256": "de59c309014f9a3568b79357657e6345107eb92a2f5f9b383c587634f5d1887d",
+    "result": {
+      "window": {
+        "id": 79179,
+        "bounds": {
+          "X": 414,
+          "Height": 412,
+          "Y": 50,
+          "Width": 683
+        }
+      },
+      "screenshot_captured": true,
+      "result": "PASS",
+      "source_kind": "unpacked local build",
+      "clean_app_profile": true,
+      "previous_profile_restored": true,
+      "login_tested": false,
+      "windows_tested": false,
+      "startup_screenshot": "startup.png",
+      "final_screenshot": "login.png",
+      "additional_settle_seconds": 10,
+      "rendered_interface_review_required": true,
+      "executable_sha256": "83705dbfa22118333bb30e6aa95225d35a7d2405146d9025d2206ab03ee7c93c"
+    }
+  },
+  "native_profiles": [
+    {
+      "suite": "legacy",
+      "report": "ui77-macos-legacy.json",
+      "sha256": "80d043bf7bdf84f0faa660d11936c1af508eed361083dc89cbe2e36b74aaffb5",
+      "cases": 56,
+      "minimum_mean_fps": 97.73893451823419,
+      "maximum_handler_ms": 14.5185,
+      "maximum_render_end_ms": 22.2877,
+      "player_import": 25,
+      "player_manifest": {
+        "path": ".artifacts/ui77/BuildMac25-source.json",
+        "sha256": "e4e55ea4b9b773463d6ce46083bf91c5a05d82f64fae7eb79ecf2dfe4770d428"
+      },
+      "input_manifest": {
+        "path": ".artifacts/ui77/legacy-profile-run/inputs.json",
+        "sha256": "8892c8f56c159d4bbea6bb0eedca2f9211d28b66dfa986df03413446780dd1f6"
+      },
+      "previous_application_profile_restored": true
+    },
+    {
+      "suite": "figure-motion",
+      "report": "ui77-macos-motion.json",
+      "sha256": "0cb21e262b71f27fef39bd6ea1fdaf13854e6f831d6c2b9db095c35e0c15bb80",
+      "cases": 32,
+      "minimum_mean_fps": 102.85918273123762,
+      "maximum_handler_ms": 29.3498,
+      "maximum_render_end_ms": 34.3251,
+      "player_import": 28,
+      "player_manifest": {
+        "path": ".artifacts/ui77/BuildMac-source.json",
+        "sha256": "be9c282e3e898a8e88e757b206f67bb3efa255dc26d43bf15cd10a6c482d184b"
+      },
+      "input_manifest": {
+        "path": ".artifacts/ui77/figure-motion-profile-run/inputs.json",
+        "sha256": "70d309db47cac9073c7765033bde6b787d6ec95462567deed074a49225589bee"
+      },
+      "previous_application_profile_restored": true
+    }
+  ],
+  "motion_projection_sources": {
+    "path": ".artifacts/ui77/motion-recordings24/provenance.json",
+    "sha256": "bfe551eb2593db821b39399bbce25e14f05032b6791764e35edb4a50258d464b"
+  },
+  "visual_review": [
+    {
+      "reviewer": "root",
+      "reviewed_at_utc": "2026-10-09T06:42:46.051801+00:00",
+      "method": "Each full image opened with view_image, no contact-sheet inference.",
+      "images": [
+        {
+          "path": ".artifacts/ui77/smoke-final/login.png",
+          "sha256": "d0771c008b00d6163d8cce6dc03e79afd033dfcf9dc03f07f8b038d058fffd77",
+          "finding": "PASS: full login fields visible, no crop; startup only, no authentication attempt."
+        },
+        {
+          "path": ".artifacts/ui77/ui24-tooltip-1366-1.00.png",
+          "sha256": "c7b2449d25aed3ed963e2389d023b563408e9644892b7ef72dc0cfa7aea3c85f",
+          "finding": "PASS: passive Locate text visible, no tooltip controls; both Fellowship tracks and HUD readable, no exterior map background or movement arrows."
+        },
+        {
+          "path": ".artifacts/ui77/ui24-tooltip-1366-1.25.png",
+          "sha256": "64a642b418803a3e56f28e9a3464b94c555d8dc221f6d9722bc9d768d3c35d5e",
+          "finding": "PASS: passive Locate text visible, no tooltip controls; both Fellowship tracks and HUD readable, no exterior map background or movement arrows."
+        },
+        {
+          "path": ".artifacts/ui77/ui24-tooltip-1920-1.00.png",
+          "sha256": "fb55193cd1dd48e556951d17878f3a0433f6e3732bfeba93460a6b1d1eadb4e5",
+          "finding": "PASS: passive Locate text visible, no tooltip controls; both Fellowship tracks and HUD readable, no exterior map background or movement arrows."
+        },
+        {
+          "path": ".artifacts/ui77/ui24-tooltip-1920-1.25.png",
+          "sha256": "6ffa73710ff40925df18d40ee36198f8e75a9a04a831fd047aa2d3f1c5573d93",
+          "finding": "PASS: passive Locate text visible, no tooltip controls; both Fellowship tracks and HUD readable, no exterior map background or movement arrows."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-start-1366-1.00.png",
+          "sha256": "5c627e5a8f7f2f20d0dd2766b67cac19d365845bcb65f3e77f243bcb3465c10d",
+          "finding": "PASS: Visible translation toward Osgiliath; source/middle differ and destination remains subdued during flight."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-middle-1366-1.00.png",
+          "sha256": "b04bed2fd1d477db9ba2017213845e8f3b2521762c3dab8f1296679481c9abb3",
+          "finding": "PASS: Visible translation toward Osgiliath; source/middle differ and destination remains subdued during flight."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-fp-start-1366-1.00.png",
+          "sha256": "ec20e7af0ab41ebf0c6335034f00e6bb66b7d6af68f32cd99f119fb7efeff90b",
+          "finding": "PASS: Visible character translation toward Fords; distinct start/middle positions, no movement arrow."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-fp-middle-1366-1.00.png",
+          "sha256": "d2ae89c42a0041fec36444c2af4a8c1f8f24edbddfd37f59ca1d7e21f5d79a86",
+          "finding": "PASS: Visible character translation toward Fords; distinct start/middle positions, no movement arrow."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-sh-start-1920-1.00.png",
+          "sha256": "99c7c6da2718535d406947ebb4d2599bf0254095da172ad817891859e8c36c74",
+          "finding": "PASS: Shadow stack visibly travels left toward its destination; legible stack count."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-sh-middle-1920-1.00.png",
+          "sha256": "202b43cb37528f733f8005ec3935caedee4cbf99aef13f1c8c9197ef23852567",
+          "finding": "PASS: Shadow stack visibly travels left toward its destination; legible stack count."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-start-1366-1.25.png",
+          "sha256": "6d3b4cffa699f8d7dbddd6bcc41b657ad053a5110cab6d83eeebee070a86dacd",
+          "finding": "PASS: Reduced motion stays at destination and fades the arrival accent; no translated route."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-middle-1366-1.25.png",
+          "sha256": "451133c03c3199481c8696bcc8e4308fb14ce9bbd810d012ff2d3f8b60be813b",
+          "finding": "PASS: Reduced motion stays at destination and fades the arrival accent; no translated route."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-sh-start-1366-1.00.png",
+          "sha256": "efecf77d5672e689f46946d1201162223b879ac80a74dff9dcb9c0c98f4fefbd",
+          "finding": "PASS: Hidden progress shows no regional flight or invented location at either phase."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-sh-middle-1366-1.00.png",
+          "sha256": "efecf77d5672e689f46946d1201162223b879ac80a74dff9dcb9c0c98f4fefbd",
+          "finding": "PASS: Hidden progress shows no regional flight or invented location at either phase."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-fp-start-1366-1.00.png",
+          "sha256": "7bc55ffbdf3e787bfa6fb6f2792007922b1c0ad94339ee914eb392c3612d51b9",
+          "finding": "PASS: Arrival accent stays at Fords; pending Guide remains visible in the HUD, no invented Fellowship origin."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-fp-middle-1366-1.00.png",
+          "sha256": "38a555cdf9a54bb8f70861ac894a73991da41532552fcd6c5e030605202c6d73",
+          "finding": "PASS: Arrival accent stays at Fords; pending Guide remains visible in the HUD, no invented Fellowship origin."
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "task": "UI-77",
+      "reviewer": "/root/map_camera",
+      "reviewed_at_utc": "2026-10-09T06:56:34.534342+00:00",
+      "commit": "53ff2021f71dc15faa733a67cbc4ae9dab8d982b",
+      "scope": "16 final PNG 1366×768, eight workloads and a scale 1.00/1.25, each separately viewed by view_image. Only current images in the ui77 directory, without historical sample figure-motion-attemp25.",
+      "total_images": 16,
+      "findings": [],
+      "verdict": "In 16 images, no apparent absence of the final pile/characters, exposed background outside the map, motion arrows, supposed route hidden Fellowship, or the end cover figure by HUD was found.",
+      "limitations": [
+        "Final images do not show animation time, indirect position, liquidity, input or behavior response during reconnect. Measurements and images start/middle receives root separately.",
+        "The lack of a drawn secret route on the images does not replace the screening filtering tests.",
+        "The viewing is not a hand-held batch or test Windows/Intel.",
+        "There were no ActiveGroups or other counters used from JSON as an overview substitute; each of 16 PNG was displayed."
+      ],
+      "images": [
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-finished-1366-1.00.png",
+          "sha256": "fe88f2842dbc6a72c626f34f5f2543363f97a00290873e344c972b68cf6e454d",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "army-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The final stack of FP has several distinctive shapes, an F stamp and a full 7 counter. The stack in the center of the map is not cut or covered with a panel; the lower HUD shows Waiting for Shadow.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-finished-1366-1.25.png",
+          "sha256": "746a19e517b9f80f1fc609775e20e9a0f8368e5e42d4f5392e997778f43b9239",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "army-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The final stack of FP has several distinctive shapes, an F stamp and a full 7 counter. The stack in the center of the map is not cut or covered with a panel; the lower HUD shows Waiting for Shadow.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-sh-finished-1366-1.00.png",
+          "sha256": "4030b5a1e3c4fd322d781cca5dc9efcfba57f56a11cc3126d56196d9d6336bae",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "army-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "Shadow's final stack has dark shapes with a red accent, S-marker and full 5 counter. The result lies on the exposed area; the lower HUD shows Waiting for Free Peoples.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-sh-finished-1366-1.25.png",
+          "sha256": "862100ba2b68f5b8f0eda85b60ae8ff7c93cc9d10946525b07b5a870a187540f",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "army-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "Shadow's final stack has dark shapes with a red accent, S-marker and full 5 counter. The result lies on the exposed area; the lower HUD shows Waiting for Free Peoples.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-fp-finished-1366-1.00.png",
+          "sha256": "8d68cdfeb3a63efe32ebf5cec69bb4b43e0ecc0848770b9eeb86439f300a00dc",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "character-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The single FP character remains in the area near the center of the screen; the full figure, the F stamp and the 1 counter are visible. HUD shows Waiting for Shadow and progress of Fellowship 4.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-fp-finished-1366-1.25.png",
+          "sha256": "3e41fa7175eb64d033e95896caebdf7c39df06165b60c390cba7dd25cbbd812e",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "character-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The single FP character remains in the area near the center of the screen; the full figure, the F stamp and the 1 counter are visible. HUD shows Waiting for Shadow and progress of Fellowship 4.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-sh-finished-1366-1.00.png",
+          "sha256": "88dc2f43dff9b4bebcc80b90948a206ef35f738e88f5071b1d42a4b4705e6714",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "character-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "In Shadow view, the final public character FP remains visible with full figure, F-marker and 1 counter. Choose an action and lower Your action do not cover the result; the progress of Fellowship is 4.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-sh-finished-1366-1.25.png",
+          "sha256": "fb1e763f8428ab1068542b474ffd3b6077f0e1f9a1264d58066834079ae273c7",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "character-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "In Shadow view, the final public character FP remains visible with full figure, F-marker and 1 counter. Choose an action and lower Your action do not cover the result; the progress of Fellowship is 4.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-fp-finished-1366-1.00.png",
+          "sha256": "f1e91e8b75cb9291d7df239063b169aab7b672fc88e3250bc57fe5c7ecf832cd",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "hidden-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "There is no route or supposed to be drawn on the site figure indirect hidden Fellowship . Top shortcut shows Hidden/post tum 5 and warp 0 , lower HUD Waiting for Shadow/Hunt 1 No information panel covers the area.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-fp-finished-1366-1.25.png",
+          "sha256": "f32764c8862221f92f8effe9cc90fc0ed03be636636808345832c36edab2b7ca",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "hidden-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "There is no route or supposed to be drawn on the site figure indirect hidden Fellowship . Top shortcut shows Hidden/post tum 5 and warp 0 , lower HUD Waiting for Shadow/Hunt 1 No information panel covers the area.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-sh-finished-1366-1.00.png",
+          "sha256": "efecf77d5672e689f46946d1201162223b879ac80a74dff9dcb9c0c98f4fefbd",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "hidden-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "Shadow view shows information shortcut Hidden/Progress 5 and the 0 warp; no regional and indirect route figure Fellowship. Choose an action and Your action are located in HUD.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-sh-finished-1366-1.25.png",
+          "sha256": "37fbf2427b3f38c7766fe11807eae5111c0b3d8de3343b131a5d5d6255381ef7",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "hidden-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "Shadow view shows information shortcut Hidden/Progress 5 and the 0 warp; no regional and indirect route figure Fellowship. Choose an action and Your action are located in HUD.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-fp-finished-1366-1.00.png",
+          "sha256": "c032cf7d41825615053b5198d117b19fffb6ea01efa797936c97b3a5d1d22fd8",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "separation-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The separated character is visible on the exposed final region: full figure, F and the 1 counter. The own waiting guide remains signaled by the Choose the next Guide, Choose the Guide and decision mark; the closed window does not obscure the character. There is no connection line to the source or the supposed route hidden Fellowship.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-fp-finished-1366-1.25.png",
+          "sha256": "a9b206bf4f39b302b9bae8e66dbb34b15eb4cea8ef9846a95a7dc87731aa7f1f",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "separation-fp",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The separated character is visible on the exposed final region: full figure, F and the 1 counter. The own waiting guide remains signaled by the Choose the next Guide, Choose the Guide and decision mark; the closed window does not obscure the character. There is no connection line to the source or the supposed route hidden Fellowship.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-sh-finished-1366-1.00.png",
+          "sha256": "3eb16ea2ca195d96ceccc532fc76584e82f25010e8924a50ba70807291e5a21f",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.0,
+          "workload": "separation-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The public separated character FP is visible on the final region with full body, F and the 1 counter. Shadow shows Waiting for Free Peoples, without the option to choose the opponent's Guide. There is no drawn route or connection to the secret position Fellowship.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-sh-finished-1366-1.25.png",
+          "sha256": "642c68bfed0378d0160628b96a606562684a75aea25a04ff87334b7f69e31d92",
+          "dimensions": [
+            1366,
+            768
+          ],
+          "ui_scale": 1.25,
+          "workload": "separation-sh",
+          "viewed_individually": true,
+          "tool": "view_image",
+          "phase": "finished",
+          "verdict": "No visible fault in the ordered range",
+          "observations": [
+            "The public separated character FP is visible on the final region with full body, F and the 1 counter. Shadow shows Waiting for Free Peoples, without the option to choose the opponent's Guide. There is no drawn route or connection to the secret position Fellowship.",
+            "The map raster reaches the sides of the visible frame under HUD; you can't see the exposed background. The sea is part of the map's graphics.",
+            "No track arrows, hanging target descriptions or cut-off end stosu/postaci. Black sections are terrain boundaries, not traffic arrows.",
+            "The main buttons and the current message are in the frame; there is no collision of HUD with the target figure."
+          ]
+        }
+      ]
+    },
+    {
+      "task": "UI-77",
+      "reviewer": "click_inspection",
+      "reviewed_at_utc": "2026-10-09T06:59:46.160241+00:00",
+      "runtime_commit": "dd1a1684a6e4b2688bcd7f5e284d6293f06e08cf",
+      "scope": "All 16 finished native PNG 1920×1080: 8 types × scale 100/125%. Each file has actually opened a separate view_image; no composites, editing the image and only requests with JSON profilers.",
+      "images_expected": 16,
+      "images_viewed": 16,
+      "visual_pass": 16,
+      "blocking_visual_findings": [],
+      "conclusion": "In this set, visible results of army/characters are readable and exposed. Hidden progress of Fellowship does not draw the regional route. No traffic arrows, hanging targets and exposed background outside the map.",
+      "limits": [
+        "Finished PNG confirm the final appearance, not the time Duration/interpolacjA animation or the number of commands. Start/middle, the costs and reads of the server are separate evidence of the coordinator.",
+        "No measurement of FPS/feedback, Unity Runners, builds or mutations of kodu/rejestru. No hand-held batch, physical smoothness or Windows/Intel runtime has been performed."
+      ],
+      "images": [
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-finished-1920-1.00.png",
+          "sha256": "3d381f570dfc67b3d5182fe0a82acac1527b79a4b88ae49d5a249de22d019d1f",
+          "kind": "army-fp",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "Final Stack FP is exposed in Lower/ the center of the map; you can see bright silhouettes, the F badge and a readable counter 7.",
+            "The image and counter remain above the map, except HUD and the bookmarks; no second hanging figure and the route travelled."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-fp-finished-1920-1.25.png",
+          "sha256": "285277f09dd7c2e28ba77259d12d2c4a16a12c7d57c073e26bf2dc61ffe33888",
+          "kind": "army-fp",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "Final Stack FP is exposed in Lower/ the center of the map; you can see bright silhouettes, the F badge and a readable counter 7.",
+            "The image and counter remain above the map, except HUD and the bookmarks; no second hanging figure and the route travelled."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-sh-finished-1920-1.00.png",
+          "sha256": "17c9ee4d0b64ebbaff868ed643b1694f029fc951c82aa3c4a0d1d46f48498c0b",
+          "kind": "army-sh",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The final stack Shadow is exposed to the west of the mountains, in the middle of the map; dark silhouettes, the S badge and the 5 counter are readable.",
+            "At both scales, the stack is not cut or obscured by panels; there is no leftover arrow or marker in flight."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-army-sh-finished-1920-1.25.png",
+          "sha256": "2204249945afdb240a0f1ec701fd41f6587e82f7e121ac7e0ba2eedfd24e9843",
+          "kind": "army-sh",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The final stack Shadow is exposed to the west of the mountains, in the middle of the map; dark silhouettes, the S badge and the 5 counter are readable.",
+            "At both scales, the stack is not cut or obscured by panels; there is no leftover arrow or marker in flight."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-fp-finished-1920-1.00.png",
+          "sha256": "7ab1ad859d59ad2087776aa372687282a58506b52e914a3e9a663ef02097bcbb",
+          "kind": "character-fp",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "A single public figure with archer figure, F-marking and 1 counter is clearly visible near the center of the map.",
+            "The final figure does not occur on HUD or panel; the status of Fellowship shows 4/0 without drawing its secret road."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-fp-finished-1920-1.25.png",
+          "sha256": "b97e48e2ff6f87d9ce495fb425678e84e005aabf4fdb4b9d773be1773ac6a4bb",
+          "kind": "character-fp",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "A single public figure with archer figure, F-marking and 1 counter is clearly visible near the center of the map.",
+            "The final figure does not occur on HUD or panel; the status of Fellowship shows 4/0 without drawing its secret road."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-sh-finished-1920-1.00.png",
+          "sha256": "3928b0f9bcc545243885d160b1319703fa91f03103ef30bbe96f732aa1cbf0bf",
+          "kind": "character-sh",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The perspective of Shadow sees the same public figure FP: archer figure, F and 1 counter. The graphics are exposed in the middle of the map.",
+            "The own message action is located in HUD; it does not obscure the public character or create a list of possible movements on the map."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-character-sh-finished-1920-1.25.png",
+          "sha256": "eda92105b86db3621de45531dc6739d6ea5ec308fd798834e874392f055d6f03",
+          "kind": "character-sh",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The perspective of Shadow sees the same public figure FP: archer figure, F and 1 counter. The graphics are exposed in the middle of the map.",
+            "The own message action is located in HUD; it does not obscure the public character or create a list of possible movements on the map."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-fp-finished-1920-1.00.png",
+          "sha256": "3ba8497f2c058aab9ee487b5dbff0002ef9320010801aaef20ce4b69fdea314c",
+          "kind": "hidden-fp",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The status of Fellowship shows the Hidden symbol, the progress of 5 and the corruption of 0. There is no new figure on a regional target or marked secret route.",
+            "Visible boundaries and local map lighting are not connected by arrows; no trace of interpolation of the hidden position."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-fp-finished-1920-1.25.png",
+          "sha256": "f05b7417941711f54ec9bebff2a4a1d52a0783985360c3029de54a8867449e61",
+          "kind": "hidden-fp",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The status of Fellowship shows the Hidden symbol, the progress of 5 and the corruption of 0. There is no new figure on a regional target or marked secret route.",
+            "Visible boundaries and local map lighting are not connected by arrows; no trace of interpolation of the hidden position."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-sh-finished-1920-1.00.png",
+          "sha256": "d3a9e6b7e0365da6bfb5cc3da94e313fa4b5df838caed6bb29d0740c20fa594a",
+          "kind": "hidden-sh",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "Shadow sees the public status of Hidden 5/0; the map does not show the new regional goal of Fellowship, the figure on the way or the trail trail trail.",
+            "HUD own action remains separate from the map. The image does not show private cards or the election panel Fellowship."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-hidden-sh-finished-1920-1.25.png",
+          "sha256": "6bbaa3f1673fefceb276d9680bd5c93667a29f1c07e3eca716a21eabb1f3e399",
+          "kind": "hidden-sh",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "Shadow sees the public status of Hidden 5/0; the map does not show the new regional goal of Fellowship, the figure on the way or the trail trail trail.",
+            "HUD own action remains separate from the map. The image does not show private cards or the election panel Fellowship."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-fp-finished-1920-1.00.png",
+          "sha256": "eab12ac375246f69a68636dd864d7326dacee28bf2f1843acfadf7312c2b0f46",
+          "kind": "separation-fp",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The separated character remains publicly visible as the F/1 archer close to the center of the map, without being obscured by HUD.",
+            "Choose the next Guide and the distinguished status of Fellowship apply to FP. Gold romb attention with the earlier known area does not form a line to the character or secret route.",
+            "Offline / draft saved locally is compatible with playing the saved projection in the profiler; the image is not proof of an active network connection."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-fp-finished-1920-1.25.png",
+          "sha256": "eaeafe5380454bb47a80099fceb403f314adf2b314395b955388ec197512a9a1",
+          "kind": "separation-fp",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "The separated character remains publicly visible as the F/1 archer close to the center of the map, without being obscured by HUD.",
+            "Choose the next Guide and the distinguished status of Fellowship apply to FP. Gold romb attention with the earlier known area does not form a line to the character or secret route.",
+            "Offline / draft saved locally is compatible with playing the saved projection in the profiler; the image is not proof of an active network connection."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-sh-finished-1920-1.00.png",
+          "sha256": "8644c0629851f65e83c320fc432cc9924e313cfc7148aa8fcc4fff9e615d5903",
+          "kind": "separation-sh",
+          "scale": 1.0,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "Shadow sees the public separation result: the exposed character FP with the counter 1. It does not show your choice of Guide or private cards opponent.",
+            "The status of Fellowship remains Hidden 5/0, without a regional route or line from a known source to a separated character."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        },
+        {
+          "path": ".artifacts/ui77/ui77-motion-separation-sh-finished-1920-1.25.png",
+          "sha256": "146a6fcc84364bb88ad0f747d8f0bc69cbcb420d7ea4e925d6e0294ec7bbea52",
+          "kind": "separation-sh",
+          "scale": 1.25,
+          "dimensions": [
+            1920,
+            1080
+          ],
+          "viewed_individually_with": "view_image",
+          "visual_result": "pass",
+          "observations": [
+            "Shadow sees the public separation result: the exposed character FP with the counter 1. It does not show your choice of Guide or private cards opponent.",
+            "The status of Fellowship remains Hidden 5/0, without a regional route or line from a known source to a separated character."
+          ],
+          "map_cover": "The map reaches all exposed edges under HUD. The blue grey areas are the sea on the map; no empty background outside the raster.",
+          "movement_arrows": "No arrows, route sections and hanging target buttons on the map. Icons of the HUD control are not a route of traffic.",
+          "occlusion": "The final indicated figure/Stock is not cut or obscured; for hidden, a new regional figure is not created."
+        }
+      ]
+    }
+  ],
+  "visual_summary": {
+    "generated_motion_png": 96,
+    "reviewed_motion_finished_png": 32,
+    "reviewed_motion_start_middle_png": 12,
+    "reviewed_tooltip_png": 4,
+    "reviewed_login_png": 1,
+    "reviewed_total": 49,
+    "note": "Each reviewed image was opened individually. Other motion PNG were checked automatically, not claimed as visually inspected."
+  },
+  "structure_review": {
+    "task": "UI-77",
+    "reviewer": "click_inspection",
+    "reviewed_at_utc": "2026-10-08T23:24:21.178094+00:00",
+    "runtime_commit": "dd1a1684a6e4b2688bcd7f5e284d6293f06e08cf",
+    "head_at_review": "14f910a84b5370723e8139e8626fc8d193c17e00",
+    "change_baseline": "a03dd35 (plan UI-73–UI-77)",
+    "method": "Read-only cross-review integration and structure for the coordinator. The agent tho-created UI-74/UI-80; this is not an external audit of the entire code.",
+    "scope": {
+      "changed_runtime_cs_files": 72,
+      "reviewed_source_files": 29,
+      "changed_server_domain_contract_files": [],
+      "runtime_matches_dd1a168": true
+    },
+    "conclusion": "No blocking defects of structure, layer breaches or new path revealing private data in over-the-counter changes have been found. Profile and native viewing require separate evidence of UI-77.",
+    "layers_and_responsibilities": [
+      {
+        "area": "Server Border",
+        "assessment": "Diff src is empty. Camera, animations, tooltip and window coordinator do not follow the rules, RNG nor the sender. TurnInteraction continues to direct the finished action to the existing CommandSender."
+      },
+      {
+        "area": "Map and inspection",
+        "assessment": "CameraState centralizes cover/clamp/TryFrame; MapEdgePan is responsible for continuous scrolling; RegionHover separates the highlight from the open. MapDraftOverlay retains legal regions without parallel target menu."
+      },
+      {
+        "area": "Figures",
+        "assessment": "Map/Figures separates the public snapshot ID, the projection difference, the silhouette directory and animation. Differentity requires the same game/Perspectives and revision +1. Unknown source of separation gives only arrival, without playing a secret route."
+      },
+      {
+        "area": "Windows and tracks",
+        "assessment": "FellowshipHuntLayout/PairedPanelPlacement they manage geometry, WindowLayout manual session positions. FellowshipTrackState reads public values, and FellowshipTrackRow update fixed cells; not added command Or the domain limit."
+      },
+      {
+        "area": "Tooltip and Cost",
+        "assessment": "RuntimeTooltip uses one subscription cycle and an uninteractive label; rejects text fields and terrain, does not capture Esc. The ActionProgress booking depends on your chosen dice, without displaying an unset budget."
+      }
+    ],
+    "duplication_and_readability": [
+      "Removed double Observe/Show in hands and sources cards retain one opening owner. HandView keeps his hand over the memorized preview, so the second click hits the same object.",
+      "The new components have narrow liability. Two atlas loaders repeat minor validation/cache, but maintain separate closed contracts 12 figures and 8 symbols; no additional common abstraction is currently needed.",
+      "Existing composers are large: TurnInteraction 856, BoardScreen 544, MapCanvas 508 line. New directories, layouts and controllers restrict further growth, but further functions should retain this division.",
+      "Historical names of DrawerHover/PoliticalHover/BattleWindowHover and some of the preserved parameters/no-op CloseTransient require consistent documentation. Possible naming orders should include the entire API and calls."
+    ],
+    "hot_paths": [
+      {
+        "path": "Pointer/fokus",
+        "assessment": "RuntimeTooltip makes a panel.Pick and a short parental walk; the timer 50 ms only works when an open description is given. FocusIndicator checks Pick every 16 ms only with a tracked seal and protects reentrants after changing the layout."
+      },
+      {
+        "path": "Pan/mapa",
+        "assessment": "MapEdgePan timer 16 ms works only on the exposed edge, stops at the border and limits the delta to 50 ms. MapRenderer retains geometry and transformation of the entire group. MapCanvas.Refresh still counts distribution/collisions markers: O(markers × occupied rectangles), an important measurement target of dense board."
+      },
+      {
+        "path": "Animacja",
+        "assessment": "Snapshot/diff and grouping take place on a new projection; Tick moves existing group transformations. Timer finishes work after the last flight, reconnect/reset removes flights. revealedRegions maintains a clear score for the next projection."
+      },
+      {
+        "path": "Zasoby/layout",
+        "assessment": "Atlases/sprite are cached; images PickingMode.Ignore do not define hitboxes. Hand/markers/tory keep controls. The pair coordinator has a guard reentranty and compares positions before writing; budget booking prevents a reflow in the middle of the figures selection."
+      }
+    ],
+    "risks_and_limits": [
+      {
+        "severity": "non_blocking_maintenance",
+        "item": "Large composers and historical names Hover is a maintenance debt; no current behavioral error resulting from these names has been found."
+      },
+      {
+        "severity": "verification_pending",
+        "item": "The static review does not confirm 60 FPS or feedback ≤100 ms. Player profile and images start/middle/finished belong to a separate acceptance coordinator."
+      },
+      {
+        "severity": "documented_platform_limit",
+        "item": "Windows/Intel runtime, physical smooth, hand-held lot and implementation remain uncounted."
+      }
+    ],
+    "verification_performed_here": [
+      "Reading BOARD_INTERACTION_UX, UI-77, UI-80, current status graph and corresponding chapters ARCHITECTURE.",
+      "Reading key sources/diff a03dd35..dd1a168, no src changes and no runtime compatibility with dd1a168.",
+      "Without Unity, tests, builds, profiler, and mutations, this artifact is the only thing that's been recorded."
+    ],
+    "native_png_review": "Not started; waiting for the coordinator signal and 16 final images with a width of 1920. This review does not include viewing.",
+    "source_sha256": {
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/CameraState.cs": "856afe0483d6bf07c46561c40ea2f5ff6a8bef7f498bd384fce6b7a9c52674fd",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapEdgePan.cs": "aaf9bf6de5cad63cf290cc23695af8ca232ce210c1381ba56b31ca918150547b",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs": "b07a1deb68f0b9484f826a359d1cdbde90a231dd9dc7ab571656133e8fac9ae3",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapRenderer.cs": "00f151b29fe53dfc6ff6f54c3d595109037c22aac895b0198d556b3ca560a0c7",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/Figures/BoardFigureSnapshot.cs": "453aede5d1b0d05a5cfb8f7e95d07af58dafebe0a618727abca2b7a5836c120f",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/Figures/BoardFigureChanges.cs": "7d9a3d1dcbc5a90b787925901e121dfeeb126958cef2e1d9c981a736466f3a8c",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/Figures/MapFigureMotion.cs": "1584ed5f347d44e12bea566a1fe53caacfd97d7be83d7801fdffb943bada0bca",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/Figures/FigureArtwork.cs": "e6487cd281ec32e51632029f0f32f526c4ec7c0aaf9395be5f4542fb50d0d0a9",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Map/Figures/MapArmyArtwork.cs": "14aae49fda74517c6c55ee2874c9ef80bcea1729fee6d8f026f414cd9365d6f9",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/RuntimeTooltip.cs": "2fa56aad4a0220e070a4afce95f3536ca00143da430637713373652cc81846f0",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHover.cs": "e66e726a642332e7222c3e250af99044dac4e8d6941d556cdb7affeb05915b05",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/FocusIndicator.cs": "99faef20fca7aeba618b46537144d8f857710e1a5849f654bdd1591b476c5da8",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/HandView.cs": "bd277c2b4e04e4c469d3eda8bb30e7f5ba2d8e39572499613c0daf180770cffb",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs": "6ee8c2d725a0f2c5af235696dc8216035a15d33d5016ae26c20328f274d5f4eb",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Windows/FellowshipHuntLayout.cs": "2d3a17cf9458045f5e603a35ad53ecbb63be4c310ac95e379c193ad9b43bd5f3",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Windows/PairedPanelPlacement.cs": "6380ceecc2f1d07f970c90d45064d285917ac74549126ed90c77934d02b0a8a0",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Windows/MapPanelPlacement.cs": "bb00e94c69fd4c4b6b4f36d5b11a691aedb124ab660b778a49209f7efe508a83",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Windows/DrawerHover.cs": "703b96652d3da8bed1e8839ada29c5f3cbda0f9fe4770491096a32f5236ec6fa",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalHover.cs": "bc396abd82097f559608ed25469a3cd571615d7f613431cefa2b943529735810",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleWindowHover.cs": "a7c06b2e5d588a44187d8a5d83ae1c8ee5992122f27ab5527cc4bc270b5ce6a7",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Presentation/FellowshipTrackState.cs": "5f507a4798ad260d80b914b72f4cae886a4fa54922971b130919f8fd3b40f58e",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipTrackRow.cs": "346dfe5667ec28100922c2f61deb29edac4d28ddc25f4c7c6aaa31b7501ac584",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipArtwork.cs": "d108f9500891e05d8bba1cf24ae25f9008995a7714fffcb7d27f8a5118774aa4",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/ActionProgress.cs": "531c1056d9e6cdaff71e3e62ac9649187a580ea4a861df57273f196069ce27c0",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Presentation/ActionDieContext.cs": "8ee5d9737ed892109d2e8e96558aa7a827917eda0b8ee66a2432bdb2065d07e3",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Application/TurnInteraction.cs": "18568621f8ad69faf17fe95513c48ea64c01e81b6dc21c3395c2c6987bde32d6",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Application/ActionContextInteraction.cs": "2b28e865f0997e59561bd132a52a920c9ae172c6098ebc291a5a9fa96f301b33",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs": "819d79f08b19d6592cbceb476c0cad7d206cea68caffac48c0479752d33cfbf4",
+      "unity/Wotr.Client/Assets/Wotr/Runtime/Diagnostics/DesktopProfileScene.cs": "1efecfbe7ec718e13d9f47287d05de9bd9dfd5995b22c07eeca05821f15bad93"
+    }
+  },
+  "diagnostic_review": {
+    "schema_version": 1,
+    "task": "UI-77",
+    "reviewer": "/root/map_camera",
+    "reviewed_at_utc": "2026-10-09T06:54:18.865828+00:00",
+    "scope": "Independent reading of four motion driver diagnostic correction files; no tests or Player run and no source changes.",
+    "commit": "53ff2021f71dc15faa733a67cbc4ae9dab8d982b",
+    "comparison": "14f910a..53ff202",
+    "sources": [
+      {
+        "path": "unity/Wotr.Client/Assets/Wotr/Runtime/Diagnostics/FigureMotionProfileScene.cs",
+        "sha256": "e94bb9c4633ae3f9880c38355df4a151b6f08235352b476328a24f5afbdaf25c"
+      },
+      {
+        "path": "unity/Wotr.Client/Assets/Wotr/Runtime/Diagnostics/DesktopProfileScene.cs",
+        "sha256": "bd8af88bbafd615f5296285d7f2b55e2035f42572b514486267dcb611cc831ef"
+      },
+      {
+        "path": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/FigureMotionNetworkTests.cs",
+        "sha256": "9baedc0d5785ce9b41c42a0e8297391508429b6159ce5ce123dd4002cc72faaf"
+      },
+      {
+        "path": "unity/Wotr.Client/Assets/Wotr/Tests/PlayMode/BoardProfileDriverTests.cs",
+        "sha256": "7341f9049bb76e65af81982b6ec72882316e16662e671edda2f3ea967868ce06"
+      }
+    ],
+    "verdict": "No specific blocking fault was found in the proven diff. Final native profiling remains a separate acceptance.",
+    "findings": [],
+    "verified_contracts": [
+      {
+        "contract": "The Inspection mode is activated by a real click of the existing control before clicking the site.",
+        "evidence": "FigureMotionProfileScene.Tick receives Action<Button> with DesktopProfileScene, caches inspect-map and requires Map.Inspecting after clicking. DesktopProfileScene.Click continues to check the enabled, geometry and actual Pick and sends down/up. BoardTerrainInput.Click still requires panel.Pick(point)==map and HitTest==Region."
+      },
+      {
+        "contract": "The reading of the site does not execute or select the pending decision of the Guide.",
+        "evidence": "MapCanvas.Select in the Inspect mode leads RegionInspected to BoardInformation.Region. It does not use the strategic path RegionSelected. The previous collision of raw Enter with DraftInput.firm was removed by using Click."
+      },
+      {
+        "contract": "Restart the cycle removes open inspection and auto-open Guide window without mutation of data.",
+        "evidence": "Begin closes the Hoover and Information before playing and Fellowship after Apply(after). BoardInformation.Close resets Inspection by existing Closed. Fellowship.Close changes only presentation. It remains identically authoritative PlayerView and the required decision."
+      },
+      {
+        "contract": "The regression includes a real server separation case and a recycle with an open panel.",
+        "evidence": "FigureMotionNetworkTests uses subsequent real before/after projections, requires DecisionKind.Guide and tests four 1366/1920 × 1/1.25. sequence 0,15,30,45,120,135,150 includes opening, Esc and restart 45→120 with open BoardInformation. Each step requires the right panel, Fords title, identical ID decision and full JSON projection."
+      },
+      {
+        "contract": "The common adapter and existing workloads are preserved.",
+        "evidence": "The driver is available internal in the same assembly test; optional recorded Views are transmitted as the fifth argument of the current DesktopProfileScene constructor. The existing workload of forty variants of the Board has not been removed or simplified. Dispose and release of RenderTexture remain."
+      },
+      {
+        "contract": "The cost and production range remain limited.",
+        "evidence": "Inspection is searched once when creating the driver. Runtime changes are closed in UNITY_EDITOR ⁇ DEVELOPMENT_BUILD and remain offline; they do not add connection, preview, POST or changes to rules."
+      }
+    ],
+    "test_evidence_read_only": [
+      {
+        "path": ".artifacts/ui77/ui80-map-motion-28.xml",
+        "sha256": "39dc8112ab3f6f2d2af745a625425d614a861aaa407349407e57b54212be48e3",
+        "scope": "Import 28, current code: six Play methods for maps/movement, including extended actual separation.",
+        "total": 6,
+        "passed": 6,
+        "non_passed": []
+      },
+      {
+        "path": ".artifacts/ui77/final-edit28.xml",
+        "sha256": "9985d8ad8d62d785eedd0d0d81216b00922bdf369a9e8e134449bdb703c25380",
+        "scope": "Import 28, full Editor of the current code.",
+        "total": 600,
+        "passed": 600,
+        "non_passed": []
+      },
+      {
+        "path": ".artifacts/ui77/ui80-profile-drivers-26.xml",
+        "sha256": "3a8ae1b36fb600fdb5798bbb5dbdfc0f69ef1a58a41eb3d0d83ba86b2d87d40b",
+        "scope": "Historical import 26: three methods of common adapters, before the final correction of the Inspection in the traffic driver.",
+        "total": 3,
+        "passed": 3,
+        "non_passed": []
+      }
+    ],
+    "execution_limitations": [
+      "The reviewer read the indicated XML, but did not run any test or Player.",
+      "Results of the native 32 profileZ cases and an overview of the PNG are not included in this review; root started them separately.",
+      "Test Guide in four systems binds reduced motion to the 1.25 scale; it does not replace an independent native profile matrix."
+    ],
+    "only_written_file": ".artifacts/ui77/driver28-review.json"
+  },
+  "earlier_failed_attempts": [
+    {
+      "evidence": ".artifacts/ui77/figure-motion-attempt25",
+      "result": "FAIL, incomplete",
+      "cause": "Guide window covered the benchmark terrain."
+    },
+    {
+      "evidence": ".artifacts/ui77/ui80-map-motion-26.xml",
+      "result": "5 passed,1 failed",
+      "cause": "The test assumed ordinary terrain click opens RegionHover during mandatory Guide."
+    },
+    {
+      "evidence": ".artifacts/ui77/ui80-map-motion-27.xml",
+      "result": "5 passed,1 failed",
+      "cause": "Raw Return did not activate Inspect; corrected to strict real button click."
+    }
+  ],
+  "limitations": [
+    "Windows x64 built but not run; Intel macOS not run.",
+    "Physical touchpad and manual game not tested.",
+    "No deployment, host publication or push.",
+    "Native metrics exclude network and physical input/display latency; mean FPS is not minimum instantaneous FPS.",
+    "Figure motion workload closes the Guide window explicitly and inspects through the normal Inspect control; pending Guide remains intact.",
+    "Source recordings and application backups remain ignored local artifacts, not committed."
+  ]
+}

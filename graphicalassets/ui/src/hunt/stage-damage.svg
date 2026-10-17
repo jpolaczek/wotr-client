@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-159: Hunt stage: damage and the Free Peoples' response; the Ring with a falling drop. -->
+  <ellipse cx="13.4" cy="14" rx="8.6" ry="6.2" fill="none" style="stroke: var(--ink)" stroke-width="5.4"/>
+  <ellipse cx="13.4" cy="14" rx="8.6" ry="6.2" fill="none" style="stroke: var(--ivory)" stroke-width="3.6"/>
+  <path d="M24.4 16.4 C24.4 16.4 20.4 21.4 20.4 23.8 C20.4 26 22.2 27.6 24.4 27.6 C26.6 27.6 28.4 26 28.4 23.8 C28.4 21.4 24.4 16.4 24.4 16.4 Z" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="1"/>
+</svg>

@@ -1,0 +1,50 @@
+{
+  "task": "UI-132",
+  "recorded_at_utc": "2026-10-14T13:30:00Z",
+  "client_commit": "cbdc3de (profile tools); acceptance changes in the following commit",
+  "scope": "Army markers, movement and the Reinforcements panel UI-124–UI-131 (AM01–AM21); Development Player profiles on a 1080p external monitor",
+  "reports": {
+    "editmode": ".artifacts/ui132/editmode.xml and editmode2.xml (722/722 each)",
+    "playmode_series": ".artifacts/ui132r/pack1-18.xml (199/211; failures classified in ARMY_MAP_UX 'Acceptance UI-132')",
+    "playmode_reruns": ".artifacts/ui132s, ui132t, ui132u (separate class reruns after fixes)",
+    "builds": ".artifacts/ui132/build-mac.log, build-win.log (Success); build-dev-mac.log (Development, Success)"
+  },
+  "map17": {
+    "report": "docs/ui/profiles/ui132-macos-map17.json",
+    "sha256": "665453e9076bbb095e4a428dddef861a1a9ed97af4cf6f16fb0b0c06618b276c",
+    "recorded_at": "2026-10-14T11:57:53.432598Z",
+    "workloads": 36,
+    "screenshots": 42,
+    "minimum_fps": 168.610537440462,
+    "maximum_to_render_ms": 13.7684,
+    "window_modes": {
+      "1366x768": "Windowed",
+      "1920x1080": "FullScreenWindow"
+    },
+    "baseline": "docs/ui/profiles/map17-macos.json (2026-10-08, before UI-126)"
+  },
+  "board": {
+    "report": "docs/ui/profiles/ui132-macos-board.json",
+    "sha256": "8d6194d19aadbe8efec9101dbfc0041c3bb679eec29c4f8056bb3128c2c1d7c3",
+    "recorded_at": "2026-10-14T12:06:44.223515Z",
+    "workloads": 40,
+    "minimum_fps": 71.01771310666528,
+    "maximum_handler_ms": 12.8758,
+    "maximum_to_render_ms": 21.3932,
+    "vsync_display_hz": 75,
+    "baseline": "docs/ui/profiles/ui121-macos-board.json (2026-10-13, 120 Hz built-in display)"
+  },
+  "hardware": {
+    "CPU": "Apple M1 Pro",
+    "GPU": "Apple M1 Pro",
+    "MemoryMB": 16384,
+    "OS": "Mac OS X 15.6.1",
+    "Unity": "6000.6.0f1",
+    "GraphicsAPI": "Metal",
+    "Platform": "OSXPlayer"
+  },
+  "not_run": [
+    "scripts/smoke-macos.py (moves the user's real app data and preferences)",
+    "Windows runtime and Intel Mac profiles"
+  ]
+}

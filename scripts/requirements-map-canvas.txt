@@ -1,0 +1,4 @@
+# UI-102 map canvas export (scripts/export_map_canvas.py); versions used for the committed outputs.
+numpy==2.5.4
+scipy==1.18.1
+Pillow==12.3.0

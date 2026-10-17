@@ -1,0 +1,40 @@
+Use case: precise-object-edit.
+Create a LARGE, high-resolution COMPLETE TERRITORY OUTLINE MAP by accurately tracing the original board in image 1. Use the accepted clean Mirkwood tracing in image 2 as the exact local boundary pattern. This is a cartographic extraction task: fidelity and correct region divisions matter more than illustration.
+
+INPUT ROLES:
+1. Original full printed board, authoritative source for the geography and every territory outside the accepted local tracing.
+2. USER-APPROVED Mirkwood outline crop. Preserve this exact pattern of curves, connected regions and boundary junctions within the full map at its correct geographic scale.
+3. Original colored crop corresponding to image 2, to align the approved tracing to image 1.
+4. Correct close-up of Mordor, for separating actual territorial borders from the decorative character panel and volcano counters.
+5. Correct close-up of Rohan, for distinguishing the real boundaries from lettering.
+
+OUTPUT CANVAS:
+One complete north-up map at the original board's geographic proportions, landscape approximately 1.416:1. Target a large 3840 x 2720 PNG if supported; use maximum practical detail. The entire map must fit without cutting off land or southern regions. Opaque pure WHITE land, consistent fine BLACK borders, fully TRANSPARENT sea/lakes/exterior. No board frame, tracks, panels, labels, numbers, terrain, symbols, shading, color, texture, caption, inset or legend. This is the complete playable map, not just the Mirkwood crop.
+
+SOURCE TRACING:
+Read the thin pale territorial lines and the actual colored political boundaries in image 1. Replace each shared border with ONE thin black line. Colored halos are not several parallel borders. A multiline place name never creates another territory. Remove tree silhouettes, tree hatching, mountain hatching, stronghold symbols and all lettering. Where mountain ridges genuinely separate territories, preserve that divide as a single boundary without drawing any extra mountain-shaped cells. Rivers on borders become single lines, not two banks enclosing spurious strips. Preserve source shapes and junctions: do not replace them with regularized round cells.
+
+MIrKWOOD — MANDATORY ACCEPTED GEOMETRY:
+Register image 2 with the original board using image 3. Preserve its aspect ratio; do not enlarge the forest cluster relative to the rest of the continent. The approved crop includes neighboring regions that must align with their counterparts in the full board.
+Seven complete forest territories must remain exactly:
+Western Mirkwood at upper left; Woodland Realm at upper right;
+Old Forest Road as one horizontal band beneath Woodland Realm;
+Narrows of the Forest at left and Eastern Mirkwood at right below that road;
+Dol Guldur at left and Southern Mirkwood at right inside the SAME rounded southern forest perimeter.
+Woodland Realm includes its northern cap and has no internal horizontal division. Old Forest Road includes its northwest projecting part and is exactly one territory. Narrows/Eastern share the approved winding divider. Dol Guldur/Southern Mirkwood share their own approved winding divider. The endpoints of these two dividers are OFFSET as in image 2, forming separate triple junctions.
+BOTH southern forest territories fit inside the red perimeter visible in images 1 and 3. Southern Rhovanion is a SEPARATE open territory immediately east of this perimeter; DO NOT turn it into Southern Mirkwood.
+Carrock, Rhosgobel and the Anduin Vales remain west of the forest, Dale and the Rhovanion territories remain east, and the Brown Lands remain below. The region junctions and proportions must agree with the accepted crop.
+
+OTHER PREVIOUSLY MISREAD AREAS:
+- Rohan: Westemnet is one region; never draw a line across its printed name. Keep Eastemnet, Westemnet, Folde, Edoras, Helm's Deep, Fords of Isen, Fangorn, Orthanc and Parth Celebrant individually correct. Use image 5 for the actual river junctions and outlines.
+- Erebor/Dale: no invented strip from the WOODLAND REALM or DALE lettering. Erebor, Iron Hills, Withered Heath, Northern Mirkwood and Dale are distinct. The genuine Old Forest Road lies south of Woodland Realm.
+- Moria: one territory between the neighboring real regions. Preserve the narrow genuine Fords of Bruinen and High Pass, but do not turn the letters of MORIA or mountain drawings into extra regions.
+- Lamedon and Parth Celebrant: one territory each, with no internal line generated from their words.
+- Rhun: preserve the actual North Rhun/East Rhun border and the Sea of Rhun coastline. The circular board track above is decoration, not a network of regions.
+- Mordor: exactly Morannon, Barad-dur, Minas Morgul, Gorgoroth and Nurn inside the mountain enclosure, with Khand as a separate genuine territory to the south. Use image 4. The volcano and round counters add ZERO regions. The character panel adds ZERO regions: remove it completely, smoothly continuing the underlying real territories to the map edge, without any portrait-panel-shaped compartment. Retain the real Morannon/Barad-dur/Gorgoroth divisions. Gorgoroth is one connected region. Nurn is distinct south of the lake. The Sea of Nurnen is a transparent water shape, NOT an extra white territory. Preserve its irregular source shoreline.
+
+REGION INVENTORY FOR COMPLETENESS — THESE ARE IDENTIFIERS, NOT TEXT TO RENDER:
+Andrast, Anfalas, Angmar, Arnor, Ash Mountains, Barad-dur, Bree, Buckland, Cardolan, Carrock, Dagorlad, Dale, Dead Marshes, Dimrill Dale, Dol Amroth, Dol Guldur, Druadan Forest, Druwaith Iaur, Eagles' Eyrie, East Harondor, East Rhun, Eastemnet, Eastern Brown Lands, Eastern Emyn Muil, Eastern Mirkwood, Edoras, Enedwaith, Erebor, Erech, Ered Luin, Ettenmoors, Evendim, Fangorn, Far Harad, Folde, Fords of Bruinen, Fords of Isen, Forlindon, Gap of Rohan, Gladden Fields, Goblin's Gate, Gorgoroth, Grey Havens, Harlindon, Helm's Deep, High Pass, Hollin, Iron Hills, Khand, Lamedon, Lorien, Lossarnach, Minas Morgul, Minas Tirith, Minhiriath, Morannon, Moria, Mount Gram, Mount Gundabad, Narrows of the Forest, Near Harad, Noman-Lands, North Anduin Vale, North Downs, North Dunland, North Ered Luin, North Ithilien, North Rhun, Northern Dorwinion, Northern Mirkwood, Northern Rhovanion, Nurn, Old Ford, Old Forest, Old Forest Road, Orthanc, Osgiliath, Parth Celebrant, Pelargir, Rhosgobel, Rivendell, South Anduin Vale, South Downs, South Dunland, South Ered Luin, South Ithilien, South Rhun, Southern Dorwinion, Southern Mirkwood, Southern Rhovanion, Tharbad, The Shire, Tower Hills, Trollshaws, Umbar, Vale of the Carnen, Vale of the Celduin, Weather Hills, West Harondor, Westemnet, Western Brown Lands, Western Emyn Muil, Western Mirkwood, Withered Heath, Woodland Realm.
+Each of these 105 named game territories should be represented once in its correct place. Small offshore islands are geographic parts of existing coastal territories, not new territories.
+
+Return ONLY the clean complete outline map. No text whatsoever. Every true region must have a closed contour with shared edges and accurate junctions; do not add regions to compensate for a mistaken count.

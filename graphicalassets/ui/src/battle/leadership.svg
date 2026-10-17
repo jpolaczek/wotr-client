@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Leadership: a war banner on its pole. -->
+  <g filter="url(#lift)">
+    <rect x="7.5" y="3" width="1.8" height="26" rx="0.9" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <circle cx="8.4" cy="2.8" r="1.8" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.4"/>
+    <path d="M9.6 5 L27 5 L23 11.5 L27 18 L9.6 18 Z" fill="url(#emblem-ember)" style="stroke: var(--emblem-outline)" stroke-width="0.7"/>
+    <path d="M12.5 8 H21 M12.5 11.5 H19 M12.5 15 H21" style="stroke: var(--ink)" stroke-width="0.8" opacity="0.5"/>
+  </g>
+</svg>

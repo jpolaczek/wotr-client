@@ -1,0 +1,1489 @@
+/* UI-86: the illustrated top bar has its own sheet; imports must precede all rules. */
+@import url("Wotr/Styles/TopBar.uss");
+@import url("Wotr/Styles/LeftRail.uss");
+@import url("Wotr/Styles/RightColumn.uss");
+@import url("Wotr/Styles/Cards.uss");
+@import url("Wotr/Styles/DicePanel.uss");
+@import url("Wotr/Styles/Notices.uss");
+/* UI-115: the battle window, dice, losses and report; rules moved out of this sheet. */
+@import url("Wotr/Styles/Battle.uss");
+/* UI-126: army markers on the map (token and figures on a base); the old marker rules left this sheet. */
+@import url("Wotr/Styles/Armies.uss");
+/* UI-130: the Reinforcements panel of a Muster action. */
+@import url("Wotr/Styles/Reinforcements.uss");
+/* UI-136: halos on the controls the chosen action die can use. */
+@import url("Wotr/Styles/DieOptions.uss");
+/* UI-138: icon buttons (Runtime/UI/IconButton.cs) on the square gilt frame. */
+@import url("Wotr/Styles/Buttons.uss");
+/* UI-139: character cards in symbols (roster rows and the inspector). */
+@import url("Wotr/Styles/Characters.uss");
+/* UI-141: printed Hunt tiles, the Hunt pool list and the drawn tile's artwork. */
+@import url("Wotr/Styles/HuntPool.uss");
+/* UI-154: the Mordor track on the map and the Fellowship on it. */
+@import url("Wotr/Styles/Mordor.uss");
+/* UI-186: region names on the map. */
+@import url("Wotr/Styles/MapNames.uss");
+@import url("Wotr/Styles/Console.uss");
+@import url("Wotr/Styles/HuntWindow.uss");
+/* UI-169: the end-of-game screen over the whole board. */
+@import url("Wotr/Styles/GameEnd.uss");
+/* TYPO-01: Cinzel headings and Alegreya body/controls, with the existing layout dimensions. */
+@import url("Wotr/Styles/Typography.uss");
+/* DIST-07: the update notice, the required-update window and the Updates section of Settings. */
+@import url("Wotr/Styles/Updates.uss");
+/* UI-114: press states; imported last so its rules win ties with the sheets above. */
+@import url("Wotr/Styles/Interaction.uss");
+
+.board-screen {
+    flex-grow: 1;
+    background-color: rgb(26, 24, 23);
+    color: rgb(231, 228, 215);
+    font-size: 16px;
+}
+
+.row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(231, 209, 160);
+    margin-bottom: 8px;
+}
+
+
+.muted {
+    color: rgb(168, 186, 184);
+    font-size: 14px;
+}
+
+.stage {
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.map {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgb(34, 32, 30);
+    overflow: hidden;
+}
+
+
+.runtime-tooltip {
+    position: absolute;
+    max-width: 360px;
+    padding: 8px 10px;
+    margin: 0;
+    white-space: normal;
+    font-size: 14px;
+    color: rgb(241, 235, 214);
+    background-color: rgb(39, 37, 34);
+    border-width: 1px;
+    border-color: rgb(210, 186, 126);
+    border-radius: 4px;
+}
+
+.tracks {
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    padding-right: 16px;
+    background-color: rgba(24, 22, 20, 0.94);
+    color: rgb(204, 219, 210);
+    font-size: 14px;
+}
+
+.bottom {
+    height: auto;
+    min-height: 88px;
+    flex-shrink: 0;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    padding-bottom: 6px;
+    background-color: rgb(34, 32, 30);
+    border-top-width: 1px;
+    border-top-color: rgb(79, 88, 80);
+}
+
+.dice-panel {
+    width: 212px;
+    padding-top: 4px;
+    padding-left: 16px;
+    padding-right: 8px;
+    border-right-width: 1px;
+    border-right-color: rgb(78, 74, 69);
+}
+
+.tray {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    flex-basis: 0;
+    padding-left: 22px;
+    padding-right: 18px;
+    padding-top: 8px;
+}
+
+.die {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    margin-right: 4px;
+    margin-bottom: 10px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    background-color: rgb(75, 71, 66);
+    color: rgb(238, 236, 221);
+    -unity-font-style: bold;
+    font-size: 17px;
+    margin-left: 0;
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+/* UI-138: every text button wears the framed lacquer of frames/button (gilt edge, studs), with its hover art;
+   a press tints and sinks it (Styles/Interaction.uss). Buttons with art of their own override the image. */
+.action {
+    min-width: 38px;
+    min-height: 36px;
+    padding-left: 12px;
+    padding-right: 12px;
+    color: rgb(241, 227, 181);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+}
+
+.action:hover {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-hover");
+}
+
+.action.selected { background-image: resource("Wotr/Art/UI/frames/button-selected"); }
+.action:disabled { color: rgb(158, 150, 128); -unity-background-image-tint-color: rgb(150, 150, 150); }
+
+
+.fp {
+    background-color: rgb(43, 78, 94);
+    color: rgb(233, 246, 244);
+}
+
+.sh {
+    background-color: rgb(99, 43, 48);
+    color: rgb(255, 231, 219);
+}
+
+
+.force-detail {
+    margin-right: 18px;
+    margin-top: 8px;
+}
+
+.gateway {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(26, 24, 23);
+    color: rgb(231, 228, 215);
+    font-size: 18px;
+}
+
+.login-card {
+    width: 520px;
+    padding: 24px;
+    background-color: rgb(34, 32, 30);
+}
+
+.login-card .unity-text-field {
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+
+.login-card .unity-toggle {
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.login-card .action {
+    margin-top: 14px;
+}
+
+.auth-hint {
+    font-size: 16px;
+    color: rgb(181, 190, 190);
+    white-space: normal;
+}
+
+.lobby-panel {
+    width: 900px;
+    max-height: 700px;
+    padding: 28px;
+    background-color: rgb(34, 32, 30);
+}
+
+.lobby-panel .row {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.lobby-panel .unity-toggle {
+    margin-right: 24px;
+    margin-bottom: 18px;
+}
+
+.variants {
+    max-width: 800px;
+    min-height: 50px;
+}
+
+.status-message {
+    white-space: normal;
+    color: rgb(232, 195, 145);
+    margin-top: 12px;
+}
+
+.inspect-panel {
+    position: absolute;
+    left: auto;
+    bottom: 16px;
+    max-width: 450px;
+    padding: 16px;
+    background-color: rgba(24, 22, 20, 0.96);
+    right: 20px;
+    width: 450px;
+}
+
+
+.selected {
+    border-top-color: rgb(245, 212, 133);
+    border-bottom-color: rgb(245, 212, 133);
+    border-left-color: rgb(245, 212, 133);
+    border-right-color: rgb(245, 212, 133);
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+}
+
+.inspect-panel .force-detail {
+    width: 410px;
+}
+
+.inspect-panel .force-detail .unity-label {
+    white-space: normal;
+}
+
+.gateway .unity-base-text-field__input {
+    background-color: rgb(55, 52, 48);
+    color: rgb(245, 239, 222);
+    padding: 8px;
+    border-top-color: rgb(108, 128, 129);
+    border-bottom-color: rgb(108, 128, 129);
+    border-left-color: rgb(108, 128, 129);
+    border-right-color: rgb(108, 128, 129);
+}
+
+.gateway .unity-text-field__input {
+    background-color: rgb(55, 52, 48);
+    color: rgb(245, 239, 222);
+}
+
+.dice-panel .die {
+    height: 34px;
+    margin-bottom: 3px;
+}
+
+.dice-panel .action {
+    min-height: 28px;
+    height: 28px;
+    min-width: 32px;
+}
+
+.draft-status {
+    white-space: normal;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.tray .action {
+    margin-bottom: 3px;
+}
+
+.dice-panel .title {
+    margin-bottom: 2px;
+}
+
+
+.drag-ghost {
+    position: absolute;
+    padding: 8px;
+    background-color: rgb(65, 62, 57);
+    color: rgb(245, 212, 133);
+    border-top-width: 2px;
+    border-top-color: rgb(245, 212, 133);
+}
+
+.board-planning .dice-panel { width: 212px; }
+.board-planning .tray { padding-top: 6px; padding-left: 12px; padding-right: 12px; }
+.board-planning .tray .title { margin-bottom: 0; font-size: 16px; }
+.board-planning .draft-status { margin-top: 2px; margin-bottom: 2px; }
+.figure-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+.figure-nation { margin-right: 10px; max-width: 300px; }
+.figure-nation .row { max-width: 300px; }
+.figure-nation .group-heading {
+    height: 24px;
+    min-height: 24px;
+    margin-bottom: 0;
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 13px;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+.figure {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 2px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    flex-shrink: 0;
+    font-size: 18px;
+}
+.left-behind { opacity: 0.5; }
+.reserve-piece { min-width: 52px; padding-left: 5px; padding-right: 5px; }
+.map-draft-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+
+.dice-panel, .hand { flex-shrink: 0; }
+.tray > * { flex-shrink: 0; }
+.figure-picker { flex-direction: column; }
+.figure-picker .figure-nation { max-width: none; flex-direction: row; align-items: center; }
+.figure-picker .figure-nation .row { max-width: none; }
+.figure-tab { padding-left: 7px; padding-right: 7px; font-size: 13px; }
+.figure-picker .figure { font-size: 15px; }
+
+.tray > .title { margin-top: 0; margin-bottom: 4px; }
+.tray .action { height: 33px; min-height: 33px; margin-top: 0; margin-bottom: 2px; padding-top: 0; padding-bottom: 0; }
+.character-planning .tray .action { height: 33px; min-height: 33px; }
+.tray .figure { height: 34px; min-height: 34px; }
+.tray .group-heading { height: 24px; min-height: 24px; }
+.tray.event-army-planning .action { min-height: 33px; height: 33px; }
+.tray.event-army-planning .figure-grid .figure-nation { flex-direction: row; align-items: center; max-width: none; }
+
+.resource-counts .unity-label { margin-right: 7px; font-size: 13px; }
+
+.tray .unavailable-figure { width: 24px; min-width: 24px; font-size: 12px; }
+
+
+.die.special-die {
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-left-radius: 1px;
+    border-bottom-right-radius: 1px;
+}
+
+.die.paid-die { background-color: rgb(65, 59, 39); }
+
+.tray .reserve-piece {
+    width: 36px;
+    min-width: 36px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 2px;
+    font-size: 14px;
+}
+
+.recruit-palette { justify-content: space-between; }
+.recruit-palette .figure-nation { margin-right: 0; }
+
+/* Hand and card details are transient; the decision dock stays visible. */
+.character-card { border-left-color: rgb(108, 187, 197); }
+.strategy-card { border-left-color: rgb(210, 169, 97); }
+.playable-card { background-color: rgb(43, 83, 70); }
+.card-inspector {
+    position: absolute;
+    width: 336px;
+    padding: 10px;
+    background-color: rgb(34, 32, 30);
+    border-top-width: 2px;
+    border-top-color: rgb(210, 185, 126);
+    border-left-width: 1px;
+    border-left-color: rgb(91, 109, 103);
+}
+.card-inspector .title { white-space: normal; font-size: 16px; margin: 0; flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.card-inspector .action { min-height: 26px; height: 26px; font-size: 12px; margin: 0 0 0 4px; }
+.card-inspector .muted { margin-bottom: 4px; }
+.card-rules { white-space: normal; font-size: 14px; flex-shrink: 0; margin: 0; padding: 0; }
+.draft-card { border-left-width: 4px; border-left-color: rgb(241, 206, 119); }
+.effect-trail { flex-direction: row; flex-wrap: wrap; }
+.tray .committed-choice { font-size: 13px; height: 27px; min-height: 27px; background-color: rgb(43, 41, 38); }
+.tray .effect-companion { width: 62px; min-width: 62px; padding: 0; margin-left: 0; margin-right: 3px; font-size: 14px; }
+.tray .effect-unit { width: 33px; min-width: 33px; padding: 0; margin-right: 3px; }
+.effect-figure-tabs, .effect-figure-row { flex-direction: row; flex-wrap: wrap; }
+.effect-hit-controls { flex-shrink: 0; flex-wrap: nowrap; }
+.effect-figure-tabs .action { font-size: 13px; padding-left: 5px; padding-right: 5px; margin-right: 3px; }
+.effect-figure-tabs .contains-selection { border-bottom-color: #a2d3b0; border-bottom-width: 3px; }
+.card-planning .tray #confirm-decision { height: 33px; min-height: 33px; }
+.card-planning .tray .action, .event-loss-planning .tray .action, .loss-planning .tray .action { height: 33px; min-height: 33px; }
+.dice-panel .action { width: 32px; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 4px; }
+.dice-panel .battle-policy .action { width: 196px; min-height: 32px; height: 32px; font-size: 13px; margin-bottom: 0; }
+.card-inspector > * { flex-shrink: 0; }
+.card-inspector .action { padding-left: 7px; padding-right: 7px; }
+.card-inspector #close-card { width: 28px; min-width: 28px; padding: 0; }
+
+.fellowship-panel {
+    position: absolute;
+    width: 380px;
+    max-width: 95%;
+    padding: 10px;
+    background-color: rgba(24, 22, 20, 0.96);
+    font-size: 14px;
+}
+.fellowship-status { position: absolute; right: 110px; top: 10px; font-size: 13px; }
+.hunt-panel { position: absolute; width: 500px; max-width: 95%; padding: 10px; background-color: rgba(24, 22, 20, 0.98); font-size: 14px; }
+.hunt-panel.hunt-reaction-panel { width: 640px; }
+.hunt-panel .window-header .title { flex-grow: 1; }
+.hunt-panel #hunt-choices > .tray { padding: 0; border-width: 0; flex-grow: 0; flex-basis: auto; }
+.hunt-panel #hunt-choices > .tray > .title { display: none; }
+.hunt-panel .tray .decision-choice-footer { flex-wrap: nowrap; align-items: center; }
+.hunt-panel .tray .decision-choice-footer > .draft-status { flex-basis: 0; flex-grow: 1; margin-right: 6px; font-size: 12px; }
+.hunt-panel .hunt-heading { flex-direction: row; justify-content: space-between; align-items: center; }
+.hunt-panel #hunt-owner { font-size: 12px; color: rgb(190, 202, 210); margin: 0 0 0 8px; }
+.hunt-panel #hunt-main { margin: 3px 0; padding-top: 3px; border-top-width: 1px; border-top-color: rgb(81, 77, 71); }
+.hunt-panel .draft-status { white-space: normal; margin-top: 2px; margin-bottom: 2px; }
+.hunt-panel #hunt-step { color: rgb(231, 209, 160); margin: 2px 0; }
+.hunt-panel #hunt-source { font-size: 12px; margin: 2px 0 4px 0; white-space: normal; }
+.hunt-panel .action { height: 32px; min-height: 32px; padding: 0 6px; margin: 0 6px 2px 0; }
+.hunt-panel #hunt-roll { margin: 3px 0; }
+.hunt-panel .hunt-roll-results, .hunt-panel .hunt-roll-overview, .hunt-panel .hunt-roll-modifiers, .hunt-panel .hunt-natural-result { flex-direction: row; align-items: center; flex-wrap: nowrap; }
+.hunt-panel .hunt-roll-totals { flex-direction: column; align-items: flex-start; margin-left: 8px; }
+.hunt-panel .hunt-roll-modifiers .unity-label { flex-grow: 1; flex-shrink: 0; }
+.hunt-panel .hunt-roll-die { width: 48px; min-width: 48px; height: 54px; min-height: 54px; flex-direction: column; align-items: center; justify-content: center; padding: 0; }
+.hunt-roll-die #hunt-pips { width: 30px; height: 30px; flex-shrink: 0; }
+.hunt-roll-die #hunt-hit { width: 12px; margin: 0; padding: 0; -unity-text-align: middle-center; }
+.hunt-roll-die #hunt-first-result { font-size: 11px; margin: 0; padding: 0; -unity-text-align: middle-center; }
+.hunt-roll-die.hunt-hit { border-color: rgb(146, 205, 177); }
+.hunt-panel #hunt-roll-bonus { margin: 0; font-size: 13px; }
+.hunt-panel #hunt-reroll-budget { margin: 2px 0 0 0; font-size: 12px; }
+.hunt-panel #hunt-movement-bonus, .hunt-panel #hunt-effect-bonus, .hunt-panel #hunt-reroll-sources, .hunt-panel #hunt-reroll-bonus { font-size: 12px; margin: 2px 12px 0 0; padding: 0; white-space: normal; }
+.hunt-panel .hunt-tile-card { height: 52px; min-height: 52px; padding: 3px 8px; flex-direction: column; align-items: center; background-color: rgb(81, 52, 44); }
+.hunt-tile-card #hunt-tile-face { font-size: 19px; margin: 0; padding: 0; }
+.hunt-tile-values { flex-direction: row; align-items: center; justify-content: center; }
+.hunt-tile-values .unity-label { margin: 1px 6px 0 6px; padding: 0; }
+.hunt-panel .hunt-report-strip { flex-direction: row; align-items: center; margin: 3px 0; }
+.hunt-allocated-dice { flex-direction: row; align-items: center; }
+.hunt-report-strip .hunt-report-event { flex-grow: 1; flex-shrink: 1; flex-basis: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; margin: 0 3px; padding: 3px; background-color: rgb(41, 38, 35); }
+.hunt-panel .hunt-report-strip .action { width: 24px; min-width: 24px; height: 24px; min-height: 24px; padding: 0; margin: 0; }
+.hunt-panel .allocated-die { width: 30px; min-width: 30px; padding: 0; margin-right: 3px; }
+.hunt-panel #hunt-allocation-count { margin: 3px 0; }
+.hunt-panel #hunt-allocation-eye { flex-direction: row; align-items: center; min-width: 80px; min-height: 36px; padding: 0 10px 0 28px; margin-right: 4px; border-width: 1px; border-radius: 3px; border-color: rgba(146, 205, 177, 0.35); background-color: rgba(41, 38, 35, 0.6); }
+.hunt-panel #hunt-allocation-eye > .unity-label { margin: 0; padding: 0; color: rgb(236, 230, 209); -unity-font-style: bold; }
+.die.hunt-candidate { border-color: rgb(146, 205, 177); }
+/* UI-183: a die allocated to the Hunt keeps its strength and wears the gold mark (Styles/DicePanel.uss). */
+.hunt-panel .companion-token { width: 61px; min-width: 32px; flex-shrink: 1; height: 44px; min-height: 44px; flex-direction: column; justify-content: center; align-items: center; padding: 0; margin-right: 5px; }
+.hunt-panel .fellowship-members { flex-wrap: nowrap; }
+.hunt-response-objects { flex-direction: row; justify-content: center; margin-top: 4px; }
+.hunt-panel .hunt-response-object { height: 68px; min-height: 68px; min-width: 0; flex-grow: 1; flex-basis: 0; flex-direction: column; align-items: center; justify-content: center; padding: 2px; }
+.hunt-response-heading { flex-direction: row; align-items: center; justify-content: center; }
+.hunt-response-icon { width: 24px; height: 24px; margin-right: 4px; justify-content: center; align-items: center; }
+.hunt-response-object #hunt-response-symbol { margin: 0; padding: 0; font-size: 16px; }
+.hunt-guide-portrait { background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 12px; }
+.hunt-random-stack { margin-right: 6px; }
+.hunt-card-back { position: absolute; left: 4px; top: 1px; width: 17px; height: 21px; background-color: rgb(86, 82, 76); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; }
+.hunt-random-stack #hunt-response-symbol { width: 17px; height: 24px; font-size: 15px; background-color: rgb(51, 49, 45); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; -unity-text-align: middle-center; }
+.hunt-response-object #hunt-response-name { margin: 0; padding: 0; font-size: 13px; }
+.hunt-response-object #hunt-response-consequence { margin: 1px 0 0 0; padding: 0; font-size: 12px; white-space: pre; -unity-text-align: middle-center; }
+.hunt-panel #hunt-guide-order { margin: 1px 0; padding: 0; font-size: 12px; color: rgb(231, 209, 160); }
+.hunt-panel .tray .hunt-reaction { flex-direction: column; align-items: stretch; flex-grow: 1; flex-basis: 0; min-width: 170px; height: auto; padding: 5px 7px; }
+.hunt-reaction .unity-label { flex-shrink: 0; margin: 0; padding: 0; white-space: normal; }
+.hunt-reaction .hunt-reaction-source { font-size: 12px; color: rgb(178, 193, 197); }
+.hunt-reaction .hunt-reaction-title { font-size: 13px; -unity-font-style: bold; }
+.hunt-reaction .hunt-reaction-detail { font-size: 12px; margin-top: 2px; }
+.hunt-reaction .hunt-reaction-cost { font-size: 12px; margin-top: 3px; color: rgb(231, 209, 160); }
+.fellowship-actions { flex-direction: row; flex-wrap: wrap; margin-top: 6px; }
+.fellowship-panel #fellowship-action-hint { white-space: normal; color: rgb(198, 208, 208); margin-bottom: 4px; }
+.fellowship-panel #fellowship-guide-hint, .fellowship-panel #fellowship-separation-hint { white-space: normal; color: rgb(231, 209, 160); }
+.fellowship-panel #fellowship-location { color: rgb(178, 193, 197); font-size: 13px; }
+.fellowship-panel .window-header .title { flex-grow: 1; }
+.fellowship-panel .window-header #focus-fellowship { width: 64px; min-width: 64px; margin-right: 6px; }
+.die.fellowship-cost { border-color: rgb(231, 209, 160); border-width: 2px; }
+.fellowship-panel > .tray { padding: 0; border-width: 0; flex-grow: 0; flex-basis: auto; }
+.fellowship-panel > .tray > .title { display: none; }
+.fellowship-panel .draft-status { white-space: normal; }
+.fellowship-panel.fellowship-route { width: 360px; }
+.fellowship-route .travel-summary { flex-wrap: wrap; }
+.fellowship-panel #fellowship-route-effect { color: rgb(231, 209, 160); white-space: normal; }
+.fellowship-panel .companion-token {
+    width: 68px;
+    min-width: 32px;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.fellowship-panel .action.companion-token { height: 44px; min-height: 44px; flex-direction: column; justify-content: center; align-items: center; }
+.companion-token.current-guide { border-color: rgb(231, 209, 160); }
+.companion-token #portrait-name { flex-shrink: 0; height: 18px; margin: 0; padding: 0; }
+.companion-token #guide-badge { flex-shrink: 0; height: 14px; margin: 0; padding: 0; font-size: 10px; -unity-text-align: middle-center; color: rgb(231, 209, 160); }
+.fellowship-panel .fellowship-members { flex-wrap: wrap; }
+.fellowship-panel .action { height: 32px; min-height: 32px; padding: 0 6px; margin: 0 8px 2px 0; }
+.fellowship-panel .unity-label { margin-top: 1px; margin-bottom: 1px; }
+.fellowship-panel #fellowship-guide { color: rgb(231, 209, 160); }
+.fellowship-members, .hunt-context, .travel-summary {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.fellowship-members { margin-top: 3px; }
+.companion-token {
+    width: 30px;
+    height: 28px;
+    -unity-text-align: middle-center;
+    background-color: rgb(65, 62, 57);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    margin-right: 5px;
+}
+.fellowship-panel #mordor-activity { white-space: normal; font-size: 12px; color: rgb(178, 193, 197); }
+.fellowship-panel #mordor-activity.mordor-inactive { color: rgb(231, 209, 160); }
+.live-board .tracks { top: auto; bottom: 8px; padding: 6px 10px; }
+.fellowship-planning .tray .action { min-height: 33px; padding-top: 0; padding-bottom: 0; }
+.companion-portraits { flex-direction: row; flex-wrap: wrap; }
+.tray .companion-group-choice { width: 32px; min-width: 32px; padding: 0; margin-left: 0; margin-right: 4px; }
+.tray .companion-portrait {
+    width: 66px;
+    height: 48px;
+    min-width: 66px;
+    min-height: 48px;
+    margin: 3px 3px 3px 0;
+    padding: 0;
+    font-size: 14px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.travel-summary .unity-label { font-size: 14px; }
+.tray .nazgul-portrait { width: 36px; min-width: 36px; height: 36px; min-height: 36px; }
+.tray .dense-travel .companion-portrait { height: 34px; min-height: 34px; margin-top: 1px; margin-bottom: 1px; }
+.fellowship-planning .tray { padding-top: 4px; }
+.portrait-guide { position: absolute; left: 3px; top: 0; font-size: 11px; color: rgb(231, 209, 160); }
+.hunt-context { margin: 2px 0; font-size: 14px; }
+.hunt-tile { padding: 3px 8px; margin-left: 6px; background-color: rgb(81, 52, 44); }
+.tray .hunt-die { width: 40px; min-width: 40px; padding: 0; }
+.fellowship-marker {
+    position: absolute;
+    /* UI-154: no button margin, so the figure stands exactly where the map places it. */
+    margin: 0;
+    width: 112px;
+    height: 30px;
+    background-color: rgb(173, 145, 82);
+    color: rgb(26, 24, 23);
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    font-size: 13px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+.tray .battle-card, .battle-report .battle-card { height: 36px; min-height: 36px; white-space: pre; -unity-text-align: middle-left; }
+.tray .loss-figure { width: 42px; min-width: 42px; height: 40px; min-height: 40px; padding: 0; margin: 0 2px 0 0; font-size: 13px; }
+.tray.table-card-removal .action { height: 33px; min-height: 33px; }
+.tray.event-recruitment .action { height: 33px; min-height: 33px; }
+.tray.event-recruitment { padding-top: 2px; }
+.tray.event-recruitment > .title { margin-bottom: 0; }
+.event-recruit-palette, .event-recruit-placements { flex-direction: row; flex-wrap: wrap; }
+.event-recruit-palette { align-items: center; }
+.event-recruit-palette .action { padding-left: 5px; padding-right: 5px; }
+.event-recruit-placements .action { font-size: 12px; padding-left: 4px; padding-right: 4px; }
+.army-planning .tray .committed-choice { height: 33px; min-height: 33px; }
+.army-planning .tray { padding-top: 4px; }
+.tray.excess-planning .action { height: 33px; min-height: 33px; }
+.tray.excess-planning .figure { height: 34px; min-height: 34px; }
+.tray.excess-planning .figure-nation, .tray.excess-planning .figure-nation .row { max-width: none; }
+.tray .figure.required-commander { width: 48px; min-width: 48px; }
+
+/* Read-only information stays above the decision tray and separate from card inspection. */
+.match-loading { position: absolute; left: 24px; top: 76px; font-size: 20px; color: rgb(231, 209, 160); }
+.board-information {
+    position: absolute; left: 16px; top: 112px; bottom: 8px; width: 560px;
+    padding: 8px; background-color: rgb(34, 32, 30);
+    border-top-width: 1px; border-top-color: rgb(111, 131, 126);
+}
+.information-heading { flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; height: 33px; min-height: 33px; }
+.information-heading .title { margin: 0; font-size: 16px; }
+.board-information .action { height: 33px; min-height: 33px; padding: 0 8px; margin: 0 4px 0 0; font-size: 13px; }
+#information-content { flex-grow: 1; min-height: 0; }
+.information-tabs { flex-direction: row; align-items: center; flex-wrap: nowrap; flex-shrink: 0; height: 33px; min-height: 33px; }
+.information-unit-row { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: nowrap; height: 18px; min-height: 18px; }
+.board-information .unity-label { font-size: 13px; margin-top: 1px; margin-bottom: 1px; }
+.configuration-summary { flex-direction: row; flex-wrap: wrap; }
+.configuration-summary .unity-label { width: 50%; height: 20px; min-height: 20px; margin: 0; }
+.information-characters { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+.information-characters .unity-label { width: 50%; height: 18px; min-height: 18px; margin: 0; }
+#inspected-region-state { height: 18px; min-height: 18px; }
+
+.event-army-plans { flex-direction: row; }
+.event-army-plan { flex-grow: 1; flex-basis: 0; min-width: 0; }
+.event-army-plan .event-army-tab { flex-grow: 1; flex-basis: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 3px; padding-right: 3px; }
+.event-army-plan .event-army-remove { width: 33px; min-width: 33px; padding: 0; }
+
+.event-recruit-nation { margin-right: 7px; align-items: center; }
+.event-recruit-nation > Label { font-size: 12px; }
+.event-recruit-nation .action { min-width: 29px; margin-left: 1px; margin-right: 1px; }
+
+.tray.corruption-planning .action { height: 33px; min-height: 33px; }
+.tray.draw-planning .action { height: 33px; min-height: 33px; }
+
+/* Expansion decisions keep the same map and fixed tray. */
+.tray.expansion-planning .action { height: 33px; min-height: 33px; }
+.council-planning .hand { display: none; }
+.council-versions, .council-homelands { flex-direction: row; flex-wrap: wrap; }
+.council-version { width: 108px; margin-right: 4px; }
+.council-version > Label { font-size: 13px; margin: 0; }
+.council-version .action { width: 104px; margin-left: 0; margin-right: 0; }
+.council-homeland { min-width: 115px; margin-right: 5px; }
+.council-homeland .action { font-size: 13px; padding-left: 5px; padding-right: 5px; margin-left: 0; margin-right: 0; }
+.expansion-dice { flex-direction: row; flex-wrap: wrap; }
+.available-dice, .sovereign-choices, .sovereign-tiles, .resource-detail-dice, .character-costs,
+.character-recruitment, .ruler-travel-mode { flex-direction: row; flex-wrap: wrap; }
+.tray.expansion-planning .expansion-die, .expansion-inspector .expansion-die { min-width: 65px; width: 65px; height: 43px; min-height: 43px; padding: 0; white-space: pre; font-size: 13px; }
+.dice-panel .available-dice { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; }
+.dice-panel .own-resource-columns { flex-direction: column; flex-shrink: 0; }
+.dice-panel .own-resource-reserves { flex-direction: column; flex-shrink: 0; min-width: 0; }
+.dice-panel.expanded-resources { width: 212px; padding-left: 8px; padding-right: 4px; padding-top: 2px; }
+.dice-panel.dense-resources { width: 260px; }
+.dice-panel.expanded-resources > .title { font-size: 16px; height: 20px; min-height: 20px; margin: 0; flex-shrink: 0; }
+.dice-panel.expanded-resources .die { height: 33px; min-height: 33px; margin-bottom: 1px; }
+.expanded-resources .die { position: relative; height: 34px; min-height: 34px; width: 33px; min-width: 33px; margin-right: 3px; margin-bottom: 3px; }
+.expanded-resources .special-die { width: 47px; min-width: 47px; font-size: 16px; padding-bottom: 12px; }
+.die-origin { position: absolute; bottom: 0; left: 0; right: 0; font-size: 10px; height: 13px; margin: 0; padding: 0; -unity-text-align: middle-center; }
+.resource-locations { flex-direction: row; flex-wrap: nowrap; flex-shrink: 0; }
+.dice-panel .resource-locations .action { width: 57px; min-width: 57px; height: 33px; min-height: 33px; font-size: 12px; margin: 0 3px 1px 0; padding: 0; }
+.pool-tokens { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; }
+.dice-panel .pool-tokens .action { width: 33px; height: 33px; min-height: 33px; font-size: 12px; margin: 0 3px 1px 0; }
+.dice-panel .pool-tokens .ruler-token { width: 42px; min-width: 42px; }
+/* UI-101: the sovereign portraits are a section of the Characters panel, sized like its roster entries. */
+.sovereign-strip { flex-direction: row; flex-wrap: wrap; }
+.sovereign-strip .action { white-space: pre; font-size: 12px; justify-content: center; -unity-text-align: middle-center; }
+.sovereign-strip .corrupted-sovereign { border-bottom-width: 3px; border-bottom-color: rgb(206, 118, 130); }
+.expansion-inspector { position: absolute; top: 112px; left: 16px; width: 560px; padding: 8px; background-color: rgb(34, 32, 30); }
+.expansion-inspector .action { height: 32px; min-height: 32px; margin: 0 4px 3px 0; padding: 0 6px; font-size: 13px; }
+.expansion-inspector .unity-label { margin-top: 0; margin-bottom: 2px; font-size: 13px; }
+.corruption-tile { width: 32px; min-width: 32px; height: 32px; background-color: rgb(67, 64, 59); -unity-text-align: middle-center; margin-right: 4px; }
+.sovereign-ability { white-space: normal; }
+
+/* Saved games and optional return summaries share the gateway, outside the decision tray. */
+.saved-games-panel {
+    max-width: 94%;
+    max-height: 94%;
+    padding: 16px;
+}
+.saved-games-panel .row {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+.saved-games-scroll {
+    min-height: 96px;
+    max-height: 360px;
+    flex-shrink: 1;
+}
+.saved-match {
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 6px;
+    min-height: 108px;
+}
+.saved-match .resume-match {
+    flex-grow: 1;
+    flex-shrink: 1;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 8px;
+}
+.saved-match .unity-label {
+    white-space: normal;
+    -unity-text-align: middle-left;
+}
+.saved-match-heading {
+    -unity-font-style: bold;
+}
+.saved-match-detail {
+    color: rgb(176, 193, 192);
+}
+.saved-match.your-decision .resume-match {
+    border-left-width: 4px;
+    border-left-color: rgb(230, 199, 128);
+}
+/* The button transitions moved to Styles/Interaction.uss (UI-114). */
+.interface-button {
+    min-width: 64px;
+    min-height: 36px;
+    height: 36px;
+    font-size: 14px;
+    padding: 0 6px;
+}
+.settings-scrim {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(15, 13, 12, 0.7);
+    color: rgb(231, 228, 215);
+    font-size: 18px;
+}
+/* MENU-14/MENU-22: a question over the main menu or the board (quit, delete game); the confirm button and Cancel
+   keep fixed places. */
+.confirm-window {
+    width: 440px;
+    max-width: 96%;
+    padding: 20px 24px 20px 24px;
+    background-color: rgb(34, 32, 30);
+}
+.confirm-window .confirm-note {
+    white-space: normal;
+    margin: 8px 0 16px 0;
+    font-size: 16px;
+}
+.confirm-window .confirm-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.confirm-window .confirm-actions .action {
+    width: 128px;
+    height: 40px;
+    min-height: 40px;
+    margin: 0 0 0 8px;
+}
+.interface-settings-panel {
+    width: 800px;
+    max-width: 96%;
+    padding: 20px 24px 24px 24px;
+    background-color: rgb(34, 32, 30);
+}
+/* MENU-12: interface options on the left, the display (window mode and resolution) on the right. */
+.interface-settings-panel .settings-heading { margin-bottom: 8px; align-items: center; }
+/* QUAL-19: the heading row sets the spacing; a title stretched by the 36-point close button with its own bottom margin
+   was 1.6 points shorter than its text at 125%. */
+.interface-settings-panel .settings-heading > .title { margin-bottom: 0; flex-grow: 1; }
+/* Every Settings control keeps the 32-point target after pixel rounding, the icon close button included. */
+.interface-settings-panel .settings-heading .icon-button { width: 36px; height: 36px; }
+.interface-settings-panel .settings-columns { flex-direction: row; align-items: flex-start; }
+.interface-settings-panel .settings-column { flex-grow: 1; flex-basis: 0; min-width: 0; }
+.interface-settings-panel #interface-options { margin-right: 28px; }
+.interface-settings-panel .display-choices { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; margin-bottom: 12px; }
+.interface-settings-panel .display-choice {
+    width: 112px;
+    height: 36px;
+    min-height: 36px;
+    margin: 0 6px 6px 0;
+    padding: 0 4px;
+    font-size: 15px;
+}
+.interface-settings-panel .unity-base-text-field__input,
+.interface-settings-panel .unity-text-field__input {
+    background-color: rgb(55, 52, 48);
+    color: rgb(245, 239, 222);
+}
+.interface-settings-panel .row {
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.interface-settings-panel .scale-choice {
+    width: 168px;
+    height: 44px;
+}
+/* AUDIO-03: Sound under the interface options; each level is a label, a 5%-step slider and its percentage. */
+.interface-settings-panel .sound-settings { margin-top: 14px; }
+.interface-settings-panel #sound-heading { margin: 0 0 2px 0; }
+.interface-settings-panel .sound-level { flex-direction: row; align-items: center; margin: 0 0 4px 0; }
+.interface-settings-panel .sound-level-label { width: 64px; margin: 0; }
+.interface-settings-panel .sound-level-slider { flex-grow: 1; min-width: 0; height: 32px; margin: 0 8px; }
+.interface-settings-panel .sound-level-value { width: 44px; margin: 0; -unity-text-align: middle-right; }
+.interface-settings-panel #test-sound { align-self: flex-start; height: 36px; min-height: 36px; margin-top: 6px; padding: 0 14px; }
+.interface-settings-panel .unity-label {
+    white-space: normal;
+}
+.interface-settings-panel .unity-toggle {
+    min-height: 40px;
+    margin-bottom: 8px;
+}
+.interface-settings-panel .unity-toggle__input {
+    min-height: 32px;
+}
+
+/* UI-15: neutral components and transient inspection. */
+.action-symbol { position: absolute; left: 5px; top: 4px; width: 22px; height: 22px; }
+.special-die .action-symbol { left: 12px; top: 1px; height: 20px; }
+.die-badge { position: absolute; right: 1px; top: 0; font-size: 12px; margin: 0; padding: 0; }
+.region-hover { position: absolute; width: 440px; padding: 8px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
+.region-hover .title { font-size: 17px; margin: 0 0 2px 0; }
+.region-hover .unity-label { font-size: 12px; margin: 1px 0; white-space: normal; }
+.hover-force { margin-top: 4px; padding-left: 4px; border-left-width: 3px; }
+.hover-force.fp { border-left-color: rgb(130, 194, 205); background-color: rgba(0, 0, 0, 0); }
+.hover-force.sh { border-left-color: rgb(203, 135, 137); background-color: rgba(0, 0, 0, 0); }
+/* UI-140: the force's label with its select/deselect-all toggle at the right. */
+.hover-force-header { flex-direction: row; align-items: center; justify-content: space-between; }
+#board-screen .hover-force-header > .hover-select-all {
+    width: 26px;
+    height: 22px;
+    min-width: 26px;
+    margin: 0 2px 0 6px;
+    padding: 0;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+}
+#board-screen .hover-force-header > .hover-select-all.all-selected { color: rgb(247, 213, 120); }
+.hover-unit-row, .hover-portraits { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.hover-unit-row > .unity-label { width: 26px; font-size: 11px; -unity-text-align: middle-center; }
+.region-hover .action { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 1px; font-size: 17px; }
+/* UI-185: a region's figures and portraits are large enough to read their artwork. */
+.region-hover .hover-figure { width: 42px; min-width: 42px; height: 46px; min-height: 46px; }
+.region-hover .hover-portrait { width: 46px; min-width: 46px; height: 46px; min-height: 46px; font-size: 13px; border-radius: 14px; }
+.eligible-figure { border-color: rgb(121, 193, 156); border-width: 2px; }
+.region-hover .selected { border-color: rgb(255, 215, 122); background-color: rgb(81, 71, 44); }
+.region-hover.compact-hover { padding: 6px; }
+.region-hover.compact-hover .action { height: 28px; min-height: 28px; }
+.region-hover.compact-hover .hover-figure, .region-hover.compact-hover .hover-portrait { height: 40px; min-height: 40px; }
+/* UI-188: a region with only its name and state: a small window sized to its text, without the "No forces" line. */
+.region-hover.name-only { max-width: 440px; padding: 5px 10px 6px 10px; }
+.region-hover.name-only .title { font-size: 15px; margin: 0; padding: 0; }
+.region-hover.name-only #hover-region-state { margin: 0; padding: 0; font-size: 11px; white-space: nowrap; }
+.region-hover.name-only #hover-empty, .region-hover.name-only .hover-effects { display: none; }
+
+.direct-army .tray { justify-content: center; }
+.direct-army .draft-status { white-space: normal; }
+.direct-muster .tray { justify-content: center; }
+.direct-muster .draft-status { white-space: normal; }
+.region-recruits { flex-direction: row; flex-wrap: wrap; border-top-width: 1px; border-top-color: rgb(105, 109, 98); margin-top: 5px; align-items: center; }
+.region-recruits .action { width: 62px; min-width: 62px; height: 36px; }
+.region-recruits > .unity-label { margin-right: 6px; }
+#orphan-leader-warning { color: rgb(255, 210, 139); width: 100%; }
+.politics-tab {
+    position: absolute; left: 0; top: 64px; width: 94px; min-width: 94px;
+    height: 36px; min-height: 36px; margin: 0; padding: 0 6px; font-size: 14px;
+    border-top-left-radius: 0; border-bottom-left-radius: 0;
+}
+.politics-panel {
+    position: absolute; left: 98px; top: 56px; bottom: 8px; max-height: 322px;
+    width: 342px; padding: 4px 8px; border-width: 1px;
+    border-color: rgb(172, 162, 122); border-radius: 6px; background-color: rgb(31, 29, 27);
+}
+.politics-header { height: 24px; min-height: 24px; flex-direction: row; align-items: center; flex-wrap: nowrap; justify-content: space-between; }
+.politics-header > .unity-label { font-size: 13px; color: rgb(231, 209, 160); }
+.politics-header .unity-toggle { margin: 0; font-size: 12px; flex-direction: row; align-items: center; }
+.politics-header .unity-toggle__label { min-width: 0; margin-right: 6px; color: rgb(218, 226, 218); }
+.politics-header .unity-toggle__input { min-height: 18px; height: 18px; }
+.politics-header .unity-toggle__checkmark { width: 18px; height: 18px; }
+.politics-axis { height: 16px; min-height: 16px; flex-direction: row; align-items: center; flex-wrap: nowrap; }
+.politics-axis-step { width: 36px; min-width: 36px; flex-shrink: 0; margin: 0; padding: 0; font-size: 11px; -unity-text-align: middle-center; color: rgb(174, 185, 179); }
+.politics-axis-spacer { width: 32px; min-width: 32px; flex-shrink: 0; }
+.politics-tracks { flex-grow: 1; min-height: 0; }
+.nation-track { flex-direction: row; align-items: stretch; flex-grow: 1; flex-shrink: 1; min-height: 24px; max-height: 34px; }
+.nation-track.opponent-nation { background-color: rgb(39, 36, 35); }
+.nation-name { width: 60px; min-width: 60px; flex-grow: 1; margin: 0; padding: 0 4px; font-size: 12px; -unity-text-align: middle-left; }
+/* UI-178: the political track is a gilt rail through four stations (three steps, then War); the stations are
+   click and drop targets, never framed buttons, and the style sheet draws them crisp at every scale. */
+.nation-slots { width: 144px; min-width: 144px; flex-shrink: 0; flex-direction: row; flex-wrap: nowrap; align-items: stretch; }
+.politics-panel .nation-rail { position: absolute; left: 18px; right: 18px; top: 50%; height: 2px; margin-top: -1px; background-color: rgb(186, 152, 82); }
+#board-screen .politics-panel .nation-slot,
+#board-screen .politics-panel .nation-slot:hover,
+#board-screen .politics-panel .nation-slot:focus,
+#board-screen .politics-panel .nation-slot:active,
+#board-screen .politics-panel .nation-slot.pressed,
+#board-screen .politics-panel .nation-slot.legal-target {
+    width: 36px; min-width: 36px; height: auto; min-height: 0; flex-grow: 0;
+    margin: 0; padding: 0; border-width: 0; border-radius: 0;
+    background-color: rgba(0, 0, 0, 0); background-image: none;
+    align-items: center; justify-content: center;
+}
+.politics-panel .nation-slot:disabled { opacity: 1; }
+.politics-panel .nation-station {
+    width: 10px; height: 10px; border-radius: 5px; border-width: 2px;
+    border-color: rgb(186, 152, 82); background-color: rgb(30, 32, 32);
+}
+.politics-panel .nation-slot.passed-station > .nation-station { background-color: rgb(186, 152, 82); }
+.politics-panel .nation-slot-war > .nation-station {
+    width: 22px; height: 22px; border-radius: 11px; border-color: rgb(170, 64, 50); background-color: rgb(48, 22, 18);
+    background-image: resource("Wotr/Art/UI/actions/battle"); -unity-background-scale-mode: scale-to-fit;
+}
+.politics-panel .nation-slot.legal-target > .nation-station { width: 16px; height: 16px; border-radius: 8px; border-color: rgb(247, 213, 120); background-color: rgb(64, 84, 52); }
+.politics-panel .nation-slot-war.legal-target > .nation-station { width: 24px; height: 24px; border-radius: 12px; border-color: rgb(247, 213, 120); }
+.politics-panel .nation-slot.destination-selected > .nation-station { border-color: rgb(255, 255, 255); }
+.politics-panel .nation-token {
+    position: absolute; top: 2px; width: 28px; min-width: 28px;
+    height: auto; min-height: 0; margin: 0; padding: 0; border-radius: 14px;
+    border-width: 2px; border-color: rgb(109, 159, 188); font-size: 16px;
+    color: rgb(150, 179, 191); background-color: rgb(39, 36, 34);
+}
+.politics-panel .nation-token.active-nation { background-color: rgb(44, 95, 115); color: rgb(235, 245, 236); }
+.politics-panel .shadow-nation .nation-token { border-color: rgb(187, 121, 99); background-color: rgb(106, 55, 46); }
+.politics-panel .nation-token.legal-target { border-color: rgb(247, 213, 120); }
+.politics-panel .nation-token.selected { border-color: white; border-width: 3px; }
+.politics-panel .nation-at-war .nation-name { color: rgb(246, 198, 136); }
+/* UI-178: the small arrow at the end of every row moves its nation a step: lit when the die can, greyed in place
+   otherwise. An offered activation (expansions) stands in the same spot. */
+.politics-panel .nation-actions { width: 28px; min-width: 28px; margin-left: 4px; flex-shrink: 0; align-items: center; justify-content: center; }
+#board-screen .politics-panel .nation-actions .icon-button { width: 26px; min-width: 26px; height: 26px; min-height: 26px; margin: 0; }
+#board-screen .politics-panel .nation-actions .nation-activate { position: absolute; left: 1px; top: 50%; margin-top: -13px; }
+#board-screen .politics-panel .nation-actions .icon-button:disabled { opacity: 0.35; }
+#board-screen .politics-panel .nation-actions .icon-button.legal-target {
+    border-width: 0; background-image: resource("Wotr/Art/UI/frames/button-square-hover");
+}
+.action-progress { flex-direction: row; align-items: center; flex-shrink: 0; }
+.action-progress .march-step { font-size: 24px; width: 34px; height: 32px; margin: 0; -unity-text-align: middle-center; color: rgb(245, 212, 133); }
+.action-progress .march-step.completed { color: rgb(135, 204, 159); }
+.action-progress .action { min-width: 34px; width: 34px; height: 32px; min-height: 32px; padding: 0; }
+
+
+/* UI-18: two stable rows of card objects, independent of the active action. */
+.hand { width: 320px; padding: 8px; border-left-width: 1px; border-left-color: rgb(78, 74, 69); }
+.hand-grid { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+.hand .hand-card {
+    height: 76px; min-height: 76px; min-width: 0; flex-shrink: 0;
+    margin: 0; padding: 2px 4px; border-width: 2px;
+    border-left-width: 4px; border-radius: 5px;
+    flex-direction: column; align-items: center;
+    background-color: rgb(47, 44, 41);
+}
+.hand-card .action-symbol { position: relative; left: 0; top: 0; width: 20px; height: 20px; flex-shrink: 0; }
+.hand .hand-card.playable-card { border-top-color: rgb(144, 203, 172); border-bottom-color: rgb(144, 203, 172); }
+.hand .hand-card.selected { background-color: rgb(82, 79, 43); border-color: rgb(241, 206, 119); }
+.card-decks { flex-direction: row; flex-wrap: nowrap; height: 40px; margin-bottom: 2px; }
+.card-decks .card-deck { flex-direction: row; align-items: center; justify-content: center; width: 50%; min-width: 0; height: 36px; min-height: 36px; padding: 2px; margin: 0; border-left-width: 4px; }
+.card-deck .action-symbol { position: relative; left: 0; top: 0; width: 22px; height: 22px; }
+.card-deck .unity-label { font-size: 12px; }
+.card-deck.empty-deck { opacity: .4; }
+.legal-target { border-top-color: rgb(144, 203, 172); border-right-color: rgb(144, 203, 172); border-bottom-color: rgb(144, 203, 172); border-width: 2px; }
+
+.component-actions { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; margin-left: 10px; margin-right: 10px; }
+.component-actions > Button { min-width: 33px; padding-left: 7px; padding-right: 7px; }
+.region-hover .component-actions > Button { width: auto; font-size: 13px; }
+
+.recruit-palette .reserve-piece { width: 30px; min-width: 30px; margin-right: 1px; }
+
+.decision-notice { color: rgb(255, 222, 145); border-color: rgb(219, 177, 85); }
+
+.card-cost-picker { flex-direction: row; flex-wrap: wrap; margin-top: 2px; }
+.card-cost-picker .action { position: relative; width: 34px; height: 34px; min-height: 34px; padding: 0; margin: 0 2px 2px 0; }
+
+/* UI-29: one hover path across the hand and its compact, two-effect preview. */
+.cards-tab { position: absolute; right: 0; top: 64px; width: 94px; height: 36px; margin: 0; }
+.hand-drawer { position: absolute; width: 320px; padding: 4px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
+.card-header { flex-direction: row; align-items: flex-start; }
+.card-header #pin-card, .card-header #close-card { width: 24px; min-width: 24px; padding: 0; }
+.card-toolbar { flex-direction: row; margin: 6px 0 4px 0; }
+.card-play-buttons { flex-direction: row; }
+.card-play-buttons .action { flex-direction: row; align-items: center; padding: 2px 8px; margin-left: 0; margin-right: 6px; }
+.card-play-buttons .action-symbol { position: relative; left: 0; top: 0; width: 18px; height: 18px; margin-right: 4px; }
+.card-play-buttons .unity-label { font-size: 12px; margin: 0; padding: 0; }
+.card-effect { flex-shrink: 0; border-left-width: 3px; border-left-color: rgb(76, 95, 99); padding-left: 8px; padding-top: 6px; padding-bottom: 6px; }
+.card-effect-heading { font-size: 12px; color: rgb(205, 186, 138); white-space: normal; margin: 0 0 4px 0; }
+.focused-effect .card-effect-heading { color: rgb(244, 230, 184); }
+#card-combat-section { border-top-width: 1px; border-top-color: rgb(80, 98, 101); margin-top: 6px; }
+.card-effect.playable-effect { border-left-color: rgb(144, 203, 172); background-color: rgb(32, 56, 50); }
+.card-inspector.compact-card { padding: 8px; }
+.compact-card .card-effect { padding-top: 4px; padding-bottom: 4px; }
+.card-inspector #card-window { font-size: 11px; white-space: normal; margin: 0 0 4px 0; }
+.card-inspector.playable-preview { border-top-color: rgb(144, 203, 172); }
+.hand .hand-card.playable-card { background-color: rgb(40, 73, 62); border-top-width: 3px; }
+.card-ready { position: absolute; right: 3px; top: 1px; color: rgb(190, 235, 184); font-size: 13px; }
+
+/* Persistent windows share a grab header; controls keep their own gestures. */
+.window-handle { min-height: 24px; flex-shrink: 0; }
+.window-handle:hover { background-color: rgba(197, 178, 126, 0.08); }
+.window-header { flex-direction: row; align-items: center; justify-content: space-between; }
+.window-header > .title { flex-grow: 1; margin: 0; font-size: 13px; }
+.window-header .action, .politics-header #close-politics { width: 24px; min-width: 24px; height: 24px; min-height: 24px; padding: 0; margin: 0; }
+.window-dragging { border-top-color: rgb(247, 213, 120); }
+
+/* UI-41: virtual history and the shared read-only action card. */
+.action-log, .action-summary { position: absolute; left: 8px; bottom: 8px; width: 410px; height: 420px; max-height: 94%; padding: 8px; background-color: rgb(34, 32, 30); border-top-width: 2px; border-top-color: rgb(197, 178, 126); }
+.action-log .action, .action-summary .action { height: 26px; min-height: 26px; font-size: 12px; padding: 0 7px; margin: 2px; }
+.action-summary { width: 390px; height: 460px; bottom: auto; top: 8px; }
+.action-log > .row { flex-shrink: 0; }
+.action-log #log-status { white-space: normal; font-size: 12px; flex-grow: 1; flex-shrink: 1; }
+.action-log #log-new-entries { flex-shrink: 0; }
+#action-log-list { flex-grow: 1; min-height: 0; }
+.action-log-row { height: 94px; min-height: 94px; max-height: 94px; flex-shrink: 0; flex-direction: row; border-bottom-width: 1px; border-bottom-color: rgb(75, 72, 67); }
+.action-log-open { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; padding: 5px 3px; border-width: 0; border-radius: 0; background-color: rgba(0,0,0,0); align-items: stretch; -unity-text-align: middle-left; }
+.action-log-open:hover { background-color: rgb(55, 52, 48); }
+.action-log-heading { font-size: 12px; color: rgb(231, 209, 160); white-space: normal; max-height: 32px; overflow: hidden; margin: 0; }
+.action-log-content { font-size: 12px; white-space: normal; max-height: 40px; overflow: hidden; margin: 2px 0; }
+.action-log-cost { font-size: 11px; white-space: nowrap; overflow: hidden; margin: 0; color: rgb(168, 186, 184); }
+.action-log .action-log-expand { width: 25px; min-width: 25px; align-self: center; }
+.action-log-child { padding-left: 10px; background-color: rgb(29, 27, 25); }
+.action-card { flex-grow: 1; min-height: 0; }
+.action-card .title { font-size: 15px; white-space: normal; margin: 4px 0; flex-shrink: 0; }
+.action-card #action-card-status { font-size: 12px; color: rgb(168, 186, 184); white-space: normal; flex-shrink: 0; }
+.action-card-costs { padding: 5px 0; flex-shrink: 0; }
+.action-cost { flex-shrink: 0; flex-direction: row; align-items: center; }
+.action-cost .action-symbol { position: relative; left: 0; top: 0; width: 24px; height: 24px; margin-right: 4px; flex-shrink: 0; }
+.action-cost .cost-symbol { width: 24px; -unity-text-align: middle-center; }
+#action-card-steps { flex-grow: 1; min-height: 0; }
+.action-card-step { border-top-width: 1px; border-top-color: rgb(75, 72, 67); padding: 6px 0; flex-shrink: 0; }
+.action-step-heading { color: rgb(231, 209, 160); font-size: 12px; white-space: normal; margin-bottom: 4px; }
+.action-detail { white-space: normal; font-size: 12px; margin: 1px 0; flex-shrink: 1; }
+.action-summary #action-card-message { font-size: 12px; white-space: normal; flex-shrink: 0; }
+.action-summary .window-header #pin-action-summary { width: auto; min-width: 32px; }
+
+.map-action-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.recorded-map-label { position: absolute; width: 232px; font-size: 11px; white-space: normal; color: rgb(168, 223, 242); background-color: rgba(28, 26, 24, .9); padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(145, 212, 238); }
+.history-context-host { border-top-color: rgb(145, 212, 238); }
+
+.notification-bar { flex-direction: row; height: 42px; min-height: 42px; max-height: 42px; padding: 2px 8px; align-items: center; flex-shrink: 0; background-color: rgb(34, 32, 30); }
+.notification-tabs { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-width: 0; align-items: center; }
+.notification-bar .action { height: 34px; min-height: 34px; margin: 0 4px 0 0; font-size: 12px; padding: 3px 8px; }
+.notification-bar .decision-notice { max-width: 290px; flex-shrink: 1; white-space: normal; }
+.action-notice { background-color: rgb(105, 48, 48); border-left-width: 3px; border-left-color: rgb(244, 166, 148); white-space: normal; -unity-text-align: middle-left; overflow: hidden; }
+.notification-tabs .action-notice { flex-basis: 0; flex-grow: 1; flex-shrink: 1; min-width: 80px; max-width: 460px; }
+.notification-more { width: 48px; flex-shrink: 0; }
+.notification-overflow { position: absolute; width: 420px; height: 360px; max-height: 94%; padding: 8px; background-color: rgb(38, 35, 33); border-top-width: 2px; border-top-color: rgb(244, 166, 148); }
+.notification-overflow .action-notice { height: 54px; min-height: 54px; margin: 2px 0; font-size: 12px; padding: 4px 8px; }
+#notification-list { flex-grow: 1; min-height: 0; }
+#notification-retry { width: 30px; }
+
+/* UI-44: one regional host for public forces and the current private choice. */
+
+/* At 125% on a small display, share the dice dock width to preserve map height. */
+.short-viewport .bottom .tray { padding-top: 2px; }
+.short-viewport .bottom .tray .action { margin-bottom: 0; }
+.short-viewport .bottom .tray > .title { font-size: 16px; margin: 0; padding: 0; }
+.short-viewport .bottom .tray .draft-status { margin-top: 2px; margin-bottom: 2px; }
+.decision-choice-footer > .draft-status { flex-basis: 100%; min-width: 0; margin-left: 0; margin-right: 0; }
+.short-viewport .bottom .decision-choice-footer { flex-wrap: nowrap; }
+.short-viewport .bottom .decision-choice-footer > .draft-status { flex-basis: 0; flex-grow: 1; font-size: 14px; margin-right: 6px; }
+.short-viewport .bottom .event-army-planning .decision-choice-footer { flex-wrap: wrap; }
+.short-viewport .bottom .event-army-planning .decision-choice-footer > .draft-status { flex-basis: 100%; flex-grow: 0; margin-right: 0; }
+.short-viewport .bottom .event-recruit-nation > Label { margin: 0; padding: 0; }
+.short-viewport .bottom .council-version { width: 84px; margin-right: 3px; }
+.short-viewport .bottom .council-version .action { width: 80px; padding-left: 4px; padding-right: 4px; font-size: 13px; }
+.short-viewport.council-planning .decision-choice-footer > .draft-status { font-size: 12px; margin-top: 0; margin-bottom: 0; }
+.short-viewport .fellowship-panel { padding: 6px; }
+.short-viewport .fellowship-panel .unity-label { margin-top: 0; margin-bottom: 0; }
+.short-viewport .fellowship-actions { margin-top: 2px; }
+.short-viewport .dice-panel > .title { font-size: 16px; height: 22px; min-height: 22px; margin: 0; }
+
+
+/* UI-57 Effects */
+.effects-tab { position: absolute; left: 0; top: 106px; width: 94px; min-width: 94px; height: 34px; min-height: 34px; padding: 0 3px; margin: 0; font-size: 12px; }
+.effects-panel { position: absolute; left: 98px; top: 56px; width: 420px; padding: 6px 8px; background-color: rgb(34, 32, 29); border-width: 1px; border-color: rgb(112, 135, 132); border-radius: 5px; }
+.effects-panel.compact-effects { width: 500px; left: 98px; top: 8px; }
+.effects-panel > .window-header { flex-direction: row; align-items: center; height: 28px; margin-bottom: 3px; }
+.effects-panel .window-header > .title { flex-grow: 1; }
+.effects-panel #close-effects { width: 28px; min-width: 28px; height: 26px; min-height: 26px; padding: 0; margin: 0; }
+#effects-sources { flex-direction: row; flex-wrap: wrap; }
+.effect-entry { flex-direction: row; align-items: center; width: 49%; min-height: 43px; margin: 1px 1px 3px 0; padding: 3px; background-color: rgb(51, 48, 45); border-width: 1px; border-color: rgb(88, 84, 78); border-radius: 3px; }
+.effect-entry.shadow-effect { background-color: rgb(55, 39, 44); border-color: rgb(100, 70, 75); }
+.effect-entry.selected-effect { border-color: rgb(228, 197, 127); }
+.effect-entry > Label { font-size: 10px; width: 20px; white-space: normal; color: rgb(175, 193, 190); }
+.effects-panel .effect-source { flex-grow: 1; flex-shrink: 1; min-width: 0; white-space: normal; font-size: 12px; min-height: 32px; margin: 0; padding: 2px 3px; background-color: rgba(0, 0, 0, 0); border-width: 0; }
+.effects-panel .effect-remove { width: 23px; min-width: 23px; min-height: 26px; height: 26px; padding: 0; margin: 0; }
+.effects-pagination { flex-direction: row; justify-content: flex-end; align-items: center; }
+.effects-pagination > .action { min-width: 26px; min-height: 24px; height: 24px; padding: 0; margin: 0; }
+.effects-pagination > Label { font-size: 11px; margin-left: 5px; margin-right: 5px; }
+#effects-source-details { margin-top: 3px; padding-top: 3px; border-top-width: 1px; border-top-color: rgb(95, 113, 110); }
+#effects-source-details Label { white-space: normal; font-size: 12px; }
+#effect-detail-title { -unity-font-style: bold; }
+.effect-detail-heading { flex-direction: row; align-items: center; flex-wrap: wrap; }
+.effect-detail-heading #effect-detail-title { margin-right: 10px; }
+#effect-detail-state { color: rgb(160, 180, 175); font-size: 11px; }
+.effect-scope { margin-top: 2px; padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(161, 177, 165); background-color: rgba(90, 110, 110, .1); }
+.compact-effects .effect-scopes, .preparing-effect-removal .effect-scopes { flex-direction: row; flex-wrap: wrap; }
+.compact-effects .effect-scope, .preparing-effect-removal .effect-scope { width: 49%; margin-right: 1%; }
+/* QUAL-19: a compact panel spends no spare space between rows; a source keeps its 32-point button (32 + 2 × 3 padding
+   + 2 × 1 border = 40). */
+.compact-effects .effect-entry { min-height: 40px; margin-bottom: 1px; }
+.compact-effects #effects-source-details { margin-top: 1px; padding-top: 2px; }
+.compact-effects #effect-removal-cost { margin-top: 2px; }
+.effect-targets { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.effect-targets .action { min-height: 23px; height: 23px; margin: 1px 4px 1px 0; padding: 2px 5px; font-size: 11px; }
+.effect-targets Label { color: rgb(193, 199, 173); }
+.effect-ended #effect-detail-state { color: rgb(208, 170, 123); }
+#effect-removal-cost { white-space: normal; font-size: 12px; color: rgb(229, 198, 131); margin-top: 5px; }
+#effects-decision-host > .tray { width: auto; min-width: 0; min-height: 0; padding: 4px; margin: 3px 0 0 0; border-width: 0; flex-grow: 0; flex-basis: auto; }
+#effects-decision-host > .tray > .title { display: none; }
+#effects-decision-host .action { font-size: 12px; }
+#effects-decision-host .unity-label { font-size: 12px; }
+.map-effects-marker { position: absolute; color: rgb(196, 222, 235); background-color: rgba(29, 27, 25, .85); padding: 0 3px; border-radius: 7px; font-size: 12px; -unity-text-align: middle-center; }
+.region-hover .hover-effects > .action { width: auto; min-width: 0; max-width: 100%; height: auto; min-height: 26px; padding: 2px 5px; font-size: 12px; white-space: normal; }
+.effect-scope-badge { width: 28px; min-width: 28px; height: 23px; min-height: 23px; padding: 0; margin: 0 2px; font-size: 11px; }
+/* UI-87: the transient scope badge covers the nation emblem instead of a long nation name. */
+.nation-track > .effect-scope-badge { position: absolute; left: 1px; top: 3px; width: 22px; min-width: 22px; }
+#effects-empty { font-size: 12px; color: rgb(173, 189, 184); padding: 8px; }
+
+/* UI-58 Resource decisions */
+.resource-panel {
+    position: absolute; left: 16px; bottom: 8px; width: 500px;
+    padding: 8px; background-color: rgb(34, 32, 30);
+    border-width: 1px; border-color: rgb(194, 163, 91);
+}
+.resource-panel .information-heading { flex-direction: row; justify-content: space-between; }
+.resource-panel .information-heading .title { font-size: 16px; }
+.resource-panel .information-heading .action { width: 32px; height: 32px; padding: 0; }
+.resource-panel .tray { width: auto; min-width: 0; flex-basis: auto; flex-grow: 0; padding: 0; margin: 0; }
+.resource-consequence { white-space: normal; font-size: 13px; margin-bottom: 5px; }
+.resource-decision-tab { position: absolute; left: 16px; bottom: 8px; height: 34px; }
+.resource-candidate { border-width: 2px; border-color: rgb(231, 193, 107); }
+.resource-unavailable { opacity: 0.6; }
+.resource-public-tokens { flex-direction: row; flex-wrap: wrap; }
+.resource-public-tokens .unity-label { margin-right: 12px; padding: 5px; background-color: rgb(49, 46, 43); }
+
+/* UI-52: reserve room for the Mordor source line without shrinking decision targets. */
+.hunt-panel.hunt-mordor-panel { padding: 6px; }
+.hunt-mordor-panel #hunt-main { margin: 2px 0; padding-top: 2px; }
+.hunt-mordor-panel #hunt-source { margin: 0 0 2px 0; }
+.fellowship-panel.fellowship-hunt-summary { width: 380px; }
+
+/* UI-60 Victory */
+.victory-tab { position: absolute; right: 8px; bottom: 8px; height: 30px; font-size: 14px; }
+.victory-result { position: absolute; right: 8px; bottom: 42px; font-size: 15px; padding: 5px 8px; background-color: rgb(34, 32, 30); color: rgb(244, 219, 157); border-top-width: 2px; border-top-color: rgb(209, 181, 115); }
+.victory-panel { position: absolute; width: 480px; padding: 6px 8px; background-color: rgb(34, 32, 30); border-width: 1px; border-color: rgb(120, 145, 145); }
+.victory-panel > .window-header { height: 27px; align-items: center; }
+.victory-panel > .window-header .title { flex-grow: 1; font-size: 15px; margin: 0; }
+.victory-panel .action { font-size: 12px; min-height: 24px; height: 24px; padding: 2px 5px; margin: 1px; }
+.victory-panel .unity-label { white-space: normal; padding: 0; }
+.victory-panel .victory-timing { font-size: 12px; color: rgb(209, 181, 115); margin: 3px 0; }
+.victory-scores { flex-direction: row; align-items: stretch; }
+.victory-score { width: 50%; padding-right: 5px; }
+.victory-score-shadow { padding-left: 5px; padding-right: 0; border-left-width: 1px; border-left-color: rgb(84, 80, 74); }
+.victory-side { font-size: 14px; -unity-font-style: bold; margin: 0 0 3px 0; }
+.threshold-reached { color: rgb(244, 219, 157); border-bottom-width: 2px; border-bottom-color: rgb(209, 181, 115); }
+.victory-region { flex-direction: row; align-items: center; min-height: 37px; }
+.victory-region-text { flex-grow: 1; flex-basis: 0; }
+.victory-region-name { font-size: 12px; margin: 0; }
+.victory-region-detail { font-size: 11px; color: rgb(174, 190, 186); margin: 0; }
+.victory-pages { flex-direction: row; align-items: center; justify-content: flex-end; height: 25px; }
+.victory-pages .unity-label { font-size: 11px; }
+.victory-score > VisualElement > .muted { font-size: 12px; }
+.victory-ring { flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: rgb(84, 80, 74); margin-top: 5px; padding-top: 4px; }
+.victory-ring > VisualElement { flex-grow: 1; flex-basis: 0; }
+.victory-ring .unity-label { font-size: 12px; margin: 0; }
+
+/* UI-53: public historical Hunt summary in the shared action card. */
+.hunt-archive { flex-shrink: 0; border-top-width: 1px; border-top-color: rgb(125, 102, 62); padding: 5px 0; }
+.hunt-archive .unity-label { font-size: 12px; white-space: normal; margin: 1px 0; padding: 0; }
+.hunt-archive #hunt-archive-source { color: rgb(231, 193, 107); }
+.hunt-archive-dice { flex-direction: row; flex-wrap: wrap; }
+.hunt-archive-die { flex-direction: row; align-items: center; margin-right: 5px; }
+.hunt-archive-die #hunt-pips { width: 23px; height: 23px; }
+.hunt-archive .hunt-archive-tile { background-color: rgb(81, 52, 44); padding: 4px 7px; margin: 3px 0; }
+
+/* UI-59: one decision host anchored to the selected Sovereign portrait. */
+.sovereign-context .dice-panel { width: 432px; padding: 4px 8px; }
+.sovereign-context .dice-panel > .title { font-size: 16px; height: 22px; min-height: 22px; margin: 0; }
+.sovereign-context .dice-panel .own-resource-columns { flex-direction: row; align-items: flex-start; }
+.sovereign-context .dice-panel .own-resource-columns > .available-dice { width: 210px; }
+.sovereign-context .dice-panel .own-resource-reserves { flex-grow: 1; flex-basis: 0; margin-left: 8px; }
+.sovereign-inspector { width: 440px; padding: 7px; }
+.sovereign-inspector .unity-label { white-space: normal; }
+.sovereign-inspector #sovereign-state { flex-grow: 1; }
+.sovereign-inspector #sovereign-cost { margin-right: 8px; -unity-text-align: middle-right; }
+.sovereign-inspector #sovereign-ability, .sovereign-inspector #sovereign-availability { color: rgb(198, 191, 169); font-size: 12px; }
+.sovereign-inspector #sovereign-attempt, .sovereign-inspector #sovereign-cost { color: rgb(231, 193, 107); }
+.sovereign-inspector #sovereign-consequence { font-size: 12px; margin-top: 3px; }
+.sovereign-inspector .tray { flex-basis: auto; flex-grow: 0; flex-shrink: 0; position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; min-width: 0; max-width: none; padding: 5px 0 0; margin: 4px 0 0; border-top-width: 1px; border-top-color: rgb(125, 102, 62); background-color: rgba(0, 0, 0, 0); }
+.sovereign-inspector .tray > .title { display: none; }
+.sovereign-inspector .decision-choice-footer { flex-wrap: nowrap; align-items: center; }
+.sovereign-inspector .decision-choice-footer > .draft-status { flex-basis: 0; flex-grow: 1; font-size: 12px; margin-right: 6px; }
+.sovereign-inspector .effect-choices, .sovereign-inspector #corruption-attempt { flex-wrap: wrap; }
+.sovereign-inspector .corruption-tile { min-width: 32px; min-height: 29px; margin: 2px 3px 2px 0; }
+
+.sovereign-inspector #sovereign-decision-host { flex-shrink: 0; }
+.sovereign-status { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.sovereign-status #sovereign-location { flex-grow: 0; min-width: 100px; }
+.sovereign-status .sovereign-tiles { flex-shrink: 0; }
+.sovereign-details { flex-direction: row; flex-wrap: wrap; }
+.sovereign-details .unity-label { margin-right: 10px; }
+.sovereign-progress { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.sovereign-progress .unity-label { margin-right: 12px; }
+.sovereign-inspector .travel-summary > .unity-label { flex-grow: 1; }
+.sovereign-inspector #corruption-attempt { flex-shrink: 0; }
+.sovereign-strip .inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
+/* Reserve the left rail and a pinned card at the smallest supported scale. */
+.edge-board .board-information { left: 102px; width: 460px; }
+
+/* UI-66: named characters, shared inspection and stable roster rows. */
+.characters-tab { position: absolute; left: 0; top: 146px; width: 94px; min-width: 94px; height: 34px; margin: 0; padding: 0 2px; font-size: 12px; }
+.characters-panel { position: absolute; left: 98px; top: 8px; width: 480px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
+.character-header { flex-direction: row; align-items: center; min-height: 30px; }
+.character-header .title { flex-grow: 1; flex-shrink: 1; margin: 0; }
+.character-header .action { width: 32px; min-width: 32px; height: 32px; margin: 0 0 0 3px; }
+.character-roster-grid { flex-direction: row; flex-wrap: wrap; }
+.character-roster-grid .action { width: 110px; min-width: 110px; min-height: 48px; height: 48px; padding: 2px 4px; margin: 2px; flex-direction: row; align-items: center; }
+.characters-panel > #characters-section-OnBoard > .unity-label, .characters-panel > #characters-section-NotInPlay > .unity-label,
+.characters-panel > #characters-section-Sovereigns > .unity-label { height: 20px; margin: 1px 2px; padding: 0; font-size: 14px; }
+.short-viewport .characters-panel { padding: 4px 6px; }
+.short-viewport .character-roster-grid .action { height: 40px; min-height: 40px; }
+#board-screen.short-viewport .characters-panel.edge-left-panel { width: 462px; }
+/* QUAL-19: a section title is as tall as its text (14 points → 20, 12 points → 18). */
+.short-viewport .characters-panel > #characters-section-OnBoard > .unity-label, .short-viewport .characters-panel > #characters-section-NotInPlay > .unity-label { height: 18px; margin-top: 0; margin-bottom: 0; font-size: 12px; }
+.character-roster-portrait { width: 26px; min-width: 26px; height: 30px; margin: 0; padding: 0; border-radius: 13px; -unity-text-align: middle-center; font-size: 13px; background-color: rgb(75, 71, 66); color: rgb(237, 223, 176); }
+.character-roster-portrait.shadow { background-color: rgb(81, 42, 43); }
+.character-roster-text { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-left: 3px; }
+/* QUAL-19: TYPO-01's Cinzel and Alegreya lines are taller than the old font's: 12-point Cinzel needs 17 points,
+   10-point Alegreya 14. */
+.character-roster-title { font-size: 12px; height: 17px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.character-roster-detail { font-size: 10px; height: 14px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.character-inspector { position: absolute; width: 420px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
+.short-viewport .character-inspector { width: 400px; }
+.character-inspector .unity-label { white-space: normal; flex-shrink: 0; }
+.character-inspector .character-header { flex-wrap: nowrap; }
+.character-inspector .character-header .title { min-width: 0; flex-shrink: 1; }
+.character-inspector .character-header .action { flex-shrink: 0; }
+.short-viewport .character-inspector .unity-label { margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+.short-viewport .character-inspector .action { min-height: 32px; height: 32px; margin-top: 1px; margin-bottom: 1px; }
+.short-viewport .character-inspector #character-statistics { margin-top: 2px; margin-bottom: 2px; }
+.short-viewport .character-inspector #character-abilities .unity-label { min-height: 20px; margin-top: 2px; margin-bottom: 2px; }
+#character-state { flex-grow: 1; flex-shrink: 1; font-size: 12px; }
+#character-statistics { font-size: 13px; margin-top: 4px; margin-bottom: 4px; }
+#character-abilities { font-size: 13px; }
+#character-limits, #character-entry { font-size: 12px; color: rgb(223, 208, 168); }
+.character-ability-pages { flex-direction: row; justify-content: flex-end; }
+.character-ability-pages .action { width: 32px; min-width: 32px; min-height: 32px; margin: 0 2px; }
+
+.dice-header { flex-direction: row; align-items: center; flex-shrink: 0; height: 22px; }
+.dice-header > .title { flex-grow: 1; flex-shrink: 1; font-size: 16px; margin: 0; }
+.sovereign-context .dice-panel .dice-header { width: 210px; }
+.sovereign-inspector .information-heading > .title { flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sovereign-inspector #sovereign-availability { height: 16px; min-height: 16px; margin: 0 10px 0 0; }
+
+/* UI-67 Character actions */
+.character-decision-active #character-statistics,
+.character-decision-active #character-abilities,
+.character-decision-active .character-ability-pages,
+.character-decision-active #character-limits { display: none; }
+.character-inspector #character-decision-host .tray { padding: 0; min-height: 0; flex-basis: auto; flex-grow: 0; flex-shrink: 0; }
+.character-inspector #character-decision-host .title { font-size: 14px; margin: 2px 0; }
+.character-inspector #character-decision-host .action { height: 33px; min-height: 33px; flex-shrink: 0; margin: 1px 2px; }
+.character-inspector #character-decision-host .unity-label { white-space: normal; margin: 1px 0; }
+.character-inspector #character-decision-host #character-recruit-progress { white-space: nowrap; flex-shrink: 0; min-width: 52px; }
+.character-inspector .character-context > .title { display: none; }
+.character-inspector #character-actions .action { min-height: 32px; margin: 2px; }
+.character-inspector #character-entry { font-size: 12px; }
+
+/* UI-68: private companion versions and Guide share one decision host. */
+.companion-setup-panel {
+    position: absolute; top: 8px; left: 116px; width: 820px;
+    padding: 8px; background-color: rgb(41, 38, 36);
+    border-top-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px;
+    border-top-color: rgb(164, 145, 97); border-bottom-color: rgb(164, 145, 97);
+    border-left-color: rgb(164, 145, 97); border-right-color: rgb(164, 145, 97);
+}
+.companion-setup-tab { position: absolute; left: 8px; top: 180px; }
+.companion-setup-panel .tray { padding: 0; margin: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; }
+.companion-setup-panel .unity-label { margin: 0; padding: 0; flex-shrink: 0; }
+.companion-setup-panel .window-header { margin-bottom: 4px; }
+.setup-portraits, .setup-guides, .setup-comparison, .setup-version-heading { flex-direction: row; }
+.setup-portraits { margin-bottom: 6px; }
+.companion-setup-panel .setup-portraits .action {
+    flex-grow: 1; flex-basis: 0; min-width: 0; max-width: 110px; height: 50px; min-height: 50px;
+    margin: 0 3px 0 0; padding: 3px; font-size: 14px;
+}
+.setup-portraits .setup-portrait-version { font-size: 12px; color: rgb(202, 191, 157); }
+.setup-comparison { align-items: stretch; }
+.companion-setup-panel .tray .setup-version-card {
+    flex-grow: 1; flex-basis: 0; min-width: 0; height: auto; min-height: 150px;
+    margin: 0 4px 0 0; padding: 7px; align-items: stretch;
+    background-color: rgb(52, 49, 45); white-space: normal;
+}
+.companion-setup-panel .tray .setup-version-card.selected { background-color: rgb(60, 70, 60); }
+.setup-version-heading { justify-content: space-between; font-size: 12px; color: rgb(202, 191, 157); }
+.setup-version-title { font-size: 16px; -unity-font-style: bold; white-space: normal; }
+.setup-version-statistics { font-size: 12px; white-space: normal; margin-bottom: 4px; }
+.setup-version-ability { font-size: 13px; white-space: normal; margin: 1px 0; }
+.setup-version-ability:focus { color: rgb(245, 212, 133); }
+.setup-guides { align-items: center; margin-top: 6px; }
+.setup-guides > Label { width: 94px; font-size: 13px; }
+.companion-setup-panel .setup-guides .action { flex-grow: 0; width: 150px; min-width: 0; padding: 0 5px; margin: 0 3px 0 0; font-size: 13px; }
+.companion-setup-panel #setup-missing { font-size: 13px; color: rgb(245, 212, 133); margin-top: 4px; }
+.companion-setup-panel .decision-choice-footer { justify-content: flex-end; margin-top: 4px; }
+.companion-setup-panel #confirm-decision { min-width: 48px; }
+
+/* UI-70: board navigation; no game pause or changes to mechanic shortcuts. */
+.board-menu { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.board-menu-panel {
+    position: absolute; right: 10px; top: 46px; width: 224px;
+    padding: 10px; background-color: rgb(36, 34, 31);
+    border-top-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px;
+    border-top-color: rgb(164, 145, 97); border-bottom-color: rgb(164, 145, 97);
+    border-left-color: rgb(164, 145, 97); border-right-color: rgb(164, 145, 97);
+}
+.board-menu-panel > .action { height: 36px; min-height: 36px; margin: 2px 0; -unity-text-align: middle-left; }
+.board-menu-status { white-space: normal; font-size: 13px; color: rgb(245, 212, 133); margin: 8px 2px 4px; }
+
+/* UI-69: a compact map-based homeland choice, separate from versions. */
+.companion-setup-panel.council-homeland-panel { width: 548px; }
+.homeland-portraits { flex-direction: row; margin: 6px 0; }
+.companion-setup-panel.council-homeland-panel .tray .homeland-portrait {
+    flex-grow: 1; flex-basis: 0; min-width: 0; height: 100px; min-height: 100px;
+    margin: 0 3px 0 0; padding: 3px; white-space: normal; font-size: 14px;
+}
+.homeland-portrait-symbol { font-size: 19px; color: rgb(231, 211, 160); }
+.homeland-location { font-size: 12px; white-space: normal; -unity-text-align: middle-center; }
+.homeland-placed .homeland-location { color: rgb(245, 212, 133); }
+.homeland-nation { font-size: 12px; color: rgb(193, 203, 193); }
+.homeland-hint { font-size: 13px; white-space: normal; }
+.council-homeland-panel #homeland-stay { align-self: flex-start; min-height: 30px; margin: 0 0 5px 0; }
+.homeland-tokens { flex-direction: row; align-items: center; }
+.council-homeland-panel .homeland-token { padding: 4px 6px; margin-right: 5px; font-size: 13px; border-bottom-width: 2px; }
+.homeland-token-none { opacity: 0.4; }
+.homeland-token-choice { border-bottom-color: rgb(220, 179, 83); }
+.homeland-token-granted { color: rgb(154, 216, 174); border-bottom-color: rgb(154, 216, 174); }
+#homeland-token-effect { flex-grow: 1; flex-basis: 0; min-width: 0; font-size: 13px; white-space: normal; }
+
+/* UI-75/76: map artwork and paired decision windows. */
+.board-screen > .map { flex-shrink: 0; }
+
+/* UI-201: seamless figures. At rest a tile is only its figure over a soft gilt glow and a thin line in its side's
+   colour; frames and fills appear only for a state (selected, eligible, a loss). */
+.illustrated-figure {
+    background-color: rgba(0, 0, 0, 0);
+    -unity-text-align: lower-center;
+    font-size: 10px;
+    padding: 0 1px 1px;
+    border-width: 0;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 12px;
+}
+.illustrated-figure > .icon-glow { left: -2px; right: -2px; top: -2px; bottom: 6px; opacity: 0.6; }
+.illustrated-figure:hover > .icon-glow { opacity: 0.85; }
+.illustrated-figure > .figure-art-image { position: absolute; left: 2px; right: 2px; top: 0; bottom: 10px; }
+.illustrated-figure.figure-free-peoples { border-bottom-color: rgb(141, 199, 218); border-bottom-width: 2px; }
+.illustrated-figure.figure-shadow { border-bottom-color: rgb(222, 140, 126); border-bottom-width: 2px; }
+.illustrated-figure.selected { border-width: 2px; border-color: rgb(241, 209, 122); background-color: rgba(199, 164, 70, .15); }
+.illustrated-figure.eligible-figure { border-width: 2px; border-color: rgb(121, 193, 156); }
+.figure-garrison { border-bottom-width: 3px; border-bottom-color: rgb(188, 180, 153); border-radius: 4px; }
+.figure-motion-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+/* UI-185/UI-192: the flying figures are as large as the map's figures; MapFigureMotion places them by their feet. */
+.moving-figures { position: absolute; width: 96px; height: 84px; }
+.moving-figures > .figure-art-image { position: absolute; width: 64px; height: 72px; top: 0; }
+.moving-figure-count { position: absolute; right: 0; bottom: 0; padding: 1px 5px; margin: 0; border-radius: 9px; background-color: rgb(34, 32, 30); color: rgb(250, 226, 167); -unity-font-style: bold; }
+.figure-arrival { border-bottom-width: 3px; border-bottom-color: rgb(242, 211, 133); border-radius: 12px; }
+
+.illustrated-companion > .figure-art-image { position: absolute; left: 0; right: 0; top: 0; bottom: 14px; }
+.illustrated-companion #portrait-name { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; height: 16px; font-size: 11px; -unity-text-align: middle-center; }
+.illustrated-companion #guide-badge { position: absolute; left: 1px; top: 1px; margin: 0; height: 12px; font-size: 9px; background-color: rgba(24, 22, 20, .88); }
+
+/* UI-79: public parallel tracks, independent of action hitboxes. */
+.fellowship-symbol { width: 24px; height: 24px; flex-shrink: 0; }
+.fellowship-status { flex-direction: row; align-items: center; }
+.fellowship-status > .fellowship-symbol { width: 20px; height: 20px; margin: 0 3px; }
+.fellowship-status > .unity-label { margin: 0 5px 0 0; padding: 0; min-width: 12px; }
+.fellowship-state-row { flex-direction: row; align-items: center; margin-bottom: 2px; }
+.fellowship-state-row > .fellowship-symbol { width: 18px; height: 18px; margin-right: 3px; }
+.fellowship-panel #fellowship-condition { font-size: 12px; margin-right: 8px; }
+.fellowship-panel #fellowship-location { flex-grow: 1; white-space: normal; -unity-text-align: middle-right; }
+.fellowship-guide-row { flex-direction: row; align-items: center; }
+.fellowship-guide-row > .fellowship-symbol { width: 18px; height: 18px; margin-right: 3px; }
+.fellowship-panel #fellowship-guide { white-space: normal; flex-grow: 1; flex-basis: 0; flex-shrink: 1; }
+.fellowship-track { flex-direction: row; align-items: center; height: 42px; min-height: 42px; margin: 1px 0; padding-right: 3px; }
+.fellowship-track:hover, .fellowship-track:focus { background-color: rgba(235, 220, 177, .06); }
+.fellowship-track-symbol { width: 26px; height: 28px; margin-right: 4px; }
+.fellowship-track-lane { flex-direction: row; flex-grow: 1; flex-basis: 0; height: 38px; }
+.fellowship-panel .fellowship-track-cell { flex-grow: 1; flex-basis: 0; min-width: 0; height: 38px; margin: 0 1px; padding: 0; border-width: 1px; border-color: rgb(93, 88, 82); border-radius: 3px; background-color: rgb(42, 40, 37); }
+.fellowship-panel .fellowship-track-cell.selected { border-color: rgb(237, 210, 139); background-color: rgb(62, 64, 49); }
+.fellowship-panel .corruption-track .fellowship-track-cell { border-color: rgb(115, 72, 66); background-color: rgb(51, 35, 35); }
+.fellowship-panel .corruption-track .fellowship-track-cell.selected { border-color: rgb(236, 151, 125); background-color: rgb(94, 48, 40); }
+.fellowship-panel .fellowship-track-tick { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; margin: 0; padding: 0; font-size: 10px; -unity-text-align: middle-center; color: rgb(169, 185, 187); }
+.fellowship-track-marker { position: absolute; left: 0; top: 0; height: 24px; }
+/* UI-95: FellowshipTrackRow places the marker over its cell; after the first placement it glides. */
+.motion-enabled .fellowship-track-marker.track-marker-gliding { transition-property: left; transition-duration: 260ms; transition-timing-function: ease-in-out-cubic; }
+/* AUDIO-06: with Reduced motion a moved marker is briefly enlarged instead of gliding, one track after the other. */
+.reduced-motion .fellowship-track.track-changed .fellowship-track-marker { scale: 1.3 1.3; }
+.fellowship-track-end { position: absolute; left: 1px; bottom: 0; width: 12px; height: 12px; }
+.fellowship-panel .fellowship-track-value { width: 30px; flex-shrink: 0; margin: 0 0 0 4px; padding: 0; font-size: 16px; -unity-font-style: bold; -unity-text-align: middle-right; }
+.fellowship-panel .corruption-track .fellowship-track-value { color: rgb(239, 165, 137); }
+.fellowship-panel .fellowship-track-overflow { position: absolute; left: 0; top: 0; width: 9px; height: 16px; margin: 0; padding: 0; font-size: 11px; color: rgb(246, 225, 167); background-color: rgb(40, 37, 35); -unity-text-align: middle-center; }
+
+/* UI-85: edge furniture follows the board reference, in ordinary layout flow.
+   UI-87 moved the left rail and its docked panels to Styles/LeftRail.uss. */
+.board-right-panels {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 380px;
+    flex-direction: column; align-items: stretch; justify-content: flex-start;
+}
+/* UI-98: the Fellowship unrolls from its plaque into .board-dropdowns (Styles/RightColumn.uss). */
+.board-dropdowns .window-header { height: 26px; min-height: 26px; margin: 0 0 3px 0; }
+.board-dropdowns .window-header .title { font-size: 16px; margin: 0; }
+.board-dropdowns .fellowship-track { height: 34px; min-height: 34px; }
+.board-dropdowns .fellowship-track-lane, .board-dropdowns .fellowship-panel .fellowship-track-cell { height: 32px; }
+.board-dropdowns .fellowship-track-marker { height: 21px; }
+.board-dropdowns .fellowship-panel .companion-token { width: 54px; min-width: 44px; margin-right: 3px; }
+.board-dropdowns .fellowship-panel .fellowship-action-hint { font-size: 12px; }
+.edge-cards {
+    margin-top: auto; flex-shrink: 0; border-width: 1px;
+    border-color: rgb(143, 132, 99); background-color: rgb(31, 29, 27);
+}
+.edge-cards .edge-hand {
+    position: relative; left: auto; right: auto; top: auto; bottom: auto;
+    width: 100%; max-width: none; padding: 4px; border-width: 0; border-radius: 0;
+}
+.edge-cards .edge-hand.edge-hand-overflow {
+    position: absolute; right: 100%; left: auto; top: auto; width: 350px;
+    margin-right: 8px; border-width: 1px; border-color: rgb(143, 132, 99);
+    background-color: rgb(31, 29, 27);
+}
+.edge-cards .card-decks { height: 34px; margin-bottom: 4px; }
+.edge-cards .card-decks .card-deck { height: 32px; min-height: 32px; }
+.edge-cards .hand-card { height: 90px; min-height: 90px; padding-top: 8px; }
+.edge-cards .hand-card .action-symbol { width: 24px; height: 24px; margin-bottom: 6px; }
+.compact-edge-board .board-right-panels { width: 350px; }
+.edge-board .bottom { margin-right: 380px; }
+.compact-edge-board .bottom { margin-right: 350px; }
+.compact-edge-board .board-dropdowns .window-header { height: 24px; min-height: 24px; margin-bottom: 1px; }
+.compact-edge-board .board-dropdowns .window-header .title { font-size: 14px; }
+.compact-edge-board .board-dropdowns .fellowship-track { height: 26px; min-height: 26px; margin: 0; }
+.compact-edge-board .board-dropdowns .fellowship-track-lane, .compact-edge-board .board-dropdowns .fellowship-track-cell { height: 25px; }
+.compact-edge-board .board-dropdowns .fellowship-track-marker { height: 18px; }
+.compact-edge-board .board-dropdowns .fellowship-track-tick { height: 12px; font-size: 8px; }
+.compact-edge-board .board-dropdowns .fellowship-panel .companion-token { width: 46px; min-width: 40px; height: 34px; min-height: 34px; margin-right: 1px; }
+.compact-edge-board .board-dropdowns .illustrated-companion #portrait-name { height: 12px; font-size: 9px; }
+.compact-edge-board .board-dropdowns .illustrated-companion > .figure-art-image { bottom: 11px; }
+.compact-edge-board .edge-cards .card-decks { height: 28px; margin-bottom: 2px; }
+.compact-edge-board .edge-cards .card-deck { height: 26px; min-height: 26px; }
+.compact-edge-board .edge-cards .hand-card { height: 70px; min-height: 70px; padding: 2px 3px; }
+.compact-edge-board .edge-cards .hand-card .action-symbol { width: 20px; height: 20px; margin-bottom: 0; }
+.edge-board .notification-bar { height: 32px; min-height: 32px; max-height: 32px; padding-top: 2px; padding-bottom: 2px; }
+/* UI-98: like the bottom bar, the notification bar ends at the right column, under the plaques' panels. */
+.edge-board .notification-bar { margin-right: 380px; }
+.compact-edge-board .notification-bar { margin-right: 350px; }
+.edge-board .notification-bar .action { height: 28px; min-height: 28px; }

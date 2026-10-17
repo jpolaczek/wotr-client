@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="36" viewBox="0 0 44 36">
+  <!-- 9-slice frame for special dice with an origin caption (Lords, Kings, Balrog). Slices (points): 10. -->
+  <rect x="2" y="2" width="40" height="31.5" rx="5" fill="none" style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)" stroke-width="1.6" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <rect x="1.5" y="1.5" width="41" height="32.5" rx="5" fill="url(#gilt)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <rect x="3.4" y="3.4" width="37.2" height="28.7" rx="3.4" style="fill: var(--ink)"/>
+    <rect x="4" y="4" width="36" height="27.5" rx="3" fill="url(#enamel-flat)"/>
+    <rect x="5" y="4.6" width="34" height="1" rx="0.5" fill="#fff" opacity="0.07"/>
+  </g>
+</svg>

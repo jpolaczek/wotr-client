@@ -1,0 +1,8 @@
+Use case: precise-object-edit
+Edit target: the supplied close-up of a painted Middle-earth map. Inpaint the orange and cyan areas. Keep every other pixel unchanged, especially all four outer edges, rivers, mountains, woods, parchment colors and existing softness, so this detail fits seamlessly back into its parent map.
+
+ORANGE MASK: restore continuous EMPTY mountain foothills and rocky ground. There must be NO city, tower or buildings in this orange area.
+CYAN MASK: paint one SMALL white Minas Tirith city inside this cyan disk. The city is only as wide as the disk. Put its base near the center of the disk, surrounded by natural ground. It has small stepped defensive walls built against a rock spur and a white citadel; not a giant round stadium. This circle is right of the orange ellipse, on the western bank of the blue river.
+Do not move the city into the orange ellipse. The orange area becomes natural rock. The new city goes entirely at the cyan location. Keep the city small and readable at the existing map scale.
+
+Remove all orange and cyan paint. No text, letters, numbers, labels, grid, region boundaries, new river, waterfall, or extra buildings. This is a precise local repair of the supplied image, not a new composition. Keep exact crop, framing and aspect ratio.

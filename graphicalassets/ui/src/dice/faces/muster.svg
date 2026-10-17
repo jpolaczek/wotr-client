@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Muster result: a banner on its pole. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="muster-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9 4.6 V29" fill="none" style="stroke: var(--ink)" stroke-width="3.6"/>
+    <path d="M9 4.6 V29" fill="none" style="stroke: var(--gilt-light)" stroke-width="1.6"/>
+    <circle cx="9" cy="3.6" r="2" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="1"/>
+    <path d="M10.4 5.6 H26.4 L22.4 11.8 L26.4 18 H10.4 Z" fill="url(#muster-ivory)" style="stroke: var(--ink)" stroke-width="1.5"/>
+    <path d="M13.4 9.2 H19.6 M13.4 14.4 H18" fill="none" style="stroke: var(--ink)" stroke-width="0.9" opacity="0.55"/>
+  </g>
+</svg>

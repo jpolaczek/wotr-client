@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Review the UI-115 battle pieces: scene strips, force frames, medallions, slots, stat icons and the stage ribbon. Unity USS (Styles/Battle.uss) is the real layout. -->
+<style>
+  html, body { margin: 0; width: 560px; height: 300px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; }
+  body { background: #0e1619; position: relative; }
+  .art { --a: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/"); }
+  .scene { height: 44px; margin: 6px 8px 4px 8px; background-repeat: repeat-x; background-size: 168px 44px; display: flex; align-items: center; justify-content: center; color: #f1dfa6; font-size: 12px; letter-spacing: 1px; text-shadow: 0 1px 1px #000; }
+  .row { display: flex; gap: 8px; margin: 4px 8px; align-items: flex-start; }
+  .force { flex: 1; height: 86px; box-sizing: border-box; border-style: solid; border-width: 14px; padding: 2px 4px; color: #f1dfa6; font-size: 11px; }
+  .free { border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/force-frame-free.png") 28 fill stretch; }
+  .shadow { border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/force-frame-shadow.png") 28 fill stretch; }
+  .line { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  .medal { width: 36px; height: 36px; background-size: contain; }
+  .slot { height: 28px; flex: 1; border-style: solid; border-width: 12px; border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/card-slot.png") 24 fill stretch; }
+  .shelf { height: 22px; flex: 1; border-style: solid; border-width: 10px; border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/garrison-shelf.png") 20 fill stretch; }
+  .icon { width: 20px; height: 20px; background-size: contain; background-repeat: no-repeat; }
+  .ribbon { height: 22px; margin: 6px 8px; border-style: solid; border-width: 6px 10px; border-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-ribbon.png") 12 20 fill stretch; display: flex; align-items: center; gap: 14px; padding: 0 8px; color: #cfc3a1; font-size: 10px; }
+  .stage { display: flex; align-items: center; gap: 4px; }
+  .stage i { width: 16px; height: 16px; background-size: contain; background-repeat: no-repeat; display: block; }
+  .stage.current { color: #f9dfa0; }
+  .stage.current i { background-image: url("../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-marker.png"), var(--i); background-size: 24px 24px, 16px 16px; background-position: center, center; width: 24px; height: 24px; }
+</style>
+</head>
+<body>
+<div class="scene" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-field.png')">FIELD</div>
+<div class="row">
+  <div class="force free">
+    <div class="line">ATTACKER · FREE PEOPLES</div>
+    <div class="line"><div class="medal" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-free.png')"></div><div class="medal" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-free-cancelled.png')"></div>
+      <div class="icon" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/strength.png')"></div>3
+      <div class="icon" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/leadership.png')"></div>2
+      <div class="icon" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/dice.png')"></div>5
+      <div class="icon" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/hit.png')"></div>5+</div>
+    <div class="line"><div class="slot"></div></div>
+  </div>
+  <div class="force shadow">
+    <div class="line">DEFENDER · SHADOW</div>
+    <div class="line"><div class="medal" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/portrait-medallion-shadow.png')"></div><div class="icon" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/garrison.png')"></div><div class="shelf"></div></div>
+    <div class="line"><div class="slot"></div></div>
+  </div>
+</div>
+<div class="ribbon">
+  <div class="stage"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-cards.png')"></i>Cards</div>
+  <div class="stage current" style="--i:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-roll.png')"><i></i>Combat roll</div>
+  <div class="stage"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-reroll.png')"></i>Re-roll</div>
+  <div class="stage"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-losses.png')"></i>Losses</div>
+  <div class="stage"><i style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/stage-next.png')"></i>Next</div>
+</div>
+<div class="scene" style="background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-siege.png')">SIEGE</div>
+<div class="row" style="margin-top:0"><div class="scene" style="flex:1;margin:0;background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-sortie.png')">SORTIE</div><div class="scene" style="flex:1;margin:0;background-image:url('../../../unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/scene-relief.png')">RELIEF</div></div>
+</body>
+</html>

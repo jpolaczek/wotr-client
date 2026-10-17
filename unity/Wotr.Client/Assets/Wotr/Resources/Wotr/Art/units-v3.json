@@ -1,0 +1,162 @@
+{
+  "schema": "board-figures-1",
+  "width": 2048,
+  "height": 512,
+  "coordinates": "normalized bottom-left; separate non-overlapping bounds",
+  "cells": [
+    {
+      "name": "gondor-regular",
+      "x": 0.0,
+      "y": 0.53125,
+      "width": 0.04736328125,
+      "height": 0.46875
+    },
+    {
+      "name": "gondor-elite",
+      "x": 0.04931640625,
+      "y": 0.53125,
+      "width": 0.119140625,
+      "height": 0.46875
+    },
+    {
+      "name": "gondor-leader",
+      "x": 0.17041015625,
+      "y": 0.53125,
+      "width": 0.05126953125,
+      "height": 0.46875
+    },
+    {
+      "name": "rohan-regular",
+      "x": 0.2236328125,
+      "y": 0.53125,
+      "width": 0.05126953125,
+      "height": 0.46875
+    },
+    {
+      "name": "rohan-elite",
+      "x": 0.27685546875,
+      "y": 0.53125,
+      "width": 0.1015625,
+      "height": 0.46875
+    },
+    {
+      "name": "rohan-leader",
+      "x": 0.38037109375,
+      "y": 0.53125,
+      "width": 0.05419921875,
+      "height": 0.46875
+    },
+    {
+      "name": "elves-regular",
+      "x": 0.4365234375,
+      "y": 0.53125,
+      "width": 0.060546875,
+      "height": 0.46875
+    },
+    {
+      "name": "elves-elite",
+      "x": 0.4990234375,
+      "y": 0.53125,
+      "width": 0.107421875,
+      "height": 0.46875
+    },
+    {
+      "name": "elves-leader",
+      "x": 0.6083984375,
+      "y": 0.53125,
+      "width": 0.05419921875,
+      "height": 0.46875
+    },
+    {
+      "name": "dwarves-regular",
+      "x": 0.66455078125,
+      "y": 0.53125,
+      "width": 0.095703125,
+      "height": 0.46875
+    },
+    {
+      "name": "dwarves-elite",
+      "x": 0.76220703125,
+      "y": 0.53125,
+      "width": 0.13720703125,
+      "height": 0.46875
+    },
+    {
+      "name": "dwarves-leader",
+      "x": 0.9013671875,
+      "y": 0.53125,
+      "width": 0.08251953125,
+      "height": 0.46875
+    },
+    {
+      "name": "north-regular",
+      "x": 0.0,
+      "y": 0.0546875,
+      "width": 0.06494140625,
+      "height": 0.46875
+    },
+    {
+      "name": "north-elite",
+      "x": 0.06689453125,
+      "y": 0.0546875,
+      "width": 0.11181640625,
+      "height": 0.46875
+    },
+    {
+      "name": "north-leader",
+      "x": 0.1806640625,
+      "y": 0.0546875,
+      "width": 0.06494140625,
+      "height": 0.46875
+    },
+    {
+      "name": "sauron-regular",
+      "x": 0.24755859375,
+      "y": 0.0546875,
+      "width": 0.09619140625,
+      "height": 0.46875
+    },
+    {
+      "name": "sauron-elite",
+      "x": 0.345703125,
+      "y": 0.0546875,
+      "width": 0.12109375,
+      "height": 0.46875
+    },
+    {
+      "name": "sauron-nazgul",
+      "x": 0.46875,
+      "y": 0.0546875,
+      "width": 0.09521484375,
+      "height": 0.46875
+    },
+    {
+      "name": "isengard-regular",
+      "x": 0.56591796875,
+      "y": 0.0546875,
+      "width": 0.0810546875,
+      "height": 0.46875
+    },
+    {
+      "name": "isengard-elite",
+      "x": 0.64892578125,
+      "y": 0.0546875,
+      "width": 0.091796875,
+      "height": 0.46875
+    },
+    {
+      "name": "southrons-regular",
+      "x": 0.74267578125,
+      "y": 0.0546875,
+      "width": 0.05029296875,
+      "height": 0.46875
+    },
+    {
+      "name": "southrons-elite",
+      "x": 0.794921875,
+      "y": 0.0546875,
+      "width": 0.1044921875,
+      "height": 0.46875
+    }
+  ]
+}

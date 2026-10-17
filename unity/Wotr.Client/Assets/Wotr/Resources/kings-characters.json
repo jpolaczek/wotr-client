@@ -1,0 +1,224 @@
+[
+  {
+    "id": "kings.character.brand.awakened",
+    "title": "Brand — King of Dale",
+    "identity": "brand",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 1,
+    "leadership": 1,
+    "nationIcon": "north",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "heir-of-bard",
+      "call-to-arms"
+    ]
+  },
+  {
+    "id": "kings.character.brand.corrupted",
+    "title": "Brand — Corrupted Ruler",
+    "identity": "brand",
+    "side": "Shadow",
+    "role": "CorruptedSovereign",
+    "level": 0,
+    "leadership": 0,
+    "nationIcon": "north",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "corrupted-ruler",
+      "shadows-in-the-north"
+    ]
+  },
+  {
+    "id": "kings.character.dain.awakened",
+    "title": "Dáin Ironfoot — King Under the Mountain",
+    "identity": "dain",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 1,
+    "leadership": 1,
+    "nationIcon": "dwarves",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "dwarvenking",
+      "iron-guard"
+    ]
+  },
+  {
+    "id": "kings.character.dain.corrupted",
+    "title": "Dáin Ironfoot — Corrupted Ruler",
+    "identity": "dain",
+    "side": "Shadow",
+    "role": "CorruptedSovereign",
+    "level": 0,
+    "leadership": 0,
+    "nationIcon": "dwarves",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "corrupted-ruler",
+      "fate-of-the-lonely-mountain"
+    ]
+  },
+  {
+    "id": "kings.character.denethor.awakened",
+    "title": "Denethor — Lord Steward of Gondor",
+    "identity": "denethor",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 1,
+    "leadership": 1,
+    "nationIcon": "gondor",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "stewardship",
+      "palantir-of-anarion"
+    ]
+  },
+  {
+    "id": "kings.character.denethor.corrupted",
+    "title": "Denethor — Corrupted Ruler",
+    "identity": "denethor",
+    "side": "Shadow",
+    "role": "CorruptedSovereign",
+    "level": 0,
+    "leadership": 0,
+    "nationIcon": "gondor",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "corrupted-ruler",
+      "fate-of-the-white-tower"
+    ]
+  },
+  {
+    "id": "kings.character.theoden.awakened",
+    "title": "Théoden — King of the Riddermark",
+    "identity": "theoden",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "rohan",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "forth-eorlingas",
+      "mustering-of-the-mark"
+    ]
+  },
+  {
+    "id": "kings.character.theoden.corrupted",
+    "title": "Théoden — Corrupted Ruler",
+    "identity": "theoden",
+    "side": "Shadow",
+    "role": "CorruptedSovereign",
+    "level": 0,
+    "leadership": 0,
+    "nationIcon": "rohan",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "corrupted-ruler",
+      "mark-of-the-white-hand"
+    ]
+  },
+  {
+    "id": "kings.character.thranduil.awakened",
+    "title": "Thranduil — King of the Woodland Realm",
+    "identity": "thranduil",
+    "side": "FreePeoples",
+    "role": "Companion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "elves",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "elvenking",
+      "far-sighted"
+    ]
+  },
+  {
+    "id": "kings.character.thranduil.corrupted",
+    "title": "Thranduil — Corrupted Ruler",
+    "identity": "thranduil",
+    "side": "Shadow",
+    "role": "CorruptedSovereign",
+    "level": 0,
+    "leadership": 0,
+    "nationIcon": "elves",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "corrupted-ruler",
+      "fate-of-mirkwood"
+    ]
+  },
+  {
+    "id": "kings.character.black-serpent",
+    "title": "The Black Serpent — Chieftain of the Haradrim",
+    "identity": "black-serpent",
+    "side": "Shadow",
+    "role": "Minion",
+    "level": 2,
+    "leadership": 2,
+    "nationIcon": "southrons",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "red-wrath",
+      "not-minion-for-gandalf-white"
+    ]
+  },
+  {
+    "id": "kings.character.shadow-of-mirkwood",
+    "title": "The Shadow of Mirkwood — Chieftain of the Dark Lord",
+    "identity": "shadow-of-mirkwood",
+    "side": "Shadow",
+    "role": "Minion",
+    "level": 3,
+    "leadership": 1,
+    "nationIcon": "sauron",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "lord-of-the-bats",
+      "not-minion-for-gandalf-white"
+    ]
+  },
+  {
+    "id": "kings.character.ugluk",
+    "title": "Uglúk — Chieftain of the Uruk-hai",
+    "identity": "ugluk",
+    "side": "Shadow",
+    "role": "Minion",
+    "level": 2,
+    "leadership": 1,
+    "nationIcon": "isengard",
+    "initial": false,
+    "extraActionDice": 0,
+    "unlimitedMovement": false,
+    "abilities": [
+      "i-command",
+      "we-march-day-and-night",
+      "not-minion-for-gandalf-white"
+    ]
+  }
+]

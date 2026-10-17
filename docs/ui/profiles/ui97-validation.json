@@ -1,0 +1,226 @@
+{
+ "task": "UI-97",
+ "date": "2026-10-11",
+ "commits": {
+  "implementation": "6871acd"
+ },
+ "reports": {
+  "base-d1": {
+   "report": ".artifacts/ui97/base-d1.xml",
+   "total": 2,
+   "passed": 2,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "49f68f99f66edec4ec9ed559e8f2e10902399759c76355afd75edeee23e502c6"
+  },
+  "base-d2": {
+   "report": ".artifacts/ui97/base-d2.xml",
+   "total": 14,
+   "passed": 11,
+   "failed": 3,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+    "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+    "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+   ],
+   "sha256": "daef949cdeee9fcd25068026225b9828a5f014eeed663cecf43687e23cbdb0a9"
+  },
+  "base-d3": {
+   "report": ".artifacts/ui97/base-d3.xml",
+   "total": 6,
+   "passed": 5,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+   ],
+   "sha256": "2fe24fba21ac77aa39fe5caa1ca75253a0b40adcac77804144e0b53aba726f98"
+  },
+  "base-d4": {
+   "report": ".artifacts/ui97/base-d4.xml",
+   "total": 5,
+   "passed": 4,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.UI10NetworkTests.DelayedViewCannotUndoOpponentActionOrClosePinnedCard"
+   ],
+   "sha256": "5f5825eaa65a3eff3f690f4647d3780ec4212105b00e7fbd559c3fc3b503c3f2"
+  },
+  "base-d5": {
+   "report": ".artifacts/ui97/base-d5.xml",
+   "total": 8,
+   "passed": 7,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards"
+   ],
+   "sha256": "30799fdfc3c4fa3cf44e5dada85d53fb6f0afe024baed7739679e84a7dcaf1dc"
+  },
+  "editor1": {
+   "report": ".artifacts/ui97/editor1.xml",
+   "total": 14,
+   "passed": 14,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "ef0286a56eeef9c8f52e75c60603aebade3fa805368725489aa2128c99f98902"
+  },
+  "dice1": {
+   "report": ".artifacts/ui97/dice1.xml",
+   "total": 1,
+   "passed": 1,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "de8fe4fca69a1d3e9463b42745cc0c554554b6e5bbea918c4f7225d64196e8b8"
+  },
+  "reg1-d1": {
+   "report": ".artifacts/ui97/reg1-d1.xml",
+   "total": 3,
+   "passed": 2,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.CompactBoardLayoutTests.SimplePanelsUseTheirContentSizeAndKeepControlsReachableInFourLayouts"
+   ],
+   "sha256": "018605d6d0eaeb608b8db94d9e899af6a4b2a57205c45f0a2f529f5bee23aebd"
+  },
+  "reg1-d2": {
+   "report": ".artifacts/ui97/reg1-d2.xml",
+   "total": 14,
+   "passed": 10,
+   "failed": 4,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+    "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+    "Wotr.PlayTests.HuntNetworkTests.RequiredAllocationKeepsTheExactDieAtItsLimit",
+    "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+   ],
+   "sha256": "495e3a147be30414e76639b244bb279b6035f43a7b58f79cc0b6e88d3b18bdc9"
+  },
+  "reg1-d3": {
+   "report": ".artifacts/ui97/reg1-d3.xml",
+   "total": 6,
+   "passed": 5,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+   ],
+   "sha256": "bb4e652e343b10bd9203627369ea4a1c890f68bf2ffab41bf30b196791b04287"
+  },
+  "reg1-d4": {
+   "report": ".artifacts/ui97/reg1-d4.xml",
+   "total": 5,
+   "passed": 4,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.UI10NetworkTests.DelayedViewCannotUndoOpponentActionOrClosePinnedCard"
+   ],
+   "sha256": "4a18d39cfc7c8e68721261605fe983a1dec5c71d9289cdf0adf9422ff6e7b3da"
+  },
+  "reg1-d5": {
+   "report": ".artifacts/ui97/reg1-d5.xml",
+   "total": 8,
+   "passed": 7,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards"
+   ],
+   "sha256": "d246e0c5a3327e52cf6187969d3938653a96e141f000fc4b5fd8c8cf0dbe710d"
+  },
+  "reg2-r1": {
+   "report": ".artifacts/ui97/reg2-r1.xml",
+   "total": 3,
+   "passed": 3,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "3f4c59c88ec724115ffcb61d6455d6c2fd8223bf16b313be7f96c249a09cbe7b"
+  },
+  "reg2-r2": {
+   "report": ".artifacts/ui97/reg2-r2.xml",
+   "total": 7,
+   "passed": 4,
+   "failed": 3,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+    "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+    "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+   ],
+   "sha256": "3b24d4df4db6f3db8f451fa40dfcf2dd4a9f1cc07460b894b886e0f03534dc21"
+  },
+  "reg3-r1": {
+   "report": ".artifacts/ui97/reg3-r1.xml",
+   "total": 3,
+   "passed": 3,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "4b0851f570ea86a9a44c6c0daf157f67f4aa1fa54fff0096aa8bea50552040d0"
+  },
+  "reg3-r2": {
+   "report": ".artifacts/ui97/reg3-r2.xml",
+   "total": 7,
+   "passed": 4,
+   "failed": 3,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+    "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+    "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+   ],
+   "sha256": "e186855b8bfc7ce8eba53e011f9a5c51168655cf81bfe848ac9d0709be0a66c8"
+  },
+  "editor-full": {
+   "report": ".artifacts/ui97/editor-full.xml",
+   "total": 622,
+   "passed": 622,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "c8cfa704a9e03c8f22cf307b7452aca3dbb8fb14445bb278675cd1d6fcc75405"
+  }
+ },
+ "builds": {
+  "BuildLocalMac": {
+   "repository_commit_at_build": "6871acd611f26cbebaece36f255d7abc552208e0",
+   "development": false,
+   "inputs": 991,
+   "tracked_inputs": 979,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  },
+  "BuildLocalWindows": {
+   "repository_commit_at_build": "6871acd611f26cbebaece36f255d7abc552208e0",
+   "development": false,
+   "inputs": 991,
+   "tracked_inputs": 979,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  }
+ },
+ "notes": {
+  "baseline": "base-* at e2e8146 (HEAD before UI-97); DicePanelLayoutTests is new.",
+  "reg1": "Two new failures: the simple-state dock reached 190 px (limit 180) and HuntNetwork expected the old tooltip with side and die id; the panel was compacted and the test moved to the short format.",
+  "reg3": "Counters as icon and count, tighter header title; layout classes pass.",
+  "pre_existing": "HuntNetwork (Miss after reconnect, KeepRoll hunt-tab covered, ZeroDice), InGameDense close-fellowship, UI10Network delayed view and T22Information dense width match the baseline exactly.",
+  "art": "graphicalassets/ui/render.py --preview: medallion 40 pt with side variants, nine face glyphs, previews/dice.png."
+ },
+ "smoke": {
+  "result": "PASS",
+  "application_identity": "com.wotr.ui97.smoke",
+  "original_profile_byte_identical": true,
+  "runtime_matches_main_build": true,
+  "runtime_files_checked": 917,
+  "development": false
+ }
+}

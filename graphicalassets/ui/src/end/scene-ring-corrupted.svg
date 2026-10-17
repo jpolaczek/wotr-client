@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="120" viewBox="0 0 480 120">
+  <!-- UI-169: the end-of-game scene of the Shadow's Ring victory: the burning Eye on the tower of Barad-dûr above
+       a dark plain, the Ring taken. Framed by a thin gilt rule with rounded corners. -->
+  <defs>
+    <clipPath id="eye-clip"><rect x="2" y="2" width="476" height="116" rx="10"/></clipPath>
+    <linearGradient id="eye-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0505"/>
+      <stop offset="0.6" stop-color="#3a0d0a"/>
+      <stop offset="1" stop-color="#6e1a0e"/>
+    </linearGradient>
+    <radialGradient id="eye-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffcf66" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#e2531a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#6e1a0e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="eye-iris" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff0b0"/>
+      <stop offset="0.45" stop-color="#ffb02e"/>
+      <stop offset="1" stop-color="#c2380c"/>
+    </radialGradient>
+  </defs>
+  <g clip-path="url(#eye-clip)">
+    <rect width="480" height="120" fill="url(#eye-sky)"/>
+    <ellipse cx="240" cy="26" rx="120" ry="44" fill="url(#eye-glow)"/>
+    <path d="M0 100 L52 92 L96 98 L150 90 L200 96 L280 96 L330 90 L384 98 L428 92 L480 98 L480 120 L0 120 Z" fill="#140806"/>
+    <path d="M218 120 L222 70 L214 62 L226 60 L228 44 L222 40 L232 38 L236 30 L244 30 L248 38 L258 40 L252 44 L254 60 L266 62 L258 70 L262 120 Z" fill="#0c0504"/>
+    <path d="M214 62 L206 46 L222 56 Z M266 62 L274 46 L258 56 Z" fill="#0c0504"/>
+    <ellipse cx="240" cy="22" rx="26" ry="11" fill="url(#eye-iris)"/>
+    <ellipse cx="240" cy="22" rx="2.6" ry="10" fill="#120302"/>
+    <path d="M214 22 Q240 6 266 22 Q240 38 214 22 Z" fill="none" stroke="#ffd27a" stroke-width="1.2" opacity="0.8"/>
+    <circle cx="240" cy="104" r="5" fill="none" stroke="#c9a25a" stroke-width="2"/>
+    <path d="M0 120 L0 110 L70 106 L130 112 L190 108 L290 108 L350 112 L410 106 L480 110 L480 120 Z" fill="#060302"/>
+  </g>
+  <rect x="2" y="2" width="476" height="116" rx="10" fill="none" stroke="url(#gilt)" stroke-width="2"/>
+</svg>

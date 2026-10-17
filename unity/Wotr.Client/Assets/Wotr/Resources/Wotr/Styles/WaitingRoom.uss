@@ -1,0 +1,181 @@
+/* MENU-25: the waiting room in the main menu's frame (Frontend.uss .main-menu): seats, the invitation line and the
+   chat inside the window; fixed sizes, every control in its place. */
+.waiting-room .waiting-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 980px;
+}
+
+.waiting-room .waiting-seats {
+    flex-direction: row;
+    flex-shrink: 0;
+    height: 128px;
+    margin-bottom: 8px;
+}
+.waiting-room .waiting-seat {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin: 0 4px;
+    padding: 10px 16px;
+    background-image: resource("Wotr/Art/UI/frames/entry");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+}
+.waiting-room .waiting-seat.yours { background-image: resource("Wotr/Art/UI/frames/entry-hover"); }
+.waiting-room .waiting-seat-heading { flex-direction: row; align-items: center; margin-bottom: 4px; }
+.waiting-room .waiting-seat-heading .menu-row-emblem { width: 32px; height: 32px; }
+.waiting-room .waiting-seat-side {
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: rgb(241, 223, 166);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-left;
+}
+.waiting-room .waiting-seat-player {
+    font-size: 21px;
+    color: rgb(245, 232, 196);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.waiting-room .waiting-seat.empty .waiting-seat-player { color: rgb(150, 146, 128); -unity-font-style: italic; }
+.waiting-room .waiting-seat-tags { font-size: 14px; height: 18px; color: rgb(214, 198, 160); }
+.waiting-room .waiting-seat-state { font-size: 15px; height: 20px; color: rgb(190, 184, 160); }
+.waiting-room .waiting-seat-state.ready { color: rgb(150, 205, 140); -unity-font-style: bold; }
+.waiting-room .waiting-remove {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
+    width: 96px;
+    height: 30px;
+    min-height: 30px;
+    font-size: 15px;
+}
+
+/* OBS-04: Take seat stays left of Remove at the foot of every seat. */
+.waiting-room .waiting-take {
+    position: absolute;
+    right: 116px;
+    bottom: 10px;
+    width: 104px;
+    height: 30px;
+    min-height: 30px;
+    font-size: 15px;
+}
+
+/* OBS-04: the audience — its count and the observers' names in a line of fixed height. */
+.waiting-room .waiting-observers {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-shrink: 0;
+    height: 52px;
+    margin: 0 4px 6px 4px;
+}
+.waiting-room .waiting-observers-title {
+    width: 110px;
+    margin-top: 6px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.waiting-room .waiting-observer-names { flex-grow: 1; flex-shrink: 1; min-width: 0; flex-direction: row; flex-wrap: wrap; overflow: hidden; }
+.waiting-room .waiting-observers-empty { margin-top: 6px; font-size: 14px; color: rgb(150, 146, 128); -unity-font-style: italic; }
+.waiting-room .waiting-observer {
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+    margin: 0 6px 4px 0;
+    padding: 0 2px 0 10px;
+    border-radius: 12px;
+    background-color: rgba(15, 13, 12, 0.55);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-color: rgba(232, 204, 130, 0.25);
+    border-bottom-color: rgba(232, 204, 130, 0.25);
+    border-left-color: rgba(232, 204, 130, 0.25);
+    border-right-color: rgba(232, 204, 130, 0.25);
+}
+.waiting-room .waiting-observer-name {
+    max-width: 120px;
+    font-size: 14px;
+    color: rgb(231, 228, 215);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.waiting-room .waiting-observer-remove {
+    width: 22px;
+    height: 22px;
+    min-height: 22px;
+    margin: 0 0 0 4px;
+    padding: 0;
+    font-size: 14px;
+    border-radius: 11px;
+}
+
+.waiting-room .waiting-invitation {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    height: 40px;
+    margin: 0 4px 6px 4px;
+}
+.waiting-room .waiting-invitation-title {
+    width: 110px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.waiting-room .waiting-invitation-code { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 34px; margin: 0 6px 0 0; }
+.waiting-room .waiting-invite-action { width: 100px; height: 34px; min-height: 34px; margin-left: 6px; flex-shrink: 0; }
+
+.waiting-room .waiting-chat {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 0;
+    margin: 0 4px;
+}
+
+/* MENU-26: the chat — a framed list that scrolls inside itself and one line to write. */
+.waiting-room .room-chat { flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.waiting-room .room-chat-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin: 0 0 4px 2px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.waiting-room .room-chat-log {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 40px;
+    padding: 6px 10px;
+    background-color: rgba(15, 13, 12, 0.55);
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-color: rgba(232, 204, 130, 0.25);
+    border-bottom-color: rgba(232, 204, 130, 0.25);
+    border-left-color: rgba(232, 204, 130, 0.25);
+    border-right-color: rgba(232, 204, 130, 0.25);
+}
+.waiting-room .room-chat-message { flex-direction: row; flex-wrap: wrap; margin-bottom: 2px; }
+.waiting-room .room-chat-author { margin-right: 6px; font-size: 15px; -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold"); }
+.waiting-room .room-chat-author.side-free { color: rgb(160, 200, 230); }
+.waiting-room .room-chat-author.side-shadow { color: rgb(230, 150, 130); }
+.waiting-room .room-chat-author.observer { color: rgb(200, 192, 170); }
+.waiting-room .room-chat-text { flex-shrink: 1; font-size: 15px; white-space: normal; color: rgb(231, 228, 215); }
+.waiting-room .room-chat-line { flex-direction: row; align-items: center; flex-shrink: 0; height: 40px; margin-top: 4px; }
+.waiting-room .room-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 34px; margin: 0 6px 0 0; }
+.waiting-room .room-chat-send { width: 100px; height: 34px; min-height: 34px; flex-shrink: 0; }

@@ -1,0 +1,16 @@
+{
+  "task": "MAP-04",
+  "mode": "built-in image_gen",
+  "outputs": [
+    {"prompt": "correction.prompt.txt", "inputs": ["edit-target.png", "region-guide.png", "board-reference.png"], "result": "exec-b8c1a1a0-e5f3-4848-9821-995d8c672312.png", "copy": "corrections-atlas.png", "native_size": [1536, 1024]},
+    {"prompt": "forests.prompt.txt", "inputs": ["forest-shapes.png", "../pencil-v1/terrain-pencil.png"], "result": "exec-61b5633b-5b0c-476d-b6fb-082be5f274dc.png", "copy": "forest-atlas.png", "native_size": [1254, 1254]},
+    {"prompt": "moria.prompt.txt", "inputs": ["moria-target.png", "moria-guide.png"], "result": "exec-1fe891b2-3b87-41e7-becd-092daf2071b3.png", "copy": "moria-passage.png", "native_size": [1254, 1254]},
+    {"prompt": "cleanup.prompt.txt", "inputs": ["edit-target.png"], "result": "exec-1537a68c-8034-417e-9a85-39b6740e68ec.png", "copy": "clean-background-atlas.png", "native_size": [1536, 1024]},
+    {"prompt": "lorien-cleanup.prompt.txt", "inputs": ["lorien-cleanup-target.png"], "result": "exec-93acf2ae-7a21-49fb-b651-e334564e4b53.png", "copy": "lorien-background.png", "native_size": [1254, 1254]}
+  ],
+  "composition": "map-composition.svg",
+  "renderer": "@resvg/resvg-js 2.6.2",
+  "output": "../middle-earth-pencil-v2.png",
+  "output_size": [6144, 5037],
+  "base": "../pencil-v1/terrain-pencil.png"
+}

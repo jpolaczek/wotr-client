@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="56" viewBox="0 0 300 56">
+  <!-- UI-169: the plate under the end-of-game title for the player who won: a gilt band with pointed ends and a
+       laurel sprig at each end; code writes VICTORY over it. -->
+  <defs>
+    <linearGradient id="victory-band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d5a2a"/>
+      <stop offset="0.55" stop-color="#22361a"/>
+      <stop offset="1" stop-color="#121d0d"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <path d="M24 8 H276 L294 28 L276 48 H24 L6 28 Z" fill="url(#victory-band)" style="stroke: var(--gilt-edge)" stroke-width="1"/>
+    <path d="M26 11.5 H274 L289.5 28 L274 44.5 H26 L10.5 28 Z" fill="none" stroke="url(#gilt)" stroke-width="1.6"/>
+    <g fill="#9cc46a" stroke="#4d6b2c" stroke-width="0.6">
+      <path d="M30 28 C 36 20, 46 18, 54 20 C 46 22, 40 25, 30 28 Z"/>
+      <path d="M30 28 C 36 36, 46 38, 54 36 C 46 34, 40 31, 30 28 Z"/>
+      <path d="M40 24 C 44 17, 52 14, 58 15 C 52 18, 47 21, 40 24 Z"/>
+      <path d="M40 32 C 44 39, 52 42, 58 41 C 52 38, 47 35, 40 32 Z"/>
+      <path d="M270 28 C 264 20, 254 18, 246 20 C 254 22, 260 25, 270 28 Z"/>
+      <path d="M270 28 C 264 36, 254 38, 246 36 C 254 34, 260 31, 270 28 Z"/>
+      <path d="M260 24 C 256 17, 248 14, 242 15 C 248 18, 253 21, 260 24 Z"/>
+      <path d="M260 32 C 256 39, 248 42, 242 41 C 248 38, 253 35, 260 32 Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Garrison: a crenellated wall segment. -->
+  <g filter="url(#lift)">
+    <rect x="4" y="13" width="24" height="15" style="fill: var(--scene-stone); stroke: var(--emblem-outline)" stroke-width="0.8"/>
+    <g style="fill: var(--scene-stone)"><rect x="4" y="8" width="5" height="5.5"/><rect x="13.5" y="8" width="5" height="5.5"/><rect x="23" y="8" width="5" height="5.5"/></g>
+    <g style="stroke: var(--scene-stone-dark)" stroke-width="0.8" fill="none"><path d="M4 18 H28 M4 23 H28 M10 13 V18 M20 13 V18 M15 18 V23 M25 18 V23 M8 23 V28 M18 23 V28"/></g>
+  </g>
+</svg>

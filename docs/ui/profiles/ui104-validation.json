@@ -1,0 +1,38 @@
+{
+ "task": "UI-104",
+ "date": "2026-10-12",
+ "commits": {
+  "implementation": "921ecf4"
+ },
+ "playmode": {
+  "ui104t": {
+   "summary": ".artifacts/ui98/runs/ui104t.json",
+   "total": 15,
+   "passed": 13,
+   "failed_tests": [
+    "Wotr.PlayTests.MapContourRenderingTests.LegendIsExplicitAndDoesNotChooseARegionOrChangeBorders",
+    "Wotr.PlayTests.MapVisibilityTests.HoverAndZoomRevealLocalMarkersAndKeepOnlyTheSelectedForce"
+   ],
+   "baseline": "Both fail identically in ui102-final.json, base102.json and final.json."
+  }
+ },
+ "editmode": {
+  "result": "632/632",
+  "report": ".artifacts/ui100/runs/ui104-edit.xml"
+ },
+ "builds": {
+  "commit": "921ecf4",
+  "tracked_inputs_matching_commit": 953,
+  "development": false,
+  "note": "Builds removed after UI-105 builds supersede them."
+ },
+ "smoke": {
+  "result": "PASS",
+  "identity": "com.wotr.ui104.smoke",
+  "runtime_files_checked": 956,
+  "original_profile_byte_identical": true
+ },
+ "notes": [
+  "Windows runtime and manual play not tested."
+ ]
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-138: Why this is or is not available. -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13.5 6.5 A7.5 7.5 0 1 0 13.6 6.5 Z M19 19.2 L26 26" style="stroke: var(--ink)" stroke-width="5.2"/>
+    <path d="M13.5 6.5 A7.5 7.5 0 1 0 13.6 6.5 Z M19 19.2 L26 26" stroke="url(#gilt)" stroke-width="3"/>
+  </g>
+</svg>

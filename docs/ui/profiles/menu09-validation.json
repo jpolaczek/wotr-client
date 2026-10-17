@@ -1,0 +1,215 @@
+{
+  "task": "MENU-09",
+  "worktree": "/private/tmp/wotr-menu-tests",
+  "branch": "codex/menu-tests",
+  "runtime_commit": "8784e0f",
+  "updated_test_commit": "366229c",
+  "checks": {
+    "editor": {
+      "report": ".artifacts/menu09-editor-final.xml",
+      "passed": 632,
+      "failed": 0,
+      "skipped": 0,
+      "sha256": "189941c2a7bfcace26091f753088dce5a77553dd5cff5f6c9f85c7055b098aaf"
+    },
+    "frontend": {
+      "report": ".artifacts/menu09-play-final.xml",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "sha256": "b8f159ff8163b0e242aaa94ed356bad8ddaaab05247f8d4be44c84151e36f59c"
+    },
+    "recovery_settings": {
+      "report": ".artifacts/menu09-regression.xml",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "sha256": "08df6cf3869a694aabc1e0c98486877a4cd36f87074d2b5231691d7428bb1478"
+    },
+    "return_list_draft": {
+      "report": ".artifacts/menu09-return-list-draft-final.xml",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "sha256": "40c2989388e8a2e9a0b8aa84e7dce1cebee72512a09e570004b480b8629addca"
+    },
+    "server": {
+      "report": ".artifacts/results/menu09-server.trx",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "sha256": "9177a40c995b9041a2e244323cd8febf80fac968cac1277d5ed622d9022a344e"
+    }
+  },
+  "runtime_files": 893,
+  "runtime_source_sha256": "94a684b110306a96fd7531fe167f30f75cf539afb37f45d9d4caf029a6b7bd3d",
+  "builds": {
+    "macos": ".artifacts/menu09/macos/Wotr.app",
+    "windows": ".artifacts/menu09/windows/Wotr.exe",
+    "macos_architectures": "x86_64 arm64",
+    "development": false,
+    "smoke": {
+      "window": {
+        "bounds": {
+          "X": 414,
+          "Height": 412,
+          "Y": 50,
+          "Width": 683
+        },
+        "id": 13837
+      },
+      "screenshot_captured": true,
+      "result": "PASS",
+      "application_identity": "com.wotr.menu09.smoke",
+      "development": false,
+      "original_profile_byte_identical": true,
+      "original_profile_files": 16,
+      "login_tested": false,
+      "windows_runtime_tested": false,
+      "intel_runtime_tested": false,
+      "executable_sha256": "0963b880ae650757d6bfeae2390485e0ed3cbc909e52f4c89bdb8ae5cadb8210",
+      "same_binary_as_normal": false,
+      "runtime_matches_normal_build": true,
+      "runtime_files_checked": 893
+    }
+  },
+  "visual_review": {
+    "result": "PASS",
+    "files": {
+      "menu09-entry-1366-1.25.png": "14ea30ed8c35e0d85bf508a011a7c89de0da55136bd4c6a2c8f3810325135ef7",
+      "menu09-waiting-1366-1.25.png": "10e88a82aca76dea44a833f0c310df190309b34ebdc266096a1e132b455a3409",
+      "menu09-main-1366-1.00.png": "761b7b69fc28c538ad9b482108c1bd5808de32355a8b4c37adbbf259494ba5f5",
+      "menu09-host-1920-1.25.png": "9c96d4a7c2ad14979e500299e0395fecfc89c09c26d5766bb712a4a5f110188b",
+      "menu09-settings-1920-1.25.png": "670c1dc3fdab56143fe2d9c0afa520fc0bf828fa24a5cbae239593eb5923eadd",
+      "menu09-entry-1920-1.00.png": "7fde0f9ce52636122542b11d292c0c0037be80d3ebbf08324a31c5bcafe3af86",
+      "menu09-main-1920-1.25.png": "fa4f4ff1b517872901a6d9d2fd19e8369f43ee6ce93791c6694edfb3ef2cc7fc",
+      "menu09-settings-1366-1.00.png": "097268c31aea6029d477ec7e87f6e7993068f20eef4afe2cc0b66c1f5036d6ab",
+      "menu09-host-1366-1.00.png": "8e07219217cf42e5ac3e91d1ad183337defcd4c4f9d594768602d0e9f184eb2b",
+      "menu09-waiting-1920-1.00.png": "8e9ac39abc98d4a811df23ba54b05631c0b89d0fa0458ffcf4065c0fb52edebe",
+      "menu09-waiting-1920-1.25.png": "628ef33a7faf91fe740f08f0e45af8505c1ca73966d8690cd2f58b15ba4bbf4b",
+      "menu09-settings-1366-1.25.png": "df5bc0a7325406ca5641409561f85d3a49cf104884339f55a11a643713d69f96",
+      "menu09-host-1366-1.25.png": "8dc59586bf8587fdf8da8b164fb20e8d54bc8f6e2e3a26b025da0a686964f6d9",
+      "menu09-main-1920-1.00.png": "9cd7c46f85e78660160e2387689ebc7309d3ffc65947beeb78f6afd31c1e7c03",
+      "menu09-entry-1920-1.25.png": "7b29a366c1e34c0f6d5de6610715231aa4fedc0b9040f5c73ea6fa9e3aa63b61",
+      "menu09-host-1920-1.00.png": "da8c1d4cbb5a86c8591b2a1b292e50973977ed30896e1c16e2c3b46c4c1b42ab",
+      "menu09-settings-1920-1.00.png": "f282932073935a777466cdc7dbf837abb9c682e0c06195c74d1b9751d4ffeca7",
+      "menu09-main-1366-1.25.png": "d0ad9bcef0be50bb88be82b1f833e9c7ec1a99ba2b39b00fec744075f4db2451",
+      "menu09-waiting-1366-1.00.png": "58fbb195c61446a9fea359ffb8c898f6b338178d19d7c61a8d6454b380f610d0",
+      "menu09-entry-1366-1.00.png": "a91b6782602f188e8ce01e9871b8080439edcafb36484dd97478faf60c0a3ed2"
+    },
+    "screens": [
+      "entry",
+      "settings",
+      "main",
+      "host",
+      "waiting"
+    ],
+    "layouts": [
+      "1366x768@100",
+      "1366x768@125",
+      "1920x1080@100",
+      "1920x1080@125"
+    ],
+    "observations": "20 PNG: fields and actions fit; code footer visible; scrollbars visible; filters/paging absent; public host invitation visible."
+  },
+  "local_server": {
+    "backup_manifest_sha256": "a476feb17d575324f0690ad9b90ddd64cd97c890ec10012e017a482eac886cb5",
+    "restore_database": "wotr_restore_menu09b",
+    "restore_migration_preservation": {
+      "accounts": {
+        "rows": 9,
+        "original_columns_preserved": true
+      },
+      "command_receipts": {
+        "rows": 96,
+        "original_columns_preserved": true
+      },
+      "invitations": {
+        "rows": 10,
+        "original_columns_preserved": true
+      },
+      "match_events": {
+        "rows": 212,
+        "original_columns_preserved": true
+      },
+      "match_reads": {
+        "rows": 2,
+        "original_columns_preserved": true
+      },
+      "matches": {
+        "rows": 4,
+        "original_columns_preserved": true
+      },
+      "rooms": {
+        "rows": 5,
+        "original_columns_preserved": true
+      },
+      "schema_migrations": {
+        "rows": 5,
+        "original_columns_preserved": true
+      },
+      "sessions": {
+        "rows": 52,
+        "original_columns_preserved": true
+      }
+    },
+    "restore_migrations": "1,2,3,4,5,6",
+    "restored_two_account_public_code_leave": "PASS",
+    "active_previous_image": "sha256:1bd30e497df8d3c703fc114b76e510aa233bc982a33ebcc9d1ef14c7f025bd69",
+    "active_image": "sha256:9cbcd02471d6dc88efa7d724db5d7488a4528b18f1f7cf696a8f4a87da13d4fc",
+    "active_data_preservation": {
+      "accounts": {
+        "rows": 9,
+        "original_columns_preserved": true
+      },
+      "command_receipts": {
+        "rows": 96,
+        "original_columns_preserved": true
+      },
+      "invitations": {
+        "rows": 10,
+        "original_columns_preserved": true
+      },
+      "match_events": {
+        "rows": 212,
+        "original_columns_preserved": true
+      },
+      "match_reads": {
+        "rows": 2,
+        "original_columns_preserved": true
+      },
+      "matches": {
+        "rows": 4,
+        "original_columns_preserved": true
+      },
+      "rooms": {
+        "rows": 5,
+        "original_columns_preserved": true
+      },
+      "schema_migrations": {
+        "rows": 5,
+        "original_columns_preserved": true
+      },
+      "sessions": {
+        "rows": 52,
+        "original_columns_preserved": true
+      }
+    },
+    "active_migrations": "1,2,3,4,5,6",
+    "https_ready_ca_verified": "PASS",
+    "result": "PASS"
+  },
+  "earlier_failed_attempts": [
+    ".artifacts/menu09-return-list-draft.xml (2/3, stale paging test)",
+    ".artifacts/menu09-local-update.log (probe on internal network unreachable)"
+  ],
+  "limitations": [
+    "Windows runtime not tested",
+    "Intel runtime not tested",
+    "Manual two-player acceptance deferred",
+    "External deployment not performed",
+    "Main checkout remains separate; use new isolated client",
+    "Old tables remain private; generate a code or create a new Public table"
+  ],
+  "prior_task_records_preserved": 208
+}

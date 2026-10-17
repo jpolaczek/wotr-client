@@ -1,0 +1,285 @@
+{
+ "task": "UI-94",
+ "date": "2026-10-11",
+ "commits": {
+  "implementation": "d7c5bc3"
+ },
+ "reports": {
+  "base-e1": {
+   "report": ".artifacts/ui94/base-e1.xml",
+   "total": 7,
+   "passed": 7,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "b04bfdadb756d8009e05ebd28619438e5b2bb9cfea4921218b15fd19a2c9b34a"
+  },
+  "base-e2": {
+   "report": ".artifacts/ui94/base-e2.xml",
+   "total": 5,
+   "passed": 3,
+   "failed": 2,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+    "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+   ],
+   "sha256": "cb1b3db30446d04caf7fd9759693297475cfdb3104e8af0de0bd0132bfc0545d"
+  },
+  "base-e3": {
+   "report": ".artifacts/ui94/base-e3.xml",
+   "total": 7,
+   "passed": 6,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients"
+   ],
+   "sha256": "b57ee3447489f6f1fe3f8ee48e49cbe241c38ca1488a541c5831c07ec14468b4"
+  },
+  "base-e4": {
+   "report": ".artifacts/ui94/base-e4.xml",
+   "total": 6,
+   "passed": 5,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+   ],
+   "sha256": "aaac64bdb2c553655004f4f24c158952dd77d0c12dfcc40d210c613862b6e6a0"
+  },
+  "base-e5": {
+   "report": ".artifacts/ui94/base-e5.xml",
+   "total": 2,
+   "passed": 1,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts"
+   ],
+   "sha256": "a08caec1a5bf3b966820b8088d0570d09c2483edcaf2008f69623067cd1e64fb"
+  },
+  "base-e6": {
+   "report": ".artifacts/ui94/base-e6.xml",
+   "total": 12,
+   "passed": 10,
+   "failed": 2,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect",
+    "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie"
+   ],
+   "sha256": "0752c55468eba5aed1ef607f62918849ce1aa8923d0f3acf77658fbbe2b14dde"
+  },
+  "editor1": {
+   "report": ".artifacts/ui94/editor1.xml",
+   "total": 10,
+   "passed": 10,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "34affba7bde98471d509b7bc607767b71f0368eebef9ccd2ca0c0b78af3210e4"
+  },
+  "reg1-e1": {
+   "report": ".artifacts/ui94/reg1-e1.xml",
+   "total": 7,
+   "passed": 6,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsNetworkTests.EnemyProtectionRequiresItsWholeCostAndOneCommitAfterReconnect"
+   ],
+   "sha256": "1ec664c80fe538358b8dd24b0085a2d00d211afd61c5e0d83e1aea845c35d21c"
+  },
+  "reg1-e2": {
+   "report": ".artifacts/ui94/reg1-e2.xml",
+   "total": 5,
+   "passed": 2,
+   "failed": 3,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsLayoutTests.MultipleSourcesAbilityEmptyAndExpiredViewsFitFourLayoutsWithoutScrolling",
+    "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+    "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+   ],
+   "sha256": "5cd37f234e0f5965f7970f03fbb195e4f89171cfa136f20a10e55fc672b754a0"
+  },
+  "reg1-e3": {
+   "report": ".artifacts/ui94/reg1-e3.xml",
+   "total": 7,
+   "passed": 6,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients"
+   ],
+   "sha256": "cc59dffe1b5ed8caa968f4638021f6a233361b5d69b71e12f2b2f44b60ddf946"
+  },
+  "reg1-e4": {
+   "report": ".artifacts/ui94/reg1-e4.xml",
+   "total": 6,
+   "passed": 5,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+   ],
+   "sha256": "d5d0c9e74b46aad369da1f83c926c70ae520a349d92d7541a8a9a755d43695f2"
+  },
+  "reg1-e5": {
+   "report": ".artifacts/ui94/reg1-e5.xml",
+   "total": 2,
+   "passed": 1,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts"
+   ],
+   "sha256": "6862c78c49ed6786742ca5bde0e9857d927748f15bb143af5aa1cf9a564dc987"
+  },
+  "fit1": {
+   "report": ".artifacts/ui94/fit1.xml",
+   "total": 2,
+   "passed": 0,
+   "failed": 2,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsLayoutTests.MultipleSourcesAbilityEmptyAndExpiredViewsFitFourLayoutsWithoutScrolling",
+    "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt"
+   ],
+   "sha256": "4a5c427433b643dd93fb99c8a804a845dbef8b4107c180e85bdc1cbb96de022a"
+  },
+  "fit2": {
+   "report": ".artifacts/ui94/fit2.xml",
+   "total": 2,
+   "passed": 0,
+   "failed": 2,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsLayoutTests.MultipleSourcesAbilityEmptyAndExpiredViewsFitFourLayoutsWithoutScrolling",
+    "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt"
+   ],
+   "sha256": "f506822e319ca2f63ca3bc736097992570a1df0aea881100d7025ea843d868fb"
+  },
+  "fit3": {
+   "report": ".artifacts/ui94/fit3.xml",
+   "total": 2,
+   "passed": 1,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt"
+   ],
+   "sha256": "87d33a1efa05b5b8c6122678cacdd074a34af1c2a6239a6e4fedf21981c1e986"
+  },
+  "reg2-e1": {
+   "report": ".artifacts/ui94/reg2-e1.xml",
+   "total": 7,
+   "passed": 7,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "1dcc5ea46dd73255da0f1110da9a18cdbbed2b6438d4c62acb056c5b86bbffd0"
+  },
+  "reg2-e2": {
+   "report": ".artifacts/ui94/reg2-e2.xml",
+   "total": 5,
+   "passed": 3,
+   "failed": 2,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+    "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+   ],
+   "sha256": "85321123fec0f2e0dca34a20a68b6b1ef8613c3c3bb993250d825147d69d0cc9"
+  },
+  "reg2-e3": {
+   "report": ".artifacts/ui94/reg2-e3.xml",
+   "total": 7,
+   "passed": 6,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients"
+   ],
+   "sha256": "abeacdf2941f4c5c99c9402ab19d0a1d173f2df3b733248cca11b01d7a4e0eca"
+  },
+  "reg2-e4": {
+   "report": ".artifacts/ui94/reg2-e4.xml",
+   "total": 6,
+   "passed": 5,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.ClickInspectionTests.BothPlayersInspectBoardFamiliesOnlyAfterExplicitActivation"
+   ],
+   "sha256": "e8bcb62791b0467729526901165ef9459765f1e01582b53e5f0833544775e0ae"
+  },
+  "reg2-e5": {
+   "report": ".artifacts/ui94/reg2-e5.xml",
+   "total": 2,
+   "passed": 1,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.InGameProfileDriverTests.AllEightRealProfileDriversChangeAndRenderTheirExpectedStateInFourLayouts"
+   ],
+   "sha256": "9408c7292f65e4d492f02a8a03d70beea355c93f8df31bbf9680a8ad187b16b0"
+  },
+  "reg2-e6": {
+   "report": ".artifacts/ui94/reg2-e6.xml",
+   "total": 12,
+   "passed": 10,
+   "failed": 2,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.BattleWindowNetworkTests.RegionClickCloseAndCombatUseOneHostAndKeepSecretsThroughReconnect",
+    "Wotr.PlayTests.CardInteractionTests.ClickInspectionPreservesSelectionAndDoubleClickNeedsTheChosenDie"
+   ],
+   "sha256": "cc83728796b188d114c4943f30dc621a784f8df78e5e39014c700ba9d712171b"
+  },
+  "editor-full": {
+   "report": ".artifacts/ui94/editor-full.xml",
+   "total": 619,
+   "passed": 619,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "e952acb7bea18fc35e49bfa12f5138225f204515ed9f5d20ba0e8c38c9801b1d"
+  }
+ },
+ "builds": {
+  "BuildLocalMac": {
+   "repository_commit_at_build": "d7c5bc3ca5e1b524ada14e6843e1cfb99b70fb68",
+   "development": false,
+   "inputs": 954,
+   "tracked_inputs": 942,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  },
+  "BuildLocalWindows": {
+   "repository_commit_at_build": "d7c5bc3ca5e1b524ada14e6843e1cfb99b70fb68",
+   "development": false,
+   "inputs": 954,
+   "tracked_inputs": 942,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  }
+ },
+ "notes": {
+  "baseline": "base-* at 5769c73 (HEAD before UI-94); base-e6 run separately after the regression.",
+  "reg1-e1": "Paying a removal pushed confirm-decision under the bottom bar; the card text now hides while a removal is paid.",
+  "reg1-e2": "At 1366x768 and 125% the panel passed the stage; scopes above a card were compacted and EffectsReadingWidth widens the panel on overflow.",
+  "fit1-fit2": "Intermediate fitting runs: 562 -> 470 -> 394 logical px; fit3 passes four layouts.",
+  "pre_existing": "EffectsLayout payment (ArgumentNullException: docked panel has no drag handle), InGameDense and InGameProfile close-fellowship, CardPack Mithril hover, ClickInspection cards-tab, CardInteraction docked hand and BattleWindow TaskCanceled match the baseline exactly.",
+  "profile_driver": "InGameProfilePanels Effects steps were rewritten but are not reached: the driver fails earlier at close-fellowship, as in the baseline."
+ },
+ "smoke": {
+  "result": "PASS",
+  "application_identity": "com.wotr.ui94.smoke",
+  "original_profile_byte_identical": true,
+  "runtime_matches_main_build": true,
+  "runtime_files_checked": 880,
+  "development": false
+ }
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-139: Nation icon of all Free Peoples (Gandalf): a blue enamel roundel with the white star of the West. -->
+  <g filter="url(#lift)">
+    <circle cx="16" cy="16" r="13" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.8"/>
+    <circle cx="16" cy="16" r="10.4" fill="url(#enamel-dome)" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+    <path d="M16 7.6 L17.7 13.4 L23.6 13.6 L18.8 17.1 L20.6 22.8 L16 19.3 L11.4 22.8 L13.2 17.1 L8.4 13.6 L14.3 13.4 Z"
+      style="fill: var(--ivory); stroke: var(--emblem-outline)" stroke-width="0.5" stroke-linejoin="round"/>
+  </g>
+</svg>

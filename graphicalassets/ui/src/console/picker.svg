@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="44" viewBox="0 0 64 44">
+  <!-- UI-159: body of the small popover that offers the results of a die changed by an Elven Ring: a dark plate
+       with a gilt border; the tail points at the die. Slices (points): 10. -->
+  <defs>
+    <linearGradient id="picker-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--plate-top)"/>
+      <stop offset="1" style="stop-color: var(--plate-bottom)"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <rect x="1.5" y="1.5" width="61" height="41" rx="6" fill="url(#picker-fill)" stroke="url(#gilt)" stroke-width="1.1"/>
+    <rect x="4" y="4" width="56" height="36" rx="4" fill="none" style="stroke: var(--gilt-shadow)" stroke-width="0.6"/>
+  </g>
+</svg>

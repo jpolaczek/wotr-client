@@ -1,0 +1,80 @@
+{
+  "task": "UI-83",
+  "date": "2026-10-09",
+  "reports": {
+    "integrated-green.xml": {
+      "passed": 7,
+      "failed": 0,
+      "sha256": "4a8fe511ce20f3dfd2433eb379492dc512dd218af1e8e98c12fd78b2ec440de9"
+    },
+    "recovery-green.xml": {
+      "passed": 3,
+      "failed": 0,
+      "sha256": "729603c0324812033ca9b5756d76e723790e76285da6a2b86a6ed146f601f1e0"
+    },
+    "editor.xml": {
+      "passed": 608,
+      "failed": 0,
+      "sha256": "a5a659495df84ffe10bf45e4918d26f8b8c746e36bb6b754fb7ff0011d036274"
+    }
+  },
+  "unique_play_methods": 9,
+  "play_methods": [
+    "Wotr.PlayTests.CardServerCompatibilityTests.LegacyDiscardOptionExplainsBothDoubleClickSurfacesWithoutPosting",
+    "Wotr.PlayTests.CardServerCompatibilityTests.RestoredDiscardChoiceSurvivesTheWarningAndServerUpdateWithoutAutomaticCommit",
+    "Wotr.PlayTests.EngineHandDiscardNetworkTests.MiniatureDoubleClicksAfterAnotherControlDiscardBothHandsAtFourLayouts",
+    "Wotr.PlayTests.EngineHandDiscardNetworkTests.PreviewContentDoubleClicksDiscardBothHandsAtFourLayouts",
+    "Wotr.PlayTests.HandDiscardDrawerTests.FreePeoplesCanCloseAndReopenExcessHandAcrossRefreshes",
+    "Wotr.PlayTests.HandDiscardDrawerTests.OpponentDecisionDoesNotOpenTheHandAndNewViewerResetsAttention",
+    "Wotr.PlayTests.HandDiscardDrawerTests.ShadowCanCloseAndReopenExcessHandAcrossRefreshes",
+    "Wotr.PlayTests.HandDiscardNetworkTests.DoubleClickDiscardsOneCardAndReconnectKeepsTheRemainingDecision",
+    "Wotr.PlayTests.HandDrawerTests.KeyboardEscapeAndPointerExitKeepSelectionAndPinnedPreviewIndependent"
+  ],
+  "dotnet": {
+    "passed": 13,
+    "failed": 0,
+    "report": ".artifacts/ui83/server-regression.trx",
+    "sha256": "70835ba8a6de8535c6c0eb067d71e4972238079faeb47086574bb0164f26dc6e"
+  },
+  "legacy_reproduction": {
+    "red_report": "legacy-red-retry.xml",
+    "expected_failures": 1,
+    "first_attempt": "Disk full prevented XML; not accepted as evidence."
+  },
+  "local_backend": {
+    "server_image": "sha256:1bd30e497df8d3c703fc114b76e510aa233bc982a33ebcc9d1ef14c7f025bd69",
+    "all_snapshots_unchanged": true,
+    "matches": 4,
+    "https_health": 200,
+    "local_ca_verified": true,
+    "user_game_commands_sent": 0
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "output": ".artifacts/ui83/macos",
+      "input_sha256": "f2bb982380919b8a71cfa1b2799ff1c441c215f8b139f2fa04f9739373d41148",
+      "provenance_report_sha256": "d547546dc92ab641437e9e67b6cd94ba010d4d3d5bd7455551db9e53abd9d5f6",
+      "runtime_inputs_match_workspace": true,
+      "development": false
+    },
+    "BuildLocalWindows": {
+      "output": ".artifacts/ui83/windows",
+      "input_sha256": "f2bb982380919b8a71cfa1b2799ff1c441c215f8b139f2fa04f9739373d41148",
+      "provenance_report_sha256": "4123fe958bca74940791fdc7895e1ef7ae7faf039840e746131fda1e6ec0bf35",
+      "runtime_inputs_match_workspace": true,
+      "development": false
+    }
+  },
+  "macos_smoke": {
+    "passed": true,
+    "login_screenshot_reviewed": true,
+    "player_profile_restored_byte_for_byte": true,
+    "report_sha256": "12254e59d0e291b2478337fa8dd9ebc750156a52d2d0dc2a27d186c6e03707a7"
+  },
+  "limits": [
+    "Windows runtime not executed.",
+    "Intel runtime not executed.",
+    "No manual game acceptance.",
+    "No gameplay commands sent in user matches; saved state exercised only on in-memory copies."
+  ]
+}

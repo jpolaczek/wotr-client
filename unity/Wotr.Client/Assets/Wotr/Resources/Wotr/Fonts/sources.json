@@ -1,0 +1,35 @@
+{
+  "license": "SIL OFL 1.1",
+  "fonts": [
+    {
+      "file": "Cinzel-SemiBold.ttf",
+      "family": "Cinzel",
+      "weight": 600,
+      "source_url": "https://raw.githubusercontent.com/google/fonts/67bc647ce1910e92f461bcc82aae30f21d21a9cc/ofl/cinzel/Cinzel%5Bwght%5D.ttf",
+      "source_sha256": "f4d83d34d1f6c741193e4acf4b3dff9531e5a67b6aa65228d00a7db72a4e0f34",
+      "sha256": "e3547d5168f281d6cc77a23138337d33fe651b1277567f466ab4074cc70fd8ef",
+      "conversion": "fontTools 4.67.0; instantiateVariableFont wght=600; English static family/style/full/PostScript names; recalcTimestamp=False",
+      "license": "Assets/StreamingAssets/ThirdPartyLicenses/cinzel-OFL.txt"
+    },
+    {
+      "file": "Alegreya-Regular.ttf",
+      "family": "Alegreya",
+      "weight": 400,
+      "source_url": "https://raw.githubusercontent.com/google/fonts/67bc647ce1910e92f461bcc82aae30f21d21a9cc/ofl/alegreya/Alegreya%5Bwght%5D.ttf",
+      "source_sha256": "ba5564634b93a8f8ba57b48cd4f1ae7417d2b4656fbac779028679b00de3cf12",
+      "sha256": "16fa28707d565b1c215743b212e970ab3e900375b0077ccf1d364f02a9b08948",
+      "conversion": "fontTools 4.67.0; instantiateVariableFont wght=400; English static family/style/full/PostScript names; recalcTimestamp=False",
+      "license": "Assets/StreamingAssets/ThirdPartyLicenses/alegreya-OFL.txt"
+    },
+    {
+      "file": "Alegreya-SemiBold.ttf",
+      "family": "Alegreya",
+      "weight": 600,
+      "source_url": "https://raw.githubusercontent.com/google/fonts/67bc647ce1910e92f461bcc82aae30f21d21a9cc/ofl/alegreya/Alegreya%5Bwght%5D.ttf",
+      "source_sha256": "ba5564634b93a8f8ba57b48cd4f1ae7417d2b4656fbac779028679b00de3cf12",
+      "sha256": "a996050cfcdab1b75d2b5fbd636d48e7453eb966ec0c285df8549547adc5f9f1",
+      "conversion": "fontTools 4.67.0; instantiateVariableFont wght=600; English static family/style/full/PostScript names; recalcTimestamp=False",
+      "license": "Assets/StreamingAssets/ThirdPartyLicenses/alegreya-OFL.txt"
+    }
+  ]
+}

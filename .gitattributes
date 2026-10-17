@@ -1,0 +1,16 @@
+* text=auto
+*.cs text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.unity text eol=lf
+*.asset text eol=lf
+*.meta text eol=lf
+*.unity whitespace=-blank-at-eol
+*.asset whitespace=-blank-at-eol
+*.meta whitespace=-blank-at-eol
+# Preserve the original font license texts, including upstream trailing spaces.
+unity/Wotr.Client/Assets/StreamingAssets/ThirdPartyLicenses/*-OFL.txt whitespace=-blank-at-eol
+*.pdf binary
+*.png binary
+*.jpg binary

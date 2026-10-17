@@ -1,0 +1,56 @@
+[
+  {
+    "id": "fate.fp.character.17",
+    "title": "There and Back Again",
+    "side": "FreePeoples",
+    "eventType": "Character",
+    "deck": "character",
+    "source": "FATE-WOTR018; 17/24 FE; FATE-CARD-SHEET-2AE0D186",
+    "replaces": "base.fp.character.17"
+  },
+  {
+    "id": "fate.fp.strategy.04",
+    "title": "Book of Mazarbul",
+    "side": "FreePeoples",
+    "eventType": "Muster",
+    "deck": "strategy",
+    "source": "FATE-WOTR018; 4/24 FE; FATE-CARD-SHEET-2AE0D186",
+    "replaces": "base.fp.strategy.04"
+  },
+  {
+    "id": "fate.fp.strategy.19",
+    "title": "Bardings",
+    "side": "FreePeoples",
+    "eventType": "Muster",
+    "deck": "strategy",
+    "source": "FATE-WOTR018; 19/24 FE; FATE-CARD-SHEET-2AE0D186",
+    "replaces": "base.fp.strategy.19"
+  },
+  {
+    "id": "fate.fp.strategy.22",
+    "title": "Dwarves of the Iron Hills",
+    "side": "FreePeoples",
+    "eventType": "Muster",
+    "deck": "strategy",
+    "source": "FATE-WOTR018; 22/24 FE; FATE-CARD-SHEET-2AE0D186",
+    "replaces": "base.fp.strategy.22"
+  },
+  {
+    "id": "fate.sh.strategy.20",
+    "title": "Orcs Multiplying Again",
+    "side": "Shadow",
+    "eventType": "Muster",
+    "deck": "strategy",
+    "source": "FATE-WOTR018; 20/24 FE; FATE-CARD-SHEET-2AE0D186",
+    "replaces": "base.sh.strategy.20"
+  },
+  {
+    "id": "fate.sh.strategy.22",
+    "title": "Monsters Roused",
+    "side": "Shadow",
+    "eventType": "Muster",
+    "deck": "strategy",
+    "source": "FATE-WOTR018; 22/24 FE; FATE-CARD-SHEET-2AE0D186",
+    "replaces": "base.sh.strategy.22"
+  }
+]

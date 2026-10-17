@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="24" viewBox="0 0 96 24">
+  <!-- 9-slice parchment tab naming the shown round of a battle report. Slices (points): left/right 10, top/bottom 8. -->
+  <defs>
+    <linearGradient id="round-tab-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--parchment-light)"/>
+      <stop offset="1" style="stop-color: var(--parchment-mid)"/>
+    </linearGradient>
+  </defs>
+  <path d="M8 2 H88 Q94 2 94 8 V22 H2 V8 Q2 2 8 2 Z" fill="url(#round-tab-fill)" style="stroke: var(--card-rim)" stroke-width="1.2"/>
+  <path d="M10 5 H86" fill="none" style="stroke: var(--card-rim)" stroke-width="0.6" opacity="0.5"/>
+</svg>

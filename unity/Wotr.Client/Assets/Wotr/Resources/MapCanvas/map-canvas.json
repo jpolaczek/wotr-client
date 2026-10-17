@@ -1,0 +1,15 @@
+{
+  "version": "map-canvas-1",
+  "map": [
+    1632.0,
+    1338.0
+  ],
+  "margins": {
+    "west": 300.0,
+    "north": 220.0,
+    "east": 200.0,
+    "south": 320.0
+  },
+  "margins_texture": "MapCanvas/margins",
+  "terrain_texture": "MapCanvas/terrain"
+}

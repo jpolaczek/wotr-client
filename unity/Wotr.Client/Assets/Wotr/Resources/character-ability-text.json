@@ -1,0 +1,1067 @@
+{
+  "schemaVersion": 1,
+  "scope": "Public character ability explanations; authority remains the server and reviewed source rules.",
+  "cards": [
+    {
+      "id": "base.character.gimli",
+      "source": "BASE · Gimli 1/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "BASE · Gimli 1/11 (Second Edition)",
+          "sourceDocument": "BASE · Gimli 1/11 (Second Edition); T20"
+        },
+        {
+          "id": "politics-dwarves-at-erebor",
+          "title": "Dwarf of Erebor",
+          "text": "Spend any available Action die while Gimli is in unconquered Erebor to advance the Dwarves Political counter one step toward At War.",
+          "source": "BASE · Gimli 1/11 (Second Edition)",
+          "sourceDocument": "BASE · Gimli 1/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.boromir",
+      "source": "BASE · Boromir 2/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "BASE · Boromir 2/11 (Second Edition)",
+          "sourceDocument": "BASE · Boromir 2/11 (Second Edition); T20"
+        },
+        {
+          "id": "politics-gondor-at-city-or-stronghold",
+          "title": "High Warden of the White Tower",
+          "text": "Spend any available Action die while Boromir is in an unconquered Gondor City or Stronghold to advance the Gondor Political counter one step toward At War.",
+          "source": "BASE · Boromir 2/11 (Second Edition)",
+          "sourceDocument": "BASE · Boromir 2/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.legolas",
+      "source": "BASE · Legolas 3/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "BASE · Legolas 3/11 (Second Edition)",
+          "sourceDocument": "BASE · Legolas 3/11 (Second Edition); T20"
+        },
+        {
+          "id": "politics-elves-at-stronghold",
+          "title": "Prince of Mirkwood",
+          "text": "Spend any available Action die while Legolas is in an unconquered Elven Stronghold to advance the Elves Political counter one step toward At War.",
+          "source": "BASE · Legolas 3/11 (Second Edition)",
+          "sourceDocument": "BASE · Legolas 3/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.gandalf-grey",
+      "source": "BASE · Gandalf the Grey 4/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "guide-draw-after-event-die-card",
+          "title": "Guide",
+          "text": "After an Event card played with an Event die has fully resolved, if Gandalf is the Guide, you may draw one card from the matching deck. Finish all battles and decisions from that event first; Gandalf may have become Guide during the action.",
+          "source": "BASE · Gandalf the Grey 4/11 (Second Edition)",
+          "sourceDocument": "BASE · Gandalf the Grey 4/11 (Second Edition); T20"
+        },
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "BASE · Gandalf the Grey 4/11 (Second Edition)",
+          "sourceDocument": "BASE · Gandalf the Grey 4/11 (Second Edition); T20"
+        },
+        {
+          "id": "may-transform-to-white",
+          "title": "Emissary from the West",
+          "text": "Outside the Fellowship, or after being eliminated, Gandalf the Grey may become Gandalf the White by spending a Will of the West die once a Minion other than the Balrog, Gothmog, the Witch-king — Chief of the Ringwraiths, or any Dark Chieftain has entered play. Replace a surviving Grey in his region; otherwise enter in Fangorn or an unconquered Elven Stronghold, even under siege.",
+          "source": "BASE · Gandalf the Grey 4/11 (Second Edition); LORDS p. 6; KINGS p. 14",
+          "sourceDocument": "BASE · Gandalf the Grey 4/11 (Second Edition); T20; LORDS p. 6; T25"
+        }
+      ]
+    },
+    {
+      "id": "base.character.strider",
+      "source": "BASE · Strider 5/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "guide-hide-with-any-action-die",
+          "title": "Guide",
+          "text": "While Strider is the Guide, you may spend any available Action die to hide a revealed Fellowship.",
+          "source": "BASE · Strider 5/11 (Second Edition)",
+          "sourceDocument": "BASE · Strider 5/11 (Second Edition); T20"
+        },
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "BASE · Strider 5/11 (Second Edition)",
+          "sourceDocument": "BASE · Strider 5/11 (Second Edition); T20"
+        },
+        {
+          "id": "may-transform-to-aragorn",
+          "title": "Heir to Isildur",
+          "text": "Outside the Fellowship, Strider may become Aragorn by spending a Will of the West die in unconquered Minas Tirith, Dol Amroth or Pelargir. Replace his card while keeping the same figure and location.",
+          "source": "BASE · Strider 5/11 (Second Edition)",
+          "sourceDocument": "BASE · Strider 5/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.pippin",
+      "source": "BASE · Peregrin Took 6/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "guide-separate-to-reduce-hunt-one",
+          "title": "Guide",
+          "text": "When the Fellowship takes at least 1 Hunt damage, you may separate this Guide to reduce that damage by 1. Choose the new Guide before resolving the remaining damage. Separation on the Mordor Track removes the Hobbit from play. This cannot reduce damage that must be taken entirely as Corruption.",
+          "source": "BASE · Peregrin Took 6/11 (Second Edition)",
+          "sourceDocument": "BASE · Peregrin Took 6/11 (Second Edition); T20"
+        },
+        {
+          "id": "return-after-fellowship-elimination-except-mordor",
+          "title": "Take Them Alive!",
+          "text": "If eliminated while in the Fellowship, this Hobbit immediately returns to play as a separated Companion. This ability does not apply on the Mordor Track.",
+          "source": "BASE · Peregrin Took 6/11 (Second Edition)",
+          "sourceDocument": "BASE · Peregrin Took 6/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.merry",
+      "source": "BASE · Meriadoc Brandybuck 7/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "guide-separate-to-reduce-hunt-one",
+          "title": "Guide",
+          "text": "When the Fellowship takes at least 1 Hunt damage, you may separate this Guide to reduce that damage by 1. Choose the new Guide before resolving the remaining damage. Separation on the Mordor Track removes the Hobbit from play. This cannot reduce damage that must be taken entirely as Corruption.",
+          "source": "BASE · Meriadoc Brandybuck 7/11 (Second Edition)",
+          "sourceDocument": "BASE · Meriadoc Brandybuck 7/11 (Second Edition); T20"
+        },
+        {
+          "id": "return-after-fellowship-elimination-except-mordor",
+          "title": "Take Them Alive!",
+          "text": "If eliminated while in the Fellowship, this Hobbit immediately returns to play as a separated Companion. This ability does not apply on the Mordor Track.",
+          "source": "BASE · Meriadoc Brandybuck 7/11 (Second Edition)",
+          "sourceDocument": "BASE · Meriadoc Brandybuck 7/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.gandalf-white",
+      "source": "BASE · Gandalf the White 8/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "move-four-alone-or-with-one-hobbit",
+          "title": "Shadowfax",
+          "text": "Gandalf may move up to 4 regions when moving alone or with exactly one Hobbit. With a larger group, use normal Companion movement. His level remains 3 for other purposes.",
+          "source": "BASE · Gandalf the White 8/11 (Second Edition)",
+          "sourceDocument": "BASE · Gandalf the White 8/11 (Second Edition); T20"
+        },
+        {
+          "id": "forfeit-leadership-to-cancel-nazgul-for-battle",
+          "title": "The White Rider",
+          "text": "At the start of a battle, after any Stronghold shelter decision and before Combat cards, you may forfeit Gandalf’s Leadership to cancel the Leadership of all Nazgûl, including the Witch-king, for the entire battle. Their presence and other abilities are unchanged.",
+          "source": "BASE · Gandalf the White 8/11 (Second Edition)",
+          "sourceDocument": "BASE · Gandalf the White 8/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.aragorn",
+      "source": "BASE · Aragorn 9/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "BASE · Aragorn 9/11 (Second Edition)",
+          "sourceDocument": "BASE · Aragorn 9/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.gollum",
+      "source": "BASE · Gollum 10/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "enter-and-guide-when-no-companions",
+          "title": "Guide",
+          "text": "Gollum joins the Fellowship and becomes its Guide when no Companions remain. He is not a Companion.",
+          "source": "BASE · Gollum 10/11 (Second Edition)",
+          "sourceDocument": "BASE · Gollum 10/11 (Second Edition); T20"
+        },
+        {
+          "id": "ignore-standard-numbered-reveal",
+          "title": "Guide · Unseen path",
+          "text": "While Gollum is Guide, ignore the Reveal symbol on standard numbered Hunt tiles. Eye tiles and special Hunt tiles retain their normal effects.",
+          "source": "BASE · Gollum 10/11 (Second Edition)",
+          "sourceDocument": "BASE · Gollum 10/11 (Second Edition); T20"
+        },
+        {
+          "id": "voluntary-reveal-to-reduce-hunt-one",
+          "title": "Guide · Reveal",
+          "text": "If the Fellowship is hidden and is not already required to reveal, you may reveal it in a legal destination to reduce Hunt damage by 1, to a minimum of 0. The usual restrictions on revealing the Fellowship still apply. This cannot reduce damage that must be taken entirely as Corruption.",
+          "source": "BASE · Gollum 10/11 (Second Edition)",
+          "sourceDocument": "BASE · Gollum 10/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.ring-bearers",
+      "source": "BASE · The Ring-bearers 11/11 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "add-gollum-when-no-companions",
+          "title": "Master of the Precious",
+          "text": "When all Companions have left the Fellowship or been eliminated, add Gollum as its Guide.",
+          "source": "BASE · The Ring-bearers 11/11 (Second Edition)",
+          "sourceDocument": "BASE · The Ring-bearers 11/11 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.saruman",
+      "source": "BASE · Saruman 1/3 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "cannot-leave-orthanc",
+          "title": "Bound to Orthanc",
+          "text": "Saruman cannot leave Orthanc, including with an army, during retreat or when advancing after combat. He may still lead an attack from Orthanc.",
+          "source": "BASE · Saruman 1/3 (Second Edition)",
+          "sourceDocument": "BASE · Saruman 1/3 (Second Edition); T20"
+        },
+        {
+          "id": "muster-each-isengard-settlement-or-upgrade-two",
+          "title": "The Voice of Saruman",
+          "text": "While Saruman is in Shadow-controlled Orthanc and is not under siege, spend a Muster die to recruit one Isengard Regular in each available unconquered Isengard Settlement, or replace two Isengard Regulars in Orthanc with Elites. Use available reserves and follow normal recruitment and stacking restrictions; a shortage permits only the replacements possible.",
+          "source": "BASE · Saruman 1/3 (Second Edition)",
+          "sourceDocument": "BASE · Saruman 1/3 (Second Edition); T20"
+        },
+        {
+          "id": "isengard-elites-have-leadership",
+          "title": "Servants of the White Hand",
+          "text": "While Saruman is in play, every Isengard Elite also counts as a Leader for movement and combat. It remains a single army unit.",
+          "source": "BASE · Saruman 1/3 (Second Edition)",
+          "sourceDocument": "BASE · Saruman 1/3 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.mouth-of-sauron",
+      "source": "BASE · The Mouth of Sauron 2/3 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "muster-as-army-once-per-turn",
+          "title": "Messenger of the Dark Tower",
+          "text": "Once per turn, you may use a Muster die as an Army die: move up to two armies, make an attack or play an Army Event card. Spend the selected die as the cost of that action.",
+          "source": "BASE · The Mouth of Sauron 2/3 (Second Edition)",
+          "sourceDocument": "BASE · The Mouth of Sauron 2/3 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "base.character.witch-king",
+      "source": "BASE · The Witch-king 3/3 (Second Edition); T20",
+      "abilities": [
+        {
+          "id": "entry-activates-all-free-peoples",
+          "title": "Terror on entering play",
+          "text": "When the Witch-king enters play, activate all Free Peoples Nations.",
+          "source": "BASE · The Witch-king 3/3 (Second Edition)",
+          "sourceDocument": "BASE · The Witch-king 3/3 (Second Edition); T20"
+        },
+        {
+          "id": "draw-after-first-round-combat-card",
+          "title": "Sorcerer",
+          "text": "After the first combat round resolves, if the Witch-king is still participating and you played a Combat card in that round, you may draw one card from the matching deck. A cancelled Combat card still counts as played. Finish any round continuation or retreat decisions before drawing.",
+          "source": "BASE · The Witch-king 3/3 (Second Edition)",
+          "sourceDocument": "BASE · The Witch-king 3/3 (Second Edition); T20"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.elrond",
+      "source": "LORDS · LM 1/10; pp. 16–17; T25",
+      "abilities": [
+        {
+          "id": "vilya",
+          "title": "Vilya",
+          "text": "After a paid action fully resolves, you may give the Vilya Ring to the Shadow to keep the just-used Action die and its result available. You cannot keep a Will of the West result. A die used to move the Fellowship does not enter the Hunt box when kept this way. Elrond must still be in play.",
+          "source": "LORDS · LM 1/10; pp. 16–17",
+          "sourceDocument": "LORDS · LM 1/10; pp. 16–17; T25; T24"
+        },
+        {
+          "id": "household-of-elrond",
+          "title": "Household of Elrond",
+          "text": "Elven Elites in Elrond’s region also count as Leaders for all combat purposes. This does not grant Leadership for movement; an Elite downgraded to a Regular immediately loses the benefit.",
+          "source": "LORDS · LM 1/10; pp. 16–17",
+          "sourceDocument": "LORDS · LM 1/10; pp. 16–17; T25"
+        },
+        {
+          "id": "combat-card-level-three",
+          "title": "Combat-card level",
+          "text": "Treat Elrond as level 3 when resolving Combat card effects. His normal level remains 0.",
+          "source": "LORDS · LM 1/10; pp. 16–17",
+          "sourceDocument": "LORDS · LM 1/10; pp. 16–17; T25"
+        },
+        {
+          "id": "cannot-leave-rivendell",
+          "title": "Bound to Rivendell",
+          "text": "Elrond cannot leave Rivendell, even with an army. Remove him from play if the Shadow conquers Rivendell.",
+          "source": "LORDS · LM 1/10; pp. 16–17",
+          "sourceDocument": "LORDS · LM 1/10; pp. 16–17; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.galadriel",
+      "source": "LORDS · LM 2/10; pp. 18–19; T25",
+      "abilities": [
+        {
+          "id": "nenya",
+          "title": "Nenya",
+          "text": "Immediately after drawing a standard Eye Hunt tile, you may give the Nenya Ring to the Shadow to cancel the tile, remove it for the rest of the game and draw a replacement. This does not cancel a numbered tile or a special Eye tile.",
+          "source": "LORDS · LM 2/10; pp. 18–19",
+          "sourceDocument": "LORDS · LM 2/10; pp. 18–19; T25; T24"
+        },
+        {
+          "id": "valour-of-the-elven-people",
+          "title": "Valour of the Elven People",
+          "text": "You may recruit in Lórien while it is under siege. The usual recruitment costs, political requirements, reserves and stacking limits still apply; this does not allow recruitment after the Shadow conquers Lórien.",
+          "source": "LORDS · LM 2/10; pp. 18–19",
+          "sourceDocument": "LORDS · LM 2/10; pp. 18–19; T25"
+        },
+        {
+          "id": "combat-card-level-three",
+          "title": "Combat-card level",
+          "text": "Treat Galadriel as level 3 when resolving Combat card effects. Her normal level remains 0.",
+          "source": "LORDS · LM 2/10; pp. 18–19",
+          "sourceDocument": "LORDS · LM 2/10; pp. 18–19; T25"
+        },
+        {
+          "id": "cannot-leave-lorien",
+          "title": "Bound to Lórien",
+          "text": "Galadriel cannot leave Lórien, even with an army. Remove her from play if the Shadow conquers Lórien.",
+          "source": "LORDS · LM 2/10; pp. 18–19",
+          "sourceDocument": "LORDS · LM 2/10; pp. 18–19; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.gandalf-grey",
+      "source": "LORDS · LM 3/10; pp. 19–20; T25",
+      "abilities": [
+        {
+          "id": "narya",
+          "title": "Narya",
+          "text": "While Gandalf is outside the Fellowship in an unconquered Free Peoples Settlement, give the Narya Ring to the Shadow and spend any available Action die to activate that Settlement’s Nation and move its Political counter directly to At War.",
+          "source": "LORDS · LM 3/10; pp. 19–20",
+          "sourceDocument": "LORDS · LM 3/10; pp. 19–20; T25; T24"
+        },
+        {
+          "id": "guide-conditional-narya-die",
+          "title": "Guide · Narya die",
+          "text": "Add the Narya die at Recover only if Gandalf is Guide and at least one Free Peoples movement die is recovered from the Hunt box. A Keeper Eye alone does not qualify. If he starts the game as Guide, add Narya in turn 1; choosing him later in the Fellowship phase does not add it that turn.",
+          "source": "LORDS · LM 3/10; pp. 19–20",
+          "sourceDocument": "LORDS · LM 3/10; pp. 19–20; T25; T24"
+        },
+        {
+          "id": "may-transform-to-white",
+          "title": "Emissary from the West",
+          "text": "Outside the Fellowship, or after being eliminated, Gandalf the Grey may become Gandalf the White by spending a Will of the West die once a Minion other than the Balrog, Gothmog, the Witch-king — Chief of the Ringwraiths, or any Dark Chieftain has entered play. Replace a surviving Grey in his region; otherwise enter in Fangorn or an unconquered Elven Stronghold, even under siege.",
+          "source": "LORDS · LM 3/10; pp. 19–20; LORDS p. 6; KINGS p. 14",
+          "sourceDocument": "LORDS · LM 3/10; pp. 19–20; T25; LORDS p. 6; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.smeagol",
+      "source": "LORDS · LM 4/10; pp. 21–22; T25",
+      "abilities": [
+        {
+          "id": "always-guide",
+          "title": "Guide",
+          "text": "The first Sméagol tile adds Sméagol as the mandatory Guide if Gollum has never entered play and Sméagol has not previously been removed. That tile, and later Sméagol tiles drawn while he is present, cause no damage and are permanently removed. This effect occurs before Mithril Coat and Sting can cancel the tile.",
+          "source": "LORDS · LM 4/10; pp. 21–22",
+          "sourceDocument": "LORDS · LM 4/10; pp. 21–22; T25"
+        },
+        {
+          "id": "level-of-highest-other-companion",
+          "title": "Level X",
+          "text": "Sméagol’s level equals the highest level of another Companion in the Fellowship. He counts as a Companion for Hunt allocation and may be chosen as a Hunt casualty. He never becomes an army character, has no Leadership and does not count as Gollum for card effects.",
+          "source": "LORDS · LM 4/10; pp. 21–22",
+          "sourceDocument": "LORDS · LM 4/10; pp. 21–22; T25"
+        },
+        {
+          "id": "smeagol-departure",
+          "title": "Departure",
+          "text": "Remove Sméagol if he separates, is eliminated, or the Fellowship declares in an unconquered Free Peoples City or Stronghold. Place We Shall Get It on the table; if he becomes the only Companion, he instead leaves immediately and is replaced by Gollum without placing the event. Forced Reveal alone does not trigger departure. Sméagol cannot return; discard and redraw any later Sméagol tile.",
+          "source": "LORDS · LM 4/10; pp. 21–22; LORDS FAQ 1.2 p. 3",
+          "sourceDocument": "LORDS · LM 4/10; pp. 21–22; T25; LORDS FAQ 1.2 p. 3"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.balrog",
+      "source": "LORDS · LM 1/5; pp. 23–25; T25",
+      "abilities": [
+        {
+          "id": "fire-and-shadow",
+          "title": "Fire and Shadow",
+          "text": "After the Fellowship declares or reveals along a route entering, leaving, passing through or remaining in the Balrog’s region, draw an additional Hunt tile before any Stronghold Hunt tile and ignore its Reveal effect. An Eye eliminates the Balrog and the Guide; if Gollum is Guide, discard that Eye instead and eliminate neither.",
+          "source": "LORDS · LM 1/5; pp. 23–25",
+          "sourceDocument": "LORDS · LM 1/5; pp. 23–25; T25"
+        },
+        {
+          "id": "flame-of-udun",
+          "title": "Flame of Udûn",
+          "text": "While participating in a battle, the Balrog adds 2 to the Combat Strength of the Shadow army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 1/5; pp. 23–25",
+          "sourceDocument": "LORDS · LM 1/5; pp. 23–25; T25"
+        },
+        {
+          "id": "balrog-activation",
+          "title": "Activation",
+          "text": "A Use Balrog result or A Balrog is Come! activates him, raising his level from 0 to 2 without moving him. When already active, Use Balrog permits one army move, one army attack or movement of the Balrog alone. Free Peoples may deactivate him with Will of the West, or with Character if Gandalf is in his region: in Moria he becomes inactive; elsewhere he is eliminated.",
+          "source": "LORDS · LM 1/5; pp. 23–25",
+          "sourceDocument": "LORDS · LM 1/5; pp. 23–25; T25"
+        },
+        {
+          "id": "not-minion-for-gandalf-white",
+          "title": "Gandalf the White entry",
+          "text": "This character does not count as a Minion for the condition that allows Gandalf the White to enter play.",
+          "source": "LORDS · LM 1/5; pp. 23–25",
+          "sourceDocument": "LORDS · LM 1/5; pp. 23–25; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.gothmog",
+      "source": "LORDS · LM 2/5; pp. 25–26; T25",
+      "abilities": [
+        {
+          "id": "fling-them-into-the-fray",
+          "title": "Fling Them into the Fray",
+          "text": "While Gothmog is with a Shadow army in a free region, spend a Muster die to recruit one Sauron Regular or replace one Sauron Regular there with an Elite, using available reserves. The region may contain a Stronghold besieged by his army, but Gothmog cannot use this ability while his own army is under siege.",
+          "source": "LORDS · LM 2/5; pp. 25–26",
+          "sourceDocument": "LORDS · LM 2/5; pp. 25–26; T25"
+        },
+        {
+          "id": "not-minion-for-gandalf-white",
+          "title": "Gandalf the White entry",
+          "text": "This character does not count as a Minion for the condition that allows Gandalf the White to enter play.",
+          "source": "LORDS · LM 2/5; pp. 25–26",
+          "sourceDocument": "LORDS · LM 2/5; pp. 25–26; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.mouth-of-sauron",
+      "source": "LORDS · LM 3/5; pp. 27; T25",
+      "abilities": [
+        {
+          "id": "evil-knowledge",
+          "title": "Evil Knowledge",
+          "text": "When the Mouth is with a besieging army, you may extend a siege assault by one round without reducing an Elite to a Regular. Use this at most once during the entire action; further rounds require the normal cost.",
+          "source": "LORDS · LM 3/5; pp. 27",
+          "sourceDocument": "LORDS · LM 3/5; pp. 27; T25"
+        },
+        {
+          "id": "great-sorcery",
+          "title": "Great Sorcery",
+          "text": "Once per turn, while the Mouth is with a Shadow army, you may use a Muster die as a Character die to move or attack with that specific army. It cannot pay for an Event card or an action by another army.",
+          "source": "LORDS · LM 3/5; pp. 27",
+          "sourceDocument": "LORDS · LM 3/5; pp. 27; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.witch-king",
+      "source": "LORDS · LM 4/5; pp. 28–29; T25",
+      "abilities": [
+        {
+          "id": "spear-of-terror",
+          "title": "Spear of Terror",
+          "text": "When the Witch-king is in the Fellowship’s region and you play a Shadow Character Event, you may immediately draw a Character Event card, before resolving the played event. With The Palantír of Orthanc, draw at most one card in total; declining this immediate draw leaves the Palantír’s later draw available.",
+          "source": "LORDS · LM 4/5; pp. 28–29",
+          "sourceDocument": "LORDS · LM 4/5; pp. 28–29; T25"
+        },
+        {
+          "id": "he-sees-he-knows",
+          "title": "He Sees, He Knows",
+          "text": "After the Fellowship declares in a region without an unconquered Free Peoples Stronghold, you may immediately move the Witch-king to that region without spending an action. A forced Reveal does not trigger this ability.",
+          "source": "LORDS · LM 4/5; pp. 28–29",
+          "sourceDocument": "LORDS · LM 4/5; pp. 28–29; T25"
+        },
+        {
+          "id": "not-minion-for-gandalf-white",
+          "title": "Gandalf the White entry",
+          "text": "This character does not count as a Minion for the condition that allows Gandalf the White to enter play.",
+          "source": "LORDS · LM 4/5; pp. 28–29",
+          "sourceDocument": "LORDS · LM 4/5; pp. 28–29; T25"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.boromir",
+      "source": "LORDS · LM 5/10; pp. 30–31; T26",
+      "abilities": [
+        {
+          "id": "guide-separate-to-reduce-hunt-one",
+          "title": "Guide",
+          "text": "During a Hunt, you may separate this Guide to reduce the damage by 1, to a minimum of 0; you may do so even when no damage remains. Companions separated from the same Hunt tile travel as one group before the Fellowship is revealed. This cannot reduce damage that must be taken entirely as Corruption.",
+          "source": "LORDS · LM 5/10; pp. 30–31; LORDS FAQ 1.2 p. 3",
+          "sourceDocument": "LORDS · LM 5/10; pp. 30–31; T26; LORDS FAQ 1.2 p. 3"
+        },
+        {
+          "id": "champion-gondor",
+          "title": "Champion",
+          "text": "While participating in a battle whose defending army is in a Gondor region or Osgiliath, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 5/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 5/10; pp. 30–31; T26"
+        },
+        {
+          "id": "messenger-gondor",
+          "title": "Messenger",
+          "text": "Spend any available Action die while Boromir is in a Gondor City or Stronghold to activate Gondor and advance its Political counter one step toward At War. The Settlement need not be unconquered.",
+          "source": "LORDS · LM 5/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 5/10; pp. 30–31; T26"
+        },
+        {
+          "id": "movement-level-two",
+          "title": "Movement level",
+          "text": "Treat this Companion as level 2 for movement only. The printed level of 1 still applies to Hunt damage and other effects, including Combat cards.",
+          "source": "LORDS · LM 5/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 5/10; pp. 30–31; T26"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.gimli",
+      "source": "LORDS · LM 6/10; pp. 30–31; T26",
+      "abilities": [
+        {
+          "id": "guide-separate-to-reduce-hunt-one",
+          "title": "Guide",
+          "text": "During a Hunt, you may separate this Guide to reduce the damage by 1, to a minimum of 0; you may do so even when no damage remains. Companions separated from the same Hunt tile travel as one group before the Fellowship is revealed. This cannot reduce damage that must be taken entirely as Corruption.",
+          "source": "LORDS · LM 6/10; pp. 30–31; LORDS FAQ 1.2 p. 3",
+          "sourceDocument": "LORDS · LM 6/10; pp. 30–31; T26; LORDS FAQ 1.2 p. 3"
+        },
+        {
+          "id": "champion-dwarves",
+          "title": "Champion",
+          "text": "While participating in a battle whose defending army is in a Dwarven region, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 6/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 6/10; pp. 30–31; T26"
+        },
+        {
+          "id": "messenger-dwarves",
+          "title": "Messenger",
+          "text": "Spend any available Action die while Gimli is in Erebor to activate the Dwarves and advance their Political counter one step toward At War. Erebor need not be unconquered.",
+          "source": "LORDS · LM 6/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 6/10; pp. 30–31; T26"
+        },
+        {
+          "id": "movement-level-two",
+          "title": "Movement level",
+          "text": "Treat this Companion as level 2 for movement only. The printed level of 1 still applies to Hunt damage and other effects, including Combat cards.",
+          "source": "LORDS · LM 6/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 6/10; pp. 30–31; T26"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.legolas",
+      "source": "LORDS · LM 7/10; pp. 30–31; T26",
+      "abilities": [
+        {
+          "id": "guide-separate-to-reduce-hunt-one",
+          "title": "Guide",
+          "text": "During a Hunt, you may separate this Guide to reduce the damage by 1, to a minimum of 0; you may do so even when no damage remains. Companions separated from the same Hunt tile travel as one group before the Fellowship is revealed. This cannot reduce damage that must be taken entirely as Corruption.",
+          "source": "LORDS · LM 7/10; pp. 30–31; LORDS FAQ 1.2 p. 3",
+          "sourceDocument": "LORDS · LM 7/10; pp. 30–31; T26; LORDS FAQ 1.2 p. 3"
+        },
+        {
+          "id": "champion-elves",
+          "title": "Champion",
+          "text": "While participating in a battle whose defending army is in an Elven region, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 7/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 7/10; pp. 30–31; T26"
+        },
+        {
+          "id": "prince-of-mirkwood",
+          "title": "Prince of Mirkwood",
+          "text": "Spend any available Action die while Legolas is in an Elven Stronghold to advance the Elves Political counter one step toward At War. The Stronghold need not be unconquered. This ability does not itself activate the Elves; normal activation from his Elven Nation icon applies separately.",
+          "source": "LORDS · LM 7/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 7/10; pp. 30–31; T26"
+        },
+        {
+          "id": "movement-level-two",
+          "title": "Movement level",
+          "text": "Treat this Companion as level 2 for movement only. The printed level of 1 still applies to Hunt damage and other effects, including Combat cards.",
+          "source": "LORDS · LM 7/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 7/10; pp. 30–31; T26"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.merry",
+      "source": "LORDS · LM 8/10; pp. 30–31; T26",
+      "abilities": [
+        {
+          "id": "guide-cancel-standard-hunt",
+          "title": "Guide",
+          "text": "While this Hobbit is Guide, and both Merry and Pippin are in the Fellowship as Hobbits of the Shire, you may eliminate both to cancel a standard Hunt tile, including its Eye or Reveal effect. This cannot cancel a special tile; Art of Disappearing does not apply to this elimination.",
+          "source": "LORDS · LM 8/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 8/10; pp. 30–31; T26"
+        },
+        {
+          "id": "champion-north",
+          "title": "Champion of the Shire",
+          "text": "While participating in a battle whose defending army is in a North region, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 8/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 8/10; pp. 30–31; T26"
+        },
+        {
+          "id": "art-of-disappearing",
+          "title": "Art of Disappearing",
+          "text": "After being eliminated in a battle, this Hobbit immediately returns to a region adjacent to the region of his army. Follow normal Companion movement restrictions: do not cross an impassable border or enter a besieged Stronghold. Choose each returning Hobbit’s destination separately.",
+          "source": "LORDS · LM 8/10; pp. 30–31; LORDS FAQ 1.2 p. 3",
+          "sourceDocument": "LORDS · LM 8/10; pp. 30–31; T26; LORDS FAQ 1.2 p. 3"
+        },
+        {
+          "id": "messenger-north",
+          "title": "Messenger of Elrond",
+          "text": "Spend any available Action die while this Hobbit is in a North City to activate the North and advance its Political counter one step toward At War. This ability does not require the City to be unconquered.",
+          "source": "LORDS · LM 8/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 8/10; pp. 30–31; T26"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.pippin",
+      "source": "LORDS · LM 9/10; pp. 30–31; T26",
+      "abilities": [
+        {
+          "id": "guide-cancel-standard-hunt",
+          "title": "Guide",
+          "text": "While this Hobbit is Guide, and both Merry and Pippin are in the Fellowship as Hobbits of the Shire, you may eliminate both to cancel a standard Hunt tile, including its Eye or Reveal effect. This cannot cancel a special tile; Art of Disappearing does not apply to this elimination.",
+          "source": "LORDS · LM 9/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 9/10; pp. 30–31; T26"
+        },
+        {
+          "id": "champion-north",
+          "title": "Champion of the Shire",
+          "text": "While participating in a battle whose defending army is in a North region, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 9/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 9/10; pp. 30–31; T26"
+        },
+        {
+          "id": "art-of-disappearing",
+          "title": "Art of Disappearing",
+          "text": "After being eliminated in a battle, this Hobbit immediately returns to a region adjacent to the region of his army. Follow normal Companion movement restrictions: do not cross an impassable border or enter a besieged Stronghold. Choose each returning Hobbit’s destination separately.",
+          "source": "LORDS · LM 9/10; pp. 30–31; LORDS FAQ 1.2 p. 3",
+          "sourceDocument": "LORDS · LM 9/10; pp. 30–31; T26; LORDS FAQ 1.2 p. 3"
+        },
+        {
+          "id": "messenger-north",
+          "title": "Messenger of Elrond",
+          "text": "Spend any available Action die while this Hobbit is in a North City to activate the North and advance its Political counter one step toward At War. This ability does not require the City to be unconquered.",
+          "source": "LORDS · LM 9/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 9/10; pp. 30–31; T26"
+        }
+      ]
+    },
+    {
+      "id": "lords.character.strider",
+      "source": "LORDS · LM 10/10; pp. 30–31; T26",
+      "abilities": [
+        {
+          "id": "guide-first-move-to-fellowship-box",
+          "title": "Guide",
+          "text": "If Strider is Guide and the Fellowship’s progress is at least 1 when its first movement of the turn begins, place that movement die in the Fellowship box instead of the Hunt box. Resolve the Hunt normally. Recover the die next turn; it does not qualify as a die recovered from Hunt for Narya.",
+          "source": "LORDS · LM 10/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 10/10; pp. 30–31; T26"
+        },
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "While participating in a battle, add 1 to the Combat Strength of the Free Peoples army, up to the limit of 5 Combat dice.",
+          "source": "LORDS · LM 10/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 10/10; pp. 30–31; T26"
+        },
+        {
+          "id": "may-transform-to-aragorn",
+          "title": "Heir to Isildur",
+          "text": "Outside the Fellowship, Strider may become Aragorn by spending a Will of the West die in unconquered Minas Tirith, Dol Amroth or Pelargir. Replace his card while keeping the same figure and location.",
+          "source": "LORDS · LM 10/10; pp. 30–31",
+          "sourceDocument": "LORDS · LM 10/10; pp. 30–31; T26"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.brand.awakened",
+      "source": "docs/sources/kings-character-index.json (kings.character.brand.awakened), card front KM 1/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "heir-of-bard",
+          "title": "Heir of Bard",
+          "text": "Once per battle, when Brand and a North Army unit participate, you may replace your played Combat card effect after cards are revealed. Cancel the Shadow Combat card effect at initiative 0. Your card must be legal and still counts as played.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 1/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.brand.awakened].abilities[heir-of-bard]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.brand.awakened), card front KM 1/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "call-to-arms",
+          "title": "Call to Arms",
+          "text": "With the North At War, spend a Ruler Muster result or Will of the West. Recruit one North Regular or Leader in each of two different free North Settlements, then one North Regular or Leader in Brand’s free region. Use available reserves; this ability does not recruit Elites.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 1/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.brand.awakened].abilities[call-to-arms]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.brand.awakened), card front KM 1/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.brand.corrupted",
+      "source": "docs/sources/kings-character-index.json (kings.character.brand.corrupted), card front KM 2/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "corrupted-ruler",
+          "title": "Corrupted ruler",
+          "text": "North Leaders and Elites cannot be recruited anywhere, except by Event effects. Corrupted Brand cannot move, awaken or participate in battle, and does not die with an army. A Companion with the North or Free Peoples icon in his region may remove him by spending a Character result; removal ends both weaknesses.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 2/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.brand.corrupted].abilities[corrupted-ruler]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.brand.corrupted), card front KM 2/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "shadows-in-the-north",
+          "title": "Shadows in the North",
+          "text": "Once per battle involving a North Army unit, Shadow may replace its played Combat card effect after cards are revealed. Cancel the Free Peoples Combat card effect at initiative 0. Brand need not be in the battle region. The Shadow card must be legal and still counts as played.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 2/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.brand.corrupted].abilities[shadows-in-the-north]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.brand.corrupted), card front KM 2/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.dain.awakened",
+      "source": "docs/sources/kings-character-index.json (kings.character.dain.awakened), card front KM 3/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "dwarvenking",
+          "title": "Dwarvenking",
+          "text": "When the Dwarves are At War and Dáin is in Erebor, spend a Muster result to replace one Dwarven Regular in his army with an Elite. This works during a siege. Return the Regular to reserves; an Elite must be available.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 3/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.dain.awakened].abilities[dwarvenking]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.dain.awakened), card front KM 3/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "iron-guard",
+          "title": "Iron Guard",
+          "text": "With the Dwarves At War, spend a Ruler Muster result or Will of the West. Recruit one Dwarven Regular or Elite in Dáin’s region if it is free or besieged, then one Dwarven Regular or Leader in a different free Dwarven Settlement. Use available reserves.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 3/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.dain.awakened].abilities[iron-guard]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.dain.awakened), card front KM 3/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.dain.corrupted",
+      "source": "docs/sources/kings-character-index.json (kings.character.dain.corrupted), card front KM 4/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "corrupted-ruler",
+          "title": "Corrupted ruler",
+          "text": "Leaders and Elites cannot be recruited in Erebor, except by Event effects. Corrupted Dáin cannot move, awaken or participate in battle, and does not die with an army. A Companion with the Dwarves or Free Peoples icon in his region may remove him by spending a Character result; removal ends both weaknesses.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 4/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.dain.corrupted].abilities[corrupted-ruler]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.dain.corrupted), card front KM 4/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "fate-of-the-lonely-mountain",
+          "title": "Fate of the Lonely Mountain",
+          "text": "Once per siege battle at Erebor, Shadow may extend its assault for one more round by eliminating one participating Shadow Regular instead of reducing an Elite. Other assault requirements still apply.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 4/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.dain.corrupted].abilities[fate-of-the-lonely-mountain]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.dain.corrupted), card front KM 4/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.denethor.awakened",
+      "source": "docs/sources/kings-character-index.json (kings.character.denethor.awakened), card front KM 5/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "stewardship",
+          "title": "Stewardship",
+          "text": "When Gondor is At War and Denethor is in Minas Tirith, spend a Muster result to replace one Gondor Regular in his army with an Elite. This works during a siege. Return the Regular to reserves; an Elite must be available.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 5/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.denethor.awakened].abilities[stewardship]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.denethor.awakened), card front KM 5/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "palantir-of-anarion",
+          "title": "Palantír of Anárion",
+          "text": "While Denethor is in Minas Tirith, use a Ruler Event result or Will of the West to draw or play an Event card. After that action has fully resolved, you may draw one additional card from either Event deck. An ordinary Event die does not grant this extra draw.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 5/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.denethor.awakened].abilities[palantir-of-anarion]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.denethor.awakened), card front KM 5/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.denethor.corrupted",
+      "source": "docs/sources/kings-character-index.json (kings.character.denethor.corrupted), card front KM 6/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "corrupted-ruler",
+          "title": "Corrupted ruler",
+          "text": "Leaders and Elites cannot be recruited in Minas Tirith, except by Event effects. Corrupted Denethor cannot move, awaken or participate in battle, and does not die with an army. A Companion with the Gondor or Free Peoples icon in his region may remove him by spending a Character result; removal ends both weaknesses.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 6/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.denethor.corrupted].abilities[corrupted-ruler]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.denethor.corrupted), card front KM 6/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "fate-of-the-white-tower",
+          "title": "Fate of the White Tower",
+          "text": "Once per siege battle at Minas Tirith, Shadow may extend its assault for one more round by eliminating one participating Shadow Regular instead of reducing an Elite. Other assault requirements still apply.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 6/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.denethor.corrupted].abilities[fate-of-the-white-tower]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.denethor.corrupted), card front KM 6/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.theoden.awakened",
+      "source": "docs/sources/kings-character-index.json (kings.character.theoden.awakened), card front KM 7/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "forth-eorlingas",
+          "title": "Forth, Eorlingas!",
+          "text": "Théoden has Leadership 3 in the first round of each battle and Leadership 1 in later rounds. This is not a Combat card replacement and does not require you to give up a card effect.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 7/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.theoden.awakened].abilities[forth-eorlingas]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.theoden.awakened), card front KM 7/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "mustering-of-the-mark",
+          "title": "Mustering of the Mark",
+          "text": "With Rohan At War, spend a Ruler Muster result or Will of the West. Recruit one Rohan Regular or Leader in each of two different free Rohan Settlements, then one Rohan Regular or Leader in Théoden’s free region. Use available reserves; this ability does not recruit Elites.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 7/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.theoden.awakened].abilities[mustering-of-the-mark]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.theoden.awakened), card front KM 7/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.theoden.corrupted",
+      "source": "docs/sources/kings-character-index.json (kings.character.theoden.corrupted), card front KM 8/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "corrupted-ruler",
+          "title": "Corrupted ruler",
+          "text": "Leaders and Elites cannot be recruited in regions of Rohan, except by Event effects. This restriction follows the region, not the unit’s nation. Corrupted Théoden cannot move, awaken or die with an army. A Companion with the Rohan or Free Peoples icon in his region may remove him by spending a Character result; removal ends both weaknesses.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 8/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.theoden.corrupted].abilities[corrupted-ruler]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.theoden.corrupted), card front KM 8/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "mark-of-the-white-hand",
+          "title": "Mark of the White Hand",
+          "text": "While Shadow controls Helm’s Deep, treat it as an Isengard Stronghold. It still counts as a conquered Free Peoples Stronghold for Shadow victory points. Removing corrupted Théoden immediately ends this change.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 8/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.theoden.corrupted].abilities[mark-of-the-white-hand]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.theoden.corrupted), card front KM 8/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.thranduil.awakened",
+      "source": "docs/sources/kings-character-index.json (kings.character.thranduil.awakened), card front KM 9/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "elvenking",
+          "title": "Elvenking",
+          "text": "When the Elves are At War and Thranduil is in Woodland Realm, spend a Muster result to replace one Elven Regular in his army with an Elite. This works during a siege. Return the Regular to reserves; an Elite must be available.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 9/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.thranduil.awakened].abilities[elvenking]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.thranduil.awakened), card front KM 9/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "far-sighted",
+          "title": "Far-sighted",
+          "text": "While the Fellowship is off the Mordor Track, spend a Ruler Character result or Will of the West. Choose one: move the Fellowship with one fewer Hunt die, to a minimum of one; or move or separate Companions with one extra region of range. Normal route restrictions apply. This does not change Hunt success numbers or re-rolls.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 9/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.thranduil.awakened].abilities[far-sighted]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.thranduil.awakened), card front KM 9/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.thranduil.corrupted",
+      "source": "docs/sources/kings-character-index.json (kings.character.thranduil.corrupted), card front KM 10/10; KINGS pp. 7,8,9,10,11,12,13",
+      "abilities": [
+        {
+          "id": "corrupted-ruler",
+          "title": "Corrupted ruler",
+          "text": "Elites cannot be recruited in Woodland Realm, except by Event effects; Leaders remain allowed. Corrupted Thranduil cannot move, awaken or participate in battle, and does not die with an army. A Companion with the Elves or Free Peoples icon in his region may remove him by spending a Character result; removal ends both weaknesses.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 10/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.thranduil.corrupted].abilities[corrupted-ruler]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.thranduil.corrupted), card front KM 10/10; KINGS pp. 7,8,9,10,11,12,13"
+        },
+        {
+          "id": "fate-of-mirkwood",
+          "title": "Fate of Mirkwood",
+          "text": "Once per siege battle at Woodland Realm, Shadow may extend its assault for one more round by eliminating one participating Shadow Regular instead of reducing an Elite. Other assault requirements still apply.",
+          "source": "KINGS pp. 7,8,9,10,11,12,13 · KM 10/10",
+          "verification": "content/kings-sovereign-implementation-manifest.json: cards[kings.character.thranduil.corrupted].abilities[fate-of-mirkwood]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.thranduil.corrupted), card front KM 10/10; KINGS pp. 7,8,9,10,11,12,13"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.black-serpent",
+      "source": "docs/sources/kings-character-index.json (kings.character.black-serpent), card front KM 1/3; KINGS pp. 7,14,15",
+      "abilities": [
+        {
+          "id": "red-wrath",
+          "title": "Red Wrath",
+          "text": "When the Black Serpent participates in battle, before revealing cards you may replace your legal Combat card effect and suffer one hit on your army. At initiative 3, add 1 to all Shadow Combat rolls this round, or 2 if the replaced card is Relentless Assault. This does not modify Leader re-rolls. Your card still counts as played; cancelling the replacement does not refund the hit.",
+          "source": "KINGS pp. 7,14,15 · KM 1/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.black-serpent].abilities[red-wrath]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.black-serpent), card front KM 1/3; KINGS pp. 7,14,15"
+        },
+        {
+          "id": "not-minion-for-gandalf-white",
+          "title": "Dark Chieftain",
+          "text": "This character is a Minion for normal rules and effects, but its entry does not fulfil Gandalf the White’s Minion requirement. It moves by non-flying Minion routes, respecting impassable borders and stronghold restrictions. A living Dark Chieftain provides the shared Shadow Ruler die at Recover, not an immediate extra die.",
+          "source": "KINGS pp. 7,14,15 · KM 1/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.black-serpent].abilities[not-minion-for-gandalf-white]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.black-serpent), card front KM 1/3; KINGS pp. 7,14,15"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.shadow-of-mirkwood",
+      "source": "docs/sources/kings-character-index.json (kings.character.shadow-of-mirkwood), card front KM 2/3; KINGS pp. 7,14,15",
+      "abilities": [
+        {
+          "id": "lord-of-the-bats",
+          "title": "Lord of the Bats",
+          "text": "When the Shadow of Mirkwood participates in battle, before revealing cards you may replace your legal Combat card effect and forfeit this character’s Leadership. At initiative 4, add 1 to all Shadow Leader re-rolls this round. If the replaced card is Swarm of Bats, also cancel the Free Peoples card effect at initiative 0. Remaining Leadership is still required for re-rolls; your card still counts as played.",
+          "source": "KINGS pp. 7,14,15 · KM 2/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.shadow-of-mirkwood].abilities[lord-of-the-bats]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.shadow-of-mirkwood), card front KM 2/3; KINGS pp. 7,14,15"
+        },
+        {
+          "id": "not-minion-for-gandalf-white",
+          "title": "Dark Chieftain",
+          "text": "This character is a Minion for normal rules and effects, but its entry does not fulfil Gandalf the White’s Minion requirement. It moves by non-flying Minion routes, respecting impassable borders and stronghold restrictions. A living Dark Chieftain provides the shared Shadow Ruler die at Recover, not an immediate extra die.",
+          "source": "KINGS pp. 7,14,15 · KM 2/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.shadow-of-mirkwood].abilities[not-minion-for-gandalf-white]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.shadow-of-mirkwood), card front KM 2/3; KINGS pp. 7,14,15"
+        }
+      ]
+    },
+    {
+      "id": "kings.character.ugluk",
+      "source": "docs/sources/kings-character-index.json (kings.character.ugluk), card front KM 3/3; KINGS pp. 7,14,15",
+      "abilities": [
+        {
+          "id": "i-command",
+          "title": "I Command",
+          "text": "When Uglúk participates in battle, before revealing cards you may replace your legal Combat card effect. At initiative 3, add 1 to both armies’ Combat rolls and Leader re-rolls this round. If the replaced card is Desperate Battle, only Shadow receives the bonus. Your card still counts as played and the replacement can be cancelled normally.",
+          "source": "KINGS pp. 7,14,15 · KM 3/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.ugluk].abilities[i-command]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.ugluk), card front KM 3/3; KINGS pp. 7,14,15"
+        },
+        {
+          "id": "we-march-day-and-night",
+          "title": "We March Day and Night",
+          "text": "When Uglúk is in the Fellowship’s region or an adjacent region, add 1 to every Shadow Hunt re-roll die. This also works while the Fellowship is hidden. It does not grant a re-roll or modify the initial Hunt roll.",
+          "source": "KINGS pp. 7,14,15 · KM 3/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.ugluk].abilities[we-march-day-and-night]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.ugluk), card front KM 3/3; KINGS pp. 7,14,15"
+        },
+        {
+          "id": "not-minion-for-gandalf-white",
+          "title": "Dark Chieftain",
+          "text": "This character is a Minion for normal rules and effects, but its entry does not fulfil Gandalf the White’s Minion requirement. It moves by non-flying Minion routes, respecting impassable borders and stronghold restrictions. A living Dark Chieftain provides the shared Shadow Ruler die at Recover, not an immediate extra die.",
+          "source": "KINGS pp. 7,14,15 · KM 3/3",
+          "verification": "content/kings-chieftain-implementation-manifest.json: cards[kings.character.ugluk].abilities[not-minion-for-gandalf-white]",
+          "sourceDocument": "docs/sources/kings-character-index.json (kings.character.ugluk), card front KM 3/3; KINGS pp. 7,14,15"
+        }
+      ]
+    },
+    {
+      "id": "fate.character.gimli",
+      "source": "docs/sources/fate-index.json (fate.character.gimli), card front 1/11 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3",
+      "abilities": [
+        {
+          "id": "combat-strength-plus-one",
+          "title": "Captain of the West",
+          "text": "When Gimli participates in a battle, increase his Free Peoples army’s Combat Strength by 1. The Combat roll is still limited to five dice. This is not extra Leadership or a bonus to die results.",
+          "source": "FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3 · 1/11 FE",
+          "verification": "content/fate-character-implementation-manifest.json: cards[fate.character.gimli].abilities[combat-strength-plus-one]",
+          "sourceDocument": "docs/sources/fate-index.json (fate.character.gimli), card front 1/11 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3"
+        },
+        {
+          "id": "politics-dwarves-at-fate-homelands",
+          "title": "Dwarf of Renown",
+          "text": "In Iron Hills or Ered Luin, spend any available Action die result to advance the Dwarves one step on the Political Track. This does not activate the nation and normal political limits still apply. The region need not be unconquered; Erebor does not qualify.",
+          "source": "FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3 · 1/11 FE",
+          "verification": "content/fate-character-implementation-manifest.json: cards[fate.character.gimli].abilities[politics-dwarves-at-fate-homelands]",
+          "sourceDocument": "docs/sources/fate-index.json (fate.character.gimli), card front 1/11 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3"
+        }
+      ]
+    },
+    {
+      "id": "fate.character.gimli-dwarven-lord",
+      "source": "docs/sources/fate-index.json (fate.character.gimli-dwarven-lord), card front LM 6/10 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3",
+      "abilities": [
+        {
+          "id": "guide-separate-to-reduce-hunt-one",
+          "title": "Guide",
+          "text": "During a Hunt, you may separate Gimli while he is the Guide to reduce Hunt damage by 1, to a minimum of zero. This may be used at zero damage, but not against damage that must be taken entirely as Corruption. Companions separated against the same tile form one group; changing the Guide is a separate decision.",
+          "source": "FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3 · LM 6/10 FE",
+          "verification": "content/fate-character-implementation-manifest.json: cards[fate.character.gimli-dwarven-lord].abilities[guide-separate-to-reduce-hunt-one]",
+          "sourceDocument": "docs/sources/fate-index.json (fate.character.gimli-dwarven-lord), card front LM 6/10 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3"
+        },
+        {
+          "id": "champion-dwarves",
+          "title": "Dwarven Champion",
+          "text": "When Gimli participates in a battle whose defending army is in a Dwarven region, add 1 to the Free Peoples army’s Combat Strength, still limited to five Combat dice. This works whether Free Peoples attacks or defends. Use the current Fate board: Erebor belongs to Sauron and does not qualify.",
+          "source": "FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3 · LM 6/10 FE",
+          "verification": "content/fate-character-implementation-manifest.json: cards[fate.character.gimli-dwarven-lord].abilities[champion-dwarves]",
+          "sourceDocument": "docs/sources/fate-index.json (fate.character.gimli-dwarven-lord), card front LM 6/10 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3"
+        },
+        {
+          "id": "messenger-dwarves",
+          "title": "Messenger of Elrond",
+          "text": "In Iron Hills or Ered Luin, spend any available Action die result to activate the Dwarves and advance them one step on the Political Track. The region need not be unconquered; Erebor does not qualify. This ability does not give Gimli a Dwarven nation icon.",
+          "source": "FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3 · LM 6/10 FE",
+          "verification": "content/fate-character-implementation-manifest.json: cards[fate.character.gimli-dwarven-lord].abilities[messenger-dwarves]",
+          "sourceDocument": "docs/sources/fate-index.json (fate.character.gimli-dwarven-lord), card front LM 6/10 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3"
+        },
+        {
+          "id": "movement-level-two",
+          "title": "Movement level",
+          "text": "Treat Gimli’s Level as 2 only for movement. His printed Level remains 1 for Hunt casualties and Combat card effects. This version has no nation icon. With Council, its starting homelands are Iron Hills or Ered Luin, not Erebor.",
+          "source": "FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3 · LM 6/10 FE",
+          "verification": "content/fate-character-implementation-manifest.json: cards[fate.character.gimli-dwarven-lord].abilities[movement-level-two]",
+          "sourceDocument": "docs/sources/fate-index.json (fate.character.gimli-dwarven-lord), card front LM 6/10 FE; FATE Collector’s Edition pp.45–46; WOTR018 rules, Lords paragraph; LORDS pp.30–31 and FAQ 1.2 p.3"
+        }
+      ]
+    }
+  ]
+}

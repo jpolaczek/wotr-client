@@ -1,0 +1,11 @@
+WoTR client fonts
+
+Cinzel SemiBold
+Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)
+License: SIL Open Font License 1.1; full text in cinzel-OFL.txt.
+
+Alegreya Regular and SemiBold
+Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya)
+License: SIL Open Font License 1.1; full text in alegreya-OFL.txt.
+
+The bundled TTFs are static weight instances of these open source font projects.

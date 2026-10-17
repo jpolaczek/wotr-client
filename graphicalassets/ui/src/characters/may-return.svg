@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-139: Removed, but a new version may come into play: a rising sun. -->
+  <g filter="url(#lift)">
+    <path d="M7 22 A9 9 0 0 1 25 22 Z" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.8"/>
+    <path d="M16 5 V9.4 M6.2 9.2 L9.2 12.2 M25.8 9.2 L22.8 12.2 M2.8 18 H6.8 M25.2 18 H29.2" style="stroke: var(--gilt-edge)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M16 5 V9.4 M6.2 9.2 L9.2 12.2 M25.8 9.2 L22.8 12.2 M2.8 18 H6.8 M25.2 18 H29.2" stroke="url(#gilt)" stroke-width="1.8" stroke-linecap="round"/>
+    <rect x="3" y="23.4" width="26" height="3" rx="1.4" style="fill: var(--ink)" opacity="0.75"/>
+  </g>
+</svg>

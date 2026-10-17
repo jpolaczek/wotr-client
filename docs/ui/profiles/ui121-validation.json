@@ -1,0 +1,67 @@
+{
+  "task": "UI-121",
+  "recorded_at_utc": "2026-10-13T17:02:13Z",
+  "client_commit": "612656d",
+  "scope": "Illustrated battle window UI-114–UI-120 and press feedback; offline presentation profile, no server commands",
+  "reports": {
+    "pack1": ".artifacts/ui121b/pack1.xml (29/30, pre-existing BattleReportNetworkTests failure)",
+    "pack2": ".artifacts/ui121b/pack2.xml (49/49)",
+    "editmode": ".artifacts/ui120/editmode2.xml (672/672)",
+    "builds": ".artifacts/ui120/build-mac.log, build-win.log (Success)",
+    "dev_build": ".artifacts/ui121b/build-dev-mac.log (Success)"
+  },
+  "player_measurements": {
+    "report": "docs/ui/profiles/ui121-macos-board.json",
+    "sha256": "746520d6f39c0cc5cadd57736a294eee402567e90326a8ae6b16610a4ff4e122",
+    "recorded_at": "2026-10-13T17:00:26.383717Z",
+    "suite": "board",
+    "workloads": 40,
+    "warmup_frames": 120,
+    "sample_frames": 360,
+    "interactions_per_workload": 24,
+    "minimum_fps": 102.23255075854149,
+    "maximum_handler_ms": 7.3678,
+    "maximum_to_render_ms": 12.2609,
+    "menu_battle": [
+      {
+        "layout": "1366x768@1.0",
+        "fps": 108.76,
+        "max_to_render_ms": 6.4056,
+        "max_handler_ms": 5.0786
+      },
+      {
+        "layout": "1366x768@1.25",
+        "fps": 105.19,
+        "max_to_render_ms": 6.3688,
+        "max_handler_ms": 4.262
+      },
+      {
+        "layout": "1920x1080@1.0",
+        "fps": 109.85,
+        "max_to_render_ms": 4.1487,
+        "max_handler_ms": 2.9584
+      },
+      {
+        "layout": "1920x1080@1.25",
+        "fps": 105.37,
+        "max_to_render_ms": 7.0828,
+        "max_handler_ms": 5.3223
+      }
+    ],
+    "hardware": {
+      "CPU": "Apple M1 Pro",
+      "GPU": "Apple M1 Pro",
+      "MemoryMB": 16384,
+      "OS": "Mac OS X 15.6.1",
+      "Unity": "6000.6.0f1",
+      "GraphicsAPI": "Metal",
+      "Platform": "OSXPlayer"
+    }
+  },
+  "legacy_suite": "Not accepted: the historical legacy suite stops at hunt-report (control hunt-report-previous has no bounds in the compact Hunt panel since UI-109); unrelated to the battle window, see .artifacts/ui121b/legacy-profile.log",
+  "limits": [
+    "Feedback ≤100 ms and ≥60 FPS satisfied by the board suite on the recorded hardware; render-end excludes display/input hardware latency",
+    "Windows runtime, Intel Mac and a manual match remain untested",
+    "Portraits and scenes are vector placeholders; prompts kept for painted replacements"
+  ]
+}

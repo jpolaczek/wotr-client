@@ -1,0 +1,217 @@
+{
+  "version": "figures-v3",
+  "model": "gpt-image-1.5",
+  "size": "1024x1024",
+  "quality": "medium",
+  "background": "transparent",
+  "styles": {
+    "unit": "A single hand-painted tabletop wargame miniature for a Tolkien-inspired strategy board game, shown full body from a slightly elevated three-quarter front view. The ENTIRE miniature is visible, including weapon tips, banner tops and feet or hooves, with a wide empty margin on every side: the miniature fills only about three quarters of the image height and never touches the edges. Isolated on a fully transparent background: no base, no pedestal, no ground, no cast shadow, no scenery. Painted resin miniature look with a crisp, chunky silhouette that stays readable at very small size, rich but slightly muted colours, soft even lighting, fine painted detail. No text, letters, numbers or frame. Subject: ",
+    "character": "A single hand-painted tabletop wargame miniature of a named hero for a Tolkien-inspired strategy board game, shown full body from a slightly elevated three-quarter front view, in the same painted resin style as the army miniatures. An original character design only loosely inspired by classic fantasy film costumes, not resembling any real actor. The ENTIRE miniature is visible with a wide empty margin on every side: it fills only about three quarters of the image height and never touches the edges. Isolated on a fully transparent background: no base, no pedestal, no ground, no cast shadow, no scenery. Crisp, distinctive silhouette readable at very small size, rich but slightly muted colours, soft even lighting. No text, letters, numbers or frame. Subject: ",
+    "portrait": "A painted head-and-shoulders portrait bust for a small circular game medallion, in a painterly oil-painting style with warm candlelit lighting and a dark warm brown background vignette. An original character design only loosely inspired by classic fantasy film costumes, not resembling any real actor. The face and the most recognisable attribute are large, centred and clearly readable at very small size; head and shoulders fill the central circle of the square image. The painting fills the entire square edge to edge with the dark background; no circle, vignette frame or white area. No text, letters, numbers, frame or border. Subject: "
+  },
+  "items": {
+    "gondor-regular": [
+      "unit",
+      "a regular foot soldier of Gondor: steel open-faced helm, dark blue tabard over mail, long spear, tall dark blue shield with a small white tree."
+    ],
+    "gondor-elite": [
+      "unit",
+      "an elite knight of Gondor riding an armoured grey warhorse at the charge: gleaming silver plate armour, plain dark blue surcoat with only a small white tree emblem and no writing, tall helm with small white wings, couched lance with a dark blue pennon. Clearly larger and grander than a foot soldier."
+    ],
+    "gondor-leader": [
+      "unit",
+      "a captain of Gondor on foot holding a tall standard: a black banner with a white tree beneath seven small stars, ornate silver armour, long dark blue cloak, sword at the hip."
+    ],
+    "rohan-regular": [
+      "unit",
+      "a regular foot soldier of Rohan: conical steel helm with cheek guards, dark green cloak, leather and mail, long spear, round dark green and gold shield with a horse motif."
+    ],
+    "rohan-elite": [
+      "unit",
+      "an elite Rider of Rohan galloping on a chestnut horse: helm with a long white horsehair crest, dark green cloak flying, scale mail, raised spear, round dark green shield with a golden horse. Clearly larger than a foot soldier."
+    ],
+    "rohan-leader": [
+      "unit",
+      "a marshal of Rohan on foot holding a tall dark green banner with a white running horse, gilded helm with a long horsetail crest, gold-trimmed mail, sword at the hip."
+    ],
+    "elves-regular": [
+      "unit",
+      "an elven archer: slender warrior with long fair hair in light green and silver, light scale armour, drawing a long elegant curved bow, quiver at the back."
+    ],
+    "elves-elite": [
+      "unit",
+      "an elite elven guard: tall warrior in gleaming golden plate armour with a high crested helm, long light green and gold cloak, wielding a long elegant glaive held across the body. Taller, heavier and far more ornate than an archer."
+    ],
+    "elves-leader": [
+      "unit",
+      "an elven lord holding a tall silver banner with a white eight-pointed star on light green, flowing silver robes over golden armour, slender sword at the hip."
+    ],
+    "dwarves-regular": [
+      "unit",
+      "a dwarf warrior: short and stocky, braided beard, iron helm, mail coat, brown and bronze clothing, round iron shield and a single-bladed axe."
+    ],
+    "dwarves-elite": [
+      "unit",
+      "an elite dwarf: broad and massive, armoured from head to toe in dark steel plate with a full face-mask helm and bronze trim, brown cloak, holding a huge two-handed war mattock. Clearly heavier and more armoured than a regular dwarf."
+    ],
+    "dwarves-leader": [
+      "unit",
+      "a dwarf lord with a tall crested helm and a long forked beard, holding a tall brown banner with a golden hammer and anvil, rich bronze and gold armour."
+    ],
+    "north-regular": [
+      "unit",
+      "a bowman of Dale: simple steel cap, light blue hood and tunic, brown leather jerkin, longbow and quiver."
+    ],
+    "north-elite": [
+      "unit",
+      "an elite Ranger of the North: tall grim warrior in a weathered light blue-grey hooded cloak over dark mail, silver star brooch, longsword drawn and a dark round shield. Taller and more battle-hardened than a bowman."
+    ],
+    "north-leader": [
+      "unit",
+      "a lord of Dale holding a tall light blue banner with a black arrow and a golden bird, fine mail with a light blue surcoat and a fur-trimmed cloak."
+    ],
+    "sauron-regular": [
+      "unit",
+      "a small, lean, hunched orc of Mordor: wiry grey-green body, crude scraps of black iron armour and red rags, small round shield painted with a red lidless eye, jagged scimitar. A light, scrawny foot soldier, much smaller and thinner than a troll."
+    ],
+    "sauron-elite": [
+      "unit",
+      "a huge armoured war troll of Mordor: hulking grey stony body in heavy black iron plates with red markings, swinging an enormous spiked hammer. It towers over orcs and is far bigger than any foot soldier."
+    ],
+    "sauron-nazgul": [
+      "unit",
+      "a ringwraith: black-robed rider with a ragged black cloak and an empty dark hood, raising a long pale blade, riding a rearing black horse."
+    ],
+    "isengard-regular": [
+      "unit",
+      "an Uruk-hai of Isengard: tall muscular dark orc warrior in black armour with yellow-ochre trim, a white hand painted on the face and on a tall black shield, heavy notched sword."
+    ],
+    "isengard-elite": [
+      "unit",
+      "an elite warg rider of Isengard: an orc rider with a raised spear on a huge snarling grey-brown wolf, yellow-ochre and black war gear with a white hand emblem, dynamic and menacing. Much larger than a foot Uruk-hai."
+    ],
+    "southrons-regular": [
+      "unit",
+      "a warrior of the far south: veiled warrior in orange and crimson robes with bronze scale armour, golden ornaments, long spear and a round painted shield."
+    ],
+    "southrons-elite": [
+      "unit",
+      "a colossal war oliphaunt (mumak) of the far south: enormous elephant with four great tusks, orange and crimson war paint and hangings, a wooden war tower with small banners on its back and a tiny spearman riding it. Huge, heavy and imposing."
+    ],
+    "gandalf-grey": [
+      "character",
+      "an old grey wizard: tall pointed grey hat, long grey robes and a silver scarf, long white beard, gnarled wooden staff in one hand and a sword at his belt"
+    ],
+    "gandalf-grey-portrait": [
+      "portrait",
+      "an old grey wizard with a long white beard and a battered tall pointed grey hat, kind but stern eyes"
+    ],
+    "strider": [
+      "character",
+      "a weathered ranger: dark green-brown hooded cloak over worn leathers, stubbled face, long dark hair, longsword drawn"
+    ],
+    "strider-portrait": [
+      "portrait",
+      "a weathered ranger in his forties with a lean weather-beaten face, a thin white scar across one eyebrow, greying temples in dark wavy hair tied back, short grizzled beard, hood down, dark green-brown cloak, watchful grey eyes"
+    ],
+    "boromir": [
+      "character",
+      "a proud warrior of Gondor: fur-trimmed red-brown cloak, mail and leather, round shield with a white tree, longsword, a large horn at his side"
+    ],
+    "boromir-portrait": [
+      "portrait",
+      "a proud broad-faced warrior of Gondor with a full dark-auburn beard and thick wavy hair, strong jaw, fur-trimmed cloak, a large horn on his shoulder strap, steady proud gaze"
+    ],
+    "legolas": [
+      "character",
+      "an elf prince archer: long straight blond hair, green and grey tunic, elegant longbow drawn, two long knives on his back"
+    ],
+    "legolas-portrait": [
+      "portrait",
+      "an elf prince with sharp angular features, high cheekbones, very long silver-blond hair worn in two thin side braids with a small leaf circlet, green and grey tunic, bow over the shoulder, calm keen eyes"
+    ],
+    "gimli": [
+      "character",
+      "a stout dwarf warrior: large braided red beard, iron helm, heavy mail and leather, big double-bladed axe"
+    ],
+    "gimli-portrait": [
+      "portrait",
+      "a stout dwarf with a large braided red beard and an iron helm, fierce eyes"
+    ],
+    "merry": [
+      "character",
+      "a young hobbit with curly brown hair and bare hairy feet, grey-green elven cloak with a leaf brooch, small sword, dark green Rohan-style tunic"
+    ],
+    "merry-portrait": [
+      "portrait",
+      "a young hobbit with a round freckled face, short tousled chestnut hair, a snub nose and bright brown eyes, grey-green elven cloak with a green leaf brooch, mischievous grin"
+    ],
+    "pippin": [
+      "character",
+      "a young hobbit with curly light-brown hair and bare hairy feet, grey elven cloak with a leaf brooch, small sword, black and silver tunic of Gondor"
+    ],
+    "pippin-portrait": [
+      "portrait",
+      "a young hobbit with a narrow cheeky face, wild sandy-blond curls, big hazel eyes and a gap-toothed grin, black and silver tunic with a small white tree"
+    ],
+    "gandalf-white": [
+      "character",
+      "a radiant white wizard: long white robes, long white beard and hair, white staff, faint glowing light around him"
+    ],
+    "gandalf-white-portrait": [
+      "portrait",
+      "a radiant white wizard with long white hair and beard, white robes, faint glowing light around the head"
+    ],
+    "aragorn": [
+      "character",
+      "a king returned: dark armour with a silver tree emblem, long royal cloak, raising a gleaming reforged longsword, simple silver circlet"
+    ],
+    "aragorn-portrait": [
+      "portrait",
+      "a regal king with shoulder-length dark hair and short beard, simple silver circlet, dark armour with a silver tree"
+    ],
+    "gollum": [
+      "character",
+      "a gaunt pale crouching creature on all fours: large pale luminous eyes, a few strands of hair, thin limbs, a ragged loincloth"
+    ],
+    "gollum-portrait": [
+      "portrait",
+      "a gaunt pale creature with huge pale luminous eyes, a few strands of hair, sunken cheeks"
+    ],
+    "ring-bearers": [
+      "character",
+      "two small hobbits travelling together: one with dark curly hair in a grey elven cloak holding a softly glowing glass vial, one stout and sandy-haired with a heavy pack and a frying pan, both barefoot"
+    ],
+    "ring-bearers-portrait": [
+      "portrait",
+      "two hobbits side by side: a pale slender one with short black curls, large serious blue-grey eyes and a grey elven cloak, a small golden ring on a chain at his neck; and a sturdy round-faced companion with short straw-coloured hair and a brown waistcoat"
+    ],
+    "saruman": [
+      "character",
+      "a tall white wizard turned traitor: white robes with a faint iridescent sheen, long white beard, black staff with a pointed white tip, cold and stern"
+    ],
+    "saruman-portrait": [
+      "portrait",
+      "a tall cold wizard with a long white beard and hair, white robes with an iridescent sheen, a black staff behind"
+    ],
+    "mouth-of-sauron": [
+      "character",
+      "a sinister emissary of the Dark Lord: tall figure in black robes and armour with a heavy black helm covering the eyes and forehead, only a grotesque wide grinning mouth visible, holding a black staff"
+    ],
+    "mouth-of-sauron-portrait": [
+      "portrait",
+      "a sinister emissary in a heavy black helm covering the eyes, only a grotesque wide grinning mouth with bad teeth visible"
+    ],
+    "witch-king": [
+      "character",
+      "the lord of the ringwraiths: tall black-robed wraith with a spiked iron crown over an empty dark hood, wielding a flail and a long sword, ragged black cloak"
+    ],
+    "witch-king-portrait": [
+      "portrait",
+      "a terrifying wraith king: spiked iron crown floating over an empty black hood, faint cold light where the face should be"
+    ]
+  },
+  "backgrounds": {
+    "portrait": "opaque"
+  }
+}

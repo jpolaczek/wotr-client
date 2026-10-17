@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Army or Muster result: a banner beside a sword. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="army-muster-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M7.6 4.6 V29" fill="none" style="stroke: var(--ink)" stroke-width="3.4"/>
+    <path d="M7.6 4.6 V29" fill="none" style="stroke: var(--gilt-light)" stroke-width="1.4"/>
+    <circle cx="7.6" cy="3.6" r="1.9" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="1"/>
+    <path d="M8.9 5.6 H19.8 L17 10.6 L19.8 15.6 H8.9 Z" fill="url(#army-muster-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M23.6 4 L25.3 6.8 L25.3 20.6 L21.9 20.6 L21.9 6.8 Z" fill="url(#army-muster-ivory)" style="stroke: var(--ink)" stroke-width="1.3"/>
+    <rect x="19" y="20.4" width="9.2" height="2.5" rx="1.2" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="1"/>
+    <rect x="22.5" y="22.7" width="2.2" height="4" style="fill: var(--gilt-shadow); stroke: var(--ink)" stroke-width="0.9"/>
+    <circle cx="23.6" cy="28" r="1.6" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="0.9"/>
+  </g>
+</svg>

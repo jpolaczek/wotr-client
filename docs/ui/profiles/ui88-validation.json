@@ -1,0 +1,145 @@
+{
+  "task": "UI-88",
+  "date": "2026-10-10",
+  "commits": {
+    "implementation": "074683b"
+  },
+  "reports": {
+    "editor_hunt": {
+      "report": ".artifacts/ui88/editor-hunt1.xml",
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "c582b4864c15d46cdbe475dfa588b1b63a2e21182879fa885455f70908ff3ba8"
+    },
+    "editor_full": {
+      "report": ".artifacts/ui88/editor-full.xml",
+      "total": 615,
+      "passed": 615,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "1143edf763edc7ff7c2c6a917d85b58fcdba71a049cd682e1612d5f703aa841c"
+    },
+    "play_first_grouped_run": {
+      "report": ".artifacts/ui88/play-hunt1.xml",
+      "total": 26,
+      "passed": 12,
+      "failed": 14,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipGuideNetworkTests.CouncilVersionAppearsToTheOpponentOnlyAfterChoosingItsGuide",
+        "Wotr.PlayTests.FellowshipGuideNetworkTests.FinishPhaseKeepsTheGuideEvenAfterOpeningTheChoice",
+        "Wotr.PlayTests.FellowshipGuideNetworkTests.GuideModeRequiresAnExplicitChoiceAndRecoversOnlyOneCommand",
+        "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+        "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+        "Wotr.PlayTests.HuntNetworkTests.LegalZeroAllocationRollsWithoutChoosingAnyDie",
+        "Wotr.PlayTests.HuntNetworkTests.SeveralDiceAllocateByClicksAndDragWithOneRecoverableCommand",
+        "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt",
+        "Wotr.PlayTests.NetworkTests.TwoIndependentSessionsUseRealServerAndRecoverLobbyAndMap",
+        "Wotr.PlayTests.T22TurnNetworkTests.FellowshipCanContinueWithAnExplicitEmptyHuntAllocation",
+        "Wotr.PlayTests.T22TurnNetworkTests.LegalPassChangesActorWithoutSpendingADie",
+        "Wotr.PlayTests.T22TurnNetworkTests.RecoveredFellowshipDieRequiresAnExplicitHuntDieBeforeRolling",
+        "Wotr.PlayTests.T22TurnNetworkTests.RingChangesChosenDieThenPoliticsSpendsThatExactCost",
+        "Wotr.PlayTests.T23FullGameNetworkTests.NormalLobbySetupReachesAFinalResultOnTwoClientsWithProductionRandomness"
+      ],
+      "sha256": "a408344369adb040239e6164b3e01ebb9b62a435b7a159e65236cf644dbcc51e"
+    },
+    "baseline_hunt_520aa1b": {
+      "report": ".artifacts/ui88/baseline-HuntNetworkTests.xml",
+      "total": 7,
+      "passed": 2,
+      "failed": 5,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+        "Wotr.PlayTests.HuntNetworkTests.ExactDiceAllocateByClicksAndDragWithOneRecoverableCommand",
+        "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+        "Wotr.PlayTests.HuntNetworkTests.LegalZeroAllocationRollsWithoutChoosingAnyDie",
+        "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+      ],
+      "sha256": "40cdf993e371e02e20609629cbfcd8a83504fbf97675158c69e0419229c2f7ee"
+    },
+    "baseline_guide_520aa1b": {
+      "report": ".artifacts/ui88/baseline-FellowshipGuideNetworkTests.xml",
+      "total": 5,
+      "passed": 2,
+      "failed": 3,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipGuideNetworkTests.CouncilVersionAppearsToTheOpponentOnlyAfterChoosingItsGuide",
+        "Wotr.PlayTests.FellowshipGuideNetworkTests.FinishPhaseKeepsTheGuideEvenAfterOpeningTheChoice",
+        "Wotr.PlayTests.FellowshipGuideNetworkTests.GuideModeRequiresAnExplicitChoiceAndRecoversOnlyOneCommand"
+      ],
+      "sha256": "4a73bfdd721c47b91910ea7de66dd1d373319489c0576623a4b5d1e88fdab34e"
+    },
+    "play_HuntNetworkTests": {
+      "report": ".artifacts/ui88/play2-HuntNetworkTests.xml",
+      "total": 7,
+      "passed": 4,
+      "failed": 3,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+        "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+        "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+      ],
+      "sha256": "0d570a6f0993314f23673ab166376c40afda50ab29bdf7eefd1f3322d7811072"
+    },
+    "play_T22TurnNetworkTests": {
+      "report": ".artifacts/ui88/play2-T22TurnNetworkTests.xml",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "c61cafa8aa73f04ff2cbdfbbff774e7352e5f281b7702cfb4815ff499d3eb66e"
+    },
+    "play_NetworkTests": {
+      "report": ".artifacts/ui88/play2-NetworkTests.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "256be6c1d0a845f4a3d2e0b3d7d4a104e42bc10e91f66486b5f8641f30723e6d"
+    },
+    "play_T23FullGameNetworkTests": {
+      "report": ".artifacts/ui88/play2-T23FullGameNetworkTests.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "7e14c8199de8a9af35def36f99762a7acb6bbd7b7b2aea1ac668a6710a3791bb"
+    }
+  },
+  "notes": {
+    "play_first_grouped_run": "9 failures were HTTP 429 TooManyRequests at login (20/min auth limit); rerun per class with a fresh server process.",
+    "pre_existing": "HuntNetworkTests Miss/KeepRoll/NoDice and 3 FellowshipGuideNetworkTests fail identically on 520aa1b (UI-85 docked Hunt/Fellowship).",
+    "smoke_title": "Smoke ran with bundle id com.wotr.ui88.smoke but window title 'War of the Ring UI87 Smoke' (copied script); script fixed afterwards."
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "inputs_sha256": "7b8d7275d7741d2e23e5987476b06457e23740d166ec83e8e85857a88596e881",
+      "repository_commit_at_build": "074683bdbda99c7c2653c99cbb726cb80254af1a",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui88/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui88/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui88/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    },
+    "BuildLocalWindows": {
+      "inputs_sha256": "7b8d7275d7741d2e23e5987476b06457e23740d166ec83e8e85857a88596e881",
+      "repository_commit_at_build": "074683bdbda99c7c2653c99cbb726cb80254af1a",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui88/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows"
+    }
+  },
+  "smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui88.smoke",
+    "original_profile_byte_identical": true,
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 851
+  }
+}

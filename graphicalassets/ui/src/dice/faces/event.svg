@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Event result: a sealed scroll. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="event-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="8.4" y="7" width="15.2" height="18" fill="url(#event-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <rect x="6.2" y="4.2" width="19.6" height="4.4" rx="2.2" fill="url(#event-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <rect x="6.2" y="23.4" width="19.6" height="4.4" rx="2.2" fill="url(#event-ivory)" style="stroke: var(--ink)" stroke-width="1.4"/>
+    <path d="M11.6 12 H20.4 M11.6 15.4 H20.4 M11.6 18.8 H17.2" fill="none" style="stroke: var(--ink)" stroke-width="1.1" opacity="0.7"/>
+    <circle cx="20.6" cy="20.2" r="2.4" style="fill: var(--wax); stroke: var(--ink)" stroke-width="0.9"/>
+  </g>
+</svg>

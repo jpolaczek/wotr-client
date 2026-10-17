@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Southrons and Easterlings: a coiled red serpent. -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 28 C2.6 24.4 5.2 17 11.8 17.6 C18.4 18.2 23.4 14.6 21 9.2 C19.6 6 15 5.8 13.4 8.6" stroke="#2a0704" stroke-width="5.4"/>
+    <path d="M8 28 C2.6 24.4 5.2 17 11.8 17.6 C18.4 18.2 23.4 14.6 21 9.2 C19.6 6 15 5.8 13.4 8.6" stroke="url(#emblem-ember)" stroke-width="3.6"/>
+    <path d="M13.8 8.4 L9.4 7.4 L11.6 11.4 Z" fill="url(#emblem-ember)" stroke="#2a0704" stroke-width="0.8"/>
+    <circle cx="12.2" cy="8.8" r="0.6" fill="#fff3c4" stroke="none"/>
+    <path d="M9.6 8.6 L7 8.2 M9.6 8.6 L7.4 10" stroke="#c9302c" stroke-width="0.6"/>
+  </g>
+</svg>

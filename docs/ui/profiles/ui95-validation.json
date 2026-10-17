@@ -1,0 +1,128 @@
+{
+ "task": "UI-95",
+ "date": "2026-10-11",
+ "commits": {
+  "implementation": "9259d6c"
+ },
+ "reports": {
+  "base-f1": {
+   "report": ".artifacts/ui95/base-f1.xml",
+   "total": 6,
+   "passed": 5,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection"
+   ],
+   "sha256": "c1ad3b0f9d575489c2af1235dceef0930b5a0df4470270c4dc935d488c40be2b"
+  },
+  "base-f2": {
+   "report": ".artifacts/ui95/base-f2.xml",
+   "total": 11,
+   "passed": 8,
+   "failed": 3,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.FellowshipGuideNetworkTests.CouncilVersionAppearsToTheOpponentOnlyAfterChoosingItsGuide",
+    "Wotr.PlayTests.FellowshipGuideNetworkTests.FinishPhaseKeepsTheGuideEvenAfterOpeningTheChoice",
+    "Wotr.PlayTests.FellowshipGuideNetworkTests.GuideModeRequiresAnExplicitChoiceAndRecoversOnlyOneCommand"
+   ],
+   "sha256": "dcdbd73507b180be93e092c847a9357f28f24085a3cd26de719cb5f95f115f7e"
+  },
+  "base-f3": {
+   "report": ".artifacts/ui95/base-f3.xml",
+   "total": 5,
+   "passed": 4,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.FellowshipNetworkTests.DeclarationMovementSeparationAndIndependentGroupsUseTheServer"
+   ],
+   "sha256": "51eab518d8857466b1bf36a99e6b8ae2b8c0b568de796a39eab9a30ab5818884"
+  },
+  "motion1": {
+   "report": ".artifacts/ui95/motion1.xml",
+   "total": 1,
+   "passed": 1,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "9fade8f934d6b2f2e1babb2dad630574c27ec2e12be68c8daf17c5c0134af654"
+  },
+  "reg1-f1": {
+   "report": ".artifacts/ui95/reg1-f1.xml",
+   "total": 7,
+   "passed": 6,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection"
+   ],
+   "sha256": "60d2b4e5cf7bf23a98dbc996f9cf0f1db2c518b756a66e86006a10bbae884b69"
+  },
+  "reg1-f2": {
+   "report": ".artifacts/ui95/reg1-f2.xml",
+   "total": 11,
+   "passed": 8,
+   "failed": 3,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.FellowshipGuideNetworkTests.CouncilVersionAppearsToTheOpponentOnlyAfterChoosingItsGuide",
+    "Wotr.PlayTests.FellowshipGuideNetworkTests.FinishPhaseKeepsTheGuideEvenAfterOpeningTheChoice",
+    "Wotr.PlayTests.FellowshipGuideNetworkTests.GuideModeRequiresAnExplicitChoiceAndRecoversOnlyOneCommand"
+   ],
+   "sha256": "1141ad10ef61ce75cbf29ede9c36fa719d5ff3b9d6668d864cdf522625e9088d"
+  },
+  "reg1-f3": {
+   "report": ".artifacts/ui95/reg1-f3.xml",
+   "total": 5,
+   "passed": 4,
+   "failed": 1,
+   "skipped": 0,
+   "failed_tests": [
+    "Wotr.PlayTests.FellowshipNetworkTests.DeclarationMovementSeparationAndIndependentGroupsUseTheServer"
+   ],
+   "sha256": "7c773e11ebb43ad4d84957f281f7b2932f946b63c0ee3c73ab74af84e1c47d52"
+  },
+  "editor-full": {
+   "report": ".artifacts/ui95/editor-full.xml",
+   "total": 619,
+   "passed": 619,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "5dabe229c8dcc93ddf297308bb25be40be25272d97317b0ad342f8c5c764d698"
+  }
+ },
+ "builds": {
+  "BuildLocalMac": {
+   "repository_commit_at_build": "9259d6c35766aa5a6b9489bcef3fb9c4ebc9625a",
+   "development": false,
+   "inputs": 954,
+   "tracked_inputs": 942,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  },
+  "BuildLocalWindows": {
+   "repository_commit_at_build": "9259d6c35766aa5a6b9489bcef3fb9c4ebc9625a",
+   "development": false,
+   "inputs": 954,
+   "tracked_inputs": 942,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  }
+ },
+ "notes": {
+  "baseline": "base-* at df691f7 (HEAD before UI-95); FellowshipMotionNetworkTests is new in reg1-f1.",
+  "motion1": "First run of the new declaration test: the Fellowship flight already existed for consecutive projections; the track marker glide is new.",
+  "pre_existing": "FellowshipTrackLayout public summary clipping, FellowshipGuide pending-receipt reopening (x3) and FellowshipNetwork declaration assertion match the baseline exactly."
+ },
+ "smoke": {
+  "result": "PASS",
+  "application_identity": "com.wotr.ui95.smoke",
+  "original_profile_byte_identical": true,
+  "runtime_matches_main_build": true,
+  "runtime_files_checked": 880,
+  "development": false
+ }
+}

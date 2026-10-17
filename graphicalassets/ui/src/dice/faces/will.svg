@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Will of the West result: an eight-pointed star. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="will-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M16.00 2.80 L17.38 12.67 L22.22 9.78 L19.33 14.62 L29.20 16.00 L19.33 17.38 L22.22 22.22 L17.38 19.33 L16.00 29.20 L14.62 19.33 L9.78 22.22 L12.67 17.38 L2.80 16.00 L12.67 14.62 L9.78 9.78 L14.62 12.67 Z" fill="url(#will-ivory)" style="stroke: var(--ink)" stroke-width="1.3"/>
+    <circle cx="16" cy="16" r="3.4" style="fill: var(--elven-stone); stroke: var(--elven-stone-dark)" stroke-width="0.8"/>
+  </g>
+</svg>

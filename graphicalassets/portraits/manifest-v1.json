@@ -1,0 +1,65 @@
+{
+  "generator": "Hand-authored SVG (graphicalassets/portraits/src) rendered with headless Google Chrome",
+  "generated_utc_date": "2026-10-13",
+  "pixels_modified": false,
+  "bounds_method": "fixed 5x4 grid of 200 px cells, 12 px margin; metadata only",
+  "purpose": "Replaceable vector placeholder portraits and scene strips; not scanned official components; not AI-painted bitmaps",
+  "prompts": [
+    "prompt-v1.txt",
+    "scenes-prompt-v1.txt"
+  ],
+  "sources": {
+    "src/portraits-v1.svg": "00a328ed61722354e6f946bb9c74855179c06bd9bd49673fbd712e4692f80624",
+    "src/scenes/field.svg": "038feca4dd5526aabce5db3dd63c1eb39d048dc23aa0d0e20b6cf5326507a121",
+    "src/scenes/relief.svg": "818be43eb172c2957fc0545a94d4dc9895f5259fb9cf263632ede20f66457b72",
+    "src/scenes/siege.svg": "0c21683646d35446d877fbc9e515e74cb1648b4469a8d44cc8625c7bac62eabf",
+    "src/scenes/sortie.svg": "f25637ec66b38cf06d414a31bfabb5baf5c355b91dc80890411f0e271a927d2a"
+  },
+  "outputs": [
+    {
+      "file": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v1.png",
+      "size": [
+        1000,
+        800
+      ],
+      "alpha": true,
+      "sha256": "ce27a2ef6ce50c373f4f0333d7a7a074697425a0608b2e804bf5b570a0b37672"
+    },
+    {
+      "file": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-scenes/field.png",
+      "size": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "sha256": "bedd6be11d103de636019079d9cf416d213a65f7632b657e5df8d3d9fdf34611"
+    },
+    {
+      "file": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-scenes/siege.png",
+      "size": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "sha256": "7721f5289f1bab497ee50aee2486ba38ffc78e708489e63ac53de0584238c034"
+    },
+    {
+      "file": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-scenes/sortie.png",
+      "size": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "sha256": "4a43ce6f7d32c2c61562f6a623f7d8fc2abf88eac22e66c7c5fb69835d2131e3"
+    },
+    {
+      "file": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-scenes/relief.png",
+      "size": [
+        336,
+        88
+      ],
+      "alpha": false,
+      "sha256": "f2b3a604788fe7ec72f91ad0eae9481248a6a4fc4fbde1f2ed7fe566417732d5"
+    }
+  ]
+}

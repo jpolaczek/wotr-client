@@ -1,0 +1,141 @@
+/* UI-179: the Reinforcements tab's panel, docked at the left rail under Politics like the other rail panels (its
+   frame, header band and place come from Styles/LeftRail.uss). A row per own nation: emblem, name and the reserve
+   tokens (art: armies/reserve-slot); during a recruitment the rows that can recruit are lit. */
+#board-screen .reinforcements-panel.edge-left-panel { width: 320px; }
+#board-screen .reinforcements-panel .panel-header > .action { width: 26px; height: 26px; min-width: 26px; min-height: 26px; padding: 0; margin: 0 0 0 6px; }
+.reinforcement-budget { flex-direction: row; align-items: center; }
+.reinforcement-budget > .budget-slot {
+    width: 18px;
+    height: 18px;
+    margin: 0 2px;
+    background-image: resource("Wotr/Art/UI/armies/budget-slot");
+}
+.reinforcement-budget > .budget-slot.filled { background-image: resource("Wotr/Art/UI/armies/budget-slot-filled"); }
+
+.reinforcement-rows { flex-direction: column; }
+/* UI-134/UI-179: one compact line per nation: emblem, name and reserve tokens; the server's reason lives in the
+   row's tooltip, the political track only in Politics. */
+.reinforcement-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 38px;
+    margin: 0;
+    padding: 1px 4px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(194, 163, 91, 0.25);
+}
+/* A settlement inspected on the map marks the row of its nation. */
+.reinforcement-row.reinforcement-focused {
+    background-color: rgba(212, 175, 55, 0.14);
+    border-left-width: 3px;
+    border-left-color: rgb(212, 175, 55);
+    padding-left: 1px;
+}
+/* UI-197: the crest stands over a soft gilt glow, which spills a little round it. */
+.reinforcement-badge { width: 20px; height: 20px; margin-right: 5px; flex-shrink: 0; }
+.reinforcement-badge > .icon-glow { left: -7px; right: -7px; top: -7px; bottom: -7px; opacity: 0.55; }
+.reinforcement-emblem { position: absolute; left: 0; top: 0; width: 20px; height: 20px; -unity-background-scale-mode: scale-to-fit; }
+.reinforcement-name {
+    width: 74px;
+    flex-shrink: 1;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+}
+/* UI-179: a nation that can recruit now has a lit row; the others stay plain, their tokens inert. */
+.reinforcement-row.recruitable {
+    background-color: rgba(64, 84, 52, 0.55);
+    border-left-width: 3px;
+    border-left-color: rgb(144, 203, 172);
+    padding-left: 1px;
+}
+.reinforcement-closed .reinforcement-name, .reinforcement-closed .reinforcement-badge { opacity: 0.55; }
+
+.reinforcement-figures { flex-direction: row; flex-shrink: 0; margin-left: auto; }
+/* UI-185: reserve figures as large as the region panel's (40 points), so their artwork reads at a glance. */
+#board-screen .reinforcement-figures > .reserve-token {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    margin: 0 1px;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/armies/reserve-slot");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .reinforcement-figures > .reserve-token.selected { background-image: resource("Wotr/Art/UI/armies/reserve-slot-selected"); }
+/* UI-213: a token that can be chosen now is lit (the eligible green of the region panel's figures) without moving
+   its figure: a tinted slot and a full glow. */
+#board-screen .reinforcement-figures > .reserve-token.eligible-token { -unity-background-image-tint-color: rgb(170, 230, 195); }
+#board-screen .reinforcement-figures > .reserve-token.eligible-token > .icon-glow { opacity: 1; }
+#board-screen .reinforcement-figures > .reserve-token.pressed { background-image: resource("Wotr/Art/UI/armies/reserve-slot-pressed"); }
+#board-screen .reinforcement-figures > .reserve-token:disabled { opacity: 0.45; }
+/* Outside a recruitment the reserves are there to read, at full strength. */
+#board-screen .reinforcement-figures > .reserve-token.reserve-readonly:disabled { opacity: 1; }
+.reserve-token-figure { position: absolute; left: 2px; right: 2px; top: 1px; bottom: 4px; }
+#board-screen .reinforcement-figures > .reserve-token > .icon-glow { left: 3px; right: 3px; top: 2px; bottom: 5px; opacity: 0.5; }
+.reserve-token-count {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    min-width: 14px;
+    margin: 0;
+    padding: 0 3px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-radius: 7px;
+    color: rgb(247, 236, 209);
+    background-color: rgba(25, 23, 22, 0.94);
+}
+
+/* The tray keeps a compact way back to the panel once it is closed. */
+#board-screen .tray #open-reinforcements { align-self: flex-start; flex-grow: 0; width: 34px; height: 34px; min-width: 34px; margin-top: 4px; }
+
+
+/* UI-131: a card or ability plan. The title names the source and shortens with an ellipsis; "Optional" marks a
+   recruitment that may be confirmed empty; the planned figures sit under the rows, each with × to return it. */
+#board-screen .reinforcements-panel .panel-header > .title {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.reinforcements-optional {
+    margin: 0 6px 0 4px;
+    padding: 0 6px;
+    font-size: 11px;
+    border-radius: 7px;
+    color: rgb(30, 24, 14);
+    background-color: rgba(212, 175, 55, 0.85);
+}
+.reinforcement-placements {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 4px 0 0 0;
+    padding-top: 4px;
+    border-top-width: 1px;
+    border-top-color: rgba(194, 163, 91, 0.35);
+}
+#board-screen .reinforcement-placements > .planned-reinforcement {
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    margin: 2px 4px 2px 0;
+    padding: 0 8px 0 2px;
+    font-size: 12px;
+}
+.planned-reinforcement-figure { width: 24px; height: 26px; margin-right: 4px; -unity-background-scale-mode: scale-to-fit; }
+.planned-reinforcement-region { margin: 0; padding: 0; color: rgb(241, 223, 166); }

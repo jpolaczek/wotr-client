@@ -1,0 +1,269 @@
+{
+  "version": "battles-v1",
+  "task": "UI-206",
+  "model": "gpt-image-1.5",
+  "generator": "OpenAI Images API via v1/generate.py; band cut with Pillow by build.py",
+  "pixels_modified": "cropped and re-encoded only",
+  "outputs": [
+    {
+      "key": "open-free-1",
+      "source": "v1/raw/open-free-1.jpg",
+      "sourceSha256": "bfbac5acb39b21900ff78dd6da9c527a5b3a9f373f95ce76e9943100890aa483",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/open-free-1.jpg",
+      "outputSha256": "e11a4ee578012a36ce088886986104fd8379dc500f787e5590af488ef406f938",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "open-free-2",
+      "source": "v1/raw/open-free-2.jpg",
+      "sourceSha256": "a7d134c3c1396a22a2920afec549e1c44941b1d6afbd885801b26bc56838a7e0",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/open-free-2.jpg",
+      "outputSha256": "9d70e553429ca1c17dd42c393b02e6cef54a9f6a05224f01d54a57f2875b5959",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "open-shadow-1",
+      "source": "v1/raw/open-shadow-1.jpg",
+      "sourceSha256": "cf5355edfa3b91d441b9907a07ea2b2dfc003463fb76d054997e053bb589039b",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/open-shadow-1.jpg",
+      "outputSha256": "44e2dfe6a024604d1a4f7e8003ee7255ec2238bce1b01ae0eaa34c955ca80dfb",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "open-shadow-2",
+      "source": "v1/raw/open-shadow-2.jpg",
+      "sourceSha256": "90dce087603f5e2e089fe0bd89116a0af8b02074bebc6d30a762a5db2eec9621",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/open-shadow-2.jpg",
+      "outputSha256": "b1850c7560cdfb31fb5b6366413dc840374cafb6968a58c3a1e2296204854926",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "open-wild-1",
+      "source": "v1/raw/open-wild-1.jpg",
+      "sourceSha256": "fce5cdd6804af98201c4fec0452dacf0fe4b487b013ffd161c7afaa2235f32a3",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/open-wild-1.jpg",
+      "outputSha256": "c29097e05e8debbedfc0a778cc98f5602e216c19574512ae36c5d8443627a504",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "open-wild-2",
+      "source": "v1/raw/open-wild-2.jpg",
+      "sourceSha256": "f01cac5bb734e6430f0b5f67b36afabd47c14975a32d65c05a7da88edea88dce",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/open-wild-2.jpg",
+      "outputSha256": "0b909b529921d22d6010e033bfffe12a52265f43a32004598c75c6ffdba6ca68",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "fortification-free-1",
+      "source": "v1/raw/fortification-free-1.jpg",
+      "sourceSha256": "d47ba6dab2f4e07ba8336a813701e2ee7000fc84859aa464b09c0557ab99c23a",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/fortification-free-1.jpg",
+      "outputSha256": "7351476b8fb67ed09c3e7486df0ef38bdcebb8d07d926c9487c6a9e9f9f59245",
+      "band": [
+        0,
+        380,
+        1536,
+        700
+      ]
+    },
+    {
+      "key": "fortification-free-2",
+      "source": "v1/raw/fortification-free-2.jpg",
+      "sourceSha256": "9a2ff791bb9b9e9691f5de05b6566048314b344b0da2026f1f3cc4654fd6beb2",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/fortification-free-2.jpg",
+      "outputSha256": "7ef9f7bc9182601f8821d68eed5b075e240439a51e0929786a7cf8d44511d5f9",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "town-free-1",
+      "source": "v1/raw/town-free-1.jpg",
+      "sourceSha256": "29b7e83fd722f500fc98b3e96bed37a8d78ecd2ac80cf381893939ca9f2ca6db",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-free-1.jpg",
+      "outputSha256": "402380b1d4447b098af0add888fa8649eaec5705a184a5a1682e0b02d79fbc9a",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "town-free-2",
+      "source": "v1/raw/town-free-2.jpg",
+      "sourceSha256": "a43e0778d2110da237ce8b18503594695dc39a018630c930a24189e98f68751f",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-free-2.jpg",
+      "outputSha256": "95c49c6242b73a494303feedcd8309e6f942e8eace53b14f13424a423d3939b4",
+      "band": [
+        0,
+        340,
+        1536,
+        660
+      ]
+    },
+    {
+      "key": "town-shadow-1",
+      "source": "v1/raw/town-shadow-1.jpg",
+      "sourceSha256": "7569dc9241fd2e24dc25d899421760580c9fe84a97654d104c77a796465e1e5f",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-shadow-1.jpg",
+      "outputSha256": "148a4248c72259d5adf4a44b90a8eecf406c42720db33f163f77c23c2025de8d",
+      "band": [
+        0,
+        400,
+        1536,
+        720
+      ]
+    },
+    {
+      "key": "town-shadow-2",
+      "source": "v1/raw/town-shadow-2.jpg",
+      "sourceSha256": "ddde22d960773736bb7b1b0a1423d1043e2fca7a442645a2f11acf6d85ad4ad1",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/town-shadow-2.jpg",
+      "outputSha256": "6ce646028b8f8a0cf7812b5bc3c780dfbaaf519075c025486eec07202a924425",
+      "band": [
+        0,
+        290,
+        1536,
+        610
+      ]
+    },
+    {
+      "key": "city-free-1",
+      "source": "v1/raw/city-free-1.jpg",
+      "sourceSha256": "64f1021d098e8a3236027d2f3f8ec1158b8e87e6aa9bbb39f232766de6393ced",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-free-1.jpg",
+      "outputSha256": "6e8d3793f7be2377c7825104b6d091929c64fc6d9a8bfe0d81d17d78bb6c1748",
+      "band": [
+        0,
+        160,
+        1536,
+        480
+      ]
+    },
+    {
+      "key": "city-free-2",
+      "source": "v1/raw/city-free-2.jpg",
+      "sourceSha256": "7a1bb06b3477cf89d1f8b38a1895d37efe1a363f672918753d3c617449e1f369",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-free-2.jpg",
+      "outputSha256": "d926367adce455f0b9529fdfbfe85c8fcd2136d123f3234de360a41f8dac8486",
+      "band": [
+        0,
+        130,
+        1536,
+        450
+      ]
+    },
+    {
+      "key": "city-shadow-1",
+      "source": "v1/raw/city-shadow-1.jpg",
+      "sourceSha256": "5b2126fd814c3065c1fab677804082bd56ba48a065c46c8c6ea8aac52daae0da",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-shadow-1.jpg",
+      "outputSha256": "fa480f21c0a2cb80d01435fdbeda6b484a5d254e1699eb8692c3bd90951eeda5",
+      "band": [
+        0,
+        260,
+        1536,
+        580
+      ]
+    },
+    {
+      "key": "city-shadow-2",
+      "source": "v1/raw/city-shadow-2.jpg",
+      "sourceSha256": "4499119b8cbbe8349ace62ba2013ef83cb55d7a028284e04a006e26068a7a244",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/city-shadow-2.jpg",
+      "outputSha256": "12be77cabb2c55264c57272e569e79096cfa7019b195e667a823b80af269fb31",
+      "band": [
+        0,
+        240,
+        1536,
+        560
+      ]
+    },
+    {
+      "key": "stronghold-free-1",
+      "source": "v1/raw/stronghold-free-1.jpg",
+      "sourceSha256": "ac3acbbb4691cf2af4a3da6aaaa86b724d6a8e50db77b9d4f2f1d34f6586c4b4",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-free-1.jpg",
+      "outputSha256": "3bd7c13de5b6ab6a89957ebb80f33afc8323860f563426c3144c8dcb5d479f35",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    },
+    {
+      "key": "stronghold-free-2",
+      "source": "v1/raw/stronghold-free-2.jpg",
+      "sourceSha256": "10f5fe9a8353dd50a8c0517ce8eb1086bba6d841d0c208812997efe0cb91a0fe",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-free-2.jpg",
+      "outputSha256": "abc67518f46b555299a7f020e26abe2c4f49062ad384f39de1ee3c546cc7a5bc",
+      "band": [
+        0,
+        280,
+        1536,
+        600
+      ]
+    },
+    {
+      "key": "stronghold-shadow-1",
+      "source": "v1/raw/stronghold-shadow-1.jpg",
+      "sourceSha256": "8067040805ed160c88ec228d75137dc0c8831a4343a6c740c47b41ac1cb923a1",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-shadow-1.jpg",
+      "outputSha256": "df2ab7eaf9b297901bb8bf93cc2f9de1f5ccff359f8d0ae433181082121f6677",
+      "band": [
+        0,
+        90,
+        1536,
+        410
+      ]
+    },
+    {
+      "key": "stronghold-shadow-2",
+      "source": "v1/raw/stronghold-shadow-2.jpg",
+      "sourceSha256": "08f4a250b795d9a5102c790fe6d02d3f1724cdc3fe0df09e3fe8ec253ee2facd",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-illustrations/stronghold-shadow-2.jpg",
+      "outputSha256": "1ad99d79e657d7d375fcdea69ad1d2b0bb8ad50035c8c322a6bd0c321f544222",
+      "band": [
+        0,
+        320,
+        1536,
+        640
+      ]
+    }
+  ]
+}

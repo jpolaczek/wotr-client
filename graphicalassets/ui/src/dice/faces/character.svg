@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32">
+  <!-- Character result: a cloaked figure, head and shoulders. Ivory glyph with an ink outline, drawn over the die medallion's enamel. -->
+  <defs>
+    <linearGradient id="character-ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="0.55" style="stop-color: var(--ivory)"/>
+      <stop offset="1" stop-color="#d8c189"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M5.4 29 C5.4 21.4 9.8 17.2 16 17.2 C22.2 17.2 26.6 21.4 26.6 29 Z" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.5"/>
+    <path d="M16 17.4 L12.6 29 M16 17.4 L19.4 29" fill="none" style="stroke: var(--ink)" stroke-width="0.8" opacity="0.5"/>
+    <circle cx="16" cy="10.4" r="6.4" fill="url(#character-ivory)" style="stroke: var(--ink)" stroke-width="1.5"/>
+    <circle cx="16" cy="18.4" r="1.7" fill="url(#gilt)" style="stroke: var(--ink)" stroke-width="0.8"/>
+  </g>
+</svg>

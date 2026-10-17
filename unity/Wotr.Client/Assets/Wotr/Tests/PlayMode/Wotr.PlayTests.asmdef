@@ -1,0 +1,17 @@
+{
+  "name": "Wotr.PlayTests",
+  "references": [
+    "Wotr.Client",
+    "Wotr.Contracts",
+    "Unity.Newtonsoft.Json",
+    "Wotr.Fixtures"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "Newtonsoft.Json.dll"
+  ]
+}

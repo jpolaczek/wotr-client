@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- Stage: Losses. Ivory on the ribbon; red marker behind the current stage. -->
+  <path d="M7 7 L25 25 M25 7 L7 25" style="stroke: var(--ivory)" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M7 7 L25 25 M25 7 L7 25" style="stroke: var(--ember-dark)" stroke-width="1.4" stroke-linecap="round"/>
+</svg>

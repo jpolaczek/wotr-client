@@ -1,0 +1,108 @@
+{
+ "task": "UI-96",
+ "date": "2026-10-11",
+ "commits": {
+  "implementation": "a411760"
+ },
+ "reports": {
+  "base-l1": {
+   "report": ".artifacts/ui96/base-l1.xml",
+   "total": 7,
+   "passed": 7,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "eb2fb31c0a0081897c9c7f423e52ff998f835e7cdeb7cbad4381fab72a1fb6bb"
+  },
+  "base-l2": {
+   "report": ".artifacts/ui96/base-l2.xml",
+   "total": 2,
+   "passed": 2,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "7287988db1a7b353f72ef5f258efefcf40ccff80ca270653161b00cd1266d5fe"
+  },
+  "reg1-l1": {
+   "report": ".artifacts/ui96/reg1-l1.xml",
+   "total": 8,
+   "passed": 8,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "8ec76a9ba14bb40979e02a495ea203007e1b50c76d34519868cc772bbd308579"
+  },
+  "reg1-l2": {
+   "report": ".artifacts/ui96/reg1-l2.xml",
+   "total": 2,
+   "passed": 2,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "00f3cf814a80ee888980318905334f46e2765075ff47c1d32d5bf52e0ad9e512"
+  },
+  "editor-full": {
+   "report": ".artifacts/ui96/editor-full.xml",
+   "total": 619,
+   "passed": 619,
+   "failed": 0,
+   "skipped": 0,
+   "failed_tests": [],
+   "sha256": "e068870121c3c0ad27572a36e02342d59773cd8ae3cff4ca5e032cc63805ee3c"
+  }
+ },
+ "dotnet": {
+  "ui96-lobby": {
+   "report": ".artifacts/ui96/ui96-lobby.trx",
+   "total": 9,
+   "passed": 8,
+   "failed": 1,
+   "sha256": "8df54618dc9c930fc6689aa8eb7cd56a75c86f6f67d8cfcdb9a43827b872d178"
+  },
+  "ui96-lobby2": {
+   "report": ".artifacts/ui96/ui96-lobby2.trx",
+   "total": 9,
+   "passed": 9,
+   "failed": 0,
+   "sha256": "3e4b61bc836d54c45c2cbb72acc03b66dd4ac2d58170bf03b0ad2fcc2300d0db"
+  },
+  "ui96-dotnet-full": {
+   "report": ".artifacts/ui96/ui96-dotnet-full.trx",
+   "total": 3732,
+   "passed": 3732,
+   "failed": 0,
+   "sha256": "5246a67933307957c04e1d7239a990ab59c03d7fe9f04bdc424cc83315527740"
+  }
+ },
+ "builds": {
+  "BuildLocalMac": {
+   "repository_commit_at_build": "a4117609ad5427a80f225aab0cacf146625e2387",
+   "development": false,
+   "inputs": 954,
+   "tracked_inputs": 942,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  },
+  "BuildLocalWindows": {
+   "repository_commit_at_build": "a4117609ad5427a80f225aab0cacf146625e2387",
+   "development": false,
+   "inputs": 954,
+   "tracked_inputs": 942,
+   "mismatch": 0,
+   "untracked_inputs": "Unity test-runner InitTestScene* leftovers; not repository files and not build scenes."
+  }
+ },
+ "notes": {
+  "baseline": "base-* use the Unity tree and contracts of 78a6892; the local test server is always built from the working tree (Development, expansions on).",
+  "ui96-lobby": "First run: ReleaseScope was read from builder.Configuration before the test host added its settings; it is now resolved from DI.",
+  "compose": "docker compose --env-file infra/.env.example -f infra/compose.yaml config --quiet passes; the server gets Wotr__Release__Expansions=false by default."
+ },
+ "smoke": {
+  "result": "PASS",
+  "application_identity": "com.wotr.ui96.smoke",
+  "original_profile_byte_identical": true,
+  "runtime_matches_main_build": true,
+  "runtime_files_checked": 880,
+  "development": false
+ }
+}

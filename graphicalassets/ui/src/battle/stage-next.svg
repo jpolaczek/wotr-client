@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- Stage: Next round or end. Ivory on the ribbon; red marker behind the current stage. -->
+  <path d="M8 6 L22 16 L8 26 Z" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="0.8"/>
+  <rect x="23" y="6" width="3.5" height="20" rx="1" style="fill: var(--ivory); stroke: var(--ink)" stroke-width="0.8"/>
+</svg>

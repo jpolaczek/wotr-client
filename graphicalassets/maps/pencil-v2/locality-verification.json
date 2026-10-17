@@ -1,0 +1,15 @@
+{
+  "comparison": "v1 and v2 rendered with the same resvg backend",
+  "outside_local_windows_changed_pixels_above_1": 0,
+  "outside_local_windows_changed_pixels_above_2": 0,
+  "outside_local_windows_maximum_gray_difference": 1,
+  "detail_order": [
+    "minas-tirith",
+    "erebor",
+    "minas-morgul",
+    "moria-lorien",
+    "old-forest",
+    "mirkwood"
+  ],
+  "details_are_crops_of_final_png": true
+}

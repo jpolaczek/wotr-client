@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- Decision: stop the battle, a sheathed sword on a shield. -->
+  <g filter="url(#lift)">
+    <path d="M16 3 L27 7 V16 C27 23 22 27.5 16 29.5 C10 27.5 5 23 5 16 V7 Z" style="fill: var(--enamel-mid); stroke: var(--gilt-light)" stroke-width="1.6"/>
+    <path d="M16 8 V23" style="stroke: var(--ivory)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M11 13 H21" style="stroke: var(--gilt-light)" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+</svg>

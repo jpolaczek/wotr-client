@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="40" viewBox="0 0 300 40">
+  <!-- UI-167: the "YOUR ACTION" ribbon that crosses the top of the map when the action passes to the player: an
+       enamel band of the player's side (free or shadow variant) between gilt rules, with swallowtail ends; code
+       writes the text over it. Only straight rules cross the stretched middle. Slices (points): 28 left and right,
+       12 top and bottom. -->
+  <defs>
+    <linearGradient id="ribbon-band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.55" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)">
+    <path d="M2 4 H298 L285 20 L298 36 H2 L15 20 Z" fill="url(#ribbon-band)" style="stroke: var(--gilt-edge)" stroke-width="0.8"/>
+    <rect x="17" y="6.6" width="266" height="1.4" fill="url(#gilt)"/>
+    <rect x="17" y="32" width="266" height="1.4" fill="url(#gilt)"/>
+    <rect x="17" y="9" width="266" height="0.6" fill="#ffffff" opacity="0.16"/>
+    <path d="M7.5 6.2 L18.5 20 L7.5 33.8" fill="none" stroke="url(#gilt)" stroke-width="1.1"/>
+    <path d="M292.5 6.2 L281.5 20 L292.5 33.8" fill="none" stroke="url(#gilt)" stroke-width="1.1"/>
+    <circle cx="23" cy="20" r="1.8" fill="url(#gilt-diagonal)"/>
+    <circle cx="277" cy="20" r="1.8" fill="url(#gilt-diagonal)"/>
+  </g>
+</svg>

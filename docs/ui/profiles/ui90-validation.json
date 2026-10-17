@@ -1,0 +1,330 @@
+{
+  "task": "UI-90",
+  "date": "2026-10-10",
+  "commits": {
+    "implementation": "06831d5"
+  },
+  "reports": {
+    "base-layout": {
+      "report": ".artifacts/ui90/base-layout.xml",
+      "total": 9,
+      "passed": 8,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection"
+      ],
+      "sha256": "dad6fb562a75e793284ea0a1198f2895a3da6fd3109b737060270a07ff96dc8c"
+    },
+    "base-hunt": {
+      "report": ".artifacts/ui90/base-hunt.xml",
+      "total": 8,
+      "passed": 7,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+      ],
+      "sha256": "f3d4820357507fc8c8a8bf5d28ba2f80a832fb8c0e1388f2a0cf27110c8ee734"
+    },
+    "base-fellowship": {
+      "report": ".artifacts/ui90/base-fellowship.xml",
+      "total": 7,
+      "passed": 5,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipNetworkTests.DeclarationMovementSeparationAndIndependentGroupsUseTheServer",
+        "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards"
+      ],
+      "sha256": "7171c640958928a504b33f084d252c003df221475839e7f7a332b939f9340a5a"
+    },
+    "base-mordor": {
+      "report": ".artifacts/ui90/base-mordor.xml",
+      "total": 7,
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.MordorNetworkTests.HideAndInactivityPublishTheTurnBoundary",
+        "Wotr.PlayTests.MordorNetworkTests.MithrilReplacesStopBeforeAdvancingAndSpendsItsCardOnce",
+        "Wotr.PlayTests.MordorNetworkTests.MovementAndEventEyesUseTheirOwnSourceWithoutARoll",
+        "Wotr.PlayTests.MordorNetworkTests.StopAndZeroDiceEyeAreAttemptsWithIndependentReveal"
+      ],
+      "sha256": "86f9cd2545fa099504fa964bd8af40ee8fd05edbc264605d9cc14d89d1d66384"
+    },
+    "base-mordor2": {
+      "report": ".artifacts/ui90/base-mordor2.xml",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "73bb1f32cd92030ff70ac3af0318587a10e0530db006a6dac9cd0dd7cc4b2b10"
+    },
+    "base-mordor3": {
+      "report": ".artifacts/ui90/base-mordor3.xml",
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "49b423b00c93c3492ab533af2ceabd449321ff366dafb815ef15868706080e18"
+    },
+    "heights-before": {
+      "report": ".artifacts/ui90/heights-before.xml",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "fa8227943321d3b9121b4e8b4b98240103e96c1fa688728d27b2cdf977364913"
+    },
+    "editor-art2": {
+      "report": ".artifacts/ui90/editor-art2.xml",
+      "total": 13,
+      "passed": 12,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.EditorTests.FellowshipTrackTests.StatusUpdatesExistingCellsAndKeepsBothTracksVisibleDuringRoutesAndHunt"
+      ],
+      "sha256": "19da57f90a145f2597b9b82f307697a75aac7cb90d040205148791528360b8e2"
+    },
+    "editor-art3": {
+      "report": ".artifacts/ui90/editor-art3.xml",
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "4b0500b9dc1097920bb9e31601118afbe6474adc5965facaffb0c08d07c5dffe"
+    },
+    "right1": {
+      "report": ".artifacts/ui90/right1.xml",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.RightColumnLayoutTests.IllustratedFellowshipAndHuntWasteNoRowsInFourLayouts"
+      ],
+      "sha256": "0bf4f49247b9ccc5b8a087f76d00ac3a27334dbcfe8e82176dce51f4fa5fa1f1"
+    },
+    "right2": {
+      "report": ".artifacts/ui90/right2.xml",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "b3573e5428d309f665e74dd2072cd31eb9c4c46dbe237a5edff9b047a9a61a12"
+    },
+    "right3": {
+      "report": ".artifacts/ui90/right3.xml",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "103ea50214226e2727c1354b6ad80d2d549bcf46967402bdf3cb2aa5d79c1e2b"
+    },
+    "reg-layout": {
+      "report": ".artifacts/ui90/reg-layout.xml",
+      "total": 9,
+      "passed": 6,
+      "failed": 3,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection",
+        "Wotr.PlayTests.MordorLayoutTests.GuideAndForcedRemovalKeepOneVisibleHostBesideTheTrackInFourLayouts",
+        "Wotr.PlayTests.MordorLayoutTests.TrackActivityAndTileFitFourLayoutsWithoutScrollingOrMovingTheCamera"
+      ],
+      "sha256": "b6a8dcf4127be65255c6b9d5845995d92dc88c76487a22c72bdf05c2d3a6ecc3"
+    },
+    "reg-hunt": {
+      "report": ".artifacts/ui90/reg-hunt.xml",
+      "total": 8,
+      "passed": 6,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HuntLayoutTests.AllocationRerollsTileAndGuideFitFourLayoutsBesideTheFellowship",
+        "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+      ],
+      "sha256": "42afcfc2e1de9cb6aa0046d417eb3df8b579aeaad9b0bd45461f0ba7bbd26fa9"
+    },
+    "reg-fellowship": {
+      "report": ".artifacts/ui90/reg-fellowship.xml",
+      "total": 7,
+      "passed": 5,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipNetworkTests.DeclarationMovementSeparationAndIndependentGroupsUseTheServer",
+        "Wotr.PlayTests.T22InformationTests.DenseInformationFitsBothSizesAndScalesBesidePinnedCards"
+      ],
+      "sha256": "35d3a709965963b6ffa3af2ed652c26bb783bf0d98cdc2a0418dca740747d97e"
+    },
+    "reg-mordor1": {
+      "report": ".artifacts/ui90/reg-mordor1.xml",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "26bca7c4a03390601a2adbb86ffea384ea3b53257d6bbe2bf47356b30eebf236"
+    },
+    "reg-mordor2": {
+      "report": ".artifacts/ui90/reg-mordor2.xml",
+      "total": 7,
+      "passed": 3,
+      "failed": 4,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.MordorNetworkTests.HideAndInactivityPublishTheTurnBoundary",
+        "Wotr.PlayTests.MordorNetworkTests.MithrilReplacesStopBeforeAdvancingAndSpendsItsCardOnce",
+        "Wotr.PlayTests.MordorNetworkTests.MovementAndEventEyesUseTheirOwnSourceWithoutARoll",
+        "Wotr.PlayTests.MordorNetworkTests.StopAndZeroDiceEyeAreAttemptsWithIndependentReveal"
+      ],
+      "sha256": "dc9a7e3171feb265fbb609e41afa470331d6e26459160cd4952d80ed12c059cb"
+    },
+    "reg-huntnet": {
+      "report": ".artifacts/ui90/reg-huntnet.xml",
+      "total": 9,
+      "passed": 6,
+      "failed": 3,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.HuntNetworkTests.AutomaticMissIsInspectableAfterReconnectWithoutAnyPendingHunt",
+        "Wotr.PlayTests.HuntNetworkTests.KeepRollUsesNoRerollsAndRetainsTheCompletedMissReport",
+        "Wotr.PlayTests.HuntNetworkTests.ZeroDiceRetainsAnExplicitResultWithoutOpeningHunt"
+      ],
+      "sha256": "0500ce8754f500109da1dc5aba708f34994328b1535824bc9704770eeadb8930"
+    },
+    "reg2-layout": {
+      "report": ".artifacts/ui90/reg2-layout.xml",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "0a4e38b1640912acde9b9f287bdc2bb7f0d93c46e3557fad8b5ac3060da0f3b7"
+    },
+    "reg2-hunt": {
+      "report": ".artifacts/ui90/reg2-hunt.xml",
+      "total": 7,
+      "passed": 5,
+      "failed": 2,
+      "skipped": 0,
+      "failed_tests": [
+        "Wotr.PlayTests.FellowshipTrackLayoutTests.PublicTracksFitBothSidesAndFourLayoutsWithoutChangingEitherProjection",
+        "Wotr.PlayTests.InGameDenseLayoutTests.BothRolesInspectDenseEffectsFullPoolsFiveSovereignsAndHelpInFourLayouts"
+      ],
+      "sha256": "3aaad3bca0116ebe2e2525899944894287471a541febabd39f0f4a5e4523ae27"
+    },
+    "editor-full": {
+      "report": ".artifacts/ui90/editor-full.xml",
+      "total": 619,
+      "passed": 619,
+      "failed": 0,
+      "skipped": 0,
+      "failed_tests": [],
+      "sha256": "0e3532a5f48458b47bc80550613eecc6a249afb389e26b902dea05e461fa6ce0"
+    }
+  },
+  "heights_pt": {
+    "fellowship FreePeoples 1366 1.00": {
+      "before": 185.0,
+      "after": 135.0
+    },
+    "hunt FreePeoples 1366 1.00": {
+      "before": 66.0,
+      "after": 38.0
+    },
+    "fellowship FreePeoples 1366 1.25": {
+      "before": 178.4,
+      "after": 132.8
+    },
+    "hunt FreePeoples 1366 1.25": {
+      "before": 65.6,
+      "after": 39.2
+    },
+    "fellowship FreePeoples 1920 1.00": {
+      "before": 184.2,
+      "after": 134.4
+    },
+    "hunt FreePeoples 1920 1.00": {
+      "before": 65.4,
+      "after": 38.4
+    },
+    "fellowship FreePeoples 1920 1.25": {
+      "before": 177.5,
+      "after": 132.0
+    },
+    "hunt FreePeoples 1920 1.25": {
+      "before": 66.0,
+      "after": 38.7
+    },
+    "fellowship Shadow 1366 1.00": {
+      "before": 263.0,
+      "after": 164.0
+    },
+    "hunt Shadow 1366 1.00": {
+      "before": 109.0,
+      "after": 40.0
+    },
+    "fellowship Shadow 1366 1.25": {
+      "before": 176.0,
+      "after": 130.4
+    },
+    "hunt Shadow 1366 1.25": {
+      "before": 65.6,
+      "after": 39.2
+    },
+    "fellowship Shadow 1920 1.00": {
+      "before": 260.3,
+      "after": 162.9
+    },
+    "hunt Shadow 1920 1.00": {
+      "before": 107.4,
+      "after": 39.8
+    },
+    "fellowship Shadow 1920 1.25": {
+      "before": 175.3,
+      "after": 129.7
+    },
+    "hunt Shadow 1920 1.25": {
+      "before": 66.0,
+      "after": 38.7
+    }
+  },
+  "notes": {
+    "editor-art1/2": "Compile error then NullReference in FellowshipTrackTests (old Compact signature, rows queried by name instead of class); fixed in editor-art3.",
+    "right1": "Location label 10 pt wide: title also had flex-grow 1; fixed in right2.",
+    "reg-layout/reg-hunt": "Header buttons were 22 pt, below the board's 24-point click target (HuntLayout, MordorLayout); fixed to 24 pt and rerun in reg2-*.",
+    "reg-mordor2": "Four TooManyRequests (login rate limit); the same four passed in reg-mordor1.",
+    "pre_existing": "FellowshipTrackLayout 'Clipped: Fellowship', InGameDense close-fellowship covered (Label→VisualElement, same hidden close button), FellowshipNetwork declaration, T22Information ≥212 fail on da0a3bf; HuntNetwork Miss/KeepRoll/NoDice fail since UI-85 (UI-88 baseline)."
+  },
+  "builds": {
+    "BuildLocalMac": {
+      "inputs_sha256": "1468f0f96c49836a93dea04c99a058bc46f7f7b29dc9e02bc54689589ede90af",
+      "repository_commit_at_build": "06831d549b49dbe741de8fac32b3db1124d73a22",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui90/macos/Wotr.app/Contents/MacOS/War of the Ring Online: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64:Mach-O 64-bit executable arm64]\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui90/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture x86_64):\tMach-O 64-bit executable x86_64\n/Users/developer/Desktop/projects/WoTR/.artifacts/ui90/macos/Wotr.app/Contents/MacOS/War of the Ring Online (for architecture arm64):\tMach-O 64-bit executable arm64"
+    },
+    "BuildLocalWindows": {
+      "inputs_sha256": "1468f0f96c49836a93dea04c99a058bc46f7f7b29dc9e02bc54689589ede90af",
+      "repository_commit_at_build": "06831d549b49dbe741de8fac32b3db1124d73a22",
+      "development": false,
+      "executable_format": "/Users/developer/Desktop/projects/WoTR/.artifacts/ui90/windows/Wotr.exe: PE32+ executable (GUI) x86-64, for MS Windows"
+    }
+  },
+  "smoke": {
+    "result": "PASS",
+    "application_identity": "com.wotr.ui90.smoke",
+    "original_profile_byte_identical": true,
+    "runtime_matches_main_build": true,
+    "runtime_files_checked": 857
+  }
+}

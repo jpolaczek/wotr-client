@@ -1,0 +1,24 @@
+Use case: precise-object-edit.
+Task: local correction of THREE remaining erroneous places in the complete region-outline map. Preserve the repairs already made to Rohan, Lamedon and Dale.
+
+INPUT ROLES:
+Image 1: EDIT TARGET, current complete white/black map, after the first group of corrections.
+Image 2: authoritative original complete board photograph.
+Image 3: correct enlarged North Rhûn / East Rhûn source.
+Image 4: correct enlarged Rivendell / High Pass / Moria source.
+Image 5: correct enlarged Fangorn / Parth Celebrant / Eastemnet source.
+
+Copy actual region borders from the original photographs. The prior map sometimes traced printed letters or terrain decorations as dividing lines. The names in these references identify regions; they are not outlines and must not be copied into the drawing. Each named source region must remain a single connected closed territory. Use image 2 to locate the details and fit the repaired local outlines into the complete target.
+
+REPAIR 1, RHÛN (image 3):
+Match the true separating edge between North Rhûn and East Rhûn, and both regions' true surrounding boundaries. East Rhûn is the single large eastern region to the right of the narrow irregular North Rhûn boundary. Remove invented cuts following the two lines of the NORTH RHÛN label or any part of EAST RHÛN lettering. Match the real border approaching the lake and the southern border of East Rhûn continuing to the original right map edge. Do not create additional small regions or wedges where the source has just a name, an icon or a decorative game-track edge. Keep the exterior crop of the playable land stable.
+
+REPAIR 2, MORIA AND HIGH PASS (image 4):
+Restore the original region shapes and shared junctions among Rivendell, Fords of Bruinen, High Pass, Goblin's Gate, Moria, Hollin and Dimrill Dale. In particular, Moria must be ONE intact territory with the exact original perimeter, not multiple pieces cut by the MORIA lettering or a mountain ridge illustration. High Pass must remain its own correctly shaped separate region above Moria. Do not turn the mountain hatching into slender additional regions. Real mountain boundaries still divide the neighboring regions, but reproduce only the actual territorial divide, not individual peaks or illustration edges. Rivendell remains one region and Fords of Bruinen one region.
+
+REPAIR 3, FANGORN / PARTH CELEBRANT (image 5):
+Restore the real outer boundary of the Fangorn region and its shared borders around it. Fangorn's territory is defined by the white boundary in the photograph, not by the outline of the individual drawn trees. Copy the full Parth Celebrant region directly above/right of Fangorn and north of Eastemnet; erase false interior strokes created from its two-line name. Preserve the source's narrow curved boundary junction between Fangorn, Parth Celebrant and Eastemnet. Eastemnet is one intact region, and the southern Rohan area, already repaired in image 1, must stay intact.
+
+KEEP ALL OTHER REGIONS UNCHANGED. In particular, do not reintroduce the removed lines across Westemnet, Lamedon or Dale. Keep the complete map's scale, location, orientation, coastline and general framing stable. This is exact local tracing from source photographs, not an artistic re-layout.
+
+Output ONE whole corrected map, not a grid of details. Opaque pure white land cells; uniform thin continuous single black boundary strokes; transparent water and exterior. Exactly coincident shared edges, closed region contours. No labels, names, icons, mountains, trees, hatching, texture, color, shadows, double riverbanks, annotations or border frame. Erase false partitions rather than merely thickening them.

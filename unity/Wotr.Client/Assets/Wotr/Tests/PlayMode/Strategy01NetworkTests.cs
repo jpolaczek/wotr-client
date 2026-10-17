@@ -1,0 +1,135 @@
+using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using UnityEngine.TestTools;
+using UnityEngine.UIElements;
+using Wotr.Contracts;
+using static Wotr.PlayTests.MatchTestRoom;
+
+namespace Wotr.PlayTests
+{
+    public class Strategy01NetworkTests
+    {
+        [UnityTest]
+        public IEnumerator ProtectionUsesTwoHandCardsAndOneDieInOneCommit() => Wait(RemoveProtection());
+        [UnityTest]
+        public IEnumerator BookMovesIndependentGroupsAndSurvivesReconnect() => Wait(Book());
+        [UnityTest]
+        public IEnumerator SpiritChoosesItsArmyOnTheMap() => Wait(Spirit());
+        [UnityTest]
+        public IEnumerator RangersRecruitsArmyChoiceAndLeaderAfterItsRoll() => Wait(Rangers());
+        [UnityTest]
+        public IEnumerator ScoutsSheltersBeforeRollingAndHandsAdvanceToAttacker() => Wait(Scouts());
+
+        private static async Task RemoveProtection()
+        {
+            using (var room = await Connect("strategy-protection", ScenarioKind.CardPack))
+            {
+                var revision = room.Sh.Board.View.Revision;
+                Assert.AreEqual(6, room.Sh.Board.Presentation.ProtectedRegions.Count);
+                var cost = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.DiscardProtection).EligibleDice[0];
+                await ComponentGestures.Cost(room, room.Sh, cost);
+                await ComponentGestures.Remove(room.Sh, "base.fp.strategy.02");
+                await CardGestures.Open(room.Sh);
+                foreach (var card in new[] { "base.sh.strategy.01", "base.sh.character.01" })
+                    CardNetworkTests.Click(room.Sh.Board.Root.Q<Button>(card));
+
+                await Reconnect(room, room.Sh);
+                Assert.AreEqual(revision, room.Sh.Board.View.Revision);
+                Assert.That(room.Sh.Board.Tray.Q<Label>("protection-cost").text, Does.Contain("Army ✓ · Character ✓"));
+                await room.Confirm(room.Sh);
+                Assert.AreEqual(3, room.Fp.Board.View.Effects.Count);
+                Assert.IsFalse(room.Fp.Board.Presentation.ProtectedRegions.Contains("lorien"));
+                Assert.IsTrue(room.Fp.Board.Presentation.ProtectedRegions.Contains("the-shire"));
+                Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == cost).Location);
+                Assert.AreEqual(1, room.Sh.Board.View.Hand.Count);
+            }
+        }
+
+        private static async Task Book()
+        {
+            using (var room = await Connect("strategy-book", ScenarioKind.CardPack))
+            {
+                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("action-SeparateCompanions"));
+                Click(room.Fp, "companion-base.character.gimli");
+                await room.Settle();
+                MapContourProbe.ClickRegion(room.Fp.Board.Map, "erebor");
+                Click(room.Fp, "new-companion-group");
+                await room.Settle();
+                Click(room.Fp, "companion-base.character.legolas");
+                await room.Settle();
+                Click(room.Fp, "travel-stay");
+                await Reconnect(room, room.Fp);
+                await room.Confirm(room.Fp);
+                Assert.AreEqual("erebor", room.Sh.Board.View.Characters.Single(c => c.Id == "base.character.gimli").Location);
+                Assert.AreEqual("dale", room.Sh.Board.View.Characters.Single(c => c.Id == "base.character.legolas").Location);
+                Assert.AreEqual(0, room.Sh.Board.View.Nations.Single(n => n.Id == "dwarves").StepsToWar);
+                Assert.AreEqual(1, room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Spent));
+            }
+        }
+
+        private static async Task Spirit()
+        {
+            using (var room = await Connect("strategy-spirit", ScenarioKind.CardPack))
+            {
+                Assert.AreEqual(2, room.Fp.Board.View.Options.Single().EligibleIds.Count);
+                MapContourProbe.ClickRegion(room.Fp.Board.Map, "orthanc");
+                await room.Confirm(room.Fp);
+                if (room.Sh.Board.View.EventLoss != null)
+                {
+                    var view = room.Sh.Board.View;
+                    var hits = view.EventLoss.Hits;
+                    foreach (var unit in view.Units.Where(u => view.EventLoss.ParticipantIds.Contains(u.Id) && u.Kind is UnitKind.Regular or UnitKind.Elite))
+                    {
+                        if (hits <= 0)
+                            break;
+                        Click(room.Sh, "loss-" + unit.Id);
+                        if (unit.Kind == UnitKind.Elite && hits >= 2)
+                            Click(room.Sh, "loss-" + unit.Id);
+                        hits -= unit.Kind == UnitKind.Elite && hits >= 2 ? 2 : 1;
+                    }
+                    await Reconnect(room, room.Sh);
+                    await room.Confirm(room.Sh);
+                }
+                Assert.AreEqual("orthanc", room.Fp.Board.View.Characters.Single(c => c.DefinitionId == "base.character.witch-king").Location);
+                Assert.IsTrue(room.Fp.Board.View.Units.Any(u => u.Location == "orthanc" && u.Kind == UnitKind.Nazgul));
+            }
+        }
+
+        private static async Task Rangers()
+        {
+            using (var room = await Connect("strategy-rangers", ScenarioKind.CardPack))
+            {
+                var view = room.Fp.Board.View;
+                var id = view.Options.Single().EligibleIds.Single(id => view.Units.Single(u => u.Id == id).Kind == UnitKind.Elite);
+                Click(room.Fp, "effect-choice-" + id);
+                await room.Confirm(room.Fp);
+                Assert.AreEqual("osgiliath", room.Sh.Board.View.Units.Single(u => u.Id == id).Location);
+                Assert.IsTrue(room.Sh.Board.View.Units.Any(u => u.Location == "osgiliath" && u.Kind == UnitKind.Leader));
+            }
+        }
+
+        private static async Task Scouts()
+        {
+            using (var room = await Connect("strategy-scouts", ScenarioKind.CardPack))
+            {
+                Assert.IsEmpty(room.Fp.Board.View.Battle.Attacker.Dice);
+                Click(room.Fp, "effect-choice-scouts.shelter");
+                await Reconnect(room, room.Fp);
+                await room.Confirm(room.Fp);
+                Assert.AreEqual(DecisionKind.BattleAdvance, room.Sh.Board.View.Decision.Kind);
+                await room.SelectAllAdvancing(room.Sh);
+                Assert.IsTrue(room.Fp.Board.View.Units.Single(u => u.Location == "helms-deep" && u.Nation == "rohan").Garrison);
+            }
+        }
+
+        private static async Task Reconnect(MatchTestRoom room, MountedMatchClient client)
+        {
+            var before = client.Connected;
+            client.Connection.Reconnect();
+            await room.Until(() => client.Connected > before);
+            await room.Settle();
+        }
+    }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Wotr.Editor",
+  "references": ["Wotr.Client", "Wotr.Contracts"],
+  "includePlatforms": ["Editor"]
+}

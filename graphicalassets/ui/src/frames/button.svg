@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="40" viewBox="0 0 96 40">
+  <!-- 9-slice framed button (Menu). Slices (points): 12 on every side. -->
+  <g filter="url(#lift)">
+    <path d="M6 1.5 H90 L94.5 6 V34 L90 38.5 H6 L1.5 34 V6 Z" fill="url(#button-fill)" stroke="url(#gilt)" stroke-width="1.3"/>
+    <path d="M7.2 4.4 H88.8 L91.6 7.2 V32.8 L88.8 35.6 H7.2 L4.4 32.8 V7.2 Z" fill="none" style="stroke: var(--gilt-shadow)" stroke-width="0.7"/>
+    <rect x="8" y="5.4" width="80" height="1" fill="#fff" opacity="0.06"/>
+    <g style="fill: var(--gilt-light); stroke: var(--gilt-edge)" stroke-width="0.3">
+      <path d="M4.3 1.9 L6.3 3.9 L4.3 5.9 L2.3 3.9 Z"/>
+      <path d="M91.7 1.9 L93.7 3.9 L91.7 5.9 L89.7 3.9 Z"/>
+      <path d="M4.3 34.1 L6.3 36.1 L4.3 38.1 L2.3 36.1 Z"/>
+      <path d="M91.7 34.1 L93.7 36.1 L91.7 38.1 L89.7 36.1 Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,115 @@
+[
+  {
+    "id": "lords.fp.character.25",
+    "title": "You Know the Way There",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 25/24"
+  },
+  {
+    "id": "lords.fp.character.26",
+    "title": "Safe Paths in the Dark",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 26/24"
+  },
+  {
+    "id": "lords.fp.character.27",
+    "title": "Wind from the West",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 27/24"
+  },
+  {
+    "id": "lords.fp.character.28",
+    "title": "Three Rings for the Elven-Kings",
+    "side": "FreePeoples",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 28/24"
+  },
+  {
+    "id": "lords.fp.strategy.25",
+    "title": "Every Little is a Gain",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Muster",
+    "source": "SRC-03: LM 25/24"
+  },
+  {
+    "id": "lords.fp.strategy.26",
+    "title": "Rangers of the North",
+    "side": "FreePeoples",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "SRC-03: LM 26/24"
+  },
+  {
+    "id": "lords.sh.character.17",
+    "replaces": "base.sh.character.17",
+    "title": "A Balrog is Come!",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: 17*/24"
+  },
+  {
+    "id": "lords.sh.character.25",
+    "title": "We Won’t Go Back",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 25/24"
+  },
+  {
+    "id": "lords.sh.character.26",
+    "title": "The Lore of the Elven Rings",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 26/24"
+  },
+  {
+    "id": "lords.sh.character.27",
+    "title": "The Gates are Closed",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 27/24"
+  },
+  {
+    "id": "lords.sh.character.28",
+    "title": "Captain of Despair",
+    "side": "Shadow",
+    "deck": "character",
+    "eventType": "Character",
+    "source": "SRC-03: LM 28/24"
+  },
+  {
+    "id": "lords.sh.strategy.25",
+    "title": "Shadow of Dol Guldur",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "SRC-03: LM 25/24"
+  },
+  {
+    "id": "lords.sh.strategy.26",
+    "title": "Madness and Horror",
+    "side": "Shadow",
+    "deck": "strategy",
+    "eventType": "Army",
+    "source": "SRC-03: LM 26/24"
+  },
+  {
+    "id": "lords.sh.special.05",
+    "title": "We Shall Get It",
+    "side": "Shadow",
+    "deck": "special",
+    "eventType": "Character",
+    "source": "SRC-03: LM 5/5"
+  }
+]

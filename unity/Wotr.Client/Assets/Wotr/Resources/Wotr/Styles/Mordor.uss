@@ -1,0 +1,96 @@
+/* UI-154: the Mordor track on the map (Runtime/Map/Mordor/MapMordorTrack.cs, FELLOWSHIP_UX F07a). Stones and gates
+   are art of graphicalassets/ui/src/mordor; step numbers are ink text shown only zoomed in. */
+.map .mordor-track-inactive { opacity: 0.9; }
+.map .mordor-slab,
+.map .mordor-crack,
+.map .mordor-gate {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.map .mordor-slab:hover,
+.map .mordor-crack:hover,
+.map .mordor-gate:hover,
+.map .mordor-slab:active,
+.map .mordor-crack:active,
+.map .mordor-gate:active { background-color: rgba(0, 0, 0, 0); }
+.map .mordor-slab { background-image: resource("Wotr/Art/UI/mordor/slab"); }
+.map .mordor-slab.mordor-passed { background-image: resource("Wotr/Art/UI/mordor/slab-passed"); }
+.map .mordor-slab.mordor-next { background-image: resource("Wotr/Art/UI/mordor/slab-next"); }
+.map .mordor-crack { background-image: resource("Wotr/Art/UI/mordor/crack-of-doom"); }
+.map .mordor-crack.mordor-next { background-image: resource("Wotr/Art/UI/mordor/crack-of-doom-next"); }
+.map .mordor-gate { background-image: resource("Wotr/Art/UI/mordor/gate"); }
+.map .mordor-gate.mordor-next { background-image: resource("Wotr/Art/UI/mordor/gate-next"); }
+.map #mordor-step-number {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 5px;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(58, 57, 52);
+}
+.map .mordor-passed > #mordor-step-number { color: rgba(58, 57, 52, 0.55); }
+.map .mordor-track-detail #mordor-step-number { display: flex; }
+
+/* The Fellowship on the track: its Corruption and the missing-attempt mark at its right. */
+.map #fellowship-mordor-status {
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    height: 16px;
+    padding: 0 3px;
+    border-width: 1px;
+    border-radius: 4px;
+    border-color: rgb(58, 57, 52);
+    background-color: rgba(239, 228, 198, 0.9);
+}
+.map #fellowship-mordor-ring {
+    width: 11px;
+    height: 11px;
+    margin-right: 2px;
+    background-image: resource("Wotr/Art/UI/icons/ring");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.map #fellowship-mordor-corruption {
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+    -unity-font-style: bold;
+    color: rgb(58, 57, 52);
+}
+.map #fellowship-mordor-idle {
+    width: 12px;
+    height: 12px;
+    margin-left: 3px;
+    background-image: resource("Wotr/Art/UI/characters/waiting");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* UI-155: offered stones answer the pointer; the Shadow sees the stones swell once when the Fellowship enters,
+   and a revealed Fellowship that may hide glows in the legal green. */
+.map .mordor-slab,
+.map .mordor-crack,
+.map .mordor-gate {
+    transition-property: scale;
+    transition-duration: 0.35s;
+}
+.map .mordor-next:hover { scale: 1.1 1.1; }
+.map .mordor-track-pulse .mordor-slab,
+.map .mordor-track-pulse .mordor-crack,
+.map .mordor-track-pulse .mordor-gate { scale: 1.3 1.3; }
+.map .fellowship-marker.fellowship-hide-target {
+    border-width: 2px;
+    border-color: rgb(144, 203, 172);
+}

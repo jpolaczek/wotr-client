@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-100: the action log, a half-unrolled parchment scroll with ink lines. -->
+  <defs>
+    <linearGradient id="log-sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbf0cc"/>
+      <stop offset="1" stop-color="#d9bf86"/>
+    </linearGradient>
+    <linearGradient id="log-roll" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8d29c"/>
+      <stop offset="0.5" stop-color="#b8945a"/>
+      <stop offset="1" stop-color="#7a5a2e"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M8 6.4 H25.4 V24.6 C25.4 26.6 23.8 27.6 22 27.6 H6.6 C8.4 27.6 9.6 26.4 9.6 24.6 V8 Z" fill="url(#log-sheet)" style="stroke: var(--ink)" stroke-width="1"/>
+    <path d="M12.4 11.4 H22 M12.4 14.8 H22 M12.4 18.2 H20 M12.4 21.6 H21.2" fill="none" style="stroke: var(--ink)" stroke-width="1" opacity="0.75"/>
+    <rect x="5.6" y="3.8" width="21.6" height="4.6" rx="2.3" fill="url(#log-roll)" style="stroke: var(--ink)" stroke-width="0.9"/>
+    <path d="M7.4 5.2 H25.4" fill="none" stroke="#fff6d6" stroke-width="0.6" opacity="0.55"/>
+    <circle cx="4.6" cy="26" r="2.4" fill="url(#log-roll)" style="stroke: var(--ink)" stroke-width="0.9"/>
+    <path d="M4.6 23.6 H9.6" fill="none" style="stroke: var(--ink)" stroke-width="0.9"/>
+  </g>
+</svg>

@@ -1,0 +1,236 @@
+/* UI-86: illustrated top bar. Pieces are rendered at 2x from graphicalassets/ui (assets.json),
+   so 9-slice values are texture pixels and -unity-slice-scale shows them at their size in points.
+   UI-98: 44 points high; the Fellowship and Hunt summary moved to the corner tab (Styles/RightColumn.uss). */
+
+.topbar {
+    height: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    /* The whole bar is an edge control that pans only on its outer rim (MapEdgePan). */
+    padding: 0 18px 0 30px;
+    background-color: rgb(33, 31, 29);
+    background-image: resource("Wotr/Art/UI/surfaces/topbar-plate");
+    background-repeat: repeat-x;
+    background-size: 168px 100%;
+    background-position: left top;
+}
+
+/* Gilt rules and plain end posts over the plate (UI-202: no filigree caps); never takes the pointer. */
+.topbar-frame {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: resource("Wotr/Art/UI/frames/topbar-frame");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-slice-top: 40;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 40;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+}
+
+/* First child of the board stage: the bar's shadow falls on the map, under the docked panels. */
+.topbar-shadow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 8px;
+    background-image: resource("Wotr/Art/UI/surfaces/cast-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.topbar > .phase {
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0 4px 0 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 15px;
+    color: rgb(236, 220, 174);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+.topbar-divider {
+    width: 10px;
+    height: 34px;
+    flex-shrink: 0;
+    margin: 0 6px;
+    background-image: resource("Wotr/Art/UI/ornaments/divider");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* Opponent action dice: medallions; special dice use framed tiles with their origin caption. */
+#opponent-dice {
+    height: 34px;
+    flex-shrink: 0;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+#opponent-dice .available-dice { flex-direction: row; flex-wrap: nowrap; align-items: center; flex-shrink: 0; }
+#opponent-dice .opponent-side {
+    margin: 0 8px 0 0;
+    padding: 0;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    -unity-font-style: bold;
+    color: rgb(201, 169, 100);
+}
+#opponent-dice .die {
+    width: 29px;
+    min-width: 29px;
+    height: 29px;
+    min-height: 29px;
+    margin: 0 3px 0 0;
+    padding: 0;
+    font-size: 13px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/dice/medallion");
+    -unity-background-scale-mode: stretch-to-fill;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 14.5px;
+}
+#opponent-dice .die:hover,
+#opponent-dice .die:focus {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/dice/medallion-hover");
+}
+#opponent-dice .die:active { background-color: rgba(0, 0, 0, 0); -unity-background-image-tint-color: rgb(222, 214, 196); }
+#opponent-dice .die .action-symbol { left: 5px; top: 5px; width: 16px; height: 16px; }
+/* UI-97: medallions in the enamel of their side with the face glyph of Styles/DicePanel.uss. */
+#opponent-dice .die.die-free { background-image: resource("Wotr/Art/UI/dice/medallion-free"); }
+#opponent-dice .die.die-shadow { background-image: resource("Wotr/Art/UI/dice/medallion-shadow"); }
+#opponent-dice .die.die-free:hover, #opponent-dice .die.die-free:focus { background-image: resource("Wotr/Art/UI/dice/medallion-free-hover"); }
+#opponent-dice .die.die-shadow:hover, #opponent-dice .die.die-shadow:focus { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-hover"); }
+#opponent-dice .die .die-face { left: 4px; top: 4px; right: 4px; bottom: 4px; }
+#opponent-dice .die.special-die {
+    width: 44px;
+    min-width: 44px;
+    height: 32px;
+    min-height: 32px;
+    margin-left: 2px;
+    border-radius: 5px;
+    background-image: resource("Wotr/Art/UI/dice/tile");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+}
+#opponent-dice .die.special-die:hover,
+#opponent-dice .die.special-die:focus { background-image: resource("Wotr/Art/UI/dice/tile-hover"); }
+#opponent-dice .special-die .action-symbol { left: 12px; top: 1px; width: 16px; height: 16px; }
+#opponent-dice .special-die .die-face { left: 13px; right: 13px; top: 2px; bottom: 12px; }
+#opponent-dice .die-origin { bottom: 1px; height: 12px; font-size: 9px; color: rgb(233, 227, 207); }
+#opponent-dice .die.selected { border-color: rgb(245, 212, 133); }
+#opponent-dice .die.legal-target { border-color: rgb(144, 203, 172); }
+#opponent-dice .die.resource-candidate { border-color: rgb(231, 193, 107); }
+
+/* Opponent counters in a gilt cartouche, pushed right with the status, Menu and plaques.
+   UI-98: each counter is its icon and number; the caption stays in the counter's description. */
+.opponent-summary {
+    height: 32px;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+    padding: 0 8px;
+    background-image: resource("Wotr/Art/UI/frames/cartouche");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+.summary-chip { height: 28px; flex-direction: row; align-items: center; padding: 0 5px; }
+.summary-icon { width: 22px; height: 22px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: stretch-to-fill; }
+.summary-icon-cards { background-image: resource("Wotr/Art/UI/icons/cards"); }
+.summary-icon-rings { background-image: resource("Wotr/Art/UI/icons/ring"); }
+.summary-icon-spent { background-image: resource("Wotr/Art/UI/icons/spent"); }
+.summary-icon-out { background-image: resource("Wotr/Art/UI/icons/out"); }
+.summary-text { flex-direction: column; justify-content: center; }
+.summary-caption {
+    display: none;
+    height: 13px;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+    -unity-text-align: lower-left;
+    color: rgb(201, 184, 142);
+}
+.summary-value {
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(241, 230, 196);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+.summary-divider {
+    width: 8px;
+    height: 24px;
+    flex-shrink: 0;
+    background-image: resource("Wotr/Art/UI/ornaments/divider-small");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.topbar > .muted {
+    flex-shrink: 0;
+    max-width: 96px;
+    margin: 0 8px;
+    white-space: normal;
+    font-size: 11px;
+}
+
+#open-board-menu {
+    width: 64px;
+    min-width: 64px;
+    height: 32px;
+    min-height: 32px;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    color: rgb(241, 227, 181);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#open-board-menu:hover,
+#open-board-menu:focus {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-hover");
+}
+#open-board-menu:active { background-color: rgba(0, 0, 0, 0); -unity-background-image-tint-color: rgb(222, 214, 196); }
+
+/* Narrow bars keep icons, values and plaques; spacing tightens and the dice owner label gives way. */
+.topbar-compact .summary-chip { padding: 0 3px; }
+.topbar-compact .summary-icon { margin-right: 2px; }
+.topbar-compact #opponent-dice .opponent-side { display: none; }
+.topbar-compact > .muted { margin: 0 5px; }
+.topbar-compact { padding-left: 28px; }
+.topbar-compact .topbar-divider { margin: 0 4px; }
+.topbar-compact #opponent-dice .die { width: 28px; min-width: 28px; height: 28px; min-height: 28px; margin-right: 2px; border-radius: 14px; }
+.topbar-compact #opponent-dice .die .action-symbol { left: 5px; top: 5px; width: 14px; height: 14px; }
+.topbar-compact #opponent-dice .die .die-face { left: 4px; top: 4px; right: 4px; bottom: 4px; }
+/* Special dice keep their 32-point minimum target and their tile. */
+.topbar-compact #opponent-dice .die.special-die { width: 42px; min-width: 42px; height: 32px; min-height: 32px; border-radius: 5px; }
+.topbar-compact #opponent-dice .special-die .action-symbol { left: 12px; top: 1px; width: 16px; height: 16px; }
+.topbar-compact #open-board-menu { width: 56px; min-width: 56px; }

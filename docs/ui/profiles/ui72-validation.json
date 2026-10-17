@@ -1,0 +1,1212 @@
+{
+  "task": "UI-72",
+  "recorded_at_utc": "2026-10-08T19:11:25.278139+00:00",
+  "scope": "Concise Evidence CM01 – CM18 Register tasks.json remains the sole source of the status of the task; acceptance   build/smoke/ogl The text describes the document UI-72.",
+  "counting": "41 fresh required methods + 1 separate driver 40 sequence. 74 historical methods and full .NET/Editor are separate, partly overlapping collections; do not sum up.",
+  "test_evidence_result": "PASS",
+  "fresh": {
+    "full_dotnet_cases": 3729,
+    "full_editor_cases": 551,
+    "required_play_methods": 41,
+    "separate_driver_methods": 1,
+    "driver_workloads": 40,
+    "batches": [
+      {
+        "id": "roster",
+        "methods": 4,
+        "cases": 4,
+        "report": "r03"
+      },
+      {
+        "id": "character-actions",
+        "methods": 7,
+        "cases": 7,
+        "report": "r04"
+      },
+      {
+        "id": "companion-setup",
+        "methods": 3,
+        "cases": 3,
+        "report": "r05"
+      },
+      {
+        "id": "homelands-core",
+        "methods": 3,
+        "cases": 3,
+        "report": "r06"
+      },
+      {
+        "id": "homelands-fate-layout",
+        "methods": 2,
+        "cases": 2,
+        "report": "r07"
+      },
+      {
+        "id": "homelands-recovery",
+        "methods": 1,
+        "cases": 1,
+        "report": "r08"
+      },
+      {
+        "id": "menu",
+        "methods": 11,
+        "cases": 11,
+        "report": "r09"
+      },
+      {
+        "id": "completion-context",
+        "methods": 4,
+        "cases": 4,
+        "report": "r10"
+      },
+      {
+        "id": "completion-recovery",
+        "methods": 2,
+        "cases": 2,
+        "report": "r11"
+      },
+      {
+        "id": "configuration-layout",
+        "methods": 2,
+        "cases": 2,
+        "report": "r12"
+      },
+      {
+        "id": "completion-layout",
+        "methods": 2,
+        "cases": 2,
+        "report": "r13"
+      },
+      {
+        "id": "board-profile-driver",
+        "methods": 1,
+        "cases": 1,
+        "report": "r14"
+      }
+    ]
+  },
+  "historical": {
+    "predecessor": "UI-63",
+    "baseline_commit": "ea3e0a9",
+    "method_count": 74,
+    "source_files": 268,
+    "identical_source_files": 267,
+    "reviewed_source_exceptions": [
+      {
+        "path": "unity/Wotr.Client/Assets/Wotr/Runtime/UI/Characters/CharacterRosterPanel.cs",
+        "old_sha256": "090ca7eb0bea03d4a7acf7437bea288fd45303789725c1bbf1e406e1f64023f5",
+        "new_sha256": "8a8704e327bbd4afe0f7a4fc298ff220ca42ab1e84e346e4e6b98bf24e431b26",
+        "result": "verified by fresh required UI72 reports",
+        "reason": "Denethor inspector height/top oscillated at 1920/125. Existing SizeChanged guard prevents repositioning for subpixel feedback; Show/Restore, targets, privacy and sender unchanged.",
+        "replacement_reports": [
+          "r03",
+          "r04",
+          "r10",
+          "r11",
+          "r13",
+          "r14"
+        ]
+      }
+    ],
+    "methods_by_report": {
+      "r15": [
+        "Wotr.PlayTests.ActionCardLayoutTests.FourLayoutsKeepVirtualRowsCardGesturesAndWindowBounds",
+        "Wotr.PlayTests.ActionCardLayoutTests.NewPagePreservesFocusedControlAndReadingAnchor",
+        "Wotr.PlayTests.CardViewportLayoutTests.ActionCardFitsBothEffectsAtFourLayoutsAndKeepsPinnedPositionAfterRefresh",
+        "Wotr.PlayTests.FloatingWindowTests.BattleHeaderAndReportMoveWhileControlsKeepTheirCommands",
+        "Wotr.PlayTests.FloatingWindowTests.HeaderCaptureCancelsSafelyAndResetAndNewBoardUseTheSessionLayout",
+        "Wotr.PlayTests.FloatingWindowTests.PersistentWindowsMoveClampAndKeepTheirPositionAcrossProjectionsAndCameraChanges",
+        "Wotr.PlayTests.FloatingWindowTests.TransientPreviewStaysAnchoredAndDraggingPinsItWhileSovereignContentMayRefresh"
+      ],
+      "r16": [
+        "Wotr.PlayTests.ContextHelpLayoutTests.BothRolesCanNavigateFocusPinAndMoveHelpInAllFourLayouts",
+        "Wotr.PlayTests.ContextHelpLayoutTests.OptionalHelpScrollingDoesNotExemptDecisionHostsOrAdditionalScrollViews",
+        "Wotr.PlayTests.ContextHelpLayoutTests.ServerConfigurationCorpusAndAllProjectedReasonsKeepTheirExactMeaning",
+        "Wotr.PlayTests.ContextHelpNetworkTests.BothRolesCanReadTheConfiguredRulesWhileWaitingWithoutSendingACommand",
+        "Wotr.PlayTests.ContextHelpNetworkTests.HelpPreservesRingAndPhysicalDieAcrossEscapeAndReconnectThenUpdatesRealLimit"
+      ],
+      "r17": [
+        "Wotr.PlayTests.EffectsLayoutTests.MultipleSourcesAbilityEmptyAndExpiredViewsFitFourLayoutsWithoutScrolling",
+        "Wotr.PlayTests.EffectsLayoutTests.PaymentStaysAtTheSourceAndTheDrawerCanMoveWithoutLosingIt",
+        "Wotr.PlayTests.InGameContextNetworkTests.ClosedEffectCostReopensFromGoldAndHistoryAndHelpKeepTheExactDraft",
+        "Wotr.PlayTests.InGameContextNetworkTests.EffectsResourcesSovereignsAndVictoryOpenSavedFactsForBothSides",
+        "Wotr.PlayTests.InGameContextNetworkTests.PublicNoticeNeverRevealsPrivateTileAndAnotherDeviceInvalidatesItsPressedChoice"
+      ],
+      "r18": [
+        "Wotr.PlayTests.EffectsNetworkTests.EmptyRegionEffectDoesNotInterceptTheFinalArmyTarget",
+        "Wotr.PlayTests.EffectsNetworkTests.EnemyProtectionRequiresItsWholeCostAndOneCommitAfterReconnect",
+        "Wotr.PlayTests.EffectsNetworkTests.ExpiringSourceKeepsItsPinnedTextAndRemovesControlsAndScopeAfterReconnect",
+        "Wotr.PlayTests.EffectsNetworkTests.PalantirCompletesOnTheChosenRingWithoutAnotherConfirmation",
+        "Wotr.PlayTests.EffectsNetworkTests.PublicEffectsHoverDoesNotMoveTheCameraAndEmptyRegionsStillRequireClick"
+      ],
+      "r19": [
+        "Wotr.PlayTests.ExpansionCorruptionNetworkTests.HiddenCorruptionStaysFaceDownForFreePeoples",
+        "Wotr.PlayTests.ExpansionCorruptionNetworkTests.SequentialCorruptionCanDrawAgainInsteadOfStopping",
+        "Wotr.PlayTests.ExpansionCorruptionNetworkTests.SequentialCorruptionCanStopAfterTheFirstTile",
+        "Wotr.PlayTests.ExpansionCorruptionNetworkTests.VisibleCorruptionIsRevealedOnlyAfterAttachment"
+      ],
+      "r20": [
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.AwakeningSelectsAmongAllFiveSovereignsAndTracesARoute",
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.CorruptedSovereignRemovalIsAnExplicitAction",
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.CouncilVersionsHomelandsAndShadowTokenSurviveReconnect",
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.DismayConsumesOneTokenAndRerollsTheSelectedRuler",
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.KeeperAndLesserChoicesPrecedeBothRulerDiscards",
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.NaryaActivatesItsNationWithTheChosenDie",
+        "Wotr.PlayTests.ExpansionDecisionNetworkTests.VilyaKeepsTheResolvingDieAvailable"
+      ],
+      "r21": [
+        "Wotr.PlayTests.ExpansionLobbyNetworkTests.AllEightModuleCombinationsStartThroughAcceptedLobbyControls",
+        "Wotr.PlayTests.LiveActivityNetworkTests.TwoMovesAttackCardsDiceRetreatAndAdvanceKeepNoticesAndArchivesConsistent"
+      ],
+      "r22": [
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.BalrogEntryOffersAnOptionalReserveFigure",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.CouncilPoliticsSpendsTheTokenWithoutADie",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.CouncilTokenAndMusterEnterAKingsChieftain",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.CouncilTravelMovesTheChosenNazgulWithoutADie",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.DenethorsTokenConvertsTheRulerAndCompletesBothDraws",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.DenethorsTokenConvertsTheRulerAndPlaysAnEvent",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.FarSightedIsAnExplicitModeForMovement",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.FarSightedSeparationPreservesItsExactRulerCost",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.FarSightedTokenSeparationKeepsTheConsumedTokenAcrossReconnect",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.RulerTokenPaysForAllThreeExplicitRecruitments",
+        "Wotr.PlayTests.ExpansionTokenNetworkTests.ThranduilsTokenPaysForFarSightedInTheSameAction"
+      ],
+      "r23": [
+        "Wotr.PlayTests.ExpansionWindowNetworkTests.EvilKnowledgeRetainsTheEliteAndFullBattleResourcesFit",
+        "Wotr.PlayTests.ExpansionWindowNetworkTests.KeepingVilyaCompletesThePaidActionWithOneClick",
+        "Wotr.PlayTests.ExpansionWindowNetworkTests.LoreCanChooseALesserEyeFromTheHuntInspector",
+        "Wotr.PlayTests.ExpansionWindowNetworkTests.LoreCanResolveBeforeDismayWithoutSpendingItsToken",
+        "Wotr.PlayTests.ExpansionWindowNetworkTests.NenyaTransfersOnlyItsOwnRingAndResumesTheHunt",
+        "Wotr.PlayTests.LordsShadowNetworkTests.LoreChangesOneRolledEyeAfterOneConfirmationAndReconnect",
+        "Wotr.PlayTests.LordsShadowNetworkTests.LoreRemovalSpendsTheExactDieWhenTheRingIsChosen"
+      ],
+      "r24": [
+        "Wotr.PlayTests.InGameContextNetworkTests.PrivateCorruptionTileReceiptSurvivesRestartWithTheSameParentAndPublicBack",
+        "Wotr.PlayTests.InGameContextNetworkTests.RestartBeforeRingCommitRestoresTheExactUnsentCostAndWaitsForTheFinalFace",
+        "Wotr.PlayTests.InGameContextNetworkTests.RingReceiptSurvivesClientAndServerRestartWithoutChangingThePhysicalCost",
+        "Wotr.PlayTests.InGameContextNetworkTests.VictoryReceiptSurvivesRestartWithoutReplayingTheFinalAction"
+      ],
+      "r25": [
+        "Wotr.PlayTests.ResourcePanelNetworkTests.DismayCanFinishBeforeLoreWithoutLosingTheExactDieOrClosingTheNewDecision",
+        "Wotr.PlayTests.ResourcePanelNetworkTests.DismayTargetsTheOpponentsRetainedRulerAfterClosingAndReconnect",
+        "Wotr.PlayTests.ResourcePanelNetworkTests.RingCommitsOnlyTheNewFaceAndLeavesTheChangedDieUnused",
+        "Wotr.PlayTests.ResourcePanelNetworkTests.RulerTokenDropKeepsItsIdentityThroughBothDenethorDraws",
+        "Wotr.PlayTests.ResourcePanelNetworkTests.SpecialChoicesAndBothDiscardsStayAtThePoolAndReopenOnlyForNewDecisions"
+      ],
+      "r26": [
+        "Wotr.PlayTests.SovereignPanelNetworkTests.FateAndRemovingTokensKeepThreeSovereignsAndDoNotInventAnImmediateRuler",
+        "Wotr.PlayTests.SovereignPanelNetworkTests.FiveSovereignsAwakenByStayingAndPreserveExactCostThroughCloseAndReconnect",
+        "Wotr.PlayTests.SovereignPanelNetworkTests.PoliticalTileReturnIsOptionalRandomAndDistinctFromRemovingTheSovereign",
+        "Wotr.PlayTests.SovereignPanelNetworkTests.PublicReplacementAndKingsEndingStaySeparateFromOrdinaryHunt",
+        "Wotr.PlayTests.SovereignPanelNetworkTests.SequentialVisibleDrawOffersOnlyTheLatestPrivateTileAndKeepsOneDecisionHost"
+      ],
+      "r27": [
+        "Wotr.PlayTests.UI63SiegeNetworkTests.AwakeningCannotEnterTheBesiegedHomeFromOutsideAndRejectsTheForgedRoute",
+        "Wotr.PlayTests.UI63SiegeNetworkTests.AwakeningInsideTheGarrisonKeepsItsSideAndPaysEitherExactPhysicalDie"
+      ],
+      "r28": [
+        "Wotr.PlayTests.VictoryPanelNetworkTests.BesiegersDoNotScoreWhileTheDefenderStillControlsTheStronghold",
+        "Wotr.PlayTests.VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins",
+        "Wotr.PlayTests.VictoryPanelNetworkTests.MilitaryThresholdsWaitForTurnEndAndShadowWinsTheTie",
+        "Wotr.PlayTests.VictoryPanelNetworkTests.RecaptureLosesTheThresholdBeforeTheEndOfTheTurn",
+        "Wotr.PlayTests.VictoryPanelNetworkTests.RingEndingsTakePriorityAndKeepInspectionPrivateAfterRetryAndReconnect"
+      ]
+    }
+  },
+  "source_provenance": {
+    "unity_manifest": {
+      "path": ".artifacts/ui72-unity-sources.json",
+      "sha256": "1398fd6e9d546311186d43bf39e7bf281604b44ee90b3ca914f8532007711ad7",
+      "files": 1248
+    },
+    "domain_manifest": {
+      "path": ".artifacts/ui72-domain-inputs.json",
+      "sha256": "a0064804d04c5467d104eb0a2db3eb608ac298af7fa5ac1f8fcb3481967a4f38",
+      "files": 926
+    },
+    "coverage_plan": {
+      "path": ".artifacts/ui72-coverage-plan.json",
+      "sha256": "a59310d225b259287bc935ce8560717ec1abedf180c0de292f7d53f033ecebf7"
+    },
+    "play_plan": {
+      "path": ".artifacts/ui72-play-plan.json",
+      "sha256": "67d91ffea7405b7b11360c2af93ee5bfce7feae2c630aac786cef51872a8e7fe"
+    },
+    "historical_plan": {
+      "path": ".artifacts/ui72-regression-evidence.json",
+      "sha256": "5f380ba69d09a38cce7ece66308e4a3bdbd8249b87c1bbd4d2beaf1ad1761fca"
+    }
+  },
+  "matrix": [
+    {
+      "id": "CM01",
+      "requirement": "Custom list and availability: both views, old records, no Council leak, read without mutacji/RNG.",
+      "test_result": "PASS",
+      "fresh_method_count": 16,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r01",
+          "methods": [
+            {
+              "method": "Wotr.Tests.CharacterRosterPersistenceTests.BothHttpRostersAndPreviewArePureAcrossLegacySnapshotAndRestart"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterPersistenceTests.ExplicitHobbitReturnPreservesTheQueuedSecondFigureAcrossRestart"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterPersistenceTests.PrivateCouncilVersionsHaveIdenticalCompleteShadowHttpViewAndErrorAfterRestart"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterPersistenceTests.WhiteReturnRestartsBeforeAndAfterOneTransformationAndOneCost"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterPersistenceTests.WitchKingReplacementKeepsOneIdentityAndItsPermanentLimitAcrossRestart"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterProjectionTests.AllEightConfigurationsHaveOnlyOwnConfiguredNamedFigures",
+              "parameterized_cases": 8
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterProjectionTests.CouncilChieftainEntryPreservesTheConcreteTokenAndRulerCost"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterProjectionTests.EachProjectedEntryTargetAndCostPassesTheRealValidator",
+              "parameterized_cases": 2
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterProjectionTests.EntryConditionsCostAndWindowRemainIndependent"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterProjectionTests.OldResponseAndUnknownFigureHistoryDoNotInventDeathOrPermission"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterProjectionTests.PrivateCouncilVersionsCannotChangeAnyShadowPayloadOrRejectedResponse"
+            }
+          ]
+        },
+        {
+          "report": "r02",
+          "methods": [
+            {
+              "method": "Wotr.EditorTests.CharacterRosterContractTests.ActualFateFigurePreservesItsPrivateVersionAndSeparateMovementLevel"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterContractTests.ActualFreePeoplesHttpWireKeepsTheSameFigureAndWhiteReturnOutsideItsWindow"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterContractTests.ActualShadowWireContainsOnlyOwnNamedFiguresAndExplicitCouncilCost"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterContractTests.MissingEntryDescriptionIsNeutralAndHasNoExecutionPermission"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterContractTests.OlderResponseDoesNotInventCharactersDeathOrActions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM02",
+      "requirement": "figure and version: before entering, transforming, death and exception of return; no false elimination in absence.",
+      "test_result": "PASS",
+      "fresh_method_count": 7,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r01",
+          "methods": [
+            {
+              "method": "Wotr.Tests.CharacterRosterLifecycleTests.FateCompanionAndAwakenedSovereignRetainTheRightVersionAndRemovedIdentity"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterLifecycleTests.GandalfReturnsAsWhiteAfterHistoricalMinionDiesWithoutDuplicatingTheFigure",
+              "parameterized_cases": 2
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterLifecycleTests.LivingGandalfKeepsHisGarrisonAndStriderHisPhysicalIdentity"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterLifecycleTests.ReturningHobbitsAreDistinctFromPermanentCasualtiesDuringBothReturnDecisions"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterLifecycleTests.TakenAliveAwaitsPlacementButOrdinaryEliminationHasNoReturn"
+            },
+            {
+              "method": "Wotr.Tests.CharacterRosterLifecycleTests.WitchKingCanReplaceHisVersionOnceButMouthCannot",
+              "parameterized_cases": 2
+            }
+          ]
+        },
+        {
+          "report": "r03",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterPanelNetworkTests.WhiteReturnsThroughOneStableInspectedFigureAndReconnect"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM03",
+      "requirement": "Characters: own name figure, sections and conditions, without Nazgûla/Fellowship, one ID after transformation and consistent sovereigns.",
+      "test_result": "PASS",
+      "fresh_method_count": 9,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r02",
+          "methods": [
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.EmptyOlderRosterIsHonestAndRemovedStartsCollapsed"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.EnemyPublicInspectionDoesNotReadOwnCandidatesOrCreateForeignControls"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.EveryPublicCharacterAbilityHasReadableTextAndItsReviewedSource"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.FateStatisticsSeparateMovementFromCombatAndHuntLevel"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.PublicAbilityInspectionExplainsParticipationAndTheFiveDiceLimit"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.RealRosterKeepsWhiteReturnOutOfRemovedAndDoesNotDuplicateFellowship"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.ShadowFullRosterShowsEightNamedFiguresAndServerEntryConditions"
+            },
+            {
+              "method": "Wotr.EditorTests.CharacterRosterPanelTests.TransformRefreshKeepsTheSameRowInspectorAndPinnedChoice"
+            }
+          ]
+        },
+        {
+          "report": "r03",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterLayoutTests.FullOwnRostersAndPublicInspectorsFitFourLayoutsWithoutDecisionScroll"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM04",
+      "requirement": "Hover/fokus/hypertrophy/Locate; stable choice, no auto-cams, no other people's controls and no empty region.",
+      "test_result": "PASS",
+      "fresh_method_count": 2,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r03",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterPanelNetworkTests.AwakenedPortraitAndOwnRosterShareOnePublicInspector"
+            },
+            {
+              "method": "Wotr.PlayTests.CharacterRosterPanelNetworkTests.HoverFocusPinAndMapInspectionPreserveSelectionAndRejectPan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM05",
+      "requirement": "List ↔ map: travel, participation in the army, several groups, flight, siege and replacing only the unsent source.",
+      "test_result": "PASS",
+      "fresh_method_count": 3,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r04",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.BalrogTravelRequiresHisExplicitAbilityAndCannotTakeANazgul"
+            },
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.FlightAndStationarySarumanKeepTheirDifferentRules"
+            },
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.RosterAndMapShareGroupsExactCostAndPaidReconnect"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM06",
+      "requirement": "Entry/change, specific die, full costs and additional die only in the appropriate Recovery.",
+      "test_result": "PASS",
+      "fresh_method_count": 3,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r02",
+          "methods": [
+            {
+              "method": "Wotr.EditorTests.CharacterRosterActionTests.EntryRetainsTheExplicitWestAndRejectsAStaleCostWithoutReplacingIt"
+            }
+          ]
+        },
+        {
+          "report": "r04",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.WhiteEntryRecoversTheLostReceiptWithoutPayingAgain"
+            }
+          ]
+        },
+        {
+          "report": "r10",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.RecordedTransformationAndGoldKeepTheNewExactCharacterDraft"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM07",
+      "requirement": "Capability, Ruler/Council/Pier a wall and a limitation; no automatic ability or cost, one host reaction.",
+      "test_result": "PASS",
+      "fresh_method_count": 4,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r04",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.CouncilEntryAndTravelKeepTheChosenTokenAndCost"
+            },
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.FateAlternateAbilityBelongsToItsStableFigure"
+            },
+            {
+              "method": "Wotr.PlayTests.CharacterRosterActionNetworkTests.RulerTokenRecruitmentUsesOneCharacterHostAndOneCommit"
+            }
+          ]
+        },
+        {
+          "report": "r10",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.CharacterReactionLinkAndAwakenedPortraitReuseTheExistingOwners"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM08",
+      "requirement": "One panel wersji/przewodnika: Lords without Council, Council, Fate and no unnecessary choice on the base.",
+      "test_result": "PASS",
+      "fresh_method_count": 6,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r02",
+          "methods": [
+            {
+              "method": "Wotr.EditorTests.CompanionSetupPanelTests.CloseSurvivesSameDecisionRefreshAndNextDecisionReleasesTheOnlyTray"
+            },
+            {
+              "method": "Wotr.EditorTests.CompanionSetupPanelTests.FateComparisonKeepsMovementDistinctAndSharesReviewedAbilityText"
+            },
+            {
+              "method": "Wotr.EditorTests.CompanionSetupPanelTests.OpeningAndComparingDoNotChooseRequiredVersionOrGuide"
+            },
+            {
+              "method": "Wotr.EditorTests.CompanionSetupPanelTests.OtherSideBaseAndFinishedGameNeverOwnThePrivatePanel"
+            },
+            {
+              "method": "Wotr.EditorTests.CompanionSetupPanelTests.RequiredChoiceAndExplicitGuideBecomeReadyTogether"
+            }
+          ]
+        },
+        {
+          "report": "r05",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CompanionSetupPanelNetworkTests.NormalSetupUsesOnlyServerChoicesAcrossLordsCouncilFateAndKings"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM09",
+      "requirement": "Privacy version/draft/Progress, open Guide and one approval; restart before/after selection.",
+      "test_result": "PASS",
+      "fresh_method_count": 2,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r05",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CompanionSetupPanelNetworkTests.PrivateVersionsAndOneReceiptSurviveClientAndServerRestarts"
+            }
+          ]
+        },
+        {
+          "report": "r10",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.PrivateSetupAndPublicGuideKeepTheirHistoricalVersionsAndProperHost"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM10",
+      "requirement": "Home 0/1/2/many figures: click/drop/Fellowship, change and empty set, correct Fate targets.",
+      "test_result": "PASS",
+      "fresh_method_count": 3,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r06",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.EmptyAndStayKeepTheSamePrivateWaitingViewAndGrantNoTokens"
+            },
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.TwoAndFiveDeparturesShareClickDropUndoAndGrantBothTokensOnce"
+            }
+          ]
+        },
+        {
+          "report": "r07",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.FateGimliUsesEitherHomelandWithOrWithoutNewCitiesAndNoNationIcon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM11",
+      "requirement": "Separate moments of setup, window without candidates, disclosure/politics, choice of one token or award of both.",
+      "test_result": "PASS",
+      "fresh_method_count": 3,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r02",
+          "methods": [
+            {
+              "method": "Wotr.EditorTests.CouncilHomelandPanelTests.TokenPreviewDistinguishesNoneChoiceAndAutomaticPair",
+              "parameterized_cases": 4
+            }
+          ]
+        },
+        {
+          "report": "r06",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.OneDepartureHandsEitherTokenToTheShadowResourcePanel"
+            },
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.TwoAndFiveDeparturesShareClickDropUndoAndGrantBothTokensOnce"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM12",
+      "requirement": "Resume/Settings/Help/Games, no pause, no hierarchy Esc/fokusu and no pass of a click to the map.",
+      "test_result": "PASS",
+      "fresh_method_count": 3,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r09",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.MenuFitsFourLayoutsAndOutsideReleaseCannotReachTheMap"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.OneEscapeClosesOneWindowThenOneSelectionThenOpensMenuAndPreservesFocus"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuNetworkTests.MenuReceivesLiveUpdatesAndRemainsAvailableAfterVictory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM13",
+      "requirement": "Scale 100/125%, Reduced motion and reset windows during draft; permanent preferences, positions only in session.",
+      "test_result": "PASS",
+      "fresh_method_count": 5,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r09",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsMapPanAndCaptureWithoutClosingInspectionOrUndoingTheDie"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.SettingsEscapeRemainsOwnedUntilReleaseAfterFocusReturnsToBoard"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.SettingsKeyboardObservationDoesNotConsumeOtherScreensAndDetachesWithBoard"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuNetworkTests.TravelCardBattleHuntAndSetupDraftsSurviveSettingsHelpAndGamesWithoutSubmission"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM14",
+      "requirement": "Games: Completed recording and saved Error, Retry, delayed upload, same journal/commandId upon return.",
+      "test_result": "PASS",
+      "fresh_method_count": 3,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r09",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardMenuNetworkTests.FailedAndDelayedDraftWritesKeepTheBoardAliveAndRetryOnlySavesLocally"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuNetworkTests.GamesDuringLostReceiptReturnsWithTheExactCommandAndNoSecondCost"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuNetworkTests.OfflineMenuPreservesTheDraftAndAllowsGamesAfterOnlyLocalWrites"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM15",
+      "requirement": "Red history and gold decision open the right context without double form and losing draft.",
+      "test_result": "PASS",
+      "fresh_method_count": 2,
+      "historical_method_count": 7,
+      "evidence": [
+        {
+          "report": "r10",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.PrivateSetupAndPublicGuideKeepTheirHistoricalVersionsAndProperHost"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.RecordedTransformationAndGoldKeepTheNewExactCharacterDraft"
+            }
+          ]
+        },
+        {
+          "report": "r17",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.ClosedEffectCostReopensFromGoldAndHistoryAndHelpKeepTheExactDraft"
+            },
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.EffectsResourcesSovereignsAndVictoryOpenSavedFactsForBothSides"
+            },
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.PublicNoticeNeverRevealsPrivateTileAndAnotherDeviceInvalidatesItsPressedChoice"
+            }
+          ]
+        },
+        {
+          "report": "r24",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.PrivateCorruptionTileReceiptSurvivesRestartWithTheSameParentAndPublicBack"
+            },
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.RestartBeforeRingCommitRestoresTheExactUnsentCostAndWaitsForTheFinalFace"
+            },
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.RingReceiptSurvivesClientAndServerRestartWithoutChangingThePhysicalCost"
+            },
+            {
+              "method": "Wotr.PlayTests.InGameContextNetworkTests.VictoryReceiptSurvivesRestartWithoutReplayingTheFinalAction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM16",
+      "requirement": "Restart/timeout/two device in input, versions, homelands and reactions: one cost/RNG, proper receipt and secrecy.",
+      "test_result": "PASS",
+      "fresh_method_count": 4,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r05",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CompanionSetupPanelNetworkTests.PrivateVersionsAndOneReceiptSurviveClientAndServerRestarts"
+            }
+          ]
+        },
+        {
+          "report": "r08",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.HomelandDraftAndBothReceiptsSurviveRestartsWithoutSkippingTheShadowChoice"
+            }
+          ]
+        },
+        {
+          "report": "r11",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.CouncilEntryDraftAndLostReceiptSurviveGamesAndBothProcessRestarts"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.SecondDeviceEnteringTheChieftainInvalidatesTheOldCapturedDestinationAndExactCost"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM17",
+      "requirement": "Common Preview/Abbreviation with Fellowship, Hunt, Fight, Sovereigns and Help; new decisions during Menu and final inspection.",
+      "test_result": "PASS",
+      "fresh_method_count": 2,
+      "historical_method_count": 2,
+      "evidence": [
+        {
+          "report": "r10",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.CharacterReactionLinkAndAwakenedPortraitReuseTheExistingOwners"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardCompletionContextNetworkTests.NewHobbitDecisionsDuringMenuAndSettingsKeepOneHostCostAndFocus"
+            }
+          ]
+        },
+        {
+          "report": "r16",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.ContextHelpNetworkTests.BothRolesCanReadTheConfiguredRulesWhileWaitingWithoutSendingACommand"
+            },
+            {
+              "method": "Wotr.PlayTests.ContextHelpNetworkTests.HelpPreservesRingAndPhysicalDieAcrossEscapeAndReconnectThenUpdatesRealLimit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CM18",
+      "requirement": "Four layouts, both roles and configurations, click/drop without scroll decision, feedback ≤100 ms, 60 FPS target, build and dragons.",
+      "test_result": "PASS",
+      "fresh_method_count": 21,
+      "historical_method_count": 0,
+      "evidence": [
+        {
+          "report": "r01",
+          "methods": [
+            {
+              "method": "Wotr.Tests.ExpansionCompositionTests.EveryLegalConfigurationHasExactSourceSlotsFiguresDiceTilesAndFirstTurn",
+              "parameterized_cases": 93
+            },
+            {
+              "method": "Wotr.Tests.ExpansionLobbyTests.All93AcceptedConfigurationsStartTheirActualSetupAndRemainImmutableThroughHttp"
+            },
+            {
+              "method": "Wotr.Tests.ExpansionPersistenceTests.All93ConfigurationsRestartTheirFirstSetupDecisionWithPrivateViewsAndIdempotentRetry"
+            },
+            {
+              "method": "Wotr.Tests.ExpansionPersistenceTests.All93ConfigurationsRestartTheirFirstPaidActionWithoutResettingSetupOrShufflingAgain"
+            },
+            {
+              "method": "Wotr.Tests.BoardProfileExportTests.TenWorkloadsUseNormalSetupAndActualBattleAndHuntDecisions"
+            },
+            {
+              "method": "Wotr.Tests.BoardProfileExportTests.ExportRoundTripsWithoutMutatingStatesRandomnessOrLeakingPrivateSetup"
+            },
+            {
+              "method": "Wotr.Tests.BoardProfileExportTests.PreparationRejectsAPreAttackPositionInsteadOfCallingItABattle"
+            }
+          ]
+        },
+        {
+          "report": "r03",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CharacterRosterLayoutTests.FullOwnRostersAndPublicInspectorsFitFourLayoutsWithoutDecisionScroll"
+            }
+          ]
+        },
+        {
+          "report": "r05",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CompanionSetupPanelNetworkTests.ComparisonAndGuideRemainReachableWithoutScrollAtFourLayouts"
+            }
+          ]
+        },
+        {
+          "report": "r07",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.CouncilHomelandPanelNetworkTests.FivePortraitsAndTokenPreviewFitBothRolesAtFourLayoutsWithoutScrolling"
+            }
+          ]
+        },
+        {
+          "report": "r09",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsMapPanAndCaptureWithoutClosingInspectionOrUndoingTheDie"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.EscapeCancelsWindowDragBeforeClosingEitherPinnedWindowOrChangingTheDraft"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.MenuFitsFourLayoutsAndOutsideReleaseCannotReachTheMap"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.OneEscapeClosesOneWindowThenOneSelectionThenOpensMenuAndPreservesFocus"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.SettingsEscapeRemainsOwnedUntilReleaseAfterFocusReturnsToBoard"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardMenuLayoutTests.SettingsKeyboardObservationDoesNotConsumeOtherScreensAndDetachesWithBoard"
+            }
+          ]
+        },
+        {
+          "report": "r12",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.ExpansionMatrixLayoutTests.BothPerspectivesOfAllConfigurationsFitWithoutScrolling"
+            },
+            {
+              "method": "Wotr.PlayTests.ExpansionMatrixLayoutTests.FullSpecialDiceAndTokenPoolsRemainInsideTheirPanels"
+            }
+          ]
+        },
+        {
+          "report": "r13",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardCompletionLayoutTests.FullRosterVersionsAndHomelandsKeepBothViewsReadableInFourLayouts"
+            },
+            {
+              "method": "Wotr.PlayTests.BoardCompletionLayoutTests.MenuSettingsAndHelpPreserveBattleAndHuntDraftsAcrossFourLayouts"
+            }
+          ]
+        },
+        {
+          "report": "r14",
+          "methods": [
+            {
+              "method": "Wotr.PlayTests.BoardProfileDriverTests.EveryBoardWorkloadUsesRealGesturesAndPreservesItsDecisionAcrossAllFourLayouts"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "id": "r01",
+      "path": "tests/Wotr.Tests/TestResults/ui72-domain.trx",
+      "sha256": "402415ddf49f945f63e9f78dee84bd12618dd8660f855f0aedeee47f33d916fd",
+      "kind": "fresh",
+      "started_at": "2026-10-08T20:27:00.5533250+02:00",
+      "finished_at": "2026-10-08T20:31:33.4385090+02:00",
+      "full_report_cases": 3729
+    },
+    {
+      "id": "r02",
+      "path": ".artifacts/ui72-edit.xml",
+      "sha256": "e73c4fbd2eba4be2d72cc70aaeae6dc699487395d8db11e3ce6d20b1a9d20729",
+      "kind": "fresh",
+      "started_at": "2026-10-08 19:04:11Z",
+      "finished_at": "2026-10-08 19:04:26Z",
+      "full_report_cases": 551
+    },
+    {
+      "id": "r03",
+      "path": ".artifacts/ui72-roster.xml",
+      "sha256": "e1989b2f034e752e99620f81d0582b4e06d2555e50805410009d3e202b89e69b",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:46:37Z",
+      "finished_at": "2026-10-08 18:46:48Z",
+      "full_report_cases": 4
+    },
+    {
+      "id": "r04",
+      "path": ".artifacts/ui72-character-actions.xml",
+      "sha256": "3d7d1a5236b0f97c6e37805a42571488592b80b97fdffd09a480f4435f7ba865",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:47:06Z",
+      "finished_at": "2026-10-08 18:47:27Z",
+      "full_report_cases": 7
+    },
+    {
+      "id": "r05",
+      "path": ".artifacts/ui72-companion-setup.xml",
+      "sha256": "15a0cfff327895dd29f380ea6bcb8f6ce841de1398c203b252e8234dc039f4af",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:47:44Z",
+      "finished_at": "2026-10-08 18:48:09Z",
+      "full_report_cases": 3
+    },
+    {
+      "id": "r06",
+      "path": ".artifacts/ui72-homelands-core.xml",
+      "sha256": "2efa2d35c19217b30c4fc1a37f1e2bb2a869e474ab6be54d58ce54d8b0d49c21",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:52:43Z",
+      "finished_at": "2026-10-08 18:52:53Z",
+      "full_report_cases": 3
+    },
+    {
+      "id": "r07",
+      "path": ".artifacts/ui72-homelands-fate-layout.xml",
+      "sha256": "cbe8da9f4a3204703f3783474cc9030db780fad38acd3c20da330d8c5b26fb08",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:53:11Z",
+      "finished_at": "2026-10-08 18:53:25Z",
+      "full_report_cases": 2
+    },
+    {
+      "id": "r08",
+      "path": ".artifacts/ui72-homelands-recovery.xml",
+      "sha256": "f45556fb77a979c17f5b0f6d67d6f814329f80ba1704cb138f7bb51c92b26223",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:53:43Z",
+      "finished_at": "2026-10-08 18:53:55Z",
+      "full_report_cases": 1
+    },
+    {
+      "id": "r09",
+      "path": ".artifacts/ui72-menu.xml",
+      "sha256": "c9d8d43c770ba9c1bd62e54f77db6f44278a96a7a8337b324e02a3ae7101e32d",
+      "kind": "fresh",
+      "started_at": "2026-10-08 19:00:40Z",
+      "finished_at": "2026-10-08 19:01:12Z",
+      "full_report_cases": 11
+    },
+    {
+      "id": "r10",
+      "path": ".artifacts/ui72-completion-context.xml",
+      "sha256": "3eb37835452b07a43710a867ac5fb6f0ec9559eafbe4f8bd9df250c08d8ed56a",
+      "kind": "fresh",
+      "started_at": "2026-10-08 19:01:31Z",
+      "finished_at": "2026-10-08 19:01:41Z",
+      "full_report_cases": 4
+    },
+    {
+      "id": "r11",
+      "path": ".artifacts/ui72-completion-recovery.xml",
+      "sha256": "0ebf861c9541b961689df9dc549b5849ac9674475d07b99ca82f1c6e1d9fdeba",
+      "kind": "fresh",
+      "started_at": "2026-10-08 19:01:59Z",
+      "finished_at": "2026-10-08 19:02:12Z",
+      "full_report_cases": 2
+    },
+    {
+      "id": "r12",
+      "path": ".artifacts/ui72-configuration-layout.xml",
+      "sha256": "12c43d93a26c51d1a5774839f09de218231975e3b242b5007025c3b4907a6acb",
+      "kind": "fresh",
+      "started_at": "2026-10-08 19:02:29Z",
+      "finished_at": "2026-10-08 19:03:26Z",
+      "full_report_cases": 2
+    },
+    {
+      "id": "r13",
+      "path": ".artifacts/ui72-completion-layout.xml",
+      "sha256": "65c08a752d672000e6076daf59482c9146d84a4a122edaacfb07425c1c4724d7",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:57:45Z",
+      "finished_at": "2026-10-08 18:59:49Z",
+      "full_report_cases": 2
+    },
+    {
+      "id": "r14",
+      "path": ".artifacts/ui72-board-profile-driver.xml",
+      "sha256": "567de13e43fec4d4914f8b124e911f2d35910f79346f839f4bcff9987f3c9c84",
+      "kind": "fresh",
+      "started_at": "2026-10-08 18:41:35Z",
+      "finished_at": "2026-10-08 18:43:01Z",
+      "full_report_cases": 1
+    },
+    {
+      "id": "r15",
+      "path": ".artifacts/ui63-window-stability.xml",
+      "sha256": "9e2a0b27b3e320e2d03e5b5e0c32edceb503bce0a1d4aa1a1ea22782fc24c5df",
+      "kind": "historical",
+      "started_at": "2026-10-08 17:54:40Z",
+      "finished_at": "2026-10-08 17:55:42Z",
+      "full_report_cases": 8
+    },
+    {
+      "id": "r16",
+      "path": ".artifacts/ui63-profile-panels.xml",
+      "sha256": "ccc0a62028bfcdeb6721fa763af15dc0d7dc01ee92e1a77de811da1a05347115",
+      "kind": "historical",
+      "started_at": "2026-10-08 17:57:33Z",
+      "finished_at": "2026-10-08 17:58:49Z",
+      "full_report_cases": 8
+    },
+    {
+      "id": "r17",
+      "path": ".artifacts/ui63-changed-panels.xml",
+      "sha256": "718148930e96e23cec55d802bed57c20f267580d2ecfcf0d05a248ab09e788e2",
+      "kind": "historical",
+      "started_at": "2026-10-08 17:59:10Z",
+      "finished_at": "2026-10-08 17:59:33Z",
+      "full_report_cases": 5
+    },
+    {
+      "id": "r18",
+      "path": ".artifacts/ui63-repeat-62-effects.xml",
+      "sha256": "6fc486c214aa764daa0b888215edcc8f349d3b10e37c93040fbe9fa0e14c032b",
+      "kind": "historical",
+      "started_at": "2026-10-08 16:29:43Z",
+      "finished_at": "2026-10-08 16:29:56Z",
+      "full_report_cases": 5
+    },
+    {
+      "id": "r19",
+      "path": ".artifacts/ui63-corruption.xml",
+      "sha256": "fa83bc8593c1281955c1285d8473b18653dd7f1d80722d4e4176cbd4ecf92f56",
+      "kind": "historical",
+      "started_at": "2026-10-08 15:46:46Z",
+      "finished_at": "2026-10-08 15:47:09Z",
+      "full_report_cases": 4
+    },
+    {
+      "id": "r20",
+      "path": ".artifacts/ui69-expansion.xml",
+      "sha256": "c41e3398f6f9d4c3c9decf566043629cbe73e5822465877c83d737d1426eeb2f",
+      "kind": "historical",
+      "started_at": "2026-10-08 15:19:25Z",
+      "finished_at": "2026-10-08 15:19:50Z",
+      "full_report_cases": 7
+    },
+    {
+      "id": "r21",
+      "path": ".artifacts/ui63-lobby-live.xml",
+      "sha256": "d191043e38a7999b21e338bc125dfec4a27cd8b0bdf3c895e6aa8e1684fc6c46",
+      "kind": "historical",
+      "started_at": "2026-10-08 16:04:32Z",
+      "finished_at": "2026-10-08 16:05:18Z",
+      "full_report_cases": 2
+    },
+    {
+      "id": "r22",
+      "path": ".artifacts/ui63-tokens-after-sync.xml",
+      "sha256": "f28bc8f6ffa639ba664c052ff09ddd3773e2bf6c3dab08d65f3085662f9b2a50",
+      "kind": "historical",
+      "started_at": "2026-10-08 17:19:01Z",
+      "finished_at": "2026-10-08 17:19:38Z",
+      "full_report_cases": 11
+    },
+    {
+      "id": "r23",
+      "path": ".artifacts/ui63-resource-order.xml",
+      "sha256": "37819136b4a3b309412353a7c98a56a431a08079d03e054f7115c2bbd359dafa",
+      "kind": "historical",
+      "started_at": "2026-10-08 15:47:28Z",
+      "finished_at": "2026-10-08 15:47:49Z",
+      "full_report_cases": 7
+    },
+    {
+      "id": "r24",
+      "path": ".artifacts/ui63-repeat-62-recovery.xml",
+      "sha256": "2471bd5fed23c08f8bc6a2985d9fbf1d2da81c0d03c80c7975fb54f5f9d973a7",
+      "kind": "historical",
+      "started_at": "2026-10-08 16:25:29Z",
+      "finished_at": "2026-10-08 16:25:48Z",
+      "full_report_cases": 4
+    },
+    {
+      "id": "r25",
+      "path": ".artifacts/ui63-resources-after-sync.xml",
+      "sha256": "4d167afe8f05870724828845ae79644962c630cb3c7a12ec41ee51f4330b470d",
+      "kind": "historical",
+      "started_at": "2026-10-08 17:18:21Z",
+      "finished_at": "2026-10-08 17:18:42Z",
+      "full_report_cases": 5
+    },
+    {
+      "id": "r26",
+      "path": ".artifacts/ui63-repeat-62-sovereigns.xml",
+      "sha256": "874f56bc9a908c9690c9d1b69e2b3661e175be82a4446fe5356f3377857db1f6",
+      "kind": "historical",
+      "started_at": "2026-10-08 16:30:54Z",
+      "finished_at": "2026-10-08 16:31:16Z",
+      "full_report_cases": 5
+    },
+    {
+      "id": "r27",
+      "path": ".artifacts/ui63-siege.xml",
+      "sha256": "9aff7e0afc443a71395bf8185b072f0b792209f47dfaef59997ab6f3fcd267ba",
+      "kind": "historical",
+      "started_at": "2026-10-08 15:53:20Z",
+      "finished_at": "2026-10-08 15:53:25Z",
+      "full_report_cases": 2
+    },
+    {
+      "id": "r28",
+      "path": ".artifacts/ui63-victory-after-shortcut.xml",
+      "sha256": "f2f4cd1eb231c938872ccc8d2c976f02c99171809b3f1143f65e938b1239855b",
+      "kind": "historical",
+      "started_at": "2026-10-08 17:59:52Z",
+      "finished_at": "2026-10-08 18:00:20Z",
+      "full_report_cases": 5
+    }
+  ],
+  "player_measurements": {
+    "report": ".artifacts/ui72/board-profile.json",
+    "sha256": "f245c3dc9076e08e9f3c43b34efd2f590c242df8c2543569f9d0da879069340a",
+    "recorded_at": "2026-10-08T19:09:21.937119Z",
+    "suite": "board",
+    "workloads": 40,
+    "warmup_frames": 120,
+    "sample_frames": 360,
+    "interactions_per_workload": 24,
+    "minimum_fps": 104.32233649294047,
+    "maximum_handler_ms": 11.2127,
+    "maximum_to_render_ms": 24.1485,
+    "hardware": {
+      "CPU": "Apple M1 Pro",
+      "GPU": "Apple M1 Pro",
+      "MemoryMB": 16384,
+      "OS": "Mac OS X 15.6.1",
+      "Unity": "6000.6.0f1",
+      "GraphicsAPI": "Metal"
+    },
+    "scope": "Offline presentation projections; no server commands. Render-end timing excludes display/input hardware latency."
+  },
+  "limits": [
+    "Fresh network Unity tests use HTTP/WS/PostgreSQL; they do not command Unity WSS.",
+    "The offline profile checks the presentation, does not replace the server or the privacy of the real projection.",
+    "Windows runtime, Intel Mac, physical smooth and manual acceptance user remain deferred; no target hosta/publikacji."
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "regions": ["morannon", "barad-dur", "gorgoroth", "minas-morgul", "nurn"],
+  "source_crop_pixels": [4273, 2618, 1871, 1826],
+  "placement_y_adjustment": 10,
+  "terrain_envelope": [[1470, 820], [1515, 755], [1967, 755], [1967, 1215], [1640, 1220], [1470, 1195]],
+  "preserved_pass": [1500, 978, 1610, 1005],
+  "edge_feather": 4
+}

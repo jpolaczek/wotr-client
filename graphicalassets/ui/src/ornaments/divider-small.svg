@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="8" height="30" viewBox="0 0 8 30">
+  <!-- Narrow separator between counters inside a cartouche. -->
+  <defs>
+    <linearGradient id="divider-small-fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--gilt-mid); stop-opacity: 0"/>
+      <stop offset="0.35" style="stop-color: var(--gilt-light)"/>
+      <stop offset="0.65" style="stop-color: var(--gilt-light)"/>
+      <stop offset="1" style="stop-color: var(--gilt-mid); stop-opacity: 0"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#engrave)">
+    <rect x="3.5" y="2" width="1" height="26" fill="url(#divider-small-fade)"/>
+    <path d="M4 11.6 L6.2 15 L4 18.4 L1.8 15 Z" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.3"/>
+  </g>
+</svg>

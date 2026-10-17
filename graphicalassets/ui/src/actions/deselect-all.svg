@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-138: Leave every figure behind. -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7.5 7.5 H24.5 V24.5 H7.5 Z" style="stroke: var(--ink)" stroke-width="4.6"/>
+    <path d="M7.5 7.5 H24.5 V24.5 H7.5 Z" stroke="url(#gilt)" stroke-width="2.4"/>
+    <path d="M12 12 L20 20 M20 12 L12 20" style="stroke: var(--ink)" stroke-width="4.6"/>
+    <path d="M12 12 L20 20 M20 12 L12 20" stroke="url(#gilt)" stroke-width="2.4"/>
+  </g>
+</svg>

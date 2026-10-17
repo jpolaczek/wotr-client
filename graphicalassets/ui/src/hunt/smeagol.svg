@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+  <!-- UI-141: Smeagol tile: two large pale eyes in the dark. -->
+  <g filter="url(#lift)">
+    <ellipse cx="16" cy="17" rx="13.4" ry="10.6" fill="#25291d" stroke="#151810" stroke-width="0.9"/>
+    <ellipse cx="10.6" cy="16" rx="4.6" ry="5.2" fill="#e8f0d2" stroke="#4f5a3c" stroke-width="0.6"/>
+    <ellipse cx="21.4" cy="16" rx="4.6" ry="5.2" fill="#e8f0d2" stroke="#4f5a3c" stroke-width="0.6"/>
+    <circle cx="11.4" cy="16.6" r="2.3" fill="#3f6fa0"/>
+    <circle cx="20.6" cy="16.6" r="2.3" fill="#3f6fa0"/>
+    <circle cx="11.4" cy="16.6" r="1" fill="#0b0b0b"/>
+    <circle cx="20.6" cy="16.6" r="1" fill="#0b0b0b"/>
+  </g>
+</svg>

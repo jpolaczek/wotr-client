@@ -1,0 +1,224 @@
+/* UI-97: the player's dice panel at the bottom left, in the gilt and enamel of the board.
+   Medallions take the enamel of their side (dice/medallion-free|shadow) and carry a face glyph
+   from dice/faces; 9-slice values are texture pixels. Layout widths stay in Wotr.uss, so the
+   short-viewport, planning and sovereign variants keep their arrangement. */
+
+/* UI-203 (user request): the bottom bar has no plate or gilt rule of its own; only its framed panels (dice, console)
+   show, on the board's plain dark ground. */
+#board-screen .bottom {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    border-top-width: 0;
+}
+
+#board-screen .dice-panel {
+    margin: 4px 0 0 4px;
+    padding: 4px 8px 5px 8px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+
+/* Header band in red lacquer with the side name. */
+#board-screen .dice-panel .dice-header {
+    height: 24px;
+    min-height: 24px;
+    margin: 0 0 3px 0;
+    padding: 0 2px 0 17px;
+    background-image: resource("Wotr/Art/UI/frames/panel-header");
+    -unity-slice-top: 16;
+    -unity-slice-right: 32;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 32;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .dice-panel .dice-header > .title {
+    margin: 0;
+    padding: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    font-size: 13px;
+    letter-spacing: 0.8px;
+    -unity-font-style: bold;
+    color: rgb(241, 223, 166);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+}
+#board-screen .dice-panel .dice-header Button {
+    height: 20px;
+    min-height: 20px;
+    margin: 0 0 0 3px;
+    padding: 0 3px;
+    font-size: 12px;
+    color: rgb(241, 227, 181);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .dice-panel .dice-header Button:hover,
+#board-screen .dice-panel .dice-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+
+/* Medallions. Three classes beat the older two-class die rules; the later planning rules still compact them. */
+.dice-panel .available-dice .die.die-free,
+.dice-panel .available-dice .die.die-shadow {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    margin: 0 3px 3px 0;
+    padding: 0;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 18px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.dice-panel .die.die-free { background-image: resource("Wotr/Art/UI/dice/medallion-free"); }
+.dice-panel .die.die-shadow { background-image: resource("Wotr/Art/UI/dice/medallion-shadow"); }
+.dice-panel .die.die-free:hover, .dice-panel .die.die-free:focus { background-image: resource("Wotr/Art/UI/dice/medallion-free-hover"); }
+.dice-panel .die.die-shadow:hover, .dice-panel .die.die-shadow:focus { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-hover"); }
+.dice-panel .die.die-free.selected { background-image: resource("Wotr/Art/UI/dice/medallion-free-selected"); }
+.dice-panel .die.die-shadow.selected { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-selected"); }
+.dice-panel .available-dice .die.paid-die { background-color: rgba(0, 0, 0, 0); -unity-background-image-tint-color: rgb(214, 196, 150); }
+.dice-panel .die:active { -unity-background-image-tint-color: rgb(222, 214, 196); }
+/* UI-136: hover, focus and press change only the medallion art; the generic button hover must not draw a pale
+   rectangle behind the round die. */
+.dice-panel .die.action:hover, .dice-panel .die.action:focus, .dice-panel .die.action:active {
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+/* The face glyph fills the enamel; an unrolled die keeps its blank medallion. */
+.die-face {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    right: 5px;
+    bottom: 5px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.die-face-character { background-image: resource("Wotr/Art/UI/dice/faces/character"); }
+.die-face-army { background-image: resource("Wotr/Art/UI/dice/faces/army"); }
+.die-face-muster { background-image: resource("Wotr/Art/UI/dice/faces/muster"); }
+.die-face-army-muster { background-image: resource("Wotr/Art/UI/dice/faces/army-muster"); }
+.die-face-event { background-image: resource("Wotr/Art/UI/dice/faces/event"); }
+.die-face-will { background-image: resource("Wotr/Art/UI/dice/faces/will"); }
+.die-face-eye { background-image: resource("Wotr/Art/UI/dice/faces/eye"); }
+.die-face-card-draw { background-image: resource("Wotr/Art/UI/dice/faces/card-draw"); }
+.die-face-use-balrog { background-image: resource("Wotr/Art/UI/dice/faces/use-balrog"); }
+.die-face-unrolled { display: none; }
+
+/* Special dice keep the framed tile with their origin caption under the glyph. */
+.dice-panel .available-dice .die.special-die {
+    width: 50px;
+    min-width: 50px;
+    border-radius: 0;
+    background-image: resource("Wotr/Art/UI/dice/tile");
+    -unity-slice-top: 20;
+    -unity-slice-right: 20;
+    -unity-slice-bottom: 20;
+    -unity-slice-left: 20;
+    -unity-slice-scale: 0.5px;
+}
+.dice-panel .die.special-die .die-face { left: 13px; right: 13px; top: 3px; bottom: 12px; }
+.dice-panel .die.special-die .die-origin { color: rgb(241, 223, 166); font-size: 9px; height: 11px; bottom: 2px; }
+.dice-panel .die .die-badge { color: rgb(255, 214, 120); }
+
+/* Counters: icon and count on a gilt-edged button; a click still opens both pools. */
+#board-screen .dice-panel .resource-locations { margin: 2px 0 0 0; }
+#board-screen .dice-panel .resource-locations .action {
+    flex-grow: 1;
+    flex-basis: 0;
+    width: auto;
+    min-width: 0;
+    height: 26px;
+    min-height: 26px;
+    margin: 0 3px 0 0;
+    padding: 0 4px 0 24px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(241, 227, 181);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .dice-panel .resource-locations .action:hover,
+#board-screen .dice-panel .resource-locations .action:focus { background-image: resource("Wotr/Art/UI/frames/button-hover"); }
+#board-screen .dice-panel .resource-locations .action:last-child { margin-right: 0; }
+#pool-count-icon { position: absolute; left: 4px; top: 4px; width: 17px; height: 17px; -unity-background-scale-mode: scale-to-fit; }
+.pool-count-spent #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/spent"); }
+.pool-count-hunt #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/hunt"); }
+.pool-count-discarded #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/out"); }
+
+/* Elven Rings as ring icons; a selected ring keeps the gold outline. */
+#board-screen .dice-panel .pool-tokens { margin: 2px 0 0 0; }
+#board-screen .dice-panel .pool-tokens .pool-ring {
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    min-height: 26px;
+    margin: 0 3px 0 0;
+    padding: 0;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 13px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/icons/ring");
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .dice-panel .pool-tokens .pool-ring.selected { border-color: rgb(245, 212, 133); }
+
+/* UI-183: while the player's decision takes dice from the pool (the Hunt allocation, an armed Elven Ring, a card that
+   waits for its die) the pool's frame glows gold, with the padding narrowed so no die moves; each die the Hunt can
+   take glows green and each die already allocated to it wears a gold ring. */
+#board-screen .dice-panel.dice-decision {
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(231, 193, 107);
+    background-color: rgba(231, 193, 107, 0.1);
+    padding: 1px 6px 1px 6px;
+}
+#board-screen .dice-panel .die.hunt-candidate { border-width: 2px; border-color: rgb(144, 203, 172); border-radius: 18px; }
+/* UI-204: with motion on, the dice the Hunt can still take pulse together, so adding them is the evident next step. */
+.motion-enabled #board-screen .dice-panel .die.hunt-candidate {
+    transition-property: border-color, background-color;
+    transition-duration: 650ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .dice-panel.hunt-candidates-bright .die.hunt-candidate {
+    border-color: rgb(196, 240, 214);
+    background-color: rgba(144, 203, 172, 0.28);
+}
+/* UI-205: before any die is in the allocation the candidates call loudest — a thicker, lighter ring and a fill, and
+   with motion on they swell a little on the beat; after the first die the gentler pulse of UI-204 remains. */
+#board-screen .dice-panel.hunt-choose-dice .die.hunt-candidate {
+    border-width: 3px;
+    border-color: rgb(176, 232, 200);
+    background-color: rgba(144, 203, 172, 0.22);
+}
+.motion-enabled #board-screen .dice-panel.hunt-choose-dice .die.hunt-candidate {
+    transition-property: border-color, background-color, scale;
+}
+.motion-enabled #board-screen .dice-panel.hunt-choose-dice.hunt-candidates-bright .die.hunt-candidate {
+    border-color: rgb(226, 255, 238);
+    background-color: rgba(144, 203, 172, 0.46);
+    scale: 1.1;
+}
+#board-screen .dice-panel .die.hunt-allocated { border-width: 2px; border-color: rgb(247, 213, 120); border-radius: 18px; }
+

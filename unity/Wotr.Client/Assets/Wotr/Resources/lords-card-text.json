@@ -1,0 +1,127 @@
+[
+  {
+    "id": "lords.fp.character.25",
+    "event": "Add the two additional Sméagol tiles to the Hunt Pool. These are the tiles set aside during setup; do not return used tiles.",
+    "combatTitle": "Blade of Westernesse",
+    "combat": "Requires a participating Hobbit. Spend one hit from your Leader re-roll to eliminate a participating Minion of your choice.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "lords.fp.character.26",
+    "event": "Heal one Corruption point. Discard We Shall Get It or We Won’t Go Back from the table without effect, if either is in play.",
+    "combatTitle": "It Is a Gift",
+    "combat": "Requires the defending Army in the Fellowship’s region. Add 1 to every die in your Combat roll and Leader re-roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "lords.fp.character.27",
+    "event": "Discard one Shadow Event card from the table. Only if Shadow has no Event cards on the table, you may inspect the Shadow hand and discard one chosen card.",
+    "combatTitle": "Orderly Withdrawal",
+    "combat": "Requires a participating Free Peoples Leader or Companion in a field battle or sortie. Before normal casualties, you may cancel one Combat roll or Leader re-roll hit. If you do, at the end of this round you must cease the attack (if attacking) or retreat (if defending), if possible.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "lords.fp.character.28",
+    "event": "Roll three dice. For each 5 or 6, recover one used Elven Ring of your choice. Take rings out of play first; take any remaining rings from Shadow.",
+    "combatTitle": "Orderly Withdrawal",
+    "combat": "Requires a participating Free Peoples Leader or Companion in a field battle or sortie. Before normal casualties, you may cancel one Combat roll or Leader re-roll hit. If you do, at the end of this round you must cease the attack (if attacking) or retreat (if defending), if possible.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "lords.fp.strategy.25",
+    "event": "Recruit one Gondor Regular in each of Pelargir, Lossarnach and Lamedon. Then draw one Strategy Event card.",
+    "combatTitle": "Shield-wall",
+    "combat": "Before removing normal casualties, cancel one hit if the opponent scored at least two hits from the Combat roll and Leader re-roll.",
+    "initiative": [
+      6
+    ]
+  },
+  {
+    "id": "lords.fp.strategy.26",
+    "event": "Choose a Shadow Army in the North or in a region adjacent to the North. Roll three dice; each 5 or 6 scores one hit. Then recruit one North unit (Regular or Elite) and one North Leader together in a free North region adjacent to the attacked region.",
+    "combatTitle": "Advantageous Position",
+    "combat": "Requires the defending Army within a Free Peoples Nation. Subtract 1 from every die in Shadow’s Combat roll. A natural 6 still hits. This does not modify the Leader re-roll.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "lords.sh.character.17",
+    "event": "Requires the Balrog in play. Activate him at Level 2. If already active, you may move him alone, or move or attack with an Army including him. Pay no extra action die. Deactivation outside Moria eliminates him.",
+    "combatTitle": "Durin’s Bane",
+    "combat": "Requires the defending Army within two regions of Moria, or the Balrog participating. Before the Combat roll, roll three dice; each 4–6 hits. Remove these casualties immediately.",
+    "initiative": [
+      2
+    ]
+  },
+  {
+    "id": "lords.sh.character.25",
+    "event": "Requires Sméagol as Guide. Play on the table; discard if he ceases to be Guide. Whenever a Sméagol tile is drawn during the Hunt, you may discard a Character-deck card from your hand or this table card for 2 direct Corruption. Resolve this before Hunt protection.",
+    "combatTitle": "Fear of Their Masters",
+    "combat": "Requires a participating Minion. Forfeit all your Leadership for +2 to every die in your Combat roll. Each natural 6 in the Free Peoples Combat roll or Leader re-roll inflicts one additional hit on your Army, even if the Leadership cost cannot be paid.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "lords.sh.character.26",
+    "event": "Play on the table. Before Action Resolution, if any Keeper die rolled an Eye, you may change one result from your Action roll. Free Peoples may spend a Will of the West, or any action die and one Elven Ring, to discard this card.",
+    "combatTitle": "Fear of Their Masters",
+    "combat": "Requires a participating Minion. Forfeit all your Leadership for +2 to every die in your Combat roll. Each natural 6 in the Free Peoples Combat roll or Leader re-roll inflicts one additional hit on your Army, even if the Leadership cost cannot be paid.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "lords.sh.character.27",
+    "event": "Play on the table. When the Fellowship declares or reveals through an unconquered Shadow Stronghold, you may discard this card for an additional Hunt tile; ignore Eye and Reveal. Free Peoples may discard it with a Will of the West, or a Character result if Gandalf the Grey or Gollum is Guide.",
+    "combatTitle": "Words of Power",
+    "combat": "Requires a participating Nazgûl. Choose a participating Companion; cancel that Companion’s Leadership and abilities for this battle round.",
+    "initiative": [
+      1
+    ]
+  },
+  {
+    "id": "lords.sh.character.28",
+    "event": "Requires the Witch-king in play and a Guide other than Gollum. Play on the table. After later actions using a Character result finish, add the used die to the Hunt Box as an Eye. Discard if either play condition fails, or the Fellowship declares in an unconquered Free Peoples Stronghold.",
+    "combatTitle": "Servant of the Shadow",
+    "combat": "Requires a participating Minion. Forfeit all Leadership of one chosen Minion. Free Peoples roll that many fewer Combat dice after the five-die limit, but at least one.",
+    "initiative": [
+      3
+    ]
+  },
+  {
+    "id": "lords.sh.strategy.25",
+    "event": "Requires a Nazgûl in Dol Guldur. Recruit Sauron Regulars there up to the Nazgûl Leadership, maximum five, available reserves and the current stacking limit. Then you may move or attack with that Army. Pay no extra action die.",
+    "combatTitle": "Mûmakil",
+    "combat": "Requires a participating Southrons and Easterlings Elite. Add 1 to every Combat roll die. After Leader re-rolls, if you scored more total hits than the opponent, inflict one additional hit.",
+    "initiative": [
+      3,
+      5
+    ]
+  },
+  {
+    "id": "lords.sh.strategy.26",
+    "event": "Sauron must be At War. Choose a Free Peoples army in or adjacent to a Sauron Stronghold. Roll 3 dice; each 5+ scores a hit. Then recruit 2 Sauron Regulars: in the same region if the target was besieged inside that Stronghold, otherwise together in a free region adjacent to the target army.",
+    "combatTitle": "Swarm of Bats",
+    "combat": "Cancel the Free Peoples Combat card. If no card was played, add 1 to all your Leader re-roll dice.",
+    "initiative": [
+      0
+    ]
+  },
+  {
+    "id": "lords.sh.special.05",
+    "event": "Enters the table automatically when Sméagol is removed, except when he is the last Companion and Gollum replaces him. With Gollum as Guide, you may discard this card after a Hunt tile is drawn to draw a replacement before resolution. Resolve the new tile normally; return the first tile to the Hunt pool after the action.",
+    "combatTitle": "",
+    "combat": "",
+    "initiative": []
+  }
+]

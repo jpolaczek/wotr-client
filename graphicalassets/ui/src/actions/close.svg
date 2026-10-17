@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-138: Close a window or panel. -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 9 L23 23 M23 9 L9 23" style="stroke: var(--ink)" stroke-width="5.4"/>
+    <path d="M9 9 L23 23 M23 9 L9 23" stroke="url(#gilt)" stroke-width="3.2"/>
+  </g>
+</svg>
