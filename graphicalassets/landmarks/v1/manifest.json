@@ -1,6 +1,6 @@
 {
   "version": "landmarks-v1",
-  "task": "UI-234",
+  "task": "UI-234, UI-256",
   "model": "gpt-image-1.5",
   "generator": "OpenAI Images API via v1/generate.py (v1/generations.jsonl); cropped, parchment-multiplied and scaled with Pillow by build.py",
   "pixels_modified": "cropped, colour-multiplied, scaled and re-encoded",
@@ -36,6 +36,149 @@
       "size": [
         256,
         154
+      ]
+    },
+    {
+      "key": "barad-dur",
+      "source": "v1/raw/barad-dur.png",
+      "sourceSha256": "0dc4c74c05399e333fe9768c8cb2549f5e4e8e6b51eb6f24314b0d2ddc7e263c",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/barad-dur.png",
+      "outputSha256": "4903b3c6a58a429fd898adf37247e68fd6a459101617fd2896d733412d31f424",
+      "size": [
+        244,
+        256
+      ]
+    },
+    {
+      "key": "dol-amroth",
+      "source": "v1/raw/dol-amroth.png",
+      "sourceSha256": "b91e3df9c4f6ba10b2d071d87bc67de7c432700299be684da54b6fdc958f8e01",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/dol-amroth.png",
+      "outputSha256": "30484221caf3ec698e56953e07ff6a42c014e5f85e5cd3fab2269784f4d06a4a",
+      "size": [
+        256,
+        211
+      ]
+    },
+    {
+      "key": "dol-guldur",
+      "source": "v1/raw/dol-guldur.png",
+      "sourceSha256": "9b18a9b1e4d3bad1b2552d16d9d7705ebfbc47a6dce033aa3dd2bd778990f3a7",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/dol-guldur.png",
+      "outputSha256": "93a4698d57d4b8147a381691216e8406cd729652037cc183e3e78f047f9d569c",
+      "size": [
+        256,
+        162
+      ]
+    },
+    {
+      "key": "erebor",
+      "source": "v1/raw/erebor.png",
+      "sourceSha256": "9d790972aaa5048780b8595aa2a29932fa68f81b139b2a0656add93bec909383",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/erebor.png",
+      "outputSha256": "3793431c4704cc4b04a61316b8c9bb2668235a89842668dac64fb23efddf8f85",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "key": "grey-havens",
+      "source": "v1/raw/grey-havens.png",
+      "sourceSha256": "66223bde654fba4b846bede1a31c17c146d2867a3e408e6bc60ecd52161165ca",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/grey-havens.png",
+      "outputSha256": "67f929c7309a4d98626177188d6f6852cbe5bcf7fe95924407576ba7c6c31224",
+      "size": [
+        256,
+        218
+      ]
+    },
+    {
+      "key": "lorien",
+      "source": "v1/raw/lorien.png",
+      "sourceSha256": "e9ac5d8724318c252f37c2c2963b522f7fdb949e911a4db01b358cd65033833a",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/lorien.png",
+      "outputSha256": "285bbcce4d6f1ec2294daf874f7dd1ca29e3cdb4100413a5ffeb0f0e673a7d0b",
+      "size": [
+        256,
+        223
+      ]
+    },
+    {
+      "key": "morannon",
+      "source": "v1/raw/morannon.png",
+      "sourceSha256": "1e1246c4657701d9391bfd3e613aae3fe3453cbdc040450e10e208a02cd0cfd3",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/morannon.png",
+      "outputSha256": "99fcf836b6082c94520ea9453f30f9f49ad30b400131d47c557b7eef03cf8f0f",
+      "size": [
+        256,
+        167
+      ]
+    },
+    {
+      "key": "moria",
+      "source": "v1/raw/moria.png",
+      "sourceSha256": "a628bb598596bf04d7829395ca1c8191369c1ae60fd926947fa402c06daa36b6",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/moria.png",
+      "outputSha256": "640e9b42c0f6f354c6f158a2890e353722dda6a5a7f82ef37121fef56e8c186f",
+      "size": [
+        256,
+        225
+      ]
+    },
+    {
+      "key": "mount-gundabad",
+      "source": "v1/raw/mount-gundabad.png",
+      "sourceSha256": "1b1109299a916c68dc3b4d71f0154832265af5ea929df1daee98c5c6c24b7bf4",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/mount-gundabad.png",
+      "outputSha256": "c826ce3af09c898508af67d5696c91b33534c7035703c48e1cd63a21c09a39e7",
+      "size": [
+        256,
+        222
+      ]
+    },
+    {
+      "key": "orthanc",
+      "source": "v1/raw/orthanc.png",
+      "sourceSha256": "e193527e32aa5601f15acbecaaebf89bfd6eb45036c612caa56d04a20e9e80be",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/orthanc.png",
+      "outputSha256": "0e70323b64e154afed8a78dd38e54cb18c9f2747c902776dbf48d145b7b3860c",
+      "size": [
+        256,
+        218
+      ]
+    },
+    {
+      "key": "rivendell",
+      "source": "v1/raw/rivendell.png",
+      "sourceSha256": "b2b8eb58cd49ff062750e51f2f55ecb525bbce127d5fe32f693a6ebdf46e48ed",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/rivendell.png",
+      "outputSha256": "795d9cec846c17fd6f8ff56eadec9c94c1f699a23c2bd365eca637f480e3f177",
+      "size": [
+        256,
+        222
+      ]
+    },
+    {
+      "key": "umbar",
+      "source": "v1/raw/umbar.png",
+      "sourceSha256": "3e2c0791dd249901037d75ea0cccbbe10dca4a724db88a53f2a86629b1c29f38",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/umbar.png",
+      "outputSha256": "5061c8fbab9cf07ef0e77a8ebaaa64976f22af72da36b50f7ebc4e6427bdcf93",
+      "size": [
+        256,
+        162
+      ]
+    },
+    {
+      "key": "woodland-realm",
+      "source": "v1/raw/woodland-realm.png",
+      "sourceSha256": "25b036e1d2232a349b2b38348a8ca8e9f3a24e21193d16ad9eceb232a301cc9b",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/woodland-realm.png",
+      "outputSha256": "817efb26bf0950ec4debe38df47d716da740fb163ccb7f88691ccaa043c8dfcf",
+      "size": [
+        256,
+        190
       ]
     }
   ]

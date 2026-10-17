@@ -56,7 +56,7 @@ def build(spec):
             meta.write_text(ui.TEXTURE_META.format(guid=ui.stable_guid(output), wrap_u=1), encoding="utf-8")
         entries.append({"key": key, "source": str(source.relative_to(HERE)), "sourceSha256": sha256(source),
                         "output": str(output.relative_to(ROOT)), "outputSha256": sha256(output), "size": list(image.size)})
-    manifest = {"version": spec["version"], "task": "UI-234", "model": spec["model"],
+    manifest = {"version": spec["version"], "task": "UI-234, UI-256", "model": spec["model"],
                 "generator": "OpenAI Images API via v1/generate.py (v1/generations.jsonl); cropped, parchment-multiplied and scaled with Pillow by build.py",
                 "pixels_modified": "cropped, colour-multiplied, scaled and re-encoded", "outputs": entries}
     MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

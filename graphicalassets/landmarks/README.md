@@ -1,11 +1,14 @@
-# Fortress drawings on the map — UI-234
+# Fortress drawings on the map — UI-234, UI-256
 
-Minas Tirith, Minas Morgul and Helm's Deep are drawn on the terrain like its forests and mountains: ink and pencil
+Every stronghold of the base board is drawn on the terrain like its forests and mountains: Minas Tirith, Minas Morgul
+and Helm's Deep (UI-234), then Barad-dûr, Dol Amroth, Dol Guldur, Erebor, the Grey Havens, Lórien, the Morannon,
+Moria, Mount Gundabad, Orthanc, Rivendell, Umbar and the Woodland Realm (UI-256, 2026-10-17): ink and pencil
 line work in the style of the map's mountains, on a transparent background. They lie in the terrain layer in board
 units, so they scale with the map and never hide with the zoom (`MapLandmarks`, `MapTerrainVisual`); names,
 settlements and forces are drawn above them. Their places (`Resources/MapCanvas/landmarks.json`: centre and width in
 board units, height from the drawing's aspect) keep clear of the region's name and the forces' row
-(`MapLandmarksTests`).
+(`MapLandmarksTests`). Where the region's name and forces leave little room (Moria, Rivendell, the Woodland Realm) the
+drawing is 30 board units wide and may reach over the region's edge; it never covers a neighbour's name.
 
 **Generation.** OpenAI Images API (`gpt-image-1.5`, 1024×1024, medium quality, transparent background) with the
 user's key from the environment. [Prompts](v1/prompts.json), [generation script](v1/generate.py) and

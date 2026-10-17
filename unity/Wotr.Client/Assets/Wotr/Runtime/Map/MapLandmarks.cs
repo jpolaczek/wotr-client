@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Wotr.Client
 {
-    // UI-234: fortress drawings (Minas Tirith, Minas Morgul, Helm's Deep) lie on the terrain like its forests and
+    // UI-234: fortress drawings (UI-256: every stronghold of the base board) lie on the terrain like its forests and
     // mountains: drawn in the terrain layer in board units, they scale with the map and never hide with the zoom.
     // Names, settlements and forces are drawn above them; their places keep clear of both (MapLandmarksTests).
     public sealed class MapLandmarks

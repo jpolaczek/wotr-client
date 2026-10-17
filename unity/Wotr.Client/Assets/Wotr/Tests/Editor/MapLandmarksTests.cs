@@ -5,7 +5,8 @@ using Wotr.Client;
 
 namespace Wotr.EditorTests
 {
-    // UI-234: the fortress drawings stand in their regions, clear of the forces' row and the region's name.
+    // UI-234: the fortress drawings stand in their regions, clear of the forces' row and the region's name. UI-256: every
+    // stronghold of the base board has one.
     public sealed class MapLandmarksTests
     {
         private const float NameHalfWidth = 36;
@@ -16,7 +17,9 @@ namespace Wotr.EditorTests
         {
             var data = BoardPresentation.Load();
             var landmarks = MapLandmarks.Load();
-            CollectionAssert.AreEquivalent(new[] { "minas-tirith", "minas-morgul", "helms-deep" }, landmarks.Items.Select(l => l.Id));
+            var strongholds = data.Regions.Values.Where(r => r.Settlement == "Stronghold").Select(r => r.Id);
+            CollectionAssert.AreEquivalent(strongholds, landmarks.Items.Select(l => l.Id), "Every stronghold has its drawing.");
+            Assert.AreEqual(16, landmarks.Items.Count);
             foreach (var landmark in landmarks.Items)
             {
                 var shape = data.Shapes[landmark.Id];

@@ -3,6 +3,19 @@
   "landmarks": [
     { "id": "minas-tirith", "texture": "Wotr/Art/map-landmarks/minas-tirith", "centre": [946, 920], "width": 50 },
     { "id": "minas-morgul", "texture": "Wotr/Art/map-landmarks/minas-morgul", "centre": [1254, 979], "width": 36 },
-    { "id": "helms-deep", "texture": "Wotr/Art/map-landmarks/helms-deep", "centre": [765, 841], "width": 30 }
+    { "id": "helms-deep", "texture": "Wotr/Art/map-landmarks/helms-deep", "centre": [765, 841], "width": 30 },
+    { "id": "barad-dur", "texture": "Wotr/Art/map-landmarks/barad-dur", "centre": [1472, 822], "width": 56 },
+    { "id": "dol-amroth", "texture": "Wotr/Art/map-landmarks/dol-amroth", "centre": [785, 1126], "width": 48 },
+    { "id": "dol-guldur", "texture": "Wotr/Art/map-landmarks/dol-guldur", "centre": [1028, 560], "width": 46 },
+    { "id": "erebor", "texture": "Wotr/Art/map-landmarks/erebor", "centre": [1147, 78], "width": 48 },
+    { "id": "grey-havens", "texture": "Wotr/Art/map-landmarks/grey-havens", "centre": [172, 408], "width": 48 },
+    { "id": "lorien", "texture": "Wotr/Art/map-landmarks/lorien", "centre": [824, 538], "width": 38 },
+    { "id": "morannon", "texture": "Wotr/Art/map-landmarks/morannon", "centre": [1304, 807], "width": 48 },
+    { "id": "moria", "texture": "Wotr/Art/map-landmarks/moria", "centre": [738, 443], "width": 30 },
+    { "id": "mount-gundabad", "texture": "Wotr/Art/map-landmarks/mount-gundabad", "centre": [776, 88], "width": 48 },
+    { "id": "orthanc", "texture": "Wotr/Art/map-landmarks/orthanc", "centre": [698, 733], "width": 48 },
+    { "id": "rivendell", "texture": "Wotr/Art/map-landmarks/rivendell", "centre": [682, 251], "width": 30 },
+    { "id": "umbar", "texture": "Wotr/Art/map-landmarks/umbar", "centre": [858, 1292], "width": 48 },
+    { "id": "woodland-realm", "texture": "Wotr/Art/map-landmarks/woodland-realm", "centre": [1112, 280], "width": 30 }
   ]
 }
