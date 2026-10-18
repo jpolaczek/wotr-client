@@ -506,3 +506,12 @@ The owner's screenshot: in the 250 px action column the code field showed "Cod" 
 Join and Observe are now as wide as their one-line words in 15 px type (`white-space: nowrap`), and the code field takes
 the rest of the row (at least 84 px), so its "Code" placeholder shows whole. The row keeps its height, so the column
 still fits 1366×768 at 125 % (`MainMenuLayoutTests` measures both labels on one line).
+
+## Open games rows inside their frame — UI-262 (2026-10-18)
+
+The owner's report: the game information in Open games sat crooked and ran outside the row's frame. The labels'
+default margins and padding made the name and detail block taller than the row's inner area, so the name touched the
+top rim and the detail line the bottom one. The block now has fixed line heights (22 px name, 18 px detail, 2 px
+between) centred in the 60 px row; long names and details end with an ellipsis and the row's tooltip holds the full
+text. `MainMenuLayoutTests` checks every label of the first rows inside its row and the rows inside the list in four
+layouts, with a 64-character name and a long host name.

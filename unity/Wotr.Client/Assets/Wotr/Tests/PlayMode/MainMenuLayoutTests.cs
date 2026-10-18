@@ -53,7 +53,7 @@ namespace Wotr.PlayTests
                     for (var i = 0; i < 20; i++)
                     {
                         matches.Matches.Add(new MatchSummary { MatchId = "match" + i, Name = new string('M', 64), Opponent = "AnotherPlayer", Turn = 12 });
-                        rooms.Rooms.Add(new PublicRoomSummary { Id = "room" + i, Name = new string('G', 64), Host = "AnotherPlayer", OpenSide = Side.Shadow,
+                        rooms.Rooms.Add(new PublicRoomSummary { Id = "room" + i, Name = new string('G', 64), Host = i == 1 ? "PlayerWithLongUsername12345678901" : "AnotherPlayer", OpenSide = Side.Shadow,
                             Status = i % 2 == 0 ? RoomStatus.Waiting : RoomStatus.Started, Players = 1 + i % 2, Observers = 16, CanPlay = i % 2 == 0 });
                     }
                     menu.ShowMatches(matches);
@@ -62,6 +62,15 @@ namespace Wotr.PlayTests
                     // OBS-04: Play and Observe stay inside every open game's row.
                     foreach (var name in new[] { "join-public-room0", "observe-public-room0", "join-public-room1", "observe-public-room1" })
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q(name.Contains("room0") ? "public-room-room0" : "public-room-room1"));
+                    // UI-262: a row's name and details stay inside the row, and the row inside the list's frame.
+                    LayoutTests.Save(target, $"ui262-open-games-{width}-{scale:0.00}.png");
+                    foreach (var id in new[] { "room0", "room1" })
+                    {
+                        var row = menu.Root.Q("public-room-" + id);
+                        Fits(row, menu.Root.Q<ScrollView>("public-games-scroll").contentViewport);
+                        foreach (var label in row.Query<Label>().ToList())
+                            Fits(label, row);
+                    }
                     // REPLAY-04: the library page in the window, with a long row and Import at the foot.
                     menu.ShowReplays();
                     menu.Replays.Show(new System.Collections.Generic.List<ReplayEntry> { new ReplayEntry { Path = "/tmp/long.wotrreplay", Manifest = new ReplayManifest

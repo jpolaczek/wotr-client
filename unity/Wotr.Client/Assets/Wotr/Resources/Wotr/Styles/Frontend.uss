@@ -221,6 +221,12 @@
 .main-menu .public-room-row { flex-direction: row; align-items: center; }
 .main-menu .public-room-row:hover { background-image: resource("Wotr/Art/UI/frames/entry"); }
 .main-menu .public-room-action { width: 92px; height: 34px; min-height: 34px; margin-left: 8px; flex-shrink: 0; font-size: 15px; }
+/* UI-262: the name and its detail line are a centred block of fixed line heights inside the row's frame (the labels'
+   default margins and padding pushed the name onto the top rim and the detail onto the bottom one); long text ends
+   with an ellipsis and the row's tooltip holds all of it. */
+.main-menu .menu-row-text { justify-content: center; height: 44px; overflow: hidden; }
+.main-menu .menu-row-title { height: 22px; margin: 0; padding: 0; -unity-text-align: middle-left; }
+.main-menu .menu-row-detail { height: 18px; margin: 2px 0 0 0; padding: 0; -unity-text-align: middle-left; }
 
 /* Saved games keep their row (resume and Changes) in the window's frame and type. */
 .main-menu .saved-match { min-height: 76px; margin: 0 4px 6px 0; }
