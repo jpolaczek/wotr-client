@@ -1,5 +1,6 @@
-# SEC-04: weekly pull requests that move the pinned action commits forward; Unity packages are pinned by
-# wotr-deps.lock.json and Packages/manifest.json and are updated by hand.
+# SEC-04: weekly pull requests that move the pinned action commits forward, all in one grouped pull request (the
+# CodeQL init and analyze steps must keep the same version). Unity packages are pinned by wotr-deps.lock.json and
+# Packages/manifest.json and are updated by hand.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -7,3 +8,6 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]
