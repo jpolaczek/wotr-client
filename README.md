@@ -70,6 +70,14 @@ returns 409 when the client is too old (`ClientUpdateRequired`) or its protocol
 is unsupported (`ServerUpdateRequired`); the client explains the reason without
 automatic retries. Details: [release/README](release/README.md).
 
+<a id="bezpieczeństwo"></a>
+## Security and official endpoints
+
+The official game server is `https://wotr.vibestudios.org`; installers and updates come from
+`https://downloads.vibestudios.org:50443/` and are verified with the Ed25519 release key `95ffc109e1bb9b15`
+(SHA-256 `95ffc109e1bb9b15710cb7ba298fb959751630ae8d96ab3e9dcab9ddadd8b5d3`). Report vulnerabilities privately as
+described in [SECURITY](SECURITY.md).
+
 <a id="dokumentacja"></a>
 ## Documentation
 
