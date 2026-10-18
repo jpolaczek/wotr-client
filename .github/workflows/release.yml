@@ -18,7 +18,7 @@ jobs:
     outputs:
       version: ${{ steps.tag.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Required repository secrets
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -54,12 +54,17 @@ jobs:
   draft:
     needs: [check, editmode, installers]
     runs-on: ubuntu-latest
+    # SEC-04: the attestation step signs with the run's OIDC identity and stores the attestations in the repository.
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     env:
       VERSION: ${{ needs.check.outputs.version }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: installers-${{ needs.check.outputs.version }}
           path: .artifacts/releases/${{ needs.check.outputs.version }}/installers
@@ -67,6 +72,12 @@ jobs:
         run: |
           python3 scripts/package_velopack.py verify
           python3 scripts/package_velopack.py assets --output .artifacts/release-assets
+      # SEC-04: build provenance for every file of the draft, so a download can be checked against this workflow run:
+      # gh attestation verify <file> --repo jpolaczek/wotr-client
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .artifacts/release-assets/*
       # A re-run replaces this tag's earlier draft; a published release is never touched.
       - name: Draft GitHub Release
         run: |

@@ -64,6 +64,11 @@ linux-x64/build-info.json
 SHA256SUMS sum of all files above
 ```
 
+SEC-04: the tag's `draft` job also records a GitHub build-provenance attestation for every file of the draft, so a
+download can be tied to the tagged commit and workflow run: `gh attestation verify <file> --repo jpolaczek/wotr-client`.
+Every action in the workflows is pinned to a commit (`tests/release/test_workflow_pins.py`); Dependabot proposes
+updates and CodeQL (`.github/workflows/codeql.yml`) scans the code.
+
 `packId` is always `WotrOnline`: Velopack recognizes the installation after it, so its change would cut players off from the upgrade. App name and shortcuts: “War of the Ring Online”. `build-info.json` creates `ClientBuildIdentity` and contains exactly those bytes that the player has embedded as a resource `wotr-build-info`. `Wotr.ReleaseTool sign --build-info ... --package
 <full package> --installer <installer>` z `wotr-server` sign the issue
 each platform (DIST-11 will do it with one command).

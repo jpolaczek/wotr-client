@@ -30,7 +30,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Required repository secrets
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -83,7 +83,7 @@ jobs:
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # Release players build from a clean Library: with a restored Library cache the editor was killed (exit 137)
       # while loading assemblies in 2 of 4 builds, also with 10 GB of swap; clean builds take ~2 minutes longer.
       - name: Disk space and swap for the Unity image
@@ -124,7 +124,7 @@ jobs:
           cat ".artifacts/releases/$VERSION/${{ matrix.folder }}/build-info.json"
           tar -C ".artifacts/releases/$VERSION" --exclude='*_DoNotShip' -czf "player-${{ matrix.folder }}.tgz" "${{ matrix.folder }}"
           ls -l "player-${{ matrix.folder }}.tgz"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: player-${{ matrix.folder }}
           path: player-${{ matrix.folder }}.tgz
@@ -136,11 +136,11 @@ jobs:
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: player-windows
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
       - name: Tools (mingw-w64, icoutils, vpk)
@@ -154,12 +154,12 @@ jobs:
           tar -C ".artifacts/releases/$VERSION" -xzf player-windows.tgz
           python3 scripts/package_velopack.py pack --platform windows
           python3 scripts/package_velopack.py pack --platform windows --smoke-output .artifacts/smoke/windows
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: installers-windows-x64
           path: .artifacts/releases/${{ env.VERSION }}/installers/windows-x64
           retention-days: 3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: smoke-windows
           path: .artifacts/smoke/windows
@@ -170,19 +170,19 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: installers-windows-x64
           path: release
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: smoke-windows
           path: next
       - name: Install, self-check, update, uninstall
         shell: pwsh
         run: ./scripts/smoke-installer-windows.ps1 -Release release -Next next -Out "$PWD\evidence"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: evidence-windows
@@ -197,11 +197,11 @@ jobs:
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: player-macos
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
       - name: vpk
@@ -218,12 +218,12 @@ jobs:
         run: |
           bash scripts/smoke-installer-macos.sh ".artifacts/releases/$VERSION/installers/macos-universal" \
             .artifacts/smoke/macos evidence
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: installers-macos-universal
           path: .artifacts/releases/${{ env.VERSION }}/installers/macos-universal
           retention-days: 3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: evidence-macos
@@ -238,11 +238,11 @@ jobs:
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: player-linux
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
       - name: Tools (squashfs-tools, FUSE, vpk)
@@ -260,12 +260,12 @@ jobs:
         run: |
           bash scripts/smoke-installer-linux.sh ".artifacts/releases/$VERSION/installers/linux-x64" \
             .artifacts/smoke/linux evidence
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: installers-linux-x64
           path: .artifacts/releases/${{ env.VERSION }}/installers/linux-x64
           retention-days: 3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: evidence-linux
@@ -278,16 +278,16 @@ jobs:
     env:
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: installers-windows-x64
           path: .artifacts/releases/${{ env.VERSION }}/installers/windows-x64
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: installers-macos-universal
           path: .artifacts/releases/${{ env.VERSION }}/installers/macos-universal
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: installers-linux-x64
           path: .artifacts/releases/${{ env.VERSION }}/installers/linux-x64
@@ -296,7 +296,7 @@ jobs:
           python3 scripts/package_velopack.py sums
           python3 scripts/package_velopack.py verify
           cat ".artifacts/releases/$VERSION/installers/SHA256SUMS"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: installers-${{ env.VERSION }}
           path: .artifacts/releases/${{ env.VERSION }}/installers

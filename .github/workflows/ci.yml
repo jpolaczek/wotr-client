@@ -11,7 +11,7 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - run: python3 scripts/check_docs.py
       - run: python3 -m unittest discover -s tests/release -p 'test_*.py' -v
   unity:
@@ -23,7 +23,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - run: python3 scripts/bootstrap_deps.py fetch --test
       - run: bash scripts/unity.sh -runTests -testPlatform EditMode -testResults .artifacts/unity-editmode.xml -logFile .artifacts/unity-tests.log
       - run: bash scripts/test-client.sh
