@@ -35,6 +35,7 @@ namespace Wotr.Client
         public IReplayFilePicker FilePicker { get; set; } = new NativeReplayFilePicker();
         private TestSession testSession;
         private MainMenuBrowser lobbyBrowser;
+        private LobbyController lobbyController;
         private MainMenuScreen mainMenu;
         private Task localWrites = Task.CompletedTask;
         private WaitingRoomController waitingRoom;
@@ -122,6 +123,8 @@ namespace Wotr.Client
             lobby.ReplaysOpened += libraryController.Refresh;
             lobbyBrowser = new MainMenuBrowser(api, lobby);
             lobbyBrowser.Refresh();
+            lobbyController = new LobbyController(api, lobby.Lobby, lobby.Challenge);
+            lobbyController.RoomOpened += ShowRoom;
             _ = LoadTestScenarios(lobby, screenLifetime.Token);
             return Task.CompletedTask;
         }
@@ -583,6 +586,8 @@ namespace Wotr.Client
             waitingRoom = null;
             lobbyBrowser?.Dispose();
             lobbyBrowser = null;
+            lobbyController?.Dispose();
+            lobbyController = null;
             libraryController?.Dispose();
             libraryController = null;
             mainMenu = null;
@@ -603,6 +608,7 @@ namespace Wotr.Client
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();
+            lobbyController?.Dispose();
             testSession?.Dispose();
             api?.Dispose();
         }

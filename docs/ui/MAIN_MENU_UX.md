@@ -526,3 +526,27 @@ same name, a password of 12–128 characters); the server checks again and answe
 InvalidName, which stay in the window as sentences. After a change the menu is built again and its status line says to
 sign in with the new name from now on; the session stays signed in. Server side: `wotr-server:docs/server/T08-LOBBY.md` (AUTH-06).
 Tests: `AccountNameTests` (EditMode), `MainMenuLayoutTests` (the button and the window in four layouts).
+
+## Lobby chat, players online and challenges — LOBBY-01 (2026-10-18)
+
+The owner's request: Open games gets a global chat whose messages are saved only there, a compact, folding list of the
+players online beside it, and challenges between them; the game rows are compacted to make room.
+
+- **Rows.** An open game's row is 46 px (was 60): a 26 px emblem, a 15 px name over a 12 px detail line, Play and
+  Observe 80 × 32 px.
+- **Chat.** Under the list a fixed 196 px panel (`lobby-panel`): "Lobby chat" with the hint "Right-click a name to
+  challenge", the log (`lobby-chat-log`, vertical scrolling only, the server's last 200 messages), the input with Send
+  (Enter sends; 1–200 characters) and the online toggle, and a one-line status (`lobby-status`).
+- **Players online.** A 150 px column (`lobby-online`) lists the players polled on the lobby in the last 20 s, this
+  player marked "(you)"; the toggle ("▸ Online n" / "◂ Online n") folds it away and back.
+- **Challenge.** A right-click on another player's name — in the column or on a message — opens a small tab
+  (`lobby-context`) with the name and **Send challenge**; Esc or a press elsewhere closes it. The status line confirms
+  the challenge or says why the server refused it (offline, already challenged, too many pending, yourself).
+- **An incoming challenge** shows a tab over the menu's window on any page (`challenge-tab`): "<name> challenges you to
+  a game" with **Accept** and **Decline**. Accept makes a private room with the challenger as host and this player in
+  the other seat and opens its waiting room; the challenger's menu opens the same room at its next poll and says so.
+  A declined or unanswered (2 minutes) challenge is told to the challenger once.
+- The menu polls `GET /api/lobby` every 3 s (`LobbyController`, `LobbyState`); a failed poll is retried silently.
+  Server side: `wotr-server:docs/server/T08-LOBBY.md` (LOBBY-01).
+
+Tests: `LobbyTests` (EditMode), `MainMenuLayoutTests` (rows, chat, column, tabs in four layouts).

@@ -1,0 +1,108 @@
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.UIElements;
+using Wotr.Client;
+using Wotr.Contracts;
+
+namespace Wotr.EditorTests
+{
+    // LOBBY-01: the lobby's state between polls, its panel (chat, players online, the challenge tab) and the menu's
+    // challenge tab, without a server.
+    public sealed class LobbyTests
+    {
+        private static LobbyMessage Message(long sequence, string author, string text) =>
+            new LobbyMessage { Sequence = sequence, Author = author, Text = text };
+
+        private static ChallengeView Challenge(string id, string from, string to, ChallengeStatus status, string room = "") =>
+            new ChallengeView { Id = id, From = from, To = to, Status = status, RoomId = room };
+
+        private static LobbyView View(params LobbyMessage[] messages) => new LobbyView
+        {
+            Messages = messages.ToList(),
+            Latest = messages.Length == 0 ? 0 : messages.Max(m => m.Sequence),
+            Online = new List<OnlinePlayer> { new OnlinePlayer { Name = "vibestudios", You = true }, new OnlinePlayer { Name = "aragorn" } }
+        };
+
+        [Test]
+        public void MessagesArriveInOrderOnceAndTheLatestIsKept()
+        {
+            var state = new LobbyState();
+            state.Apply(View(Message(2, "aragorn", "second"), Message(1, "aragorn", "first")));
+            state.Apply(View(Message(2, "aragorn", "second"), Message(3, "vibestudios", "third")));
+            CollectionAssert.AreEqual(new[] { "first", "second", "third" }, state.Messages.Select(m => m.Text));
+            Assert.AreEqual(3, state.Latest);
+            var many = Enumerable.Range(4, LobbyLimits.MessagesKept + 10).Select(i => Message(i, "a", "m" + i)).ToArray();
+            state.AddMessages(many);
+            Assert.AreEqual(LobbyLimits.MessagesKept, state.Messages.Count);
+        }
+
+        [Test]
+        public void OwnChallengeOutcomesAreToldOnceAndAnIncomingOneStaysDismissed()
+        {
+            var state = new LobbyState();
+            var view = View();
+            view.Outgoing.Add(Challenge("c1", "vibestudios", "aragorn", ChallengeStatus.Accepted, "room-1"));
+            view.Outgoing.Add(Challenge("c2", "vibestudios", "boromir", ChallengeStatus.Pending));
+            view.Incoming.Add(Challenge("c3", "gimli", "vibestudios", ChallengeStatus.Pending));
+            var outcomes = state.Apply(view);
+            Assert.AreEqual(new[] { "c1" }, outcomes.Select(c => c.Id).ToArray());
+            Assert.AreEqual("c3", state.Incoming.Id);
+            Assert.IsEmpty(state.Apply(view), "An outcome is told once.");
+            state.Dismiss("c3");
+            state.Apply(view);
+            Assert.IsNull(state.Incoming, "A dismissed challenge does not come back.");
+            StringAssert.Contains("accepted", LobbyState.Outcome(view.Outgoing[0]));
+            StringAssert.Contains("aragorn", LobbyState.Refusal("PlayerOffline", "aragorn"));
+        }
+
+        [Test]
+        public void ThePanelShowsMessagesAndPlayersAndChallengesFromTheTab()
+        {
+            var panel = new LobbyPanel();
+            var state = new LobbyState();
+            state.Apply(View(Message(1, "aragorn", "Who plays the Shadow?")));
+            panel.Apply(state);
+            Assert.AreEqual("Who plays the Shadow?", panel.Root.Q("lobby-message-1").Q<Label>(className: "lobby-text").text);
+            Assert.IsNotNull(panel.Root.Q<Label>("lobby-player-aragorn"));
+            StringAssert.Contains("(you)", panel.Root.Q<Label>("lobby-player-vibestudios").text);
+            StringAssert.Contains("Online 2", panel.Root.Q<Button>("lobby-online-toggle").text);
+            panel.OpenContext("aragorn", Vector2.zero);
+            Assert.AreEqual(DisplayStyle.Flex, panel.ContextTab.style.display.value);
+            Assert.AreEqual("aragorn", panel.ContextTab.Q<Label>("lobby-context-name").text);
+            panel.CloseContext();
+            Assert.AreEqual(DisplayStyle.None, panel.ContextTab.style.display.value);
+            string sent = null;
+            panel.Send += text => sent = text;
+            panel.Input.value = "  hello  ";
+            panel.Submit();
+            Assert.AreEqual("hello", sent);
+            Assert.AreEqual("", panel.Input.value);
+            panel.ToggleOnline();
+            Assert.IsFalse(panel.OnlineShown);
+            Assert.AreEqual(DisplayStyle.None, panel.Root.Q("lobby-online").style.display.value);
+        }
+
+        [Test]
+        public void TheChallengeTabNamesTheChallengerAndAnswersOnce()
+        {
+            var tab = new ChallengeTab();
+            Assert.IsFalse(tab.IsShown);
+            tab.Show(Challenge("c9", "aragorn", "vibestudios", ChallengeStatus.Pending));
+            Assert.IsTrue(tab.IsShown);
+            Assert.AreEqual("aragorn challenges you to a game", tab.Root.Q<Label>("challenge-text").text);
+            Assert.AreEqual("c9", tab.ChallengeId);
+            tab.Show(null);
+            Assert.IsFalse(tab.IsShown);
+        }
+
+        [Test]
+        public void TheMenuHoldsTheLobbyUnderOpenGamesAndTheTabOverTheWindow()
+        {
+            var menu = new MainMenuScreen("vibestudios");
+            Assert.IsTrue(menu.Root.Q("public-games").Contains(menu.Lobby.Root));
+            Assert.IsTrue(menu.Root.Q("menu-window").Contains(menu.Challenge.Root));
+        }
+    }
+}

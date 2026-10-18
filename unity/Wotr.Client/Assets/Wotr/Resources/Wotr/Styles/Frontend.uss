@@ -490,3 +490,68 @@
 .frontend .login-card .auth-secondary .action { flex-grow: 1; flex-basis: 0; margin: 0; }
 .frontend .login-card .auth-secondary .action:first-child { margin-right: 10px; }
 .frontend .login-card .auth-hint { -unity-text-align: middle-center; font-size: 14px; margin: 0; }
+
+/* LOBBY-01: Open games makes room for the lobby — compact game rows, then a fixed-height chat with a folding column of
+   the players online; a right-click on a name opens a small challenge tab, and a challenge to this player shows a tab
+   over the window on any page. */
+.main-menu .public-room-row { height: 46px; min-height: 46px; margin-bottom: 4px; padding: 0 10px 0 8px; }
+.main-menu .public-room-row .menu-row-emblem { width: 26px; height: 26px; margin-right: 10px; }
+.main-menu .public-room-row .menu-row-text { height: 38px; }
+.main-menu .public-room-row .menu-row-title { height: 20px; font-size: 15px; }
+.main-menu .public-room-row .menu-row-detail { height: 16px; margin-top: 2px; font-size: 12px; }
+.main-menu .public-room-row .public-room-action { width: 80px; height: 32px; min-height: 32px; margin-left: 6px; font-size: 14px; }
+
+.main-menu .lobby-panel {
+    flex-direction: row;
+    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    height: 196px;
+    min-height: 196px;
+    margin: 8px 0 0 0;
+    padding: 6px 8px 6px 10px;
+    border-width: 1px;
+    border-color: rgba(232, 204, 130, 0.3);
+    border-radius: 4px;
+    background-color: rgba(18, 16, 14, 0.72);
+}
+.main-menu .lobby-chat { flex-grow: 1; flex-shrink: 1; min-width: 0; overflow: hidden; }
+.main-menu .lobby-chat-header { flex-direction: row; align-items: center; height: 20px; flex-shrink: 0; }
+.main-menu .lobby-chat-title { font-size: 13px; letter-spacing: 1px; color: rgb(232, 204, 130);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold"); }
+.main-menu .lobby-chat-hint { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 10px; font-size: 11px; color: rgb(150, 144, 128); }
+.main-menu .lobby-chat-log { flex-grow: 1; flex-shrink: 1; min-height: 0; margin: 4px 0; padding: 2px 4px;
+    background-color: rgba(10, 9, 8, 0.55); }
+.main-menu .lobby-message { flex-direction: row; flex-wrap: wrap; min-width: 0; margin-bottom: 1px; overflow: hidden; }
+.main-menu .lobby-author { margin: 0 6px 0 0; padding: 0; font-size: 13px; -unity-font-style: bold; color: rgb(214, 186, 120); }
+.main-menu .lobby-author:hover { color: rgb(245, 212, 133); }
+.main-menu .lobby-text { flex-shrink: 1; min-width: 0; max-width: 100%; margin: 0; padding: 0; font-size: 13px; white-space: normal; color: rgb(231, 228, 215); }
+.main-menu .lobby-chat-line { flex-direction: row; align-items: center; height: 34px; flex-shrink: 0; }
+.main-menu .lobby-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 30px; margin: 0 6px 0 0; font-size: 14px; }
+.main-menu .lobby-chat-input > .unity-base-text-field__input { color: rgb(245, 239, 222); background-color: rgb(46, 41, 34); }
+.main-menu .lobby-chat-send { width: 64px; height: 32px; min-height: 32px; margin: 0; padding: 0 6px; font-size: 14px; }
+.main-menu .lobby-online-toggle { width: 96px; height: 32px; min-height: 32px; margin: 0 0 0 6px; padding: 0 6px; font-size: 13px;
+    white-space: nowrap; -unity-text-align: middle-center; }
+.main-menu .lobby-status { height: 16px; flex-shrink: 0; min-width: 0; margin: 2px 0 0 0; font-size: 12px; color: rgb(232, 195, 145);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-menu .lobby-online { width: 150px; flex-shrink: 0; margin-left: 8px; padding-left: 8px; border-left-width: 1px;
+    border-left-color: rgba(232, 204, 130, 0.25); }
+.main-menu .lobby-online-title { height: 20px; font-size: 12px; letter-spacing: 1px; color: rgb(232, 204, 130);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold"); }
+.main-menu .lobby-online-list { flex-grow: 1; min-height: 0; }
+.main-menu .lobby-player { height: 22px; margin: 0; padding: 0 4px; font-size: 13px; color: rgb(231, 228, 215);
+    -unity-text-align: middle-left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-menu .lobby-player:hover { background-color: rgba(232, 204, 130, 0.12); color: rgb(245, 212, 133); }
+.main-menu .lobby-player-you { color: rgb(150, 144, 128); }
+.main-menu .lobby-context { position: absolute; width: 170px; padding: 6px; border-width: 1px; border-color: rgba(232, 204, 130, 0.7);
+    border-radius: 4px; background-color: rgb(30, 27, 23); }
+.main-menu .lobby-context-name { height: 20px; margin: 0 0 4px 2px; font-size: 13px; -unity-font-style: bold; color: rgb(245, 212, 133);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-menu .lobby-context-action { height: 32px; min-height: 32px; margin: 0; font-size: 14px; }
+.main-menu .challenge-tab { position: absolute; left: 16px; right: 16px; top: 52px; height: 48px; flex-direction: row; align-items: center;
+    padding: 0 10px 0 16px; border-width: 1px; border-color: rgb(232, 204, 130); border-radius: 4px;
+    background-color: rgb(74, 22, 18); }
+.main-menu .challenge-text { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: 15px; -unity-font-style: bold; color: rgb(250, 232, 196);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-menu .challenge-action { width: 92px; height: 34px; min-height: 34px; margin: 0 0 0 8px; font-size: 14px; }

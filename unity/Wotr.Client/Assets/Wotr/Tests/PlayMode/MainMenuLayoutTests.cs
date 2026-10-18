@@ -62,6 +62,30 @@ namespace Wotr.PlayTests
                     // OBS-04: Play and Observe stay inside every open game's row.
                     foreach (var name in new[] { "join-public-room0", "observe-public-room0", "join-public-room1", "observe-public-room1" })
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q(name.Contains("room0") ? "public-room-room0" : "public-room-room1"));
+                    // LOBBY-01: the chat, the players online, a name's challenge tab and a challenge to this player fit the window.
+                    var lobbyState = new LobbyState();
+                    var lobbyView = new LobbyView { Latest = 30 };
+                    for (var i = 1; i <= 30; i++)
+                        lobbyView.Messages.Add(new LobbyMessage { Sequence = i, Author = i % 2 == 0 ? "PlayerWithLongUsername12345678901" : "aragorn",
+                            Text = i % 3 == 0 ? new string('w', 120) : "Anyone for a game tonight? " + i });
+                    for (var i = 0; i < 12; i++)
+                        lobbyView.Online.Add(new OnlinePlayer { Name = i == 0 ? "PlayerWithLongUsername12345678901" : "player" + i, You = i == 0 });
+                    lobbyState.Apply(lobbyView);
+                    menu.Lobby.Apply(lobbyState);
+                    menu.Lobby.Status.text = "Challenge sent to PlayerWithLongUsername12345678901. Waiting for an answer…";
+                    menu.Challenge.Show(new ChallengeView { Id = "c1", From = "PlayerWithLongUsername12345678901", To = "you" });
+                    yield return Settle();
+                    var menuWindow = menu.Root.Q("menu-window");
+                    foreach (var name in new[] { "lobby-panel", "lobby-chat-log", "lobby-chat-input", "lobby-chat-send", "lobby-online-toggle", "lobby-status", "lobby-online", "challenge-tab", "challenge-accept", "challenge-decline" })
+                        Fits(menu.Root.Q(name), menuWindow);
+                    Fits(menu.Root.Q("public-room-room0"), menu.Root.Q<ScrollView>("public-games-scroll").contentViewport);
+                    Assert.LessOrEqual(menu.Root.Q("public-room-room0").worldBound.height, 47f, "Open games rows are compact.");
+                    menu.Lobby.OpenContext("player3", new Vector2(10000, 10000));
+                    yield return Settle();
+                    Fits(menu.Lobby.ContextTab, menu.Root.Q("lobby-panel"));
+                    LayoutTests.Save(target, $"lobby01-open-games-{width}-{scale:0.00}.png");
+                    menu.Lobby.CloseContext();
+                    menu.Challenge.Hide();
                     // UI-262: a row's name and details stay inside the row, and the row inside the list's frame.
                     LayoutTests.Save(target, $"ui262-open-games-{width}-{scale:0.00}.png");
                     foreach (var id in new[] { "room0", "room1" })

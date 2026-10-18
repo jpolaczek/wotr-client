@@ -53,6 +53,9 @@ namespace Wotr.Client
         public event Action<string> StartScenario;
         // REPLAY-04: the library page in the window; the flow fills it when it opens.
         public ReplayLibraryPage Replays { get; } = new ReplayLibraryPage(false);
+        // LOBBY-01: the Open games page's chat and players online, and a challenge to this player over the window.
+        public LobbyPanel Lobby { get; } = new LobbyPanel();
+        public ChallengeTab Challenge { get; } = new ChallengeTab();
         // AUTH-06: the window for a new account name, opened from the masthead.
         public AccountNameDialog AccountName { get; } = new AccountNameDialog();
         private readonly Label player = new Label { name = "menu-player", pickingMode = PickingMode.Ignore };
@@ -80,6 +83,7 @@ namespace Wotr.Client
             body.Add(panel);
             panel.Add(WindowHeader());
             BuildLists(panel);
+            panel.Add(Challenge.Root);
             host = new HostGameForm(username);
             host.Create += request => Create?.Invoke(request);
             host.Cancel += ShowPublicGames;
@@ -161,6 +165,7 @@ namespace Wotr.Client
             publicScroll.AddToClassList("menu-scroll");
             publicScroll.Add(publicRooms);
             tables.Add(publicScroll);
+            tables.Add(Lobby.Root);
             publicScroll.verticalScroller.valueChanged += value => RequestMore(publicScroll, value, MorePublic);
             matchScroll.AddToClassList("saved-games-scroll");
             matchScroll.AddToClassList("menu-scroll");
