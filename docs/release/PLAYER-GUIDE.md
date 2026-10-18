@@ -61,7 +61,7 @@ The installation starts only after you click. Before it the game ends local reco
 4. Set expansions and variants. Both click `Accept configuration`, then host `Start game`. The
    configuration changes require new permissions.
 
-The game does not set up accounts and does not accept invitations to accounts (from AUTH-03). The table code is only used to join the party. Do not pass your password on to anyone; the administrator can only assign an email address to the older account.
+After 10 wrong passwords for one account name within 15 minutes, that name cannot sign in for 15 minutes, from any computer; the game says how long to wait. The game does not set up accounts and does not accept invitations to accounts (from AUTH-03). The table code is only used to join the party. Do not pass your password on to anyone; the administrator can only assign an email address to the older account.
 
 <a id="w-czasie-gry"></a>
 ## While playing

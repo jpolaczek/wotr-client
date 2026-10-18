@@ -1,3 +1,4 @@
+using System;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -21,8 +22,9 @@ namespace Wotr.Client
             return "";
         }
 
-        public static string Refusal(string error) => error switch
+        public static string Refusal(string error, TimeSpan? retryAfter = null) => error switch
         {
+            SignInLock.Error => SignInLock.Text(retryAfter),
             "NameTaken" => "That name is taken. Choose another.",
             "WrongPassword" => "The password is not right.",
             "InvalidName" => NameRule,

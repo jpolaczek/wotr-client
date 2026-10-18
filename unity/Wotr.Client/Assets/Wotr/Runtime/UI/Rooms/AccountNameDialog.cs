@@ -97,9 +97,9 @@ namespace Wotr.Client
             password.SetEnabled(!value);
         }
 
-        public void Refused(string error)
+        public void Refused(string error, TimeSpan? retryAfter = null)
         {
-            Status.text = AccountNameRules.Refusal(error);
+            Status.text = AccountNameRules.Refusal(error, retryAfter);
             password.value = "";
             password.Focus();
         }

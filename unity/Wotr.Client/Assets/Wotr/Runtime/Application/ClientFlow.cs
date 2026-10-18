@@ -142,7 +142,8 @@ namespace Wotr.Client
             }
             catch (ApiException error)
             {
-                lobby.AccountName.Refused(error.Status == 429 ? "TooManyRequests" : error.Message);
+                lobby.AccountName.Refused(error.Status == 429 && error.Message != SignInLock.Error ? "TooManyRequests" : error.Message,
+                    error.RetryAfter);
             }
             catch (Exception) when (!screenLifetime.IsCancellationRequested)
             {
@@ -553,6 +554,8 @@ namespace Wotr.Client
                 // QUAL-05: a busy database is temporary; a pending command keeps its id for "Check result".
                 case "ServerBusy":
                     return "The server is busy. Try again in a moment.";
+                case SignInLock.Error:
+                    return SignInLock.Text(apiError.RetryAfter);
                 // QUAL-02: sign-in and game budgets share one message; the server says when to retry.
                 case "TooManyRequests":
                     return apiError.RetryAfter.HasValue
