@@ -81,12 +81,15 @@ namespace Wotr.EditorTests
             panel.Submit();
             Assert.AreEqual("hello", sent);
             Assert.AreEqual("", panel.Input.value);
-            panel.ToggleOnline();
-            Assert.IsFalse(panel.OnlineShown);
+            Assert.IsFalse(panel.OnlineShown, "The players online start folded, so the input is free.");
             Assert.AreEqual(DisplayStyle.None, panel.Root.Q("lobby-online").style.display.value);
             StringAssert.Contains("Show the players online (2)", panel.Root.Q<Button>("lobby-online-tab").tooltip);
             panel.ToggleOnline();
+            Assert.IsTrue(panel.OnlineShown);
             Assert.AreEqual(DisplayStyle.Flex, panel.Root.Q("lobby-online").style.display.value);
+            StringAssert.Contains("Hide", panel.Root.Q<Button>("lobby-online-tab").tooltip);
+            panel.ToggleOnline();
+            Assert.AreEqual(DisplayStyle.None, panel.Root.Q("lobby-online").style.display.value);
         }
 
         // LOBBY-02: a new sign-in starts the chat from now: none of the earlier messages and none of the earlier

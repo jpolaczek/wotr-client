@@ -85,29 +85,37 @@ namespace Wotr.PlayTests
                     menu.Challenge.Show(new ChallengeView { Id = "c1", From = "PlayerWithLongUsername12345678901", To = "you" });
                     yield return Settle();
                     var menuWindow = menu.Root.Q("menu-window");
-                    foreach (var name in new[] { "lobby-panel", "lobby-chat-log", "lobby-chat-input", "lobby-online-strip", "lobby-online-tab", "lobby-status", "lobby-online", "challenge-tab", "challenge-accept", "challenge-decline" })
+                    foreach (var name in new[] { "lobby-panel", "lobby-chat-log", "lobby-chat-input", "lobby-online-strip", "lobby-online-tab", "lobby-status", "challenge-tab", "challenge-accept", "challenge-decline" })
                         Fits(menu.Root.Q(name), menuWindow);
                     Fits(menu.Root.Q("public-room-room0"), menu.Root.Q<ScrollView>("public-games-scroll").contentViewport);
                     Assert.LessOrEqual(menu.Root.Q("public-room-room0").worldBound.height, 47f, "Open games rows are compact.");
+                    // LOBBY-02: unfolded, the players online lie over the chat's log and input; the chat keeps its width and
+                    // the tab its place.
+                    var onlineTab = menu.Root.Q<Button>("lobby-online-tab");
+                    var tabBefore = onlineTab.worldBound;
+                    var logBefore = menu.Root.Q("lobby-chat-log").worldBound;
+                    var inputBefore = menu.Root.Q("lobby-chat-input").worldBound;
+                    Fits(menu.Root.Q("lobby-online-tab-label"), onlineTab);
+                    menu.Lobby.ToggleOnline();
+                    yield return Settle();
+                    var online = menu.Root.Q("lobby-online");
+                    Fits(online, menu.Root.Q("lobby-panel"));
+                    Fits(menu.Root.Q("lobby-player-player3"), online);
+                    Assert.AreEqual(tabBefore, onlineTab.worldBound);
+                    Assert.AreEqual(logBefore, menu.Root.Q("lobby-chat-log").worldBound, "The chat is not narrowed.");
+                    Assert.AreEqual(inputBefore, menu.Root.Q("lobby-chat-input").worldBound);
+                    Assert.IsTrue(online.worldBound.Overlaps(inputBefore) && online.worldBound.Overlaps(logBefore), "It lies over them.");
+                    Assert.LessOrEqual(online.worldBound.xMax, tabBefore.xMin + 1, "The strip and its tab stay visible.");
                     menu.Lobby.OpenContext("player3", new Vector2(10000, 10000));
                     yield return Settle();
                     Fits(menu.Lobby.ContextTab, menu.Root.Q("lobby-panel"));
                     LayoutTests.Save(target, $"lobby01-open-games-{width}-{scale:0.00}.png");
                     menu.Lobby.CloseContext();
                     menu.Challenge.Hide();
-                    // LOBBY-02: the tab folds the players online into the strip and keeps its place; the chat takes the room.
-                    var onlineTab = menu.Root.Q<Button>("lobby-online-tab");
-                    var tabBefore = onlineTab.worldBound;
-                    var logBefore = menu.Root.Q("lobby-chat-log").worldBound.width;
-                    Fits(menu.Root.Q("lobby-online-tab-label"), onlineTab);
                     menu.Lobby.ToggleOnline();
                     yield return Settle();
                     Assert.AreEqual(tabBefore, onlineTab.worldBound);
-                    Assert.Greater(menu.Root.Q("lobby-chat-log").worldBound.width, logBefore + 100);
-                    Fits(menu.Root.Q("lobby-chat-input"), menuWindow);
                     LayoutTests.Save(target, $"lobby02-folded-{width}-{scale:0.00}.png");
-                    menu.Lobby.ToggleOnline();
-                    yield return Settle();
                     // UI-262: a row's name and details stay inside the row, and the row inside the list's frame.
                     LayoutTests.Save(target, $"ui262-open-games-{width}-{scale:0.00}.png");
                     foreach (var id in new[] { "room0", "room1" })

@@ -9,7 +9,8 @@ namespace Wotr.Client
 {
     // LOBBY-01: the Open games screen's chat under the game list, with a compact column of the players online beside it.
     // LOBBY-02: the column folds into a grey strip at the right edge; the tab at the strip's bottom folds and unfolds it
-    // and never moves. A right-click on a player's name (in the column or on a message) opens a small tab with Send
+    // and never moves. Unfolded, the column lies over the chat's right side and its input instead of narrowing them; it
+    // starts folded, so the input is free. A right-click on a player's name (in the column or on a message) opens a small tab with Send
     // challenge. The panel keeps a fixed height; only its own log scrolls.
     public sealed class LobbyPanel
     {
@@ -17,7 +18,7 @@ namespace Wotr.Client
         public TextField Input { get; } = new TextField { name = "lobby-chat-input", maxLength = LobbyLimits.LongestMessage };
         public Label Status { get; } = new Label { name = "lobby-status" };
         public VisualElement ContextTab { get; } = new VisualElement { name = "lobby-context" };
-        public bool OnlineShown { get; private set; } = true;
+        public bool OnlineShown { get; private set; }
         private const float ContextWidth = 170;
         private const float ContextHeight = 80;
         public event Action<string> Send;
@@ -53,6 +54,7 @@ namespace Wotr.Client
             online.Add(onlineList);
             Root.Add(online);
             Root.Add(Strip());
+            ShowOnlineColumn();
             BuildContextTab();
             Root.RegisterCallback<PointerDownEvent>(CloseContextOutside, TrickleDown.TrickleDown);
             Root.RegisterCallback<KeyDownEvent>(e => { if (e.keyCode == KeyCode.Escape) CloseContext(); }, TrickleDown.TrickleDown);
@@ -246,9 +248,16 @@ namespace Wotr.Client
         public void ToggleOnline()
         {
             OnlineShown = !OnlineShown;
+            ShowOnlineColumn();
+            RenderOnlineCount(onlineCount);
+        }
+
+        private void ShowOnlineColumn()
+        {
             online.style.display = OnlineShown ? DisplayStyle.Flex : DisplayStyle.None;
             tab.EnableInClassList("lobby-online-tab-folded", !OnlineShown);
-            RenderOnlineCount(onlineCount);
+            if (OnlineShown)
+                online.BringToFront();
         }
 
         private int onlineCount;
