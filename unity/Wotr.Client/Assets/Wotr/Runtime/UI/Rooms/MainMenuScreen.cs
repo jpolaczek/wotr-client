@@ -53,11 +53,16 @@ namespace Wotr.Client
         public event Action<string> StartScenario;
         // REPLAY-04: the library page in the window; the flow fills it when it opens.
         public ReplayLibraryPage Replays { get; } = new ReplayLibraryPage(false);
+        // AUTH-06: the window for a new account name, opened from the masthead.
+        public AccountNameDialog AccountName { get; } = new AccountNameDialog();
+        private readonly Label player = new Label { name = "menu-player", pickingMode = PickingMode.Ignore };
+        private string username;
         public event Action ReplaysOpened;
         private Button showReplays;
 
         public MainMenuScreen(string username)
         {
+            this.username = username;
             Root.name = "main-menu";
             FrontendTheme.Apply(Root);
             Root.AddToClassList("gateway");
@@ -105,19 +110,34 @@ namespace Wotr.Client
             page.Add(Status);
             Quit.Confirmed += () => QuitRequested?.Invoke();
             Root.Add(Quit.Root);
+            Root.Add(AccountName.Root);
             ShowPublicGames();
         }
 
-        private static VisualElement Masthead(string username)
+        // AUTH-06: "Signed in as" and, beside it, the change of the account name.
+        private VisualElement Masthead(string name)
         {
             var masthead = Ignored("menu-masthead");
             var title = new Label("WAR OF THE RING") { name = "menu-title", pickingMode = PickingMode.Ignore };
             title.AddToClassList("menu-title");
-            var player = new Label("Signed in as " + username) { name = "menu-player", pickingMode = PickingMode.Ignore };
+            var account = Ignored("menu-account");
             player.AddToClassList("menu-player");
+            ShowUsername(name);
+            var change = BoardScreen.Button("Change name", () => AccountName.Open(username));
+            change.name = "change-account-name";
+            change.AddToClassList("menu-account-change");
+            change.tooltip = "Change the name you sign in and play under.";
+            account.Add(player);
+            account.Add(change);
             masthead.Add(title);
-            masthead.Add(player);
+            masthead.Add(account);
             return masthead;
+        }
+
+        public void ShowUsername(string name)
+        {
+            username = name;
+            player.text = "Signed in as " + name;
         }
 
         private VisualElement WindowHeader()

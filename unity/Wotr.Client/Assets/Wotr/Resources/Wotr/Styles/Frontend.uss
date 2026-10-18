@@ -103,6 +103,17 @@
     color: rgb(214, 198, 160);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
 }
+/* AUTH-06: the account line under the title — "Signed in as" and a quiet Change name beside it. The button hangs
+   beside the line without taking height, so the masthead and the menu window keep their sizes. */
+.main-menu .menu-account { flex-direction: row; align-items: center; justify-content: center; }
+.main-menu .menu-account-change { position: absolute; left: 100%; top: -3px; height: 24px; min-height: 24px;
+    margin: 0 0 0 10px; padding: 0 10px; font-size: 13px; -unity-text-align: middle-center; white-space: nowrap; }
+.account-name-window .unity-text-field { flex-direction: column; align-items: stretch; margin: 8px 0 0 0; }
+.account-name-window .unity-text-field > .unity-base-field__label { min-width: 0; margin: 0 0 3px 2px; font-size: 14px;
+    color: rgb(214, 198, 160); }
+.account-name-window .unity-text-field:hover > .unity-base-field__label { color: rgb(214, 198, 160); }
+.account-name-window .unity-text-field:focus > .unity-base-field__label { color: rgb(245, 212, 133); }
+.account-name-window .status-message { margin-top: 8px; min-height: 20px; }
 .main-menu .menu-body {
     flex-direction: row;
     width: 980px;
