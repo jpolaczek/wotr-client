@@ -1139,6 +1139,10 @@ Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-se
   min) · Downloading  45%), ready-to-use parcel (`Restart and update`  /  `Later`; repair: `Restart
   and repair`) or the download error requested by the player (`Retry`  /  `Later` The bar does not
   appear or disappear itself during the decision beyond the change of status of the update.
+  DIST-15: `What's new` (`update-notice-notes`, before the other buttons) opens the game site's notes of the
+  offered, downloading or ready release (`<server>/updates#v<version>`; never for a repair). The first start of a
+  newer version than the one that last ran shows `Updated to version <version>.` with `What's new` and `Close`
+  until the player closes it; a first installation shows nothing.
 - **`update-required`** window (scrim like Settings, window like `quit-window`) when the server
   rejects the version (409 or the status of the directory) or the date expired. The screen
   underneath is visible, but disabled (`InterfaceController.Hold`). action in fixed places: `Retry`

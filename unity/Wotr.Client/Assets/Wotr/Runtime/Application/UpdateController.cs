@@ -33,7 +33,7 @@ namespace Wotr.Client
         public UpdateCoordinator Coordinator => coordinator;
 
         public UpdateController(UpdateCoordinator coordinator, InterfaceController ui, Func<bool, Task<string>> save, Func<Task> close,
-            Action quit, Action openGamePage, string installedVersion, IDisposable owned = null)
+            Action quit, Action openGamePage, Action<string> openNotes, string installedVersion, IDisposable owned = null)
         {
             this.coordinator = coordinator;
             this.ui = ui;
@@ -53,6 +53,8 @@ namespace Wotr.Client
             Notice.Install += Restart;
             Notice.Retry += Check;
             Notice.GamePage += openGamePage;
+            Notice.WhatsNew += openNotes;
+            Notice.Close += coordinator.DismissArrival;
             Overlay.Install += Restart;
             Overlay.GamePage += openGamePage;
             Overlay.Retry += Check;
@@ -89,7 +91,8 @@ namespace Wotr.Client
                 ReleaseTrust.Pinned, installer, new ServerClock(), () => TimeSpan.FromSeconds(random.NextDouble() * 600));
             var gamePage = ServerConfiguration.Address.TrimEnd('/') + "/";
             return new UpdateController(coordinator, ui, flow.SaveForExit, flow.CloseForExit, ApplicationQuit.Exit,
-                () => Application.OpenURL(gamePage), ClientInstallation.InstalledVersion, catalog);
+                () => Application.OpenURL(gamePage), version => Application.OpenURL(UpdateArrival.NotesUrl(gamePage, version)),
+                ClientInstallation.InstalledVersion, catalog);
         }
 
         // Every frame from ClientBootstrap: the coordinator's clock, and the countdown once a second.

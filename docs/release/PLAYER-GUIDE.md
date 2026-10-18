@@ -41,6 +41,9 @@ The installed game itself checks new releases: when you start, what 15 minutes a
   on the server. When the package is ready, `Restart and update` saves the state and starts the game
   in a new version. `Decline and quit` saves the state and closes the game without installation;
   when the next start, the selection returns and the downloaded package waits.
+- **What's new:** while a new version is offered, downloading or ready, `What's new` on the bar opens a short
+  note about it on the game page (fixes, new features). After an update the bar says `Updated to version …` once,
+  with `What's new` and `Close`; all notes are at the game page's `/updates`.
 - **`Settings` → `Repair installation` downloads the current version again and installs it after
   `Restart and repair`. Settings and saves remain. When the current version is withdrawn, the game
   proposes a newer one.

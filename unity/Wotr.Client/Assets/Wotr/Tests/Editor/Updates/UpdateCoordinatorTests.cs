@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using UnityEngine.UIElements;
 using Wotr.Client.Updates;
 using Wotr.Contracts;
 
@@ -376,6 +377,66 @@ namespace Wotr.Client.Tests
             Assert.AreEqual(UpdateStatus.Idle, updater.Snapshot.Status);
             Assert.IsFalse(updater.Snapshot.Blocked);
             Assert.AreEqual(0, host.Requests);
+        }
+
+        // DIST-15: a version newer than the one that last ran here is announced once; a first installation is not.
+        [Test]
+        public void ANewerVersionThanLastTimeIsAnnouncedOnceButAFirstInstallationIsNot()
+        {
+            Assert.AreEqual("", Updater().Snapshot.UpdatedTo, "a first installation");
+            var store = new UpdateStore(folder);
+            var state = store.Load();
+            Assert.AreEqual("0.9.0", state.LastRunVersion);
+            state.LastRunVersion = "0.8.5";
+            store.Save(state);
+
+            var updated = Updater();
+            Assert.AreEqual("0.9.0", updated.Snapshot.UpdatedTo);
+            var notice = new UpdateNotice();
+            notice.Render(updated.Snapshot, Start, "");
+            Assert.IsTrue(notice.IsShown);
+            Assert.AreEqual("Updated to version 0.9.0.", notice.Bar.Q<Label>("update-notice-text").text);
+            Assert.AreEqual(DisplayStyle.Flex, notice.Bar.Q<Button>("update-notice-notes").style.display.value);
+            Assert.AreEqual("Close", notice.Bar.Q<Button>("update-notice-first").text);
+
+            var changes = 0;
+            updated.Changed += _ => changes++;
+            updated.DismissArrival();
+            Assert.AreEqual("", updated.Snapshot.UpdatedTo);
+            Assert.AreEqual(1, changes);
+            notice.Render(updated.Snapshot, Start, "");
+            Assert.IsFalse(notice.IsShown);
+            Assert.AreEqual("", Updater().Snapshot.UpdatedTo, "once per version");
+        }
+
+        [Test]
+        public async Task AnOfferedReleaseHasWhatsNewAndARepairHasNot()
+        {
+            Publish("0.9.1");
+            catalog.View = View("0.9.1");
+            var updater = Updater();
+            await updater.Check();
+            await Until(() => updater.Snapshot.Status == UpdateStatus.Available);
+            var notice = new UpdateNotice();
+            notice.Render(updater.Snapshot, Start, "");
+            Assert.AreEqual(DisplayStyle.Flex, notice.Bar.Q<Button>("update-notice-notes").style.display.value);
+            Assert.AreEqual("What's new", notice.Bar.Q<Button>("update-notice-notes").text);
+            Assert.AreEqual("https://wotr.example.test/updates#v0.9.1", UpdateArrival.NotesUrl("https://wotr.example.test/", "0.9.1"));
+
+            updater.Later();
+            notice.Render(updater.Snapshot, Start, "");
+            Assert.IsFalse(notice.IsShown);
+            Assert.AreEqual(DisplayStyle.None, notice.Bar.Q<Button>("update-notice-notes").style.display.value);
+        }
+
+        [Test]
+        public void OnlyANewerVersionCountsAsAnArrival()
+        {
+            Assert.AreEqual("0.9.0-rc.10", UpdateArrival.Version("0.9.0-rc.9", "0.9.0-rc.10"));
+            Assert.AreEqual("", UpdateArrival.Version("", "0.9.0-rc.10"));
+            Assert.AreEqual("", UpdateArrival.Version("0.9.0-rc.10", "0.9.0-rc.10"));
+            Assert.AreEqual("", UpdateArrival.Version("0.9.0", "0.9.0-rc.10"));
+            Assert.AreEqual("", UpdateArrival.Version("not a version", "0.9.0-rc.10"));
         }
 
         private UpdateCoordinator Updater(bool withInstaller = true)

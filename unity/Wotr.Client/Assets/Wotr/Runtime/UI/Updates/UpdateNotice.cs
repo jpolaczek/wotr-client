@@ -8,6 +8,8 @@ namespace Wotr.Client
     // / Later; a download shows its progress with Cancel; a scheduled minimum counts down to its deadline; a ready
     // package offers Restart and update. Root is a lane that never takes the pointer, so a gesture on the board
     // passes beside the bar; nothing here opens or closes on its own while the player decides.
+    // DIST-15: What's new opens the game site's notes of the offered, downloading or ready release, and the first
+    // start of a new version shows "Updated to version …" with What's new and Close.
     public sealed class UpdateNotice
     {
         public VisualElement Root { get; } = new VisualElement { name = "update-lane", pickingMode = PickingMode.Ignore };
@@ -18,9 +20,13 @@ namespace Wotr.Client
         public event Action Install;
         public event Action Retry;
         public event Action GamePage;
+        public event Action<string> WhatsNew;
+        public event Action Close;
         private readonly Label text = new Label { name = "update-notice-text" };
+        private readonly Button notes;
         private readonly Button first;
         private readonly Button second;
+        private string notesVersion = "";
         private Choice firstChoice;
         private Choice secondChoice;
 
@@ -32,7 +38,8 @@ namespace Wotr.Client
             Cancel,
             Install,
             Retry,
-            GamePage
+            GamePage,
+            Close
         }
 
         public UpdateNotice()
@@ -43,6 +50,8 @@ namespace Wotr.Client
             Root.Add(Bar);
             text.AddToClassList("update-notice-text");
             Bar.Add(text);
+            notes = Control("update-notice-notes", () => WhatsNew?.Invoke(notesVersion));
+            notes.text = "What's new";
             first = Control("update-notice-first", () => Raise(firstChoice));
             second = Control("update-notice-second", () => Raise(secondChoice));
         }
@@ -51,7 +60,14 @@ namespace Wotr.Client
 
         public void Render(UpdateSnapshot update, DateTimeOffset now, string exitError)
         {
+            Choose(update, now, exitError);
+            notes.style.display = IsShown && notesVersion.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void Choose(UpdateSnapshot update, DateTimeOffset now, string exitError)
+        {
             var deadline = update.Plan?.Deadline;
+            notesVersion = update.Repair ? "" : update.Version;
             if (update.Blocked)
                 Hide();
             else if (update.Mode == UpdateMode.RequiredSoon && deadline.HasValue)
@@ -89,6 +105,13 @@ namespace Wotr.Client
             {
                 Show(update.Message, "", Choice.Retry, Choice.Later);
                 text.tooltip = "";
+                notesVersion = "";
+            }
+            else if (update.UpdatedTo.Length > 0)
+            {
+                Show($"Updated to version {update.UpdatedTo}.", "", Choice.Close, Choice.None);
+                text.tooltip = "What's new opens this version's notes on the game page.";
+                notesVersion = update.UpdatedTo;
             }
             else
                 Hide();
@@ -114,6 +137,7 @@ namespace Wotr.Client
                 Choice.Install => "Restart and update",
                 Choice.Retry => "Retry",
                 Choice.GamePage => "Game page",
+                Choice.Close => "Close",
                 _ => ""
             };
             button.style.display = choice == Choice.None ? DisplayStyle.None : DisplayStyle.Flex;
@@ -129,6 +153,7 @@ namespace Wotr.Client
                 case Choice.Install: Install?.Invoke(); break;
                 case Choice.Retry: Retry?.Invoke(); break;
                 case Choice.GamePage: GamePage?.Invoke(); break;
+                case Choice.Close: Close?.Invoke(); break;
             }
         }
 

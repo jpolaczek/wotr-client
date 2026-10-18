@@ -49,6 +49,8 @@ namespace Wotr.Client.Updates
         public bool Dismissed { get; internal set; }
         public bool CanInstall { get; internal set; }
         public bool Blocked { get; internal set; }
+        // DIST-15: the version this copy was just updated to, until the player closes its notice.
+        public string UpdatedTo { get; internal set; } = "";
 
         public UpdateMode Mode => Plan?.Mode ?? UpdateMode.None;
         public bool Required => Mode == UpdateMode.RequiredNow || Mode == UpdateMode.RequiredSoon;
@@ -97,6 +99,7 @@ namespace Wotr.Client.Updates
             this.jitter = jitter;
             state = store.Load();
             snapshot.CanInstall = installer != null;
+            NoteArrival();
         }
 
         public event Action<UpdateSnapshot> Changed;
@@ -251,11 +254,30 @@ namespace Wotr.Client.Updates
             }
         }
 
+        // DIST-15: the player closed the notice of the version this copy was just updated to.
+        public void DismissArrival()
+        {
+            if (snapshot.UpdatedTo.Length == 0)
+                return;
+            snapshot.UpdatedTo = "";
+            Publish();
+        }
+
         public void Dispose()
         {
             lifetime.Cancel();
             transfer?.Cancel();
             downloader.Dispose();
+        }
+
+        // Remembers the running version; a newer one than last time is announced once (UpdateArrival).
+        private void NoteArrival()
+        {
+            if (state.LastRunVersion == identity.Version)
+                return;
+            snapshot.UpdatedTo = UpdateArrival.Version(state.LastRunVersion, identity.Version);
+            state.LastRunVersion = identity.Version;
+            store.Save(state);
         }
 
         private async Task Apply(UpdatePlan plan)
