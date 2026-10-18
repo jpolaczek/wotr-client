@@ -18,11 +18,15 @@ namespace Wotr.Client
         public event Action Install;
         public event Action GamePage;
         public event Action Repair;
+        // DIST-15/DIST-17: the game site's notes of the offered, downloading or ready release.
+        public event Action<string> WhatsNew;
         private readonly Label build = new Label { name = "update-build" };
         private readonly Label status = new Label { name = "update-status" };
         private readonly Button check;
         private readonly Button primary;
         private readonly Button repair;
+        private readonly Button notes;
+        private string notesVersion = "";
         private readonly VisualElement confirmation = new VisualElement { name = "update-repair-confirmation" };
         private readonly Label question = new Label { name = "update-repair-question" };
         private Action primaryAction;
@@ -39,6 +43,7 @@ namespace Wotr.Client
             check = Control(actions, "update-check", "Check now", () => Check?.Invoke());
             primary = Control(actions, "update-primary", "", () => primaryAction?.Invoke());
             repair = Control(actions, "update-repair", "Repair installation", Ask);
+            notes = Control(actions, "update-whats-new", "What's new", () => WhatsNew?.Invoke(notesVersion));
             Root.Add(actions);
             confirmation.AddToClassList("update-repair-confirmation");
             confirmation.style.display = DisplayStyle.None;
@@ -78,6 +83,10 @@ namespace Wotr.Client
             repair.tooltip = !update.CanInstall ? "This copy was not installed by the game's installer. Install it from the game page."
                 : withdrawn ? "This version was withdrawn. Update to the newest version instead."
                 : "Downloads this version again and reinstalls it. Settings and saved games stay.";
+            notesVersion = update.Repair ? "" : update.Version;
+            notes.SetEnabled(notesVersion.Length > 0);
+            notes.tooltip = notesVersion.Length > 0 ? $"Opens the notes on version {notesVersion} on the game page."
+                : "Shows the notes on a new version once one is available.";
             question.text = $"Download version {ownVersion} again and reinstall it? The game restarts when you choose " +
                 "Restart and repair. Settings and saved games stay.";
             if (!repair.enabledSelf)

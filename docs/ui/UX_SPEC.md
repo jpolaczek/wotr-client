@@ -1131,18 +1131,13 @@ Directory, settings, priorities, track sequence exception, data limits and scena
 
 Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-server:docs/release/DISTRIBUTION_PLAN.md` (Section ‘D13 — Changes with 2026-10-14’). Three elements, all in English:
 
-- **Toolbar `update-notice`** over each screen (root layer, under notifications and test strip, 116
-  px from the top, centered). pass   `update-lane` does not capture the indicator; gestures on the
-  map pass by the bar. The bar shows one of: optional version (`Download update`  /  `Later`, size
-  in content, description in tooltip), download with a percentage (`Cancel`; missing for the
-  required version), countdown to the required version date (Update required at 20:00  (in  1  h  12
-  min) · Downloading  45%), ready-to-use parcel (`Restart and update`  /  `Later`; repair: `Restart
-  and repair`) or the download error requested by the player (`Retry`  /  `Later` The bar does not
-  appear or disappear itself during the decision beyond the change of status of the update.
-  DIST-15: `What's new` (`update-notice-notes`, before the other buttons) opens the game site's notes of the
-  offered, downloading or ready release (`<server>/updates#v<version>`; never for a repair). The first start of a
-  newer version than the one that last ran shows `Updated to version <version>.` with `What's new` and `Close`
-  until the player closes it; a first installation shows nothing.
+- **No update bar (DIST-17, 2026-10-18).** The bar over every screen (DIST-07's `update-notice`, with DIST-15's What's
+  new and "Updated to version") is gone. Only the first menus — the sign-in screen and the main menu — show an update:
+  their **Settings** button glows gently (`update-glow`: golden tint and edge, nothing moves) and carries a small note
+  that is not a control (`settings-update-note`, no pointer): `Update available`, `Downloading 45%`, `Update ready`,
+  `Update required soon` or `Update required`; on the sign-in screen under the button, in the main menu inside it on
+  the right. The button's tooltip says the full sentence. A repair, a failure or no release show nothing. Downloading,
+  installing and `What's new` happen only in Settings' Updates row.
 - **`update-required`** window (scrim like Settings, window like `quit-window`) when the server
   rejects the version (409 or the status of the directory) or the date expired. The screen
   underneath is visible, but disabled (`InterfaceController.Hold`). action in fixed places: `Retry`

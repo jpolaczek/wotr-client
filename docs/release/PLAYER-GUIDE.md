@@ -30,20 +30,19 @@ macOS remembers the shutdown for this game also after it is restarted. You can s
 
 The installed game itself checks new releases: when you start, what 15 minutes and when the server rejects its version. The version and state of the update can be seen in `Settings` → `Game version`; `Check now` checks immediately.
 
-- **The optional version:** The top of the screen bar gives the number and size (description in the
-  hints). `Download update` takes it in the background and `Later` hides the bar for the next start.
-  Before `Download update` the game does not download or byte the package. `Cancel` interrupts the
-  download; the `Download update` resumes it from the interrupt.
-- **The version required from a specific moment:** The bar shows the time and time that has been
-  ("Update required at 20:00 (in 1 h 12 min)"). The game takes the package itself, within minutes,
-  and you continue playing until now.
+- **Where you see it:** on the sign-in screen and in the main menu, `Settings` glows and a small note beside it says
+  `Update available` (or `Downloading …`, `Update ready`, `Update required soon`). Nothing appears during a game.
+- **The optional version:** open `Settings` → `Game version`. `Download update` takes it in the background;
+  before that the game does not download a byte of the package. `Cancel download` interrupts the download, and
+  `Download update` resumes it. `What's new` opens a short note about the version on the game page.
+- **The version required from a specific moment:** Settings shows the time and what is left
+  ("Update required at 20:00 (in 1 h 12 min)"), and the menus' note says `Update required soon`. The game takes the
+  package itself, within minutes, and you continue playing until then.
 - **The `Update required` window stops new moves; the batch is visible under it and remains stored
   on the server. When the package is ready, `Restart and update` saves the state and starts the game
   in a new version. `Decline and quit` saves the state and closes the game without installation;
   when the next start, the selection returns and the downloaded package waits.
-- **What's new:** while a new version is offered, downloading or ready, `What's new` on the bar opens a short
-  note about it on the game page (fixes, new features). After an update the bar says `Updated to version …` once,
-  with `What's new` and `Close`; all notes are at the game page's `/updates`.
+- **What's new:** all notes are at the game page's `/updates`; Settings opens the one of the offered version.
 - **`Settings` → `Repair installation` downloads the current version again and installs it after
   `Restart and repair`. Settings and saves remain. When the current version is withdrawn, the game
   proposes a newer one.

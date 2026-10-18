@@ -37,6 +37,15 @@ namespace Wotr.PlayTests
                     CoversWithMap(gateway.Root, content);
                     CreditsClear(gateway.Root, content, gateway.Root.Q(className: "login-card"));
                     LayoutTests.Save(target, $"menu09-entry-{width}-{scale:0.00}.png");
+                    // DIST-17: an update lights Settings with a note under it; nothing moves and the note stays on the card.
+                    var gatewaySettings = gateway.Root.Q<Button>("open-interface");
+                    var gatewayBefore = gatewaySettings.worldBound;
+                    gateway.ShowUpdate(UpdateNoteSample);
+                    yield return Settle();
+                    Assert.AreEqual(gatewayBefore, gatewaySettings.worldBound);
+                    Fits(gatewaySettings.Q<Label>("settings-update-note"), gateway.Root.Q(className: "login-card"));
+                    LayoutTests.Save(target, $"dist17-entry-update-{width}-{scale:0.00}.png");
+                    gateway.ShowUpdate(Wotr.Client.Updates.UpdateNote.None);
                     client.Interface.Open();
                     yield return Settle();
                     // MENU-20: the server comes from the build's configuration, never from Settings.
@@ -158,6 +167,22 @@ namespace Wotr.PlayTests
                     CreditsClear(menu.Root, content, window, menu.Root.Q("menu-actions"), menu.Status);
                     var size = window.worldBound.size;
                     LayoutTests.Save(target, $"menu09-main-{width}-{scale:0.00}.png");
+                    // DIST-17: the note sits inside Settings on the right, beside its label; nothing moves.
+                    var menuSettings = menu.Root.Q<Button>("open-interface");
+                    var menuBefore = menuSettings.worldBound;
+                    menu.ShowUpdate(UpdateNoteSample);
+                    yield return Settle();
+                    Assert.AreEqual(menuBefore, menuSettings.worldBound);
+                    var menuNote = menuSettings.Q<Label>("settings-update-note");
+                    Fits(menuNote, menuSettings);
+                    var settingsLabel = menuSettings.MeasureTextSize("Settings", 0, VisualElement.MeasureMode.Undefined, 0,
+                        VisualElement.MeasureMode.Undefined).x;
+                    var noteText = menuNote.MeasureTextSize(menuNote.text, 0, VisualElement.MeasureMode.Undefined, 0,
+                        VisualElement.MeasureMode.Undefined).x;
+                    Assert.Less(menuSettings.resolvedStyle.paddingLeft + settingsLabel + noteText + 12, menuSettings.worldBound.width,
+                        "the note and the label share the button without touching");
+                    LayoutTests.Save(target, $"dist17-main-update-{width}-{scale:0.00}.png");
+                    menu.ShowUpdate(Wotr.Client.Updates.UpdateNote.None);
                     // MENU-11: My games replaces the open games in the same window; the window keeps its size.
                     ReturnTestFixture.Click(menu.Root.Q<Button>("show-my-games"));
                     yield return Settle();
@@ -280,6 +305,9 @@ namespace Wotr.PlayTests
             var band = new Rect(credits.worldBound.center.x - text.x / 2, credits.worldBound.yMin, text.x, credits.worldBound.height);
             return band.Overlaps(panel.worldBound);
         }
+
+        private static readonly Wotr.Client.Updates.UpdateNote UpdateNoteSample =
+            new Wotr.Client.Updates.UpdateNote("Update required soon", "Version 0.9.1 is required at 20:00.");
 
         private static void Fits(VisualElement element, VisualElement bounds)
         {

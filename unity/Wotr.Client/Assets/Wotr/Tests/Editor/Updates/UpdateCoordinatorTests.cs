@@ -379,64 +379,65 @@ namespace Wotr.Client.Tests
             Assert.AreEqual(0, host.Requests);
         }
 
-        // DIST-15: a version newer than the one that last ran here is announced once; a first installation is not.
+        // DIST-17: an offered release lights Settings in the first menus with a short note; Settings itself offers the
+        // download and What's new. Nothing else shows it.
         [Test]
-        public void ANewerVersionThanLastTimeIsAnnouncedOnceButAFirstInstallationIsNot()
-        {
-            Assert.AreEqual("", Updater().Snapshot.UpdatedTo, "a first installation");
-            var store = new UpdateStore(folder);
-            var state = store.Load();
-            Assert.AreEqual("0.9.0", state.LastRunVersion);
-            state.LastRunVersion = "0.8.5";
-            store.Save(state);
-
-            var updated = Updater();
-            Assert.AreEqual("0.9.0", updated.Snapshot.UpdatedTo);
-            var notice = new UpdateNotice();
-            notice.Render(updated.Snapshot, Start, "");
-            Assert.IsTrue(notice.IsShown);
-            Assert.AreEqual("Updated to version 0.9.0.", notice.Bar.Q<Label>("update-notice-text").text);
-            Assert.AreEqual(DisplayStyle.Flex, notice.Bar.Q<Button>("update-notice-notes").style.display.value);
-            Assert.AreEqual("Close", notice.Bar.Q<Button>("update-notice-first").text);
-
-            var changes = 0;
-            updated.Changed += _ => changes++;
-            updated.DismissArrival();
-            Assert.AreEqual("", updated.Snapshot.UpdatedTo);
-            Assert.AreEqual(1, changes);
-            notice.Render(updated.Snapshot, Start, "");
-            Assert.IsFalse(notice.IsShown);
-            Assert.AreEqual("", Updater().Snapshot.UpdatedTo, "once per version");
-        }
-
-        [Test]
-        public async Task AnOfferedReleaseHasWhatsNewAndARepairHasNot()
+        public async Task AnOfferedReleaseLightsSettingsAndSettingsOffersItsDownloadAndNotes()
         {
             Publish("0.9.1");
             catalog.View = View("0.9.1");
             var updater = Updater();
+            Assert.IsFalse(UpdateHint.For(updater.Snapshot, Start).Shown, "nothing before the first check");
             await updater.Check();
             await Until(() => updater.Snapshot.Status == UpdateStatus.Available);
-            var notice = new UpdateNotice();
-            notice.Render(updater.Snapshot, Start, "");
-            Assert.AreEqual(DisplayStyle.Flex, notice.Bar.Q<Button>("update-notice-notes").style.display.value);
-            Assert.AreEqual("What's new", notice.Bar.Q<Button>("update-notice-notes").text);
-            Assert.AreEqual("https://wotr.example.test/updates#v0.9.1", UpdateArrival.NotesUrl("https://wotr.example.test/", "0.9.1"));
 
-            updater.Later();
-            notice.Render(updater.Snapshot, Start, "");
-            Assert.IsFalse(notice.IsShown);
-            Assert.AreEqual(DisplayStyle.None, notice.Bar.Q<Button>("update-notice-notes").style.display.value);
+            var note = UpdateHint.For(updater.Snapshot, Start);
+            Assert.AreEqual("Update available", note.Text);
+            StringAssert.Contains("0.9.1", note.Detail);
+            var settings = new Button { tooltip = "Interface size" };
+            var hint = new SettingsUpdateHint(settings);
+            hint.Show(note);
+            Assert.IsTrue(settings.ClassListContains(SettingsUpdateHint.GlowClass));
+            Assert.AreEqual("Update available", hint.Note.text);
+            Assert.AreEqual(PickingMode.Ignore, hint.Note.pickingMode, "the note is not another control");
+            Assert.AreEqual(note.Detail, settings.tooltip);
+            hint.Show(UpdateNote.None);
+            Assert.IsFalse(settings.ClassListContains(SettingsUpdateHint.GlowClass));
+            Assert.AreEqual(DisplayStyle.None, hint.Note.style.display.value);
+            Assert.AreEqual("Interface size", settings.tooltip);
+
+            var section = new UpdateSettingsSection(new ClientBuildInfo { Version = "0.9.0", Platform = ClientPlatforms.MacOS }, "0.9.0");
+            string opened = null;
+            section.WhatsNew += version => opened = version;
+            section.Render(updater.Snapshot, "0.9.0", false, "");
+            Assert.AreEqual("Download update", section.Root.Q<Button>("update-primary").text);
+            Assert.IsTrue(section.Root.Q<Button>("update-whats-new").enabledSelf);
+            Assert.IsNull(opened);
+            Assert.AreEqual("https://wotr.example.test/updates#v0.9.1", UpdateNotes.Url("https://wotr.example.test/", "0.9.1"));
         }
 
         [Test]
-        public void OnlyANewerVersionCountsAsAnArrival()
+        public void TheNoteNamesTheStateAndStaysSilentOtherwise()
         {
-            Assert.AreEqual("0.9.0-rc.10", UpdateArrival.Version("0.9.0-rc.9", "0.9.0-rc.10"));
-            Assert.AreEqual("", UpdateArrival.Version("", "0.9.0-rc.10"));
-            Assert.AreEqual("", UpdateArrival.Version("0.9.0-rc.10", "0.9.0-rc.10"));
-            Assert.AreEqual("", UpdateArrival.Version("0.9.0", "0.9.0-rc.10"));
-            Assert.AreEqual("", UpdateArrival.Version("not a version", "0.9.0-rc.10"));
+            UpdateNote Note(UpdateMode mode, UpdateStatus status, bool repair = false, bool blocked = false, string percent = "") =>
+                UpdateHint.Note(mode, status, repair, blocked, "0.9.1", percent, Start.AddHours(2), Start);
+
+            Assert.AreEqual("Update available", Note(UpdateMode.Optional, UpdateStatus.Available).Text);
+            Assert.AreEqual("Downloading 45%", Note(UpdateMode.Optional, UpdateStatus.Downloading, percent: "45%").Text);
+            Assert.AreEqual("Update ready", Note(UpdateMode.Optional, UpdateStatus.Ready).Text);
+            Assert.AreEqual("Update ready", Note(UpdateMode.RequiredNow, UpdateStatus.Ready).Text);
+            Assert.AreEqual("Update required", Note(UpdateMode.RequiredNow, UpdateStatus.Downloading).Text);
+            Assert.AreEqual("Update required", Note(UpdateMode.Optional, UpdateStatus.Available, blocked: true).Text);
+            Assert.AreEqual("Update required soon", Note(UpdateMode.RequiredSoon, UpdateStatus.Waiting).Text);
+            foreach (var silent in new[]
+            {
+                Note(UpdateMode.None, UpdateStatus.Idle),
+                Note(UpdateMode.ServerBehind, UpdateStatus.Idle),
+                Note(UpdateMode.Optional, UpdateStatus.Ready, repair: true),
+                Note(UpdateMode.Optional, UpdateStatus.Failed),
+                Note(UpdateMode.Optional, UpdateStatus.Checking)
+            })
+                Assert.IsFalse(silent.Shown);
         }
 
         private UpdateCoordinator Updater(bool withInstaller = true)

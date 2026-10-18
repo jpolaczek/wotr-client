@@ -58,6 +58,8 @@ namespace Wotr.Client
         public ChallengeTab Challenge { get; } = new ChallengeTab();
         public event Action ReplaysOpened;
         private Button showReplays;
+        // DIST-17: the glow and note of an available update on Settings.
+        private SettingsUpdateHint updateHint;
 
         public MainMenuScreen(string username)
         {
@@ -162,6 +164,8 @@ namespace Wotr.Client
             }
         }
 
+        public void ShowUpdate(Updates.UpdateNote note) => updateHint.Show(note);
+
         private VisualElement ActionColumn()
         {
             var column = new VisualElement { name = "menu-actions" };
@@ -175,6 +179,7 @@ namespace Wotr.Client
             column.Add(testButton);
             var settings = InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke());
             settings.AddToClassList("menu-action");
+            updateHint = new SettingsUpdateHint(settings);
             column.Add(settings);
             column.Add(Ignored("menu-actions-spacer"));
             // MENU-31: Sign out and Quit game share the column's last row, so Demo vs CPU fits above them.

@@ -37,6 +37,8 @@ namespace Wotr.Client
         private MainMenuBrowser lobbyBrowser;
         private LobbyController lobbyController;
         private MainMenuScreen mainMenu;
+        // DIST-17: the updater's latest note, shown on Settings of the sign-in screen and the main menu only.
+        private Updates.UpdateNote updateNote = Updates.UpdateNote.None;
         private Task localWrites = Task.CompletedTask;
         private WaitingRoomController waitingRoom;
         private GatewayScreen authScreen;
@@ -69,10 +71,19 @@ namespace Wotr.Client
                 ShowLogin();
         }
 
+        // DIST-17: called by the updater whenever its state changes; only the first menus show it.
+        public void ShowUpdate(Updates.UpdateNote note)
+        {
+            updateNote = note;
+            authScreen?.ShowUpdate(note);
+            mainMenu?.ShowUpdate(note);
+        }
+
         private void ShowLogin()
         {
             ChangeScreen();
             authScreen = new GatewayScreen();
+            authScreen.ShowUpdate(updateNote);
             errorLabel = authScreen.Status;
             root.Add(authScreen.Root);
             authScreen.InterfaceRequested += OpenInterface;
@@ -103,6 +114,7 @@ namespace Wotr.Client
         {
             ChangeScreen();
             var lobby = new MainMenuScreen(api.Username);
+            lobby.ShowUpdate(updateNote);
             mainMenu = lobby;
             errorLabel = lobby.Status;
             root.Add(lobby.Root);

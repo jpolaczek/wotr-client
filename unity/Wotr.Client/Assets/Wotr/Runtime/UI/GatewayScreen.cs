@@ -16,6 +16,8 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "gateway-screen" };
         public Label Status { get; } = new Label { name = "auth-status" };
         public event Action<string, string> Submitted;
+        // DIST-17: the glow and note of an available update on Settings.
+        private readonly SettingsUpdateHint updateHint;
         public event Action InterfaceRequested;
         // REPLAY-04: the library opens before sign-in, without an account or a server.
         public event Action ReplaysRequested;
@@ -67,11 +69,15 @@ namespace Wotr.Client
             replays.name = "auth-replays";
             replays.tooltip = "Watch saved games again; no account or server needed.";
             replays.AddToClassList("auth-replays");
-            var secondary = Column("auth-secondary", InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke()), replays);
+            var settings = InterfaceSettingsPanel.OpenButton(() => InterfaceRequested?.Invoke());
+            updateHint = new SettingsUpdateHint(settings);
+            var secondary = Column("auth-secondary", settings, replays);
             secondary.AddToClassList("auth-secondary");
             card.Add(secondary);
             SubmitOnEnter(password);
         }
+
+        public void ShowUpdate(Updates.UpdateNote note) => updateHint.Show(note);
 
         private static VisualElement Column(string name, params Button[] buttons)
         {

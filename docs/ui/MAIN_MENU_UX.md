@@ -545,3 +545,11 @@ players online beside it, and challenges between them; the game rows are compact
   Server side: `wotr-server:docs/server/T08-LOBBY.md` (LOBBY-01).
 
 Tests: `LobbyTests` (EditMode), `MainMenuLayoutTests` (rows, chat, column, tabs in four layouts).
+
+## Updates at Settings — DIST-17 (2026-10-18)
+
+The owner's request: no update bar over the screens. The sign-in screen's and the main menu's **Settings** glow gently
+when an update is available, downloading, ready or required, with a small note (`settings-update-note`, not a control):
+under the button on the sign-in card, inside the button on the right in the menu's column. Nothing moves; the download
+and What's new are in Settings. Details: UX_SPEC (updates). Tests: `FirstMenuUpdateTests` (EditMode),
+`MainMenuLayoutTests` (the note in four layouts on both screens).

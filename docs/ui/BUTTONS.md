@@ -8,7 +8,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | Kind | Count |
 | --- | --- |
 | icon | 58 |
-| text | 102 |
+| text | 107 |
 | art | 61 |
 | glyph | 1 |
 
@@ -154,10 +154,10 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 39 | text | Name(group.Key) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 53 | text | All / none |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 73 | text | (required ? "◇ " : "") + piece.Label |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 54 | text | Login |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 56 | text | Create account |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 59 | text | Forgot password? |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 66 | text | Replays |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 56 | text | Login |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 58 | text | Create account |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 61 | text | Forgot password? |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/GatewayScreen.cs` | 68 | text | Replays |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntDiceStrip.cs` | 90 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntPanel.cs` | 82 | text | Hunt |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntPanel.cs` | 97 | icon | hunt-pool |
@@ -197,16 +197,21 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Replays/ReplayLibraryPage.cs` | 107 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Replays/ReplayLibraryPage.cs` | 118 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rings/RingFacePicker.cs` | 90 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/ChallengeTab.cs` | 25 | text | Accept |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/ChallengeTab.cs` | 28 | text | Decline |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/ConfigurationEditor.cs` | 30 | text | Use the base game |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/DemoStartPage.cs` | 37 | text | Back |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/HostGameForm.cs` | 94 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/HostGameForm.cs` | 114 | text | Back |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/HostGameForm.cs` | 120 | text | Create game |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 129 | icon | refresh |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 200 | text | Join |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 205 | text | Observe |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 218 | text | text |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 355 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 87 | text | Send |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 91 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 103 | text | Send challenge |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 135 | icon | refresh |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 210 | text | Join |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 215 | text | Observe |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 228 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 365 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/PublicRoomRow.cs` | 41 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/RoomChatPanel.cs` | 38 | text | Send |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/RoomScreen.cs` | 38 | text | Tables |
@@ -219,14 +224,14 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 168 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 363 | glyph | × |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/SoundSettingsSection.cs` | 33 | text | Test sound |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 22 | icon | back |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 46 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 28 | icon | back |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 65 | text | tab |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 87 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestSessionBar.cs` | 45 | text | text |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateNotice.cs` | 139 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 40 | text | Restart and update |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 42 | text | Retry |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 44 | text | Decline and quit |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateSettingsSection.cs` | 110 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateSettingsSection.cs` | 119 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Victory/GameEndScreen.cs` | 133 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Victory/VictoryPanel.cs` | 33 | text | FP —/4 · SH —/10 |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Victory/VictoryPanel.cs` | 44 | icon | close |

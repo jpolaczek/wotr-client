@@ -7,10 +7,8 @@ namespace Wotr.Client.Updates
     // What the updater remembers between runs, in persistentDataPath/updates/state.json: the release the player
     // agreed to download (consent belongs to one version and never moves to another), the release whose package is
     // downloaded and verified (checked again before it is installed), and whether that package is a repair of the running version.
-    // LastRunVersion is the version that last started here (DIST-15: a newer one shows What's new once).
     public sealed class UpdateState
     {
-        public string LastRunVersion { get; set; } = "";
         public string ConsentedVersion { get; set; } = "";
         public string ReadyVersion { get; set; } = "";
         public string ReadyPackage { get; set; } = "";
