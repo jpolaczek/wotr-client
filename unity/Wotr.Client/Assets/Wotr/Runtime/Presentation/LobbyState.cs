@@ -66,6 +66,8 @@ namespace Wotr.Client
             "SelfChallenge" => "You cannot challenge yourself.",
             "PlayerNotFound" => "There is no player named " + name + ".",
             "ChallengeClosed" => "That challenge is no longer open.",
+            "ChallengeNotFound" => "That challenge is no longer open.",
+            "RoomUnavailable" => "The table could not be made. Try the challenge again.",
             "InvalidMessage" => "Messages are 1–" + LobbyLimits.LongestMessage + " characters.",
             "TooManyRequests" => "Too many requests. Wait a moment.",
             _ => "That did not work. Try again."
