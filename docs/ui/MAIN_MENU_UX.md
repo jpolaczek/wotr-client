@@ -516,16 +516,11 @@ between) centred in the 60 px row; long names and details end with an ellipsis a
 text. `MainMenuLayoutTests` checks every label of the first rows inside its row and the rows inside the list in four
 layouts, with a 64-character name and a long host name.
 
-## Changing the account name — AUTH-06 (2026-10-18)
+## Changing the account name — AUTH-06, removed (AUTH-07, 2026-10-18)
 
-The owner's request: players can change their account name, with validation. Beside "Signed in as …" under the menu's
-title a quiet **Change name** (`change-account-name`) hangs without taking height, so the masthead and the menu window
-keep their sizes. It opens a window (`AccountNameDialog`, `account-name-dialog`) with the new name and the current
-password. The game checks first (`AccountNameRules`: 3–32 letters a–z, digits or . _ -, not an email address, not the
-same name, a password of 12–128 characters); the server checks again and answers NameTaken, WrongPassword or
-InvalidName, which stay in the window as sentences. After a change the menu is built again and its status line says to
-sign in with the new name from now on; the session stays signed in. Server side: `wotr-server:docs/server/T08-LOBBY.md` (AUTH-06).
-Tests: `AccountNameTests` (EditMode), `MainMenuLayoutTests` (the button and the window in four layouts).
+The menu offered a **Change name** beside "Signed in as" from 0.9.0-rc.9. At the owner's request (AUTH-07) the
+client no longer offers it: the masthead shows only "Signed in as …". The server keeps the endpoint and the
+operator's `--rename` (`wotr-server:docs/server/T08-LOBBY.md`).
 
 ## Lobby chat, players online and challenges — LOBBY-01 (2026-10-18)
 

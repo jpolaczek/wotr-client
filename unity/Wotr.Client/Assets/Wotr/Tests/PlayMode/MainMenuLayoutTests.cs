@@ -112,17 +112,6 @@ namespace Wotr.PlayTests
                         Fits(menu.Root.Q<Button>(name), content);
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q("menu-actions"));
                     }
-                    // AUTH-06: Change name sits beside "Signed in as", and its window fits every layout.
-                    Fits(menu.Root.Q<Button>("change-account-name"), content);
-                    Fits(menu.Root.Q<Label>("menu-player"), content);
-                    menu.AccountName.Open("PlayerWithLongUsername12345678901");
-                    menu.AccountName.Refused("NameTaken");
-                    yield return Settle();
-                    foreach (var name in new[] { "account-name-new", "account-name-password", "account-name-submit", "account-name-cancel", "account-name-status" })
-                        Fits(menu.Root.Q(name), content);
-                    LayoutTests.Save(target, $"auth06-rename-{width}-{scale:0.00}.png");
-                    menu.AccountName.Close();
-                    yield return Settle();
                     // UI-257: Join and Observe keep their words on one line, and the code field is wide enough for its placeholder.
                     foreach (var name in new[] { "join-invitation", "observe-invitation" })
                     {

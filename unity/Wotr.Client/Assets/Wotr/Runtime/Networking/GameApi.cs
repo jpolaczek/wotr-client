@@ -74,15 +74,6 @@ namespace Wotr.Client
             UseSession(await Send<SessionView>("POST", "api/auth/register",
                 new RegisterRequest { Username = username, Email = email, Password = password }, cancellation));
 
-        // AUTH-06: the server changed this session's account name; the token and account stay.
-        public async Task<string> RenameAccount(string newName, string password, CancellationToken cancellation)
-        {
-            var session = await Send<SessionView>("POST", "api/account/name",
-                new LoginRequest { Username = newName, Password = password }, cancellation);
-            Username = session.Username;
-            return Username;
-        }
-
         private void UseSession(SessionView session)
         {
             Token = session.Token;

@@ -118,7 +118,6 @@ namespace Wotr.Client
             lobby.Logout += () => Perform(async () => { try { await api.Logout(screenLifetime.Token); } finally { ShowLogin(); } });
             lobby.QuitRequested += quit;
             lobby.StartScenario += id => Perform(() => StartTestScenario(id));
-            lobby.AccountName.Submitted += (name, password) => _ = RenameAccount(lobby, name, password);
             libraryController = new ReplayLibraryController(Replays, lobby.Replays, FilePicker, entry => PlayReplay(entry, false));
             lobby.ReplaysOpened += libraryController.Refresh;
             lobbyBrowser = new MainMenuBrowser(api, lobby);
@@ -127,32 +126,6 @@ namespace Wotr.Client
             lobbyController.RoomOpened += ShowRoom;
             _ = LoadTestScenarios(lobby, screenLifetime.Token);
             return Task.CompletedTask;
-        }
-
-        // AUTH-06: the server checks the name again and the password; a refusal stays in the window. After a change the
-        // menu is built again, so every default (e.g. a new game's name) uses the new name.
-        private async Task RenameAccount(MainMenuScreen lobby, string name, string password)
-        {
-            lobby.AccountName.Busy(true);
-            try
-            {
-                var renamed = await api.RenameAccount(name, password, screenLifetime.Token);
-                lobby.AccountName.Close();
-                await ShowLobby("Your account name is now " + renamed + ". Sign in with it from now on.");
-            }
-            catch (ApiException error)
-            {
-                lobby.AccountName.Refused(error.Status == 429 && error.Message != SignInLock.Error ? "TooManyRequests" : error.Message,
-                    error.RetryAfter);
-            }
-            catch (Exception) when (!screenLifetime.IsCancellationRequested)
-            {
-                lobby.AccountName.Refused("");
-            }
-            finally
-            {
-                lobby.AccountName.Busy(false);
-            }
         }
 
         // MENU-31: the menu's demo makes a private room on the chosen side, starts the demo against the CPU from it (DEMO-04)
