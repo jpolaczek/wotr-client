@@ -51,6 +51,7 @@ check_app() {
 # An optional fourth argument starts that architecture's slice (arch -x86_64: Intel code under Rosetta).
 self_check() {
   local name="$1" installed="$2" build="$3" slice="${4:-}" json="$out/self-check-$1.json" executable
+  rm -f "$json"  # SEC-01: the game never overwrites an existing report
   executable="$(defaults read "$app/Contents/Info" CFBundleExecutable)"
   ${slice:+arch -$slice} "$app/Contents/MacOS/$executable" -batchmode -nographics -logFile "$out/player-$name.log" --wotr-self-check "$json" \
     || fail "self-check $name exit $?"

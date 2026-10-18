@@ -46,6 +46,8 @@ function Check-Hooks([string]$Phase, [int]$Expected) {
 # The installed game reports itself (InstallationSelfCheck) and quits before opening a window.
 function Self-Check([string]$Name, [string]$Installed, [string]$Build) {
     $json = Join-Path $Out "self-check-$Name.json"
+    # SEC-01: the game writes only a new report at an absolute path.
+    Remove-Item -LiteralPath $json -ErrorAction SilentlyContinue
     $arguments = '-batchmode', '-nographics', '-logFile', "`"$(Join-Path $Out "player-$Name.log")`"", '--wotr-self-check', "`"$json`""
     Wait-Exit (Start-Process -FilePath $Exe -ArgumentList $arguments -PassThru) "self-check $Name" 120
     $check = Get-Content $json -Raw | ConvertFrom-Json
@@ -64,7 +66,7 @@ function Fingerprint([string]$Folder) {
     } | Out-String
 }
 
-New-Item -ItemType Directory -Force $Out | Out-Null
+$Out = (New-Item -ItemType Directory -Force $Out).FullName
 Remove-Item $Report -ErrorAction SilentlyContinue
 if (Test-Path $Root) { Fail "$Root exists — uninstall War of the Ring Online before the smoke test" }
 $version = (Get-Content (Join-Path $Release 'build-info.json') -Raw | ConvertFrom-Json).version

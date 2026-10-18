@@ -63,6 +63,7 @@ same_data() {
 # The installed game reports itself (InstallationSelfCheck) and quits before opening a window.
 self_check() {
   local name="$1" installed="$2" build="$3" json="$out/self-check-$1.json"
+  rm -f "$json"  # SEC-01: the game never overwrites an existing report
   "$app" -batchmode -nographics -logFile "$out/player-$name.log" --wotr-self-check "$json" || fail "self-check $name exit $?"
   record "self-check $name: $(python3 -I -c 'import json, sys; print(json.dumps(json.load(open(sys.argv[1]))))' "$json")"
   [[ "$(json_field "$json" installedVersion)" == "$installed" && "$(json_field "$json" buildVersion)" == "$build" &&

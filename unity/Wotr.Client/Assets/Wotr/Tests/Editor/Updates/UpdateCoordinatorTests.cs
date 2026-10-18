@@ -84,6 +84,8 @@ namespace Wotr.Client.Tests
             Assert.IsTrue(await updater.Install());
             Assert.AreEqual(1, installer.Staged.Count);
             Assert.AreEqual((state.ReadyPackage, false), installer.Staged[0]);
+            Assert.AreEqual("0.9.1", installer.Releases[0].Version, "SEC-01: the installer gets the signed version.");
+            Assert.AreEqual(state.ReadySha256, installer.Releases[0].Sha256);
             Assert.AreEqual(UpdateStatus.Applying, updater.Snapshot.Status);
         }
 
@@ -454,13 +456,15 @@ namespace Wotr.Client.Tests
         private sealed class Installer : IUpdateInstaller
         {
             public List<(string Package, bool Repair)> Staged { get; } = new List<(string, bool)>();
+            public List<StagedRelease> Releases { get; } = new List<StagedRelease>();
             public Exception Failure { get; set; }
 
-            public Task Stage(string package, bool repair, CancellationToken cancellation)
+            public Task Stage(StagedRelease release, CancellationToken cancellation)
             {
                 if (Failure != null)
                     return Task.FromException(Failure);
-                Staged.Add((package, repair));
+                Staged.Add((release.Package, release.Repair));
+                Releases.Add(release);
                 return Task.CompletedTask;
             }
         }

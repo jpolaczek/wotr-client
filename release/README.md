@@ -128,7 +128,7 @@ bash scripts/smoke-installer-linux.sh .artifacts/releases/<version>/installers/l
   ([SOURCES](../unity/Wotr.Client/Assets/Plugins/Velopack/SOURCES.md)).
 - `Assets/Wotr/Runtime/Updates`: Velopacka start before splash screen without automatic use of
   packages, installation status (build release only installed by Velopack can update; Editor, build
-  developer and copy with ZIP-a-a-a-a-a-a-a-a-a-a-a-a-a) and `--wotr-self-check <file>` for test
+  developer and copy with ZIP-a-a-a-a-a-a-a-a-a-a-a-a-a) and `--wotr-self-check <file>` (SEC-01: only a new `.json` file at an absolute path in an existing folder; otherwise exit code 2) for test
   dragons: saves build and install version, platform and data path, then closes the game before
   opening the window.
 - `release/windows/WotrLauncher.c`: `Wotr.exe` from Windows installation. Corresponds to 0 code for

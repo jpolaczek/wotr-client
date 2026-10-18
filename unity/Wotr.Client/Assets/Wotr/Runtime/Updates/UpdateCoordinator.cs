@@ -14,7 +14,7 @@ namespace Wotr.Client.Updates
     public interface IUpdateInstaller
     {
         // Stages the verified package and starts the helper that applies it after this process exits.
-        Task Stage(string package, bool repair, CancellationToken cancellation);
+        Task Stage(StagedRelease release, CancellationToken cancellation);
     }
 
     public enum UpdateStatus
@@ -236,7 +236,8 @@ namespace Wotr.Client.Updates
                     Show(UpdateStatus.Failed, "The downloaded update was damaged and downloads again.");
                     return false;
                 }
-                await installer.Stage(state.ReadyPackage, state.ReadyIsRepair, lifetime.Token);
+                await installer.Stage(new StagedRelease(state.ReadyPackage, state.ReadyVersion, state.ReadySha256, state.ReadyIsRepair),
+                    lifetime.Token);
                 // The installer holds its own copy now. A repair keeps the running version, so a ready package left
                 // behind would offer the same repair again on every start (2026-10-17); an update would be dropped by
                 // the new version anyway.
