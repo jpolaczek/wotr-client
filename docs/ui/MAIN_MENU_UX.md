@@ -530,10 +530,17 @@ players online beside it, and challenges between them; the game rows are compact
 - **Rows.** An open game's row is 46 px (was 60): a 26 px emblem, a 15 px name over a 12 px detail line, Play and
   Observe 80 × 32 px.
 - **Chat.** Under the list a fixed 196 px panel (`lobby-panel`): "Lobby chat" with the hint "Right-click a name to
-  challenge", the log (`lobby-chat-log`, vertical scrolling only, the server's last 200 messages), the input with Send
-  (Enter sends; 1–200 characters) and the online toggle, and a one-line status (`lobby-status`).
-- **Players online.** A 150 px column (`lobby-online`) lists the players polled on the lobby in the last 20 s, this
-  player marked "(you)"; the toggle ("▸ Online n" / "◂ Online n") folds it away and back.
+  challenge", the log (`lobby-chat-log`, vertical scrolling only), the input across the whole line (LOBBY-02: Enter
+  sends, no Send button; 1–200 characters), and a one-line status (`lobby-status`).
+- **History (LOBBY-02).** The chat belongs to the sign-in: it starts empty at sign-in (earlier messages are not shown,
+  earlier challenge outcomes are not acted on) and stays while the player moves between the menu, rooms and games;
+  signing out clears it. Other players keep what they saw. The server only relays messages (LOBBY-03): it holds each one
+  in memory for about a minute so the menus polling every 3 s fetch it, and never stores it.
+- **Players online.** A 150 px column (`lobby-online`, titled "Online · n") lists the players polled on the lobby in the
+  last 20 s, this player marked "(you)". LOBBY-02 (2026-10-18, the owner's request): no fold button in the chat line; a
+  16 px grey strip at the panel's right edge (`lobby-online-strip`) carries a tab at its bottom (`lobby-online-tab`,
+  "Online" written upwards) that folds the column into the strip and back. The tab never moves; the chat takes the
+  room.
 - **Challenge.** A right-click on another player's name — in the column or on a message — opens a small tab
   (`lobby-context`) with the name and **Send challenge**; Esc or a press elsewhere closes it. The status line confirms
   the challenge or says why the server refused it (offline, already challenged, too many pending, yourself).

@@ -10,7 +10,7 @@ namespace Wotr.Client
     // challenged player from the answer, for the challenger from the next poll.
     public sealed class LobbyController : IDisposable
     {
-        public LobbyState State { get; } = new LobbyState();
+        public LobbyState State { get; }
         public event Action<RoomView> RoomOpened;
         private readonly GameApi api;
         private readonly LobbyPanel panel;
@@ -18,11 +18,14 @@ namespace Wotr.Client
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private bool opening;
 
-        public LobbyController(GameApi api, LobbyPanel panel, ChallengeTab tab)
+        // LOBBY-02: the state belongs to the sign-in, so the chat seen so far comes back when the menu does.
+        public LobbyController(GameApi api, LobbyPanel panel, ChallengeTab tab, LobbyState state)
         {
             this.api = api;
             this.panel = panel;
             this.tab = tab;
+            State = state;
+            panel.Apply(State);
             panel.Send += text => _ = SendMessage(text);
             panel.Challenge += name => _ = SendChallenge(name);
             tab.Accept += id => _ = Accept(id);

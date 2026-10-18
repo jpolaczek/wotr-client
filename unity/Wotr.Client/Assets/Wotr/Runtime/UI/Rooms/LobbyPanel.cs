@@ -7,8 +7,9 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // LOBBY-01: the Open games screen's chat under the game list, with a compact column of the players online beside it
-    // that folds away. A right-click on a player's name (in the column or on a message) opens a small tab with Send
+    // LOBBY-01: the Open games screen's chat under the game list, with a compact column of the players online beside it.
+    // LOBBY-02: the column folds into a grey strip at the right edge; the tab at the strip's bottom folds and unfolds it
+    // and never moves. A right-click on a player's name (in the column or on a message) opens a small tab with Send
     // challenge. The panel keeps a fixed height; only its own log scrolls.
     public sealed class LobbyPanel
     {
@@ -24,7 +25,8 @@ namespace Wotr.Client
         private readonly ScrollView log = new ScrollView(ScrollViewMode.Vertical) { name = "lobby-chat-log" };
         private readonly VisualElement online = new VisualElement { name = "lobby-online" };
         private readonly ScrollView onlineList = new ScrollView(ScrollViewMode.Vertical) { name = "lobby-online-list" };
-        private Button toggle;
+        private readonly Label onlineTitle = new Label("Online") { name = "lobby-online-title", pickingMode = PickingMode.Ignore };
+        private Button tab;
         private readonly Label contextName = new Label { name = "lobby-context-name", pickingMode = PickingMode.Ignore };
         private string onlineKey = "";
         private long shownLatest;
@@ -44,17 +46,17 @@ namespace Wotr.Client
             chat.Add(Status);
             Root.Add(chat);
             online.AddToClassList("lobby-online");
-            var title = new Label("Online") { pickingMode = PickingMode.Ignore };
-            title.AddToClassList("lobby-online-title");
-            online.Add(title);
+            onlineTitle.AddToClassList("lobby-online-title");
+            online.Add(onlineTitle);
             onlineList.AddToClassList("lobby-online-list");
             onlineList.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             online.Add(onlineList);
             Root.Add(online);
+            Root.Add(Strip());
             BuildContextTab();
             Root.RegisterCallback<PointerDownEvent>(CloseContextOutside, TrickleDown.TrickleDown);
             Root.RegisterCallback<KeyDownEvent>(e => { if (e.keyCode == KeyCode.Escape) CloseContext(); }, TrickleDown.TrickleDown);
-            RenderToggle(0);
+            RenderOnlineCount(0);
         }
 
         private VisualElement Header()
@@ -75,24 +77,33 @@ namespace Wotr.Client
             var row = new VisualElement { name = "lobby-chat-line" };
             row.AddToClassList("lobby-chat-line");
             Input.AddToClassList("lobby-chat-input");
-            Input.textEdition.placeholder = "Write to everyone on Open games";
+            // LOBBY-02: Enter sends; there is no Send button.
+            Input.textEdition.placeholder = "Write to everyone on Open games and press Enter";
+            // Caught on the way down, before the field's own text input can take the key.
             Input.RegisterCallback<KeyDownEvent>(e =>
             {
                 if (e.keyCode is not (KeyCode.Return or KeyCode.KeypadEnter))
                     return;
                 Submit();
                 e.StopPropagation();
-            });
+            }, TrickleDown.TrickleDown);
             row.Add(Input);
-            var send = BoardScreen.Button("Send", Submit);
-            send.name = "lobby-chat-send";
-            send.AddToClassList("lobby-chat-send");
-            row.Add(send);
-            toggle = BoardScreen.Button("", ToggleOnline);
-            toggle.name = "lobby-online-toggle";
-            toggle.AddToClassList("lobby-online-toggle");
-            row.Add(toggle);
             return row;
+        }
+
+        // LOBBY-02: the grey strip at the right edge with the tab at its bottom; the tab folds the column beside it.
+        private VisualElement Strip()
+        {
+            var strip = new VisualElement { name = "lobby-online-strip" };
+            strip.AddToClassList("lobby-online-strip");
+            tab = BoardScreen.Button("", ToggleOnline);
+            tab.name = "lobby-online-tab";
+            tab.AddToClassList("lobby-online-tab");
+            var label = new Label("Online") { name = "lobby-online-tab-label", pickingMode = PickingMode.Ignore };
+            label.AddToClassList("lobby-online-tab-label");
+            tab.Add(label);
+            strip.Add(tab);
+            return strip;
         }
 
         private void BuildContextTab()
@@ -167,7 +178,7 @@ namespace Wotr.Client
                 foreach (var player in players)
                     onlineList.Add(PlayerRow(player));
             }
-            RenderToggle(players.Count);
+            RenderOnlineCount(players.Count);
         }
 
         private VisualElement PlayerRow(OnlinePlayer player)
@@ -236,16 +247,17 @@ namespace Wotr.Client
         {
             OnlineShown = !OnlineShown;
             online.style.display = OnlineShown ? DisplayStyle.Flex : DisplayStyle.None;
-            RenderToggle(onlineCount);
+            tab.EnableInClassList("lobby-online-tab-folded", !OnlineShown);
+            RenderOnlineCount(onlineCount);
         }
 
         private int onlineCount;
 
-        private void RenderToggle(int count)
+        private void RenderOnlineCount(int count)
         {
             onlineCount = count;
-            toggle.text = (OnlineShown ? "▸ " : "◂ ") + "Online " + count;
-            toggle.tooltip = OnlineShown ? "Hide the players online" : "Show the players online";
+            onlineTitle.text = "Online · " + count;
+            tab.tooltip = OnlineShown ? "Hide the players online" : $"Show the players online ({count})";
         }
     }
 }

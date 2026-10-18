@@ -67,7 +67,9 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Who plays the Shadow?", panel.Root.Q("lobby-message-1").Q<Label>(className: "lobby-text").text);
             Assert.IsNotNull(panel.Root.Q<Label>("lobby-player-aragorn"));
             StringAssert.Contains("(you)", panel.Root.Q<Label>("lobby-player-vibestudios").text);
-            StringAssert.Contains("Online 2", panel.Root.Q<Button>("lobby-online-toggle").text);
+            Assert.AreEqual("Online · 2", panel.Root.Q<Label>("lobby-online-title").text);
+            Assert.IsNull(panel.Root.Q("lobby-online-toggle"), "LOBBY-02: no fold button in the chat line");
+            Assert.IsNotNull(panel.Root.Q("lobby-online-strip").Q<Button>("lobby-online-tab"));
             panel.OpenContext("aragorn", Vector2.zero);
             Assert.AreEqual(DisplayStyle.Flex, panel.ContextTab.style.display.value);
             Assert.AreEqual("aragorn", panel.ContextTab.Q<Label>("lobby-context-name").text);
@@ -82,6 +84,33 @@ namespace Wotr.EditorTests
             panel.ToggleOnline();
             Assert.IsFalse(panel.OnlineShown);
             Assert.AreEqual(DisplayStyle.None, panel.Root.Q("lobby-online").style.display.value);
+            StringAssert.Contains("Show the players online (2)", panel.Root.Q<Button>("lobby-online-tab").tooltip);
+            panel.ToggleOnline();
+            Assert.AreEqual(DisplayStyle.Flex, panel.Root.Q("lobby-online").style.display.value);
+        }
+
+        // LOBBY-02: a new sign-in starts the chat from now: none of the earlier messages and none of the earlier
+        // challenge outcomes; what comes later shows as usual.
+        [Test]
+        public void ASignInStartsTheChatFromNow()
+        {
+            var state = LobbyState.FromSignIn();
+            var before = View(Message(1, "aragorn", "Before you came"), Message(2, "gimli", "Also before"));
+            before.Outgoing.Add(Challenge("c1", "vibestudios", "aragorn", ChallengeStatus.Accepted, "room-1"));
+            before.Online.Add(new OnlinePlayer { Name = "aragorn" });
+
+            Assert.IsEmpty(state.Apply(before), "An earlier accepted challenge does not open its room again.");
+            Assert.IsEmpty(state.Messages);
+            Assert.AreEqual(2, state.Latest);
+            Assert.IsTrue(state.Online.Any(player => player.Name == "aragorn"), "Players online show at once.");
+
+            var after = View(Message(3, "aragorn", "Welcome"));
+            after.Outgoing.Add(Challenge("c1", "vibestudios", "aragorn", ChallengeStatus.Accepted, "room-1"));
+            Assert.IsEmpty(state.Apply(after));
+            Assert.AreEqual(new[] { "Welcome" }, state.Messages.Select(m => m.Text).ToArray());
+            var plain = new LobbyState();
+            Assert.AreEqual(1, plain.Apply(before).Count);
+            Assert.AreEqual(2, plain.Messages.Count, "A state made outside a sign-in still takes the history.");
         }
 
         [Test]

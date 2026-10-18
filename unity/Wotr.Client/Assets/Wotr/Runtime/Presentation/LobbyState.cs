@@ -7,9 +7,16 @@ namespace Wotr.Client
     // LOBBY-01: what the menu knows of the lobby between polls — the chat's messages in order (at most the server's
     // MessagesKept), the players online, the incoming challenge to show, and which outcomes of this player's own
     // challenges were already acted on, so an accepted one opens its room once and a refusal is told once.
+    // LOBBY-02: one state per sign-in (ClientFlow keeps it while the player moves between screens). A state made for a new
+    // sign-in starts from now: its first poll shows none of the earlier messages and acts on none of the earlier
+    // challenge outcomes, so signing out clears the chat for this player.
     public sealed class LobbyState
     {
         private readonly List<LobbyMessage> messages = new List<LobbyMessage>();
+        private bool fromNow;
+
+        public static LobbyState FromSignIn() => new LobbyState { fromNow = true };
+
         private readonly HashSet<string> handled = new HashSet<string>();
         private readonly HashSet<string> dismissed = new HashSet<string>();
 
@@ -21,11 +28,22 @@ namespace Wotr.Client
         // Applies a poll; returns the outcomes of own challenges that are new since the last poll.
         public IReadOnlyList<ChallengeView> Apply(LobbyView view)
         {
+            if (fromNow)
+                return StartFromNow(view);
             AddMessages(view.Messages);
             Latest = System.Math.Max(Latest, view.Latest);
             Online = view.Online.OrderBy(player => player.Name, System.StringComparer.OrdinalIgnoreCase).ToList();
             Incoming = view.Incoming.FirstOrDefault(challenge => challenge.Status == ChallengeStatus.Pending && !dismissed.Contains(challenge.Id));
             return view.Outgoing.Where(challenge => challenge.Status != ChallengeStatus.Pending && handled.Add(challenge.Id)).ToList();
+        }
+
+        private IReadOnlyList<ChallengeView> StartFromNow(LobbyView view)
+        {
+            fromNow = false;
+            foreach (var challenge in view.Outgoing.Where(challenge => challenge.Status != ChallengeStatus.Pending))
+                handled.Add(challenge.Id);
+            var latest = System.Math.Max(view.Latest, view.Messages.Count == 0 ? 0 : view.Messages.Max(message => message.Sequence));
+            return Apply(new LobbyView { Latest = latest, Online = view.Online, Incoming = view.Incoming, Outgoing = view.Outgoing });
         }
 
         // The player answered or closed the tab; the same challenge does not come back.

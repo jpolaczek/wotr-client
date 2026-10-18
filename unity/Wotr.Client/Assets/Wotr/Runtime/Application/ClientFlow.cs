@@ -36,6 +36,8 @@ namespace Wotr.Client
         private TestSession testSession;
         private MainMenuBrowser lobbyBrowser;
         private LobbyController lobbyController;
+        // LOBBY-02: the lobby chat of this sign-in; signing out (any return to the sign-in screen) drops it.
+        private LobbyState lobbyState;
         private MainMenuScreen mainMenu;
         // DIST-17: the updater's latest note, shown on Settings of the sign-in screen and the main menu only.
         private Updates.UpdateNote updateNote = Updates.UpdateNote.None;
@@ -82,6 +84,7 @@ namespace Wotr.Client
         private void ShowLogin()
         {
             ChangeScreen();
+            lobbyState = null;
             authScreen = new GatewayScreen();
             authScreen.ShowUpdate(updateNote);
             errorLabel = authScreen.Status;
@@ -134,7 +137,8 @@ namespace Wotr.Client
             lobby.ReplaysOpened += libraryController.Refresh;
             lobbyBrowser = new MainMenuBrowser(api, lobby);
             lobbyBrowser.Refresh();
-            lobbyController = new LobbyController(api, lobby.Lobby, lobby.Challenge);
+            lobbyState ??= LobbyState.FromSignIn();
+            lobbyController = new LobbyController(api, lobby.Lobby, lobby.Challenge, lobbyState);
             lobbyController.RoomOpened += ShowRoom;
             _ = LoadTestScenarios(lobby, screenLifetime.Token);
             return Task.CompletedTask;
