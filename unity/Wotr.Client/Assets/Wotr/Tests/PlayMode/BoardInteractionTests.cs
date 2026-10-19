@@ -281,10 +281,11 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-151: a Combat choice without a legal card goes as No card without a click, once per decision; while the
-        // opponent chooses, No card stays in the footer, greyed out.
+        // UI-279 (replacing UI-151's answer without a click): a Combat choice without a legal card waits for the click on
+        // No card, which glows alone and says why; the click sends it once. While the opponent chooses, No card stays in
+        // the footer, greyed out.
         [UnityTest]
-        public IEnumerator UI151NoLegalCombatCardSendsNoCardOnceAndKeepsTheButton()
+        public IEnumerator UI279NoLegalCombatCardWaitsForTheNoCardClickAndKeepsTheButton()
         {
             var view = BattleScreenFixture.Create(CommandKind.CommitCombatCard);
             view.Battle.Stage = "DefenderCard";
@@ -292,7 +293,13 @@ namespace Wotr.PlayTests
             using (var test = new Harness(view))
             {
                 yield return new WaitForSeconds(.3f);
-                Assert.AreEqual(1, test.Backend.Commands, "Without a legal card, No card goes without a click.");
+                Assert.AreEqual(0, test.Backend.Commands, "Nothing is sent without a click, even the only choice.");
+                var only = test.Board.Tray.Q<Button>("battle-no-card");
+                Assert.IsTrue(only.ClassListContains(ChoiceGlow.ClassName), "The only choice glows.");
+                StringAssert.StartsWith("No legal Combat card · Click", only.tooltip);
+                Click(only);
+                yield return new WaitForSeconds(.3f);
+                Assert.AreEqual(1, test.Backend.Commands);
                 Assert.AreEqual(CommandKind.CommitCombatCard, test.Backend.Last.Kind);
                 Assert.IsTrue(string.IsNullOrEmpty(test.Backend.Last.Payload.CardId));
                 test.Push();

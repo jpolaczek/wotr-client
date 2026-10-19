@@ -389,12 +389,12 @@ namespace Wotr.PlayTests
             await At(revision + 1);
         }
 
-        // UI-151: without a legal Combat card the client answers No card itself; with one the player clicks it.
+        // UI-279: the player clicks No card for an own Combat choice, even without a legal card (UI-151 sent it by itself).
         public async Task NoCard(MountedMatchClient client)
         {
+            await Settle();
             var view = client.Board.View;
-            var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
-            if (view.Decision?.Kind == DecisionKind.CombatCard && view.DecisionOwner == view.You && option?.EligibleIds.Count > 0)
+            if (view.Decision?.Kind == DecisionKind.CombatCard && view.DecisionOwner == view.You)
             {
                 await Direct(client, "battle-no-card");
                 return;

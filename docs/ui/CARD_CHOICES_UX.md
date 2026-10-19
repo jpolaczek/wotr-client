@@ -40,7 +40,8 @@ window. MVP scope: base-game cards. Expansion decisions stay on their own panels
    Fellowship panel and Politics keep hosting the decisions that belong to them (they are part
    of the fixed UI). A list that cannot fit in the console is the only exception and has to be
    named in the inventory below.
-6. **Fewest clicks.** A single legal option is applied without a click (as today). A click that
+6. **Fewest clicks.** Nothing is sent without a click, even a single legal option (UI-279, owner
+   decision 2026-10-19); the single option glows and says what its click does. A click that
    completes a choice sends it. Counting what still has to be chosen stays visible in the
    console, so the player never needs to open a panel to see progress.
 

@@ -251,15 +251,16 @@ User notification from 2026-10-14: “After starting the new battle window, batt
 
 The user's application from 2026-10-14: "If there is no card to play, the player should not have to click “no card”. This button should not disappear and appear, changing the size of the window, but should be grey if not available to click".
 
-- When the `CombatCard` decision belongs to the player and the `CommitCombatCard` option has no
-  legal card (`EligibleIds` empty), `TurnInteraction` sends “No card” itself (the
-  `DirectBattleChoice` button path), once a decision and only a connection; the tiles not available
-  cards remain with the terms.
+- Superseded by UI-279 (owner, 2026-10-19: every choice waits for a click). When the `CombatCard`
+  decision belongs to the player and the `CommitCombatCard` option has no legal card (`EligibleIds`
+  empty), No card glows alone (`ChoiceGlow`) and its tooltip reads "No legal Combat card · Click to
+  fight this round without one"; the player clicks it. The tiles of unavailable cards keep their
+  terms.
 - In the cards stage battle (`BattleStages.Index` 0) the player footer that waits for the opponent
   has a greyed "No card" at the same place, so the button does not disappear between selection and
   expectation.
-- Quick "No card" without legal card reveals to the opponent the lack of such card as well as
-  instant click.
+- The player's own click also hides the lack of a legal card better than an instant automatic
+  answer did.
 
 <a id="cele-33-px-w-oknie-bitwy--ui-132"></a>
 ## 33 px targets in battle window — UI-132

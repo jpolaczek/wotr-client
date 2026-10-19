@@ -175,7 +175,7 @@ namespace Wotr.PlayTests
             var option = client.Board.View.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
             if (client.Board.View.Decision?.Kind != DecisionKind.CombatCard || option?.EligibleIds.Count == 0)
             {
-                // UI-151: without a legal Combat card the defender's No card goes without a click.
+                // UI-279: without a legal Combat card the defender still clicks No card (room.NoCard).
                 await room.NoCard(client);
                 return;
             }
