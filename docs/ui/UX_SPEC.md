@@ -1235,6 +1235,19 @@ the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CON
 [CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
 `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
 
+## Expansion characters: portrait keys and ability lines — ART-04 (2026-10-19)
+
+A character's portrait and figure cell is its definition id after "<module>.character.", dots as dashes
+(`PortraitArtwork.Key`): the Lords versions share their base cells ("lords.character.gimli" → "gimli"), and every
+sovereign state, Dark Chieftain and the Dwarven Lord has its own ("kings.character.brand.awakened" →
+"brand-awakened"); before, all ten sovereign states collided on "awakened" or "corrupted". A cell without art keeps
+the figure silhouette. The prompts for the expansion characters' figures and portraits (and the five corrupted
+sovereigns' portraits) are in `graphicalassets/figures/v3/prompts.json` under these keys; ART-05–ART-07 generate them.
+Every ability of the expansions' characters has a one-line tooltip form (`character-ability-summaries.json`, at most
+72 characters, no rule added); where one ability id reads differently on another card, the card has its own form
+("fate.character.gimli-dwarven-lord#messenger-dwarves"). Tests: `PortraitArtworkTests.EveryCharacterCardResolvesItsOwnPortraitKey`,
+`CharacterAbilitySummariesTests.EveryAbilityOfEveryCharacterHasOneShortLine`.
+
 ## Expansion decisions routed to their objects — UI-264 (2026-10-19)
 
 Every expansion decision kind and card presentation has a host other than the generic window

@@ -26,6 +26,30 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("", PortraitArtwork.Key(""));
         }
 
+        // ART-04: every character card resolves its own cell: versions of one figure share it, while each sovereign
+        // state, each Dark Chieftain and the Dwarven Lord have cells of their own (no more "awakened" for all five).
+        [Test]
+        public void EveryCharacterCardResolvesItsOwnPortraitKey()
+        {
+            Assert.AreEqual("brand-awakened", PortraitArtwork.Key("kings.character.brand.awakened"));
+            Assert.AreEqual("dain-corrupted", PortraitArtwork.Key("kings.character.dain.corrupted"));
+            Assert.AreEqual("gimli-dwarven-lord", PortraitArtwork.Key("fate.character.gimli-dwarven-lord"));
+            Assert.AreEqual("gimli", PortraitArtwork.Key("fate.character.gimli"));
+            var cards = Newtonsoft.Json.Linq.JObject.Parse(Resources.Load<TextAsset>("character-ability-text").text)["cards"]
+                .Select(card => (string)card["id"]).ToList();
+            var expansions = cards.Where(id => !id.StartsWith("base.")).ToList();
+            CollectionAssert.IsNotEmpty(expansions);
+            foreach (var id in expansions)
+            {
+                var key = PortraitArtwork.Key(id);
+                Assert.AreEqual(id.Substring(id.IndexOf(".character.", System.StringComparison.Ordinal) + 11).Replace('.', '-'), key, id);
+                var sharing = cards.Where(other => other != id && PortraitArtwork.Key(other) == key).ToList();
+                Assert.IsTrue(sharing.All(other => other.EndsWith(".character." + key)), id + " shares its cell only with versions of itself");
+            }
+            Assert.AreEqual(10, expansions.Where(id => id.StartsWith("kings.character.") && id.Count(c => c == '.') == 3)
+                .Select(PortraitArtwork.Key).Distinct().Count(), "Five sovereigns, two states each.");
+        }
+
         [Test]
         public void AtlasSuppliesEveryNamedCharacterWithDisjointCellsAndUiImportSettings()
         {

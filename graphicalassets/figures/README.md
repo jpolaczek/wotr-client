@@ -82,3 +82,11 @@ User application: each character (Fellowship, Saruman, etc.) has its own, nice g
 - The portrait of the battle medallion is derived from v2. The expansions character (Sméagol,
   Elrond, Galadriel, Balrog, Gothmog) retains the portraits of UI-120 from v1.
 
+## Expansion characters — ART-04 (2026-10-19)
+
+`v3/prompts.json` adds the figures and portraits of the expansions' own characters (Elrond, Galadriel, the Balrog,
+Gothmog, Sméagol, the Dwarven Lord Gimli, the five awakened sovereigns, the three Dark Chieftains) and the portraits
+of the five corrupted sovereigns, keyed like their cells (`PortraitArtwork.Key`: "brand-awakened",
+"brand-corrupted-portrait", "black-serpent"). Lords versions of base characters reuse the base art with an owner-only
+badge (owner decision 2026-10-19). Nothing is generated yet: ART-05 (Fate), ART-06 (Lords) and ART-07 (Kings) run
+`v3/generate.py` for their keys and review the results.

@@ -13,11 +13,19 @@ namespace Wotr.Client
         private static readonly NamedAtlas Current = new NamedAtlas(BasePath);
         private static readonly NamedAtlas Previous = new NamedAtlas(ResourcePath);
 
-        // "base.character.gandalf-grey" and "lords.character.gandalf-grey" share one portrait.
+        private const string CharacterMarker = ".character.";
+
+        // ART-04: a character's cell is its definition id after "<module>.character.", dots as dashes. Versions of one
+        // figure share it ("base.character.gandalf-grey" and "lords.character.gandalf-grey" → "gandalf-grey"), and
+        // each sovereign state has its own ("kings.character.brand.awakened" → "brand-awakened"; before ART-04 every
+        // state collided on "awakened"). Other ids keep their last segment.
         public static string Key(string definitionId)
         {
             if (string.IsNullOrEmpty(definitionId))
                 return "";
+            var marker = definitionId.IndexOf(CharacterMarker, System.StringComparison.Ordinal);
+            if (marker >= 0)
+                return definitionId.Substring(marker + CharacterMarker.Length).Replace('.', '-');
             var dot = definitionId.LastIndexOf('.');
             return dot < 0 ? definitionId : definitionId.Substring(dot + 1);
         }

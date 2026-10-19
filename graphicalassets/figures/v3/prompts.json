@@ -209,6 +209,138 @@
     "witch-king-portrait": [
       "portrait",
       "a terrifying wraith king: spiked iron crown floating over an empty black hood, faint cold light where the face should be"
+    ],
+    "elrond": [
+      "character",
+      "a tall ageless elf lord: long dark hair, a silver circlet, flowing robes of deep blue and silver, a ring with a blue stone, calm and wise"
+    ],
+    "elrond-portrait": [
+      "portrait",
+      "an ageless elf lord with long dark hair and a silver circlet, grave and wise eyes"
+    ],
+    "galadriel": [
+      "character",
+      "a radiant elf lady: very long golden-silver hair, a white gown, a ring with a white stone, serene and luminous"
+    ],
+    "galadriel-portrait": [
+      "portrait",
+      "a radiant elf lady with very long golden-silver hair, a white gown and a luminous serene face"
+    ],
+    "balrog": [
+      "character",
+      "a huge demon of shadow and flame towering over other miniatures: wide wings of black smoke, great horns, a whip of fire and a flaming sword, molten cracks glowing through dark skin"
+    ],
+    "balrog-portrait": [
+      "portrait",
+      "a demon of shadow and flame: a horned black head wreathed in fire, burning eyes"
+    ],
+    "gothmog": [
+      "character",
+      "a grotesque orc general: hunched and scarred, a spiked black helm, heavy dark plate armour, a long cleaver, a tattered dark banner"
+    ],
+    "gothmog-portrait": [
+      "portrait",
+      "a grotesque orc general with a scarred deformed face and a spiked black helm"
+    ],
+    "smeagol": [
+      "character",
+      "a thin pale crouching creature in a ragged loincloth, huge hopeful pale eyes and a few wisps of hair, gentler than his darker self"
+    ],
+    "smeagol-portrait": [
+      "portrait",
+      "a thin pale creature with huge hopeful pale eyes and a few wisps of hair"
+    ],
+    "gimli-dwarven-lord": [
+      "character",
+      "a stout dwarf lord: large braided red beard, a gilded crowned helm, ornate golden mail, a fur-trimmed cloak, a broad war axe"
+    ],
+    "gimli-dwarven-lord-portrait": [
+      "portrait",
+      "a stout dwarf lord with a large braided red beard and a gilded crowned helm, proud eyes"
+    ],
+    "brand-awakened": [
+      "character",
+      "a proud king of a lakeside trading city: dark beard, a gold circlet, blue and bronze armour, a longbow on his back and a sword in hand"
+    ],
+    "brand-awakened-portrait": [
+      "portrait",
+      "a proud bearded king with a gold circlet, blue and bronze armour, steady eyes"
+    ],
+    "dain-awakened": [
+      "character",
+      "an old dwarf king: a white forked beard, an iron crown, heavy plate armour, a two-handed red mattock"
+    ],
+    "dain-awakened-portrait": [
+      "portrait",
+      "an old dwarf king with a white forked beard and an iron crown, stern and fearless"
+    ],
+    "denethor-awakened": [
+      "character",
+      "a stern old steward of a white stone city: grey hair, black and silver robes over mail, a white tree emblem, a tall rod of office"
+    ],
+    "denethor-awakened-portrait": [
+      "portrait",
+      "a stern old steward with grey hair, black and silver robes and a proud cold gaze"
+    ],
+    "theoden-awakened": [
+      "character",
+      "a king of horse-lords: long white hair and beard, a gold crown, green and gold mail, a sword raised high"
+    ],
+    "theoden-awakened-portrait": [
+      "portrait",
+      "an old king of horse-lords with long white hair, a gold crown and a fierce renewed gaze"
+    ],
+    "thranduil-awakened": [
+      "character",
+      "an elven king of a forest realm: long pale hair, a crown of autumn leaves and berries, red and silver robes, a curved sword"
+    ],
+    "thranduil-awakened-portrait": [
+      "portrait",
+      "an elven king with long pale hair and a crown of autumn leaves, cool and haughty"
+    ],
+    "brand-corrupted-portrait": [
+      "portrait",
+      "a bearded king with a tarnished gold circlet, grey-faced and hollow-eyed, a creeping shadow over him"
+    ],
+    "dain-corrupted-portrait": [
+      "portrait",
+      "an old dwarf king with a white forked beard and a tarnished iron crown, grey-faced and hollow-eyed, a creeping shadow over him"
+    ],
+    "denethor-corrupted-portrait": [
+      "portrait",
+      "a grey-haired steward in black and silver, grey-faced and hollow-eyed, a creeping shadow over him"
+    ],
+    "theoden-corrupted-portrait": [
+      "portrait",
+      "an old king of horse-lords with long white hair and a tarnished crown, grey-faced and hollow-eyed, a creeping shadow over him"
+    ],
+    "thranduil-corrupted-portrait": [
+      "portrait",
+      "an elven king with long pale hair and a withered leaf crown, grey-faced and hollow-eyed, a creeping shadow over him"
+    ],
+    "black-serpent": [
+      "character",
+      "a desert warlord: crimson and gold lacquered armour, a turban helm, a black serpent banner, a curved scimitar"
+    ],
+    "black-serpent-portrait": [
+      "portrait",
+      "a desert warlord with a crimson and gold turban helm and a cruel proud face"
+    ],
+    "shadow-of-mirkwood": [
+      "character",
+      "a dark sorcerer of a haunted forest: a hooded cloak of shadow with bat-like tatters, a pale cruel face, a crooked black staff"
+    ],
+    "shadow-of-mirkwood-portrait": [
+      "portrait",
+      "a dark sorcerer with a pale cruel face under a hood of shadow, bats around him"
+    ],
+    "ugluk": [
+      "character",
+      "a broad uruk captain: a scarred grey hide, a white hand painted on his helm and shield, heavy black armour, a broad cleaver"
+    ],
+    "ugluk-portrait": [
+      "portrait",
+      "a broad uruk captain with a white hand painted on his helm and a snarling face"
     ]
   },
   "backgrounds": {
