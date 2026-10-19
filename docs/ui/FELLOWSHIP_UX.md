@@ -542,3 +542,16 @@ on the crater; steps are 46–53 map units apart instead of about 26. The track'
 40 map units apart and from every region's anchor (the gates, at their regions' edges, keep 20). Tests:
 `MordorTrackGeometryTests`, `MordorLayoutTests` (four layouts, the figure on its step, the walk between steps),
 `MordorNetworkTests`, `FellowshipLayoutTests`.
+
+<a id="ui-284"></a>
+## A journey's companions are portraits — UI-284 (2026-10-19)
+
+The owner's decision after the object controls audit: a card's companion journey (Book of Mazarbul, Fear! Fire!
+Foes!, Gwaihir the Windlord, We Prove the Swifter, and a Shadow's journey alike) shows the figures to move as their
+painted portraits with their short names under them, as on the Fellowship panel, instead of name buttons; a Nazgûl shows
+its figure. A portrait that can still be chosen glows with the shared ChoiceGlow, pulsing its rim and plate only (the
+row fills its width, so it does not swell); a chosen one shows its selection. Destinations stay region clicks on the
+map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250). Tests:
+`CompanionJourneyPortraitTests.TheJourneysCompanionsArePortraitsThatGlowUntilChosen`,
+`Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
+`Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`.

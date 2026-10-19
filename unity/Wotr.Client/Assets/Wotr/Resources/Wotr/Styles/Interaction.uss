@@ -57,6 +57,7 @@
 #board-screen .action.choice-glow,
 #board-screen .dice-panel .die.choice-glow,
 #board-screen .fellowship-panel .companion-token.choice-glow,
+#board-screen .companion-portrait.choice-glow,
 #board-screen .edge-left-panel .character-roster-grid .action.choice-glow {
     border-width: 3px;
     border-color: rgb(255, 214, 112);
@@ -74,6 +75,13 @@
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1.05 1.05;
+}
+/* UI-284: a journey's portraits fill their row edge to edge, so their pulse changes the rim and plate only (they are
+   .action buttons too, so the scale of the rule above is undone here). */
+.motion-enabled #board-screen .choice-glow-pulse .companion-portrait.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1 1;
 }
 
 /* UI-243: the Characters row whose entry waits for a region stays chosen: solid gold, no pulse, and its second line
