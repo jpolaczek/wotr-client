@@ -62,9 +62,15 @@ namespace Wotr.Client
             reads++;
             if (added == 0)
                 return;
-            log.schedule.Execute(() => log.scrollOffset = new Vector2(0, float.MaxValue));
+            ShowLatest();
             Added?.Invoke(added, reads == 1);
         }
+
+        // UI-281: the newest line at the bottom of the list, also when the list was laid out while rolled up. The
+        // scheduler runs before layout, so the scroll waits for the following tick, when the list has its height.
+        public void ShowLatest() => log.schedule.Execute(() => log.schedule.Execute(ScrollToEnd));
+
+        private void ScrollToEnd() => log.scrollOffset = new Vector2(0, float.MaxValue);
 
         public void Clear() => Input.SetValueWithoutNotify("");
 

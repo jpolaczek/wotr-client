@@ -238,3 +238,12 @@ UI-259 (2026-10-18, owner's report): the chat field shows what is typed — parc
 (rgb 245,239,222 on rgb 46,41,34), a gold caret, selection and focus rim, and a quiet placeholder. Before, the text
 had a contrast of about 1.1:1 against the field. Test: `BoardInteractionTests.ChatInputShowsTypedTextWithReadableContrast`
 (at least 7:1).
+
+UI-281 (2026-10-19, owner's report): with the chat open, Enter in its line sends the message. Before, the board's
+confirm key (`DraftInput`) took Enter first, on its way down from the board's root, so the message stayed unsent and a
+ready choice could be confirmed instead; the chat is now one of the inputs that key ignores
+(`GameChatPanel.ContainsInput`), and Esc still rolls the panel up (`BoardEscape`). The panel always opens on its newest
+message, also when messages came while it was rolled up or the player had scrolled up before closing it: the list
+scrolls to its end on the tick after it is laid out (`RoomChatPanel.ShowLatest`). Tests:
+`DraftInputTests.EnterInTheOpenChatSendsTheMessageAndConfirmsNothing` (a ready Hunt allocation stays unconfirmed by
+the chat's Enter and is confirmed by Enter outside it), `BoardInteractionTests.ChatOpensOnItsNewestMessage`.
