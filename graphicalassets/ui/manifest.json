@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "ac28bfaf46e2bb154d8bb4a6b6bb1e9c0a62af161f1d859d18a9e244f4c630d9"
+    "assets.json": "8ac26ee46c3a2ba347f291d6aa4f7666f83c2a3ee3402c0857d1c4f32d71951f"
   },
   "assets": [
     {
@@ -1142,6 +1142,118 @@
       "alpha": true,
       "source_sha256": "61c08c3c0c91a36054e1e6ef7ddc0f2dd605948ea4eb652ad95f37628bb9158e",
       "png_sha256": "77f6996f985483c76dfba9db37f291992bcf6e0b6bcc53a269fa7f1511982e02"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/attempt.png",
+      "source": "src/kings/attempt.svg",
+      "variant": null,
+      "logical": [
+        22,
+        22
+      ],
+      "pixels": [
+        44,
+        44
+      ],
+      "alpha": true,
+      "source_sha256": "2a35ff36cc38a7d45f4997e70c2d428e36559789dda95bf1d2e03c81402b11ff",
+      "png_sha256": "ae3ace10de5208517a7e5c13502e0d8ab158133dae9ba96eaa19f9a672acd7e8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/status-initial.png",
+      "source": "src/kings/status-initial.svg",
+      "variant": null,
+      "logical": [
+        12,
+        12
+      ],
+      "pixels": [
+        24,
+        24
+      ],
+      "alpha": true,
+      "source_sha256": "48e85eda6da6bc8025a740ad449fe41b4d8cc04949eba3edb56431e0ef9714b9",
+      "png_sha256": "c4807a92db7f191cfb51eb7ef264fc79913faf653ed152aa5e6751f6d6b941ca"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/status-awakened.png",
+      "source": "src/kings/status-awakened.svg",
+      "variant": null,
+      "logical": [
+        12,
+        12
+      ],
+      "pixels": [
+        24,
+        24
+      ],
+      "alpha": true,
+      "source_sha256": "5fac9ca0e46e9a8c182b9c5aa72ab598b43e570ef15c6b0f97147b6850638088",
+      "png_sha256": "4294d017321e525e96c08898ff4738f4ed474c7cfc560919b1d7efb8d1afa921"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/status-corrupted.png",
+      "source": "src/kings/status-corrupted.svg",
+      "variant": null,
+      "logical": [
+        12,
+        12
+      ],
+      "pixels": [
+        24,
+        24
+      ],
+      "alpha": true,
+      "source_sha256": "4409eb6a2721ec072893c5500e08997660b308878c0b7c6c24ada9a21249bfc4",
+      "png_sha256": "4963633b5191de2f011086c11f396f70ca9114e969190fe30ca6b9b741b689b4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/status-removed.png",
+      "source": "src/kings/status-removed.svg",
+      "variant": null,
+      "logical": [
+        12,
+        12
+      ],
+      "pixels": [
+        24,
+        24
+      ],
+      "alpha": true,
+      "source_sha256": "f6c36e59f36a975a038f7c45bff3700b32a66f6d7d179e48f3768eccb05c7149",
+      "png_sha256": "3ab43003460a06a148e4d7155521eeab7207acffd535cf9684f8a9b5169f0821"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/tile-back.png",
+      "source": "src/kings/tile-back.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "2b68bef26666f9326dafca1038366206e6ccf350195070c2e54f1f999196487f",
+      "png_sha256": "272021f3e0949c9a0d52ed3339c9bfa1367a7dda9ccb6517a919acb12615a7af"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/marker-corrupted.png",
+      "source": "src/kings/marker-corrupted.svg",
+      "variant": null,
+      "logical": [
+        26,
+        26
+      ],
+      "pixels": [
+        52,
+        52
+      ],
+      "alpha": true,
+      "source_sha256": "3a2b215a7e6ead209252fbfbe867a2a1bc27668ac04f8ab7214abf7897c885cb",
+      "png_sha256": "fc1a8ce1e3851c83f737354961fc696076e585e3e49f538caca958f39667ac12"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/gothmog.png",

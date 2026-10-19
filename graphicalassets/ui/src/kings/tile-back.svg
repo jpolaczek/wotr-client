@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <!-- UI-274: a face-down Hunt tile drawn for a corruption attempt, as the Free Peoples see it. -->
+  <g filter="url(#lift)">
+    <circle cx="9" cy="9" r="8.2" style="fill: var(--scene-stone-dark); stroke: var(--gilt-dim)" stroke-width="0.8"/>
+    <circle cx="9" cy="9" r="5.6" fill="none" style="stroke: var(--gilt-dim)" stroke-width="0.6" opacity="0.8"/>
+    <path d="M5.4 9 Q9 5.8 12.6 9 Q9 12.2 5.4 9 Z" style="fill: var(--scene-gaze)"/>
+  </g>
+</svg>

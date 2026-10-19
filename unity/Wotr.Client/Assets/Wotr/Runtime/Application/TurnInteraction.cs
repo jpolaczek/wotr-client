@@ -45,6 +45,7 @@ namespace Wotr.Client
         private readonly FellowshipContextInteraction fellowshipContext;
         private readonly HuntContextInteraction huntContext;
         private readonly ResourceContextInteraction resources;
+        private readonly SovereignInteraction sovereigns;
         private readonly ComponentContextInteraction components;
         private readonly ConsoleOptionsInteraction consoleOptions;
         private readonly TurnConsoleInteraction console;
@@ -105,6 +106,7 @@ namespace Wotr.Client
             huntContext = new HuntContextInteraction(board, EditSelection, () => SelectionBusy);
             resources = new ResourceContextInteraction(board, EditSelection,
                 () => SelectionBusy);
+            sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy, () => online);
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
@@ -254,6 +256,12 @@ namespace Wotr.Client
 
         private void ChooseArmy(DraftToken army)
         {
+            // UI-274: a force holding a lit king is that king's figure on the map.
+            if (board.Map.LitSovereign(army) is { } king)
+            {
+                board.Sovereigns.Click(king);
+                return;
+            }
             if (context.ArmyActive || view?.Decision?.Kind == DecisionKind.Action && !draft.Kind.HasValue)
             {
                 if (army.Side != view.You)
@@ -824,6 +832,7 @@ namespace Wotr.Client
             cardArmies.Refresh(view, draft);
             fellowshipContext.Refresh(view, draft);
             huntContext.Refresh(view, draft);
+            sovereigns.Refresh(view, draft);
             resources.Refresh(view, draft);
             components.Refresh(view, draft, !SelectionBusy);
             // UI-271: after the components, whose map owners a figure's reaction extends.
@@ -912,8 +921,6 @@ namespace Wotr.Client
                 board.Hunt.Open();
             else if (board.Tray.parent == board.ResourceDecision.DecisionHost)
                 board.ResourceDecision.Open();
-            else if (board.Tray.parent == board.Sovereigns.DecisionHost)
-                board.Sovereigns.OpenDecision();
             else if (board.Tray.parent == board.TableEffects.DecisionHost)
                 board.TableEffects.Open();
             else if (board.Tray.parent == board.Characters.DecisionHost)
@@ -1047,6 +1054,7 @@ namespace Wotr.Client
             politics.Dispose();
             fellowshipContext.Dispose();
             huntContext.Dispose();
+            sovereigns.Dispose();
             resources.Dispose();
             context.Dispose();
             board.Map.RegionSelected -= ChooseRegion;

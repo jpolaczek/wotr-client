@@ -158,7 +158,7 @@ namespace Wotr.PlayTests
 
         private static void ProjectedSovereigns(BoardScreen board)
         {
-            var portraits = board.Sovereigns.Root.Query<Button>().ToList();
+            var portraits = board.Sovereigns.Root.Query<Button>(className: "sovereign-portrait").ToList();
             Assert.AreEqual(board.View.Sovereigns.Count, portraits.Count);
             if (board.View.Configuration.Fate)
                 Assert.IsFalse(portraits.Any(b => b.name.EndsWith("dain") || b.name.EndsWith("brand")));

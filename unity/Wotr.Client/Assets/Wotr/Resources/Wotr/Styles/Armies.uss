@@ -127,6 +127,51 @@
 .army.army-token.garrison.fp.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-pressed"); }
 .army.army-token.garrison.sh.pressed .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-pressed"); }
 
+/* UI-274: a force led by an Initial king wears a crown over its base; a force holding a king that a decision or the
+   selected die lights glows like an eligible force (sovereign-target), and its click chooses the king. */
+.army-crown {
+    position: absolute;
+    width: 24px;
+    height: 15px;
+    background-image: resource("Wotr/Art/UI/dice/ruler-crown");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.army-figures .army-crown { left: 46px; top: -8px; }
+.army-token .army-crown { left: 13px; top: -9px; width: 18px; height: 11px; }
+.army.army-figures.field-force.fp.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-eligible"); }
+.army.army-figures.field-force.sh.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-eligible"); }
+.army.army-figures.garrison.fp.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-eligible"); }
+.army.army-figures.garrison.sh.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-eligible"); }
+.army.army-token.field-force.fp.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-eligible"); }
+.army.army-token.field-force.sh.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-eligible"); }
+.army.army-token.garrison.fp.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-eligible"); }
+.army.army-token.garrison.sh.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-eligible"); }
+
+/* UI-274: a Corrupted king's dark marker by his capital (MapSovereignMarkers); a steady gold rim and plate when a
+   click on it chooses him (no pulse, so the map is never restyled on a timer). */
+#board-screen .sovereign-marker,
+.sovereign-marker {
+    position: absolute;
+    width: 30px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/kings/marker-corrupted");
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .sovereign-marker:hover { -unity-background-image-tint-color: rgb(255, 236, 214); }
+#board-screen .sovereign-marker.pressed { scale: 0.94 0.94; }
+#board-screen .sovereign-marker.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+
 /* UI-127: the planned move ghost, figures of the selection at a hovered target; never interactive. */
 .army.army-ghost { opacity: 0.5; }
 .army-ghost-caption {

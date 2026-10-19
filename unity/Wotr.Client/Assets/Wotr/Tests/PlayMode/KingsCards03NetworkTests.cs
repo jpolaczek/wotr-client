@@ -158,10 +158,9 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-power", ScenarioKind.CardPack))
             {
-                Click(room.Sh, "effect-choice-kings.sovereign.denethor");
                 await Layout(room, room.Sh, "power");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
-                await room.Confirm(room.Sh);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Sh, "kings.sovereign.denethor");
                 Assert.AreNotEqual("Sovereign", room.Sh.Board.View.Decision?.Presentation);
             }
         }

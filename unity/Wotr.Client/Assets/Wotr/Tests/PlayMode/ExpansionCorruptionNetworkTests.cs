@@ -17,42 +17,60 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator SequentialCorruptionCanStopAfterTheFirstTile() => Wait(Attempt("stop", true, true));
         [UnityTest] public IEnumerator SequentialCorruptionCanDrawAgainInsteadOfStopping() => Wait(Attempt("draw", true, false));
 
+        // UI-274: the Lords special Eye (Nenya) pays only when clicked first in the Hunt Box, where it stands in the
+        // Shadow's row; the attempt button beside the king starts the attempt. Hidden and Visible draws are taken without
+        // a click; the tiles stand beside the king and the click on one attaches it. Sequential's Draw again is the
+        // console's button. No window opens.
         private static async Task Attempt(string scenario, bool sequential, bool stop)
         {
             using (var room = await Connect("ui09-corruption-" + scenario, ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 const string sovereign = "kings.sovereign.thranduil";
                 const string die = "lords.die.nenya";
-                // UI-230: the Nenya die in the Hunt box stands in the pool's row while the attempt may use it.
-                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die));
-                await Layout(room, room.Sh, "corrupt-attempt-" + scenario, "ui09");
+                var eye = room.Sh.Board.OwnDice.Q<Button>(die);
+                Assert.IsNotNull(eye, "The Keeper Eye that may pay stands in the Shadow's row.");
+                CardNetworkTests.Click(eye);
+                await room.Settle();
+                room.Sh.Board.Characters.Open();
+                await room.Settle();
+                var attempt = room.Sh.Board.Sovereigns.Root.Q<Button>("sovereign-attempt-" + sovereign);
+                Assert.IsTrue(attempt.enabledSelf && attempt.ClassListContains("legal-target"));
+                StringAssert.StartsWith("Click to attempt to corrupt Thranduil", attempt.tooltip);
+                await SovereignPanelLayoutChecks.Slots(room, room.Sh, "attempt-" + scenario);
+                room.Sh.Board.Characters.Open();
+                await room.Settle();
                 var revision = room.Sh.Board.View.Revision;
-                CardNetworkTests.Click(await BoardNavigation.Sovereign(room.Sh.Board, sovereign));
-                await room.At(revision + 1);
+                CardNetworkTests.Click(room.Sh.Board.Sovereigns.Root.Q<Button>("sovereign-attempt-" + sovereign));
+                await room.Until(() => room.Fp.Board.View.Revision > revision && room.Sh.Board.View.CorruptionAttempt != null);
                 Assert.AreEqual(DecisionKind.CorruptionTile, room.Sh.Board.View.Decision.Kind);
                 Assert.IsNull(room.Fp.Board.View.Decision);
                 Assert.IsEmpty(room.Fp.Board.View.CorruptionAttempt.OwnChoices);
                 Assert.IsEmpty(room.Fp.Board.View.Sovereigns.Single(s => s.Id == sovereign).Tiles);
-                var tile = room.Sh.Board.View.CorruptionAttempt.OwnChoices.Single().TileId;
+                if (!sequential)
+                    await room.Until(() => room.Sh.Board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile));
+                var tile = room.Sh.Board.View.CorruptionAttempt.OwnChoices.First().TileId;
                 Assert.IsNull(room.Fp.Board.Root.Q<Button>("corruption-choice-" + tile));
-                await Layout(room, room.Sh, "corrupt-choice-" + scenario, "ui09");
+                await SovereignPanelLayoutChecks.Slots(room, room.Sh, "choice-" + scenario);
+                await SovereignPanelLayoutChecks.Slots(room, room.Fp, "choice-fp-" + scenario);
                 await Reconnect(room, room.Sh);
-                if (sequential && stop)
+                room.Sh.Board.Characters.Open();
+                await room.Settle();
+                if (sequential && !stop)
                 {
-                    revision = room.Sh.Board.View.Revision;
-                    Click(room.Sh, "corruption-choice-" + tile);
-                    await room.At(revision + 1);
+                    var draw = room.Sh.Board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
+                    await room.Until(() => draw.enabledInHierarchy);
+                    PointerGestureEvents.ClickAt(draw);
                 }
                 else
-                    await room.Confirm(room.Sh);
-                if (!sequential)
                 {
-                    Assert.AreEqual(DecisionKind.CorruptionTile, room.Sh.Board.View.Decision.Kind);
-                    await Layout(room, room.Sh, "corrupt-place-" + scenario, "ui09");
-                    revision = room.Sh.Board.View.Revision;
-                    Click(room.Sh, "corruption-choice-" + tile);
-                    await room.At(revision + 1);
+                    var button = room.Sh.Board.Sovereigns.Root.Q("sovereign-slot-" + sovereign).Q<Button>("corruption-choice-" + tile);
+                    Assert.IsTrue(button.ClassListContains("legal-target"));
+                    StringAssert.StartsWith("Click to attach this tile to Thranduil", button.tooltip);
+                    PointerGestureEvents.ClickAt(button);
                 }
+                await room.Until(() => room.Fp.Board.View.CorruptionAttempt == null && room.Sh.Board.View.CorruptionAttempt == null);
+                watch.NeverOpened();
                 var fp = room.Fp.Board.View.Sovereigns.Single(s => s.Id == sovereign).Tiles.Single();
                 var sh = room.Sh.Board.View.Sovereigns.Single(s => s.Id == sovereign).Tiles.Single();
                 Assert.AreEqual(1, sh.Value);

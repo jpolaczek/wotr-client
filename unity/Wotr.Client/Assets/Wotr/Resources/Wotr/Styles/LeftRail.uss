@@ -264,20 +264,84 @@
 #board-screen .edge-left-panel .effect-entry.selected-effect { border-width: 2px; border-color: rgb(228, 197, 127); }
 #board-screen .edge-left-panel .character-roster-grid .action.selected { border-width: 2px; border-color: rgb(245, 212, 133); }
 #board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
-/* UI-101: the sovereign portraits sit in one compact row under the characters, keeping their marks. */
+/* UI-101/UI-274: the sovereigns sit in one row of fixed slots under the characters: the painted portrait with its
+   status badge, the Shadow's attempt button at its corner, the name, the corruption meter and the tiles drawn or
+   inspected beside the king. Every slot keeps its size in every state. */
 #board-screen .edge-left-panel .sovereign-strip.character-roster-grid { flex-wrap: nowrap; }
-#board-screen .edge-left-panel .sovereign-strip.character-roster-grid .action {
-    width: 64px;
-    min-width: 64px;
-    height: 38px;
-    min-height: 38px;
+#board-screen .edge-left-panel .sovereign-slot {
+    width: 62px;
+    min-width: 62px;
+    height: 92px;
+    min-height: 92px;
     margin: 1px;
-    padding: 0;
-    font-size: 10px;
-    flex-shrink: 1;
+    align-items: center;
+    flex-shrink: 0;
 }
-#board-screen .edge-left-panel .sovereign-strip .action.corrupted-sovereign { border-bottom-width: 3px; border-color: rgb(206, 118, 130); }
-#board-screen .edge-left-panel .sovereign-strip .action.inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
+#board-screen .edge-left-panel .sovereign-slot > .sovereign-portrait {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    min-height: 46px;
+    margin: 4px 0 0 0;
+    padding: 0;
+    border-radius: 23px;
+    overflow: visible;
+}
+#board-screen .edge-left-panel .sovereign-portrait > .sovereign-portrait-image { width: 44px; height: 44px; border-radius: 22px; }
+#board-screen .edge-left-panel .sovereign-portrait.sovereign-initial > .sovereign-portrait-image { -unity-background-image-tint-color: rgb(170, 170, 170); opacity: 0.85; }
+#board-screen .edge-left-panel .sovereign-portrait.sovereign-removed > .sovereign-portrait-image { opacity: 0.35; }
+#board-screen .edge-left-panel .sovereign-portrait.inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
+#board-screen .edge-left-panel .sovereign-portrait > .sovereign-status {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 14px;
+    height: 14px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.sovereign-status-initial { background-image: resource("Wotr/Art/UI/kings/status-initial"); }
+.sovereign-status-awakened { background-image: resource("Wotr/Art/UI/kings/status-awakened"); }
+.sovereign-status-corrupted { background-image: resource("Wotr/Art/UI/kings/status-corrupted"); }
+.sovereign-status-removed { background-image: resource("Wotr/Art/UI/kings/status-removed"); }
+#board-screen .edge-left-panel .sovereign-slot > .sovereign-attempt {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 11px;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/kings/attempt");
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .edge-left-panel .sovereign-slot > .sovereign-attempt:disabled { opacity: 0.4; }
+#board-screen .edge-left-panel .sovereign-slot > .sovereign-attempt:hover { scale: 1.08 1.08; }
+#board-screen .edge-left-panel .sovereign-slot > .sovereign-name { font-size: 10px; margin: 1px 0 0 0; -unity-text-align: middle-center; color: rgb(230, 214, 176); }
+#board-screen .edge-left-panel .sovereign-meter { flex-direction: row; height: 6px; margin: 1px 0; }
+#board-screen .edge-left-panel .sovereign-pip { width: 9px; height: 5px; margin: 0 1px; border-width: 1px; border-color: rgb(150, 132, 92); border-radius: 1px; }
+#board-screen .edge-left-panel .sovereign-pip.filled { background-color: rgb(196, 64, 46); border-color: rgb(120, 30, 20); }
+#board-screen .edge-left-panel .sovereign-pip.hidden { background-color: rgb(92, 84, 70); }
+#board-screen .edge-left-panel .sovereign-tiles { flex-direction: row; height: 18px; }
+#board-screen .edge-left-panel .sovereign-tile {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    min-height: 18px;
+    margin: 0 1px;
+    padding: 0;
+    border-width: 0;
+    border-radius: 9px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+    justify-content: center;
+}
+#board-screen .edge-left-panel .sovereign-tile > Label { font-size: 10px; -unity-font-style: bold; -unity-text-align: middle-center; color: rgb(40, 24, 14); margin: 0; padding: 0; }
+.sovereign-tile-back { background-image: resource("Wotr/Art/UI/kings/tile-back"); }
+.sovereign-tile-face { background-image: resource("Wotr/Art/UI/hunt/tile-standard"); }
+.sovereign-tile-kings { background-image: resource("Wotr/Art/UI/hunt/kings"); }
 #board-screen .edge-left-panel .effect-entry > Label { color: rgb(230, 200, 122); }
 
 /* UI-94: a selected card source shows its complete text on the parchment of an unrolled hand card

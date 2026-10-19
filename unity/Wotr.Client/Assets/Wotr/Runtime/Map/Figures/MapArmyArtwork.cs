@@ -33,6 +33,8 @@ namespace Wotr.Client
         private readonly VisualElement[] emblems = new VisualElement[MaximumEmblems];
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
+        // UI-274: the crown over a force led by an Initial king.
+        private readonly VisualElement crown = Ignored("army-crown");
         private readonly Button button;
         private int shown;
 
@@ -67,6 +69,7 @@ namespace Wotr.Client
             Root.Add(row);
             count.AddToClassList("army-count");
             Root.Add(count);
+            Root.Add(crown);
             Root.Add(Ignored("army-moved"));
             button.Add(Root);
         }
@@ -94,6 +97,7 @@ namespace Wotr.Client
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
             count.text = army.Total.ToString();
+            crown.EnableInClassList(UnusedClass, army.CrownedTitles.Count == 0);
             button.EnableInClassList(FieldClass, !army.Garrison);
         }
 

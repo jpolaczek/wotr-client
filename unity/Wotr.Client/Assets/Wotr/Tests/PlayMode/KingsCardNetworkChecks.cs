@@ -16,6 +16,26 @@ namespace Wotr.PlayTests
             await room.Settle();
         }
 
+        // UI-274: a king a card's step chooses is clicked on his glowing portrait in the Characters panel; the click sends.
+        internal static async Task ChooseKing(MatchTestRoom room, MountedMatchClient client, string id, string detail = "")
+        {
+            var revision = client.Board.View.Revision;
+            var portrait = await BoardNavigation.Sovereign(client.Board, id);
+            Assert.IsTrue(portrait.ClassListContains("legal-target"), id + " glows for the card's choice.");
+            StringAssert.StartsWith("Click to choose", portrait.tooltip);
+            StringAssert.Contains(detail, portrait.tooltip);
+            PointerGestureEvents.ClickAt(portrait);
+            await room.At(revision + 1);
+        }
+
+        // UI-274: an inspected king's tile stands face up beside his portrait; its click returns it.
+        internal static async Task<Button> InspectedTile(MatchTestRoom room, MountedMatchClient client, string king, string tile)
+        {
+            await BoardNavigation.Sovereign(client.Board, king);
+            await room.Settle();
+            return client.Board.Sovereigns.Root.Q("sovereign-slot-" + king)?.Q<Button>("corruption-choice-" + tile);
+        }
+
         internal static async Task Layout(MatchTestRoom room, MountedMatchClient client, string name, string prefix = "kings02")
         {
             // A choice may still be on its way to the server; measure the tray its reply rebuilds.

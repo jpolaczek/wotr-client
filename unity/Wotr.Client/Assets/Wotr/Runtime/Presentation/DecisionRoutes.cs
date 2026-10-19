@@ -27,7 +27,6 @@ namespace Wotr.Client
         Characters,
         Console,
         Resources,
-        Sovereigns,
         Window
     }
 
@@ -67,7 +66,7 @@ namespace Wotr.Client
             DecisionKind.Dismay => DecisionHost.Resources,
             DecisionKind.CouncilVersions => DecisionHost.Fellowship,
             DecisionKind.CouncilHomelands => DecisionHost.Fellowship,
-            DecisionKind.CorruptionTile => DecisionHost.Sovereigns,
+            DecisionKind.CorruptionTile => DecisionHost.Characters,
             _ => DecisionHost.Window
         };
 
@@ -82,14 +81,15 @@ namespace Wotr.Client
             "ActionDie" or "DieAndResult" => DecisionHost.Dice,
             "ElvenRings" => DecisionHost.Rings,
             "CharacterCardDiscard" or InspectedHand.Presentation => DecisionHost.Hand,
-            "FellowshipCompanions" or "Companion" or "CorruptionRemoval" or "SmeagolCorruption" or "InspectedCorruption" or
+            "FellowshipCompanions" or "Companion" or "SmeagolCorruption" or
                 "CompanionDestination" => DecisionHost.Fellowship,
             "CombatReplacement" or "CombatEffect" or "ConvertMisses" or "LeadershipAndMiss" or "NazgulOrMinion" or
                 "LeaderOrCompanion" or "Minion" or "CharacterLeadership" or "NazgulLeadership" or "MinionLeadership" or
                 "SacrificeAndHits" => DecisionHost.Battle,
             "LureCompanion" or "CaptainOrder" or "BalrogOrder" or "FellowshipAction" or "NazgulStrike" or
                 "EffectTargets" or "SovereignCardBranch" => DecisionHost.Console,
-            "Sovereign" => DecisionHost.Sovereigns,
+            // UI-274: the kings' portraits and tiles in the Characters panel.
+            "Sovereign" or "CorruptionRemoval" or "InspectedCorruption" => DecisionHost.Characters,
             // UI-272: a reaction outside the Hunt and battles answers at its card (hand, table ×) or the console.
             "CardOrDecline" => DecisionHost.Console,
             // UI-271: a card's character move (the Balrog alone) is drawn on the map.

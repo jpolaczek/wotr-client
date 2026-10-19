@@ -6,11 +6,10 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // Stable public inspector. Private choices remain in the separately owned decision tray.
+    // Stable public inspector. UI-274: it informs only; the decisions are made on the portraits and their tiles.
     public sealed class SovereignInspector
     {
         public VisualElement Root { get; } = new VisualElement { name = "sovereign-inspector" };
-        public VisualElement DecisionHost { get; } = new VisualElement { name = "sovereign-decision-host" };
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
         private readonly Label state = Text("sovereign-state");
@@ -57,7 +56,6 @@ namespace Wotr.Client
             progress.Add(revealed);
             Root.Add(progress);
             Root.Add(consequence);
-            Root.Add(DecisionHost);
         }
 
         public void Apply(PlayerView view, SovereignView sovereign, TurnDraft draft, bool ownsDecision)
@@ -80,7 +78,6 @@ namespace Wotr.Client
             Attempt(view, sovereign.Id);
             Show(cost, SovereignPresentation.Cost(view, draft, sovereign.Id));
             Show(consequence, ownsDecision ? SovereignPresentation.Consequence(view, draft) : "");
-            DecisionHost.style.display = ownsDecision ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void Tiles(SovereignView sovereign)

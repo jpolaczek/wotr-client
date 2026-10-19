@@ -27,6 +27,10 @@ namespace Wotr.Client
         // UI-126: nations with the most figures first, and the characters by name.
         public List<NationForce> Nations = new List<NationForce>();
         public List<string> CharacterNames = new List<string>();
+        // UI-274: the kings in this force; an Initial king is its crowned leader (CrownedTitles), an Awakened one
+        // stands among its characters.
+        public List<string> SovereignIds = new List<string>();
+        public List<string> CrownedTitles = new List<string>();
         public int Total => Regular + Elite + Leaders + Characters;
 
         public static ArmyMarker From(string region, Side side, bool garrison, IEnumerable<(string Nation, UnitKind Kind)> units)
@@ -67,6 +71,8 @@ namespace Wotr.Client
         // UI-265: the shown game's expansion modules (ExpansionModules ids), for the map's module-dependent drawings.
         public List<string> Modules { get; private set; } = new List<string>();
         public List<ArmyMarker> Armies = new List<ArmyMarker>();
+        // UI-274: the corrupted kings, each a dark marker by his capital.
+        public List<SovereignView> CorruptedSovereigns = new List<SovereignView>();
         private Dictionary<string, RegionDefinition> printedRegions;
         private readonly HashSet<string> overriddenRegions = new HashSet<string>();
         public Dictionary<string, RegionDefinition> Regions
@@ -126,6 +132,7 @@ namespace Wotr.Client
             ResetRegions();
             Modules = new List<string>();
             Armies.Clear();
+            CorruptedSovereigns.Clear();
             ProtectedRegions.Clear();
             Control.Clear();
         }
@@ -151,7 +158,28 @@ namespace Wotr.Client
                 army.CharacterAppearance = FigureAppearances.Art(group.First());
                 army.CharacterNames = group.Select(c => CharacterLibrary.Name(c.DefinitionId)).ToList();
             }
+            foreach (var king in view.Sovereigns)
+                AddSovereign(view, king);
+            CorruptedSovereigns = view.Sovereigns.Where(s => s.Status == SovereignStatus.Corrupted && Regions.ContainsKey(s.RegionId)).ToList();
         }
+
+        private void AddSovereign(PlayerView view, SovereignView king)
+        {
+            var army = king.Status switch
+            {
+                SovereignStatus.Initial => view.Units.Where(u => u.Id == king.Id).Select(u => Force(u.Location, u.Side, u.Garrison)).FirstOrDefault(),
+                SovereignStatus.Awakened => view.Characters.Where(c => c.Id == king.Id).Select(c => Force(c.Location, c.Side, c.Garrison)).FirstOrDefault(),
+                _ => null
+            };
+            if (army == null)
+                return;
+            army.SovereignIds.Add(king.Id);
+            if (king.Status == SovereignStatus.Initial)
+                army.CrownedTitles.Add(king.Title);
+        }
+
+        private ArmyMarker Force(string region, Side side, bool garrison) =>
+            Armies.FirstOrDefault(a => a.RegionId == region && a.Side == side && a.Garrison == garrison);
         public void UseStressFixture()
         {
             UseSetup();

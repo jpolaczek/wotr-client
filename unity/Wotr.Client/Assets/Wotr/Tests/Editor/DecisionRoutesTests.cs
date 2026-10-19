@@ -52,16 +52,16 @@ namespace Wotr.EditorTests
         [TestCase(DecisionKind.CouncilToken, DecisionHost.Dice)]         // UI-270: the tokens in the Shadow pool
         [TestCase(DecisionKind.CouncilVersions, DecisionHost.Fellowship)] // UI-269: Fellowship portraits
         [TestCase(DecisionKind.CouncilHomelands, DecisionHost.Fellowship)] // UI-270: Fellowship portraits and regions
-        [TestCase(DecisionKind.CorruptionTile, DecisionHost.Sovereigns)] // UI-274: beside the sovereign's portrait
+        [TestCase(DecisionKind.CorruptionTile, DecisionHost.Characters)] // UI-274: beside the sovereign's portrait
         public void ExpansionDecisionsHaveTheirHosts(DecisionKind kind, DecisionHost host) =>
             Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, "")));
 
         // UI-264: the expansions' card steps: a sovereign is chosen at the sovereigns, a two-way mode is a console
         // button; a Sequential corruption draw is a CorruptionTile decision and goes by its kind.
-        [TestCase(DecisionKind.EffectChoice, "Sovereign", DecisionHost.Sovereigns)]
+        [TestCase(DecisionKind.EffectChoice, "Sovereign", DecisionHost.Characters)]
         [TestCase(DecisionKind.EffectChoice, "SovereignCardBranch", DecisionHost.Console)]
         [TestCase(DecisionKind.EffectChoice, "EffectTargets", DecisionHost.Console)]
-        [TestCase(DecisionKind.CorruptionTile, "CorruptionSequential", DecisionHost.Sovereigns)]
+        [TestCase(DecisionKind.CorruptionTile, "CorruptionSequential", DecisionHost.Characters)]
         public void ExpansionCardStepsHaveObjectHosts(DecisionKind kind, string presentation, DecisionHost host) =>
             Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, presentation)));
 

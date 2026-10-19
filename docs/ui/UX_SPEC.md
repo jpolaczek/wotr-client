@@ -433,6 +433,9 @@ Legend “ ⁇ ” is available on request in English; shows a white line, barri
 <a id="ui-59--decyzje-przy-portrecie-suwerena"></a>
 ## UI-59 — decisions on the sovereign portrait
 
+Superseded by [UI-274](#sovereigns-on-their-objects--ui-274-2026-10-19): the decisions are made on the portraits,
+their attempt buttons and tiles, and the inspector hosts none.
+
 The Politics strip shows three or five portraits according to the projection. Hover/fokus opens a public preview, click it pin. The preview shows the state, region, immunity, overt tiles or reverses and safe conditions; Location is an open navigation. The inspection itself does not move the camera or draft.
 
 The new decision opens one host at the right portrait. die and the selected target remain tied after Close and reconnet. Stay here ends legal awakening; the route retains the existing gestures of the map. Before the end you can see the return of the tile, the identity of the token and conditional subsequent Recovery Ruler. Back adjacent to Stay, the repetitive gesture instruction is in the tooltip of the route; the error and the result of the preview remain visible. No additional Confirm or Place til switch after the selection of the legal tile. The attempt has a cost and limit, public omissions and own legal Draw/Stop or the tiles. Sequential does not restore the previous result to the selection, and Visible does not release FP's private selection of the Shadow. The random return after the policy is signed separately, without the value selector or additional dice.
@@ -721,6 +724,8 @@ In the notification bar, in front of the stack, there are two small square icons
 
 <a id="władcy-w-zakładce-characters--ui-101"></a>
 ## Overlords in Characters tab — UI-101
+
+UI-274 replaces the hiding rules below: every sovereign keeps a fixed slot in every state.
 
 2026-10-12: “We remove buttons to hang in the middle of the map (theoden, denethor, thranduil)”. User selection: We open the rulers from the section on the Charters page.
 
@@ -1284,6 +1289,40 @@ figure, Gothmog's Reserve row), `ExpansionWindowNetworkTests` (Evil Knowledge), 
 (entries, the Witch-king's switch, Spear, He Sees, the Balrog alone), seeder scenarios `ui271-*`
 (wotr-server `LordsCharacterScenarioTests`).
 
+## Sovereigns on their objects — UI-274 (2026-10-19)
+
+Owner decision 2026-10-19: the kings' decisions are made on their objects, and no window opens for them.
+
+- **Characters panel.** Every sovereign keeps a fixed slot in every state (`SovereignPortrait`): his painted portrait
+  (an Initial king shows his awakened portrait, dimmed), a status badge (initial, awakened, corrupted, removed), his
+  name, a corruption meter with a pip per point of resistance (filled for known corruption, hatched for hidden tiles;
+  only while Initial) and a row for the tiles of an attempt or an inspection. An unlit portrait's click opens the
+  inspector, which only informs.
+- **Corruption attempt.** For the Shadow a graphic button stands at the top right of each Initial king's portrait. It
+  keeps its place, disabled with its reason in the tooltip, when no attempt is possible. Its click pays an eligible Eye
+  from the Hunt Box: a standard Eye, else a Ruler die; a Lords special Eye only when the player clicked it first. When
+  only special Eyes remain, the button stays disabled and says "Click the special Eye that pays in the Hunt Box
+  first." The drawn tiles stand beside the king: values for the Shadow, backs for the Free Peoples. The Shadow's
+  click attaches a tile. In Sequential corruption the latest tile's click keeps it, and "Draw again" stays in the
+  console. A draw that is the only legal step, and a choice with one tile left, are sent without a click when they
+  arise during play. Opening a game sends nothing (UI-12): a draw already waiting then is the console's Draw tiles, and
+  a single tile waits for its click.
+- **Awakening.** Die → glowing king (portrait or his force on the map) → destination. A single destination (his
+  besieged home, for one) is sent with the king's click.
+- **Cards and the cleanse.** A card's choice of a king lights his portrait ("Click to …"). The inspection's tiles stand
+  beside the inspected king, and the cleanse returns a random tile from the glowing king; Keep is in the console.
+- **Map.** An Initial king is his force's crowned leader: a crown over the base or token, and "Led by …" in the force's
+  tooltip. An Awakened king is a character figure. A Corrupted king is no figure, so a dark marker
+  (`MapSovereignMarkers`) stands beside the forces of his region. A force holding a king that a decision or the
+  selected die lights glows like an eligible force, its tooltip says what the click does, and its click chooses the
+  king. The exception: when the selected die can move the force itself, the click selects the force and the king's
+  portrait chooses him. The corrupted marker glows and acts the same way. Otherwise its click opens the king's
+  information.
+
+This supersedes UI-59's decision host and UI-101's hiding of portraits. Tests: `SovereignPanelTests`,
+`SovereignMapTests`, `DecisionRoutesTests`, `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests`,
+`KingsCards01–04NetworkTests`, `UI63SiegeNetworkTests`, `SovereignSectionLayoutTests`, `ReturnListTests`.
+
 ## Kings of Middle-earth art — ART-07 (2026-10-19, painted part)
 
 Generated and built like ART-06: the awakened figures of Brand, Dáin, Denethor, Théoden and Thranduil, their awakened
@@ -1332,7 +1371,7 @@ Every expansion decision kind and card presentation has a host other than the ge
 | Special die (Lords), Ruler discard (Kings) | lit dice in the pool; the console hint says what the click does | UI-267, UI-273 (art, dimmed slots) |
 | Vilya keep, Dismay, Council token | Dice & tokens panel | UI-268, UI-276, UI-270 |
 | Companion versions, homelands (Council) | setup panel | UI-269, UI-270 |
-| Corruption tile, a card's choice of a sovereign | sovereigns | UI-274, UI-278 |
+| Corruption tile, a card's choice of a sovereign | the kings' portraits, attempt buttons and tiles (UI-274) | UI-278 |
 | Fate's Monsters branch, Kings cards' branches | console buttons | — |
 
 The special-die pick, the Ruler discard, the Council setup and token and the corruption tile are required decisions

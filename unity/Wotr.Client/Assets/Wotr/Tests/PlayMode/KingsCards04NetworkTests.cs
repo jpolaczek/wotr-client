@@ -23,12 +23,8 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-enemy-sovereign", ScenarioKind.CardPack))
             {
-                var button = room.Sh.Board.Tray.Q<Button>("effect-choice-kings.sovereign.denethor");
-                Assert.IsTrue(button.text.Contains("4+"));
                 await Layout(room, room.Sh, "sovereign");
-                var revision = room.Sh.Board.View.Revision;
-                CardNetworkTests.Click(button);
-                await room.At(revision + 1);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Sh, "kings.sovereign.denethor", "4+");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 Assert.AreEqual("Region", room.Sh.Board.View.Decision.Presentation);
                 Assert.AreEqual(2, room.Sh.Board.View.Options.Single().EligibleIds.Count);
@@ -79,9 +75,7 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-enemy-power", ScenarioKind.CardPack))
             {
                 await Layout(room, room.Sh, "power");
-                var revision = room.Sh.Board.View.Revision;
-                Click(room.Sh, "effect-choice-kings.sovereign.denethor");
-                await room.At(revision + 1);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Sh, "kings.sovereign.denethor");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 Assert.AreNotEqual("Sovereign", room.Sh.Board.View.Decision?.Presentation);
             }

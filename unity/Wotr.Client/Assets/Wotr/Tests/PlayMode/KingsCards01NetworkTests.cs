@@ -29,8 +29,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
                 Click(room.Fp, "effect-choice-kings.wisdom.inspect");
                 await room.At(revision + 1);
-                Click(room.Fp, "effect-choice-kings.sovereign.dain");
-                await room.Confirm(room.Fp);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Fp, "kings.sovereign.dain");
                 Assert.AreEqual("InspectedCorruption", room.Fp.Board.View.Decision.Presentation);
                 CollectionAssert.AreEqual(originalPolitics, room.Fp.Board.View.Nations.Select(n => n.StepsToWar));
                 Assert.IsNull(room.Sh.Board.View.Decision);
@@ -43,14 +42,20 @@ namespace Wotr.PlayTests
             {
                 const string tile = "base.hunt.standard.1.0.1";
                 var revision = room.Fp.Board.View.Revision;
-                Assert.IsNotNull(room.Fp.Board.Tray.Q<Button>("effect-choice-" + tile));
-                Assert.IsNull(room.Sh.Board.Tray.Q<Button>("effect-choice-" + tile));
+                // UI-274: the inspected tiles stand face up beside Dáin; Keep tiles is the console's button.
+                var inspected = await KingsCardNetworkChecks.InspectedTile(room, room.Fp, "kings.sovereign.dain", tile);
+                Assert.IsTrue(inspected.ClassListContains("legal-target"));
+                StringAssert.StartsWith("Click to return this tile", inspected.tooltip);
+                Assert.IsNull(room.Sh.Board.Root.Q<Button>("corruption-choice-" + tile));
                 Assert.IsFalse(room.Fp.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.denethor").Tiles[0].Value.HasValue);
                 await Layout(room, keep ? "wisdom-keep" : "dark-return");
                 await Reconnect(room);
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
                 Assert.IsTrue(room.Fp.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.dain").Tiles.All(t => t.Value.HasValue));
-                Click(room.Fp, "effect-choice-" + (keep ? "keep" : tile));
+                if (keep)
+                    Click(room.Fp, "effect-choice-keep");
+                else
+                    PointerGestureEvents.ClickAt(await KingsCardNetworkChecks.InspectedTile(room, room.Fp, "kings.sovereign.dain", tile));
                 await room.At(revision + 1);
                 var sovereign = room.Fp.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.dain");
                 Assert.AreEqual(keep ? 2 : 1, sovereign.Tiles.Count);
@@ -65,10 +70,9 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-aid-awakening", ScenarioKind.CardPack))
             {
-                Click(room.Fp, "effect-choice-kings.sovereign.dain");
                 await Layout(room, "aid-awakening");
                 await Reconnect(room);
-                await room.Confirm(room.Fp);
+                await KingsCardNetworkChecks.ChooseKing(room, room.Fp, "kings.sovereign.dain");
                 Assert.AreEqual(SovereignStatus.Awakened, room.Sh.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.dain").Status);
                 Assert.AreEqual("erebor", room.Sh.Board.View.Characters.Single(c => c.Id == "kings.sovereign.dain").Location);
                 Assert.AreEqual(SovereignStatus.Initial, room.Sh.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.theoden").Status);

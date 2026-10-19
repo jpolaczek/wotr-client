@@ -129,8 +129,17 @@ namespace Wotr.Client
             var next = draft.Fork();
             if (!ExpansionActions.SelectSovereign(view, next, id))
                 return false;
-            edit(() => draft.Adopt(next), ExpansionActions.Immediate(next.Kind));
+            // UI-274: an awakening with one legal destination (most kings wake at home) is complete with the click.
+            var single = next.Kind == CommandKind.AwakenSovereign && AwakeningTarget(next) is { Length: > 0 } target &&
+                TravelDraft.RouteTo(next, view, board.Presentation, target);
+            edit(() => draft.Adopt(next), single || ExpansionActions.Immediate(next.Kind));
             return true;
+        }
+
+        private string AwakeningTarget(TurnDraft selection)
+        {
+            var travel = DraftOptions.For(view, selection)?.Travel.FirstOrDefault();
+            return travel?.Targets.Count == 1 ? travel.Targets[0] : "";
         }
 
         public bool Ring(string id)

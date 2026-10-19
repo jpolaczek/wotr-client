@@ -47,13 +47,15 @@ namespace Wotr.Client
             // UI-272: the Lore of the Elven Rings: its die and result are chosen on the pool; Keep results is a button.
             // Wind from the West and Safe Paths in the Dark discard Shadow table cards with their × in the Effects
             // panel; Three Rings for the Elven-Kings recovers Rings on their sockets.
-            LoreChoice.Presentation, "TableCards", RingRecovery.Presentation
+            LoreChoice.Presentation, "TableCards", RingRecovery.Presentation,
+            // UI-274: a card's choice of a king, the cleanse and the inspection of a king's tiles.
+            SovereignChoices.Sovereign, SovereignChoices.Removal, SovereignChoices.Inspection
         };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
         public static bool Owns(PlayerView view, TurnDraft draft) =>
             Card(view, draft) && !RegionChoice(view) || Reaction(view, draft) && ReactionOptions(view).Count <= Limit ||
-            NamedRings.VilyaDecision(view);
+            NamedRings.VilyaDecision(view) || SovereignAttempt.OwnAttempt(view);
 
         // A region's alternatives (Dreadful Spells) are console buttons; the region itself stays a map click.
         public static bool HostsAlternatives(PlayerView view, TurnDraft draft) => Card(view, draft) && RegionChoice(view);
@@ -67,6 +69,9 @@ namespace Wotr.Client
             // UI-268: Vilya is kept on its socket; spending the die is the console's button.
             if (NamedRings.VilyaDecision(view))
                 return NamedRings.SpendTheDie(view) is { } spend ? new List<ConsoleOption> { spend } : None;
+            // UI-274: Sequential corruption's Draw again; the tiles stand beside the king.
+            if (SovereignAttempt.OwnAttempt(view))
+                return SovereignAttempt.ConsoleOptions(view);
             return Owns(view, draft) ? ReactionOptions(view) : None;
         }
 
@@ -102,6 +107,9 @@ namespace Wotr.Client
                 return option.EffectChoices.Where(LoreChoice.KeepOption).Select(c => Effect(view, draft, option, c)).ToList();
             if (view.Decision.Presentation == RingRecovery.Presentation)
                 return None;
+            // UI-274: the kings and their tiles are chosen in the Characters panel; Keep tiles is a button.
+            if (SovereignChoices.Owns(view))
+                return SovereignChoices.ConsoleOptions(view, draft);
             // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
             var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();

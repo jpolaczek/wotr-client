@@ -61,12 +61,8 @@ namespace Wotr.PlayTests
             var portrait = board.Sovereigns.Root.Q<Button>("sovereign-" + id);
             Assert.IsNotNull(portrait, id);
             Assert.IsTrue(board.Characters.Root.Contains(portrait), "The portrait stands in the Characters panel.");
-            if (portrait.style.display.value != DisplayStyle.None)
-                return portrait;
-            // An awakened sovereign the roster already lists as a character keeps only that entry.
-            var row = board.Characters.Root.Q<Button>("character-roster-" + id);
-            Assert.IsNotNull(row, "Roster entry of the awakened sovereign " + id);
-            return row;
+            // UI-274: every sovereign keeps its fixed slot in every state.
+            return portrait;
         }
     }
 }

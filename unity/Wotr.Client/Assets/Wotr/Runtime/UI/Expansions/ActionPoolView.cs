@@ -54,8 +54,10 @@ namespace Wotr.Client
             root.EnableInClassList("expanded-resources", view.Configuration.Lords || view.Configuration.Kings);
             // UI-267: a special die not kept this turn keeps its slot, dimmed, until the next roll; UI-273: so does a die
             // discarded after the roll in a Kings game, until the next Recover.
+            // UI-274: a Free Peoples Keeper Eye in the Hunt Box that pays a corruption attempt stands in the Shadow's row.
             var visibleDice = view.Dice.Where(d => d.Owner == side && (DiceOutsidePool.InPool(d) || SpecialDice.SetAside(d) ||
-                RulerDice.Discarded(view, d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
+                RulerDice.Discarded(view, d) || own && DiceOutsidePool.Offered(view, d)) ||
+                own && d.Owner != side && d.Location == DieLocation.Hunt && DiceOutsidePool.Offered(view, d)).ToArray();
             root.EnableInClassList("dense-resources", visibleDice.Length > 8);
             // Opponent counters live in the top bar's OpponentSummary.
             root.Add(own ? Header(side) : OwnerLabel(side));

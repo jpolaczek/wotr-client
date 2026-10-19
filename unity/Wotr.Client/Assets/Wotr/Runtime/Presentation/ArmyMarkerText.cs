@@ -14,6 +14,8 @@ namespace Wotr.Client
                 lines.Add("Characters: " + string.Join(", ", army.CharacterNames));
             else if (army.Characters > 0)
                 lines.Add("Characters: " + army.Characters);
+            if (army.CrownedTitles.Count > 0)
+                lines.Add("Led by " + string.Join(", ", army.CrownedTitles) + " (not awakened)");
             return string.Join("\n", lines);
         }
 

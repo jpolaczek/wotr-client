@@ -16,9 +16,10 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
                 return null;
-            var sovereign = SovereignPresentation.DecisionTarget(view, null);
-            if (sovereign.Length > 0)
+            // UI-274: a king's decision is made in the Characters panel, on his portrait or tiles.
+            if (SovereignPresentation.OwnsDecision(view, null))
             {
+                var sovereign = SovereignPresentation.DecisionTarget(view, null);
                 return At(DecisionContext.Sovereign, view.Sovereigns.FirstOrDefault(s => s.Id == sovereign)?.RegionId, sovereign);
             }
             if (view.Battle != null || view.EventLoss != null)

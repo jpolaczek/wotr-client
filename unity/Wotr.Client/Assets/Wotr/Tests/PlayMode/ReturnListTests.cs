@@ -152,10 +152,12 @@ namespace Wotr.PlayTests
         private static async Task InspectSovereign(MountedFlowClient client, DecisionAttention attention, CancellationToken token)
         {
             var board = client.Board;
-            Assert.IsTrue(board.Sovereigns.IsOpen);
-            Assert.AreEqual(attention.Subject, board.Sovereigns.Selected);
-            Assert.AreSame(board.Sovereigns.DecisionHost, board.Tray.parent);
+            // UI-274: the king's decision opens the Characters panel, where his portrait and tiles make it.
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display);
+            Assert.IsNotNull(board.Sovereigns.Root.Q("sovereign-slot-" + attention.Subject));
+            Assert.IsFalse(board.DecisionWindow.IsOpen);
             var decision = board.View.Decision.Id;
+            board.Sovereigns.Show(attention.Subject);
             var location = board.Sovereigns.Inspector.Q<Button>("sovereign-location");
             await Until(() => location?.enabledInHierarchy == true && location.worldBound.height > 0, token);
             await Task.Delay(80, token);

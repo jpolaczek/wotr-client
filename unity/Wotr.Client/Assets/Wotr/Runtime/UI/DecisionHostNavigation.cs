@@ -10,8 +10,6 @@ namespace Wotr.Client
                 board.Hunt.Open();
             else if (parent == board.TableEffects.DecisionHost)
                 board.TableEffects.Open();
-            else if (parent == board.Sovereigns.DecisionHost)
-                board.Sovereigns.OpenDecision();
             else if (parent == board.ResourceDecision.DecisionHost)
                 board.ResourceDecision.Open();
             else if (parent == board.Characters.DecisionHost)

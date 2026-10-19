@@ -8,13 +8,13 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-101: the portraits live in the Characters panel (Root is its Sovereigns section); the inspector
-    // opens beside the portrait, or beside the Characters tab while the panel is rolled up. An awakened
-    // sovereign the player's roster already lists as a character keeps only that roster entry.
+    // opens beside the portrait, or beside the Characters tab while the panel is rolled up. UI-274: every sovereign keeps
+    // a fixed slot (SovereignPortrait) in every state, and the decisions about the kings are made on the portraits, their
+    // attempt buttons and tiles; the inspector only informs and hosts no decision.
     public sealed class SovereignPanel
     {
         public VisualElement Root { get; } = BoardScreen.Row("sovereign-strip");
         public VisualElement Inspector => inspector.Root;
-        public VisualElement DecisionHost => inspector.DecisionHost;
         public string Selected => selected;
         public string DecisionTarget { get; private set; } = "";
         public bool IsOpen => Inspector.style.display.value != DisplayStyle.None;
@@ -24,22 +24,26 @@ namespace Wotr.Client
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         public Func<IEnumerable<Rect>> FixedOcclusions { get; set; }
         public Func<VisualElement> FallbackAnchor { get; set; }
-        public Func<string, bool> ListedAsCharacter { get; set; }
-        public bool HasShownPortraits => portraits.Values.Any(portrait => portrait.style.display.value != DisplayStyle.None);
+        public bool HasShownPortraits => portraits.Count > 0;
+        // UI-274: a portrait's choice in the current decision (a card's king, the cleanse) and the objects' clicks.
+        public Func<string, SovereignChoice> Choice { get; set; } = _ => null;
+        public event Action<string> AttemptChosen;
+        public event Action<string, string> TileChosen;
         public event Action Opening;
         public event Action<bool> Highlighted;
+        // UI-274: what a click on each king does now (null when it only informs), for his objects on the map.
+        public event Action<Func<string, string>> Lit;
         public event Action Applied;
         public Func<string, bool, VisualElement, bool> InspectCharacter { get; set; }
         private readonly SovereignInspector inspector;
-        private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
+        private readonly Dictionary<string, SovereignPortrait> portraits = new Dictionary<string, SovereignPortrait>();
         private readonly BoardPresentation data;
         private readonly IVisualElementScheduledItem positionUpdate;
         private bool positionScheduled;
         private PlayerView view;
         private TurnDraft draft;
-        private VisualElement tray, dock;
+        private Func<string, bool> lit = _ => false;
         private string selected = "";
-        private string observedDecision = "";
 
         public SovereignPanel(BoardPresentation data, Action<string> focus)
         {
@@ -55,17 +59,11 @@ namespace Wotr.Client
             Close();
         }
 
-        public void Attach(VisualElement decisionTray, VisualElement decisionDock)
-        {
-            tray = decisionTray;
-            dock = decisionDock;
-        }
-
         public void Apply(PlayerView latest)
         {
             if (view != null && view.MatchId != latest.MatchId)
             {
-                observedDecision = DecisionTarget = "";
+                DecisionTarget = "";
                 draft = null;
                 Close();
             }
@@ -73,7 +71,7 @@ namespace Wotr.Client
             Root.style.display = view.Sovereigns.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var id in portraits.Keys.Where(id => view.Sovereigns.All(s => s.Id != id)).ToArray())
             {
-                portraits[id].RemoveFromHierarchy();
+                portraits[id].Root.RemoveFromHierarchy();
                 portraits.Remove(id);
             }
             foreach (var sovereign in view.Sovereigns)
@@ -85,26 +83,29 @@ namespace Wotr.Client
 
         private void Portrait(SovereignView sovereign)
         {
-            if (!portraits.TryGetValue(sovereign.Id, out var button))
+            if (!portraits.TryGetValue(sovereign.Id, out var portrait))
             {
                 var id = sovereign.Id;
-                button = BoardScreen.Button("", () =>
-                {
-                    if (Activate?.Invoke(id) != true)
-                        Show(id);
-                });
-                button.name = "sovereign-" + id;
-                button.AddToClassList(RuntimeTooltip.RichHoverClass);
-                button.userData = new DraftToken(DraftObject.Sovereign, id);
-                portraits.Add(id, button);
-                Root.Add(button);
+                portrait = new SovereignPortrait(id, () => Click(id), () => AttemptChosen?.Invoke(id), (king, tile) => TileChosen?.Invoke(king, tile));
+                portraits.Add(id, portrait);
+                Root.Add(portrait.Root);
             }
-            button.text = sovereign.Title.Split(' ')[0] + "\n" + SovereignPresentation.Status(sovereign.Status);
-            var region = data.Regions.TryGetValue(sovereign.RegionId, out var definition) ? definition.Name : "Out of play";
-            button.tooltip = sovereign.Title + " · " + sovereign.Status + " · " + region;
-            button.EnableInClassList("corrupted-sovereign", sovereign.Status == SovereignStatus.Corrupted);
-            var listed = sovereign.Status == SovereignStatus.Awakened && ListedAsCharacter?.Invoke(sovereign.Id) == true;
-            button.style.display = listed ? DisplayStyle.None : DisplayStyle.Flex;
+            portrait.Apply(view, sovereign, draft, data, ClickHint(sovereign.Id));
+        }
+
+        public string ClickHint(string id)
+        {
+            var choice = Choice(id);
+            if (choice != null)
+                return choice.Tooltip;
+            return lit(id) && view != null ? SovereignPresentation.LitHint(view, draft, id) : null;
+        }
+
+        // A king's object (portrait or map figure) whose decision uses it acts; any other opens his information.
+        public void Click(string id)
+        {
+            if (Activate?.Invoke(id) != true)
+                Show(id);
         }
 
         public void Context(PlayerView latest, TurnDraft selection)
@@ -113,16 +114,8 @@ namespace Wotr.Client
             draft = selection;
             var previousTarget = DecisionTarget;
             DecisionTarget = SovereignPresentation.DecisionTarget(view, draft);
-            if (DecisionTarget.Length > 0 && tray != null && tray.parent != DecisionHost)
-                DecisionHost.Add(tray);
-            else if (DecisionTarget.Length == 0 && tray?.parent == DecisionHost)
-                dock.Add(tray);
-            var decision = view.Decision?.Id ?? "";
-            var changed = decision != observedDecision;
-            observedDecision = decision;
-            if (DecisionTarget.Length > 0 && (changed || previousTarget != DecisionTarget))
-                Show(DecisionTarget);
-            else if (selected.Length > 0)
+            // The portraits follow in Highlight, which the same refresh calls next.
+            if (selected.Length > 0 && previousTarget == DecisionTarget)
                 Render();
         }
 
@@ -134,20 +127,22 @@ namespace Wotr.Client
             Open(id);
         }
 
-        public void OpenDecision() => Show(DecisionTarget);
         public void Pin() => Show(selected);
         public void CloseTransient() { if (!Pinned) Close(); }
 
+        // The portraits a die or a decision lights; the Characters tab glows while one does.
         public void Highlight(Func<string, bool> legal)
         {
+            lit = legal;
             var any = false;
-            foreach (var portrait in portraits)
+            foreach (var sovereign in view?.Sovereigns ?? new List<SovereignView>())
             {
-                var target = legal(portrait.Key);
-                portrait.Value.EnableInClassList("legal-target", target);
-                any |= target;
+                Portrait(sovereign);
+                any |= legal(sovereign.Id) || Choice(sovereign.Id) != null || SovereignAttempt.Enabled(view, draft, sovereign.Id) ||
+                    SovereignAttempt.Tiles(view, sovereign).Any(t => t.Selectable);
             }
             Highlighted?.Invoke(any);
+            Lit?.Invoke(ClickHint);
         }
 
         public void Close()
@@ -157,7 +152,7 @@ namespace Wotr.Client
             positionScheduled = false;
             selected = "";
             foreach (var portrait in portraits.Values)
-                portrait.EnableInClassList("inspected-sovereign", false);
+                portrait.Portrait.EnableInClassList("inspected-sovereign", false);
             Inspector.style.display = DisplayStyle.None;
         }
 
@@ -195,7 +190,7 @@ namespace Wotr.Client
             }
             inspector.Apply(view, sovereign, draft, selected == DecisionTarget && DecisionTarget.Length > 0);
             foreach (var portrait in portraits)
-                portrait.Value.EnableInClassList("inspected-sovereign", portrait.Key == selected);
+                portrait.Value.Portrait.EnableInClassList("inspected-sovereign", portrait.Key == selected);
             Position();
             Window?.Refresh();
         }
@@ -203,8 +198,8 @@ namespace Wotr.Client
         // The portrait while the Characters panel shows it, otherwise the element that stands for the panel.
         private VisualElement Source(string id)
         {
-            if (portraits.TryGetValue(id, out var portrait) && Shown(portrait))
-                return portrait;
+            if (portraits.TryGetValue(id, out var portrait) && Shown(portrait.Portrait))
+                return portrait.Portrait;
             return FallbackAnchor?.Invoke() ?? Root;
         }
 

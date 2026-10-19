@@ -15,12 +15,53 @@ namespace Wotr.Client
             if (view.Decision.Presentation == "CorruptionRemoval")
                 return view.Options.SelectMany(o => o.EffectChoices).Select(c => c.TargetId)
                     .FirstOrDefault(id => view.Sovereigns.Any(s => s.Id == id)) ?? "";
+            if (view.Decision.Presentation == SovereignChoices.Inspection)
+                return SovereignChoices.InspectedKing(view);
             return view.Decision.Kind == DecisionKind.Action && draft?.Kind is
                 CommandKind.AwakenSovereign or CommandKind.AttemptCorruption or CommandKind.RemoveCorruptedSovereign
                 ? draft.Payload.CharacterId : "";
         }
 
-        public static bool OwnsDecision(PlayerView view, TurnDraft draft) => DecisionTarget(view, draft).Length > 0;
+        // UI-274: the decision is made on the kings' portraits, attempt buttons and tiles; the tray builds no choice. A
+        // king's action whose king is not chosen yet (a die selected for it) waits on them too.
+        public static bool OwnsDecision(PlayerView view, TurnDraft draft) => DecisionTarget(view, draft).Length > 0 || SovereignChoices.Owns(view) ||
+            KingAction(view, draft);
+
+        private static bool KingAction(PlayerView view, TurnDraft draft) => view?.Decision?.Kind == DecisionKind.Action &&
+            view.DecisionOwner == view.You && !view.Winner.HasValue && draft?.Kind is CommandKind.AwakenSovereign or CommandKind.AttemptCorruption or CommandKind.RemoveCorruptedSovereign;
+
+        // What the step waits for, for the console's hint.
+        public static string Hint(PlayerView view, TurnDraft draft)
+        {
+            if (!OwnsDecision(view, draft))
+                return "";
+            if (SovereignAttempt.OwnAttempt(view))
+                return view.CorruptionAttempt?.Sequential == true ? "Click the latest tile beside the king to keep it · Or draw again"
+                    : SovereignAttempt.ForcedDraw(view) ? "Draw the Corruption tiles for the attempt" : "Click a glowing tile beside the king to attach it";
+            if (view.Decision.Presentation == SovereignChoices.Inspection)
+                return "Click a tile beside the king to return it to the Hunt Pool · Or keep the tiles";
+            if (view.Decision.Presentation == "CorruptionRemoval")
+                return "Click the glowing king to return one random tile · Or keep the tiles";
+            if (view.Decision.Presentation == SovereignChoices.Sovereign)
+                return "Click a glowing king, by his portrait or on the map";
+            if (KingAction(view, draft) && draft.Payload.CharacterId.Length == 0)
+                return draft.Kind == CommandKind.AttemptCorruption ? "Click the attempt button beside a king in the Characters panel"
+                    : "Click a glowing king, by his portrait or on the map";
+            return draft?.Kind == CommandKind.AwakenSovereign ? "Click a highlighted region on the map for the awakened king" : "";
+        }
+
+        // UI-274: what a click on a king the selected die lights does, for his portrait's and map object's tooltips.
+        public static string LitHint(PlayerView view, TurnDraft draft, string id)
+        {
+            var name = view.Sovereigns.FirstOrDefault(s => s.Id == id)?.Title ?? id;
+            return ExpansionActions.Sovereign(view, draft, id)?.Kind switch
+            {
+                CommandKind.AwakenSovereign => "Click to awaken " + name,
+                CommandKind.RemoveCorruptedSovereign => "Click to remove the corrupted " + name,
+                CommandKind.AttemptCorruption => "Click to attempt to corrupt " + name,
+                _ => "Click to choose " + name
+            };
+        }
 
         public static string Status(SovereignStatus status) => status switch
         {

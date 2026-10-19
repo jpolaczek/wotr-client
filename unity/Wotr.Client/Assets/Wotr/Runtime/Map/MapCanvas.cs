@@ -40,6 +40,7 @@ namespace Wotr.Client
         public MapFigureMotion Figures { get; }
         // UI-131: ghosts of reinforcements planned by a card or an ability.
         public MapPlannedRecruits PlannedRecruits { get; }
+        public MapSovereignMarkers SovereignMarkers { get; }
         // UI-212: a card's planned Nazgûl flights at their destinations.
         public MapPlannedRecruits PlannedFlights { get; }
         public bool Panning => panning;
@@ -48,6 +49,8 @@ namespace Wotr.Client
         // The HUD panels over the map; region names hide under them (UI-199: forces do not avoid them).
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
+        public const string SovereignTargetClass = "sovereign-target";
+        private Func<string, string> sovereignHint = _ => null;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
         private readonly Dictionary<(string, Side, bool), Marker> markers = new Dictionary<(string, Side, bool), Marker>();
@@ -145,6 +148,8 @@ namespace Wotr.Client
             Figures = new MapFigureMotion(this);
             PlannedRecruits = new MapPlannedRecruits(this);
             PlannedFlights = new MapPlannedRecruits(this, "planned-flight", removable: false);
+            SovereignMarkers = new MapSovereignMarkers(this);
+            SovereignMarkers.Apply(Data);
         }
 
         private void PointerDown(PointerDownEvent e)
@@ -404,6 +409,7 @@ namespace Wotr.Client
             Data = data;
             Renderer.UpdateMetadata(data);
             SyncMarkers();
+            SovereignMarkers.Apply(data);
             Refresh();
         }
         public void HighlightSources(IEnumerable<ArmyOption> armies, Side side)
@@ -414,7 +420,10 @@ namespace Wotr.Client
             foreach (var source in eligibleSources)
                 sourceRegions.Add(source.Item1);
             foreach (var marker in markers.Values)
+            {
                 marker.Button.EnableInClassList("eligible-army", eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison)));
+                ApplySovereignHint(marker);
+            }
             Redraw();
         }
 
@@ -450,6 +459,7 @@ namespace Wotr.Client
             UpdateGhost();
             PlannedRecruits?.Layout();
             PlannedFlights?.Layout();
+            SovereignMarkers?.Layout();
             HistoryOverlay?.Layout();
             Figures?.Layout();
             covered.AddRange(used);
@@ -524,7 +534,7 @@ namespace Wotr.Client
                 marker.Army = army;
                 marker.Artwork.Apply(army);
                 marker.Button.EnableInClassList(MapArmyArtwork.MovedClass, marched.Contains(key));
-                marker.Button.tooltip = ArmyMarkerText.Describe(army, Data.Regions[army.RegionId].Name);
+                ApplySovereignHint(marker);
             }
             foreach (var key in obsolete)
             {
@@ -534,6 +544,43 @@ namespace Wotr.Client
             regionMarkers.Clear();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
                 regionMarkers.Add(group.Key, group.OrderBy(m => m.Army.Garrison ? 0 : 1).ThenBy(m => m.Army.Side).ToList());
+        }
+
+        // UI-274: a force holding a king that a decision or the selected die lights glows, and its click chooses the
+        // king, unless the force is itself a source for the selected die (then the king's portrait chooses him).
+        public void LightSovereigns(Func<string, string> hint)
+        {
+            sovereignHint = hint;
+            foreach (var marker in markers.Values)
+                ApplySovereignHint(marker);
+            SovereignMarkers.Light(hint);
+        }
+
+        public string LitSovereign(DraftToken army) =>
+            army.Side is Side side && markers.TryGetValue((army.Id, side, army.Garrison), out var marker) ? LitSovereign(marker) : null;
+
+        private string LitSovereign(Marker marker) => eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison))
+            ? null : marker.Army.SovereignIds.FirstOrDefault(id => sovereignHint(id) != null);
+
+        private void ApplySovereignHint(Marker marker)
+        {
+            var king = LitSovereign(marker);
+            var description = ArmyMarkerText.Describe(marker.Army, Data.Regions[marker.Army.RegionId].Name);
+            marker.Button.tooltip = king != null ? sovereignHint(king) + "\n" + description : description;
+            marker.Button.EnableInClassList(SovereignTargetClass, king != null);
+        }
+
+        // Left of a region's forces, or where its row would stand when it has none.
+        internal Rect BesideForces(string region, Vector2 size)
+        {
+            if (regionMarkers.TryGetValue(region, out var row) && row.Count > 0 && row[0].Visible)
+            {
+                var left = row[0].Bounds;
+                return LocalMarkerRect(new Vector2(left.xMin - 4 - size.x / 2, left.yMax - size.y / 2), size);
+            }
+            var shape = Data.Shapes[region];
+            var anchor = Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
+            return LocalMarkerRect(RowCentre(0, anchor, size, Data.Regions[region].Settlement != null), size);
         }
 
         private Marker CreateMarker(ArmyMarker army)

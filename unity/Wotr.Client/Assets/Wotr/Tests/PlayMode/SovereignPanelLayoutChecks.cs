@@ -29,6 +29,45 @@ namespace Wotr.PlayTests
             await room.Settle();
         }
 
+        // UI-274: a king's decision is made on his slot in the Characters panel: every slot, its attempt button and its
+        // tiles stand inside the panel at four layouts, and no decision window opens.
+        public static async Task Slots(MatchTestRoom room, MountedMatchClient client, string name)
+        {
+            foreach (var width in new[] { 1366, 1920 })
+                foreach (var scale in new[] { 1f, 1.25f })
+                {
+                    var target = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                    target.Create();
+                    client.Panel.targetTexture = target;
+                    client.Interface.Preferences.SetScale(scale);
+                    client.Board.Characters.Open();
+                    await room.Settle();
+                    LayoutTests.Save(target, $"ui274-{name}-{width}-{scale:0.00}.png");
+                    CheckSlots(client);
+                    client.Panel.targetTexture = client.Viewport;
+                    target.Release();
+                    Object.Destroy(target);
+                }
+            client.Interface.Preferences.SetScale(1f);
+            await room.Settle();
+        }
+
+        private static void CheckSlots(MountedMatchClient client)
+        {
+            var board = client.Board;
+            var panel = board.Characters.Root;
+            Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display);
+            Assert.IsFalse(board.DecisionWindow.IsOpen, "A king's decision opens no window.");
+            foreach (var slot in board.Sovereigns.Root.Query(className: "sovereign-slot").ToList())
+                foreach (var element in new[] { slot }.Concat(slot.Query<Button>().ToList()).Where(Visible))
+                {
+                    Assert.GreaterOrEqual(element.worldBound.xMin, panel.worldBound.xMin - 1, element.name);
+                    Assert.LessOrEqual(element.worldBound.xMax, panel.worldBound.xMax + 1, element.name);
+                    Assert.LessOrEqual(element.worldBound.yMax, panel.worldBound.yMax + 1, element.name);
+                }
+            Assert.IsEmpty(panel.Query<ScrollView>().ToList());
+        }
+
         private static void Check(MountedMatchClient client)
         {
             var board = client.Board;
@@ -47,8 +86,6 @@ namespace Wotr.PlayTests
                 board.HandDrawer.Tab, board.ResourceDecision.Tab, board.Victory.Tab, board.Victory.Banner };
             foreach (var control in fixedControls.Where(c => c != null && Visible(c) && (c.childCount > 0 || c is TextElement)))
                 Assert.IsFalse(panel.worldBound.Overlaps(control.worldBound), "Fixed control is covered: " + control.name);
-            if (panel.parent.contentRect.height <= 365 && board.Tray.parent == board.Sovereigns.DecisionHost)
-                Assert.LessOrEqual(panel.layout.height, 216, "Compact decisions must fit between the Cards and Victory shortcuts.");
             Assert.IsEmpty(panel.Query<ScrollView>().ToList());
             Assert.IsEmpty(panel.Query<TextField>().ToList());
             foreach (var button in panel.Query<Button>().ToList().Where(b => b.enabledInHierarchy && Visible(b)))

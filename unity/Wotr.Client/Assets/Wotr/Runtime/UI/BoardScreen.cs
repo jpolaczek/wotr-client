@@ -164,6 +164,9 @@ namespace Wotr.Client
             actionPool = new ActionPoolView(id => DieSelected?.Invoke(id), id => RulerTokenSelected?.Invoke(id));
             actionPool.CouncilChosen = id => CouncilTokenSelected?.Invoke(id);
             Sovereigns = new SovereignPanel(Presentation, id => Map.Focus(id));
+            // UI-274: the kings' map objects light and act like their portraits.
+            Sovereigns.Lit += Map.LightSovereigns;
+            Map.SovereignMarkers.Selected += Sovereigns.Click;
             Root.Add(stage);
             // UI-100: no map control row. The wheel zooms, the Fellowship panel locates,
             // and the log and last battle icons join the notice stack (ActionNoticeBar).
@@ -333,7 +336,6 @@ namespace Wotr.Client
             Hunt.Attach(Tray, decisionDock);
             tableEffects.Attach(Tray, decisionDock);
             ResourceDecision.Attach(Tray, decisionDock);
-            Sovereigns.Attach(Tray, decisionDock);
             Map.RegisterCallback<GeometryChangedEvent>(_ => Sovereigns.RequestPosition());
             stage.Insert(stage.IndexOf(Cards.Root), Battles.Root);
             var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, GameChat.Icon, GameChat.Root, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,

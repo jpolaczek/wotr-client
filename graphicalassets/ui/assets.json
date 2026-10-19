@@ -739,6 +739,34 @@
       "role": "UI-273: the crown a Kings Ruler die wears on its top edge."
     },
     {
+      "source": "kings/attempt.svg",
+      "role": "UI-274: the corruption-attempt button beside an Initial king's portrait."
+    },
+    {
+      "source": "kings/status-initial.svg",
+      "role": "UI-274: status badge of an Initial king."
+    },
+    {
+      "source": "kings/status-awakened.svg",
+      "role": "UI-274: status badge of an Awakened king."
+    },
+    {
+      "source": "kings/status-corrupted.svg",
+      "role": "UI-274: status badge of a Corrupted king."
+    },
+    {
+      "source": "kings/status-removed.svg",
+      "role": "UI-274: status badge of a king removed from the game."
+    },
+    {
+      "source": "kings/tile-back.svg",
+      "role": "UI-274: a face-down tile drawn for a corruption attempt."
+    },
+    {
+      "source": "kings/marker-corrupted.svg",
+      "role": "UI-274: the map marker of a Corrupted king by his capital."
+    },
+    {
       "source": "dice/origins/gothmog.svg",
       "role": "UI-267: origin emblem of Gothmog's die: the pale moon of Minas Morgul."
     },

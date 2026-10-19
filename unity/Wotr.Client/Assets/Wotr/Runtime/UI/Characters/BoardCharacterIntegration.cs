@@ -17,7 +17,6 @@ namespace Wotr.Client
             stage.Add(characters.Inspector.Root);
             characters.AddSovereigns(board.Sovereigns.Root);
             board.Sovereigns.FallbackAnchor = () => characters.Tab;
-            board.Sovereigns.ListedAsCharacter = characters.Lists;
             board.Sovereigns.Applied += () => characters.ShowSovereigns(board.Sovereigns.HasShownPortraits);
             board.Sovereigns.Highlighted += any => characters.Tab.EnableInClassList("legal-target", any);
             characters.InspectorWindow = new FloatingWindow(characters.Inspector.Root, board.Windows,

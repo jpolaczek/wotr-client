@@ -32,43 +32,36 @@ namespace Wotr.EditorTests
                 Assert.IsFalse(placement.Overlaps(control), "Fixed control is covered: " + control);
         }
 
+        // UI-274: the attempt's tiles stand beside the king, the Shadow's with their values; their click attaches; the
+        // tray builds no choice, so no window opens, and the inspector does not open by itself.
         [Test]
-        public void DecisionOpensOnceClosePreservesDraftAndInspectionNeverRetargetsItsControls()
+        public void AttemptTilesStandBesideTheKingAndTheTrayStaysEmpty()
         {
             var view = View();
+            view.CorruptionAttempt.OwnChoices.Add(new CorruptionTileView { Id = "a", TileId = "t2", Value = 2 });
+            view.CorruptionAttempt.OwnChoices.Add(new CorruptionTileView { Id = "b", TileId = "t1", Value = 1 });
+            view.Options.Add(new ActionOption { Kind = CommandKind.ChooseCorruptionTile, Enabled = true, EligibleIds = { "t2", "t1" } });
             var draft = new TurnDraft();
             draft.Choose(CommandKind.ChooseCorruptionTile);
-            draft.Change(p => p.Ids.Add("tile"));
-            var panel = Panel(view, out var tray, out var dock);
+            var panel = Panel(view);
             panel.Context(view, draft);
-            Assert.IsTrue(panel.IsOpen);
-            Assert.AreEqual("king", panel.Selected);
-            Assert.AreSame(panel.DecisionHost, tray.parent);
-            panel.Close();
-            view.Revision++;
-            panel.Apply(view);
-            panel.Context(view, draft);
-            Assert.IsFalse(panel.IsOpen);
-            CollectionAssert.AreEqual(new[] { "tile" }, draft.Payload.Ids);
-            panel.Show("other");
-            Assert.AreEqual(DisplayStyle.None, panel.DecisionHost.style.display.value);
-            Assert.AreSame(panel.DecisionHost, tray.parent);
-            Assert.AreEqual("king", panel.DecisionTarget);
-            panel.OpenDecision();
-            Assert.AreEqual("king", panel.Selected);
-            Assert.AreEqual(DisplayStyle.Flex, panel.DecisionHost.style.display.value);
-            panel.Close();
-            view.Decision.Id = "next";
-            panel.Context(view, draft);
-            Assert.IsTrue(panel.IsOpen);
-            view.Decision = null;
-            view.DecisionOwner = Side.FreePeoples;
-            panel.Context(view, draft);
-            Assert.AreSame(dock, tray.parent);
-            Assert.IsTrue(panel.IsOpen, "An automatic result updates the open public inspector.");
-            Assert.AreEqual(DisplayStyle.None, panel.DecisionHost.style.display.value);
+            panel.Highlight(_ => false);
+            Assert.IsFalse(panel.IsOpen, "The decision opens no inspector.");
+            var slot = panel.Root.Q("sovereign-slot-king");
+            var tile = slot.Q<Button>("corruption-choice-t2");
+            Assert.AreEqual("2", tile.Q<Label>().text);
+            Assert.IsTrue(tile.ClassListContains(SovereignPortrait.LitClass));
+            StringAssert.StartsWith("Click to attach this tile to Dáin", tile.tooltip);
+            Assert.AreEqual(2, slot.Query<Button>(className: "sovereign-tile").ToList().Count);
+            Assert.IsEmpty(panel.Root.Q("sovereign-slot-other").Query<Button>(className: "sovereign-tile").ToList());
+            var tray = new DecisionTray(new VisualElement());
+            tray.Render(view, draft, false, false);
+            Assert.IsFalse(tray.HasChoices, "The tiles are on the king: no window.");
+            Assert.AreEqual(DecisionHost.Characters, DecisionRoutes.Of(view));
+            Assert.AreEqual(DecisionContext.Sovereign, DecisionAttention.For(view).Context);
         }
 
+        // The Free Peoples see the drawn tiles' backs beside the king and never a private value or tile id.
         [Test]
         public void PublicInspectorKeepsUnknownSumAndCannotRenderPrivateChoicesEvenInVisibleVariant()
         {
@@ -78,47 +71,79 @@ namespace Wotr.EditorTests
             view.Configuration.VisibleCorruption = true;
             view.Sovereigns[0].Tiles.Add(new CorruptionTileView { Id = "back-0" });
             view.CorruptionAttempt.OwnChoices.Add(new CorruptionTileView { Id = "secret", TileId = "private-physical-tile", Value = 3 });
-            var panel = Panel(view, out var tray, out var dock);
+            var panel = Panel(view);
             panel.Context(view, new TurnDraft());
+            panel.Highlight(_ => false);
             Assert.IsFalse(panel.IsOpen);
+            var slot = panel.Root.Q("sovereign-slot-king");
+            Assert.IsTrue(slot.Q<Button>("corruption-choice-drawn-0").ClassListContains("sovereign-tile-back"));
+            Assert.AreEqual(Visibility.Hidden, slot.Q<Button>("sovereign-attempt-king").style.visibility.value,
+                "No attempt control for the Free Peoples.");
             panel.Show("king");
-            Assert.AreSame(dock, tray.parent);
             StringAssert.Contains("Corruption ? / 4", panel.Inspector.Q<Label>("sovereign-state").text);
             Assert.AreEqual("▧", panel.Inspector.Q<Label>("attached-tile-back-0").text);
-            Assert.IsEmpty(panel.DecisionHost.Children());
-            var labels = string.Join(" ", panel.Inspector.Query<Label>().ToList().Select(l => l.text + l.tooltip + l.name));
+            var labels = string.Join(" ", panel.Root.Query<VisualElement>().ToList().Concat(panel.Inspector.Query<VisualElement>().ToList())
+                .Select(e => e.name + e.tooltip + (e as TextElement)?.text));
             StringAssert.DoesNotContain("private-physical-tile", labels);
             StringAssert.DoesNotContain("secret", labels);
-            Assert.IsNull(panel.Inspector.Q<Button>("corruption-choice-private-physical-tile"));
         }
 
-        // UI-101: an awakened sovereign the player's roster lists as a character keeps only that roster entry.
+        // UI-274: every sovereign keeps its slot in every state, its badge and meter following the projection.
         [Test]
-        public void AwakenedSovereignListedInTheRosterHidesItsPortraitAndReportsAnEmptySection()
+        public void EverySovereignKeepsItsSlotInEveryState()
         {
             var view = View();
             view.Decision = null;
-            view.Sovereigns.Add(new SovereignView { Id = "other-king", Title = "Other King" });
-            var panel = Panel(view, out _, out _);
-            var applied = 0;
-            panel.Applied += () => applied++;
-            panel.ListedAsCharacter = id => id == "king";
+            view.CorruptionAttempt = null;
+            var panel = Panel(view);
+            var slot = panel.Root.Q("sovereign-slot-king");
+            Assert.AreEqual(4, slot.Q("sovereign-meter").childCount, "A pip per point of resistance.");
+            Assert.IsTrue(slot.Q("sovereign-status").ClassListContains("sovereign-status-initial"));
+            view.Sovereigns[0].Tiles.Add(new CorruptionTileView { Id = "back-0" });
             panel.Apply(view);
-            Assert.AreEqual(1, applied);
-            Assert.AreEqual(DisplayStyle.Flex, panel.Root.Q<Button>("sovereign-king").style.display.value, "Not awakened yet.");
+            Assert.IsTrue(slot.Q("sovereign-meter")[0].ClassListContains("hidden"), "A hidden tile hatches a pip.");
+            foreach (var status in new[] { SovereignStatus.Awakened, SovereignStatus.Corrupted, SovereignStatus.Removed })
+            {
+                view.Sovereigns[0].Status = status;
+                panel.Apply(view);
+                Assert.AreSame(slot, panel.Root.Q("sovereign-slot-king"), "The slot stays in its place.");
+                Assert.IsTrue(slot.Q("sovereign-status").ClassListContains("sovereign-status-" + status.ToString().ToLowerInvariant()));
+            }
+            Assert.IsTrue(panel.HasShownPortraits);
+        }
+
+        // UI-274: the attempt button beside an Initial king pays a standard Shadow Eye unless the player clicked a special
+        // Eye first; disabled, it says why.
+        [Test]
+        public void TheAttemptButtonPaysAStandardEyeUnlessASpecialEyeWasClickedFirst()
+        {
+            var view = View();
+            view.Decision.Kind = DecisionKind.Action;
+            view.CorruptionAttempt = null;
+            view.Dice.Add(new DieView { Id = "lesser", Owner = Side.Shadow, Source = "lords.die.gothmog", Face = DieFace.Eye, Location = DieLocation.Hunt });
+            view.Dice.Add(new DieView { Id = "eye", Owner = Side.Shadow, Source = "standard", Face = DieFace.Eye, Location = DieLocation.Hunt });
+            view.Options.Add(new ActionOption { Kind = CommandKind.AttemptCorruption, Enabled = true, EligibleIds = { "king" }, EligibleDice = { "lesser", "eye" } });
+            view.Availability.Add(new ActionAvailabilityView { SubjectId = "other", ActionId = SovereignAttempt.ActionId,
+                Conditions = { new AvailabilityConditionView { Description = "This sovereign has not been targeted this turn.", Met = false } } });
+            var draft = new TurnDraft();
+            Assert.AreEqual("eye", SovereignAttempt.Eye(view, draft));
+            var panel = Panel(view);
+            panel.Context(view, draft);
+            panel.Highlight(_ => false);
+            var button = panel.Root.Q<Button>("sovereign-attempt-king");
+            Assert.IsTrue(button.enabledSelf);
+            StringAssert.StartsWith("Click to attempt to corrupt Dáin", button.tooltip);
+            var other = panel.Root.Q<Button>("sovereign-attempt-other");
+            Assert.IsFalse(other.enabledSelf);
+            StringAssert.Contains("○ This sovereign has not been targeted this turn.", other.tooltip);
+            draft.Choose(CommandKind.AttemptCorruption, "lesser");
+            Assert.AreEqual("lesser", SovereignAttempt.Eye(view, draft), "A special Eye clicked first pays.");
+            view.Options[0].EligibleDice.Remove("eye");
+            Assert.IsFalse(SovereignAttempt.Enabled(view, new TurnDraft(), "king"));
+            StringAssert.Contains("Click the special Eye that pays in the Hunt Box first", SovereignAttempt.Tooltip(view, new TurnDraft(), view.Sovereigns[0]));
             view.Sovereigns[0].Status = SovereignStatus.Awakened;
             panel.Apply(view);
-            Assert.AreEqual(DisplayStyle.None, panel.Root.Q<Button>("sovereign-king").style.display.value);
-            Assert.IsTrue(panel.HasShownPortraits);
-            foreach (var sovereign in view.Sovereigns)
-                sovereign.Status = SovereignStatus.Awakened;
-            panel.ListedAsCharacter = _ => true;
-            panel.Apply(view);
-            Assert.IsFalse(panel.HasShownPortraits, "A section of listed sovereigns only is empty.");
-            panel.ListedAsCharacter = _ => false;
-            panel.Apply(view);
-            Assert.AreEqual(DisplayStyle.Flex, panel.Root.Q<Button>("sovereign-king").style.display.value,
-                "Another side's awakened sovereign keeps its portrait.");
+            Assert.AreEqual(Visibility.Hidden, button.style.visibility.value, "An awakened king takes no attempt.");
         }
 
         [Test]
@@ -127,7 +152,7 @@ namespace Wotr.EditorTests
             var view = View();
             view.Decision = null;
             view.Sovereigns.AddRange(Enumerable.Range(2, 3).Select(i => new SovereignView { Id = "s" + i, Title = "Sovereign " + i }));
-            var panel = Panel(view, out _, out _);
+            var panel = Panel(view);
             Assert.AreEqual(5, panel.Root.childCount);
             var portrait = panel.Root.Q<Button>("sovereign-king");
             panel.Show("king");
@@ -137,7 +162,7 @@ namespace Wotr.EditorTests
             panel.Apply(view);
             Assert.AreSame(portrait, panel.Root.Q<Button>("sovereign-king"));
             Assert.AreSame(heading, panel.Inspector.Q<Label>(className: "title"));
-            StringAssert.Contains("Awakened", portrait.text);
+            Assert.IsTrue(portrait.ClassListContains("sovereign-awakened"));
             view.Sovereigns.RemoveRange(3, 2);
             panel.Apply(view);
             Assert.AreEqual(3, panel.Root.childCount);
@@ -156,9 +181,12 @@ namespace Wotr.EditorTests
             view.CorruptionAttempt = null;
             view.Decision.Kind = DecisionKind.EffectChoice;
             view.Decision.Presentation = "CorruptionRemoval";
-            view.Options.Add(new ActionOption { Kind = CommandKind.ChooseEffect,
-                EffectChoices = { new EffectChoiceView { Id = "remove", TargetId = "king" } } });
+            view.Options.Add(new ActionOption { Kind = CommandKind.ChooseEffect, Enabled = true, EligibleIds = { "remove", "decline" },
+                EffectChoices = { new EffectChoiceView { Id = "remove", TargetId = "king" }, new EffectChoiceView { Id = "decline", TargetId = "king", Title = "Keep tiles" } } });
             Assert.AreEqual("king", SovereignPresentation.DecisionTarget(view, null));
+            // UI-274: the king's portrait returns the tile; Keep tiles is the console's button.
+            StringAssert.StartsWith("Click to return one random tile of Dáin", SovereignChoices.Portraits(view)["king"].Tooltip);
+            CollectionAssert.AreEqual(new[] { "effect-choice-decline" }, SovereignChoices.ConsoleOptions(view, new TurnDraft()).Select(o => o.Name));
             var attention = DecisionAttention.For(view);
             Assert.AreEqual(DecisionContext.Sovereign, attention.Context);
             Assert.AreEqual("king", attention.Subject);
@@ -219,10 +247,10 @@ namespace Wotr.EditorTests
             var tray = new VisualElement();
             var decision = new DecisionTray(tray);
             decision.Render(view, draft, false, false);
-            Assert.AreSame(tray.Q<Button>("travel-stay").parent, tray.Q<Button>("decision-back").parent);
-            Assert.IsEmpty(FellowshipDraft.Hint(draft, view));
-            // UI-105: the destination click places the sovereign; no route is drawn.
-            StringAssert.Contains("Click a highlighted destination", tray.Q<Label>("travel-summary").tooltip);
+            // UI-274: the destination is a click on the map; the tray offers no Stay button and opens no window.
+            Assert.IsNull(tray.Q<Button>("travel-stay"));
+            Assert.IsFalse(decision.HasChoices);
+            StringAssert.Contains("Click a highlighted region on the map", tray.Q<Label>(className: "draft-status").text);
             decision.Preview(false, "Offline · Your draft is saved locally.");
             var status = tray.Q<Label>(className: "draft-status");
             Assert.AreEqual(DisplayStyle.Flex, status.style.display.value);
@@ -235,7 +263,7 @@ namespace Wotr.EditorTests
             var view = View();
             view.Availability.Add(new ActionAvailabilityView { SubjectId = "king", Title = "Attempt corruption", Cost = "One eligible Eye",
                 Conditions = { new AvailabilityConditionView { Description = "Already attempted this turn", Met = false } } });
-            var panel = Panel(view, out _, out _);
+            var panel = Panel(view);
             panel.Show("king");
             StringAssert.Contains("Already attempted", panel.Inspector.Q<Label>("sovereign-availability").tooltip);
             Assert.IsNull(ExpansionActions.Sovereign(view, new TurnDraft(), "king"));
@@ -244,13 +272,9 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(panel.Inspector.Q<Label>("sovereign-availability").tooltip);
         }
 
-        private static SovereignPanel Panel(PlayerView view, out VisualElement tray, out VisualElement dock)
+        private static SovereignPanel Panel(PlayerView view)
         {
             var panel = new SovereignPanel(BoardPresentation.Load(), _ => Assert.Fail("Inspection cannot move the camera."));
-            tray = new VisualElement();
-            dock = new VisualElement();
-            dock.Add(tray);
-            panel.Attach(tray, dock);
             panel.Apply(view);
             return panel;
         }

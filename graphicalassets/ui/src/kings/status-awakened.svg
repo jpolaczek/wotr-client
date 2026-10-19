@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+  <!-- UI-274: an Awakened king: a solid gold crown. -->
+  <g filter="url(#lift)">
+    <path d="M2 9.4 L1.5 3.6 L4.2 5.8 L6 2.6 L7.8 5.8 L10.5 3.6 L10 9.4 Z" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-shadow)" stroke-width="0.6" stroke-linejoin="round"/>
+    <circle cx="6" cy="7.6" r="0.9" style="fill: var(--crown-stone)"/>
+  </g>
+</svg>

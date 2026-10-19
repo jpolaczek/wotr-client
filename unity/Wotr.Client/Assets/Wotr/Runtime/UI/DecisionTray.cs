@@ -151,6 +151,7 @@ namespace Wotr.Client
             foreach (var hint in new[]
             {
                 CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
+                SovereignPresentation.Hint(view, draft),
                 RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
                 ResourcePresentation.PoolHint(view)
             })
@@ -230,9 +231,7 @@ namespace Wotr.Client
             {
                 var back = IconButton.Create("back", "Back", () => Cancel?.Invoke());
                 back.name = "decision-back";
-                var route = draft.Kind == CommandKind.AwakenSovereign && SovereignPresentation.OwnsDecision(view, draft)
-                    ? root.Q<Button>("travel-stay")?.parent : null;
-                (route ?? footer).Add(back);
+                footer.Add(back);
             }
             if (view.Decision.Kind == DecisionKind.Reaction && view.Options.Any(o => o.Kind == CommandKind.DeclineReaction && o.Enabled) &&
                 !CardConsoleOptions.Owns(view, draft))
@@ -252,14 +251,13 @@ namespace Wotr.Client
                 }
             foreach (var alternative in ExpansionDecision.Alternatives(view, draft))
             {
-                if (SovereignPresentation.OwnsDecision(view, draft) && alternative.Kind == CommandKind.ChooseCorruptionTile)
-                    continue; // Each legal tile is already the direct placement control.
                 var button = BoardScreen.Button(Label(alternative.Kind), () => ActionChosen?.Invoke(alternative.Kind));
                 button.name = "action-" + alternative.Kind;
                 button.SetEnabled(alternative.Enabled);
                 footer.Add(button);
             }
-            if (draft.Kind == CommandKind.AwakenSovereign || ComponentActions.Immediate(view, draft) || ExpansionActions.Immediate(draft.Kind) || FellowshipActions.Immediate(draft.Kind) || ContextualFellowship && FellowshipDraft.UsesRoute(draft.Kind) &&
+            // UI-274: a king's decision is sent by the click on his portrait, attempt button or tile; no Confirm.
+            if (SovereignPresentation.OwnsDecision(view, draft) || draft.Kind == CommandKind.AwakenSovereign || ComponentActions.Immediate(view, draft) || ExpansionActions.Immediate(draft.Kind) || FellowshipActions.Immediate(draft.Kind) || ContextualFellowship && FellowshipDraft.UsesRoute(draft.Kind) &&
                 option.Travel.Count > 0 && !TravelDraft.IsGrouped(draft.Kind) && !FellowshipDraft.LocationRoute(draft.Kind) ||
                 option.Kind is CommandKind.ResolveHuntDamage or CommandKind.CommitCombatCard or CommandKind.AdvanceBattle or CommandKind.RetreatBattle or CommandKind.ExtendSiege || option.Kind == CommandKind.ChooseEffect &&
                 option.Minimum == 1 && option.Maximum == 1 && option.EventRecruitment == null || option.Kind == CommandKind.RespondEffect)
@@ -385,9 +383,11 @@ namespace Wotr.Client
 
         private void AddDraftChoices(PlayerView view, TurnDraft draft, ActionOption option, VisualElement footer)
         {
+            // UI-274: the kings' decisions are made on their portraits, attempt buttons, tiles and the map.
+            if (SovereignPresentation.OwnsDecision(view, draft))
+                return;
             if (option.Kind is CommandKind.ChooseCorruptionTile or CommandKind.DrawCorruptionTile)
-                refreshChoices.Add(CorruptionAttemptChoices.Render(SovereignPresentation.OwnsDecision(view, draft) ? footer : root,
-                    view, option, draft, action => DraftEdited?.Invoke(action), kind => ActionChosen?.Invoke(kind)));
+                refreshChoices.Add(CorruptionAttemptChoices.Render(root, view, option, draft, action => DraftEdited?.Invoke(action), kind => ActionChosen?.Invoke(kind)));
             else if (ExpansionDraft.Handles(draft.Kind))
             {
                 var choices = new ExpansionChoices(root, view, draft, action => DraftEdited?.Invoke(action), data, versions);

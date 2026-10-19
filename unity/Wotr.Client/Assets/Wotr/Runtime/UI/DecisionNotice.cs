@@ -91,8 +91,9 @@ namespace Wotr.Client
                 case DecisionContext.Fellowship:
                     board.Fellowship.Open();
                     break;
+                // UI-274: the kings' decisions are made on their portraits in the Characters panel.
                 case DecisionContext.Sovereign:
-                    board.Sovereigns.Show(attention.Subject);
+                    board.Characters.Open();
                     break;
                 case DecisionContext.Region:
                     if (board.Presentation.Regions.ContainsKey(attention.Region))
