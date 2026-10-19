@@ -254,3 +254,26 @@ click. Test: `RegionForceChoicesTests`.
 
 UI-246 revision (2026-10-17): Leadership points are taken on their source figure or portrait (a badge counts them) and
 Heroic Death's amounts are full-size "−1/−2/−3" buttons; see BATTLE_WINDOW_UX.
+
+## Fate of Erebor cards and Gimli on their objects — UI-266 (2026-10-19)
+
+Every choice of the six Fate cards with their own steps is made on its object; none opens the generic decision
+window (`DecisionRoutes`, test `FateCardStepsHaveObjectHosts`):
+
+| Card | Step | Object |
+| --- | --- | --- |
+| There and Back Again | Separate a Companion or group (+1 range), then a new Guide | Fellowship portraits and the highlighted destination on the map (UI-105) |
+| Book of Mazarbul | Move the Companions outside the Fellowship; the Dwarven region; the recruit | The figures' routes on the map; the lit region (`Region`); the reserve figure (`ReserveFigures`) |
+| Bardings, Dwarves of the Iron Hills | The region next to Dale (or Dale) with its two recruits | The recruitment plan: a region click, then the reserve figures (`RecruitmentPlan`) |
+| Orcs Multiplying Again | Mount Gundabad or Erebor, then the limited reserve | The lit region, then the recruitment plan |
+| Monsters Roused | West or East of the mountains, then the Elite's region and the plan | Two console buttons (`EffectTargets`), the lit region, the recruitment plan |
+
+Gimli's abilities keep the path of every character ability: a click on the paying die lights the ability in the
+panel of the region where he stands, and its click uses it (Dwarf of Renown, Messenger of the Dwarves). The task
+first named the Dwarves row of the Politics track as its object; that row shows the result, but the action list
+carries no nation for a character's ability, and a second place for one ability would break the rule that a
+mechanic's control lives at its object. Gimli, Dwarven Lord leaves as the Guide from the Hunt's response row.
+
+The test menu's Fate tab holds the six cards in "Cards" (wotr-server `FateCardScenarios`: the card in hand with
+dice that pay for it) beside "Gimli". Tests: `FateCardsNetworkTests` and `FateGimliNetworkTests` watch both clients'
+decision windows (`GenericWindowWatch`) and check each step's host.

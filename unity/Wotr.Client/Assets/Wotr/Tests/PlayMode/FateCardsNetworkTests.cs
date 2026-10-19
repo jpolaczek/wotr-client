@@ -10,6 +10,7 @@ using static Wotr.PlayTests.KingsCardNetworkChecks;
 
 namespace Wotr.PlayTests
 {
+    // UI-266: every step of the six Fate cards is made on its object; the generic decision window never opens.
     public class FateCardsNetworkTests
     {
         [UnityTest] public IEnumerator ThereSeparatesThenChangesGuideBeforePolitics() => Wait(There());
@@ -22,29 +23,36 @@ namespace Wotr.PlayTests
         private static async Task There()
         {
             using (var room = await Connect("fate-there", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var before = room.Fp.Board.View.Nations.Single(n => n.Id == "north").StepsToWar;
+                watch.OnItsObject(room.Fp);
                 Click(room.Fp, "companion-base.character.merry");
                 await room.Settle();
                 // UI-105: the highlighted destination is the whole gesture; its click sends Merry at once.
                 await Layout(room, room.Fp, "there-route", "fate");
                 await room.MoveTo(room.Fp, "fords-of-bruinen");
                 Assert.AreEqual(before, room.Sh.Board.View.Nations.Single(n => n.Id == "north").StepsToWar);
+                watch.OnItsObject(room.Fp);
                 Click(room.Fp, "companion-base.character.strider");
                 await Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);
                 Assert.AreEqual(before - 1, room.Sh.Board.View.Nations.Single(n => n.Id == "north").StepsToWar);
                 Assert.IsTrue(room.Sh.Board.View.Nations.Single(n => n.Id == "north").Active);
+                watch.NeverOpened();
             }
         }
 
         private static async Task Book()
         {
             using (var room = await Connect("fate-book", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var revision = room.Fp.Board.View.Revision;
+                watch.OnItsObject(room.Fp);
                 await Target(room, room.Fp, "iron-hills");
                 await room.At(revision + 1);
+                watch.OnItsObject(room.Fp);
                 await Layout(room, room.Fp, "book-region", "fate");
                 var view = room.Fp.Board.View;
                 var id = view.Options.Single().EligibleIds.Single(i => view.Units.Single(u => u.Id == i).Kind == UnitKind.Elite);
@@ -53,14 +61,17 @@ namespace Wotr.PlayTests
                 await room.Confirm(room.Fp);
                 Assert.AreEqual("iron-hills", room.Sh.Board.View.Units.Single(u => u.Id == id).Location);
                 Assert.AreEqual(0, room.Sh.Board.View.Nations.Single(n => n.Id == "dwarves").StepsToWar);
+                watch.NeverOpened();
             }
         }
 
         private static async Task Recruit(string scenario, string nation)
         {
             using (var room = await Connect(scenario, ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var revision = room.Fp.Board.View.Revision;
+                watch.OnItsObject(room.Fp);
                 await RecruitAt(room, room.Fp, nation, UnitKind.Elite, "iron-hills");
                 await RecruitAt(room, room.Fp, nation, UnitKind.Leader, "iron-hills");
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
@@ -73,16 +84,20 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(1, room.Sh.Board.View.Players.Single(p => p.Side == Side.FreePeoples).HandCount);
                 Assert.AreEqual("sauron", room.Sh.Board.Map.Data.Regions["erebor"].Nation);
                 Assert.AreEqual("City", room.Fp.Board.Map.Data.Regions["ered-luin"].Settlement);
+                watch.NeverOpened();
             }
         }
 
         private static async Task Orcs()
         {
             using (var room = await Connect("fate-orcs", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var revision = room.Sh.Board.View.Revision;
+                watch.OnItsObject(room.Sh);
                 await Target(room, room.Sh, "erebor");
                 await room.At(revision + 1);
+                watch.OnItsObject(room.Sh);
                 await RecruitAt(room, room.Sh, "sauron", UnitKind.Regular, "dol-guldur");
                 for (var i = 0; i < 3; i++)
                     await RecruitAt(room, room.Sh, "sauron", UnitKind.Regular, "erebor");
@@ -91,25 +106,31 @@ namespace Wotr.PlayTests
                 await room.Confirm(room.Sh);
                 Assert.AreEqual(5, room.Fp.Board.View.Units.Count(u => u.Location == "erebor" && u.Kind == UnitKind.Regular));
                 Assert.IsFalse(room.Sh.Board.View.Units.Any(u => u.Nation == "sauron" && u.Kind == UnitKind.Regular && u.Location == "reserve"));
+                watch.NeverOpened();
             }
         }
 
         private static async Task Monsters()
         {
             using (var room = await Connect("fate-monsters", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
+                watch.OnItsObject(room.Sh);
                 Click(room.Sh, "effect-choice-fate.monsters.east");
                 await Layout(room, room.Sh, "monsters-branch", "fate");
                 await room.Confirm(room.Sh);
                 var revision = room.Sh.Board.View.Revision;
+                watch.OnItsObject(room.Sh);
                 await Target(room, room.Sh, "withered-heath");
                 await room.At(revision + 1);
+                watch.OnItsObject(room.Sh);
                 await RecruitAt(room, room.Sh, "sauron", UnitKind.Regular, "northern-mirkwood");
                 await RecruitAt(room, room.Sh, "sauron", UnitKind.Elite, "withered-heath");
                 await Reconnect(room, room.Sh);
                 await room.Confirm(room.Sh);
                 Assert.IsTrue(room.Fp.Board.View.Units.Any(u => u.Location == "withered-heath" && u.Kind == UnitKind.Elite));
                 Assert.IsTrue(room.Fp.Board.View.Units.Any(u => u.Location == "northern-mirkwood" && u.Kind == UnitKind.Regular));
+                watch.NeverOpened();
             }
         }
 

@@ -62,6 +62,26 @@ namespace Wotr.EditorTests
         public void ExpansionCardStepsHaveObjectHosts(DecisionKind kind, string presentation, DecisionHost host) =>
             Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, presentation)));
 
+        // UI-266: the Fate cards' steps: separations and the Guide on the Fellowship portraits, regions on the map,
+        // the recruits and recruitment plans in the reserve, the Monsters Roused branches as console buttons.
+        [TestCase(DecisionKind.CompanionSeparation, "", DecisionHost.Fellowship)]   // There and Back Again, Book of Mazarbul
+        [TestCase(DecisionKind.Guide, "", DecisionHost.Fellowship)]                 // There and Back Again
+        [TestCase(DecisionKind.EffectChoice, "Region", DecisionHost.Map)]           // Book, Orcs Multiplying Again, Monsters
+        [TestCase(DecisionKind.EffectChoice, "ReserveFigures", DecisionHost.Reserve)] // Book of Mazarbul
+        [TestCase(DecisionKind.EffectChoice, "RecruitmentPlan", DecisionHost.Reserve)] // Bardings, Dwarves, Orcs, Monsters
+        [TestCase(DecisionKind.EffectChoice, "EffectTargets", DecisionHost.Console)] // Monsters Roused
+        public void FateCardStepsHaveObjectHosts(DecisionKind kind, string presentation, DecisionHost host) =>
+            Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, presentation)));
+
+        // UI-266: Gimli, Dwarven Lord leaves as the Guide from the Hunt's response row.
+        [Test]
+        public void GimlisGuideResponseStaysInTheHunt()
+        {
+            var view = Own(DecisionKind.Reaction, "");
+            view.Hunt = new HuntView();
+            Assert.AreEqual(DecisionHost.Hunt, DecisionRoutes.Of(view));
+        }
+
         private static PlayerView Own(DecisionKind kind, string presentation) => new PlayerView
         {
             You = Side.Shadow, DecisionOwner = Side.Shadow,
