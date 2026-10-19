@@ -1009,6 +1009,10 @@
 .component-actions { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; margin-left: 10px; margin-right: 10px; }
 .component-actions > Button { min-width: 33px; padding-left: 7px; padding-right: 7px; }
 .region-hover .component-actions > Button { width: auto; font-size: 13px; }
+/* UI-286: a character's ability is a small picture on the square gilt frame; it glows only while a click can use it. */
+.component-actions > .action.icon-button.ability-icon,
+.region-hover .component-actions > .action.icon-button.ability-icon { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 2px 4px 2px 0; }
+.component-actions > .ability-icon > .icon-glyph { max-width: 24px; max-height: 24px; }
 
 .recruit-palette .reserve-piece { width: 30px; min-width: 30px; margin-right: 1px; }
 

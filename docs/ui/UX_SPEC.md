@@ -1264,3 +1264,17 @@ the symbol printed on its corner and its title in dark ink (`EffectEntry.CardTil
 can use now takes the hand's playable parchment. An ability or another effect keeps its plain tile. The Hunt's
 responses show pictures as well (HUNT_UX, UI-288). Test:
 `HuntAndEffectPicturesTests.TableCardsAmongTheEffectsAreParchmentCardsAndAbilitiesStayPlain`.
+
+## Character abilities are small pictures — UI-286 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 4): a character's ability in the
+region panel, the Characters inspector and the decision dock is no longer a text button ("★ Saruman" twice for the
+Voice) but a small picture on the square gilt frame of what it does (`AbilityPictures`): a muster flag for Voice ·
+recruit, the upgrade star for Voice · upgrade, the Politics track for Gimli's, Boromir's and Legolas's political
+abilities, the boot or the crossed swords for the Mouth of Sauron's move or attack, the board pin for an entry, and the
+ability scroll otherwise. The picture glows and pulses with the shared ChoiceGlow only while a click can use it (its
+die is chosen and the board is free); otherwise it stays in its place greyed out. Its tooltip names the owner and the
+ability and says "Click to use" or "Select an eligible die to use it". The controls keep their names
+(`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
+text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
+`ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
