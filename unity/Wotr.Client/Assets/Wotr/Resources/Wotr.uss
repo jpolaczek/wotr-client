@@ -522,15 +522,18 @@
 .hunt-response-objects { flex-direction: row; justify-content: center; margin-top: 4px; }
 /* UI-285: the table cards' responses, each a small parchment card with its name and what it does. */
 .hunt-card-responses { flex-direction: row; justify-content: center; margin-top: 4px; }
-.hunt-response-card { width: 20px; height: 27px; margin-right: 5px; background-image: resource("Wotr/Art/UI/cards/parchment"); -unity-background-scale-mode: scale-to-fit; border-width: 1px; border-color: rgb(160, 132, 82); border-radius: 2px; }
+/* UI-288: the card face carries the symbol printed on the card's corner, in ink. */
+.hunt-response-card { width: 21px; height: 28px; margin-right: 5px; justify-content: center; align-items: center; background-image: resource("Wotr/Art/UI/cards/parchment"); -unity-background-scale-mode: stretch-to-fill; border-width: 1px; border-color: rgb(160, 132, 82); border-radius: 2px; }
+.hunt-response-card > .action-symbol { position: relative; left: 0; top: 0; width: 15px; height: 15px; margin: 0; }
 .hunt-panel .hunt-response-object { height: 68px; min-height: 68px; min-width: 0; flex-grow: 1; flex-basis: 0; flex-direction: column; align-items: center; justify-content: center; padding: 2px; }
 .hunt-response-heading { flex-direction: row; align-items: center; justify-content: center; }
-.hunt-response-icon { width: 24px; height: 24px; margin-right: 4px; justify-content: center; align-items: center; }
-.hunt-response-object #hunt-response-symbol { margin: 0; padding: 0; font-size: 16px; }
-.hunt-guide-portrait { background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 12px; }
-.hunt-random-stack { margin-right: 6px; }
-.hunt-card-back { position: absolute; left: 4px; top: 1px; width: 17px; height: 21px; background-color: rgb(86, 82, 76); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; }
-.hunt-random-stack #hunt-response-symbol { width: 17px; height: 24px; font-size: 15px; background-color: rgb(51, 49, 45); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; -unity-text-align: middle-center; }
+/* UI-288: pictures instead of glyphs: the Ring with its drop of Corruption, the Guide's figure in a gilt medallion,
+   the Companions' stack for a random casualty. */
+.hunt-response-icon { width: 28px; height: 28px; margin-right: 5px; justify-content: center; align-items: center; -unity-background-scale-mode: scale-to-fit; }
+.hunt-response-ring { background-image: resource("Wotr/Art/UI/hunt/choice-corruption"); }
+.hunt-response-random { background-image: resource("Wotr/Art/UI/hunt/choice-random"); }
+.hunt-guide-portrait { overflow: hidden; background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 14px; }
+.hunt-guide-portrait > .figure-art-image { position: absolute; left: 1px; right: 1px; top: 1px; bottom: 0; }
 .hunt-response-object #hunt-response-name { margin: 0; padding: 0; font-size: 13px; }
 .hunt-response-object #hunt-response-consequence { margin: 1px 0 0 0; padding: 0; font-size: 12px; white-space: pre; -unity-text-align: middle-center; }
 .hunt-panel #hunt-guide-order { margin: 1px 0; padding: 0; font-size: 12px; color: rgb(231, 209, 160); }

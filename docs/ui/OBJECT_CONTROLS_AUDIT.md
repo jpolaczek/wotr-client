@@ -90,4 +90,5 @@ does not place the tray either: "CharacterCardDiscard → Hand" has no object be
 Controls deliberately approved stay as they are. Axe and Bow → UI-285 (HUNT_UX); finding 1 (Guide reactions) awaits
 the owner's decision; findings 2 and 3 stay; finding 4 → small clickable ability icons that glow only when usable
 (UI-286); finding 5 stays for now; finding 6 → UI-287 (FELLOWSHIP_UX); finding 7 → graphics (UI-288); finding 8 →
-remove the unreachable fallbacks (UI-289). Companion journeys → portraits (UI-284, FELLOWSHIP_UX).
+remove the unreachable fallbacks (UI-289). Companion journeys → portraits (UI-284, FELLOWSHIP_UX). Finding 7 is done in
+UI-288 (UX_SPEC, HUNT_UX).

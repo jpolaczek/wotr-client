@@ -25,6 +25,9 @@ namespace Wotr.Client
         private static IReadOnlyDictionary<string, CardText> cards;
         public static IReadOnlyDictionary<string, CardText> Cards => cards ??= Load();
         public static string Title(string id) => Cards.TryGetValue(id, out var card) ? card.Title : FigureGrid.Name(id);
+        // The die face printed on a card's corner: the symbol a card shows wherever it appears.
+        public static DieFace Face(string id) =>
+            Cards.TryGetValue(id, out var card) && System.Enum.TryParse<DieFace>(card.EventType, out var face) ? face : DieFace.Event;
 
         public static string EventText(CardText card, MatchConfiguration configuration) =>
             configuration?.Kings == true && configuration.VisibleCorruption && card.Id.StartsWith("kings.")

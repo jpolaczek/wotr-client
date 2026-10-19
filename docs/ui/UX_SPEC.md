@@ -1255,3 +1255,12 @@ After choosing a die the available left tabs' icons jumped off their medallions:
 inner edge, which moves with the border (1 px at rest, 3 px when available, UI-223), while the medallion art keeps its
 centre (47, 22). Each state now places the 24 px icon on that centre (`LeftRail.uss`). Test:
 `BoardInteractionTests.LeftRailIconsStayOnTheirMedallionsWhenATabIsAvailable` (within 0.75 px in both states).
+
+## Cards among the effects are cards — UI-288 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 7): a card among the Effects
+tab's sources (a card kept on the table or a card whose effect lasts) is a small parchment card as in the hand, with
+the symbol printed on its corner and its title in dark ink (`EffectEntry.CardTile`, `LeftRail.uss`); a source a click
+can use now takes the hand's playable parchment. An ability or another effect keeps its plain tile. The Hunt's
+responses show pictures as well (HUNT_UX, UI-288). Test:
+`HuntAndEffectPicturesTests.TableCardsAmongTheEffectsAreParchmentCardsAndAbilitiesStayPlain`.

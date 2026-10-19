@@ -365,3 +365,13 @@ to the generic choice list as a text rectangle whose button also pinned the full
   `CardPack02NetworkTests.StaffPreventsAnUnseenTileAndAdvancesMordor`, `HuntRecoveryNetworkTests`,
   `MordorNetworkTests.MithrilReplacesStopBeforeAdvancingAndSpendsItsCardOnce`, `Shadow01NetworkTests`,
   `Shadow03NetworkTests`; `MatchTestRoom.ObjectChoice` finds the card object in the Hunt window.
+
+<a id="ui-288"></a>
+## Pictures on the responses — UI-288 (2026-10-19)
+
+The owner's decision after the object controls audit (finding 7): the response objects show pictures instead of the
+glyphs ○ ★ ?. The Ring shows the Ring with its drop of Corruption (`hunt/choice-corruption`), the Guide the current
+Guide's own figure in a gilt medallion (the version the Fellowship panel shows; it follows a change of Guide), the
+random casualty the Companions' stack (`hunt/choice-random`), and a table card's response (UI-285) a small parchment
+card with the symbol printed on the card's corner (`CardLibrary.Face`). The pictures are 28 points, 22 in a short
+window. Tests: `HuntAndEffectPicturesTests`, `HuntLayoutTests` (all four layouts).

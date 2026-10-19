@@ -16,6 +16,9 @@ namespace Wotr.Client
         private readonly ChoicePulse cardPulse;
         private string cardKey = "";
         private readonly Dictionary<HuntResponse, Button> choices = new Dictionary<HuntResponse, Button>();
+        // UI-288: the current Guide's figure on its response; Context keeps it on the Guide of the moment.
+        private readonly Image guideArt = FigureArtwork.Image(FigureAppearances.Character("", Side.FreePeoples));
+        private string guideShown;
         private readonly Label guideOrder = new Label("Guide casualty → New Guide before Corruption")
             { name = "hunt-guide-order", pickingMode = PickingMode.Ignore };
 
@@ -73,8 +76,12 @@ namespace Wotr.Client
             button.AddToClassList("hunt-card-response");
             var header = BoardScreen.Row("hunt-response-heading");
             header.pickingMode = PickingMode.Ignore;
-            var card = new VisualElement { pickingMode = PickingMode.Ignore };
+            // UI-288: a small parchment card with the symbol printed on the card's corner.
+            var card = new VisualElement { name = "hunt-response-art", pickingMode = PickingMode.Ignore };
             card.AddToClassList("hunt-response-card");
+            var symbol = new ActionSymbol(CardLibrary.Face(response.CardId));
+            symbol.AddToClassList(ActionSymbol.InkClass);
+            card.Add(symbol);
             header.Add(card);
             header.Add(new Label(response.Name) { name = "hunt-response-name", pickingMode = PickingMode.Ignore });
             button.Add(header);
@@ -83,22 +90,32 @@ namespace Wotr.Client
             return button;
         }
 
-        private static void AddFace(Button button, HuntResponse response)
+        // The Guide's figure, as the Fellowship panel shows it: its own version when the Companion is the player's.
+        private void ShowGuide(PlayerView view)
+        {
+            var guide = view.Fellowship.Guide;
+            var version = view.OwnCompanions.Any(c => c.Id == guide)
+                ? CharacterLibrary.Version(view, guide) : FellowshipGuideText.PublicVersion(view.Fellowship, guide);
+            var shown = version.Length > 0 ? version : guide;
+            if (shown == guideShown)
+                return;
+            guideShown = shown;
+            guideArt.sprite = FigureArtwork.Sprite(FigureAppearances.Character(shown, Side.FreePeoples));
+        }
+
+        // UI-288: each response shows its picture: the Ring with its drop of Corruption, the Guide's own figure, the
+        // Companions' stack for a random casualty.
+        private void AddFace(Button button, HuntResponse response)
         {
             var header = BoardScreen.Row("hunt-response-heading");
             header.pickingMode = PickingMode.Ignore;
-            var portrait = new VisualElement { pickingMode = PickingMode.Ignore };
+            var portrait = new VisualElement { name = "hunt-response-art", pickingMode = PickingMode.Ignore };
             portrait.AddToClassList("hunt-response-icon");
+            portrait.EnableInClassList("hunt-response-ring", response == HuntResponse.Ring);
             portrait.EnableInClassList("hunt-guide-portrait", response == HuntResponse.Guide);
-            portrait.EnableInClassList("hunt-random-stack", response == HuntResponse.RandomCompanion);
-            if (response == HuntResponse.RandomCompanion)
-            {
-                var back = new VisualElement { pickingMode = PickingMode.Ignore };
-                back.AddToClassList("hunt-card-back");
-                portrait.Add(back);
-            }
-            portrait.Add(new Label(response == HuntResponse.Ring ? "○" : response == HuntResponse.Guide ? "★" : "?")
-                { name = "hunt-response-symbol", pickingMode = PickingMode.Ignore });
+            portrait.EnableInClassList("hunt-response-random", response == HuntResponse.RandomCompanion);
+            if (response == HuntResponse.Guide)
+                portrait.Add(guideArt);
             header.Add(portrait);
             header.Add(new Label { name = "hunt-response-name", pickingMode = PickingMode.Ignore });
             button.Add(header);
@@ -124,6 +141,8 @@ namespace Wotr.Client
                     continue;
                 button.Q<Label>("hunt-response-name").text = pair.Key == HuntResponse.Ring ? "Ring" :
                     pair.Key == HuntResponse.Guide ? CharacterLibrary.ShortName(view, view.Fellowship.Guide) : "Random companion";
+                if (pair.Key == HuntResponse.Guide)
+                    ShowGuide(view);
                 button.Q<Label>("hunt-response-consequence").text = HuntResponseActions.Consequence(view, pair.Key);
                 button.tooltip = HuntResponseActions.Describe(view, pair.Key) +
                     "\nClick to choose · Or drag onto the tile.";
