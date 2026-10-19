@@ -12,6 +12,8 @@ namespace Wotr.Client
     // control keeps its place; what is not available is greyed out, never hidden (docs/ui/WAITING_ROOM_UX.md).
     // OBS-04: each seat takes a free place or removes its player, the audience line lists the observers, and a
     // player may move to the audience; the host may run the room from the audience.
+    // UI-263: under the seats the window splits: the audience, the invitation and the chat on the left, the rules
+    // (the table's expansions and variants) on the right. Only the host changes the rules, and Ready accepts them.
     public sealed class WaitingRoomScreen
     {
         public VisualElement Root { get; } = new VisualElement { name = "waiting-room" };
@@ -30,6 +32,9 @@ namespace Wotr.Client
         public event Action Observe;
         public event Action Refresh;
         public event Action InterfaceRequested;
+        // UI-263: the configuration the host asks for after one click on the rules strip.
+        public event Action<MatchConfiguration> Configure;
+        public RulesStrip Rules { get; } = new RulesStrip();
         private readonly Label title = new Label { name = "waiting-title" };
         private readonly Label information = new Label { name = "waiting-information" };
         private readonly SeatCard freePeoples;
@@ -67,6 +72,7 @@ namespace Wotr.Client
             back.AddToClassList("menu-action-quiet");
             invite = Action("generate-room-invitation", "New code", () => Invite?.Invoke(), "waiting-invite-action");
             copy = Action("copy-room-invitation", "Copy", CopyCode, "waiting-invite-action");
+            Rules.Toggled += Toggle;
             var page = new VisualElement { pickingMode = PickingMode.Ignore };
             page.AddToClassList("menu-page");
             Root.Add(page);
@@ -109,10 +115,17 @@ namespace Wotr.Client
             seats.Add(freePeoples.Root);
             seats.Add(shadow.Root);
             window.Add(seats);
-            window.Add(audience.Root);
-            window.Add(InvitationLine());
+            var lower = new VisualElement { name = "waiting-lower" };
+            lower.AddToClassList("waiting-lower");
+            var social = new VisualElement { name = "waiting-social" };
+            social.AddToClassList("waiting-social");
+            social.Add(audience.Root);
+            social.Add(InvitationLine());
             ChatHost.AddToClassList("waiting-chat");
-            window.Add(ChatHost);
+            social.Add(ChatHost);
+            lower.Add(social);
+            lower.Add(Rules.Root);
+            window.Add(lower);
             return window;
         }
 
@@ -163,6 +176,12 @@ namespace Wotr.Client
             return column;
         }
 
+        private void Toggle(string rule)
+        {
+            if (Room != null && !busy)
+                Configure?.Invoke(RulesChoices.Toggle(Room.Configuration, rule));
+        }
+
         private static Button Action(string name, string text, Action action, string style)
         {
             var button = BoardScreen.Button(text, action);
@@ -185,8 +204,8 @@ namespace Wotr.Client
                 return;
             Room = room;
             title.text = room.Name;
-            var configuration = ConfigurationOptions.IsBase(room.Configuration) ? "Base game" : "Saved configuration";
-            information.text = $"{room.Visibility} · {configuration} · Two players · Observers {room.Observers.Count}/{Limit(room)}";
+            information.text = $"{room.Visibility} · {RulesChoices.Summary(room.Configuration)} · Two players · " +
+                $"Observers {room.Observers.Count}/{Limit(room)}";
             freePeoples.Show(room);
             shadow.Show(room);
             audience.Show(room, Limit(room));
@@ -209,7 +228,8 @@ namespace Wotr.Client
             var waiting = Room.Status == RoomStatus.Waiting;
             ready.text = OwnReady ? "Not ready" : "Ready";
             ready.SetEnabled(!busy && waiting && Player);
-            ready.tooltip = Player ? "" : "Only the players get ready.";
+            ready.tooltip = !Player ? "Only the players get ready."
+                : OwnReady ? "Withdraw your acceptance of these rules." : "Accept these rules and get ready to play.";
             back.SetEnabled(!busy);
             demo.SetEnabled(!busy && waiting && Player);
             var audienceFull = Room.Observers.Count >= Limit(Room);
@@ -218,7 +238,9 @@ namespace Wotr.Client
                 : "Leave your seat and watch this game.";
             start.SetEnabled(!busy && waiting && Room.IsHost && Room.FreePeoplesAccepted && Room.ShadowAccepted && Room.StartUnavailableReason.Length == 0);
             start.tooltip = !Room.IsHost ? "Only the host starts the game."
-                : Room.StartUnavailableReason.Length == 0 ? "Both players must be ready." : "This table cannot start here. Host a new base game.";
+                : Room.StartUnavailableReason.Length == 0 ? "Both players must be ready."
+                : "This server no longer offers an expansion chosen here. Change the rules first.";
+            Rules.Show(Room, busy);
             freePeoples.Enable(Room, busy);
             shadow.Enable(Room, busy);
             audience.Enable(Room, busy);

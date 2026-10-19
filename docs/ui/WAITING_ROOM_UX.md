@@ -110,6 +110,59 @@ Both only work before the launch.
 - After the party starts, the viewer stays in the waiting room with status; board the viewer joins
   OBS-05.
 
+<a id="rules-strip--ui-263-2026-10-19"></a>
+## Rules strip — UI-263 (2026-10-19)
+
+Owner decision 2026-10-19: the rules of a table are chosen only in its waiting room. Under the seats the window
+splits in two: the audience, the invitation and the chat keep the left part, and the rules take a fixed column of
+236 px on the right, every rule in a fixed place:
+
+```
+│ ┌ Free Peoples ─────────┐ ┌ Shadow ────────────────┐ │
+│ └───────────────────────┘ └────────────────────────┘ │
+│ Observers 2/16 [Ann ×][Bo ×]          (⛰) [✓ New Cities         ] │
+│ Invitation [code……] [Copy] [New code] Fate [○ Council of Rivendell] │
+│ Chat                                   (◎◎)[○ Visible Corruption  ] │
+│ ┌───────────────────────────────┐     Lords[○ Sequential Corruption] │
+│ │ Alice: ready when you are     │     (♛) [✓ Dismay              ] │
+│ └───────────────────────────────┘     Kings[○ Removing Ruler Tokens] │
+│ [message…………………………] [Send]                                       │
+```
+
+The three medallions (44 px, 58 px with the caption) and the six chips (25 px, 29 px apart) are both 174 px tall, so
+the column fits the window at 125 % on 1366 x 768; the invitation's title and buttons are narrower (96 and 92 px) to
+keep the code readable beside it; observers that do not fit the line are clipped and the count stays.
+
+- Three expansion medallions in release order: Fate of Erebor (the Lonely Mountain under the Arkenstone), Lords of
+  Middle-earth (three linked Elven rings), Kings of Middle-earth (a crown). Art: `graphicalassets/ui/src/rules`
+  (`medallion` with `hover`, `pressed`, `fate-on`, `lords-on`, `kings-on`; `crest-*`; `check-off`/`check-on`). An
+  expansion in the game lights its medallion in its own enamel with a gold glow and a coloured crest; one not in the
+  game shows a grey crest. Names: `rules-module-fate|lords|kings`.
+- Six variant chips in one column, grouped by the expansion they need: New Cities (Fate), Council of Rivendell
+  (Lords), Visible Corruption and Sequential Corruption (Kings), Dismay and Removing Ruler Tokens (Lords and Kings)
+  (`rules-variant-<id>`). A chip that is on wears the red lacquer of a selected
+  button and a ticked gilt ring; off, an empty ring.
+- Only the host of a waiting room changes the rules. A click sends `PUT /api/rooms/{id}/configuration` with the
+  room's version and the configuration after that one change (`RulesChoices.Toggle`); the strip changes only when
+  the server's room comes back. Removing an expansion removes its variants; adding or removing Lords or Kings sets
+  Dismay to its default (on with both); switching Dismay off also switches Removing Ruler Tokens off.
+- Every control stays in place and is disabled, never hidden, with the reason in its tooltip: a variant whose
+  expansion is missing ("Council of Rivendell needs Lords of Middle-earth."), an expansion the server does not offer
+  yet ("… · Not yet available on this server.", from `RoomView.OfferedModules`; an older server's
+  `ExpansionsAvailable` offers all or none), the guest ("Only the host chooses the rules."), a started game ("The
+  rules are fixed once the game starts."). An expansion that is in the game but no longer offered stays enabled for
+  the host, who can still remove it. Every enabled control's tooltip says what its click does ("Click to add Fate of
+  Erebor to this game. Both players get ready again."), and each variant's tooltip adds what it changes.
+- Ready accepts the rules (its tooltip says so); every change of the rules resets both players' Ready on the server.
+  Start explains a table whose expansion the server no longer offers.
+- The masthead line names the rules: "Public · Fate of Erebor + Kings of Middle-earth · Two players · Observers 0/16".
+- The crests (`ExpansionCrests`, 18 px) also mark a game's expansions on the rows of Open games, My games and Replays,
+  after the phase in the top bar and in the Victory window's header; their tooltip names the expansions and the
+  variants in play. A base game shows none.
+
+The old `RoomScreen` and `ConfigurationEditor` (toggles, only used by tests) are gone; their tests moved to
+`WaitingRoomRulesTests` and `RulesChoicesTests`.
+
 <a id="scenariusze"></a>
 ## Scenarios
 
@@ -121,3 +174,4 @@ Both only work before the launch.
 | WR04 | The guest sees the “Start game” and “Remove” grey; the removed guest returns to the message menu. | MENU-25 |
 | WR05 | Two players exchange messages via the server; Enter sends; text with tags is displayed literally. | MENU-26 |
 | OB03 | A viewer from a public poem and code, chat with role, simultaneous “Take seat” into one place (one sits, the other gets status), return to the audience, remove the viewer by the host. | OBS-04 |
+| WR06 | The host adds and removes expansions and variants by clicks; the guest sees them read-only; an unreleased module is greyed with its reason; every change resets Ready; all 93 legal configurations are reachable and fit the window in four layouts. | UI-263 |

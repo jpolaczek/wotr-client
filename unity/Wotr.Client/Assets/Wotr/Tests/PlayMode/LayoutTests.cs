@@ -88,11 +88,13 @@ namespace Wotr.PlayTests
             Assert.LessOrEqual(auth.Root.Q<Button>().worldBound.yMax, 768);
             Save(target, "login-1366.png");
             root.Clear();
-            var room = new RoomScreen();
+            // UI-263: the waiting room with every expansion and variant: three medallions and six chips on screen.
+            var room = new WaitingRoomScreen();
             room.Update(new Wotr.Contracts.RoomView
             {
                 FreePeoples = "Alice",
                 Shadow = "Bob",
+                IsHost = true,
                 ExpansionsAvailable = true,
                 Version = 1,
                 Configuration = new Wotr.Contracts.MatchConfiguration
@@ -112,7 +114,8 @@ namespace Wotr.PlayTests
             root.Add(room.Root);
             for (var frame = 0; frame < 12; frame++)
                 yield return null;
-            Assert.AreEqual(9, room.Root.Query<Toggle>().ToList().Count);
+            Assert.AreEqual(9, room.Rules.Root.Query<Button>().ToList().Count);
+            Assert.AreEqual(9, room.Rules.Root.Query<Button>(className: "on").ToList().Count);
             foreach (var button in room.Root.Query<Button>().ToList())
                 Assert.LessOrEqual(button.worldBound.yMax, 768);
             Save(target, "room-1366.png");

@@ -24,7 +24,7 @@ From MENU-28 host addresses are not in git (`ServerConfiguration`, `ClientEnviro
 
 The menu shows open games and My games and Host a game, Join by code, Settings and Sign out; screen layout from MENU-11 describes the section “ Menu layout — MENU-11 Public means visibility for logged users of this server, without automatic matchmaking. The list refreshes every 5 s, waiting room what 2 p. Requests are cancelled when changing the screen. From MENU-09 lists contain more rows and scroll without filters All/Your decision/Waiting/Finished and without Previous/Next. Further pages API load after scrolling to the end; refresh includes the loaded part, retains rows and position. Another page without scrolling only loads the list shorter than the view, evaluated after the new rows are placed ( DIST-01 Field Game code and Join by code stand by MENU-11 in column action One list error does not hide the others. Back at 404 returns to the menu. Source of this product adjustment: user request 2026-10-12 .
 
-Host game: name (default {username}'s game, 1–64 characters after trim, no controls), Public/Private (default Public), Free Peoples/Shadow (default Free Peoples). Always base game and two seats. The new menu does not show expansions also in Development. Name/widocznoity/page are constant since creation. The public line opens and takes a free seat with one click.
+Host game: name (default {username}'s game, 1–64 characters after trim, no controls), Public/Private (default Public), Free Peoples/Shadow (default Free Peoples). A new table starts as the base game with two seats; since UI-263 (2026-10-19) its host chooses the expansions and variants in the waiting room ([WAITING_ROOM_UX](WAITING_ROOM_UX.md#rules-strip--ui-263-2026-10-19)), and the server offers only the released modules (wotr-server EXP-01). Name/widocznoity/page are constant since creation. The public line opens and takes a free seat with one click.
 
 Private room does not enter the public list. Host public and private room generates/copy random code; at the same time, one code is active, generating is impotent. Joining a member repeated after losing the reply does not take second place. Upon the guest's departure, the code is invalidated; the host can generate a new one. Start/close sizing prevents new attachments. The code never goes to public DTO.
 
@@ -384,7 +384,8 @@ User application from 2026-10-16: "Adjust host view a game to the rest of the de
   (`host-fp`, `host-shadow`); the selected card shines and has a golden outline;
 - ‘Visibility’: segment buttons ‘Public’ and ‘Private’ (`host-public`, `host-private`) with one
   sentence of the explanation below;
-- the line of rules „Base game · Two players · Play at your own pace”;
+- the line of rules „Two players · Play at your own pace · Choose expansions in the waiting room” (`host-rules-note`,
+  UI-263: the rules are chosen in the waiting room, after the table exists);
 - Footer: ‘Back’ (`cancel-host`) to the left, message of the middle error, ‘Create game’
   (`submit-host`) to the right.
 

@@ -54,6 +54,10 @@ namespace Wotr.PlayTests
         {
             var revision = client.Board.View.Revision;
             Assert.AreEqual(configuration.Kings ? configuration.Fate ? 3 : 5 : 0, client.Board.View.Sovereigns.Count);
+            // UI-263: the expansions' crests after the phase and in the Victory header.
+            var modules = RulesChoices.ModuleIds.Where(module => RulesChoices.IsOn(configuration, module)).Select(m => "crest-" + m);
+            CollectionAssert.AreEqual(modules, client.Board.TopBar.Crests.Children().Select(c => c.name));
+            CollectionAssert.AreEqual(modules, client.Board.Victory.Root.Q("victory-crests").Children().Select(c => c.name));
             await Layout(room, client, "rules-" + flags + "-" + client.Board.View.You, "t34");
             Assert.AreEqual(revision, client.Board.View.Revision, "Reading match rules must not perform a game action.");
         }
@@ -62,7 +66,8 @@ namespace Wotr.PlayTests
         {
             using (var mounted = new MountedMatchClient(fp.Address.ToString(), "lobby", api: fp))
             {
-                var screen = new RoomScreen();
+                // UI-263: the waiting room's rules strip, Ready and Start, over the same HTTP calls as WaitingRoomController.
+                var screen = new WaitingRoomScreen();
                 var root = mounted.Board.Root.parent;
                 mounted.Board.Root.RemoveFromHierarchy();
                 root.Add(screen.Root);
@@ -70,27 +75,33 @@ namespace Wotr.PlayTests
                 Task<RoomView> request = null;
                 screen.Configure += config => request = fp.Put<RoomView>($"api/rooms/{room.Id}/configuration",
                     new ConfigureRoomRequest { ExpectedVersion = screen.Room.Version, Configuration = config }, token);
-                screen.Confirm += () => request = fp.Post<RoomView>($"api/rooms/{room.Id}/confirm",
-                    new RoomRevisionRequest { ExpectedVersion = screen.Room.Version }, token);
+                screen.Ready += ready => request = fp.Put<RoomView>($"api/rooms/{room.Id}/ready",
+                    new RoomReadyRequest { ExpectedVersion = screen.Room.Version, Ready = ready }, token);
                 screen.Start += () => request = fp.Post<RoomView>($"api/rooms/{room.Id}/start",
                     new RoomRevisionRequest { ExpectedVersion = screen.Room.Version }, token);
-                // Exercise a reversible configuration edit through the same UI event/HTTP contract as ClientFlow.
-                foreach (var enabled in new[] { !room.Configuration.Fate, room.Configuration.Fate })
+                // A reversible edit: Fate's medallion twice, then New Cities back to the wanted rules.
+                for (var click = 0; click < 2; click++)
                 {
-                    screen.Root.Q<Toggle>("config-fate").value = enabled;
+                    await Task.Delay(80, token);
+                    CardNetworkTests.Click(screen.Rules.Medallion("fate"));
                     screen.Update(await request);
                 }
                 if (room.Configuration.NewCities != screen.Room.Configuration.NewCities)
                 {
-                    screen.Root.Q<Toggle>("config-new-cities").value = room.Configuration.NewCities;
+                    await Task.Delay(80, token);
+                    CardNetworkTests.Click(screen.Rules.VariantChip("new-cities"));
                     screen.Update(await request);
                 }
+                Assert.AreEqual(room.Configuration.Fate, screen.Room.Configuration.Fate);
+                Assert.AreEqual(room.Configuration.NewCities, screen.Room.Configuration.NewCities);
+                Assert.IsFalse(screen.Room.FreePeoplesAccepted == true || screen.Room.ShadowAccepted == true,
+                    "Every change of the rules makes both players get ready again.");
                 Assert.IsFalse(screen.Root.Q<Button>("start-game").enabledSelf);
                 await Task.Delay(80, token);
-                CardNetworkTests.Click(screen.Root.Q<Button>("confirm-configuration"));
+                CardNetworkTests.Click(screen.Root.Q<Button>("room-ready"));
                 screen.Update(await request);
-                var version = new RoomRevisionRequest { ExpectedVersion = screen.Room.Version };
-                await sh.Post<RoomView>($"api/rooms/{room.Id}/confirm", version, token);
+                await sh.Put<RoomView>($"api/rooms/{room.Id}/ready",
+                    new RoomReadyRequest { ExpectedVersion = screen.Room.Version, Ready = true }, token);
                 screen.Update(await fp.Get<RoomView>($"api/rooms/{room.Id}", token));
                 Assert.IsTrue(screen.Root.Q<Button>("start-game").enabledSelf);
                 await Task.Delay(80, token);

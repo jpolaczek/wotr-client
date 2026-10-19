@@ -41,6 +41,11 @@ namespace Wotr.EditorTests
             ("rail/edge-tab", 94, 66, true), ("rail/edge-tab-hover", 94, 66, true), ("rail/edge-tab-selected", 94, 66, true),
             ("rail/edge-tab-pressed", 94, 66, true), ("rail/edge-tab-available", 94, 66, true),
             ("rail/edge-tab-available-hover", 94, 66, true),
+            // UI-263: the waiting room's rules strip and the expansions' crests.
+            ("rules/medallion", 56, 56, true), ("rules/medallion-hover", 56, 56, true), ("rules/medallion-pressed", 56, 56, true),
+            ("rules/medallion-fate-on", 56, 56, true), ("rules/medallion-lords-on", 56, 56, true),
+            ("rules/medallion-kings-on", 56, 56, true), ("rules/crest-fate", 32, 32, true), ("rules/crest-lords", 32, 32, true),
+            ("rules/crest-kings", 32, 32, true), ("rules/check-off", 14, 14, true), ("rules/check-on", 14, 14, true),
             ("console/ribbon-free", 300, 40, true), ("console/ribbon-shadow", 300, 40, true), ("console/status-glow", 48, 48, true),
             ("end/title-victory", 300, 56, true), ("end/title-defeat", 300, 56, true),
             ("actions/back", 20, 20, true), ("actions/battle", 20, 20, true), ("actions/close", 20, 20, true),

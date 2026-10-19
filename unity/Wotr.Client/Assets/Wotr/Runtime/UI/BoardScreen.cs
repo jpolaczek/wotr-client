@@ -560,6 +560,7 @@ namespace Wotr.Client
             Map.MordorTrack.Apply(MordorTrackState.For(tracks));
             Map.Figures.Apply(view);
             Phase.text = $"Turn {view.Turn} · {PhaseName(view.Phase)}";
+            ExpansionCrests.Show(TopBar.Crests, view.Configuration);
             actionPool.Apply(OwnDice, view, view.You, true);
             var opponent = view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
             actionPool.Apply(OpponentDice, view, opponent, false);

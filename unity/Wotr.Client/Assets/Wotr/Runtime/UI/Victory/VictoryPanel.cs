@@ -22,6 +22,7 @@ namespace Wotr.Client
         private readonly Label timing = new Label { name = "victory-timing" };
         private readonly VictoryScoreColumn freePeoples, shadow;
         private PlayerView view;
+        private readonly VisualElement crests = ExpansionCrests.Row("victory-crests");
         private bool visible;
 
         public VictoryPanel(VisualElement surface, MapCanvas map, Action fellowship, WindowLayout positions = null)
@@ -41,6 +42,8 @@ namespace Wotr.Client
             Banner.pickingMode = PickingMode.Ignore;
             Banner.style.display = DisplayStyle.None;
             var header = FloatingWindow.Header("Victory");
+            // UI-263: the game's expansion crests beside the title.
+            header.Add(crests);
             var close = IconButton.Create("close", "Close", Close);
             close.name = "close-victory";
             close.tooltip = "Close Victory · Keep your selection";
@@ -83,6 +86,7 @@ namespace Wotr.Client
                 shadow.ResetPage();
             }
             view = latest;
+            ExpansionCrests.Show(crests, view.Configuration);
             Tab.style.display = MenuOnly ? DisplayStyle.None : DisplayStyle.Flex;
             Tab.text = VictoryPresentation.Summary(view);
             Tab.EnableInClassList("threshold-reached", !view.Winner.HasValue && view.MilitaryVictory.Exists(score => score.ThresholdReached));

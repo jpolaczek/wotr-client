@@ -556,3 +556,7 @@
 .main-menu .challenge-text { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: 15px; -unity-font-style: bold; color: rgb(250, 232, 196);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .main-menu .challenge-action { width: 92px; height: 34px; min-height: 34px; margin: 0 0 0 8px; font-size: 14px; }
+
+/* UI-263: the crests of a listed game's expansions: before the row's buttons, and in a saved game's upper right. */
+.main-menu .menu-row > .expansion-crests { margin: 0 8px 0 4px; }
+.main-menu .saved-match .expansion-crests { position: absolute; top: 8px; right: 12px; }

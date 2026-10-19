@@ -15,6 +15,8 @@ namespace Wotr.Client
         // Cast onto the top of the map area, beneath every docked panel; never takes the pointer.
         public VisualElement Shadow { get; } = new VisualElement { name = "topbar-shadow", pickingMode = PickingMode.Ignore };
         public OpponentSummary Opponent { get; } = new OpponentSummary();
+        // UI-263: the game's expansion crests after the phase, the variants in their tooltip.
+        public VisualElement Crests { get; } = ExpansionCrests.Row("topbar-crests");
 
         public TopBarView(Label phase, VisualElement opponentDice, Label connection, Button menu)
         {
@@ -27,6 +29,7 @@ namespace Wotr.Client
             Root.Add(Frame);
             phase.AddToClassList("phase");
             Root.Add(phase);
+            Root.Add(Crests);
             Root.Add(Divider());
             opponentDice.AddToClassList("row");
             Root.Add(opponentDice);

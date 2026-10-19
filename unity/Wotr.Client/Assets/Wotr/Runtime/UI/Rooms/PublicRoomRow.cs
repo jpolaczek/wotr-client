@@ -7,18 +7,21 @@ namespace Wotr.Client
     // MENU-11: one open game in the menu window — the free side's emblem, the game's name and who hosts it.
     // OBS-04: the row also says whether the game waits or is in progress, how many seats and observers it has, and
     // keeps Play and Observe in fixed places; the one not available is greyed out with the reason.
+    // UI-263: the crests of the table's expansions stand before Play, the variants in their tooltip.
     public sealed class PublicRoomRow
     {
         public VisualElement Root { get; }
         private readonly VisualElement emblem = new VisualElement { pickingMode = PickingMode.Ignore };
         private readonly Label name = new Label { pickingMode = PickingMode.Ignore };
         private readonly Label detail = new Label { pickingMode = PickingMode.Ignore };
+        private readonly VisualElement crests;
         private readonly Button play;
         private readonly Button observe;
 
         public PublicRoomRow(string id, Action<string, RoomRole> join)
         {
             Root = new VisualElement { name = "public-room-" + id };
+            crests = ExpansionCrests.Row("public-room-crests-" + id);
             Root.AddToClassList("menu-row");
             Root.AddToClassList("public-room-row");
             emblem.AddToClassList("menu-row-emblem");
@@ -32,6 +35,7 @@ namespace Wotr.Client
             observe = RowButton("observe-public-" + id, "Observe", () => join(id, RoomRole.Observer));
             Root.Add(emblem);
             Root.Add(text);
+            Root.Add(crests);
             Root.Add(play);
             Root.Add(observe);
         }
@@ -51,7 +55,9 @@ namespace Wotr.Client
             emblem.EnableInClassList("side-shadow", !free);
             name.text = room.Name;
             detail.text = Detail(room);
-            Root.tooltip = room.Name + " · " + detail.text;
+            ExpansionCrests.Show(crests, room.Configuration);
+            Root.tooltip = room.Name + " · " + RulesChoices.Summary(room.Configuration ?? new MatchConfiguration()) + " · " +
+                detail.text;
             play.SetEnabled(room.CanPlay);
             play.tooltip = room.CanPlay ? "Join as " + BoardScreen.SideName(room.OpenSide) + "."
                 : room.Status == RoomStatus.Started ? "The game has started." : "Both seats are taken.";

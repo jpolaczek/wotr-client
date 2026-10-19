@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- UI-263: Kings of Middle-earth: a five-pointed crown on its band. Original simplified symbol; gilt with an ink
+       outline and an ivory band. -->
+  <defs>
+    <linearGradient id="crest-kings-band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="1" style="stop-color: var(--ivory)"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#lift)" stroke-linejoin="round">
+    <path d="M4.2 22.6 L3 9.4 L9.4 15.4 L12.4 6.4 L16 13.6 L19.6 6.4 L22.6 15.4 L29 9.4 L27.8 22.6 Z" fill="url(#gilt)"
+      style="stroke: var(--ink)" stroke-width="1.4"/>
+    <rect x="4" y="22.4" width="24" height="5.4" rx="1" fill="url(#crest-kings-band)" style="stroke: var(--ink)"
+      stroke-width="1.3"/>
+    <g style="stroke: var(--ink)" stroke-width="0.8">
+      <circle cx="3" cy="9.2" r="1.6" fill="url(#gilt)"/>
+      <circle cx="12.4" cy="6.2" r="1.6" fill="url(#gilt)"/>
+      <circle cx="19.6" cy="6.2" r="1.6" fill="url(#gilt)"/>
+      <circle cx="29" cy="9.2" r="1.6" fill="url(#gilt)"/>
+      <circle cx="16" cy="25.1" r="1.5" fill="#c23a2a"/>
+      <circle cx="9.6" cy="25.1" r="1.1" fill="#3f7fc4"/>
+      <circle cx="22.4" cy="25.1" r="1.1" fill="#3f7fc4"/>
+    </g>
+  </g>
+</svg>

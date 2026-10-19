@@ -250,7 +250,9 @@ namespace Wotr.PlayTests
                     content.Add(waiting.Root);
                     waiting.Update(new RoomView { Id = "room", Name = new string('N', 64), Host = "PlayerWithLongUsername12345678901",
                         IsHost = true, Managed = true, Visibility = RoomVisibility.Public, FreePeoples = "PlayerWithLongUsername12345678901",
-                        JoinCode = new string('A', 43), ObserverLimit = 16, Observers = Audience() });
+                        JoinCode = new string('A', 43), ObserverLimit = 16, Observers = Audience(), ExpansionsAvailable = true,
+                        Configuration = new MatchConfiguration { Lords = true, Kings = true, Fate = true, Council = true, Dismay = true,
+                            VisibleCorruption = true, SequentialCorruption = true, RemovingRulerTokens = true, NewCities = true } });
                     waiting.Status.text = "Connection interrupted. Your seat is kept. Retry Refresh when the server is available.";
                     // MENU-26: the chat in its place, with a long line and markup shown as plain text.
                     var chat = new RoomChatPanel();
@@ -279,6 +281,12 @@ namespace Wotr.PlayTests
                         Assert.IsFalse(waiting.Root.Q<Button>("seat-" + key + "-take").worldBound.Overlaps(waiting.Root.Q<Button>("seat-" + key + "-remove").worldBound));
                     }
                     Fits(waiting.Root.Q<Button>("remove-observer-Observer01"), waiting.Root.Q("waiting-observers"));
+                    // UI-263: the rules' three medallions and six chips stay inside the window beside the chat.
+                    foreach (var control in waiting.Rules.Root.Query<Button>().ToList())
+                        Fits(control, waitingWindow);
+                    Assert.AreEqual(9, waiting.Rules.Root.Query<Button>().ToList().Count);
+                    Assert.AreEqual(174, waiting.Root.Q("waiting-rules-modules").resolvedStyle.height, 0.5f);
+                    Fits(waiting.Root.Q("waiting-rules"), waitingWindow);
                     Assert.AreEqual(52, waiting.Root.Q("waiting-observers").resolvedStyle.height, 0.5f);
                     Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.width, waiting.Root.Q("seat-shadow").worldBound.width, 0.5f, "Two equal seats.");
                     Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.height, waiting.Root.Q("seat-shadow").worldBound.height, 0.5f, "Two equal seats.");

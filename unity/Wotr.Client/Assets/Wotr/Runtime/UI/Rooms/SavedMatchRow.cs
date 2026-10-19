@@ -11,6 +11,8 @@ namespace Wotr.Client
         private readonly Label heading = new Label();
         private readonly Label detail = new Label();
         private readonly Label state = new Label();
+        // UI-263: the game's expansion crests in the row's upper right corner.
+        private readonly VisualElement crests;
         private MatchSummary current;
         private string version = "";
 
@@ -18,6 +20,7 @@ namespace Wotr.Client
         {
             Root.name = "saved-match-" + match.MatchId;
             Root.AddToClassList("saved-match");
+            crests = ExpansionCrests.Row("saved-match-crests-" + match.MatchId);
             var resume = BoardScreen.Button("", () => open(current));
             resume.name = "resume-match-" + match.MatchId;
             resume.AddToClassList("resume-match");
@@ -26,6 +29,7 @@ namespace Wotr.Client
             resume.Add(heading);
             resume.Add(detail);
             resume.Add(state);
+            resume.Add(crests);
             Root.Add(resume);
             Apply(match);
         }
@@ -41,6 +45,7 @@ namespace Wotr.Client
             detail.text = (string.IsNullOrEmpty(match.Name) ? "" : "With " + match.Opponent + " · ") + BoardScreen.SideName(match.You) + " · Turn " + match.Turn + " · " + Modules(match.Configuration);
             state.text = (match.HasUnseenChanges ? "● New changes · " : "") + Status(match);
             Root.EnableInClassList("your-decision", match.Status == MatchStatus.YourDecision);
+            ExpansionCrests.Show(crests, match.Configuration);
         }
 
         public static string Status(MatchSummary match) => match.Status == MatchStatus.Finished

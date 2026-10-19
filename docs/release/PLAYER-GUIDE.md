@@ -60,8 +60,12 @@ The installation starts only after you click. Before it the game ends local reco
    password?`, also in the browser; the reset link only comes to the confirmed address.
 3. Open `Tables`. Create `New table · Free Peoples` or `New table · Shadow`. `Copy table invitation`
    copy the code for the second player; it typed it in `Table invitation` and click `Join`.
-4. Set expansions and variants. Both click `Accept configuration`, then host `Start game`. The
-   configuration changes require new permissions.
+4. In the waiting room the host chooses the rules in the strip under the seats: a click on an expansion's
+   medallion (Fate, Lords, Kings) adds or removes it, and a click on a variant adds or removes that variant. A
+   variant whose expansion is missing, and an expansion this server does not offer yet, stay greyed out; hover them
+   for the reason. The guest sees the same rules but cannot change them. `Ready` accepts the rules; every change
+   makes both players get ready again. The host then clicks `Start game`. The crests of a game's expansions appear
+   on its rows in Open games, My games and Replays, after the phase in the top bar and in the Victory window.
 
 After 10 wrong passwords for one account name within 15 minutes, that name cannot sign in for 15 minutes, from any computer; the game says how long to wait. The game does not set up accounts and does not accept invitations to accounts (from AUTH-03). The table code is only used to join the party. Do not pass your password on to anyone; the administrator can only assign an email address to the older account.
 

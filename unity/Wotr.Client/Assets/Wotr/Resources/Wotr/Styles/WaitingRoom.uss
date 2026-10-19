@@ -76,6 +76,8 @@
     flex-shrink: 0;
     height: 52px;
     margin: 0 4px 6px 4px;
+    /* UI-263: beside the rules the line is narrower; observers that do not fit are clipped, the count stays. */
+    overflow: hidden;
 }
 .waiting-room .waiting-observers-title {
     width: 110px;
@@ -129,15 +131,25 @@
     height: 40px;
     margin: 0 4px 6px 4px;
 }
+/* UI-263: narrower title and buttons keep the code field readable in the line beside the rules. */
 .waiting-room .waiting-invitation-title {
-    width: 110px;
+    width: 96px;
     font-size: 14px;
     letter-spacing: 1px;
     color: rgb(214, 198, 160);
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
 }
 .waiting-room .waiting-invitation-code { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 34px; margin: 0 6px 0 0; }
-.waiting-room .waiting-invite-action { width: 100px; height: 34px; min-height: 34px; margin-left: 6px; flex-shrink: 0; }
+.waiting-room .waiting-invite-action {
+    width: 92px;
+    height: 34px;
+    min-height: 34px;
+    margin-left: 6px;
+    padding: 0 6px;
+    flex-shrink: 0;
+    font-size: 15px;
+    white-space: nowrap;
+}
 
 .waiting-room .waiting-chat {
     flex-grow: 1;
@@ -179,3 +191,81 @@
 .waiting-room .room-chat-line { flex-direction: row; align-items: center; flex-shrink: 0; height: 40px; margin-top: 4px; }
 .waiting-room .room-chat-input { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 34px; margin: 0 6px 0 0; }
 .waiting-room .room-chat-send { width: 100px; height: 34px; min-height: 34px; flex-shrink: 0; }
+
+/* UI-263: under the seats the window splits in two: the audience, the invitation and the chat on the left, and the
+   rules on the right (236 px): a column of three medallions (56 px art drawn at 44 px, the crest inside, a caption
+   below) beside a column of six variant chips. Fixed sizes; nothing moves when a rule changes. 3 x 58 px = 6 x 29 px = 174 px
+   fits the window's lower part at 125 % on 1366 x 768. */
+.waiting-room .waiting-lower { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.waiting-room .waiting-social { flex-grow: 1; flex-shrink: 1; min-width: 0; min-height: 0; }
+.waiting-room .waiting-rules {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-shrink: 0;
+    width: 236px;
+    margin: 0 4px 0 6px;
+}
+.waiting-room .waiting-rules-modules { flex-direction: column; flex-shrink: 0; width: 52px; margin-right: 6px; }
+.waiting-room .rules-module { height: 58px; align-items: center; }
+.waiting-room .rules-medallion {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    background-image: resource("Wotr/Art/UI/rules/medallion");
+    -unity-slice-top: 0;
+    -unity-slice-right: 0;
+    -unity-slice-bottom: 0;
+    -unity-slice-left: 0;
+}
+.waiting-room .rules-medallion:hover { background-image: resource("Wotr/Art/UI/rules/medallion-hover"); }
+.waiting-room .rules-medallion.pressed { background-image: resource("Wotr/Art/UI/rules/medallion-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+.waiting-room .rules-medallion.module-fate.on { background-image: resource("Wotr/Art/UI/rules/medallion-fate-on"); }
+.waiting-room .rules-medallion.module-lords.on { background-image: resource("Wotr/Art/UI/rules/medallion-lords-on"); }
+.waiting-room .rules-medallion.module-kings.on { background-image: resource("Wotr/Art/UI/rules/medallion-kings-on"); }
+.waiting-room .rules-medallion:disabled { opacity: 0.45; -unity-background-image-tint-color: rgb(255, 255, 255); }
+.waiting-room .rules-medallion.on:disabled { opacity: 0.85; }
+.waiting-room .rules-medallion-crest { width: 28px; height: 28px; }
+/* An expansion that is not in the game shows its crest in grey. */
+.waiting-room .rules-medallion .expansion-crest { -unity-background-image-tint-color: rgb(120, 116, 108); }
+.waiting-room .rules-medallion.on .expansion-crest { -unity-background-image-tint-color: rgb(255, 255, 255); }
+.waiting-room .rules-module-name {
+    height: 13px;
+    margin-top: 1px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-center;
+}
+.waiting-room .waiting-rules-variants { flex-grow: 1; flex-shrink: 1; min-width: 0; flex-direction: column; }
+.waiting-room .rules-chip {
+    flex-direction: row;
+    align-items: center;
+    height: 25px;
+    min-height: 25px;
+    min-width: 0;
+    margin: 0 0 4px 0;
+    padding: 0 6px 0 7px;
+}
+.waiting-room .rules-check {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-right: 5px;
+    background-image: resource("Wotr/Art/UI/rules/check-off");
+}
+.waiting-room .rules-chip.on .rules-check { background-image: resource("Wotr/Art/UI/rules/check-on"); }
+.waiting-room .rules-chip-name {
+    flex-shrink: 1;
+    min-width: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -unity-text-align: middle-left;
+}

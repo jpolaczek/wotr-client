@@ -215,6 +215,36 @@
       "--card-rim": "#7a2a1c",
       "--card-glow": "#e0574a",
       "--card-glow-opacity": "1"
+    },
+    "fate-on": {
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1",
+      "--enamel-light": "#4d7fa8",
+      "--enamel-mid": "#24506f",
+      "--enamel-dark": "#102c42"
+    },
+    "lords-on": {
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1",
+      "--enamel-light": "#4f8a5e",
+      "--enamel-mid": "#275a36",
+      "--enamel-dark": "#12321c"
+    },
+    "kings-on": {
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1",
+      "--enamel-light": "#9a3a5a",
+      "--enamel-mid": "#5e1c35",
+      "--enamel-dark": "#33101e"
     }
   },
   "assets": [
@@ -1184,6 +1214,37 @@
     {
       "source": "end/title-defeat.svg",
       "role": "UI-169: plate under the DEFEAT title: darkened iron and red band with dulled gilt and a cracked rule; code writes the title."
+    },
+    {
+      "source": "rules/medallion.svg",
+      "role": "UI-263: an expansion's medallion in the waiting room's rules strip; the crest sits on top. Off in neutral enamel, lit in the module's enamel with a gold glow when the game uses it; hover and pressed as the other controls.",
+      "variants": [
+        "hover",
+        "pressed",
+        "fate-on",
+        "lords-on",
+        "kings-on"
+      ]
+    },
+    {
+      "source": "rules/crest-fate.svg",
+      "role": "UI-263: Fate of Erebor crest (the Lonely Mountain under the Arkenstone), on its medallion and, small, on rows and plaques."
+    },
+    {
+      "source": "rules/crest-lords.svg",
+      "role": "UI-263: Lords of Middle-earth crest (three linked Elven rings)."
+    },
+    {
+      "source": "rules/crest-kings.svg",
+      "role": "UI-263: Kings of Middle-earth crest (a crown)."
+    },
+    {
+      "source": "rules/check-off.svg",
+      "role": "UI-263: a variant chip that is off (empty gilt ring)."
+    },
+    {
+      "source": "rules/check-on.svg",
+      "role": "UI-263: a variant chip that is on (gilt ring with a tick)."
     }
   ],
   "previews": [

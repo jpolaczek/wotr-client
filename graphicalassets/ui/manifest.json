@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "eea0ef23f6c269c36c1b64c879a2170f7cd7d3cddfe9271a17c92839963bd38a"
+    "assets.json": "3d60896147de192afbb187ba77f3f9defab44a0ae99f102d2daabb91b0bc5089"
   },
   "assets": [
     {
@@ -4230,6 +4230,182 @@
       "alpha": true,
       "source_sha256": "007eb6be5ce9be5f8c2cff9462a11f985bc1ba4a88d5b0946555fc8af789aa3d",
       "png_sha256": "97241732ee254a07b22505c7a778fd20990b710d42fe8a7b04e4bebaed12262b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/medallion.png",
+      "source": "src/rules/medallion.svg",
+      "variant": null,
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "01008a4708ea7e3ab699d8d8723aaaad116a88c823115f470eae070ab5f011ad",
+      "png_sha256": "c94fb5e27af4d7c8ac00ff9a9f655ab3ec63ac3db7b84b59ac0b2cc82c63abbd"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/medallion-hover.png",
+      "source": "src/rules/medallion.svg",
+      "variant": "hover",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "01008a4708ea7e3ab699d8d8723aaaad116a88c823115f470eae070ab5f011ad",
+      "png_sha256": "a4ef5499178a182cdc1304444286383ce6c522371f5e153952839c5c77d966d0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/medallion-pressed.png",
+      "source": "src/rules/medallion.svg",
+      "variant": "pressed",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "01008a4708ea7e3ab699d8d8723aaaad116a88c823115f470eae070ab5f011ad",
+      "png_sha256": "849d1e893908c14961d754ec9d032b05989ca9e851dceb2938bf356c1abdb44a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/medallion-fate-on.png",
+      "source": "src/rules/medallion.svg",
+      "variant": "fate-on",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "01008a4708ea7e3ab699d8d8723aaaad116a88c823115f470eae070ab5f011ad",
+      "png_sha256": "87f09ec47bdca1ea73895e0fe1613931917ec3852ca8e70541f170c66cc35db5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/medallion-lords-on.png",
+      "source": "src/rules/medallion.svg",
+      "variant": "lords-on",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "01008a4708ea7e3ab699d8d8723aaaad116a88c823115f470eae070ab5f011ad",
+      "png_sha256": "ef889a3754b95b1b0f50497277606feb797aafbe67f6fc805f5aa672660d67e7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/medallion-kings-on.png",
+      "source": "src/rules/medallion.svg",
+      "variant": "kings-on",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "01008a4708ea7e3ab699d8d8723aaaad116a88c823115f470eae070ab5f011ad",
+      "png_sha256": "89f9b4de762e6763ca1ec874c6fbbb3305f9ce8e910f8846ec6392c017ecea21"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/crest-fate.png",
+      "source": "src/rules/crest-fate.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "8075b5b921376f321a6c019bebf008387b8ac375ca4310376a879994f7efac3f",
+      "png_sha256": "7ffbe37d34984463282fbd2c526d754214ac00baddaf5d2fb4b3878f0da487e9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/crest-lords.png",
+      "source": "src/rules/crest-lords.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "c2a66fa006db54eba724b5f44e6cc5f4f613e2a6075407272b4e4964439127c7",
+      "png_sha256": "200e716c6986582d2ec9babd34edf3be80c4ccb633743aa6b573a9dcf23afc2b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/crest-kings.png",
+      "source": "src/rules/crest-kings.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "06373e023a2e57924148821b3a682438d7021effe90891f2f009327cc7d2e105",
+      "png_sha256": "2926ad47b1a53b0f87f70cef2695974747506aebb6588e425b1a97a866833dd0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/check-off.png",
+      "source": "src/rules/check-off.svg",
+      "variant": null,
+      "logical": [
+        14,
+        14
+      ],
+      "pixels": [
+        28,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "165ec56502cea4e91ae88a0fe8d4804a3e9b86031cb191af623974beb5dd15c4",
+      "png_sha256": "12fc65a0d68d1acc25ba85fc6578df6930210de70d6f265eb35b024c3a8ed0e6"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/rules/check-on.png",
+      "source": "src/rules/check-on.svg",
+      "variant": null,
+      "logical": [
+        14,
+        14
+      ],
+      "pixels": [
+        28,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "df46d00940ac11a1b7ce4364017bddf9a0baa6fd578cf2f507240d194f64ea92",
+      "png_sha256": "0eac7ef525c01e387bda06fdfe85767abe128d84cf73174d64ff2b691577bf6f"
     }
   ]
 }

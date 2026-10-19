@@ -31,7 +31,11 @@ namespace Wotr.Client
             Root.Add(Field("Visibility", Visibility()));
             visibilityNote.AddToClassList("host-note");
             Root.Add(visibilityNote);
-            var rules = new Label("Base game · Two players · Play at your own pace") { pickingMode = PickingMode.Ignore };
+            // UI-263: the rules are chosen in the waiting room, after the table exists.
+            var rules = new Label("Two players · Play at your own pace · Choose expansions in the waiting room")
+            {
+                name = "host-rules-note", pickingMode = PickingMode.Ignore
+            };
             rules.AddToClassList("host-note");
             Root.Add(rules);
             Root.Add(Footer());

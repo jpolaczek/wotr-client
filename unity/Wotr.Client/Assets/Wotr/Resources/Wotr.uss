@@ -1489,3 +1489,13 @@
 .edge-board .notification-bar { margin-right: 380px; }
 .compact-edge-board .notification-bar { margin-right: 350px; }
 .edge-board .notification-bar .action { height: 28px; min-height: 28px; }
+
+/* UI-263: the expansions' crests (graphicalassets/ui/src/rules), on the waiting room's medallions and, 18 px, in a row
+   wherever a game is listed or played; a base game's row is empty and takes no space. */
+.expansion-crest { width: 18px; height: 18px; flex-shrink: 0; }
+.expansion-crest.crest-fate { background-image: resource("Wotr/Art/UI/rules/crest-fate"); }
+.expansion-crest.crest-lords { background-image: resource("Wotr/Art/UI/rules/crest-lords"); }
+.expansion-crest.crest-kings { background-image: resource("Wotr/Art/UI/rules/crest-kings"); }
+.expansion-crests { flex-direction: row; align-items: center; flex-shrink: 0; }
+.expansion-crests > .expansion-crest { margin-left: 3px; }
+.expansion-crests.base-game { display: none; }
