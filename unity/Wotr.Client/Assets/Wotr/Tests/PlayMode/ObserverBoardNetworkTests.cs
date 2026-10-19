@@ -20,22 +20,27 @@ namespace Wotr.PlayTests
     // The board shows the Free Peoples' hand under the viewing bar, a click on the map opens the region; a change to
     // the Shadow keeps the camera and shows the Shadow's hand; a player's move arrives live and a reconnect shows the
     // current state. The observer's client sends no command, preview, receipt or read marker, and Exit match frees
-    // the place in the audience.
+    // the place in the audience. EXP-04: an observer of a Fate game sees its crest and board from both sides.
     public sealed class ObserverBoardNetworkTests
     {
         [UnityTest]
-        public IEnumerator AnObserverWatchesBothSidesLiveWithoutSendingAnything()
+        public IEnumerator AnObserverWatchesBothSidesLiveWithoutSendingAnything() => Watch(new MatchConfiguration());
+
+        [UnityTest]
+        public IEnumerator AnObserverWatchesAFateGameFromBothSides() => Watch(new MatchConfiguration { Fate = true });
+
+        private static IEnumerator Watch(MatchConfiguration configuration)
         {
             var path = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
             if (string.IsNullOrEmpty(path))
                 Assert.Ignore("Real HTTP fixture required.");
-            var task = Run(JObject.Parse(File.ReadAllText(path))["Address"].Value<string>());
+            var task = Run(JObject.Parse(File.ReadAllText(path))["Address"].Value<string>(), configuration);
             while (!task.IsCompleted)
                 yield return null;
             task.GetAwaiter().GetResult();
         }
 
-        private static async Task Run(string address)
+        private static async Task Run(string address, MatchConfiguration configuration)
         {
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
             var token = timeout.Token;
@@ -44,7 +49,7 @@ namespace Wotr.PlayTests
             var host = await Account(new GameApi(address), "obvh", token);
             var guest = await Account(new GameApi(address), "obvg", token);
             var watcher = await Account(new GameApi(address, recorder), "obvw", token);
-            var match = await StartWatched(host, guest, watcher, token);
+            var match = await StartWatched(host, guest, watcher, configuration, token);
             using (var client = new MountedFlowClient(watcher, storage))
             {
                 await ClickReady(client.Root, "open-room-" + match.Room, token);
@@ -56,6 +61,8 @@ namespace Wotr.PlayTests
                 CollectionAssert.AreEqual((await View(host, match.Id, token)).Hand, board.View.Hand);
                 Assert.IsNull(board.View.Decision, "An observer's board holds no decision of its own.");
                 Assert.IsEmpty(board.View.Options);
+                if (configuration.Fate)
+                    FateAcceptanceNetworkTests.ShowsFate(board);
 
                 board.Map.Select("minas-tirith");
                 await Until(() => board.Hover.Panel.Root.resolvedStyle.display == DisplayStyle.Flex, token);
@@ -65,6 +72,8 @@ namespace Wotr.PlayTests
                 await Until(() => board.View.You == Side.Shadow, token);
                 CollectionAssert.AreEqual((await View(guest, match.Id, token)).Hand, board.View.Hand);
                 Assert.AreEqual(camera, board.Map.Camera.Pan + "/" + board.Map.Camera.Zoom, "A change of side keeps the camera.");
+                if (configuration.Fate)
+                    FateAcceptanceNetworkTests.ShowsFate(board);
 
                 var before = board.View.Revision;
                 await ContinueFellowship(host, match.Id, token);
@@ -96,14 +105,19 @@ namespace Wotr.PlayTests
             return api;
         }
 
-        // A public room the guest joins and the watcher observes; both players get ready and the host starts it.
-        private static async Task<(string Room, string Id)> StartWatched(GameApi host, GameApi guest, GameApi watcher, CancellationToken token)
+        // A public room the guest joins and the watcher observes; the host sets the rules, both players get ready and
+        // the host starts it.
+        private static async Task<(string Room, string Id)> StartWatched(GameApi host, GameApi guest, GameApi watcher,
+            MatchConfiguration configuration, CancellationToken token)
         {
             var room = await host.Post<RoomView>("api/rooms", new CreateRoomRequest
                 { Name = "Live watch", Visibility = RoomVisibility.Public, Side = Side.FreePeoples }, token);
             await guest.Post<RoomView>("api/rooms/" + room.Id + "/join", null, token);
             await watcher.Post<RoomView>("api/rooms/" + room.Id + "/join?role=Observer", null, token);
             var version = (await host.Get<RoomView>("api/rooms/" + room.Id, token)).Version;
+            if (configuration.Fate)
+                version = (await host.Put<RoomView>("api/rooms/" + room.Id + "/configuration",
+                    new ConfigureRoomRequest { ExpectedVersion = version, Configuration = configuration }, token)).Version;
             await host.Post<RoomView>("api/rooms/" + room.Id + "/confirm", new RoomRevisionRequest { ExpectedVersion = version }, token);
             await guest.Post<RoomView>("api/rooms/" + room.Id + "/confirm", new RoomRevisionRequest { ExpectedVersion = version }, token);
             var started = await host.Post<RoomView>("api/rooms/" + room.Id + "/start", new RoomRevisionRequest { ExpectedVersion = version }, token);
