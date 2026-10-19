@@ -121,7 +121,7 @@ def build():
 
 def report(outputs, sources, pending):
     return {
-        'version': 'art-figures-1', 'tasks': ['ART-01', 'ART-02', 'ART-04', 'ART-05', 'ART-06'],
+        'version': 'art-figures-1', 'tasks': ['ART-01', 'ART-02', 'ART-04', 'ART-05', 'ART-06', 'ART-07'],
         'sources': {**sources, 'graphicalassets/figures/v3/prompts.json': sha((SOURCE / 'prompts.json').read_bytes()),
                     'scripts/build_figure_art.py': sha(Path(__file__).read_bytes())},
         'tools': {'Pillow': PIL.__version__},

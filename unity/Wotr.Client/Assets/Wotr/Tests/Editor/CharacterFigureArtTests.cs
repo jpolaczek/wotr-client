@@ -21,12 +21,21 @@ namespace Wotr.EditorTests
         // the base figures, as every version does).
         private static readonly string[] LordsCharacters = { "elrond", "galadriel", "balrog", "gothmog", "smeagol" };
 
+        // ART-07: the Kings of Middle-earth sovereigns (awakened figures; awakened and corrupted portraits) and Chieftains.
+        private static readonly string[] KingsFigures =
+        {
+            "brand-awakened", "dain-awakened", "denethor-awakened", "theoden-awakened", "thranduil-awakened",
+            "black-serpent", "shadow-of-mirkwood", "ugluk"
+        };
+
         [Test]
         public void EveryBaseCharacterHasItsOwnFigure()
         {
             // ART-05/ART-06: the expansions' own characters join the atlas as their art is generated (Fate's Dwarven
             // Lord, the Lords characters).
-            CollectionAssert.AreEquivalent(BaseCharacters.Append("gimli-dwarven-lord").Concat(LordsCharacters), FigureArtwork.Characters.Names);
+            CollectionAssert.AreEquivalent(BaseCharacters.Append("gimli-dwarven-lord").Concat(LordsCharacters).Concat(KingsFigures),
+                FigureArtwork.Characters.Names);
+            Assert.AreEqual("theoden-awakened", FigureAppearances.Character("kings.character.theoden.awakened", Side.FreePeoples).Key);
             Assert.AreEqual("gimli-dwarven-lord", FigureAppearances.Character("fate.character.gimli-dwarven-lord", Side.FreePeoples).Key);
             foreach (var key in LordsCharacters)
             {
@@ -47,7 +56,7 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void BaseAndLordsCharactersHavePaintedPortraits()
+        public void EveryCharacterHasAPaintedPortrait()
         {
             var painted = Resources.Load<Texture2D>(PortraitArtwork.BasePath);
             Assert.IsNotNull(painted);
@@ -59,8 +68,10 @@ namespace Wotr.EditorTests
             Assert.AreSame(painted, PortraitArtwork.Sprite("lords.character.gimli").texture, "Versions share the portrait.");
             foreach (var key in LordsCharacters)
                 Assert.AreSame(painted, PortraitArtwork.Sprite("lords.character." + key).texture, key + " has its painted portrait.");
-            // Every character with a UI-120 portrait is painted now; one whose art is not generated yet has none.
-            Assert.IsNull(PortraitArtwork.Sprite("kings.character.black-serpent"));
+            // ART-07: each sovereign state and each Chieftain has its painted portrait too.
+            foreach (var id in new[] { "kings.character.theoden.awakened", "kings.character.theoden.corrupted",
+                "kings.character.dain.corrupted", "kings.character.black-serpent", "kings.character.ugluk" })
+                Assert.AreSame(painted, PortraitArtwork.Sprite(id)?.texture, id + " has its painted portrait.");
         }
     }
 }

@@ -1248,6 +1248,14 @@ with its control, settlement and points. Tests: `MapLandmarksTests.AFateGameDraw
 `RegionVictoryTextTests`, `VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins` (with a
 screenshot of Erebor), `ConfigurationLayoutTests` (all 93 configurations in four layouts).
 
+## Kings of Middle-earth art — ART-07 (2026-10-19, painted part)
+
+Generated and built like ART-06: the awakened figures of Brand, Dáin, Denethor, Théoden and Thranduil, their awakened
+and corrupted portraits (grey-faced and hollow-eyed under a creeping shadow), and the Chieftains — the Black Serpent,
+the Shadow of Mirkwood and Uglúk — figure and portrait. `docs/sources/ART-FIGURES.json` lists nothing pending. The
+UI pieces of the module (Ruler die body, Ruler and Dismay tokens, the corruption-attempt button, the Kings Hunt tile)
+come with UI-273, UI-274 and UI-276.
+
 ## Lords of Middle-earth art — ART-06 (2026-10-19)
 
 Generated with `graphicalassets/figures/v3/generate.py` (prompts in `prompts.json`) and built with

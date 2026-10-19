@@ -143,6 +143,97 @@
       "y": 0.3671875,
       "width": 0.078125,
       "height": 0.3125
+    },
+    {
+      "name": "brand-awakened",
+      "x": 0.640625,
+      "y": 0.3671875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "dain-awakened",
+      "x": 0.720703125,
+      "y": 0.3671875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "denethor-awakened",
+      "x": 0.80078125,
+      "y": 0.3671875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "theoden-awakened",
+      "x": 0.880859375,
+      "y": 0.3671875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "thranduil-awakened",
+      "x": 0.0,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "brand-corrupted",
+      "x": 0.080078125,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "dain-corrupted",
+      "x": 0.16015625,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "denethor-corrupted",
+      "x": 0.240234375,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "theoden-corrupted",
+      "x": 0.3203125,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "thranduil-corrupted",
+      "x": 0.400390625,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "black-serpent",
+      "x": 0.48046875,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "shadow-of-mirkwood",
+      "x": 0.560546875,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
+    },
+    {
+      "name": "ugluk",
+      "x": 0.640625,
+      "y": 0.046875,
+      "width": 0.078125,
+      "height": 0.3125
     }
   ]
 }
