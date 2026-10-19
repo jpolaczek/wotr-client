@@ -126,6 +126,16 @@ namespace Wotr.EditorTests
             StringAssert.EndsWith("The rules are fixed once the game starts.", RulesChoices.Modules(started)[1].Tooltip);
         }
 
+        // DEMO-06: the demo page has no Ready, so its tooltips do not promise one.
+        [Test]
+        public void TheDemoPagesRulesSayNothingAboutReady()
+        {
+            var room = Host(new MatchConfiguration { Fate = true });
+            Assert.AreEqual("Click to remove Fate of Erebor from this game.", RulesChoices.Modules(room, readiness: false)[0].Tooltip);
+            StringAssert.StartsWith("Click to play with New Cities.\n", RulesChoices.Variants(room, readiness: false)[0].Tooltip);
+            StringAssert.Contains("Both players get ready again.", RulesChoices.Modules(room)[0].Tooltip);
+        }
+
         [Test]
         public void SummariesNameTheExpansionsInReleaseOrderAndTheVariants()
         {

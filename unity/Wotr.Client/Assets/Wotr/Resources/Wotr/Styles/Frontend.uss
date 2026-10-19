@@ -562,3 +562,80 @@
 /* UI-263: the crests of a listed game's expansions: before the row's buttons, and in a saved game's upper right. */
 .main-menu .menu-row > .expansion-crests { margin: 0 8px 0 4px; }
 .main-menu .saved-match .expansion-crests { position: absolute; top: 8px; right: 12px; }
+
+/* UI-263: the rules' controls, shared by the waiting room (a column of medallions beside a column of chips) and the
+   demo page (DEMO-06, .rules-row): medallions (56 px art drawn at 44 px, the crest inside, a caption below) and the
+   variant chips (the button frame, red lacquer and a ticked ring when on). */
+.frontend .waiting-rules-modules { flex-direction: column; flex-shrink: 0; width: 52px; margin-right: 6px; }
+.frontend .rules-module { height: 58px; align-items: center; }
+.frontend .rules-medallion {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    background-image: resource("Wotr/Art/UI/rules/medallion");
+    -unity-slice-top: 0;
+    -unity-slice-right: 0;
+    -unity-slice-bottom: 0;
+    -unity-slice-left: 0;
+}
+.frontend .rules-medallion:hover { background-image: resource("Wotr/Art/UI/rules/medallion-hover"); }
+.frontend .rules-medallion.pressed { background-image: resource("Wotr/Art/UI/rules/medallion-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+.frontend .rules-medallion.module-fate.on { background-image: resource("Wotr/Art/UI/rules/medallion-fate-on"); }
+.frontend .rules-medallion.module-lords.on { background-image: resource("Wotr/Art/UI/rules/medallion-lords-on"); }
+.frontend .rules-medallion.module-kings.on { background-image: resource("Wotr/Art/UI/rules/medallion-kings-on"); }
+.frontend .rules-medallion:disabled { opacity: 0.45; -unity-background-image-tint-color: rgb(255, 255, 255); }
+.frontend .rules-medallion.on:disabled { opacity: 0.85; }
+.frontend .rules-medallion-crest { width: 28px; height: 28px; }
+/* An expansion that is not in the game shows its crest in grey. */
+.frontend .rules-medallion .expansion-crest { -unity-background-image-tint-color: rgb(120, 116, 108); }
+.frontend .rules-medallion.on .expansion-crest { -unity-background-image-tint-color: rgb(255, 255, 255); }
+.frontend .rules-module-name {
+    height: 13px;
+    margin-top: 1px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-text-align: middle-center;
+}
+.frontend .waiting-rules-variants { flex-grow: 1; flex-shrink: 1; min-width: 0; flex-direction: column; }
+.frontend .rules-chip {
+    flex-direction: row;
+    align-items: center;
+    height: 25px;
+    min-height: 25px;
+    min-width: 0;
+    margin: 0 0 4px 0;
+    padding: 0 6px 0 7px;
+}
+.frontend .rules-check {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-right: 5px;
+    background-image: resource("Wotr/Art/UI/rules/check-off");
+}
+.frontend .rules-chip.on .rules-check { background-image: resource("Wotr/Art/UI/rules/check-on"); }
+.frontend .rules-chip-name {
+    flex-shrink: 1;
+    min-width: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -unity-text-align: middle-left;
+}
+
+/* DEMO-06: on the demo page the medallions stand in a row and the chips in two rows of three beside them. */
+.frontend .waiting-rules.rules-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; height: 62px; margin: 0 0 8px 0; }
+.frontend .rules-row .waiting-rules-modules { flex-direction: row; width: auto; margin-right: 10px; }
+.frontend .rules-row .rules-module { width: 52px; }
+.frontend .rules-row .waiting-rules-variants { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+.frontend .rules-row .rules-chip { width: 32%; margin: 0 1% 4px 0; }
+.frontend .rules-row .rules-chip-name { font-size: 11px; }
+

@@ -16,9 +16,11 @@ namespace Wotr.Client
         private readonly Dictionary<string, Button> medallions = new Dictionary<string, Button>();
         private readonly Dictionary<string, Button> chips = new Dictionary<string, Button>();
 
-        public RulesStrip()
+        // DEMO-06: the demo page lays the same controls out in one row (medallions, then the chips in two rows of three).
+        public RulesStrip(bool row = false)
         {
             Root.AddToClassList("waiting-rules");
+            Root.EnableInClassList("rules-row", row);
             var modules = new VisualElement { name = "waiting-rules-modules" };
             modules.AddToClassList("waiting-rules-modules");
             foreach (var module in RulesChoices.ModuleIds)
@@ -35,11 +37,11 @@ namespace Wotr.Client
 
         public Button VariantChip(string variant) => chips[variant];
 
-        public void Show(RoomView room, bool busy)
+        public void Show(RoomView room, bool busy, bool readiness = true)
         {
-            foreach (var choice in RulesChoices.Modules(room))
+            foreach (var choice in RulesChoices.Modules(room, readiness))
                 Apply(medallions[choice.Id], choice, busy);
-            foreach (var choice in RulesChoices.Variants(room))
+            foreach (var choice in RulesChoices.Variants(room, readiness))
                 Apply(chips[choice.Id], choice, busy);
         }
 

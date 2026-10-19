@@ -71,11 +71,12 @@ namespace Wotr.Client
         public static bool Offered(RoomView room, string module) =>
             room.OfferedModules.Contains(module) || room.OfferedModules.Count == 0 && room.ExpansionsAvailable;
 
-        public static IReadOnlyList<RuleChoice> Modules(RoomView room) =>
-            ModuleIds.Select(module => Module(room, module)).ToList();
+        // readiness: the rules are for players who then get ready (a waiting room); the demo page has no Ready.
+        public static IReadOnlyList<RuleChoice> Modules(RoomView room, bool readiness = true) =>
+            ModuleIds.Select(module => Module(room, module, readiness)).ToList();
 
-        public static IReadOnlyList<RuleChoice> Variants(RoomView room) =>
-            VariantIds.Select(variant => Variant(room, variant)).ToList();
+        public static IReadOnlyList<RuleChoice> Variants(RoomView room, bool readiness = true) =>
+            VariantIds.Select(variant => Variant(room, variant, readiness)).ToList();
 
         public static bool IsOn(MatchConfiguration configuration, string id) => id switch
         {
@@ -139,7 +140,7 @@ namespace Wotr.Client
         private static bool DismayOn(MatchConfiguration configuration) =>
             configuration.Dismay ?? (configuration.Lords && configuration.Kings);
 
-        private static RuleChoice Module(RoomView room, string module)
+        private static RuleChoice Module(RoomView room, string module, bool readiness)
         {
             var on = IsOn(room.Configuration, module);
             var offered = Offered(room, module);
@@ -149,11 +150,11 @@ namespace Wotr.Client
                 Name = ModuleName(module),
                 On = on,
                 Enabled = Editable(room) && (offered || on),
-                Tooltip = ModuleTooltip(room, module, on, offered)
+                Tooltip = ModuleTooltip(room, module, on, offered, readiness ? AgainReady : "")
             };
         }
 
-        private static string ModuleTooltip(RoomView room, string module, bool on, bool offered)
+        private static string ModuleTooltip(RoomView room, string module, bool on, bool offered, string again)
         {
             var name = ModuleName(module);
             if (!offered && !on)
@@ -162,11 +163,11 @@ namespace Wotr.Client
                 return name + (on ? " · In this game." : " · Not in this game.") + ReadOnlyReason(room);
             if (on)
                 return "Click to remove " + name + " from this game." + (HasVariants(room.Configuration, module)
-                    ? " Its variants go with it." : "") + AgainReady;
-            return "Click to add " + name + " to this game." + AgainReady;
+                    ? " Its variants go with it." : "") + again;
+            return "Click to add " + name + " to this game." + again;
         }
 
-        private static RuleChoice Variant(RoomView room, string variant)
+        private static RuleChoice Variant(RoomView room, string variant, bool readiness)
         {
             var on = IsOn(room.Configuration, variant);
             var available = Available(room.Configuration, variant);
@@ -176,11 +177,11 @@ namespace Wotr.Client
                 Name = VariantName(variant),
                 On = on,
                 Enabled = Editable(room) && available,
-                Tooltip = VariantTooltip(room, variant, on, available)
+                Tooltip = VariantTooltip(room, variant, on, available, readiness ? AgainReady : "")
             };
         }
 
-        private static string VariantTooltip(RoomView room, string variant, bool on, bool available)
+        private static string VariantTooltip(RoomView room, string variant, bool on, bool available, string again)
         {
             var name = VariantName(variant);
             var effect = "\n" + VariantEffect(variant);
@@ -188,7 +189,7 @@ namespace Wotr.Client
                 return name + " needs " + Requirement(variant) + "." + effect;
             if (!Editable(room))
                 return name + (on ? " · In this game." : " · Not in this game.") + ReadOnlyReason(room) + effect;
-            return (on ? "Click to play without " : "Click to play with ") + name + "." + AgainReady + effect;
+            return (on ? "Click to play without " : "Click to play with ") + name + "." + again + effect;
         }
 
         private static string Requirement(string variant) => variant switch

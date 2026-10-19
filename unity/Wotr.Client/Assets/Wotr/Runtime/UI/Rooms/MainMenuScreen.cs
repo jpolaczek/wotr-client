@@ -36,7 +36,9 @@ namespace Wotr.Client
         private readonly Button testButton;
         public event Action<CreateRoomRequest> Create;
         // MENU-31: the side chosen on the demo page; the flow starts a demo against the CPU at once.
-        public event Action<Side> Demo;
+        public event Action<Side, MatchConfiguration> Demo;
+        // DEMO-06: the demo page opened; the flow answers with the released modules (ShowDemoModules).
+        public event Action DemoOpened;
         // OBS-04: a public game is joined to play or to observe.
         public event Action<string, RoomRole> JoinPublic;
         public event Action MorePublic;
@@ -86,7 +88,7 @@ namespace Wotr.Client
             host.Cancel += ShowPublicGames;
             host.Root.style.display = DisplayStyle.None;
             panel.Add(host.Root);
-            demo.Start += side => Demo?.Invoke(side);
+            demo.Start += (side, configuration) => Demo?.Invoke(side, configuration);
             demo.Back += ShowPublicGames;
             demo.Root.style.display = DisplayStyle.None;
             panel.Add(demo.Root);
@@ -267,7 +269,15 @@ namespace Wotr.Client
 
         private void ShowHostForm() => ShowPage("Host a game", host.Root);
 
-        private void ShowDemo() => ShowPage("Demo vs CPU", demo.Root);
+        private void ShowDemo()
+        {
+            ShowPage("Demo vs CPU", demo.Root);
+            DemoOpened?.Invoke();
+        }
+
+        public DemoStartPage DemoPage => demo;
+
+        public void ShowDemoModules(IEnumerable<string> modules) => demo.Offer(modules);
 
         private static void RequestMore(ScrollView scroll, float value, Action more)
         {

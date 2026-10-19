@@ -414,6 +414,13 @@ The user request from 2026-10-16: "Do the best from the main menu option demo mo
 
 The error appears in the status of the menu, and the room is released anyway.
 
+DEMO-06 (2026-10-19): above the side cards the page has the same rules as a waiting room, in one row (`RulesStrip`
+with `.rules-row`: the Fate, Lords and Kings medallions, then the six variant chips in two rows of three). The page
+asks `GET /api/rooms/offered-modules` when it opens; a module the server does not release stays disabled with its
+reason, and a server without the route offers the base game. The rules are set before the click on a side card (still
+the whole selection); their tooltips leave out Ready. The client then configures the private room
+(`PUT …/configuration`) before starting the demo, so the demo plays with those rules.
+
 <a id="logowanie-bez-rejestracji--auth-03-2026-10-16"></a>
 ## Logging without registration — AUTH-03 (2026-10-16)
 

@@ -240,6 +240,13 @@ namespace Wotr.PlayTests
                     Assert.AreEqual("Demo vs CPU", menu.Root.Q<Label>("menu-window-title").text);
                     foreach (var part in new[] { "demo-fp", "demo-shadow", "cancel-demo" })
                         Fits(menu.Root.Q<Button>(part), window);
+                    // DEMO-06: the rules above the side cards, every module offered and every rule on.
+                    menu.ShowDemoModules(new[] { "fate", "lords", "kings" });
+                    yield return Settle();
+                    foreach (var control in menu.DemoPage.Rules.Root.Query<Button>().ToList())
+                        Fits(control, window);
+                    Assert.IsFalse(menu.DemoPage.Rules.Root.Q<Button>("rules-module-lords").worldBound.Overlaps(
+                        menu.Root.Q<Button>("demo-fp").worldBound), "The rules stand above the side cards.");
                     Assert.AreEqual(size, window.worldBound.size);
                     Fits(menu.Root.Q<Button>("menu-demo"), menu.Root.Q("menu-actions"));
                     Fits(menu.Root.Q<Button>("quit-game"), menu.Root.Q("menu-actions"));
