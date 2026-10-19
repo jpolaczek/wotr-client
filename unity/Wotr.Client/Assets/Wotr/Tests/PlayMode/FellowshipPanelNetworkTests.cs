@@ -47,6 +47,10 @@ namespace Wotr.PlayTests
                 StringAssert.StartsWith("Click the Ring to hide", board.Fellowship.Ring.tooltip);
                 Assert.IsFalse(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
                 Assert.AreEqual("Revealed", board.Fellowship.Status.Q<Label>("fellowship-status-condition").text);
+                // UI-280: the Fellowship's figure on its region glows for the same hide, and the hint names both.
+                Assert.IsTrue(board.Map.FellowshipMarker.Root.ClassListContains(MapFellowshipMarker.HideClass));
+                StringAssert.Contains(MapFellowshipMarker.HideHint, board.Map.FellowshipMarker.Root.tooltip);
+                Assert.AreEqual(FellowshipActions.HideHint, board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
             }
             // Hovering the corner tab unrolls the full form over it, as a player reaches the panel.
             CardGestures.Move(board.Fellowship.Status);

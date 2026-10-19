@@ -90,16 +90,15 @@
 .map .mordor-track-pulse .mordor-slab,
 .map .mordor-track-pulse .mordor-crack,
 .map .mordor-track-pulse .mordor-gate { scale: 1.3 1.3; }
-.map .fellowship-marker.fellowship-hide-target {
-    border-width: 2px;
-    border-color: rgb(144, 203, 172);
-}
-/* UI-236: the figure that declares its position glows like the other legal targets on the map. */
+/* UI-236, UI-280: the figure that declares its position or hides glows like the other legal targets on the map, on its
+   region as on the Mordor track. */
+.map .fellowship-marker.fellowship-hide-target,
 .map .fellowship-marker.fellowship-declare-target {
     border-width: 2px;
     border-color: rgb(144, 203, 172);
     border-radius: 8px;
 }
+.map .fellowship-marker.fellowship-hide-target:hover,
 .map .fellowship-marker.fellowship-declare-target:hover { scale: 1.08 1.08; }
 
 

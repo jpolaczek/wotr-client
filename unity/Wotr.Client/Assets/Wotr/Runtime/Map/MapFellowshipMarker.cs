@@ -28,9 +28,10 @@ namespace Wotr.Client
         public VisualElement Status => status;
         public VisualElement Tile => tile.Root;
         public event System.Action Clicked;
-        // UI-155: on the track a revealed Fellowship hides with one click on its figure when the server allows it.
+        // UI-155, UI-280: a revealed Fellowship hides with one click on its figure when the server allows it.
         public event System.Action HideRequested;
         public const string HideClass = "fellowship-hide-target";
+        public const string HideHint = "Click to hide the Fellowship.";
         public bool HideOffered { get; private set; }
         // UI-236: in the Fellowship phase a click on the figure declares its position; the panel has no button for it.
         public event System.Action DeclareRequested;
@@ -51,15 +52,7 @@ namespace Wotr.Client
         public MapFellowshipMarker(MapCanvas map)
         {
             this.map = map;
-            marker.clicked += () =>
-            {
-                if (HideOffered && mordor.Active)
-                    HideRequested?.Invoke();
-                else if (DeclareOffered && !mordor.Active)
-                    DeclareRequested?.Invoke();
-                else
-                    Clicked?.Invoke();
-            };
+            marker.clicked += Activate;
             marker.userData = new DraftToken(DraftObject.Fellowship);
             marker.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             marker.RegisterCallback<PointerEnterEvent>(_ => { hovered = true; map.Refresh(); });
@@ -83,6 +76,17 @@ namespace Wotr.Client
             motion.Pause();
         }
 
+        // The figure's click: the hide or the declaration it offers, otherwise its inspection.
+        public void Activate()
+        {
+            if (HideOffered)
+                HideRequested?.Invoke();
+            else if (DeclareOffered && !mordor.Active)
+                DeclareRequested?.Invoke();
+            else
+                Clicked?.Invoke();
+        }
+
         public bool OnTrack => mordor.Active;
         public float TrackStep => shownStep;
 
@@ -102,12 +106,15 @@ namespace Wotr.Client
             Layout();
         }
 
+        // UI-280: wherever the revealed Fellowship stands, on a region or on the Mordor track, its figure glows while the
+        // chosen die can hide it and a click hides it; the Ring in the Fellowship panel stays the same control (UI-232).
         public void OfferHide(bool offered)
         {
+            if (HideOffered == offered)
+                return;
             HideOffered = offered;
-            marker.EnableInClassList(HideClass, offered && mordor.Active);
-            if (mordor.Active)
-                marker.tooltip = mordor.FigureTooltip + (offered ? "\nClick to hide the Fellowship." : "");
+            marker.EnableInClassList(HideClass, offered);
+            map.Refresh();
         }
 
         public void OfferDeclare(bool offered)
@@ -141,14 +148,15 @@ namespace Wotr.Client
             marker.style.opacity = map.Figures?.FellowshipArriving == true ? .25f : 1;
             var visible = map.Data.Shapes.TryGetValue(regionId, out var shape);
             var anchor = visible ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1])) : Vector2.zero;
-            // A figure that offers the declaration is the control for it, so it shows at every zoom.
-            visible &= map.NearView(anchor) &&
-                (DeclareOffered || hovered || inspected || map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
+            // A figure that offers the declaration or the hide is the control for it, so it shows at every zoom.
+            visible &= map.NearView(anchor) && (DeclareOffered || HideOffered || hovered || inspected ||
+                map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
             Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
-            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" + (DeclareOffered ? "\n" + DeclareHint : "");
+            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" +
+                (DeclareOffered ? "\n" + DeclareHint : "") + (HideOffered ? "\n" + HideHint : "");
         }
 
         // The first place whose figure stands with its feet inside the region at the current zoom; a region too small
@@ -183,7 +191,7 @@ namespace Wotr.Client
                 return;
             var rect = map.LocalMarkerRect(anchor + new Vector2(0, 4 - size.y / 2), size);
             Place(rect, reserve);
-            marker.tooltip = mordor.FigureTooltip + (HideOffered ? "\nClick to hide the Fellowship." : "");
+            marker.tooltip = mordor.FigureTooltip + (HideOffered ? "\n" + HideHint : "");
             var measured = status.resolvedStyle.width;
             var statusWidth = float.IsNaN(measured) || measured <= 0 ? StatusWidth : measured;
             var tileWidth = withTile ? TileWidth : 0;

@@ -94,6 +94,8 @@ namespace Wotr.Client
 
         public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
 
+        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or the glowing Ring · No progress or extra Hunt die.";
+
         public static string ActionHint(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
             if (view.Decision == null || view.DecisionOwner != view.You)
@@ -105,9 +107,9 @@ namespace Wotr.Client
                 return "No Fellowship action in this decision";
             if (Option(view, context, kind, draft) == null)
                 return (view.Fellowship.Hidden ? "" : "Hide first · ") + "Select a Character die";
-            // UI-220: the glowing status plaque is the hide.
+            // UI-232, UI-280: the glowing Fellowship figure on the map and the glowing Ring are the hide.
             if (!view.Fellowship.Hidden)
-                return "Click the glowing Fellowship plaque to hide here; no progress or extra Hunt die.";
+                return HideHint;
             // UI-110: the glowing track symbol is the move.
             return view.Fellowship.MordorStep.HasValue ? "Click the glowing Mordor track symbol · Resolve a Hunt tile before any advance."
                 : "Click the glowing track symbol · Progress +1 and resolve the Hunt; the map position stays unchanged.";

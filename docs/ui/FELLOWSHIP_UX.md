@@ -492,3 +492,19 @@ gesture, and the plan keeps its one confirmation. Required groups stay locked. A
 ordinary Character-die move starts over from that source, as before. Test:
 `CompanionGroupGestureTests`, `TravelActionTests`;
 `Strategy01NetworkTests` (Book of Mazarbul).
+
+<a id="ui-280"></a>
+## The Fellowship's figure hides it on the map — UI-280 (2026-10-19)
+
+The owner's report: "it is not clear where to hide the Fellowship". After UI-232 the only hide control off the Mordor
+track was the Ring icon on the corner plaque and in the panel, and the panel's hint still sent the player to "the
+glowing Fellowship plaque". Now, wherever the revealed Fellowship stands, on its region as on the Mordor track
+(UI-155), its figure on the map is the hide's object: once the chosen die can hide it (the server's `EligibleDice`, the
+same condition as the Ring), the figure glows like the other legal targets on the map (`fellowship-hide-target`, the
+style of the declaring figure, UI-236), shows at every zoom, reads "Click to hide the Fellowship." and one click hides
+it with that die (UI-142). The Ring stays the same control in the panel; there is still no separate Hide button. The
+panel's hint reads "Hide: click the glowing Fellowship figure on the map or the glowing Ring · No progress or extra
+Hunt die." (`FellowshipActions.HideHint`). Without such a die neither glows. Tests:
+`FellowshipFigureHideTests` (the figure's click hides on a region and on the track only while offered),
+`FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce` (the chosen die lights the figure, its hint and
+the Ring; the Ring's click hides), `MordorNetworkTests` (the track hide).

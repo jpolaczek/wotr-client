@@ -41,7 +41,7 @@ namespace Wotr.Client
         }
 
         // UI-155: the track takes the clicks of the server's options: step 0 and the gate enter, the next step
-        // attempts a move with the chosen die, and the revealed figure hides.
+        // attempts a move with the chosen die. UI-280: the revealed figure hides, on its region as on the track.
         private void OfferTrack()
         {
             var fellowship = view.Fellowship;
@@ -49,7 +49,7 @@ namespace Wotr.Client
             var enter = !busy() && Offered(CommandKind.EnterMordor);
             var move = !busy() && step < MordorTrackGeometry.LastStep && Offered(CommandKind.MoveFellowship);
             board.Map.MordorTrack.Offer(enter ? 0 : move ? step.Value + 1 : -1, enter ? fellowship.RegionId : "");
-            board.Map.FellowshipMarker.OfferHide(!busy() && step.HasValue && !fellowship.Hidden && Offered(CommandKind.HideFellowship));
+            board.Map.FellowshipMarker.OfferHide(!busy() && !fellowship.Hidden && Offered(CommandKind.HideFellowship));
             board.Map.FellowshipMarker.OfferDeclare(!busy() && !step.HasValue && draft.Kind == null && Offered(CommandKind.DeclareFellowship));
         }
 
