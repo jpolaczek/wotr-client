@@ -21,6 +21,8 @@ export WOTR_LIMIT_READS="${WOTR_LIMIT_READS:-10000}"
 export WOTR_LIMIT_ROOMS="${WOTR_LIMIT_ROOMS:-10000}"
 export WOTR_LIMIT_CONCURRENT="${WOTR_LIMIT_CONCURRENT:-256}"
 export WOTR_LIMIT_SOCKETS="${WOTR_LIMIT_SOCKETS:-64}"
+# EXP-00: every PlayMode room signs its fixture accounts in from one address; the 20-per-minute default throttles them.
+export WOTR_LIMIT_SIGNINS="${WOTR_LIMIT_SIGNINS:-10000}"
 # AUTH-02: registrations count against the email limit (5 per IP address in 10 minutes); tests register many accounts.
 export Wotr__Email__PermitsPerAddress="${Wotr__Email__PermitsPerAddress:-10000}"
 export WOTR_CLIENT_TEST_REPOSITORY="$wotr_root"
