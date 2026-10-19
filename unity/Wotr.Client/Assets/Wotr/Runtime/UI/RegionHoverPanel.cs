@@ -116,6 +116,9 @@ namespace Wotr.Client
             Root.Add(new Label((region.Settlement ?? "Wilderness") + " · " +
                 (region.Nation == null ? "Neutral" : FigureGrid.Name(region.Nation)) + " · " +
                 (control.HasValue ? BoardScreen.SideName(control.Value) : "Uncontrolled")) { name = "hover-region-state" });
+            var points = RegionVictoryText.For(region, control);
+            if (points.Length > 0)
+                Root.Add(new Label(points) { name = "hover-region-points" });
             var forces = contents.Units.Select(u => (u.Side, u.Garrison))
                 .Concat(contents.Characters.Select(c => (c.Side, c.Garrison))).Distinct().OrderBy(f => f.Side).ThenBy(f => f.Garrison);
             foreach (var force in forces)

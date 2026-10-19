@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,6 +13,8 @@ namespace Wotr.Client
         public Texture2D Margins { get; }
         public MapLandmarks Landmarks { get; }
         private readonly MapCanvasLayout canvas;
+        // UI-265: the expansion modules of the shown game choose the landmarks' variants.
+        private IReadOnlyList<string> modules = new List<string>();
         private readonly Vertex[] vertices = new Vertex[4];
         private static readonly ushort[] Indices = { 0, 1, 2, 2, 3, 0 };
 
@@ -31,7 +35,19 @@ namespace Wotr.Client
             Quad(context, Texture, map);
             // UI-234: the fortress drawings are part of the terrain, in its board units.
             foreach (var landmark in Landmarks.Items)
-                Quad(context, landmark.Texture, landmark.Rect);
+            {
+                var texture = landmark.TextureFor(modules);
+                Quad(context, texture, landmark.RectOf(texture));
+            }
+        }
+
+        // True when the drawings change with these modules; the terrain layer then repaints.
+        public bool Use(IReadOnlyList<string> active)
+        {
+            if (active.SequenceEqual(modules))
+                return false;
+            modules = active.ToList();
+            return true;
         }
 
         private void Quad(MeshGenerationContext context, Texture2D texture, Rect rect)

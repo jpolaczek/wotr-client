@@ -113,6 +113,8 @@ namespace Wotr.Client
         {
             if (geometry == null)
                 return;
+            if (terrain.Use(data.Modules))
+                terrainLayer.MarkDirtyRepaint();
             foreach (var border in borders)
                 border.Update(data.Regions);
             political.Update(data);

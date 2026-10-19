@@ -64,6 +64,8 @@ namespace Wotr.Client
         private static MapBorderData sharedBorders;
         public IReadOnlyDictionary<string, HuntTileDefinition> HuntTiles { get; private set; }
         public HashSet<string> ProtectedRegions { get; } = new HashSet<string>();
+        // UI-265: the shown game's expansion modules (ExpansionModules ids), for the map's module-dependent drawings.
+        public List<string> Modules { get; private set; } = new List<string>();
         public List<ArmyMarker> Armies = new List<ArmyMarker>();
         private Dictionary<string, RegionDefinition> printedRegions;
         private readonly HashSet<string> overriddenRegions = new HashSet<string>();
@@ -122,6 +124,7 @@ namespace Wotr.Client
         public void ClearGameState()
         {
             ResetRegions();
+            Modules = new List<string>();
             Armies.Clear();
             ProtectedRegions.Clear();
             Control.Clear();
@@ -129,6 +132,7 @@ namespace Wotr.Client
         public void Apply(PlayerView view)
         {
             ApplyRegions(view.RegionOverrides);
+            Modules = ExpansionModules.Of(view.Configuration ?? new MatchConfiguration());
             ProtectedRegions.Clear();
             ProtectedRegions.UnionWith(view.Effects.Where(e => e.Modifier == "PreventShadowArmyEntry").Select(e => e.TargetId));
             Control = new Dictionary<string, Side?>(view.Control);

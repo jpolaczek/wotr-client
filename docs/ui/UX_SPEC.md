@@ -1235,6 +1235,19 @@ the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CON
 [CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
 `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
 
+## Fate board — UI-265 (2026-10-19)
+
+The Fate map reads as the expansion sets it up: the region overrides from the server make Erebor a Shadow (Sauron)
+Stronghold, Dale a neutral Fortification and the Iron Hills a Dwarven City (New Cities adds Ered Luin and South
+Rhûn), so their gems take the right cut and colour (ruby, quartz trillion, sapphire by control). The map's landmark
+drawings may have a variant per module (`landmarks.json` `"variants": {"fate": …}`): in a Fate game Erebor's drawing
+is the Shadow-held one (ART-05) in the same place, chosen from `BoardPresentation.Modules` and repainted only when the
+modules change. The region panel adds where its points come from (`RegionVictoryText`, `hover-region-points`): "Worth
+2 VP to the Free Peoples if captured" or "Scores 2 VP for the Free Peoples"; the Victory panel lists each scoring region
+with its control, settlement and points. Tests: `MapLandmarksTests.AFateGameDrawsEreborHeldByTheShadowInItsPlace`,
+`RegionVictoryTextTests`, `VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins` (with a
+screenshot of Erebor), `ConfigurationLayoutTests` (all 93 configurations in four layouts).
+
 ## Fate of Erebor art — ART-05 (2026-10-19)
 
 Generated and built with the existing pipelines: the Dwarven Lord Gimli's figure and portrait (`gimli-dwarven-lord`
