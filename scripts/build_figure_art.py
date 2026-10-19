@@ -25,7 +25,7 @@ WIDTH = 2048
 # Relative height of a figure in its cell, so a regular stands lower than its elite and a hobbit lower than a
 # man wherever the cell is shown at one size; the figure stands on the cell's bottom edge.
 STATURE = {'-regular': 0.78, '-leader': 0.88, 'merry': 0.62, 'pippin': 0.62, 'ring-bearers': 0.64, 'gollum': 0.55,
-           'gimli': 0.74, 'gimli-dwarven-lord': 0.74}
+           'gimli': 0.74, 'gimli-dwarven-lord': 0.74, 'smeagol': 0.55}
 # style -> (atlas name, cell height, widest cell)
 ATLASES = {
     'unit': ('units-v3', 240, 400),
@@ -121,7 +121,7 @@ def build():
 
 def report(outputs, sources, pending):
     return {
-        'version': 'art-figures-1', 'tasks': ['ART-01', 'ART-02', 'ART-04', 'ART-05'],
+        'version': 'art-figures-1', 'tasks': ['ART-01', 'ART-02', 'ART-04', 'ART-05', 'ART-06'],
         'sources': {**sources, 'graphicalassets/figures/v3/prompts.json': sha((SOURCE / 'prompts.json').read_bytes()),
                     'scripts/build_figure_art.py': sha(Path(__file__).read_bytes())},
         'tools': {'Pillow': PIL.__version__},

@@ -1248,6 +1248,16 @@ with its control, settlement and points. Tests: `MapLandmarksTests.AFateGameDraw
 `RegionVictoryTextTests`, `VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins` (with a
 screenshot of Erebor), `ConfigurationLayoutTests` (all 93 configurations in four layouts).
 
+## Lords of Middle-earth art — ART-06 (2026-10-19)
+
+Generated with `graphicalassets/figures/v3/generate.py` (prompts in `prompts.json`) and built with
+`scripts/build_figure_art.py`: the painted figures and portraits of Elrond, Galadriel, the Balrog, Gothmog and Sméagol
+(stature 0.55, as Gollum) join `characters-v1` and `battle-portraits-v2`; the Mouth's and the Witch-king's Lords
+versions keep their base art, as every version does (PortraitArtwork.Key). The rest of the module's art came with its
+UI tasks: the special dice bodies, origin emblems and Remove star (UI-267), the three named Rings (UI-268), the
+versions badge and Guide crown (UI-269), the Council tokens, alternate mark and Fellowship Box icon (UI-270). No Lords
+character shows the silhouette any more. Tests: `CharacterFigureArtTests`, `PortraitArtworkTests`, `UiArtKitTests`.
+
 ## Fate of Erebor art — ART-05 (2026-10-19)
 
 Generated and built with the existing pipelines: the Dwarven Lord Gimli's figure and portrait (`gimli-dwarven-lord`

@@ -4,7 +4,8 @@
     "ART-01",
     "ART-02",
     "ART-04",
-    "ART-05"
+    "ART-05",
+    "ART-06"
   ],
   "sources": {
     "graphicalassets/figures/v3/raw/gondor-regular.png": "258b983bcdd5cef282d4c459012480d33871b7f925e23db4f3441fdee55d7e2b",
@@ -43,6 +44,11 @@
     "graphicalassets/figures/v3/raw/saruman.png": "e010ec193d5e45803c8461016e028ffccc53791278906363931a35ab9eb3abb0",
     "graphicalassets/figures/v3/raw/mouth-of-sauron.png": "eeadbc8264acfd8dda7c716f1e7147e92e521cac52339682452cf289ecdb4ec8",
     "graphicalassets/figures/v3/raw/witch-king.png": "d260edc3c3029729032ba65574ece202d136843ab286dbd5635f44ca9c9187ea",
+    "graphicalassets/figures/v3/raw/elrond.png": "8744fbbff187d40e64afe6120645190a9fa4e4a805fa5a1a0913f6400bbcdc9a",
+    "graphicalassets/figures/v3/raw/galadriel.png": "21f09bbb49722f58ea9f9f37a9e142ff593637ead7918271ac69efa05fc3f5ae",
+    "graphicalassets/figures/v3/raw/balrog.png": "998fdbff1f01a4b53c462a416ba0c42ca01cbec9551fa84e0cd65684caaac49d",
+    "graphicalassets/figures/v3/raw/gothmog.png": "46cf161a8e7bfc973541b5a77a6e3d12600edd86057df80aa19396be66db6489",
+    "graphicalassets/figures/v3/raw/smeagol.png": "0e629f495112a4919e60a7a3e5c75e8b028d42777640a5583d0e260bca43a011",
     "graphicalassets/figures/v3/raw/gimli-dwarven-lord.png": "ed7de010814cced9896ce553709e8883a672af467ff49d41c4aba0ceb162c1dd",
     "graphicalassets/figures/v3/raw/gandalf-grey-portrait.png": "740404f31f47eee411fc8119e5c6e863a99f37f442c5976692cb64b1791a030b",
     "graphicalassets/figures/v3/raw/strider-portrait.png": "a3e1bfc087cb510cf27a0ff2dc03196b4532d6dfefb18933f3f92364bc98e11e",
@@ -58,9 +64,14 @@
     "graphicalassets/figures/v3/raw/saruman-portrait.png": "f86572395c5fbb87189d398961228a86fc78226a5298822950088fad05af0835",
     "graphicalassets/figures/v3/raw/mouth-of-sauron-portrait.png": "4e792a7b8abd05e80526973a08b008351bee46715c851ee39fc64e8f7789c10c",
     "graphicalassets/figures/v3/raw/witch-king-portrait.png": "9b3435f6bd4810159b61e9b65ccbc9bd00eeadec6bc70a3b514bd42f700e0719",
+    "graphicalassets/figures/v3/raw/elrond-portrait.png": "ecaeb1b795681b4fff31c221d798266a3057eec835f3e8f57d9a0b6bbca51420",
+    "graphicalassets/figures/v3/raw/galadriel-portrait.png": "0aabd3d4daa86ed03bd81422bebee55a09bedf3cf155ab0246fc2d2f5259af80",
+    "graphicalassets/figures/v3/raw/balrog-portrait.png": "132f7511f3cb758952b925463d9f72be5da0a621ab298d89ee53407cda2fa170",
+    "graphicalassets/figures/v3/raw/gothmog-portrait.png": "f4263f7fe1dac639c795f9cfe3ebd839340bbb4a5a9f909fa44a3b56986873ed",
+    "graphicalassets/figures/v3/raw/smeagol-portrait.png": "b106aa33e9b003eae4eca77b35f45a4f32ee55dfdfd8ab337c20eddb445c566d",
     "graphicalassets/figures/v3/raw/gimli-dwarven-lord-portrait.png": "f9e7573c7c487d00bb3c0470764b20a5daba40bc8a2b85c3426a484d942bbc2b",
     "graphicalassets/figures/v3/prompts.json": "ca9ef0521a248c4607db43d59c6fbb359686e24a0b8596364034bbe12a915f3f",
-    "scripts/build_figure_art.py": "108ab94378923edf5b774b3588e92dfcd9c45f7a54217bf39097d1a1ef5b15af"
+    "scripts/build_figure_art.py": "63e8b25fb204c0facc3dbde7daad23db0ba45dbca57fd945c61498ae8d1d8ef9"
   },
   "tools": {
     "Pillow": "12.3.0"
@@ -87,19 +98,18 @@
     "ring-bearers": 0.64,
     "gollum": 0.55,
     "gimli": 0.74,
-    "gimli-dwarven-lord": 0.74
+    "gimli-dwarven-lord": 0.74,
+    "smeagol": 0.55
   },
   "outputs": {
-    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.json": "54085fcf7c7a17e4de80a78579076237c808a3cc718a9e0d07c8641028a00558",
-    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.png": "8a76b8c946da91a512fb1416644725994bd5009047c79caefebf453c2d37c9d7",
-    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.json": "f3341010804cecde857b38ee9163c7fb8aa581c79b65a3a04d9ac7b5867a34df",
-    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.png": "4400ff786b5fb6fa4456059f4a45dc54c1f078c081833cea1c6a415590cc9e15",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.json": "6f9ef9bc28c15bfbec46a1531e0e28442930d74712ea25dd9ba2dcff8bf67385",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/battle-portraits-v2.png": "fcd6fd6477a14ba9d8d0e9b3fab565c225cc4b5110dfbb58c49664b8b34e05f0",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.json": "d8d6ac0292f522da40d2db2f39c859302540ca0a2448b24a13b42a5e388b3033",
+    "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/characters-v1.png": "e52e69fcf8deab55d37bd62d57d17aa7e786cbd7dbf1a32e017cdf54d3f2867a",
     "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/units-v3.json": "6600b61512a36b8ab5b01fd0dfcb08d7f20260980e22b5366eff23f6282f662a",
     "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/units-v3.png": "54b8f5ba811821a39297a691ca987447ec705afd1e5beebb45c7738afa14bfc0"
   },
   "pending": [
-    "balrog",
-    "balrog-portrait",
     "black-serpent",
     "black-serpent-portrait",
     "brand-awakened",
@@ -111,16 +121,8 @@
     "denethor-awakened",
     "denethor-awakened-portrait",
     "denethor-corrupted-portrait",
-    "elrond",
-    "elrond-portrait",
-    "galadriel",
-    "galadriel-portrait",
-    "gothmog",
-    "gothmog-portrait",
     "shadow-of-mirkwood",
     "shadow-of-mirkwood-portrait",
-    "smeagol",
-    "smeagol-portrait",
     "theoden-awakened",
     "theoden-awakened-portrait",
     "theoden-corrupted-portrait",
