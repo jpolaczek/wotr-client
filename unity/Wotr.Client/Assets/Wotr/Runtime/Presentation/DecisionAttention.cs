@@ -25,7 +25,7 @@ namespace Wotr.Client
                 return At(DecisionContext.Battle, view.EventLoss?.RegionId ?? view.Battle.RegionId);
             if (HuntActions.UsesPanel(view))
                 return At(DecisionContext.Hunt, "");
-            if (FellowshipActions.UsesPanel(view, null))
+            if (FellowshipActions.UsesPanel(view, null) && !CompanionJourneyDraft.OnMap(view))
                 return At(DecisionContext.Fellowship, view.Fellowship.MordorStep.HasValue ? "" : view.Fellowship.RegionId);
             var figures = FigureRegion(view);
             if (figures.Length > 0)

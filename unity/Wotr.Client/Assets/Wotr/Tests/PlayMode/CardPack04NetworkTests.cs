@@ -49,9 +49,12 @@ namespace Wotr.PlayTests
                 {
                     if (card == "base.fp.character.12")
                     {
-                        // UI-214: the follow-up's Decline is a console button; the card is played from the hand.
+                        // UI-214/UI-291: the card is played from the hand; the console's Pass would skip the
+                        // follow-up, so no option takes the console's hint.
                         Assert.AreEqual("ents.follow-up", room.Fp.Board.View.Decision.Window);
-                        AssertConsoleOptions(room.Fp, "action-DeclineReaction");
+                        AssertConsoleOptions(room.Fp);
+                        Assert.IsTrue(room.Fp.Board.Console.Actions.Pass.enabledSelf);
+                        StringAssert.Contains("free Character Event", room.Fp.Board.Console.Actions.Pass.tooltip);
                     }
                     await CardGestures.Play(room, room.Fp, card);
                 }

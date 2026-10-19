@@ -37,6 +37,8 @@ namespace Wotr.Client
             Right.AddToClassList("map-edge-control");
             Dropdowns.AddToClassList("board-dropdowns");
             Dropdowns.AddToClassList("map-edge-control");
+            // UI-290: a usable corner tab pulses in the same rhythm (RightColumn.uss).
+            Dropdowns.schedule.Execute(() => Dropdowns.ToggleInClassList(TabPulseClass)).Every(MapTargetGlow.PulseMilliseconds);
             Left.style.display = Right.style.display = Dropdowns.style.display = DisplayStyle.None;
             stage.Add(Left);
             board.Root.Add(Right);
@@ -78,16 +80,13 @@ namespace Wotr.Client
             BuildCorner();
             DockDropdown(board.Fellowship.Root, "fellowship");
             board.Fellowship.VisibilityChanged += RefreshCorner;
+            board.Fellowship.UsableChanged += () => Corner.EnableInClassList(UsableClass, board.Fellowship.Usable);
             // UI-98: hovering the corner tab unrolls the Fellowship like a left tab; a decision it hosts holds it.
             // UI-162: the Hunt is a window of its own, opened from the console.
             Preview.Add(CornerKey, Corner, CornerPanels, OpenCorner, CloseCorner,
                 RightGroup, () => board.Fellowship.Held, CloseCorner);
-            // UI-220: while hiding is legal, the plaque's click hides the Fellowship instead of unrolling the panel.
-            board.Fellowship.Status.clickable = new Clickable(() =>
-            {
-                if (!board.Fellowship.RequestHide())
-                    Preview.Show(CornerKey);
-            });
+            // UI-293: the plaque's click unrolls the panel; hiding is the marker on the panel's track.
+            board.Fellowship.Status.clickable = new Clickable(() => Preview.Show(CornerKey));
             // UI-91: no "Cards N" header or help link; the hand itself is the permanent bottom of the column.
             var cards = new VisualElement { name = "edge-cards" };
             cards.AddToClassList("edge-cards");
@@ -123,6 +122,8 @@ namespace Wotr.Client
         }
 
         public const string TabPulseClass = "edge-tabs-pulse";
+        // UI-290: the corner tab while something in the Fellowship panel can be used now.
+        public const string UsableClass = "fellowship-usable";
 
         private void AddTab(Button tab, string title, string icon)
         {
@@ -139,6 +140,10 @@ namespace Wotr.Client
         {
             Corner.AddToClassList("edge-corner-tab");
             Corner.Add(board.Fellowship.Status);
+            // UI-290: the rim lies over the whole tab, so lighting it moves nothing.
+            var rim = new VisualElement { name = "edge-corner-usable", pickingMode = PickingMode.Ignore };
+            rim.AddToClassList("edge-corner-usable");
+            Corner.Add(rim);
             CornerPanels.AddToClassList("edge-corner-panels");
             CornerPanels.style.display = DisplayStyle.None;
             Dropdowns.Add(Corner);

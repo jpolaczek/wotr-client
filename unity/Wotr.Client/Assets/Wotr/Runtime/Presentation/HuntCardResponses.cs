@@ -18,7 +18,7 @@ namespace Wotr.Client
     // UI-285 (owner's decision after the object controls audit): the table cards that answer in the Hunt — Axe and Bow,
     // Mithril Coat and Sting, Horn of Gondor, Wizard's Staff, Crebain… — stand as card objects in the Hunt window's
     // response row, beside the Ring, Guide and random-companion responses; one click uses the card (discarding it when
-    // that is its cost), and Skip declines. They no longer fall to the generic choice list.
+    // that is its cost), and the console's Pass declines (UI-291). They no longer fall to the generic choice list.
     public static class HuntCardResponses
     {
         private static readonly IReadOnlyList<HuntCardResponse> None = new HuntCardResponse[0];
@@ -46,7 +46,7 @@ namespace Wotr.Client
             {
                 Id = choice.Id, CardId = choice.SourceId, Name = title, Consequence = consequence,
                 Tooltip = cost + " · " + consequence + (choice.Detail.Length > 0 ? "\n" + choice.Detail : "") +
-                    "\nOr Skip to continue without it."
+                    "\nOr Pass to skip it."
             };
         }
 

@@ -136,7 +136,12 @@ namespace Wotr.PlayTests
                         }
                         if (kind == CommandKind.RespondEffect)
                         {
-                            Assert.AreEqual("Skip", board.Tray.Q<Button>("action-DeclineReaction").text);
+                            // UI-291: the console's Pass declines the window, glows and names what it skips.
+                            Assert.IsNull(board.Tray.Q<Button>("action-DeclineReaction"));
+                            var pass = board.Console.Actions.Pass;
+                            Assert.IsTrue(pass.enabledSelf);
+                            Assert.IsTrue(pass.ClassListContains(ChoiceGlow.ClassName));
+                            StringAssert.Contains("Mithril Coat and Sting · Replace tile", pass.tooltip);
                             // UI-285: Mithril is a glowing card object in the response row, not a tray choice.
                             var mithril = board.Hunt.Root.Q<Button>("effect-choice-card.mithril-replace");
                             Assert.IsTrue(mithril.ClassListContains("legal-target"));

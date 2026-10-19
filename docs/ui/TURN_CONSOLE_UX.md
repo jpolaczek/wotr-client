@@ -472,3 +472,24 @@ Ring", then "or Stay to finish after healing"; Stay is the console's only button
 
 While a payment has alternative dice, the dice pool's frame lights (`DiceDecision`) and the alternatives glow in the
 shared rhythm; the console and the decision window do not repeat them.
+
+## Pass also declines a reaction — UI-291 (2026-10-20)
+
+The owner's decision: the console's Pass also declines the player's own reaction window — a Guide's or character's
+skill (Gandalf the Grey's draw, the White Rider, Merry's or Pippin's separation, Gollum's reveal), a table card's or a
+hand card's response, the Ents' free Event. It lights with the shared ChoiceGlow whenever a click can use it (a legal
+Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Gandalf the Grey · Draw matching
+card"; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
+"Decline"/"Skip" buttons are gone, so the console keeps its hint ("… · or Pass to skip it."), and three object-less
+responses now fit the console. The opponent's window never enables it. Tests: `CardConsoleOptionsTests`,
+`ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
+`CardPack04NetworkTests`.
+
+## The status plaque lights only when its click opens something — UI-292 (2026-10-20)
+
+The owner's decision: the plaque ("YOUR ACTION", "YOUR DECISION · …") no longer glows, pulses or presses when its click
+would open nothing — a plain action whose choices are the dice and the map, for example. It lights and keeps its "Click
+to …" tooltip only when the click opens the decision's window, battle, Hunt, Fellowship or Effects panel, Reinforcements,
+the end of the game, or the notice's region, sovereign or hand (`DecisionNotice.Opens`, `DecisionHostNavigation.Hosted`);
+otherwise it is read-only (`ReadOnlyControl`). The headline and the arrival flash still announce the turn. Test:
+`TurnRibbonTests` (the action's plaque stays unlit and read-only).

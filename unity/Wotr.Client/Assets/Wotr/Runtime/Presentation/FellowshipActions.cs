@@ -5,7 +5,9 @@ namespace Wotr.Client
 {
     public static class FellowshipActions
     {
+        // UI-294: a card's journey of companions outside the Fellowship is made on the map, not in the panel.
         public static bool UsesPanel(PlayerView view, TurnDraft draft) => view.Battle == null && view.EventLoss == null && !HuntActions.UsesPanel(view, draft) &&
+            !CompanionJourneyDraft.Active(view, draft) &&
             (view.Decision?.Kind is DecisionKind.FellowshipPhase or DecisionKind.Guide or
                 DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation ||
                 draft?.Kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.DeclareFellowship or
@@ -94,7 +96,7 @@ namespace Wotr.Client
 
         public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
 
-        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or the glowing Ring · No progress or extra Hunt die.";
+        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or its glowing marker on the Fellowship track · No progress or extra Hunt die.";
 
         public static string ActionHint(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
@@ -107,7 +109,7 @@ namespace Wotr.Client
                 return "No Fellowship action in this decision";
             if (Option(view, context, kind, draft) == null)
                 return (view.Fellowship.Hidden ? "" : "Hide first · ") + "Select a Character die";
-            // UI-232, UI-280: the glowing Fellowship figure on the map and the glowing Ring are the hide.
+            // UI-280, UI-293: the glowing Fellowship figure on the map and its glowing marker on the track are the hide.
             if (!view.Fellowship.Hidden)
                 return HideHint;
             // UI-110, UI-282: the glowing track symbol, and off the Mordor track the glowing figure on the map, is the move.

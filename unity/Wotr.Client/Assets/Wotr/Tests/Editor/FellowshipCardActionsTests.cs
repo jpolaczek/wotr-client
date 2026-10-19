@@ -21,7 +21,7 @@ namespace Wotr.EditorTests
             StringAssert.Contains("There Is Another Way", controls.HideTooltip);
             CollectionAssert.AreEqual(new[] { "fellowship.stay" }, CardConsoleOptions.For(view, Draft(view)).Select(o => o.Id).ToArray(),
                 "Only Stay stays a console button.");
-            StringAssert.StartsWith("Hide: click the glowing Ring", FellowshipCardActions.Guidance(view));
+            StringAssert.StartsWith("Hide: click the Fellowship's glowing marker on its track", FellowshipCardActions.Guidance(view));
             var draft = new TurnDraft();
             FellowshipCardActions.Choose(view, draft, FellowshipCardActions.Hide);
             Assert.AreEqual(CommandKind.ChooseEffect, draft.Kind);

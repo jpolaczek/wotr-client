@@ -113,6 +113,7 @@ namespace Wotr.Client
                     : draft.Kind == CommandKind.DiscardCards
                     ? "Click a card, then click it again to discard it face down."
                     : NazgulFlightDraft.Active(view, draft) ? NazgulFlightDraft.Hint(view, draft)
+                    : CompanionJourneyDraft.Active(view, draft) ? CompanionJourneyDraft.Hint(view, draft)
                     : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)
                     : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
@@ -202,14 +203,7 @@ namespace Wotr.Client
                     ? root.Q<Button>("travel-stay")?.parent : null;
                 (route ?? footer).Add(back);
             }
-            if (view.Decision.Kind == DecisionKind.Reaction && view.Options.Any(o => o.Kind == CommandKind.DeclineReaction && o.Enabled) &&
-                !CardConsoleOptions.Owns(view, draft))
-            {
-                var decline = BoardScreen.Button(ContextualHunt ? "Skip" : "Decline", () => ActionChosen?.Invoke(CommandKind.DeclineReaction));
-                decline.name = "action-DeclineReaction";
-                decline.tooltip = "Continue without using a reaction in this window";
-                footer.Add(decline);
-            }
+            // UI-291: a reaction window is declined with the console's Pass, not a Decline or Skip button here.
             if (view.Decision.Kind == DecisionKind.ArmyEvent && !CardArmyEvent.Active(view, draft))
                 foreach (var alternative in view.Options.Where(o => o.Kind != draft.Kind))
                 {
@@ -382,6 +376,10 @@ namespace Wotr.Client
             {
                 // UI-212: the flights are chosen on the map; the console confirms them.
             }
+            else if (CompanionJourneyDraft.Active(view, draft))
+            {
+                // UI-294: the companions move on the map; the console's ✓ finishes the journey.
+            }
             else if (CardFigureDraft.Active(view, draft))
             {
                 // UI-215: the figures are chosen in the region panel; the console confirms them.
@@ -469,11 +467,12 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row();
             root.Add(row);
-            // UI-247: reactions used on their portraits in the Battle window need no Respond step here.
-            foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind != CommandKind.PlayEvent &&
+            // UI-247: reactions used on their portraits in the Battle window need no Respond step here. UI-291: the
+            // console's Pass declines a reaction window.
+            foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind is not (CommandKind.PlayEvent or CommandKind.DeclineReaction) &&
                 !(o.Kind == CommandKind.RespondEffect && BattleReactions.AllOnPortraits(view))))
             {
-                var button = BoardScreen.Button(ContextualHunt && option.Kind == CommandKind.DeclineReaction ? "Skip" : Label(option.Kind), () => ActionChosen?.Invoke(option.Kind));
+                var button = BoardScreen.Button(Label(option.Kind), () => ActionChosen?.Invoke(option.Kind));
                 button.SetEnabled(option.Enabled);
                 button.name = "action-" + option.Kind;
                 button.userData = new DraftToken(DraftObject.Action, action: option.Kind);

@@ -93,3 +93,12 @@ the owner's decision; findings 2 and 3 stay; finding 4 → small clickable abili
 remove the unreachable fallbacks (UI-289). Companion journeys → portraits (UI-284, FELLOWSHIP_UX). Finding 7 is done in
 UI-288 (UX_SPEC, HUNT_UX); finding 4 in UI-286 (UX_SPEC); finding 8 in UI-289 (UX_SPEC), except `ExcessChoices`,
 which stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
+
+## Owner's decisions (2026-10-20)
+
+After playing: the whole Fellowship tab lights up when something in it can be used (UI-290); the console's Pass also
+declines a reaction, glows when usable and names what it skips, and the wide Decline button is gone (UI-291); the status
+plaque lights only when its click opens something (UI-292); the Fellowship's marker on its track hides it and the Ring
+icons are informational (UI-293); a journey of companions outside the Fellowship is made on the map with the console's
+✓ as its only finish, superseding UI-284's portraits and UI-250's Stay all / Stay here for it (UI-294). See
+FELLOWSHIP_UX and TURN_CONSOLE_UX.

@@ -358,7 +358,7 @@ to the generic choice list as a text rectangle whose button also pinned the full
   Guide and random-companion objects: a small card face, the card's name and the consequence. Legal objects glow with
   the shared ChoiceGlow and pulse.
 - One click uses the card (UI-142): `HuntContextInteraction.CardResponse` sets the draft's reaction and sends it;
-  "Skip" in the tray declines. The tooltip names the cost ("Click to discard Axe and Bow · Reduce damage …").
+  the console's Pass declines (UI-291). The tooltip names the cost ("Click to discard Axe and Bow · Reduce damage …").
 - `CardChoices` leaves these choices out of the tray and no Hunt reaction pins the card inspector; the card can still be
   read in the Effects panel. A reaction whose source is not a table card (Nenya, a character's ability) stays in the tray.
 - Tests: `HuntLayoutTests` (RespondEffect), `CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients`,

@@ -77,9 +77,11 @@
     scale: 1.05 1.05;
 }
 /* UI-284: a journey's portraits fill their row edge to edge, so their pulse changes the rim and plate only (they are
-   .action buttons too, so the scale of the rule above is undone here). UI-285: so do the Hunt's table-card responses. */
+   .action buttons too, so the scale of the rule above is undone here). UI-285: so do the Hunt's table-card responses;
+   UI-291: and the console's actions, whose column keeps its fixed size. */
 .motion-enabled #board-screen .choice-glow-pulse .companion-portrait.choice-glow,
-.motion-enabled #board-screen .choice-glow-pulse .hunt-card-response.choice-glow {
+.motion-enabled #board-screen .choice-glow-pulse .hunt-card-response.choice-glow,
+.motion-enabled #board-screen .choice-glow-pulse .console-action.choice-glow {
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1 1;

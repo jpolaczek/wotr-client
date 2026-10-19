@@ -20,12 +20,17 @@ namespace Wotr.Client
         // UI-110: the symbol's button; enabled and glowing only while the chosen die can move the Fellowship.
         public Button Move { get; }
         public event Action Activated;
+        // UI-293 (owner's decision): the Fellowship's marker on the track is the Hide control.
+        public VisualElement Marker => marker;
+        public bool MarkerOffered { get; private set; }
+        public event Action MarkerActivated;
         private readonly Label[] cells;
         private readonly VisualElement lane;
         private readonly Image marker;
         private readonly Label overflow = new Label("+") { pickingMode = PickingMode.Ignore };
         private int selected = -1;
         private readonly IVisualElementScheduledItem pulse;
+        private readonly ChoicePulse markerPulse;
 
         public FellowshipTrackRow(string name, string icon, int maximum, string cellPrefix, string valueName)
         {
@@ -71,7 +76,14 @@ namespace Wotr.Client
             marker = FellowshipArtwork.Image(icon);
             marker.name = name + "-marker";
             marker.AddToClassList("fellowship-track-marker");
+            marker.AddToClassList(PressFeedback.PressableClass);
+            marker.AddManipulator(new Clickable(() =>
+            {
+                if (MarkerOffered)
+                    MarkerActivated?.Invoke();
+            }));
             lane.Add(marker);
+            markerPulse = new ChoicePulse(lane);
             lane.RegisterCallback<GeometryChangedEvent>(_ => Place(false));
             overflow.AddToClassList("fellowship-track-overflow");
             lane.Add(overflow);
@@ -103,6 +115,22 @@ namespace Wotr.Client
                 Move.RemoveFromClassList(BrightClass);
             }
         }
+
+        // UI-293: while hiding is legal the marker glows and pulses (ChoiceGlow) and says what a click does; otherwise it is
+        // a picture that takes no pointer.
+        public void OfferMarker(bool offered, string tooltip)
+        {
+            MarkerOffered = offered;
+            marker.pickingMode = offered ? PickingMode.Position : PickingMode.Ignore;
+            marker.focusable = offered;
+            marker.EnableInClassList(FellowshipStatus.HideClass, offered);
+            ChoiceGlow.Apply(marker, offered);
+            marker.tooltip = offered ? tooltip : "";
+            markerPulse.Run(offered);
+        }
+
+        // The row's own controls: the symbol's move and, while it hides, the marker.
+        public bool Controls(VisualElement target) => target == Move || Move.Contains(target) || MarkerOffered && target == marker;
 
         public void Apply(FellowshipTrackState state)
         {

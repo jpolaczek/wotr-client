@@ -126,8 +126,8 @@ namespace Wotr.Client
             board.Map.ArmySelected += ChooseArmy;
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
-            console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, ChooseComponent, ChooseRing,
-                () => reinforcements.Planning);
+            console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
+                ChooseComponent, ChooseRing, () => reinforcements.Planning);
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
             board.Characters.EntryRequested += RequestEntry;
@@ -201,8 +201,9 @@ namespace Wotr.Client
             }
             if (view?.Decision != null && TravelDraft.TargetRoute(draft.Kind))
             {
-                // UI-105: a reachable destination moves the selected group at once; any other region opens its panel.
-                if (!travel.Reach(region))
+                // UI-105: a reachable destination moves the selected group at once; UI-294: in a card's journey a region
+                // with one lit companion chooses it; any other region opens its panel.
+                if (!travel.Reach(region) && !travel.Source(region))
                     board.Hover.Toggle(region);
                 return;
             }
@@ -550,11 +551,6 @@ namespace Wotr.Client
         {
             if (SelectionBusy || view?.Decision == null)
                 return;
-            if (choice.Kind == ConsoleOptionKind.Decline)
-            {
-                Choose(CommandKind.DeclineReaction);
-                return;
-            }
             if (choice.Kind == ConsoleOptionKind.Action && choice.Command.HasValue)
             {
                 Choose(choice.Command.Value);

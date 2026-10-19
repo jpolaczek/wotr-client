@@ -50,11 +50,28 @@ namespace Wotr.Client
                 board.Map.Focus(attention.Region);
             if (!DecisionHostNavigation.TryOpen(board))
                 OpenContext(attention);
-            if (board.View.Decision.Kind == DecisionKind.DiscardCards ||
-                board.View.Options.Any(o => o.Kind == CommandKind.DiscardProtection && o.Enabled) ||
-                board.View.Decision.Presentation == "Deck")
+            if (UsesHand(board.View))
                 board.HandDrawer.Open();
         }
+
+        // UI-292: a click shows something: the panel holding the tray, the decision's panel or region (the camera moves
+        // to it), or the hand. Otherwise Open only focuses the tray, which nobody sees.
+        public bool Opens
+        {
+            get
+            {
+                var attention = DecisionAttention.For(board.View);
+                if (attention == null)
+                    return false;
+                if (DecisionHostNavigation.Hosted(board) || UsesHand(board.View) || attention.Region.Length > 0)
+                    return true;
+                return attention.Context is DecisionContext.Hunt or DecisionContext.Battle or DecisionContext.Fellowship or
+                    DecisionContext.Sovereign;
+            }
+        }
+
+        private static bool UsesHand(PlayerView view) => view.Decision.Kind == DecisionKind.DiscardCards ||
+            view.Options.Any(o => o.Kind == CommandKind.DiscardProtection && o.Enabled) || view.Decision.Presentation == "Deck";
 
         // UI-254: the window the notice opened for the current decision is open: its region panel, or the hand for
         // excess cards. The console's plaque closes it again.

@@ -563,3 +563,46 @@ The owner's decision after the object controls audit: the Fellowship panel's "Fi
 the Fellowship phase, greyed out, and its tooltip says why ("Finish phase · Only in your Fellowship phase, to keep the
 current Guide."), as the fixed-places rule asks; it still leaves the row while a route is drawn. Test:
 `FellowshipGuideChoiceTests.TheFellowshipPhaseChoosesTheGuideFromItsPortraitWithoutAMode`.
+
+<a id="ui-290"></a>
+## The whole Fellowship tab lights up when something in it can be used — UI-290 (2026-10-20)
+
+The owner's decision: while anything in the Fellowship panel can be used now — a Guide's or character's skill such as
+Gandalf the Grey's draw, the Guide's choice, a move, hiding, Finish phase, a separation — the whole corner tab that
+carries the plaque lights up like a usable left tab (UI-223): a bright gold rim laid over the tab, a warmer plate and a
+gold caption, pulsing in the shared 750 ms rhythm (`BoardEdgeLayout.UsableClass`, `RightColumn.uss`); Reduced motion
+keeps it bright and still. The rim lies over the tab, so nothing in it moves. The opponent's Fellowship decision lights
+nothing on this side (`FellowshipPanel.Usable` now checks the decision's owner). The plaque's thin green rim is gone.
+Test: `FellowshipPanelNetworkTests` (both cases).
+
+<a id="ui-293"></a>
+## The Fellowship's marker on its track hides it — UI-293 (2026-10-20)
+
+The owner changed the Ring's concept (after UI-232): the control is the icon on the track — the Fellowship's marker on
+the progress track, or on the Mordor track in Mordor. While hiding is legal with the chosen die it glows and pulses
+(ChoiceGlow), presses in, says "Click the Fellowship's marker on its track to hide it…", and a click hides
+(`FellowshipTrackRow.OfferMarker`); otherwise it is a picture that takes no pointer. The Ring on the plaque and in the
+panel's header is purely informational now: a picture of the condition whose click reaches its host (the plaque
+opens the panel, the header row locates the Fellowship); the plaque's click no longer hides. The figure on the map still
+hides (UI-280), and the hints name the figure and the marker. `FellowshipRingControl` was removed. Tests:
+`FellowshipTrackMarkerTests`, `FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce`,
+`FellowshipCardActionsTests`.
+
+<a id="ui-294"></a>
+## A journey of companions outside the Fellowship is made on the map — UI-294 (2026-10-20)
+
+The owner's decision, superseding UI-250's group controls and UI-284's portraits for these journeys: a card's journey of
+companions outside the Fellowship (Book of Mazarbul, Fear! Fire! Foes!, Kings' Aid, and Gwaihir the Windlord or We Prove
+the Swifter when they move a companion outside it) is made on the map only (`CompanionJourneyDraft`):
+
+- a click on a region with one lit companion chooses it (several: the region's panel lists them, as before);
+- a click on a highlighted destination routes it; its figure stands faintly there (`MapCanvas.PlannedJourneys`), the
+  companion is released for the next pick, and a click on its own region keeps it there; ↶ undoes the last step;
+- the console's ✓ finishes once everything the player wanted has moved; finishing with nothing moved is allowed where
+  the card allows it, and companions not moved stay;
+- the decision window and the Fellowship panel list nothing: no card title, companions, "No group", "Stay all", "Stay
+  here" or "Choose a group". The console's hint guides ("Click a lit companion, then its destination · ✓ finishes…").
+
+Gwaihir's and Swifter's separation of the Fellowship's own companions keeps the Fellowship panel. Tests:
+`CompanionJourneyMapTests`, `DecisionRoutesTests`, `Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
+`Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`, `CardPack03NetworkTests`.

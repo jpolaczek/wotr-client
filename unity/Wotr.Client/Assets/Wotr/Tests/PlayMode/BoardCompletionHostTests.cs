@@ -66,8 +66,11 @@ namespace Wotr.PlayTests
                 "Own automatic consequences and new own decisions are not enemy actions.");
             board.Notice.Open();
             await room.Settle();
-            var skip = board.Tray.Q<Button>("action-DeclineReaction");
-            Assert.IsNotNull(skip, "Gollum's voluntary response must preserve an explicit refusal.");
+            // UI-291: the console's Pass is the explicit refusal of Gollum's voluntary response.
+            var skip = board.Console.Actions.Pass;
+            Assert.IsTrue(skip.enabledSelf, "Gollum's voluntary response must preserve an explicit refusal.");
+            StringAssert.Contains("Gollum", skip.tooltip);
+            Assert.IsNull(board.Tray.Q<Button>("action-DeclineReaction"));
             var revision = board.View.Revision;
             PointerGestureEvents.ClickAt(skip);
             await room.At(revision + 1);
@@ -120,7 +123,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(1, board.Root.Query<VisualElement>("decision-tray").ToList().Count);
                 Assert.AreEqual(0, board.Characters.DecisionHost.childCount);
                 var revision = board.View.Revision;
-                PointerGestureEvents.ClickAt(board.Tray.Q<Button>("action-DeclineReaction"));
+                // UI-291: the console's Pass declines the battle reaction.
+                PointerGestureEvents.ClickAt(board.Console.Actions.Pass);
                 await room.At(revision + 1);
                 Assert.AreEqual(DecisionKind.CombatCard, board.View.Decision.Kind);
                 Assert.AreSame(board.Battles.Root, board.Tray.parent);

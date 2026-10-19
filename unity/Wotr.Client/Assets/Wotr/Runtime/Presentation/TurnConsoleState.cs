@@ -60,7 +60,7 @@ namespace Wotr.Client
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
             DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
             DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
-                "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Decline.",
+                "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Pass to skip it.",
             _ => "Click the status to open this decision."
         };
 

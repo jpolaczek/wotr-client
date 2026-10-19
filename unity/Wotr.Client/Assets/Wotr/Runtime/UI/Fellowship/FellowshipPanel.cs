@@ -11,13 +11,17 @@ namespace Wotr.Client
         private BoardPresentation data;
         public VisualElement Root { get; } = new VisualElement { name = "fellowship-panel", focusable = true };
         public Button Status => status.Summary;
-        public Button Ring => status.Ring;
-        public Button PanelRing => status.PanelRing;
+        // UI-293: the Fellowship's marker on its visible track, which hides it while hiding is legal.
+        public VisualElement HideMarker => status.HideMarker;
         public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
         public event Action Opening;
         public event Action VisibilityChanged;
+        // UI-290: something in the panel can be used now (a Guide's or character's skill, the Guide, a move, hiding,
+        // Finish phase); the corner tab that carries the plaque lights up as a whole.
+        public bool Usable { get; private set; }
+        public event Action UsableChanged;
         public bool Docked { get; set; }
         // UI-98: a docked panel unrolls under its top-bar plaque and is held open while it hosts a decision.
         public bool Held { get; private set; }
@@ -44,7 +48,6 @@ namespace Wotr.Client
             Root.style.display = DisplayStyle.None;
             status = new FellowshipStatus(Open);
             status.HideRequested += () => RequestHide();
-            status.LocateRequested += focus;
             status.TrackFocusRequested += focus;
             Observe(Status);
             Observe(map.FellowshipMarker.Root);
@@ -70,7 +73,8 @@ namespace Wotr.Client
             RegisterHover();
         }
 
-        // UI-232: a click on the Ring icon hides a revealed Fellowship when the chosen die allows it.
+        // UI-293: a click on the Fellowship's marker on its track (or its figure on the map) hides a revealed Fellowship
+        // when the chosen die allows it.
         public bool RequestHide()
         {
             if (!controls.HideOffered)
@@ -131,9 +135,19 @@ namespace Wotr.Client
                 Root.Add(tray);
             else if (!owns && tray.parent == Root)
                 dock.Add(tray);
-            Status.EnableInClassList("legal-target", owns && latest.Decision != null || controls.Offers || roster.Choosing);
+            // UI-290: the opponent's Fellowship decision lights nothing on this side.
+            SetUsable(owns && latest.Decision != null && latest.DecisionOwner == latest.You || controls.Offers || roster.Choosing);
             OpenNewDecision(latest, owns);
             RefreshVisibility();
+        }
+
+        private void SetUsable(bool usable)
+        {
+            Status.EnableInClassList("legal-target", usable);
+            if (usable == Usable)
+                return;
+            Usable = usable;
+            UsableChanged?.Invoke();
         }
 
         private void OpenNewDecision(PlayerView latest, bool owns)

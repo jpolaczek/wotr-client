@@ -215,8 +215,12 @@ namespace Wotr.PlayTests
                 client.Board.Fellowship.Open();
                 return client.Board.Fellowship.Root.Q<Button>("fellowship-progress");
             }
+            // UI-293: There Is Another Way's Hide is the Fellowship's marker on its track.
             if (id == FellowshipCardActions.Hide)
-                return client.Board.Fellowship.IsOpen ? client.Board.Fellowship.PanelRing : client.Board.Fellowship.Ring;
+            {
+                client.Board.Fellowship.Open();
+                return client.Board.Fellowship.HideMarker;
+            }
             return null;
         }
 
@@ -225,8 +229,12 @@ namespace Wotr.PlayTests
             (VisualElement)TrayOrConsole(client, name) ?? ObjectChoice(client, name);
 
         // UI-214: a card's object-less options and a reaction's responses are buttons in the console, named as in the tray.
+        // UI-291: a reaction window is declined with the console's Pass.
         internal static Button TrayOrConsole(MountedMatchClient client, string name) =>
-            client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);
+            name == DeclineName ? client.Board.Console.Actions.Pass
+                : client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);
+
+        internal const string DeclineName = "action-DeclineReaction";
 
         // UI-215: a card's figure choice (and excess outside a battle) is made in the open region panel.
         internal static Button PanelFigure(MountedMatchClient client, string name)

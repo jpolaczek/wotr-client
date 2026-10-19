@@ -77,7 +77,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(Side.Shadow, board.View.Dice.Single(d => d.Id == cost).Owner);
                 AssertNoRoll(room, 0);
                 Assert.AreEqual("base.sh.character.05", board.View.Hunt.SourceId);
-                PointerGestureEvents.ClickAt(board.Tray.Q<Button>("action-DeclineReaction"));
+                // UI-291: the console's Pass declines the window.
+                PointerGestureEvents.ClickAt(board.Console.Actions.Pass);
                 await room.At(2);
                 Assert.IsNull(board.View.Hunt);
                 Assert.AreEqual(4, board.View.Fellowship.Corruption);

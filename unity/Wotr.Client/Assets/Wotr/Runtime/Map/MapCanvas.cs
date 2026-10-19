@@ -42,6 +42,8 @@ namespace Wotr.Client
         public MapPlannedRecruits PlannedRecruits { get; }
         // UI-212: a card's planned Nazgûl flights at their destinations.
         public MapPlannedRecruits PlannedFlights { get; }
+        // UI-294: the companions a card's journey moves, drawn faintly at their destinations.
+        public MapPlannedRecruits PlannedJourneys { get; }
         public bool Panning => panning;
         public MapFellowshipMarker FellowshipMarker { get; }
         public MapMordorTrack MordorTrack { get; }
@@ -145,6 +147,7 @@ namespace Wotr.Client
             Figures = new MapFigureMotion(this);
             PlannedRecruits = new MapPlannedRecruits(this);
             PlannedFlights = new MapPlannedRecruits(this, "planned-flight", removable: false);
+            PlannedJourneys = new MapPlannedRecruits(this, "planned-journey", removable: false);
         }
 
         private void PointerDown(PointerDownEvent e)
@@ -450,6 +453,7 @@ namespace Wotr.Client
             UpdateGhost();
             PlannedRecruits?.Layout();
             PlannedFlights?.Layout();
+            PlannedJourneys?.Layout();
             HistoryOverlay?.Layout();
             Figures?.Layout();
             covered.AddRange(used);
