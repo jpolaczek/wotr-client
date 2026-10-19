@@ -67,7 +67,21 @@ Mordor's track is drawn on the map as a stone trail in ink from Morannon and Min
 <a id="no-card-bez-kliknięcia--ui-151"></a>
 ## "No card" without clicking — UI-151
 
-Without legal card the client sends the fight himself “No card”, once per decision; in the stage cards button is in footer, greyed while waiting. Details: [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md).
+Superseded by [UI-279](#every-choice-waits-for-a-click--ui-279-2026-10-19): without a legal card the player clicks No card, which glows alone and says why. In the cards stage the button keeps its place in the footer, greyed while waiting. Details: [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md).
+
+## Every choice waits for a click — UI-279 (2026-10-19)
+
+Owner decision 2026-10-19: the client never sends a decision without a click, even when only one option is legal. This
+rule replaces UI-151's automatic No card. Automatic single choices cost later work, and opening a saved game must not
+submit anything (UI-12). The single option glows, and its tooltip says what the click does:
+
+- a Combat choice without a legal card: No card glows and says "No legal Combat card · Click to fight this round
+  without one" (UI-151).
+
+A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
+payment method. The player's own "Skip cards this battle" policy (UI-11) stays, because the player chose it. Tests:
+`BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`; `MatchTestRoom.NoCard` clicks No card for every
+own Combat choice.
 
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150

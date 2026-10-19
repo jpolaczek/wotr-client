@@ -63,7 +63,7 @@ namespace Wotr.Client
                 refresh.Add(() => target.text = draft.Payload.RegionId.Length == 0 ? "Choose a retreat region on the map." : "Retreat to " + data.Regions[draft.Payload.RegionId].Name);
             }
             if (draft.Kind == CommandKind.CommitCombatCard)
-                AddDirect(footer, "No card", "battle-no-card", draft.Kind.Value, direct);
+                NoCard(footer, option, draft.Kind.Value, direct);
             if (draft.Kind == CommandKind.AdvanceBattle)
             {
                 AddSelectAll(footer, option, draft, edit);
@@ -109,6 +109,16 @@ namespace Wotr.Client
                 return root;
             column.AddToClassList("battle-force-choosing");
             return column;
+        }
+
+        // UI-279: without a legal Combat card, No card is the only choice and still waits for its click: it glows and says so.
+        private static void NoCard(VisualElement footer, ActionOption option, CommandKind kind, Action<CommandKind> direct)
+        {
+            var button = AddDirect(footer, "No card", "battle-no-card", kind, direct);
+            var only = option.EligibleIds.Count == 0;
+            ChoiceGlow.Apply(button, only);
+            button.tooltip = only ? "No legal Combat card · Click to fight this round without one"
+                : "Click to fight this round without a Combat card";
         }
 
         internal static Button AddDirect(VisualElement root, string title, string name, CommandKind kind, Action<CommandKind> direct)

@@ -158,31 +158,26 @@ namespace Wotr.PlayTests
             }
         }
 
-        // Both sides answer No card, through the server when they hold a card (a side without one answers by itself,
-        // UI-151), until the battle moves on to its next decision.
+        // Both sides answer No card through the server, also a side without a legal card (UI-279: nothing is sent by
+        // itself), until the battle moves on to its next decision.
         private static async Task PastCombatCards(MatchTestRoom room)
         {
             var sh = room.Sh.Board;
-            await room.Until(() =>
-            {
-                var view = sh.View;
-                return view.Decision?.Kind != DecisionKind.CombatCard || CardHolder(room, view) != null;
-            });
+            await room.Until(() => sh.View.Decision?.Kind != DecisionKind.CombatCard || Chooser(room, sh.View) != null);
             while (sh.View.Decision?.Kind == DecisionKind.CombatCard)
             {
-                var holder = CardHolder(room, sh.View);
                 var revision = sh.View.Revision;
-                if (holder != null)
-                    await Send(room, holder, CommandKind.CommitCombatCard, new CommandPayload());
+                await room.Until(() => Chooser(room, sh.View) != null);
+                await Send(room, Chooser(room, sh.View), CommandKind.CommitCombatCard, new CommandPayload());
                 await room.Until(() => sh.View.Revision > revision);
             }
         }
 
-        private static MountedMatchClient CardHolder(MatchTestRoom room, PlayerView view)
+        // The side choosing its Combat card, once its client shows the same revision.
+        private static MountedMatchClient Chooser(MatchTestRoom room, PlayerView view)
         {
             var client = view.DecisionOwner == Side.FreePeoples ? room.Fp : room.Sh;
-            var option = client.Board.View.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
-            return client.Board.View.Revision == view.Revision && option?.EligibleIds.Count > 0 ? client : null;
+            return client.Board.View.Revision == view.Revision ? client : null;
         }
 
         // The windows the table never opens for an observer: battle, Hunt, the decision window, the Fellowship panel,

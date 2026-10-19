@@ -146,8 +146,8 @@ namespace Wotr.PlayTests
                 var revision = room.Sh.Board.View.Revision;
                 var choice = CardGestures.Source(room.Sh, "base.sh.character.17");
                 LayoutTests.Save(room.Sh.Viewport, "ui47-balrog-combat.png");
-                // UI-147: one click on the table card in the battle window plays it, without a card window. UI-151: the
-                // Free Peoples may answer No card themselves, so the private commitment is read from their first view.
+                // UI-147: one click on the table card in the battle window plays it, without a card window. The Free
+                // Peoples see the private commitment in the first view after it.
                 PlayerView hidden = null;
                 void Seen(PlayerView view)
                 {

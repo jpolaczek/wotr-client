@@ -18,7 +18,6 @@ namespace Wotr.Client
         private readonly GameApi api;
         private readonly BoardScreen board;
         private string notice = "";
-        private string skippedCombatChoice = "";
         private string pendingProblem = "";
         private readonly MatchConnection connection;
         private readonly DecisionTray tray;
@@ -444,7 +443,6 @@ namespace Wotr.Client
             // QUAL-09: recorded only once rendered, so a failed render can be repeated with the same view.
             version.Commit(latest);
             RecoverPending();
-            SkipEmptyCombatChoice();
         }
 
         // UI-167: the ribbon (or the console's flash) when this view passes the action to the player.
@@ -453,20 +451,6 @@ namespace Wotr.Client
             var text = signal.Observe(view);
             if (text.Length > 0)
                 board.SignalTurn(text, view.You);
-        }
-
-        // UI-151: a Combat choice without a legal card can only be No card, so it is sent without a click, once per
-        // decision, through the No card button's own path.
-        private void SkipEmptyCombatChoice()
-        {
-            if (!online || view?.Decision?.Kind != DecisionKind.CombatCard || view.DecisionOwner != view.You ||
-                skippedCombatChoice == view.Decision.Id)
-                return;
-            var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
-            if (option == null || option.EligibleIds.Count > 0 || !CanChoose(CommandKind.CommitCombatCard))
-                return;
-            skippedCombatChoice = view.Decision.Id;
-            DirectBattleChoice(CommandKind.CommitCombatCard);
         }
 
         private void EnsureMandatoryDraft()
@@ -536,7 +520,6 @@ namespace Wotr.Client
             if (view != null)
                 Render();
             RecoverPending();
-            SkipEmptyCombatChoice();
         }
 
         private void RecoverPending()
