@@ -100,6 +100,14 @@ namespace Wotr.Client
                 if (hold)
                     Open();
             }
+            else if (use && hold && !engaged)
+            {
+                // UI-271: a plan begun while the panel already followed a Muster die (the Balrog's entry with its
+                // optional reserve figure) unrolls it, unless the player closed it for this use.
+                engaged = true;
+                if (!dismissed)
+                    Open();
+            }
             else if (!use && active)
             {
                 active = false;

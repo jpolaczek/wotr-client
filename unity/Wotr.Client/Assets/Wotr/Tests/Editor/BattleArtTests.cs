@@ -152,6 +152,8 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("retreat", BattleChoices.IconFor(CommandKind.RetreatIntoSiege));
             Assert.AreEqual("advance", BattleChoices.IconFor(CommandKind.AdvanceBattle));
             Assert.AreEqual("extend-siege", BattleChoices.IconFor(CommandKind.ExtendSiege));
+            Assert.AreEqual("evil-knowledge", BattleChoices.IconFor(CommandKind.UseEvilKnowledge));
+            StringAssert.StartsWith("Click to extend the siege", BattleChoices.DirectTooltip(CommandKind.UseEvilKnowledge));
             Assert.AreEqual("", BattleChoices.IconFor(CommandKind.CommitCombatCard), "Only decisions with art get an icon.");
 
             var view = BattleScreenFixture.Create(CommandKind.ContinueBattle, mode: BattleMode.Sortie);

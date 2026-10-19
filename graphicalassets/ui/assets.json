@@ -1142,6 +1142,10 @@
       "role": "Decision icon: extend-siege."
     },
     {
+      "source": "battle/evil-knowledge.svg",
+      "role": "Decision icon: Evil Knowledge extends the siege (Lords)."
+    },
+    {
       "source": "battle/round-tab.svg",
       "role": "Parchment tab naming the shown round of a battle report.",
       "slices": {

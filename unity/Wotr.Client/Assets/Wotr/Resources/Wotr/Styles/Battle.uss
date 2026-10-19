@@ -549,6 +549,7 @@
 .regional-battle .tray #action-FightFieldBattle { width: 140px; min-width: 140px; }
 .regional-battle .tray #action-RetreatIntoSiege { width: 144px; min-width: 144px; }
 .regional-battle .tray #action-ExtendSiege { width: 138px; min-width: 138px; }
+.regional-battle .tray #action-UseEvilKnowledge { width: 150px; min-width: 150px; }
 .regional-battle .tray #battle-stay { width: 96px; min-width: 96px; }
 /* UI-146: the advance's select/deselect-all toggle keeps the square icon frame inside the gilt footer. */
 .regional-battle .tray .battle-choice-footer #battle-select-all {
@@ -571,6 +572,7 @@
 .battle-direct-icon-retreat { background-image: resource("Wotr/Art/UI/battle/retreat"); }
 .battle-direct-icon-advance { background-image: resource("Wotr/Art/UI/battle/advance"); }
 .battle-direct-icon-extend-siege { background-image: resource("Wotr/Art/UI/battle/extend-siege"); }
+.battle-direct-icon-evil-knowledge { background-image: resource("Wotr/Art/UI/battle/evil-knowledge"); }
 .battle-direct-icon-no-card { background-image: resource("Wotr/Art/UI/battle/no-card"); }
 .regional-battle .tray #retreat-destination { font-size: 12px; margin: 2px 0 3px 0; color: rgb(246, 226, 160); -unity-font-style: bold; }
 

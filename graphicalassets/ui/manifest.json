@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "d7cf41aea01657ffc8cf557b1ef49989516bcf03f36e14e00e39d643d3afe3f1"
+    "assets.json": "4ecb8d29c1157c8a2b83adbe0f0a2f761e07d860c8715ef3fb78d1e0f042152c"
   },
   "assets": [
     {
@@ -2934,6 +2934,22 @@
       "alpha": true,
       "source_sha256": "ab8a415df723ef5d23f7446a6aa24c9fb1030a163c2940bc6735996924adf198",
       "png_sha256": "33e98caf6d2b0258b002cd3b760af036bc7893b1eacb45aece4476ff036933a7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/evil-knowledge.png",
+      "source": "src/battle/evil-knowledge.svg",
+      "variant": null,
+      "logical": [
+        20,
+        20
+      ],
+      "pixels": [
+        40,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "3dc94bc438d5799c369e9245a52a84d669665328abc3528f841b58f8b2be1303",
+      "png_sha256": "40f963193409ad0fe771b24a9f271399a6d081e45bd718607730305837925ba5"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/battle/round-tab.png",

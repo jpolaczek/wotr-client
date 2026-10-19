@@ -118,7 +118,7 @@ namespace Wotr.EditorTests
             ("battle/loss-downgrade", 18, 18, true), ("battle/loss-remove", 18, 18, true),
             ("battle/hit-seal", 16, 16, true), ("battle/hit-seal-spent", 16, 16, true),
             ("battle/continue", 20, 20, true), ("battle/stop", 20, 20, true), ("battle/hold", 20, 20, true),
-            ("battle/retreat", 20, 20, true), ("battle/advance", 20, 20, true), ("battle/extend-siege", 20, 20, true),
+            ("battle/retreat", 20, 20, true), ("battle/advance", 20, 20, true), ("battle/extend-siege", 20, 20, true), ("battle/evil-knowledge", 20, 20, true),
             ("battle/round-tab", 96, 24, true),
             ("battle/die-1", 22, 22, true), ("battle/die-1-hit", 22, 22, true), ("battle/die-1-rerolled", 22, 22, true),
             ("battle/die-1-die-selected", 22, 22, true), ("battle/die-1-die-pressed", 22, 22, true),

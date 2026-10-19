@@ -26,7 +26,10 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.SiegeContinuation, room.Sh.Board.View.Decision.Kind);
                 var elites = room.Sh.Board.View.Units.Where(u => u.Location == "minas-tirith" && u.Kind == UnitKind.Elite).Select(u => u.Id).ToArray();
                 var paid = room.Sh.Board.View.Dice.Count(d => d.Location is DieLocation.Resolving or DieLocation.Spent);
-                Assert.IsTrue(room.Sh.Board.Tray.Q<Button>("action-UseEvilKnowledge").enabledSelf);
+                var evilKnowledge = room.Sh.Board.Tray.Q<Button>("action-UseEvilKnowledge");
+                Assert.IsTrue(evilKnowledge.enabledSelf);
+                Assert.IsNotNull(evilKnowledge.Q(className: "battle-direct-icon-evil-knowledge"), "UI-271: the siege footer shows Evil Knowledge as a graphic choice.");
+                StringAssert.StartsWith("Click to extend the siege", evilKnowledge.tooltip);
                 Assert.IsTrue(room.Sh.Board.View.Options.Any(o => o.Kind == CommandKind.ExtendSiege));
                 Assert.IsTrue(room.Sh.Board.View.Options.Any(o => o.Kind == CommandKind.StopBattle));
                 await Layout(room, room.Sh, "evil-knowledge", "t34");

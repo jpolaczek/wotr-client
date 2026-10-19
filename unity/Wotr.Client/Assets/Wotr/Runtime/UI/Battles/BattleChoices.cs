@@ -122,6 +122,7 @@ namespace Wotr.Client
                 button.AddToClassList("battle-direct");
                 button.Add(DirectIcon(icon));
             }
+            button.tooltip = DirectTooltip(kind);
             root.Add(button);
             return button;
         }
@@ -136,6 +137,13 @@ namespace Wotr.Client
             return icon;
         }
 
+        // UI-271: the Mouth of Sauron's Evil Knowledge says what its click does, as the label names only the ability.
+        public static string DirectTooltip(CommandKind kind) => kind switch
+        {
+            CommandKind.UseEvilKnowledge => "Click to extend the siege by one round without downgrading an Elite · Evil Knowledge, once per action",
+            _ => ""
+        };
+
         public static string IconFor(CommandKind kind) => kind switch
         {
             CommandKind.ContinueBattle or CommandKind.FightFieldBattle => "continue",
@@ -144,6 +152,7 @@ namespace Wotr.Client
             CommandKind.RetreatBattle or CommandKind.RetreatIntoSiege => "retreat",
             CommandKind.AdvanceBattle => "advance",
             CommandKind.ExtendSiege => "extend-siege",
+            CommandKind.UseEvilKnowledge => "evil-knowledge",
             _ => ""
         };
 

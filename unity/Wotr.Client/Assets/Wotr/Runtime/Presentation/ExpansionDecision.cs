@@ -38,7 +38,7 @@ namespace Wotr.Client
             CommandKind.AwakenSovereign => "Awaken sovereign",
             CommandKind.RemoveCorruptedSovereign => "Remove corrupted sovereign",
             CommandKind.AttemptCorruption => "Attempt corruption",
-            CommandKind.UseEvilKnowledge => "Evil Knowledge · Extend siege",
+            CommandKind.UseEvilKnowledge => "Evil Knowledge",
             _ => ""
         };
 
