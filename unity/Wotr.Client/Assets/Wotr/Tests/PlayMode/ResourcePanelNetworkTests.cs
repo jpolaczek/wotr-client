@@ -42,20 +42,14 @@ namespace Wotr.PlayTests
             await room.At(revision + 1);
             Assert.AreEqual("removed", actor.Board.View.RulerTokens.Single(t => t.Id == token).Location);
             Assert.AreEqual("DieAndResult", actor.Board.View.Decision.Presentation);
-            Assert.IsTrue(actor.Board.ResourceDecision.IsOpen);
-            Assert.AreSame(actor.Board.ResourceDecision.DecisionHost, actor.Board.Tray.parent);
-            PointerGestureEvents.ClickAt(actor.Board.Tray.Q<Button>("effect-choice-" + ruler.Id));
-            await room.Settle();
+            // UI-272: Lore is made on the pool's die and its result popover; the Dice & tokens panel stays closed.
+            Assert.AreNotSame(actor.Board.ResourceDecision.DecisionHost, actor.Board.Tray.parent);
+            await LoreGestures.Die(room, actor, ruler.Id);
             var face = actor.Board.View.Dice.Single(d => d.Id == ruler.Id).Face == DieFace.Muster
                 ? DieFace.Character : DieFace.Muster;
-            PointerGestureEvents.ClickAt(actor.Board.Tray.Q<Button>("effect-choice-lore." + face + ".keep"));
-            await room.Settle();
-            actor.Board.ResourceDecision.Close();
             await Reconnect(room, actor);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
-            PointerGestureEvents.ClickAt(actor.Board.ResourceDecision.Tab);
             await room.Settle();
-            await room.Confirm(actor);
+            await LoreGestures.Result(room, actor, "lore." + face + ".keep");
             Assert.AreEqual(revision + 2, actor.Board.View.Revision);
             Assert.AreEqual(face, room.Fp.Board.View.Dice.Single(d => d.Id == ruler.Id).Face);
             Assert.AreEqual(DieLocation.Available, room.Fp.Board.View.Dice.Single(d => d.Id == ruler.Id).Location);

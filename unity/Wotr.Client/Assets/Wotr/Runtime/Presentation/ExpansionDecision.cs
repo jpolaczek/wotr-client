@@ -42,8 +42,9 @@ namespace Wotr.Client
             _ => ""
         };
 
+        // UI-272: Lore before Dismay is the Lore card's click in the Effects panel (LoreChoice.CardUses), not a button.
         public static IEnumerable<ActionOption> Alternatives(PlayerView view, TurnDraft draft) =>
             view.Decision.Kind is DecisionKind.Dismay or DecisionKind.CorruptionTile
-                ? view.Options.Where(o => o.Kind != draft.Kind) : Enumerable.Empty<ActionOption>();
+                ? view.Options.Where(o => o.Kind != draft.Kind && o.Kind != CommandKind.UseLoreBeforeActions) : Enumerable.Empty<ActionOption>();
     }
 }

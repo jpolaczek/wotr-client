@@ -116,6 +116,10 @@ namespace Wotr.Client
                     : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)
                     : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
+                    : CostDice.RingHint(view, draft) is { Length: > 0 } ring ? ring
+                    : LoreChoice.Hint(view, draft) is { Length: > 0 } lore ? lore
+                    : RingRecovery.Hint(view, draft) is { Length: > 0 } recovery ? recovery
+                    : InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it"
                     : ResourcePresentation.PoolHint(view) is { Length: > 0 } pool ? pool
                     : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
                     : CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions
@@ -507,12 +511,12 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row();
             root.Add(row);
-            // UI-248: Palantír of Orthanc takes its Ring on the Ring itself and its die in the pool; the expansions'
-            // Palantír of Barad-dûr and Lore keep these buttons.
-            if (option.Kind is CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore)
+            // UI-248: Palantír of Orthanc takes its Ring on the Ring itself and its die in the pool, and so does Lore since
+            // UI-272; the Kings' Palantír of Barad-dûr keeps these buttons until UI-278.
+            if (option.Kind == CommandKind.DiscardBaradPalantir)
             {
                 var noRing = Choice("No Ring", () => draft.Payload.RingId == "", () => RingChosen?.Invoke(""), "A Will of the West die needs no Ring.");
-                noRing.name = option.Kind == CommandKind.DiscardLore ? "lore-no-ring" : "palantir-no-ring";
+                noRing.name = "palantir-no-ring";
                 row.Add(noRing);
                 foreach (var id in option.EligibleIds)
                 {

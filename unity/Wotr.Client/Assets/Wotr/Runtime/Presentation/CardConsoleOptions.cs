@@ -43,7 +43,11 @@ namespace Wotr.Client
             // UI-264: the expansions' two-way card modes (Fate's Monsters, the Kings cards' branches).
             "EffectTargets", "SovereignCardBranch",
             // UI-271: the Balrog card's order: move him alone, move his army, or finish.
-            "BalrogOrder"
+            "BalrogOrder",
+            // UI-272: the Lore of the Elven Rings: its die and result are chosen on the pool; Keep results is a button.
+            // Wind from the West and Safe Paths in the Dark discard Shadow table cards with their × in the Effects
+            // panel; Three Rings for the Elven-Kings recovers Rings on their sockets.
+            LoreChoice.Presentation, "TableCards", RingRecovery.Presentation
         };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
@@ -72,7 +76,7 @@ namespace Wotr.Client
         public static IReadOnlyDictionary<string, string> TableCards(PlayerView view, TurnDraft draft)
         {
             var option = Card(view, draft) ? DraftOptions.For(view, draft) : null;
-            if (option == null || view.Decision.Presentation != "NazgulStrike")
+            if (option == null || view.Decision.Presentation is not ("NazgulStrike" or "TableCards"))
                 return NoTableCards;
             return option.EffectChoices.Where(TableCard).ToDictionary(c => c.Id,
                 c => "Discard " + CardLibrary.Title(c.SourceId) + " · " + c.Detail);
@@ -94,6 +98,10 @@ namespace Wotr.Client
                 return None;
             if (RegionChoice(view))
                 return Alternatives(view, draft, option);
+            if (view.Decision.Presentation == LoreChoice.Presentation)
+                return option.EffectChoices.Where(LoreChoice.KeepOption).Select(c => Effect(view, draft, option, c)).ToList();
+            if (view.Decision.Presentation == RingRecovery.Presentation)
+                return None;
             // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
             var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();

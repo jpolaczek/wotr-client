@@ -69,7 +69,7 @@ namespace Wotr.Client
             // UI-171: the tray reports its hint before this refresh; a hint-less step shows the new guidance, not the last.
             ShowHint();
             var rings = ExpansionActions.RingKind(view, draft);
-            board.Console.Rings.Apply(view, draft.Payload.RingId, idle, DraftOptions.For(view, draft, rings), rings);
+            board.Console.Rings.Apply(view, draft.Payload.RingId, idle, DraftOptions.For(view, draft, rings), rings, draft.Payload.Ids);
             board.Console.Hunt.SetAllocating(view.Decision?.Kind == DecisionKind.AllocateHunt && view.DecisionOwner == view.You);
             RefreshActions(docked && !board.DecisionWindow.IsOpen);
         }

@@ -94,7 +94,7 @@ namespace Wotr.Client
                 CardDraft.Choose(next, option, id);
                 edit(() => draft.Adopt(next), CardDraft.Ready(next, option));
             }
-            else if (draft.Kind == CommandKind.ChooseEffect && view.Hand.Contains(id))
+            else if (draft.Kind == CommandKind.ChooseEffect && (view.Hand.Contains(id) || InspectedHand.Contains(view, id)))
                 edit(() => CardDraft.Choose(draft, option, id), false);
         }
 

@@ -198,3 +198,6 @@
 /* UI-124: a chosen action die dims the cards it cannot play; an unrolled card reads at full strength. */
 #board-screen .hand-card.card-unplayable { opacity: 0.5; }
 #board-screen .hand-card.card-unplayable.card-expanded { opacity: 1; }
+
+/* UI-272: a Shadow card Wind from the West inspects stands in the Free Peoples' drawer with a Shadow-red edge. */
+#board-screen .hand .hand-card.inspected-card { border-width: 2px; border-color: rgb(150, 46, 34); border-radius: 4px; }

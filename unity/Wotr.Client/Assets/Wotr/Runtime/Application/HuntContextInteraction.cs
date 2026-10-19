@@ -30,6 +30,7 @@ namespace Wotr.Client
             board.Hunt.Guides.Selected += Guide;
             board.Hunt.Responses.Selected += Respond;
             board.Hunt.Responses.GuideResponse += GuideResponse;
+            board.Hunt.Responses.CardResponse += CardResponse;
             board.Hunt.Tile.Selected += ApplyResponse;
         }
 
@@ -108,6 +109,25 @@ namespace Wotr.Client
             }, true);
         }
 
+        // UI-272: a Lords table card's response in the row: a reaction, or We Won't Go Back's cost; its click sends it.
+        private void CardResponse(string id)
+        {
+            var response = busy() || draft == null ? null : HuntCardResponses.Find(view, id);
+            if (response == null)
+                return;
+            edit(() =>
+            {
+                if (response.Reaction)
+                {
+                    if (draft.Kind != CommandKind.RespondEffect)
+                        draft.Choose(CommandKind.RespondEffect);
+                    draft.Change(p => p.ReactionId = id);
+                }
+                else
+                    CardDraft.Choose(draft, DraftOptions.For(view, draft), id);
+            }, true);
+        }
+
         private void ApplyResponse()
         {
             if (draft?.HuntChoice is { } response)
@@ -150,6 +170,7 @@ namespace Wotr.Client
             board.Hunt.Guides.Selected -= Guide;
             board.Hunt.Responses.Selected -= Respond;
             board.Hunt.Responses.GuideResponse -= GuideResponse;
+            board.Hunt.Responses.CardResponse -= CardResponse;
             board.Hunt.Tile.Selected -= ApplyResponse;
         }
     }

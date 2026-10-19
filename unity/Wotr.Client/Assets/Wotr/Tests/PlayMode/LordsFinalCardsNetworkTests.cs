@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -20,11 +21,15 @@ namespace Wotr.PlayTests
         private static async Task Target()
         {
             using (var room = await Connect("lords-madness-target", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var revision = room.Sh.Board.View.Revision;
                 Assert.IsNull(room.Fp.Board.View.Decision);
-                CardNetworkTests.Click(room.Sh.Board.Tray.Query<Button>(className: "committed-choice").ToList().First());
+                // UI-272: the region is chosen on the map with the window closed; the console names the resolving card
+                // (UI-211), so no trail button of the closed window recalls it.
                 await room.Settle();
+                StringAssert.Contains(CardLibrary.Title("lords.sh.strategy.26").ToUpperInvariant(),
+                    room.Sh.Board.Console.Status.Headline.text.ToUpperInvariant());
                 var region = MapContourProbe.ReachRegion(room.Sh.Board.Map, "eagles-eyrie");
                 MapContourProbe.Hover(room.Sh.Board.Root, region);
                 await room.Settle();
@@ -32,8 +37,6 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(room.Sh.Board.Map.DraftOverlay.Targets.Contains("eagles-eyrie"));
                 StringAssert.Contains("Roll 3 dice", room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.ChooseEffect).EffectChoices.Single(c => c.TargetId == "eagles-eyrie" || c.Id == "eagles-eyrie").Detail);
                 Assert.AreEqual(revision, room.Sh.Board.View.Revision);
-                Assert.AreEqual("lords.sh.strategy.26", room.Sh.Board.Cards.CardId);
-                Assert.AreEqual("Resolving Event", room.Sh.Board.Cards.Root.Q<Label>("card-window").text);
                 Assert.IsNull(room.Fp.Board.View.EventLoss);
                 await Reconnect(room, room.Sh);
                 await Layout(room, room.Sh, "madness-target");
@@ -41,6 +44,7 @@ namespace Wotr.PlayTests
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("confirm-decision"));
                 await ArmyGestures.Target(room, room.Sh, "eagles-eyrie");
                 Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision);
+                watch.NeverOpened();
             }
         }
 
@@ -72,7 +76,12 @@ namespace Wotr.PlayTests
                 var board = room.Sh.Board;
                 var inspectionRevision = board.View.Revision;
                 board.Cards.Close();
-                await ComponentGestures.Hover(board.Tray.Q<Button>("effect-choice-lords.we-shall-get-it"));
+                // UI-272: the reaction is a response object in the Hunt window's response row, not a tray button.
+                var response = board.Hunt.Responses.Root.Q<Button>("effect-choice-lords.we-shall-get-it");
+                Assert.AreEqual("hunt-card-responses", response.parent.name);
+                Assert.IsNull(board.Tray.Q<Button>("effect-choice-lords.we-shall-get-it"));
+                StringAssert.StartsWith("Click to discard", response.tooltip);
+                await ComponentGestures.Hover(response);
                 Assert.IsEmpty(board.Cards.CardId, "Hovering a final reaction must not inspect or execute it.");
                 PointerGestureEvents.ClickAt(board.TableEffects.Tab);
                 await room.Settle();
@@ -96,7 +105,7 @@ namespace Wotr.PlayTests
                 {
                     await room.Settle();
                     var revision = room.Sh.Board.View.Revision;
-                    PointerGestureEvents.ClickAt(room.Sh.Board.Tray.Q<Button>("effect-choice-lords.we-shall-get-it"));
+                    PointerGestureEvents.ClickAt(room.Sh.Board.Hunt.Responses.Root.Q<Button>("effect-choice-lords.we-shall-get-it"));
                     await room.At(revision + 1);
                     await Layout(room, room.Sh, "special-replace");
                 }

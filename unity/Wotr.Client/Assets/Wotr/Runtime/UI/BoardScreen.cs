@@ -64,6 +64,8 @@ namespace Wotr.Client
         public DecisionWindow DecisionWindow { get; } = new DecisionWindow();
         // UI-161: the results an Elven Ring can give the chosen die, above that die.
         public RingFacePicker RingPicker { get; } = new RingFacePicker();
+        // UI-272: the new results of a die changed by The Lore of the Elven Rings.
+        public RingFacePicker LorePicker { get; } = new RingFacePicker("lore-face-picker");
         public PoliticalPanel Nations { get; }
         private readonly Label loading = new Label("Loading match…") { name = "match-loading" };
         public CardInspector Cards { get; } = new CardInspector();
@@ -376,6 +378,7 @@ namespace Wotr.Client
             bottom.Add(Console.Root);
             Root.Add(bottom);
             Root.Add(RingPicker.Root);
+            Root.Add(LorePicker.Root);
             Root.Add(GameEnd.Root);
             var mapOcclusions = overlays.Concat(new[] { top, Notifications.Root, bottom }).ToArray();
             Map.Occlusions = () => mapOcclusions.Where(element => element.resolvedStyle.display != DisplayStyle.None && element.worldBound.width > 0)

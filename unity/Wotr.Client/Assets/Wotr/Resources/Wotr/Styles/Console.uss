@@ -382,6 +382,16 @@
 .ring-face.die-free.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-free-selected"); }
 .ring-face.die-shadow.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-selected"); }
 .ring-face:disabled { opacity: 0.35; }
+/* UI-272: a Lore result that keeps a special die's Remove symbol carries its star. */
+.ring-face > .die-remove-star {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    width: 13px;
+    height: 13px;
+    background-image: resource("Wotr/Art/UI/dice/remove-star");
+    -unity-background-scale-mode: scale-to-fit;
+}
 .ring-face-tail {
     position: absolute;
     bottom: -9px;

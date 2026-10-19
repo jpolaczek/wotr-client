@@ -19,6 +19,7 @@ namespace Wotr.Client
             this.choose = choose;
             board.Console.Status.OptionChosen += Chosen;
             board.TableEffects.OfferChosen += TableCard;
+            board.TableEffects.UseChosen += CardUse;
             board.Hover.Panel.ForceChosen += Force;
         }
 
@@ -35,6 +36,7 @@ namespace Wotr.Client
             panel.RefreshForces();
             board.Console.Status.SetOptions(CardConsoleOptions.For(view, draft), enabled);
             board.TableEffects.Offer(TableOffers(view, draft), enabled);
+            board.TableEffects.Uses(enabled ? LoreChoice.CardUses(view) : new Dictionary<string, string>());
         }
 
         // The Nazgûl Strike's table cards and, outside a battle or the Hunt, a table card's own reaction (UI-247).
@@ -76,6 +78,13 @@ namespace Wotr.Client
 
         private void Force(string id) => choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Effect });
 
+        // UI-272: the Lore card's click starts Lore before Dismay.
+        private void CardUse(string id)
+        {
+            if (LoreChoice.CardUses(view).ContainsKey(id))
+                choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Action, Command = CommandKind.UseLoreBeforeActions });
+        }
+
         private void TableCard(string id)
         {
             var reaction = CardConsoleOptions.TableReaction(view, id);
@@ -88,6 +97,7 @@ namespace Wotr.Client
         {
             board.Console.Status.OptionChosen -= Chosen;
             board.TableEffects.OfferChosen -= TableCard;
+            board.TableEffects.UseChosen -= CardUse;
             board.Hover.Panel.ForceChosen -= Force;
         }
     }

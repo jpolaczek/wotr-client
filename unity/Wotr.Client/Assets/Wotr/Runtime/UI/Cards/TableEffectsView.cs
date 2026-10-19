@@ -21,6 +21,8 @@ namespace Wotr.Client
         public event Action<ComponentAction> RemovalSelected;
         // UI-214: the source a card's effect offers was chosen with its ×.
         public event Action<string> OfferChosen;
+        // UI-272: a card the decision uses itself was clicked (The Lore of the Elven Rings before Dismay).
+        public event Action<string> UseChosen;
         private readonly DrawerHover hover;
         private readonly EffectSourceDetails details;
         private readonly EffectsReadingWidth reading;
@@ -30,6 +32,7 @@ namespace Wotr.Client
         private readonly Dictionary<string, EffectEntry> entries = new Dictionary<string, EffectEntry>();
         private Dictionary<string, ComponentAction> choices = new Dictionary<string, ComponentAction>();
         private IReadOnlyDictionary<string, string> offers = new Dictionary<string, string>();
+        private IReadOnlyDictionary<string, string> uses = new Dictionary<string, string>();
         private bool choicesEnabled, offersEnabled;
         private IReadOnlyList<EffectSource> sources = Array.Empty<EffectSource>();
         // UI-221: the hovered source's text, over the other sources.
@@ -148,7 +151,7 @@ namespace Wotr.Client
             {
                 if (!entries.TryGetValue(source.Key, out var entry))
                 {
-                    entry = new EffectEntry(source, Select, Remove, Hover);
+                    entry = new EffectEntry(source, Select, Remove, Hover, Use);
                     entries.Add(source.Key, entry);
                     list.Add(entry.Root);
                 }
@@ -191,17 +194,34 @@ namespace Wotr.Client
             RefreshChoices();
         }
 
+        // UI-272: the cards the decision uses with a click on the card itself (source id → what the click does).
+        public void Uses(IReadOnlyDictionary<string, string> latest)
+        {
+            if (uses.Count == 0 && latest.Count == 0)
+                return;
+            uses = latest;
+            ApplyContext();
+            RefreshChoices();
+        }
+
+        private void Use(string id)
+        {
+            if (uses.ContainsKey(id))
+                UseChosen?.Invoke(id);
+        }
+
         private void ApplyContext()
         {
             foreach (var entry in entries.Values)
             {
                 if (offers.TryGetValue(entry.Source.SourceId, out var offer))
-                {
                     entry.Offer(offer, offersEnabled);
-                    continue;
+                else
+                {
+                    choices.TryGetValue(entry.Source.SourceId, out var choice);
+                    entry.Context(choice, choicesEnabled, view);
                 }
-                choices.TryGetValue(entry.Source.SourceId, out var choice);
-                entry.Context(choice, choicesEnabled, view);
+                entry.Use(uses.TryGetValue(entry.Source.SourceId, out var use) ? use : "");
             }
         }
 
@@ -272,7 +292,7 @@ namespace Wotr.Client
             cost.text = choice == null ? "" : EffectsPresentation.RemovalCost(view, choice);
             cost.style.display = cost.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             Tab.EnableInClassList("legal-target", choices.Values.Any(c => c.Enabled && sources.Any(s => s.SourceId == c.CardId)) ||
-                offersEnabled && sources.Any(s => offers.ContainsKey(s.SourceId)));
+                offersEnabled && sources.Any(s => offers.ContainsKey(s.SourceId)) || sources.Any(s => uses.ContainsKey(s.SourceId)));
         }
 
         // UI-221: hovering a tile unrolls its text like a hand card; leaving it rolls it back. Nothing is sent.

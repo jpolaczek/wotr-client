@@ -13,8 +13,8 @@ namespace Wotr.Client
             // UI-264: the special-die pick and the Ruler discard are made on the dice in the pool, not in this panel.
             // UI-268: Vilya's decision is made on the paid die and the Vilya socket, with Spend the die in the console.
             // UI-270: the Council's token choice is made on the tokens in the pool.
+            // UI-272: the Lore of the Elven Rings is made on the pool's dice and a result popover (LoreChoice).
             return view.Decision.Kind is DecisionKind.Dismay ||
-                view.Decision.Kind == DecisionKind.EffectChoice && view.Decision.Presentation == "DieAndResult" ||
                 view.Decision.Kind == DecisionKind.Action && CouncilPending(draft);
         }
 

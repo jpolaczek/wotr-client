@@ -92,23 +92,24 @@ namespace Wotr.PlayTests
                 var tokens = room.Sh.Board.View.RulerTokens.Count(t => t.Location == "dismay");
                 Assert.AreEqual(DecisionKind.Dismay, room.Sh.Board.View.Decision.Kind);
                 await Layout(room, room.Sh, "lore-order", "t34");
-                await room.Direct(room.Sh, "action-UseLoreBeforeActions");
+                // UI-272: the Lore card in the Effects panel starts Lore before Dismay; no tray button does.
+                Assert.IsNull(room.Sh.Board.Tray.Q<Button>("action-UseLoreBeforeActions"));
+                room.Sh.Board.TableEffects.Open();
+                await room.Settle();
+                var card = room.Sh.Board.TableEffects.Root.Q<Button>("effect-source-" + LoreChoice.Card);
+                Assert.IsTrue(card.ClassListContains("legal-target"));
+                Assert.AreEqual(LoreChoice.CardUse, card.tooltip);
+                var revision = room.Sh.Board.View.Revision;
+                CardNetworkTests.Click(card);
+                await room.At(revision + 1);
                 var die = room.Sh.Board.View.Dice.Single(d => d.Owner == Side.Shadow &&
                     (hunt ? d.Source == "lords.die.balrog" && d.Location == DieLocation.Hunt : d.Source == "ruler"));
-                StringAssert.Contains(hunt ? "Balrog" : "Ruler", room.Sh.Board.Tray.Q<Button>("effect-choice-" + die.Id).text);
-                if (hunt)
-                {
-                    // UI-230: the Balrog die in the Hunt box stands in the pool's row while Lore may choose it.
-                    PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>(die.Id));
-                    await room.Settle();
-                    Assert.IsTrue(room.Sh.Board.Tray.Q<Button>("effect-choice-" + die.Id).ClassListContains("selected"));
-                }
-                else
-                    CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die.Id));
-                Click(room.Sh, "effect-choice-lore.Muster.keep");
+                // UI-230: the Balrog die in the Hunt box stands in the pool's row while Lore may choose it.
+                await LoreGestures.Die(room, room.Sh, die.Id);
                 await Layout(room, room.Sh, hunt ? "lore-eye" : "lore-ruler", "t34");
                 await Reconnect(room, room.Sh);
-                await room.Confirm(room.Sh);
+                await room.Settle();
+                await LoreGestures.Result(room, room.Sh, "lore.Muster.keep");
                 Assert.AreEqual(DecisionKind.Dismay, room.Sh.Board.View.Decision.Kind);
                 Assert.AreEqual(DieFace.Muster, room.Fp.Board.View.Dice.Single(d => d.Id == die.Id).Face);
                 Assert.AreEqual(tokens, room.Fp.Board.View.RulerTokens.Count(t => t.Location == "dismay"));

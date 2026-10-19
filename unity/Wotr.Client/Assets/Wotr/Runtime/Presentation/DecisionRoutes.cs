@@ -81,22 +81,30 @@ namespace Wotr.Client
             "Deck" => DecisionHost.Map,
             "ActionDie" or "DieAndResult" => DecisionHost.Dice,
             "ElvenRings" => DecisionHost.Rings,
-            "CharacterCardDiscard" => DecisionHost.Hand,
+            "CharacterCardDiscard" or InspectedHand.Presentation => DecisionHost.Hand,
             "FellowshipCompanions" or "Companion" or "CorruptionRemoval" or "SmeagolCorruption" or "InspectedCorruption" or
                 "CompanionDestination" => DecisionHost.Fellowship,
             "CombatReplacement" or "CombatEffect" or "ConvertMisses" or "LeadershipAndMiss" or "NazgulOrMinion" or
                 "LeaderOrCompanion" or "Minion" or "CharacterLeadership" or "NazgulLeadership" or "MinionLeadership" or
                 "SacrificeAndHits" => DecisionHost.Battle,
             "LureCompanion" or "CaptainOrder" or "BalrogOrder" or "FellowshipAction" or "NazgulStrike" or
-                "InspectedHand" or "EffectTargets" or "SovereignCardBranch" => DecisionHost.Console,
+                "EffectTargets" or "SovereignCardBranch" => DecisionHost.Console,
             "Sovereign" => DecisionHost.Sovereigns,
+            // UI-272: a reaction outside the Hunt and battles answers at its card (hand, table ×) or the console.
+            "CardOrDecline" => DecisionHost.Console,
+            // UI-271: a card's character move (the Balrog alone) is drawn on the map.
+            "PortraitRoute" => DecisionHost.Map,
             "Nation" => DecisionHost.Map,
             _ => DecisionHost.Window
         };
 
-        private static DecisionHost Battle(DecisionView decision) =>
-            decision.Kind is DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction
-                ? Presented(decision.Presentation) is DecisionHost.Window ? DecisionHost.Battle : Presented(decision.Presentation)
-                : DecisionHost.Battle;
+        // A battle's reaction (CardOrDecline) and any step without an object of its own stay in the Battle window.
+        private static DecisionHost Battle(DecisionView decision)
+        {
+            if (decision.Kind is not (DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction))
+                return DecisionHost.Battle;
+            var host = Presented(decision.Presentation);
+            return host == DecisionHost.Window || decision.Presentation == "CardOrDecline" ? DecisionHost.Battle : host;
+        }
     }
 }

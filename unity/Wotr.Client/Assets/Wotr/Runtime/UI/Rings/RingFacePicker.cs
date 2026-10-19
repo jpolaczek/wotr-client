@@ -9,12 +9,15 @@ namespace Wotr.Client
     // UI-161: the results an Elven Ring can give the chosen die, in a small popover over the die's column (art:
     // console/picker and console/picker-tail). It stands above the whole dice panel, so it covers neither the die
     // nor the panel's header and help links; the tail points at the die. A click on a result completes the gesture.
+    // UI-272: the Lore of the Elven Rings uses a second picker whose results name their choice and may carry the
+    // special die's Remove star.
     public sealed class RingFacePicker
     {
         private const float Gap = 10f;
         private const float Margin = 4f;
-        public VisualElement Root { get; } = new VisualElement { name = "ring-face-picker" };
+        public VisualElement Root { get; }
         public event Action<DieFace> Chosen;
+        public event Action<RingFace> OptionChosen;
         public bool IsOpen => Root.style.display.value == DisplayStyle.Flex;
         private readonly VisualElement row = new VisualElement { name = "ring-face-row" };
         private readonly VisualElement tail = new VisualElement { name = "ring-face-tail", pickingMode = PickingMode.Ignore };
@@ -22,8 +25,9 @@ namespace Wotr.Client
         private VisualElement ceiling;
         private string shown = "";
 
-        public RingFacePicker()
+        public RingFacePicker(string name = "ring-face-picker")
         {
+            Root = new VisualElement { name = name };
             Root.AddToClassList("ring-face-picker");
             row.AddToClassList("ring-face-row");
             tail.AddToClassList("ring-face-tail");
@@ -87,13 +91,33 @@ namespace Wotr.Client
         private Button FaceButton(Side side, RingFace option)
         {
             var face = option.Face;
-            var button = new Button(() => Chosen?.Invoke(face)) { name = "ring-face-" + DieFaceIcon.Key(face) };
+            var button = new Button(() =>
+            {
+                Chosen?.Invoke(face);
+                OptionChosen?.Invoke(option);
+            }) { name = "ring-face-" + (option.Id.Length > 0 ? option.Id : DieFaceIcon.Key(face)) };
             button.AddToClassList("ring-face");
             button.AddToClassList(side == Side.FreePeoples ? "die-free" : "die-shadow");
             button.Add(new DieFaceIcon(face));
-            button.tooltip = ActionCardText.Face(face) + (option.Enabled ? "" : " · Current result");
+            if (option.Remove)
+                button.Add(RemoveStar());
+            button.tooltip = Tooltip(option);
             button.SetEnabled(option.Enabled);
             return button;
+        }
+
+        private static string Tooltip(RingFace option)
+        {
+            if (option.Id.Length == 0)
+                return ActionCardText.Face(option.Face) + (option.Enabled ? "" : " · Current result");
+            return "Click to change the die to " + ActionCardText.Face(option.Face) + (option.Remove ? " · ★ Remove symbol kept" : "");
+        }
+
+        private static VisualElement RemoveStar()
+        {
+            var star = new VisualElement { name = "die-remove-star", pickingMode = PickingMode.Ignore };
+            star.AddToClassList("die-remove-star");
+            return star;
         }
     }
 }

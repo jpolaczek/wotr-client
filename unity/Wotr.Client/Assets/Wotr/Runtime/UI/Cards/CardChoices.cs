@@ -147,8 +147,10 @@ namespace Wotr.Client
                 if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
-                // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row.
-                if (HuntGuideResponses.InRow(view, id))
+                // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row; UI-272: so
+                // is a Lords table card's response, and We Won't Go Back's Character cards glow in the hand.
+                if (HuntGuideResponses.InRow(view, id) || HuntCardResponses.InRow(view, id) ||
+                    view.Decision?.Presentation == HuntCardResponses.Smeagol && view.Hand.Contains(id) || InspectedHand.Contains(view, id))
                     continue;
                 // UI-268: Nenya's response is its glowing ring socket in the console.
                 if (NamedRings.OnSocket(view, id))

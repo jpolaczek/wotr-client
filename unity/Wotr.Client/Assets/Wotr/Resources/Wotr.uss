@@ -527,6 +527,9 @@
 .hunt-guide-portrait { background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 12px; }
 .hunt-random-stack { margin-right: 6px; }
 .hunt-card-back { position: absolute; left: 4px; top: 1px; width: 17px; height: 21px; background-color: rgb(86, 82, 76); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; }
+/* UI-272: a Lords table card's response object shows the card itself; No Corruption, an empty card slot. */
+.hunt-response-card { width: 18px; height: 24px; background-image: resource("Wotr/Art/UI/cards/back"); -unity-background-scale-mode: scale-to-fit; }
+.hunt-response-none { width: 18px; height: 24px; border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; opacity: 0.6; }
 .hunt-random-stack #hunt-response-symbol { width: 17px; height: 24px; font-size: 15px; background-color: rgb(51, 49, 45); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; -unity-text-align: middle-center; }
 .hunt-response-object #hunt-response-name { margin: 0; padding: 0; font-size: 13px; }
 .hunt-response-object #hunt-response-consequence { margin: 1px 0 0 0; padding: 0; font-size: 12px; white-space: pre; -unity-text-align: middle-center; }

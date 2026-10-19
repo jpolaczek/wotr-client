@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -51,17 +52,20 @@ namespace Wotr.Client
             return index < 0 ? null : sockets[index];
         }
 
-        // option: the server's option for the ring choice of this step, of the given kind.
-        public void Apply(PlayerView view, string armed, bool enabled, ActionOption option, CommandKind kind)
+        // option: the server's option for the ring choice of this step, of the given kind; chosen: Rings a card's step
+        // has picked so far (UI-272: Three Rings for the Elven-Kings).
+        public void Apply(PlayerView view, string armed, bool enabled, ActionOption option, CommandKind kind,
+            IReadOnlyCollection<string> chosen = null)
         {
             var ordered = view.Rings.OrderBy(r => NamedRings.Place(r.Id)).ThenBy(r => r.Id, StringComparer.Ordinal).ToList();
             for (var index = 0; index < Count; index++)
             {
                 var ring = index < ordered.Count ? ordered[index] : null;
                 shown[index] = ring?.Id ?? "";
-                ids[index] = ring?.Owner == view.You ? ring.Id : "";
                 var keeper = enabled && ring != null && ring.Owner == view.You && NamedRings.KeeperReady(view, ring.Id);
                 var usable = keeper || enabled && ring != null && option is { Enabled: true } && option.EligibleIds.Contains(ring.Id);
+                // A card may recover a Ring the Shadow holds or one out of play, so its socket answers too.
+                ids[index] = ring != null && (ring.Owner == view.You || usable) ? ring.Id : "";
                 var socket = sockets[index];
                 Name(socket, ring == null ? "" : NamedRings.Key(ring.Id), keeper);
                 if (applied && ring != null && owners[index] != ring.Owner)
@@ -70,7 +74,7 @@ namespace Wotr.Client
                 socket.EnableInClassList("ring-free", ring?.Owner == Side.FreePeoples);
                 socket.EnableInClassList("ring-captured", ring?.Owner == Side.Shadow);
                 socket.EnableInClassList("ring-removed", ring?.Owner == null);
-                socket.EnableInClassList("selected", ring != null && ring.Id == armed);
+                socket.EnableInClassList("selected", ring != null && (ring.Id == armed || chosen?.Contains(ring.Id) == true));
                 socket.EnableInClassList("legal-target", usable);
                 socket.SetEnabled(usable);
                 socket.tooltip = keeper ? Name(ring) + "\n" + NamedRings.UseNow(ring.Id) : Tooltip(view, ring, usable, option, kind);
@@ -98,10 +102,10 @@ namespace Wotr.Client
         {
             if (ring == null)
                 return "Elven Ring · Not in this game";
-            if (ring.Owner == null)
-                return ExpansionLabels.Ring(ring.Id) + " · Removed from the game";
             if (usable)
                 return Name(ring) + "\n" + Use(kind);
+            if (ring.Owner == null)
+                return ExpansionLabels.Ring(ring.Id) + " · Removed from the game";
             var reason = ring.Owner != view.You ? "" : option == null ? "Not usable now" : option.Reason;
             var keeper = ring.Owner == Side.FreePeoples ? NamedRings.Keeper(ring.Id) : "";
             return Name(ring) + (reason.Length > 0 ? "\n" + reason : "") + (keeper.Length > 0 ? "\n" + keeper : "");
@@ -111,10 +115,11 @@ namespace Wotr.Client
         {
             CommandKind.UseRing => "Click, then a die to change its result",
             CommandKind.UseVilya => "Click to use it on the kept die",
+            CommandKind.ChooseEffect => "Click to recover this Ring for the Free Peoples",
             _ => "Click to pay the card's cost with this ring"
         };
 
-        private static string Name(RingView ring) =>
-            ExpansionLabels.Ring(ring.Id) + " · " + (ring.Owner == Side.FreePeoples ? "Free Peoples" : "Shadow (captured)");
+        private static string Name(RingView ring) => ExpansionLabels.Ring(ring.Id) + " · " +
+            (ring.Owner == Side.FreePeoples ? "Free Peoples" : ring.Owner == Side.Shadow ? "Shadow (captured)" : "Removed from the game");
     }
 }

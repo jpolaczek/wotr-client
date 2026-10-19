@@ -277,3 +277,36 @@ mechanic's control lives at its object. Gimli, Dwarven Lord leaves as the Guide 
 The test menu's Fate tab holds the six cards in "Cards" (wotr-server `FateCardScenarios`: the card in hand with
 dice that pay for it) beside "Gimli". Tests: `FateCardsNetworkTests` and `FateGimliNetworkTests` watch both clients'
 decision windows (`GenericWindowWatch`) and check each step's host.
+
+## Lords of Middle-earth cards on their objects — UI-272 (2026-10-19)
+
+No Lords card decision opens the generic window:
+
+- **The Lore of the Elven Rings** is used card → die → face (`LoreChoice`, `LoreInteraction`). Its eligible Shadow dice
+  glow in the pool (a Hunt-box die stands in the pool's row, UI-230); a click picks one and its new results open in a
+  popover over it (`BoardScreen.LorePicker`, the Ring picker of UI-161), a special die's results also with the ★ Remove
+  symbol; the result's click sends the change. Keep results is the console's button. With Kings, Dismay's "Use Lore
+  first" is the Lore card's click in the Effects panel: the card glows and says what its click does (`EffectEntry.Use`,
+  `TableEffectsView.Uses`). The Dice & tokens panel no longer hosts Lore.
+- **Removing Lore and The Gates are Closed** is paid like Palantír of Orthanc (UI-248): the eligible dice glow in the
+  pool (`CostDice`), a Ring is paid on its socket, a Will of the West die pays alone and drops a chosen Ring, and the
+  console asks for the Ring while a die waits for one. The tray lists neither dice nor Rings.
+- **We Shall Get It! and The Gates are Closed in a Hunt** are response objects in the Hunt window's response row
+  (`HuntCardResponses`, the card, its name and what it does); their click discards the card and answers, Skip declines.
+  **We Won't Go Back**'s cost offers the table card (+2 Corruption) and No Corruption in the same row, while the
+  Character cards it accepts glow in the hand. The Gates on a declaration (no Hunt) keep their × in the Effects panel
+  with the console's Decline (UI-247).
+- **Wind from the West and Safe Paths in the Dark** discard Shadow table cards with their × in the Effects panel
+  ("Discard a table card" opens it, as for The Nazgûl Strike!); Wind's Inspect / Finish are console buttons, and the
+  inspected Shadow hand stands in the player's hand drawer with a Shadow-red edge, marked to discard (`InspectedHand`):
+  the click on one discards it.
+- **Three Rings for the Elven-Kings** recovers Rings on their sockets in the console (`RingRecovery`): the Rings it may
+  return glow (also one the Shadow holds or one out of play), each click picks one, and the click that completes the
+  count sends the choice; the console counts the Rings left.
+
+Tests: `LordsCardChoicesTests`, `CostDiceTests.LoreRemovalListsNoDiceOrRingsAndAsksForTheRingOnItsSocket`,
+`CostDiceTests.GatesRemovalTakesItsDieInThePool`, `DecisionRoutesTests`, `LordsCardNetworkTests` (Gates on a
+declaration, Wind's table and hand, Safe Paths, Three Rings), `LordsShadowNetworkTests` (Lore, removals, We Won't Go
+Back), `LordsFinalCardsNetworkTests` (We Shall Get It!), `ExpansionWindowNetworkTests` and
+`ResourcePanelNetworkTests` (Lore before and after Dismay), each with `GenericWindowWatch`; seeder scenarios `ui272-*`
+(wotr-server `LordsCardScenarioTests`).

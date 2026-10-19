@@ -41,6 +41,7 @@ namespace Wotr.Client
         private readonly CardFigureInteraction cardFigures;
         private readonly CardArmyInteraction cardArmies;
         private readonly FigureAbilityInteraction figureAbilities;
+        private readonly LoreInteraction lore;
         private readonly FellowshipContextInteraction fellowshipContext;
         private readonly HuntContextInteraction huntContext;
         private readonly ResourceContextInteraction resources;
@@ -133,6 +134,7 @@ namespace Wotr.Client
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, ChooseComponent, ChooseRing,
                 () => reinforcements.Planning);
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
+            lore = new LoreInteraction(board, EditSelection, () => SelectionBusy);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
             board.Characters.EntryRequested += RequestEntry;
             if (persistence != null)
@@ -403,6 +405,13 @@ namespace Wotr.Client
             }
             if (resources.Ring(id))
                 return;
+            // UI-272: Three Rings for the Elven-Kings picks the Rings it recovers on their sockets.
+            if (RingRecovery.Active(view) && draft.Kind == CommandKind.ChooseEffect &&
+                DraftOptions.For(view, draft)?.EligibleIds.Contains(id) == true)
+            {
+                CompleteChoice(() => CardDraft.Choose(draft, DraftOptions.For(view, draft), id));
+                return;
+            }
             if (draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore && CanChoose(draft.Kind.Value))
             {
                 // UI-248: the chosen Ring clicked again is taken back; no payment is chosen in its place.
@@ -819,6 +828,7 @@ namespace Wotr.Client
             components.Refresh(view, draft, !SelectionBusy);
             // UI-271: after the components, whose map owners a figure's reaction extends.
             figureAbilities.Refresh(view, draft, components.Current);
+            lore.Refresh(view, draft);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
                 view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.MoveArmies;
@@ -1044,6 +1054,7 @@ namespace Wotr.Client
             components.Dispose();
             consoleOptions.Dispose();
             rings.Dispose();
+            lore.Dispose();
             console.Dispose();
             board.Characters.EntryRequested -= RequestEntry;
             board.Characters.Enterable = _ => false;
