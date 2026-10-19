@@ -10,8 +10,8 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
                 return false;
-            return view.Decision.Kind is DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard
-                or DecisionKind.CouncilToken or DecisionKind.Dismay or DecisionKind.KeepActionDie ||
+            // UI-264: the special-die pick and the Ruler discard are made on the dice in the pool, not in this panel.
+            return view.Decision.Kind is DecisionKind.CouncilToken or DecisionKind.Dismay or DecisionKind.KeepActionDie ||
                 view.Decision.Kind == DecisionKind.EffectChoice && view.Decision.Presentation == "DieAndResult" ||
                 view.Decision.Kind == DecisionKind.Action && CouncilPending(draft);
         }
@@ -39,6 +39,14 @@ namespace Wotr.Client
                 return Enumerable.Empty<string>();
             return entries.SelectMany(c => c.Dice).Distinct();
         }
+
+        // UI-264: the special-die pick and the Ruler discard are made on the lit dice in the pool.
+        public static bool PoolDecision(PlayerView view) =>
+            view?.Decision?.Kind is DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard &&
+            view.DecisionOwner == view.You && !view.Winner.HasValue;
+
+        // The console's hint says what a click on a lit die does.
+        public static string PoolHint(PlayerView view) => PoolDecision(view) ? Consequence(view, null) : "";
 
         public static string Consequence(PlayerView view, TurnDraft draft) => CouncilPending(draft)
             ? "Choose a highlighted use. Chieftain entry also spends the exact die you select."

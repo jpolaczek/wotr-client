@@ -44,7 +44,7 @@ namespace Wotr.EditorTests
         [Test]
         public void OnlyOwnResourceWindowsUseThisHostAndNeverReplaceHuntOrNarya()
         {
-            var view = View(DecisionKind.SpecialDieChoice);
+            var view = View(DecisionKind.Dismay);
             Assert.IsTrue(ResourcePresentation.OwnsDecision(view, null));
             view.You = Side.Shadow;
             Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
@@ -58,10 +58,24 @@ namespace Wotr.EditorTests
             // UI-161: the base Elven Ring is used at its console socket, the dice and the result popover.
             draft.Choose(CommandKind.UseRing);
             Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
-            view.Decision.Kind = DecisionKind.SpecialDieChoice;
+            view.Decision.Kind = DecisionKind.Dismay;
             Assert.IsTrue(ResourcePresentation.OwnsDecision(view, draft));
             view.Winner = Side.Shadow;
             Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
+        }
+
+        // UI-264: the special-die pick and the Ruler discard are made on the pool's lit dice, never in this panel.
+        [TestCase(DecisionKind.SpecialDieChoice)]
+        [TestCase(DecisionKind.RulerDiscard)]
+        public void PoolDecisionsStayOutOfThePanel(DecisionKind kind)
+        {
+            var view = View(kind);
+            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
+            Assert.IsTrue(ResourcePresentation.PoolDecision(view));
+            StringAssert.StartsWith("Click a highlighted die", ResourcePresentation.PoolHint(view));
+            view.You = Side.Shadow;
+            Assert.IsFalse(ResourcePresentation.PoolDecision(view), "The opponent's pick lights nothing.");
+            Assert.AreEqual("", ResourcePresentation.PoolHint(view));
         }
 
         [Test]

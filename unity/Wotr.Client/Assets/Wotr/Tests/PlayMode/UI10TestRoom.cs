@@ -76,7 +76,7 @@ namespace Wotr.PlayTests
         }
 
         public static void Click(MountedMatchClient client, string name) =>
-            CardNetworkTests.Click(client.Board.Tray.Q<Button>(name));
+            CardNetworkTests.Click(client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name));
 
         public async Task SelectDrawCost(MountedMatchClient client, string die = null)
         {

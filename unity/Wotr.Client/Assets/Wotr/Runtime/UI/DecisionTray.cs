@@ -116,6 +116,7 @@ namespace Wotr.Client
                     : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)
                     : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
+                    : ResourcePresentation.PoolHint(view) is { Length: > 0 } pool ? pool
                     : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
@@ -193,6 +194,7 @@ namespace Wotr.Client
                 PlayerSide(footer, view);
             }
             if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
+                !ResourcePresentation.PoolDecision(view) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && (view.Decision.Kind is DecisionKind.Action or DecisionKind.Reaction or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
             {

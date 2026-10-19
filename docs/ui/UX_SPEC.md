@@ -404,7 +404,7 @@ Guide, its ability, return and Reveal have one tray and a clear cost of the ongo
 <a id="ui-58--wybór-zasobu-bez-kopii-obiektów"></a>
 ## UI-58 — selection of a resource without a copy of objects
 
-dice Keeper/Lesser and Ruler discards are selected in the pool; the panel gives a short effect before gesture. The new decision opens Dice & tokens once, Close retains the choice. The council does not choose strategic application or cost per player; its own applications and accurate dice inputs are highlighted. The change of the wall The Ring does not start using dice. Objects not available retain the source inspection, conditions and appropriate recovery time. The enemies of dice may be the target of their own Dismay according to server options.
+dice Keeper/Lesser and Ruler discards are selected in the pool; since UI-264 the console's hint gives the short effect before the gesture and Dice & tokens does not open for them. Its other decisions open Dice & tokens once, Close retains the choice. The council does not choose strategic application or cost per player; its own applications and accurate dice inputs are highlighted. The change of the wall The Ring does not start using dice. Objects not available retain the source inspection, conditions and appropriate recovery time. The enemies of dice may be the target of their own Dismay according to server options.
 
 <a id="ui-53--h05h11h12-w-historii"></a>
 ## UI-53 — H05/H11/H12 in history
@@ -1234,6 +1234,26 @@ region), the battle window for losses, the Hunt panel for its damage, the hand f
 the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md),
 [CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
 `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
+
+## Expansion decisions routed to their objects — UI-264 (2026-10-19)
+
+Every expansion decision kind and card presentation has a host other than the generic window
+(`DecisionRoutes.Expansion`, `DecisionRoutes.Presented`):
+
+| Decision | Host now | Moves to its object in |
+|---|---|---|
+| Special die (Lords), Ruler discard (Kings) | lit dice in the pool; the console hint says what the click does | UI-267, UI-273 (art, dimmed slots) |
+| Vilya keep, Dismay, Council token | Dice & tokens panel | UI-268, UI-276, UI-270 |
+| Companion versions, homelands (Council) | setup panel | UI-269, UI-270 |
+| Corruption tile, a card's choice of a sovereign | sovereigns | UI-274, UI-278 |
+| Fate's Monsters branch, Kings cards' branches | console buttons | — |
+
+The special-die pick, the Ruler discard, the Council setup and token and the corruption tile are required decisions
+(`RequiredDecisions`): the red notice at the top waits for them. Vilya's keep and Dismay can be declined and are not.
+Dice & tokens no longer opens for the two pool decisions; the last of UI-268, UI-270, UI-272 and UI-276 deletes it.
+Tests: `DecisionRoutesTests.EveryDecisionKindHasAnObjectHost`, `ExpansionDecisionsHaveTheirHosts`,
+`ExpansionCardStepsHaveObjectHosts`, `RequiredDecisionTests`, `ResourcePanelTests.PoolDecisionsStayOutOfThePanel`,
+`ResourcePanelNetworkTests.SpecialChoicesAndBothDiscardsAreMadeOnThePoolDiceWithoutAPanel`.
 
 ## Rail icons stay on their medallions — UI-261 (2026-10-18)
 

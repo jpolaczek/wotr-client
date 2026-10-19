@@ -14,7 +14,7 @@ namespace Wotr.PlayTests
     public sealed class ResourcePanelNetworkTests
     {
         [UnityTest]
-        public IEnumerator SpecialChoicesAndBothDiscardsStayAtThePoolAndReopenOnlyForNewDecisions() => Wait(Choices());
+        public IEnumerator SpecialChoicesAndBothDiscardsAreMadeOnThePoolDiceWithoutAPanel() => Wait(Choices());
 
         [UnityTest]
         public IEnumerator DismayTargetsTheOpponentsRetainedRulerAfterClosingAndReconnect() => Wait(Dismay());
@@ -63,6 +63,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DecisionKind.Action, room.Fp.Board.View.Decision.Kind);
         }
 
+        // UI-264: the special-die pick and the Ruler discard are made on the lit dice in the pool; neither the
+        // 'Dice & tokens' panel nor the decision window opens, and the console says what the click does.
         private static async Task Choices()
         {
             using var room = await Connect("ui09-dice", ScenarioKind.CardPack);
@@ -70,21 +72,20 @@ namespace Wotr.PlayTests
                 foreach (var actor in new[] { room.Sh, room.Fp })
                 {
                     Assert.AreEqual(kind, actor.Board.View.Decision.Kind);
-                    var panel = actor.Board.ResourceDecision;
-                    Assert.IsTrue(panel.IsOpen);
-                    Assert.AreSame(panel.DecisionHost, actor.Board.Tray.parent);
-                    var opponent = actor == room.Fp ? room.Sh : room.Fp;
-                    Assert.IsFalse(opponent.Board.ResourceDecision.IsOpen);
+                    Assert.IsTrue(RequiredDecisions.Waits(actor.Board.View));
                     var before = actor.Board.View.Revision;
                     var id = actor.Board.View.Options.Single().EligibleDice.First();
+                    await Reconnect(room, actor);
+                    Assert.IsFalse(actor.Board.ResourceDecision.IsOpen, "The pool's decision opens no panel.");
+                    Assert.AreNotSame(actor.Board.ResourceDecision.DecisionHost, actor.Board.Tray.parent);
+                    Assert.IsFalse(actor.Board.DecisionWindow.IsOpen, "The pool's decision opens no window.");
+                    var opponent = actor == room.Fp ? room.Sh : room.Fp;
+                    Assert.IsFalse(opponent.Board.ResourceDecision.IsOpen);
                     Assert.IsTrue(actor.Board.OwnDice.Q<Button>(id).ClassListContains("resource-candidate"));
                     Assert.IsNull(actor.Board.Tray.Q<Button>("cost-" + id), "Choose the actual die in its pool, without a duplicate picker.");
                     Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
-                    PointerGestureEvents.ClickAt(panel.Root.Q<Button>("resource-panel-close"));
-                    await Reconnect(room, actor);
-                    Assert.IsFalse(panel.IsOpen, "The same decision must stay closed after refresh.");
-                    PointerGestureEvents.ClickAt(panel.Tab);
-                    await room.Settle();
+                    Assert.IsNull(actor.Board.Tray.Q<Button>("decision-back"), "A single pool choice has nothing to go back to.");
+                    StringAssert.StartsWith("Click a highlighted die", actor.Board.Tray.Q<Label>(className: "draft-status").text);
                     await Layout(room, actor, kind + "-" + actor.Board.View.You, "ui58");
                     PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(id));
                     await room.At(before + 1);

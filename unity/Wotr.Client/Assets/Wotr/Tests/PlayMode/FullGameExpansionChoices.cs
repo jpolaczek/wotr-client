@@ -46,7 +46,8 @@ namespace Wotr.PlayTests
                     await room.Settle();
                     inspect?.Invoke(client);
                     var revision = client.Board.View.Revision;
-                    MatchTestRoom.Click(client, "cost-" + option.EligibleDice[0]);
+                    // UI-264: the die is chosen in its pool.
+                    CardNetworkTests.Click(client.Board.OwnDice.Q<Button>(option.EligibleDice[0]));
                     await room.At(revision + 1);
                     return true;
                 default:

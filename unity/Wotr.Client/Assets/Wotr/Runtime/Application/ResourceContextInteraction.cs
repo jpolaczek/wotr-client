@@ -36,7 +36,8 @@ namespace Wotr.Client
         private void HighlightCandidates()
         {
             var option = DraftOptions.For(view, draft);
-            var choosing = ResourcePresentation.OwnsDecision(view, draft) && option?.Enabled == true;
+            var choosing = (ResourcePresentation.OwnsDecision(view, draft) || ResourcePresentation.PoolDecision(view)) &&
+                option?.Enabled == true;
             var councilDice = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
             var councilToken = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
             foreach (var pool in new[] { board.OwnDice, board.OpponentDice })

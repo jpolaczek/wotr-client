@@ -398,6 +398,12 @@ The choice that has the object is moved to the object (UI-164). The inventory fr
 | Broken Response (Check result) | ✓ console; at the tray in the dock also the decision window | UI-160 |
 
 The decisions of expansions (Council, Kings, Lords) remain at their panels (Dice & tokens, sovereigns, preparation) without a new project.
+UI-264 (2026-10-19) gives each of them a host in `DecisionRoutes.Expansion`: the special-die pick and the Ruler discard
+are made on the lit dice in the pool, with the console's hint saying what the click does ("Click a highlighted die to
+keep it …") and no panel, window or Back; Vilya's keep, Dismay and the Council token stay with Dice & tokens until
+UI-268, UI-276 and UI-270; Companion versions and homelands stay with the setup panel (UI-269, UI-270); a corruption
+tile and a card's choice of a sovereign belong to the sovereigns (UI-274, UI-278). Fate's Monsters branch and the
+Kings cards' two-way branches are console buttons like the base cards' modes (`CardConsoleOptions`).
 
 <a id="wdrożenie-ui-164"></a>
 ### implementation UI-164

@@ -7,6 +7,9 @@ namespace Wotr.Client
     // (wotr-server:docs/ui/interaction-inventory.json, base_coverage); UI-245–UI-251 move more presentations onto
     // objects by changing the host here and adding the gesture there. Window is the generic list, the fallback for a
     // choice no object owns yet.
+    // UI-264: every expansion decision has a host. The dice pool takes the special-die pick and the Ruler discard; the
+    // panels the expansion UI already uses (Resources, Setup, Sovereigns) stay hosts until the expansion tasks move
+    // their decisions onto objects (UI-268, UI-269, UI-270, UI-274, UI-276) — then they leave this list.
     public enum DecisionHost
     {
         None,
@@ -22,6 +25,9 @@ namespace Wotr.Client
         Fellowship,
         Characters,
         Console,
+        Resources,
+        Setup,
+        Sovereigns,
         Window
     }
 
@@ -48,9 +54,19 @@ namespace Wotr.Client
                 DecisionKind.CombatCard or DecisionKind.BattleReroll or DecisionKind.BattleContinue or DecisionKind.BattleRetreat or
                     DecisionKind.BattleAdvance or DecisionKind.StrongholdDefense or DecisionKind.SiegeContinuation => DecisionHost.Battle,
                 DecisionKind.EffectChoice or DecisionKind.CharacterEvent or DecisionKind.Reaction => Presented(decision.Presentation),
-                _ => DecisionHost.Window
+                _ => Expansion(decision.Kind)
             };
         }
+
+        // UI-264: the hosts of the expansion decisions (Lords, Council, Kings).
+        public static DecisionHost Expansion(DecisionKind kind) => kind switch
+        {
+            DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard => DecisionHost.Dice,
+            DecisionKind.KeepActionDie or DecisionKind.Dismay or DecisionKind.CouncilToken => DecisionHost.Resources,
+            DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands => DecisionHost.Setup,
+            DecisionKind.CorruptionTile => DecisionHost.Sovereigns,
+            _ => DecisionHost.Window
+        };
 
         // The host of a card's step, by the server's presentation of it.
         public static DecisionHost Presented(string presentation) => presentation switch
@@ -69,7 +85,8 @@ namespace Wotr.Client
                 "LeaderOrCompanion" or "Minion" or "CharacterLeadership" or "NazgulLeadership" or "MinionLeadership" or
                 "SacrificeAndHits" => DecisionHost.Battle,
             "LureCompanion" or "CaptainOrder" or "BalrogOrder" or "FellowshipAction" or "NazgulStrike" or
-                "InspectedHand" => DecisionHost.Console,
+                "InspectedHand" or "EffectTargets" or "SovereignCardBranch" => DecisionHost.Console,
+            "Sovereign" => DecisionHost.Sovereigns,
             "Nation" => DecisionHost.Map,
             _ => DecisionHost.Window
         };

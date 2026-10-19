@@ -37,7 +37,12 @@ namespace Wotr.Client
         public const int Limit = 3;
         private static readonly IReadOnlyList<ConsoleOption> None = new List<ConsoleOption>();
         private static readonly IReadOnlyDictionary<string, string> NoTableCards = new Dictionary<string, string>();
-        private static readonly HashSet<string> Modes = new HashSet<string> { "CaptainOrder", "LureCompanion", "FellowshipAction", "NazgulStrike" };
+        private static readonly HashSet<string> Modes = new HashSet<string>
+        {
+            "CaptainOrder", "LureCompanion", "FellowshipAction", "NazgulStrike",
+            // UI-264: the expansions' two-way card modes (Fate's Monsters, the Kings cards' branches).
+            "EffectTargets", "SovereignCardBranch"
+        };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
         public static bool Owns(PlayerView view, TurnDraft draft) =>
