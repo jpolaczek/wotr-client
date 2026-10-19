@@ -67,6 +67,24 @@ namespace Wotr.EditorTests
             Assert.AreEqual("", RingChoice.Headline(new TurnDraft()));
         }
 
+        // UI-282: a Character die that can move the hidden Fellowship names its glowing figure on the map; a die that
+        // cannot says nothing about it.
+        [Test]
+        public void ACharacterDieThatMovesTheFellowshipNamesItsFigure()
+        {
+            var view = View(Side.FreePeoples, Side.FreePeoples, DecisionKind.Action);
+            view.Fellowship = new FellowshipView { RegionId = "rivendell", Hidden = true };
+            view.Dice.Add(new DieView { Id = "fp-2", Owner = Side.FreePeoples, Face = DieFace.Character, Location = DieLocation.Available });
+            view.Options.Add(new ActionOption { Kind = CommandKind.MoveFellowship, Enabled = true, EligibleDice = { "fp-2" } });
+            var die = new ActionDieContext();
+            die.Sync(view, "fp-2");
+            StringAssert.EndsWith("The glowing Fellowship figure moves the Fellowship.",
+                TurnConsoleState.For(view, new TurnDraft(), die, Region).Guidance);
+            die.Sync(view, "fp-1");
+            Assert.AreEqual("Choose what this die acts on: the highlighted map, cards and panels.",
+                TurnConsoleState.For(view, new TurnDraft(), die, Region).Guidance);
+        }
+
         // UI-236: the Fellowship phase names the map's figure and the track's gate instead of panel buttons.
         [Test]
         public void FellowshipPhaseNamesTheFigureAndTheGate()
@@ -76,7 +94,7 @@ namespace Wotr.EditorTests
             view.Options.Add(new ActionOption { Kind = CommandKind.DeclareFellowship, Enabled = true });
             view.Options.Add(new ActionOption { Kind = CommandKind.EnterMordor, Enabled = true });
             var guidance = TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Guidance;
-            StringAssert.StartsWith("Declare: click the Fellowship figure · Enter Mordor: click the glowing gate", guidance);
+            StringAssert.StartsWith("Declare: click the glowing Fellowship figure on the map · Enter Mordor: click the glowing gate", guidance);
             StringAssert.EndsWith("or continue to the Hunt.", guidance);
         }
 

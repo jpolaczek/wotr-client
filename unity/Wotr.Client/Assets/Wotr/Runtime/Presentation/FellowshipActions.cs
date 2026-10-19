@@ -110,9 +110,12 @@ namespace Wotr.Client
             // UI-232, UI-280: the glowing Fellowship figure on the map and the glowing Ring are the hide.
             if (!view.Fellowship.Hidden)
                 return HideHint;
-            // UI-110: the glowing track symbol is the move.
+            // UI-110, UI-282: the glowing track symbol, and off the Mordor track the glowing figure on the map, is the move.
             return view.Fellowship.MordorStep.HasValue ? "Click the glowing Mordor track symbol · Resolve a Hunt tile before any advance."
-                : "Click the glowing track symbol · Progress +1 and resolve the Hunt; the map position stays unchanged.";
+                : MoveHint;
         }
+
+        public const string MoveHint = "Move: click the glowing Fellowship figure on the map or the glowing track symbol · " +
+            "Progress +1 and resolve the Hunt; the map position stays unchanged.";
     }
 }

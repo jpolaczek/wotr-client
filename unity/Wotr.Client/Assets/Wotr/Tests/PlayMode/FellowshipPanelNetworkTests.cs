@@ -52,6 +52,16 @@ namespace Wotr.PlayTests
                 StringAssert.Contains(MapFellowshipMarker.HideHint, board.Map.FellowshipMarker.Root.tooltip);
                 Assert.AreEqual(FellowshipActions.HideHint, board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
             }
+            else
+            {
+                // UI-282: the chosen die lights the hidden Fellowship's figure on the map as its move, and the hints say so.
+                var figure = board.Map.FellowshipMarker;
+                Assert.IsTrue(figure.MoveOffered);
+                Assert.IsTrue(figure.Root.ClassListContains(MapFellowshipMarker.MoveClass));
+                Assert.IsTrue(figure.Root.ClassListContains(ChoiceGlow.ClassName));
+                StringAssert.Contains(MapFellowshipMarker.MoveHint, figure.Root.tooltip);
+                Assert.AreEqual(FellowshipActions.MoveHint, board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
+            }
             // Hovering the corner tab unrolls the full form over it, as a player reaches the panel.
             CardGestures.Move(board.Fellowship.Status);
             await room.Settle();

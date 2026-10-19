@@ -38,6 +38,13 @@ namespace Wotr.Client
         public const string DeclareClass = "fellowship-declare-target";
         public const string DeclareHint = "Click to declare the Fellowship's position · Choose the route on the map.";
         public bool DeclareOffered { get; private set; }
+        // UI-282: off the Mordor track a hidden Fellowship moves with one click on its figure when the chosen die can
+        // move it, as with the track symbol in its panel.
+        public event System.Action MoveRequested;
+        public const string MoveClass = "fellowship-move-target";
+        public const string MoveHint = "Click to move the Fellowship: progress +1, then the Hunt; its last known position stays.";
+        public bool MoveOffered { get; private set; }
+        private readonly ChoicePulse pulse;
         private string regionId = "";
         private MordorTrackState mordor = MordorTrackState.Outside;
         private bool tileShown;
@@ -74,13 +81,16 @@ namespace Wotr.Client
             map.Add(tile.Root);
             motion = marker.schedule.Execute(Walk).Every(16);
             motion.Pause();
+            pulse = new ChoicePulse(marker);
         }
 
-        // The figure's click: the hide or the declaration it offers, otherwise its inspection.
+        // The figure's click: the hide, the move or the declaration it offers, otherwise its inspection.
         public void Activate()
         {
             if (HideOffered)
                 HideRequested?.Invoke();
+            else if (MoveOffered && !mordor.Active)
+                MoveRequested?.Invoke();
             else if (DeclareOffered && !mordor.Active)
                 DeclareRequested?.Invoke();
             else
@@ -114,7 +124,7 @@ namespace Wotr.Client
                 return;
             HideOffered = offered;
             marker.EnableInClassList(HideClass, offered);
-            map.Refresh();
+            Glow();
         }
 
         public void OfferDeclare(bool offered)
@@ -123,6 +133,26 @@ namespace Wotr.Client
                 return;
             DeclareOffered = offered;
             marker.EnableInClassList(DeclareClass, offered && !mordor.Active);
+            Glow();
+        }
+
+        // UI-282: the hidden Fellowship's figure is the Character die's move on the map.
+        public void OfferMove(bool offered)
+        {
+            if (MoveOffered == offered)
+                return;
+            MoveOffered = offered;
+            marker.EnableInClassList(MoveClass, offered && !mordor.Active);
+            Glow();
+        }
+
+        // UI-282: a figure that offers any of its clicks wears the shared gold ChoiceGlow and pulses, like the other
+        // objects the player is asked to click.
+        private void Glow()
+        {
+            var offers = HideOffered || MoveOffered && !mordor.Active || DeclareOffered && !mordor.Active;
+            ChoiceGlow.Apply(marker, offers);
+            pulse.Run(offers);
             map.Refresh();
         }
 
@@ -148,15 +178,15 @@ namespace Wotr.Client
             marker.style.opacity = map.Figures?.FellowshipArriving == true ? .25f : 1;
             var visible = map.Data.Shapes.TryGetValue(regionId, out var shape);
             var anchor = visible ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1])) : Vector2.zero;
-            // A figure that offers the declaration or the hide is the control for it, so it shows at every zoom.
-            visible &= map.NearView(anchor) && (DeclareOffered || HideOffered || hovered || inspected ||
+            // A figure that offers the declaration, the move or the hide is the control for it, so it shows at every zoom.
+            visible &= map.NearView(anchor) && (DeclareOffered || HideOffered || MoveOffered || hovered || inspected ||
                 map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
             Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
-            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" +
-                (DeclareOffered ? "\n" + DeclareHint : "") + (HideOffered ? "\n" + HideHint : "");
+            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" + (DeclareOffered ? "\n" + DeclareHint : "") +
+                (MoveOffered ? "\n" + MoveHint : "") + (HideOffered ? "\n" + HideHint : "");
         }
 
         // The first place whose figure stands with its feet inside the region at the current zoom; a region too small

@@ -508,3 +508,22 @@ Hunt die." (`FellowshipActions.HideHint`). Without such a die neither glows. Tes
 `FellowshipFigureHideTests` (the figure's click hides on a region and on the track only while offered),
 `FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce` (the chosen die lights the figure, its hint and
 the Ring; the Ring's click hides), `MordorNetworkTests` (the track hide).
+
+<a id="ui-282"></a>
+## The Fellowship's figure is the Character die's move and glows like every choice — UI-282 (2026-10-19)
+
+The owner's report: "the Fellowship should be marked more clearly as an option of the Character die with which we move
+it forward on the map; now it is not clear where the Declare position option is (it is on the figure)". Off the Mordor
+track the hidden Fellowship's figure on the map is now the move's object too: once the chosen die can move it (the
+server's `EligibleDice`, the same condition as the panel's track symbol, UI-110), the figure glows, shows at every
+zoom, reads "Click to move the Fellowship: progress +1, then the Hunt; its last known position stays." and one click
+moves it with that die (UI-142); on the Mordor track the next step stays the move. Every offer of the figure — the
+move, the declaration (UI-236) and the hide (UI-280) — wears the shared ChoiceGlow (a thick gold rim on a warm plate
+pulsing in the 750 ms rhythm, still under Reduced motion) instead of the old thin green border. The console names the
+figure: with such a die "Choose what this die acts on: … The glowing Fellowship figure moves the Fellowship." (or
+"hides the Fellowship"), and in the Fellowship phase "Declare: click the glowing Fellowship figure on the map"; the
+panel's hint reads "Move: click the glowing Fellowship figure on the map or the glowing track symbol · …"
+(`FellowshipActions.MoveHint`). Tests: `FellowshipFigureHideTests.TheHiddenFigureMovesOffTheTrackAndEveryOfferGlows`,
+`TurnConsoleStateTests.ACharacterDieThatMovesTheFellowshipNamesItsFigure`,
+`FellowshipPanelNetworkTests.MoveKeepsTheMapRegionAndRecoversTheExactWillDieReceipt` (the chosen die lights the
+figure and its hints), `FellowshipGestures.Declare`.
