@@ -51,6 +51,24 @@ namespace Wotr.Client
             "kings.character.shadow-of-mirkwood" => "Mirkwood",
             _ => Name(id).Split(' ')[0]
         };
+        // UI-271: the versions of one Shadow character told apart, the base card beside its Lords alternative.
+        public static string Epithet(string id) => id switch
+        {
+            "base.character.mouth-of-sauron" => "Lieutenant of Barad-dûr",
+            "lords.character.mouth-of-sauron" => "Black Númenórean",
+            "base.character.witch-king" => "the Black Captain",
+            "lords.character.witch-king" => "Chief of the Ringwraiths",
+            _ => ""
+        };
+        public static string ShortEpithet(string id) => id switch
+        {
+            "base.character.mouth-of-sauron" => "Lieutenant",
+            "lords.character.mouth-of-sauron" => "Númenórean",
+            "base.character.witch-king" => "Black Captain",
+            "lords.character.witch-king" => "Chief",
+            _ => ""
+        };
+        public static string FullName(string id) => Epithet(id).Length > 0 ? Name(id) + ", " + Epithet(id) : Name(id);
         public static string Symbol(string id)
         {
             var words = Name(id).Replace('-', ' ').Split(' ').Where(w => w.Length > 0 && w.ToLowerInvariant() != "the" && w.ToLowerInvariant() != "of").ToArray();

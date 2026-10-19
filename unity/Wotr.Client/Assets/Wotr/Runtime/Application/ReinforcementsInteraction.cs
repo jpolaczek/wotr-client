@@ -18,13 +18,15 @@ namespace Wotr.Client
         private readonly Func<string, bool> recruitAtOnly;
         private readonly Action confirm;
         private readonly Action finish;
+        private readonly Action<ComponentAction> ability;
         private PlayerView view;
         private TurnDraft draft;
+        private List<ComponentAction> abilities = new List<ComponentAction>();
 
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
         public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster, Func<string, bool> recruitAtOnly,
-            Action confirm, Action finish)
+            Action confirm, Action finish, Action<ComponentAction> ability)
         {
             this.board = board;
             this.edit = edit;
@@ -33,6 +35,7 @@ namespace Wotr.Client
             this.recruitAtOnly = recruitAtOnly;
             this.confirm = confirm;
             this.finish = finish;
+            this.ability = ability;
             board.Reinforcements.FigureChosen += Choose;
             board.Reinforcements.PlacementRemoved += Remove;
             board.Reinforcements.Finish += Finish;
@@ -46,6 +49,9 @@ namespace Wotr.Client
             view = latest;
             draft = selection;
             var plan = ReinforcementPlans.For(view, draft, board.Presentation);
+            // UI-271: Gothmog's ability stands beside the Muster rows while the die chosen can pay it.
+            abilities = plan == null && muster() && draft.Kind == null
+                ? ComponentActions.For(view, draft).Where(CharacterAbilityPlaces.InReserve).ToList() : new List<ComponentAction>();
             board.Reinforcements.Apply(State(plan));
             board.Map.PlannedRecruits.Apply(plan?.Placements ?? Nothing, view.You, !busy());
         }
@@ -57,7 +63,9 @@ namespace Wotr.Client
             if (!muster() || draft.Kind is not (null or CommandKind.Recruit))
                 return ReinforcementsState.Browse(view);
             var recruitment = MusterActions.Option(view, board.ActionDie, CommandKind.Recruit);
-            return ReinforcementsState.For(view, recruitment, draft.ReserveId, !busy());
+            var state = ReinforcementsState.For(view, recruitment, draft.ReserveId, !busy());
+            state.Rows = state.Rows.Concat(GothmogReinforcements.Rows(view, abilities, board.Presentation)).ToList();
+            return state;
         }
 
         // A card or ability plans the figure; a Muster reserve lights the settlements it can take.
@@ -65,6 +73,11 @@ namespace Wotr.Client
         {
             if (view == null || busy())
                 return;
+            if (GothmogReinforcements.Ability(abilities, id) is { } chosen)
+            {
+                ability(chosen);
+                return;
+            }
             if (Planning)
                 edit(() => ReinforcementPlans.Choose(draft, view, id));
             else if (muster())

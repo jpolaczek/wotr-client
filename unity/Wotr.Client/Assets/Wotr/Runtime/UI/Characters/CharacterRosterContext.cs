@@ -59,7 +59,8 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            components = choices.ToList();
+            // UI-271: an ability used on its own object is not repeated as an inspector button.
+            components = choices.Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
             enabled = canEdit;
             DecisionFigure = CharacterRosterActions.OwnsDecision(view, draft)
                 ? CharacterRosterActions.DecisionFigure(view, draft) : "";
@@ -80,8 +81,7 @@ namespace Wotr.Client
             panel.RefreshSelection();
         }
 
-        public bool Available(string id) => components.Any(item => item.Enabled &&
-            CharacterRosterActions.Figure(view, item.OwnerId) == id);
+        public bool Available(string id) => components.Any(item => item.Enabled && CharacterRosterActions.Row(view, item) == id);
 
         // UI-108: the one entry the chosen cost allows for this figure. Several versions or entries stay an explicit
         // choice in the inspector.
@@ -92,7 +92,7 @@ namespace Wotr.Client
         }
 
         private List<ComponentAction> Entries(string id) => view == null ? new List<ComponentAction>() : components
-            .Where(item => item.Enabled && item.Kind == CommandKind.EnterCharacter && CharacterRosterActions.Figure(view, item.OwnerId) == id)
+            .Where(item => item.Enabled && item.Kind == CommandKind.EnterCharacter && CharacterRosterActions.Row(view, item) == id)
             .ToList();
 
         private string EntryLabel(ComponentAction item) => view?.OwnCharacterRoster

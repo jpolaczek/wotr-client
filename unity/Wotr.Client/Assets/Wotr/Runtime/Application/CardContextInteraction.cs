@@ -172,8 +172,20 @@ namespace Wotr.Client
 
         private void Draw(string deck)
         {
-            if (!busy() && view != null && CardActions.CanDraw(view, draft, board.ActionDie, deck))
+            if (busy() || view == null)
+                return;
+            var spear = ChiefReactionObjects.DeckReaction(view, deck);
+            if (spear.Length > 0)
+                edit(() => Respond(spear), true);
+            else if (CardActions.CanDraw(view, draft, board.ActionDie, deck))
                 edit(() => CardActions.Draw(draft, view, board.ActionDie, deck), true);
+        }
+
+        private void Respond(string reaction)
+        {
+            if (draft.Kind != CommandKind.RespondEffect)
+                draft.Choose(CommandKind.RespondEffect);
+            draft.Change(p => p.ReactionId = reaction);
         }
 
         private void Cost(EventCostOption cost)

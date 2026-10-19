@@ -50,7 +50,8 @@ namespace Wotr.Client
         }
 
         private static string Moved(PlayerView view, TurnDraft draft) =>
-            view.Decision?.Kind == DecisionKind.CharacterEvent && draft.Kind == CommandKind.MoveShadowCharacters ? "Nazgûl moved" : "characters moved";
+            view.Decision?.Kind == DecisionKind.CharacterEvent && draft.Kind == CommandKind.MoveShadowCharacters
+                ? NazgulFlightDraft.OnlyNazgul(view, draft) ? "Nazgûl moved" : "figures moved" : "characters moved";
 
         private static string Count(int count, string what) => count == 0 ? "" : what.Substring(0, 1).ToUpperInvariant() + what.Substring(1) + " " + count;
 

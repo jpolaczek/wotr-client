@@ -71,7 +71,7 @@ namespace Wotr.Client
             }
             if (NazgulFlightDraft.Targets(view, draft).Contains(region))
             {
-                edit(() => NazgulFlightDraft.Fly(view, draft, region), false);
+                edit(() => NazgulFlightDraft.Fly(view, draft, region, board.Presentation), false);
                 return true;
             }
             if (!NazgulFlightDraft.IsSource(view, draft, region))

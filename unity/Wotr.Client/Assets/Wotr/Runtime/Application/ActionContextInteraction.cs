@@ -38,6 +38,7 @@ namespace Wotr.Client
             board.Hover.Panel.Eligible = id => !busy() && eligible.Contains(id);
             board.Hover.Panel.Selected = selected.Contains;
             board.Hover.Panel.Moved = moved.Contains;
+            board.Hover.Panel.Offer = _ => "";
             board.Hover.Panel.RefreshSelection();
             board.Map.ShowMarched(MarchedForces(view, moved));
             var sources = ArmyActive ? ContextArmySelection.Sources(view, board.ActionDie) : Enumerable.Empty<ArmyOption>();
@@ -164,6 +165,7 @@ namespace Wotr.Client
             board.Hover.Panel.Eligible = _ => false;
             board.Hover.Panel.Selected = _ => false;
             board.Hover.Panel.Moved = _ => false;
+            board.Hover.Panel.Offer = _ => "";
             board.Map.SetGhost(null);
             board.Map.ShowMarched(Enumerable.Empty<(string, Side, bool)>());
             board.Hover.Close();

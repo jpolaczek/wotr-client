@@ -9,6 +9,8 @@ namespace Wotr.Client
         public string UnitId = "";
         public string Nation = "";
         public UnitKind Kind;
+        // UI-271: a moved character's definition, so its ghost shows its own figure; "" for a unit.
+        public string CharacterId = "";
         public string RegionId = "";
         public string RegionName = "";
     }

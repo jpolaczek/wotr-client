@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
+using UnityEngine.UIElements;
 using Wotr.Client;
 
 namespace Wotr.PlayTests
@@ -43,10 +45,16 @@ namespace Wotr.PlayTests
                 client.Board.DecisionWindow.Opening -= handler;
         }
 
+        // The decision, its owner's side and the tray's shown buttons, so a failure names what opened the window.
         private static string Describe(MountedMatchClient client)
         {
-            var decision = client.Board.View?.Decision;
-            return decision == null ? "no decision" : decision.Kind + " " + decision.Presentation;
+            var view = client.Board.View;
+            var decision = view?.Decision;
+            if (decision == null)
+                return "no decision";
+            var buttons = client.Board.Tray.Query<Button>().ToList()
+                .Where(button => button.resolvedStyle.display != DisplayStyle.None).Select(button => button.name);
+            return decision.Kind + " " + decision.Presentation + " (" + view.You + ": " + string.Join(" ", buttons) + ")";
         }
     }
 }

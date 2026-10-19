@@ -85,7 +85,7 @@ namespace Wotr.Client
             confirm.SetEnabled(confirmable && legal);
             Sync(state.Rows);
             foreach (var row in state.Rows)
-                views[row.Nation].Apply(row, state);
+                views[row.Id].Apply(row, state);
             planned.Apply(state);
             ShowFocus();
         }
@@ -208,15 +208,15 @@ namespace Wotr.Client
         {
             var same = latest.Count == views.Count;
             foreach (var row in latest)
-                same &= views.ContainsKey(row.Nation);
+                same &= views.ContainsKey(row.Id);
             if (same)
                 return;
             rows.Clear();
             views.Clear();
             foreach (var row in latest)
             {
-                var view = new ReinforcementRowView(row.Nation, id => FigureChosen?.Invoke(id));
-                views.Add(row.Nation, view);
+                var view = new ReinforcementRowView(row.Id, row.Nation, id => FigureChosen?.Invoke(id));
+                views.Add(row.Id, view);
                 rows.Add(view.Root);
             }
         }

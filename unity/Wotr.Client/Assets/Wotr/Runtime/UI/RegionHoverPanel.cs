@@ -15,6 +15,8 @@ namespace Wotr.Client
         public Func<string, bool> Selected { get; set; } = _ => false;
         // UI-127: figures that already marched in this action; they cannot be chosen again.
         public Func<string, bool> Moved { get; set; } = _ => false;
+        // UI-271: what a lit figure's click does when it is not a selection (an ability used on the figure).
+        public Func<string, string> Offer { get; set; } = _ => "";
         public event Action<string> FigureChosen;
         public event Action<string> EffectInspected;
         public event Action<string> CharacterInspected;
@@ -232,8 +234,9 @@ namespace Wotr.Client
                 entry.Value.EnableInClassList("eligible-figure", eligible);
                 entry.Value.EnableInClassList("selected", selected);
                 entry.Value.EnableInClassList(MapArmyArtwork.MovedClass, moved);
-                entry.Value.tooltip = descriptions[entry.Key] + (selected ? " · Selected · Click to leave behind" : eligible
-                    ? " · Click to select" : moved ? " · Already marched in this action" : "") +
+                var offer = eligible ? Offer(entry.Key) : "";
+                entry.Value.tooltip = descriptions[entry.Key] + (selected ? " · Selected · Click to leave behind" : offer.Length > 0
+                    ? " · " + offer : eligible ? " · Click to select" : moved ? " · Already marched in this action" : "") +
                     (abilities.TryGetValue(entry.Key, out var lines) ? lines : "");
             }
         }

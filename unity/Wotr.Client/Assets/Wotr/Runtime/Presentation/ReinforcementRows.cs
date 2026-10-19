@@ -13,10 +13,15 @@ namespace Wotr.Client
         public string Reason = "";
         // UI-135: a legal recruit with a known consequence, such as a leader removed where no army stands.
         public string Warning = "";
+        // UI-271: what this token's click does when it differs from the panel's hint (Gothmog's ability).
+        public string Hint = "";
     }
 
     public sealed class ReinforcementRow
     {
+        // UI-271: a row that is not a nation's own (Gothmog's) has its own key; a nation's row is keyed by the nation.
+        public string Key = "";
+        public string Id => Key.Length > 0 ? Key : Nation;
         public string Nation = "";
         public string Name = "";
         // A card plan's limits for the nation (UI-131); UI-179: never the nation's political status.

@@ -51,6 +51,8 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-271: with the paying die selected the Balrog's figure glows in his region's panel, says what its click does,
+        // and its click (de)activates him at once; the panel lists no ability button.
         private static async Task Balrog(bool activate)
         {
             using (var room = await Connect(activate ? "t34-balrog-activate" : "t34-balrog-deactivate", ScenarioKind.CardPack))
@@ -58,11 +60,36 @@ namespace Wotr.PlayTests
                 var client = activate ? room.Sh : room.Fp;
                 var choice = client.Board.View.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility)
                     .CharacterActions.Single(c => c.AbilityId == (activate ? "activate-balrog" : "deactivate-balrog"));
-                await Ability(room, client, choice, activate ? "balrog-activate" : "balrog-deactivate");
+                var region = client.Board.View.Characters.Single(c => c.Id == choice.CharacterId).Location;
+                await ComponentGestures.Cost(room, client, choice.Dice[0]);
+                var figure = await BalrogFigure(room, client, choice, region, activate);
+                await Layout(room, client, activate ? "balrog-activate" : "balrog-deactivate", "ui271");
+                await Reconnect(room, client);
+                figure = await BalrogFigure(room, client, choice, region, activate);
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(figure);
+                await room.At(revision + 1);
+                Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == choice.Dice[0]).Location);
                 Assert.AreEqual(activate ? 2 : 0, room.Fp.Board.View.Characters.Single(c => c.Id == choice.CharacterId).Level);
             }
         }
 
+        private static async Task<Button> BalrogFigure(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice,
+            string region, bool activate)
+        {
+            client.Board.Hover.Open(region);
+            await room.Settle();
+            var panel = client.Board.Hover.Panel;
+            Assert.IsNull(panel.Components.Root.Q<Button>("component-" + ComponentGestures.Character(choice)),
+                "UI-271: the Balrog's ability is used on his figure, not a button.");
+            var figure = panel.Root.Q<Button>("hover-figure-" + choice.CharacterId);
+            Assert.IsTrue(figure.ClassListContains("eligible-figure"));
+            StringAssert.Contains(activate ? "Click to activate the Balrog" : "Click to deactivate the Balrog", figure.tooltip);
+            return figure;
+        }
+
+        // UI-271: with a Muster die selected Gothmog's row in the Reserve panel offers a Regular (recruit) and an Elite
+        // (upgrade); the token's click uses the ability at once.
         private static async Task Gothmog(bool upgrade)
         {
             using (var room = await Connect(upgrade ? "t34-gothmog-upgrade" : "t34-gothmog-recruit", ScenarioKind.CardPack))
@@ -71,21 +98,36 @@ namespace Wotr.PlayTests
                 var before = client.Board.View.Units.Count(u => u.Location == "minas-morgul" && u.Kind == UnitKind.Regular);
                 var choice = client.Board.View.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility)
                     .CharacterActions.Single(c => c.AbilityId == (upgrade ? "gothmog-upgrade" : "gothmog-recruit"));
-                await Ability(room, client, choice, upgrade ? "gothmog-upgrade" : "gothmog-recruit");
+                await ComponentGestures.Cost(room, client, choice.Dice[0]);
+                var token = await GothmogToken(room, client, upgrade);
+                client.Board.Hover.Open("minas-morgul");
+                await room.Settle();
+                Assert.IsNull(client.Board.Hover.Panel.Components.Root.Q<Button>("component-" + ComponentGestures.Character(choice)),
+                    "UI-271: Gothmog's ability stands in the Reserve panel, not the region panel.");
+                await Layout(room, client, upgrade ? "gothmog-upgrade" : "gothmog-recruit", "ui271");
+                await Reconnect(room, client);
+                token = await GothmogToken(room, client, upgrade);
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(token);
+                await room.At(revision + 1);
+                Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == choice.Dice[0]).Location);
                 Assert.AreEqual(before + (upgrade ? -1 : 1), room.Fp.Board.View.Units.Count(u => u.Location == "minas-morgul" && u.Kind == UnitKind.Regular));
             }
         }
 
-        private static async Task Ability(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice, string name)
+        private static async Task<Button> GothmogToken(MatchTestRoom room, MountedMatchClient client, bool upgrade)
         {
-            await ComponentGestures.Cost(room, client, choice.Dice[0]);
-            await ComponentGestures.Show(client, ComponentGestures.Character(choice));
-            await Layout(room, client, name, "t34");
-            await Reconnect(room, client);
-            var revision = client.Board.View.Revision;
-            await ComponentGestures.Select(client, ComponentGestures.Character(choice));
-            await room.At(revision + 1);
-            Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == choice.Dice[0]).Location);
+            client.Board.Reinforcements.Open();
+            await room.Settle();
+            var row = client.Board.Reinforcements.Root.Q("reinforcement-gothmog");
+            Assert.IsNotNull(row, "Gothmog's row stands in the Reserve panel.");
+            StringAssert.StartsWith("Gothmog · Minas Morgul", row.Q<Label>("reinforcement-name").text);
+            var token = row.Q<Button>("reserve-token-gothmog-" + (upgrade ? UnitKind.Elite : UnitKind.Regular));
+            Assert.IsTrue(token.enabledSelf && token.ClassListContains("eligible-token"));
+            StringAssert.StartsWith(upgrade ? "Elite · " : "Regular · ", token.tooltip);
+            StringAssert.Contains(upgrade ? "Click to replace a Sauron Regular in Minas Morgul" : "Click to recruit a Sauron Regular in Minas Morgul",
+                token.tooltip);
+            return token;
         }
 
         private static async Task Travel(Side side)

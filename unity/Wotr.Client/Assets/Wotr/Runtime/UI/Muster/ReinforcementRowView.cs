@@ -17,13 +17,13 @@ namespace Wotr.Client
         private readonly Dictionary<UnitKind, Token> tokens = new Dictionary<UnitKind, Token>();
         private readonly HashSet<UnitKind> shown = new HashSet<UnitKind>();
         private readonly Action<string> chosen;
-        private readonly string nation;
+        private readonly string key;
 
-        public ReinforcementRowView(string nation, Action<string> chosen)
+        public ReinforcementRowView(string key, string nation, Action<string> chosen)
         {
-            this.nation = nation;
+            this.key = key;
             this.chosen = chosen;
-            Root.name = "reinforcement-" + nation;
+            Root.name = "reinforcement-" + key;
             Root.AddToClassList("reinforcement-row");
             Root.Add(Badge(nation));
             name.AddToClassList("reinforcement-name");
@@ -54,7 +54,7 @@ namespace Wotr.Client
             shown.Clear();
             foreach (var figure in row.Figures)
             {
-                TokenFor(figure.Kind).Apply(figure, state, nation);
+                TokenFor(figure.Kind).Apply(figure, state, row.Nation, key);
                 shown.Add(figure.Kind);
             }
             // A kind the current source does not offer (a Muster token during a card plan) is hidden, not left stale.
@@ -105,9 +105,9 @@ namespace Wotr.Client
                 Button.Add(count);
             }
 
-            public void Apply(ReinforcementFigure figure, ReinforcementsState state, string nation)
+            public void Apply(ReinforcementFigure figure, ReinforcementsState state, string nation, string key)
             {
-                Button.name = state.TokenPrefix + nation + "-" + figure.Kind;
+                Button.name = state.TokenPrefix + key + "-" + figure.Kind;
                 image.sprite = FigureArtwork.Sprite(FigureAppearances.Unit(nation, figure.Kind, state.Side));
                 count.text = figure.Reserve.ToString();
                 Button.userData = figure.ReserveId == null ? null : new DraftToken(DraftObject.Reserve, figure.ReserveId);
@@ -120,7 +120,7 @@ namespace Wotr.Client
                 Button.EnableInClassList("eligible-token", state.Open && state.Interactive && figure.ReserveId != null && !selected);
                 Button.tooltip = figure.Kind + " · " + figure.Reserve + " in reserve" + (!state.Open ? "" : " · " + (figure.ReserveId == null
                     ? figure.Reason.Length > 0 ? figure.Reason : "Not available now"
-                    : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");
+                    : figure.Hint.Length > 0 ? figure.Hint : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");
                 Button.EnableInClassList("token-warning", figure.Warning.Length > 0);
             }
         }

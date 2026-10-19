@@ -19,6 +19,7 @@ namespace Wotr.Client
         public static IEnumerable<ComponentAction> For(PlayerView view, string figure, string version,
             IEnumerable<ComponentAction> components)
         {
+            figure = CharacterRosterVersions.Figure(figure);
             var row = view.OwnCharacterRoster.FirstOrDefault(item => item.Side == view.You && item.FigureId == figure);
             if (row == null)
                 return Enumerable.Empty<ComponentAction>();
@@ -35,9 +36,14 @@ namespace Wotr.Client
             view?.Decision?.Kind == DecisionKind.Action && !view.Winner.HasValue && draft.Kind != CommandKind.EnterCharacter &&
             DecisionFigure(view, draft).Length > 0;
 
+        // The Characters row of the entering version (UI-271: its own row when it is an alternative version).
         public static string EnteringFigure(PlayerView view, TurnDraft draft) =>
             draft.Kind == CommandKind.EnterCharacter && draft.Payload.RegionId.Length == 0 && view.DecisionOwner == view.You
-                ? Figure(view, draft.Payload.CharacterId) : "";
+                ? CharacterRosterVersions.RowKey(view, Figure(view, draft.Payload.CharacterId), draft.Payload.CharacterId) : "";
+
+        // The Characters row that offers a component: an entry belongs to its version's row, anything else to the figure.
+        public static string Row(PlayerView view, ComponentAction item) => CharacterRosterVersions.RowKey(view,
+            Figure(view, item.OwnerId), item.Kind == CommandKind.EnterCharacter ? item.Character?.CharacterId : "");
 
         public static bool HasReaction(PlayerView view, string id) =>
             id.Length > 0 && view?.Decision != null && view.DecisionOwner == view.You && view.Decision.Kind != DecisionKind.Action &&

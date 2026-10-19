@@ -104,7 +104,7 @@ namespace Wotr.Client
             var future = row.FutureVersions.FirstOrDefault(v => v.DefinitionId == version);
             stats.Apply(CharacterCardFacts.For(row, version, future == null));
             abilities.Apply(version);
-            var explanation = row.Side == view.You ? ResourcePresentation.Explain(view, row.FigureId) : "";
+            var explanation = row.Side == view.You ? ResourcePresentation.Explain(view, CharacterRosterVersions.Figure(row.FigureId)) : "";
             limits.text = explanation.Length > 0 ? "Limits" : "";
             limits.tooltip = explanation;
             ShowLimits(explanation.Length > 0);

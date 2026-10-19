@@ -40,6 +40,7 @@ namespace Wotr.Client
         private readonly NazgulFlightInteraction flights;
         private readonly CardFigureInteraction cardFigures;
         private readonly CardArmyInteraction cardArmies;
+        private readonly FigureAbilityInteraction figureAbilities;
         private readonly FellowshipContextInteraction fellowshipContext;
         private readonly HuntContextInteraction huntContext;
         private readonly ResourceContextInteraction resources;
@@ -94,7 +95,7 @@ namespace Wotr.Client
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
             reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.Active,
-                id => muster.RecruitAtOnly(id), Confirm, FinishSequence);
+                id => muster.RecruitAtOnly(id), Confirm, FinishSequence, ChooseComponent);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);
@@ -106,7 +107,9 @@ namespace Wotr.Client
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
-            context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id);
+            figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy);
+            context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id) ||
+                figureAbilities.Figure(id);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
             input = new DraftInput(board.Root, Confirm, Back, Drop,
                 () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch);
@@ -814,6 +817,8 @@ namespace Wotr.Client
             huntContext.Refresh(view, draft);
             resources.Refresh(view, draft);
             components.Refresh(view, draft, !SelectionBusy);
+            // UI-271: after the components, whose map owners a figure's reaction extends.
+            figureAbilities.Refresh(view, draft, components.Current);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
                 view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.MoveArmies;

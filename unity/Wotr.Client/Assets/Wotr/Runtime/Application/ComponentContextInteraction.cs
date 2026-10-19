@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Wotr.Contracts;
 
@@ -9,6 +10,8 @@ namespace Wotr.Client
     {
         private readonly BoardScreen board;
         private readonly Action<ComponentAction> select;
+        // The components of the last refresh, for the contexts that place some of them on their objects (UI-271).
+        public IReadOnlyList<ComponentAction> Current { get; private set; } = new List<ComponentAction>();
 
         public ComponentContextInteraction(BoardScreen board, Action<ComponentAction> select)
         {
@@ -24,6 +27,7 @@ namespace Wotr.Client
         public void Refresh(PlayerView view, TurnDraft draft, bool enabled)
         {
             var components = ComponentActions.For(view, draft).ToList();
+            Current = components;
             var idle = draft.Kind == null;
             var council = ResourcePresentation.CouncilPending(draft);
             board.ResourceDecision.CouncilChoices.Apply(council ? components.Where(c => c.Kind != CommandKind.EnterCharacter)
@@ -33,7 +37,8 @@ namespace Wotr.Client
             board.Components.Apply(components.Where(c => c.CardId.Length == 0 && c.Region.Length == 0 && idle &&
                 c.Kind is not (CommandKind.UseCouncilToken or CommandKind.EnterCharacter or CommandKind.Pass or CommandKind.DiscardDie) &&
                 !council), enabled);
-            board.Hover.Panel.Context(components.Where(c => c.Region.Length > 0 && idle), enabled);
+            // UI-271: an ability used on its own object (the Balrog's figure, Gothmog's Reserve row) has no button here.
+            board.Hover.Panel.Context(components.Where(c => c.Region.Length > 0 && idle && !CharacterAbilityPlaces.OwnPlace(c)), enabled);
             board.TableEffects.Context(components.Where(c => c.CardId.Length > 0), enabled);
             board.TableEffects.Draft(view, draft);
             board.Map.HighlightOwners(components.Where(c => c.Enabled && idle).Select(c => c.Region));

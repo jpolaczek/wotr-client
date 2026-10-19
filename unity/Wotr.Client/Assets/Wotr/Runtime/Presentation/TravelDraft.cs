@@ -122,10 +122,8 @@ namespace Wotr.Client
                 Stay(draft, option);
                 return true;
             }
-            List<string> route;
-            if (travel.Flight)
-                route = new List<string> { travel.Origin, target };
-            else if (!Routes(travel, data).TryGetValue(target, out route))
+            var route = Path(travel, data, target);
+            if (route == null)
                 return false;
             draft.Change(_ =>
             {
@@ -133,6 +131,15 @@ namespace Wotr.Client
                 Route(draft).AddRange(route);
             });
             return true;
+        }
+
+        // The route of one figure to a target: a flight goes straight there, a walker along the shortest path within its
+        // range (UI-271: also a Shadow character moved by a card); the server checks every step.
+        public static List<string> Path(TravelOption travel, BoardPresentation data, string target)
+        {
+            if (travel.Flight)
+                return new List<string> { travel.Origin, target };
+            return data != null && Routes(travel, data).TryGetValue(target, out var route) ? route : null;
         }
 
         private static Dictionary<string, List<string>> Routes(TravelOption travel, BoardPresentation data)

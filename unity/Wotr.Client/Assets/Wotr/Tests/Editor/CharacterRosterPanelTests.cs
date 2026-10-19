@@ -170,7 +170,10 @@ namespace Wotr.EditorTests
             var view = Read("CharacterRosterShadowWire.json");
             var panel = new CharacterRosterPanel(new VisualElement(), BoardPresentation.Load(), _ => { });
             panel.Apply(view);
-            Assert.AreEqual(8, panel.Root.Query<Button>().ToList().Count(b => b.name.StartsWith("character-roster-")));
+            var rows = panel.Root.Query<Button>().ToList().Where(b => b.name.StartsWith("character-roster-")).ToList();
+            // UI-271: the Mouth of Sauron and the Witch-king list their base and Lords versions as two rows each.
+            Assert.AreEqual(10, rows.Count);
+            Assert.AreEqual(8, rows.Select(b => CharacterRosterVersions.Figure(b.name.Substring("character-roster-".Length))).Distinct().Count());
             var future = view.OwnCharacterRoster.Single(r => r.Identity == "black-serpent").FutureVersions.Single();
             StringAssert.Contains(future.Entry.Source, CharacterRosterPresentation.Conditions(future.Entry));
             StringAssert.Contains(future.Entry.Cost, CharacterRosterPresentation.Conditions(future.Entry));

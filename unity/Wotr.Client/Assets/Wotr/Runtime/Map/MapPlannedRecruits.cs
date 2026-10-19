@@ -47,9 +47,23 @@ namespace Wotr.Client
                     ghost = new Ghost(map, pair.Key, prefix, removable ? () => Removed?.Invoke(pair.Key) : null);
                     ghosts.Add(pair.Key, ghost);
                 }
-                ghost.Apply(ArmyMarker.From(pair.Key, side, false, pair.Value.Select(p => (p.Nation, p.Kind))), interactive);
+                ghost.Apply(Marker(pair.Key, side, pair.Value), interactive);
             }
             Layout();
+        }
+
+        // Planned units by nation and kind; a moved character (UI-271) shows its own figure.
+        private static ArmyMarker Marker(string region, Side side, List<PlannedReinforcement> placements)
+        {
+            var units = placements.Where(p => p.CharacterId.Length == 0).Select(p => (p.Nation, p.Kind));
+            var marker = ArmyMarker.From(region, side, false, units);
+            var characters = placements.Where(p => p.CharacterId.Length > 0).ToList();
+            if (characters.Count == 0)
+                return marker;
+            marker.Characters = characters.Count;
+            marker.CharacterAppearance = FigureAppearances.Character(characters[0].CharacterId, side);
+            marker.CharacterNames.AddRange(characters.Select(c => CharacterLibrary.ShortName(c.CharacterId)));
+            return marker;
         }
 
         public void Layout()

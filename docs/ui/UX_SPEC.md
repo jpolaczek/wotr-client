@@ -1248,6 +1248,42 @@ with its control, settlement and points. Tests: `MapLandmarksTests.AFateGameDraw
 `RegionVictoryTextTests`, `VictoryPanelNetworkTests.FateNewCitiesAndKingsKeepTheirAuthoritativeScoringOrigins` (with a
 screenshot of Erebor), `ConfigurationLayoutTests` (all 93 configurations in four layouts).
 
+## Lords characters on their objects — UI-271 (2026-10-19)
+
+Every Lords character ability is used on its object; no ability button stands in the region panel or the inspector:
+
+- **Entries** start from the character's row in the Characters panel, as the base characters do (UI-240). The Mouth
+  of Sauron and the Witch-king, whose Lords cards are alternatives to the base ones, list each version not in play as
+  a row of its own (`CharacterRosterVersions`, key `figure@version`), its second line naming the version
+  (Lieutenant / Númenórean, Black Captain / Chief). With the Black Captain in play, the Chief's row (under Not in play)
+  turns him in place: "Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the
+  Ringwraiths"; his own row keeps inspecting him. An entry waiting for its region offers no Change button (which
+  opened the generic window): another lit row changes it. Elrond, Galadriel, Gothmog and the Balrog enter from their
+  rows; the Balrog's optional reserve figure is chosen in the Reserve panel, which now unrolls when that plan begins
+  after the Muster die (`ReinforcementsPanel.Follow`).
+- **The Balrog** is activated (Use Balrog die) or deactivated (Free Peoples' Will of the West, or a Character die with
+  Gandalf beside him) by a click on his figure: with the paying die selected, his region glows on the map and his
+  figure in its panel glows and says what the click does (`FigureAbilityInteraction`, `CharacterAbilityPlaces`).
+- **Gothmog**'s "fling into the fray" stands in the Reserve panel while a Muster die is selected: his row
+  ("Gothmog · Minas Morgul") offers a Sauron Regular (recruit beside him) and an Elite (replace a Regular there); the
+  token's click uses the ability at once (`GothmogReinforcements`).
+- **Evil Knowledge** is a graphic choice in the siege footer (an eye over a tower) whose tooltip says it extends the
+  siege without downgrading an Elite.
+- **The Chief's reactions**: Spear of Terror lights the Shadow's Character deck ("Click to draw a Character card ·
+  Spear of Terror…"); He Sees, He Knows lights the Chief's region and his figure, whose click moves him to the
+  Fellowship (`ChiefReactionObjects`). The console keeps only Decline.
+- **One movement pattern**: a card that moves Shadow characters uses the Nazgûl flight gesture (UI-212) for all of
+  them. A walker (the Balrog alone, the Lords Minions) goes along its shortest path within its level, alone in its
+  group, its ghost is its own figure, and the console speaks of figures rather than Nazgûl. The Balrog card's order
+  (alone / army / finish) is three console buttons.
+
+Tests: `CharacterRosterVersionsTests`, `NazgulFlightDraftTests.AWalkingCharacterMovesAlongItsPathWithTheSameGesture`,
+`CardConsoleOptionsTests.TheBalrogsOrderIsThreeConsoleButtonsAndNoWindow`,
+`CardConsoleOptionsTests.TheChiefsReactionsLeaveTheConsoleForTheirObjects`, `ExpansionAbilityNetworkTests` (Balrog
+figure, Gothmog's Reserve row), `ExpansionWindowNetworkTests` (Evil Knowledge), `LordsCharacterNetworkTests`
+(entries, the Witch-king's switch, Spear, He Sees, the Balrog alone), seeder scenarios `ui271-*`
+(wotr-server `LordsCharacterScenarioTests`).
+
 ## Kings of Middle-earth art — ART-07 (2026-10-19, painted part)
 
 Generated and built like ART-06: the awakened figures of Brand, Dáin, Denethor, Théoden and Thranduil, their awakened

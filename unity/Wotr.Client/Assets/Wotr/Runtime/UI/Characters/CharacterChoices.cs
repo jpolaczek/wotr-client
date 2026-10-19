@@ -33,7 +33,8 @@ namespace Wotr.Client
             }
             if (current != null)
             {
-                if (option.CharacterActions.Count > 1 && !compact)
+                // UI-271: an entry is chosen on its row in the Characters panel, where another lit row changes it.
+                if (option.CharacterActions.Count > 1 && !compact && draft.Kind != CommandKind.EnterCharacter)
                 {
                     var change = BoardScreen.Button("Change", () => edit(() => CharacterDraft.ClearSelection(draft)));
                     change.name = "change-character-action";

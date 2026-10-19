@@ -66,7 +66,19 @@ namespace Wotr.Client
             if (region.Length > 0)
                 return new CharacterStatus { Key = "on-board", Text = region + (row.Garrison ? " · Garrison" : ""), Short = region,
                     Tooltip = state + " · " + region };
-            var (key, words) = row.Lifecycle switch
+            var (key, words) = StatusWords(row);
+            // Beside the ring a roster row needs no "In".
+            var brief = key == "fellowship" ? "Fellowship" : words;
+            return new CharacterStatus { Key = key, Text = words, Short = brief, Tooltip = state };
+        }
+
+        // UI-271: a version row names its version, as both rows show the same character.
+        private static (string Key, string Words) StatusWords(CharacterRosterView row)
+        {
+            var version = CharacterRosterVersions.Version(row.FigureId);
+            if (version.Length > 0)
+                return ("waiting", CharacterLibrary.ShortEpithet(version));
+            return row.Lifecycle switch
             {
                 CharacterRosterLifecycle.OnBoard => ("on-board", "On board"),
                 CharacterRosterLifecycle.InFellowship => ("fellowship", "In Fellowship"),
@@ -77,9 +89,6 @@ namespace Wotr.Client
                 CharacterRosterLifecycle.NotEntered => ("waiting", "Not entered"),
                 _ => ("waiting", "Unknown")
             };
-            // Beside the ring a roster row needs no "In".
-            var brief = key == "fellowship" ? "Fellowship" : words;
-            return new CharacterStatus { Key = key, Text = words, Short = brief, Tooltip = state };
         }
 
         private static string Number(int? value) => value.HasValue ? value.Value.ToString() : "?";

@@ -35,13 +35,16 @@ namespace Wotr.Client
             foreach (var entry in buttons)
             {
                 var count = counts != null && counts.TryGetValue(entry.Key, out var n) ? n : 0;
-                var available = CardActions.CanDraw(view, draft, context, entry.Key);
+                // UI-271: the Chief's Spear of Terror is drawn from the Character deck itself.
+                var spear = ChiefReactionObjects.DeckReaction(view, entry.Key).Length > 0;
+                var available = spear || CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
                 entry.Value.EnableInClassList("empty-deck", count == 0);
                 entry.Value.Q<Label>("deck-count").text = count.ToString();
                 entry.Value.SetEnabled(available && !busy);
-                entry.Value.tooltip = FigureGrid.Name(entry.Key) + " · " + count + " cards" +
-                    (count == 0 ? " · Empty" : available ? " · Draw" : " · Choose an Event die to draw");
+                var state = FigureGrid.Name(entry.Key) + " · " + count + " cards";
+                entry.Value.tooltip = spear ? ChiefReactionObjects.SpearOffer + "\n" + state :
+                    state + (count == 0 ? " · Empty" : available ? " · Draw" : " · Choose an Event die to draw");
             }
         }
     }

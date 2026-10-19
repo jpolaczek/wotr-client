@@ -41,7 +41,9 @@ namespace Wotr.Client
         {
             "CaptainOrder", "LureCompanion", "FellowshipAction", "NazgulStrike",
             // UI-264: the expansions' two-way card modes (Fate's Monsters, the Kings cards' branches).
-            "EffectTargets", "SovereignCardBranch"
+            "EffectTargets", "SovereignCardBranch",
+            // UI-271: the Balrog card's order: move him alone, move his army, or finish.
+            "BalrogOrder"
         };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
@@ -160,10 +162,11 @@ namespace Wotr.Client
         private static IReadOnlyList<ConsoleOption> ReactionOptions(PlayerView view)
         {
             var respond = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect);
-            // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247).
+            // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247), the
+            // Chief's at the Character deck and at his figure (UI-271).
             var tableCards = ReactionTableCards(view);
             var options = respond?.EffectChoices.Where(c => !view.Hand.Contains(c.SourceId) && !FellowshipActions.ReactionOnRoster(view, c.Id) &&
-                    !tableCards.ContainsKey(c.SourceId))
+                    !tableCards.ContainsKey(c.SourceId) && !ChiefReactionObjects.OnObject(c.Id))
                 .Select(Response).ToList() ??
                 new List<ConsoleOption>();
             if (tableCards.Count > 0)

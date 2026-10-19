@@ -55,6 +55,59 @@ namespace Wotr.EditorTests
             Assert.IsFalse(WindowChoices(view, draft));
         }
 
+        // UI-271: the Balrog card's order is three console buttons.
+        [Test]
+        public void TheBalrogsOrderIsThreeConsoleButtonsAndNoWindow()
+        {
+            var view = Card("BalrogOrder",
+                new EffectChoiceView { Id = "balrog.alone", Title = "Move the Balrog alone" },
+                new EffectChoiceView { Id = "balrog.army", Title = "Move or attack with his army" },
+                new EffectChoiceView { Id = "balrog.finish", Title = "Finish" });
+            var draft = Draft(CommandKind.ChooseEffect);
+            var options = CardConsoleOptions.For(view, draft);
+            CollectionAssert.AreEqual(new[] { "effect-choice-balrog.alone", "effect-choice-balrog.army", "effect-choice-balrog.finish" },
+                options.Select(o => o.Name));
+            Assert.IsFalse(WindowChoices(view, draft));
+        }
+
+        // UI-271: the Chief's Spear of Terror is used at the Character deck and He Sees, He Knows at his figure; the console
+        // keeps only Decline.
+        [Test]
+        public void TheChiefsReactionsLeaveTheConsoleForTheirObjects()
+        {
+            var view = new PlayerView
+            {
+                You = Side.Shadow,
+                DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "chief", Kind = DecisionKind.Reaction },
+                Characters = { new CharacterView { Id = "base.character.witch-king", DefinitionId = "lords.character.witch-king", Side = Side.Shadow, Location = "minas-morgul" } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.RespondEffect, Enabled = true,
+                        EffectChoices =
+                        {
+                            new EffectChoiceView { Id = ChiefReactionObjects.Spear, SourceId = "lords.character.witch-king", Title = "Spear of Terror · Draw card" },
+                            new EffectChoiceView { Id = ChiefReactionObjects.Follow, SourceId = "lords.character.witch-king", Title = "He Sees, He Knows · Follow" }
+                        }
+                    },
+                    new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true }
+                }
+            };
+            var options = CardConsoleOptions.For(view, new TurnDraft());
+            CollectionAssert.AreEqual(new[] { "action-DeclineReaction" }, options.Select(o => o.Name));
+            Assert.AreEqual(ChiefReactionObjects.Spear, ChiefReactionObjects.DeckReaction(view, "character"));
+            Assert.AreEqual("", ChiefReactionObjects.DeckReaction(view, "strategy"));
+            Assert.AreEqual("base.character.witch-king", ChiefReactionObjects.FollowFigure(view));
+            var decks = new DeckView();
+            decks.Refresh(view, new TurnDraft(), new ActionDieContext(), false);
+            var character = decks.Root.Q<Button>("deck-character");
+            Assert.IsTrue(character.enabledSelf && character.ClassListContains("legal-target"));
+            StringAssert.StartsWith("Click to draw a Character card · Spear of Terror", character.tooltip);
+            Assert.IsFalse(decks.Root.Q<Button>("deck-strategy").enabledSelf);
+        }
+
         [Test]
         public void TheNazgulStrikeDiscardsTableCardsInTheEffectsPanelAndKeepsThreeButtons()
         {
