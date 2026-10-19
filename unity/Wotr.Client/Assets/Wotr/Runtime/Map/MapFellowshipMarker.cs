@@ -14,7 +14,8 @@ namespace Wotr.Client
         // UI-228: above the region's forces first; where that would stand in the neighbouring region (Gorgoroth under
         // Barad-dûr), below them, then right and left of them.
         private static readonly Vector2[] RegionPlaces = { new Vector2(0, -64), new Vector2(0, 64), new Vector2(70, -8), new Vector2(-70, -8) };
-        private static readonly Vector2 TrackDetail = new Vector2(36, 40), TrackToken = new Vector2(28, 32);
+        // UI-283 (owner's request): on the Mordor track the figure is twice its first size, as large as on a region.
+        private static readonly Vector2 TrackDetail = new Vector2(72, 80), TrackToken = new Vector2(56, 64);
         private const float StatusWidth = 58;
         private const float TileWidth = 30;
         private readonly MapCanvas map;
@@ -226,7 +227,8 @@ namespace Wotr.Client
             var statusWidth = float.IsNaN(measured) || measured <= 0 ? StatusWidth : measured;
             var tileWidth = withTile ? TileWidth : 0;
             var left = anchor.x - (tileWidth + statusWidth) / 2;
-            var top = anchor.y + (detail ? 24 : 14);
+            // Under the step's stone, which UI-283 made twice as tall.
+            var top = anchor.y + (detail ? 48 : 28);
             // On the Crack of Doom the row would cover its caption and step 4, so it stands left of the crater.
             if (shownStep >= MordorTrackGeometry.LastStep)
             {

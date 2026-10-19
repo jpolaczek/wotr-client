@@ -193,17 +193,18 @@ namespace Wotr.Client
                 mordorTrack.style.opacity = active ? 1 : InactiveTrackOpacity;
         }
 
-        // UI-154/UI-157: the Mordor track's path and its two entrances: a paper underlay, then deep red ink.
+        // UI-154/UI-157: the Mordor track's path and its two entrances: a paper underlay, then deep red ink. UI-283: the
+        // path is drawn twice as wide, under stones twice as large.
         private static void DrawMordorTrack(Painter2D painter, BoardPresentation data)
         {
             var core = data.Borders.Palette.BarrierCoreWidth;
             var track = data.MordorTrack;
             var path = track.PathPoints.ToList();
             var entrances = track.Entrances.Select(entrance => entrance.Points.ToList()).ToList();
-            Polyline(painter, path, TrackUnderlay, core * 2.6f);
+            Polyline(painter, path, TrackUnderlay, core * 5.2f);
             foreach (var entrance in entrances)
                 Polyline(painter, entrance, TrackUnderlay, core * 2f);
-            Polyline(painter, path, TrackInk, core * 1.3f);
+            Polyline(painter, path, TrackInk, core * 2.6f);
             foreach (var entrance in entrances)
                 Polyline(painter, entrance, TrackInk, core * .9f);
         }

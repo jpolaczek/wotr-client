@@ -527,3 +527,18 @@ panel's hint reads "Move: click the glowing Fellowship figure on the map or the 
 `TurnConsoleStateTests.ACharacterDieThatMovesTheFellowshipNamesItsFigure`,
 `FellowshipPanelNetworkTests.MoveKeepsTheMapRegionAndRecoversTheExactWillDieReceipt` (the chosen die lights the
 figure and its hints), `FellowshipGestures.Declare`.
+
+<a id="ui-283"></a>
+## The Mordor track twice as large — UI-283 (2026-10-19)
+
+The owner's request: "we should also enlarge the Mordor track visually; the figure on it seems miniature; both the
+track and the figure should be about twice as large". On the map the track's stones, the Crack of Doom and the two
+gates are twice their former size (slab 68 × 50 px zoomed in and 44 × 34 px on the whole map, the Crack 92 × 76 and
+60 × 50, the gates 46 × 46 and 34 × 34; step numbers 22 px), the ink path is twice as wide, and the Fellowship's figure
+on the track is 72 × 80 / 56 × 64 px — the size it has on a region — with its Corruption row moved under the larger
+stone. So that the larger stones keep apart, steps 1–4 lie on a ring twice as wide round Orodruin's east side, over
+the ash plain (`MapCanvas/mordor-track.json`): step 0 and both gates stay where they were and the Crack of Doom stays
+on the crater; steps are 46–53 map units apart instead of about 26. The track's validation keeps up: steps at least
+40 map units apart and from every region's anchor (the gates, at their regions' edges, keep 20). Tests:
+`MordorTrackGeometryTests`, `MordorLayoutTests` (four layouts, the figure on its step, the walk between steps),
+`MordorNetworkTests`, `FellowshipLayoutTests`.

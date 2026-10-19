@@ -20,10 +20,11 @@ namespace Wotr.Client
         public const string DetailClass = "mordor-track-detail";
         public const string PulseClass = "mordor-track-pulse";
         private const long PulseMilliseconds = 1200;
-        // UI-157: sized to read over the ash plain at both levels of detail.
-        private static readonly Vector2 SlabDetail = new Vector2(34, 25), SlabToken = new Vector2(22, 17);
-        private static readonly Vector2 CrackDetail = new Vector2(46, 38), CrackToken = new Vector2(30, 25);
-        private static readonly Vector2 GateDetail = new Vector2(23, 23), GateToken = new Vector2(17, 17);
+        // UI-157: sized to read over the ash plain at both levels of detail. UI-283 (owner's request): twice as large,
+        // on steps twice as far apart.
+        private static readonly Vector2 SlabDetail = new Vector2(68, 50), SlabToken = new Vector2(44, 34);
+        private static readonly Vector2 CrackDetail = new Vector2(92, 76), CrackToken = new Vector2(60, 50);
+        private static readonly Vector2 GateDetail = new Vector2(46, 46), GateToken = new Vector2(34, 34);
         public VisualElement Root { get; } = new VisualElement { name = "mordor-track-stones", pickingMode = PickingMode.Ignore };
         public MordorTrackState State { get; private set; } = MordorTrackState.Outside;
         // UI-155: the step a click would play (0 enters, the next one attempts a move), and the entering gate.

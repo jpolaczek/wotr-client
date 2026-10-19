@@ -33,10 +33,10 @@
     left: 0;
     right: 0;
     top: 0;
-    bottom: 5px;
+    bottom: 10px;
     margin: 0;
     padding: 0;
-    font-size: 12px;
+    font-size: 22px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     color: rgb(58, 57, 52);
