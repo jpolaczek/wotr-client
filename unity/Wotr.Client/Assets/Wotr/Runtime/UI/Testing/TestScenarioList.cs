@@ -66,7 +66,10 @@ namespace Wotr.Client
                 button.name = TestScenarioTabs.Name(tab);
                 button.AddToClassList("test-scenario-tab");
                 button.EnableInClassList("selected", tab == Tab);
+                button.EnableInClassList("test-scenario-tab-module", TestScenarioTabs.IsModule(tab));
                 button.SetEnabled(present.Contains(tab));
+                button.tooltip = present.Contains(tab) ? "" : TestScenarioTabs.IsModule(tab)
+                    ? tab + " · Not yet available on this server." : "No scenarios here.";
                 tabs.Add(button);
             }
         }
@@ -74,9 +77,9 @@ namespace Wotr.Client
         private void RenderScenarios()
         {
             scroll.Clear();
-            foreach (var group in catalog.Scenarios.Where(scenario => TestScenarioTabs.Of(scenario.Group) == Tab).GroupBy(scenario => scenario.Group))
+            foreach (var group in catalog.Scenarios.Where(scenario => TestScenarioTabs.Of(scenario) == Tab).GroupBy(scenario => scenario.Group))
             {
-                scroll.Add(Text(TestScenarioTabs.GroupTitle(group.Key), "test-scenario-group"));
+                scroll.Add(Text(TestScenarioTabs.GroupTitle(Tab, group.Key), "test-scenario-group"));
                 foreach (var scenario in group)
                     scroll.Add(Row(scenario));
             }

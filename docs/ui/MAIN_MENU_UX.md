@@ -251,6 +251,11 @@ The menu has a button in the action column (from MENU-11; previously in the head
   its combat card, under Character and Strategy. The tab comes from the server's group text before " · "
   (`TestScenarioTabs`), so no contract changed; a tab without scenarios stays in place, disabled, and a refreshed
   catalog keeps the open tab. Server side and proof that every card is playable: `wotr-server:docs/TEST_SCENARIOS.md`.
+- TEST-10 (2026-10-19): three narrow expansion tabs follow, **Fate**, **Lords** and **Kings** (`test-tab-fate`,
+  `test-tab-lords`, `test-tab-kings`, 72 px each). An expansion scenario stands in the tab of its module
+  (`TestScenarioView.Modules`, Contracts 0.13.0), its group named without the module ("Special dice", "Council of
+  Rivendell"). The server lists only the scenarios of released modules, so the tab of a module it does not release
+  has none and stays in place, disabled, with the tooltip "… · Not yet available on this server."
 
 <a id="wyjście-z-gry--menu-14-2026-10-15"></a>
 ## Out of the game — MENU-14 (2026-10-15)

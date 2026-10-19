@@ -53,7 +53,8 @@ namespace Wotr.Client.Tests
             var list = new TestScenarioList();
             list.Show(catalog);
             Assert.AreEqual(TestScenarioTabs.General, list.Tab);
-            CollectionAssert.AreEqual(new[] { "test-tab-dice-game", "test-tab-free-peoples-cards", "test-tab-shadow-cards" },
+            CollectionAssert.AreEqual(new[] { "test-tab-dice-game", "test-tab-free-peoples-cards", "test-tab-shadow-cards",
+                "test-tab-fate", "test-tab-lords", "test-tab-kings" },
                 list.Root.Query<Button>(className: "test-scenario-tab").ToList().Select(b => b.name));
             Assert.IsNull(list.Root.Q<Button>("test-scenario-card-base.fp.character.01-event"), "Card scenarios wait in their tab.");
             Assert.IsFalse(list.Root.Q<Button>("test-tab-shadow-cards").enabledSelf, "A tab without scenarios keeps its place, disabled.");
@@ -67,6 +68,37 @@ namespace Wotr.Client.Tests
             Assert.AreEqual(TestScenarioTabs.FreePeoplesCards, list.Tab, "A refreshed catalog keeps the open tab.");
             Assert.AreEqual(TestScenarioTabs.ShadowCards, TestScenarioTabs.Of("Shadow cards · Strategy"));
             Assert.AreEqual(TestScenarioTabs.General, TestScenarioTabs.Of("Shadow · Army die"));
+        }
+
+        // TEST-10: an expansion scenario stands in its module's tab, its group named without the module; the tab of a
+        // module the server does not release stays in place, disabled with the reason.
+        [Test]
+        public void ExpansionScenariosStandInTheirModulesTab()
+        {
+            var catalog = Catalog();
+            var vilya = Scenario("lords-fp-vilya", "Lords · Characters and Rings", "Vilya", Side.FreePeoples);
+            vilya.Modules.Add(ExpansionModules.Lords);
+            var renown = Scenario("fate-gimli-renown", "Fate of Erebor", "Gimli's Renown", Side.FreePeoples);
+            renown.Modules.Add(ExpansionModules.Fate);
+            catalog.Scenarios.Add(vilya);
+            catalog.Scenarios.Add(renown);
+            var list = new TestScenarioList();
+            list.Show(catalog);
+            Assert.IsNull(list.Root.Q<Button>("test-scenario-lords-fp-vilya"), "Expansion scenarios wait in their tab.");
+            Assert.IsTrue(list.Root.Q<Button>("test-tab-lords").enabledSelf);
+            Assert.IsTrue(list.Root.Q<Button>("test-tab-fate").enabledSelf);
+            var kings = list.Root.Q<Button>("test-tab-kings");
+            Assert.IsFalse(kings.enabledSelf);
+            Assert.AreEqual("Kings · Not yet available on this server.", kings.tooltip);
+            list.Select(TestScenarioTabs.Lords);
+            CollectionAssert.AreEqual(new[] { "Characters and Rings" },
+                list.Root.Query<Label>(className: "test-scenario-group").ToList().Select(l => l.text));
+            Assert.IsNotNull(list.Root.Q<Button>("test-scenario-lords-fp-vilya"));
+            list.Select(TestScenarioTabs.Fate);
+            CollectionAssert.AreEqual(new[] { "Fate of Erebor" },
+                list.Root.Query<Label>(className: "test-scenario-group").ToList().Select(l => l.text));
+            Assert.AreEqual(TestScenarioTabs.Kings, TestScenarioTabs.Of(new TestScenarioView { Group = "Kings · Ruler dice",
+                Modules = new List<string> { ExpansionModules.Kings } }));
         }
 
         [Test]
