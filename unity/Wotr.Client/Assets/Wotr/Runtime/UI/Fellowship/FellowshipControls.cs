@@ -62,12 +62,15 @@ namespace Wotr.Client
                 Offers |= legal && enabled;
                 item.Value.SetEnabled(enabled && legal);
                 item.Value.EnableInClassList("legal-target", legal);
-                item.Value.style.display = own && !route && legal ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = Description(view, item.Key);
+                // UI-287: Finish phase keeps its place outside the Fellowship phase, greyed out with its reason.
+                item.Value.style.display = own && !route ? DisplayStyle.Flex : DisplayStyle.None;
+                item.Value.tooltip = legal ? Description(view, item.Key) : Unavailable;
             }
             hint.text = FellowshipActions.ActionHint(view, draft, context);
             hint.style.display = own && !route && inActions && !docked ? DisplayStyle.Flex : DisplayStyle.None;
         }
+
+        public const string Unavailable = "Finish phase · Only in your Fellowship phase, to keep the current Guide.";
 
         private static string Description(PlayerView view, CommandKind kind) => kind switch
         {

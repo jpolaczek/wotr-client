@@ -555,3 +555,11 @@ map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250). Tests:
 `CompanionJourneyPortraitTests.TheJourneysCompanionsArePortraitsThatGlowUntilChosen`,
 `Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
 `Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`.
+
+<a id="ui-287"></a>
+## Finish phase greyed out, not hidden — UI-287 (2026-10-19)
+
+The owner's decision after the object controls audit: the Fellowship panel's "Finish phase" keeps its place outside
+the Fellowship phase, greyed out, and its tooltip says why ("Finish phase · Only in your Fellowship phase, to keep the
+current Guide."), as the fixed-places rule asks; it still leaves the row while a route is drawn. Test:
+`FellowshipGuideChoiceTests.TheFellowshipPhaseChoosesTheGuideFromItsPortraitWithoutAMode`.
