@@ -33,7 +33,7 @@ namespace Wotr.Client
                 label.AddToClassList("setup-version-ability");
                 Root.Add(label);
             }
-            Root.tooltip = "Choose " + CharacterLibrary.Name(definitionId) + " · " + caption;
+            Root.tooltip = "Click to choose " + CharacterLibrary.Name(definitionId) + " · " + caption;
         }
 
         public void Select(bool selected)

@@ -11,7 +11,7 @@ namespace Wotr.Client
 
         public static string Title(DecisionKind kind) => kind switch
         {
-            DecisionKind.CouncilVersions => "Choose your companions · Private",
+            DecisionKind.CouncilVersions => "Prepare the Fellowship",
             DecisionKind.CouncilHomelands => "Starting positions · Private until confirmed",
             DecisionKind.CouncilToken => "Choose a Council token",
             DecisionKind.SpecialDieChoice => "Special dice",

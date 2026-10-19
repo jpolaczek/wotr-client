@@ -86,8 +86,8 @@ namespace Wotr.PlayTests
         {
             if (board.Characters.Inspector.Root.resolvedStyle.display != DisplayStyle.None)
                 inspected.Add(board.Characters.Inspector.FigureId);
-            if (board.CompanionSetup.ComparedFigure.Length > 0)
-                compared.Add(board.CompanionSetup.ComparedFigure);
+            if (board.Fellowship.Versions.Figure.Length > 0)
+                compared.Add(board.Fellowship.Versions.Figure);
             states.Add(board.Menu.IsOpen ? "menu" : "board");
             var location = board.CompanionSetup.Root.Q<Button>("homeland-character-base.character.gimli")?.Q<Label>("homeland-location");
             if (location != null)

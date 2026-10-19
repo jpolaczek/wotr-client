@@ -1337,7 +1337,6 @@
 .setup-guides { align-items: center; margin-top: 6px; }
 .setup-guides > Label { width: 94px; font-size: 13px; }
 .companion-setup-panel .setup-guides .action { flex-grow: 0; width: 150px; min-width: 0; padding: 0 5px; margin: 0 3px 0 0; font-size: 13px; }
-.companion-setup-panel #setup-missing { font-size: 13px; color: rgb(245, 212, 133); margin-top: 4px; }
 .companion-setup-panel .decision-choice-footer { justify-content: flex-end; margin-top: 4px; }
 .companion-setup-panel #confirm-decision { min-width: 48px; }
 
@@ -1405,6 +1404,47 @@
 .illustrated-companion > .figure-art-image { position: absolute; left: 0; right: 0; top: 0; bottom: 14px; }
 .illustrated-companion #portrait-name { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; height: 16px; font-size: 11px; -unity-text-align: middle-center; }
 .illustrated-companion #guide-badge { position: absolute; left: 1px; top: 1px; margin: 0; height: 12px; font-size: 9px; background-color: rgba(24, 22, 20, .88); }
+/* UI-269: a portrait's cell keeps the row's flow (the portrait shrinks as before) and holds the starting Guide's crown
+   centred just above the portrait, clear of it; the two-faces badge sits at the portrait's upper left while versions
+   are chosen. */
+.fellowship-portrait-cell { flex-direction: row; flex-shrink: 1; min-width: 0; position: relative; }
+.fellowship-portrait-cell > .guide-crown {
+    position: absolute;
+    left: 50%;
+    top: -17px;
+    width: 18px;
+    height: 16px;
+    margin-left: -9px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/fellowship/guide-crown");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.fellowship-portrait-cell > .guide-crown:hover:enabled { background-image: resource("Wotr/Art/UI/fellowship/guide-crown-crown-hover"); background-color: rgba(0, 0, 0, 0); }
+.fellowship-portrait-cell > .guide-crown.selected { background-image: resource("Wotr/Art/UI/fellowship/guide-crown-crown-on"); }
+.fellowship-portrait-cell > .guide-crown:active { scale: 0.9 0.9; }
+.illustrated-companion .versions-badge {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 16px;
+    height: 16px;
+    background-image: resource("Wotr/Art/UI/fellowship/versions");
+    -unity-background-scale-mode: scale-to-fit;
+}
+/* UI-269: while the versions are chosen the panel widens for the two version cards side by side. */
+.fellowship-panel.fellowship-versions { width: 452px; }
+.fellowship-versions .fellowship-members { margin-top: 18px; }
+.fellowship-versions .setup-comparison { flex-direction: row; align-items: stretch; margin-top: 4px; }
+.fellowship-panel.fellowship-versions .action.setup-version-card {
+    flex-grow: 1; flex-basis: 0; width: auto; min-width: 0; height: auto; min-height: 140px;
+    margin: 0 4px 0 0; padding: 6px; align-items: stretch; flex-direction: column; justify-content: flex-start;
+    background-color: rgb(52, 49, 45); white-space: normal;
+}
+.fellowship-panel.fellowship-versions .action.setup-version-card:last-child { margin-right: 0; }
+.fellowship-panel.fellowship-versions .action.setup-version-card.selected { background-color: rgb(60, 70, 60); }
 
 /* UI-79: public parallel tracks, independent of action hitboxes. */
 .fellowship-symbol { width: 24px; height: 24px; flex-shrink: 0; }

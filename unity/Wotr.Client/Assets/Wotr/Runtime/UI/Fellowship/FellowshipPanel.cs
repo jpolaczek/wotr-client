@@ -16,6 +16,9 @@ namespace Wotr.Client
         public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
+        // UI-269: a starting Guide candidate's crown while the private versions are chosen.
+        public event Action<string> GuideChosen;
+        public VersionComparison Versions { get; } = new VersionComparison();
         public event Action Opening;
         public event Action VisibilityChanged;
         public bool Docked { get; set; }
@@ -31,6 +34,7 @@ namespace Wotr.Client
         private readonly FellowshipRoster roster = new FellowshipRoster();
         private readonly Button focusButton;
         private string observedDecision = "";
+        private bool choosingVersions;
         private bool wasVisible;
         private VisualElement tray;
         private VisualElement dock;
@@ -66,8 +70,21 @@ namespace Wotr.Client
             Root.Add(roster.Root);
             controls.Selected += kind => ActionSelected?.Invoke(kind);
             status.MoveRequested += () => ActionSelected?.Invoke(CommandKind.MoveFellowship);
-            roster.Selected += id => PortraitSelected?.Invoke(id);
+            roster.Selected += Portrait;
+            Versions.Changed += roster.Compare;
+            roster.GuideChosen += id => GuideChosen?.Invoke(id);
             RegisterHover();
+        }
+
+        // UI-269: while the versions are chosen a portrait's click compares its two versions; otherwise it acts.
+        private void Portrait(string id)
+        {
+            if (!choosingVersions)
+            {
+                PortraitSelected?.Invoke(id);
+                return;
+            }
+            Versions.Select(id);
         }
 
         // UI-232: a click on the Ring icon hides a revealed Fellowship when the chosen die allows it.
@@ -119,7 +136,12 @@ namespace Wotr.Client
             controls.Refresh(latest, draft, context, enabled && !hunt, route || separation || hunt, Docked);
             status.OfferMove(controls.MoveOffered, controls.MoveDescription);
             status.OfferHide(controls.HideOffered, controls.HideTooltip);
-            roster.Context(latest, draft, context, enabled && !hunt);
+            var versions = CompanionSetupPresentation.Versions(latest);
+            if (!versions)
+                Versions.Reset();
+            choosingVersions = versions;
+            Root.EnableInClassList("fellowship-versions", versions);
+            roster.Context(latest, draft, context, enabled && !hunt, Versions.Figure);
             var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;
             status.Compact(route || separation || draft.Kind == CommandKind.SelectGuide, latest.Hunt != null, rosterVisible && roster.ShowsGuide);

@@ -18,10 +18,11 @@ namespace Wotr.EditorTests
             var option = view.Options.Single();
             var draft = new TurnDraft();
             DraftGesture.Choose(draft, view, option.Kind);
-            var panel = new CompanionSetupPanel { ComparedFigure = Gimli };
+            var versions = new VersionComparison();
+            versions.Select(Gimli);
             var root = new VisualElement();
             var edits = 0;
-            var choices = new CompanionSetupChoices(root, option, draft, action => { edits++; action(); }, panel);
+            var choices = new CompanionSetupChoices(root, option, draft, action => { edits++; action(); }, versions);
             choices.Refresh();
             Assert.AreEqual(0, edits);
             Assert.IsEmpty(draft.Payload.Ids);
@@ -50,10 +51,12 @@ namespace Wotr.EditorTests
             Assert.AreEqual(Gimli, CompanionSetupPresentation.Definition(draft, option, Gimli));
         }
 
+        // UI-269: the setup panel hosts only the homelands.
         [Test]
         public void CloseSurvivesSameDecisionRefreshAndNextDecisionReleasesTheOnlyTray()
         {
             var view = Setup();
+            view.Decision.Kind = DecisionKind.CouncilHomelands;
             var panel = new CompanionSetupPanel();
             var tray = new VisualElement();
             var dock = new VisualElement();
@@ -62,12 +65,10 @@ namespace Wotr.EditorTests
             panel.Context(view);
             Assert.IsTrue(panel.IsOpen);
             Assert.AreSame(panel.DecisionHost, tray.parent);
-            panel.ComparedFigure = Gimli;
             panel.Close();
             view.Revision++;
             panel.Context(view);
             Assert.IsFalse(panel.IsOpen);
-            Assert.AreEqual(Gimli, panel.ComparedFigure);
             panel.Open();
             Assert.IsTrue(panel.IsOpen);
             view.Decision.Kind = DecisionKind.FellowshipPhase;
@@ -86,7 +87,6 @@ namespace Wotr.EditorTests
             view.You = Side.Shadow;
             panel.Context(view);
             Assert.IsFalse(panel.Active);
-            Assert.IsEmpty(panel.ComparedFigure);
             view.You = Side.FreePeoples;
             view.Decision = null;
             panel.Context(view);
@@ -105,10 +105,11 @@ namespace Wotr.EditorTests
             option.CompanionVersions[1].BaseId = "fate.character.gimli";
             option.CompanionVersions[1].AlternateId = "fate.character.gimli-dwarven-lord";
             var root = new VisualElement();
-            var panel = new CompanionSetupPanel { ComparedFigure = Gimli };
+            var versions = new VersionComparison();
+            versions.Select(Gimli);
             var draft = new TurnDraft();
             DraftGesture.Choose(draft, view, option.Kind);
-            _ = new CompanionSetupChoices(root, option, draft, action => action(), panel);
+            _ = new CompanionSetupChoices(root, option, draft, action => action(), versions);
             var card = root.Q<Button>("version-fate.character.gimli-dwarven-lord");
             var stats = card.Q<Label>(className: "setup-version-statistics").text;
             StringAssert.Contains("Level 1", stats);
@@ -120,6 +121,47 @@ namespace Wotr.EditorTests
                 StringAssert.Contains(ability.Text, label.tooltip);
                 StringAssert.Contains(ability.Source, label.tooltip);
             }
+        }
+
+        // UI-269: the versions on the Fellowship panel's portraits — a badge on each companion with two versions, the
+        // required one glowing until chosen, the compared one selected, a crown on each starting Guide candidate.
+        [Test]
+        public void ThePortraitsCarryTheVersionBadgesAndTheCandidatesTheirCrowns()
+        {
+            var view = Setup();
+            view.OwnCompanions.Add(new CharacterView { Id = Grey, DefinitionId = Grey, Side = Side.FreePeoples });
+            view.OwnCompanions.Add(new CharacterView { Id = Gimli, DefinitionId = Gimli, Side = Side.FreePeoples });
+            view.OwnCompanions.Add(new CharacterView { Id = "base.character.merry", DefinitionId = "base.character.merry", Side = Side.FreePeoples });
+            var option = view.Options.Single();
+            var draft = new TurnDraft();
+            DraftGesture.Choose(draft, view, option.Kind);
+            var roster = new FellowshipRoster();
+            roster.Apply(view);
+            roster.Context(view, draft, new ActionDieContext(), true, Gimli);
+            var grey = roster.Root.Q<Button>("fellowship-portrait-" + Grey);
+            var gimli = roster.Root.Q<Button>("fellowship-portrait-" + Gimli);
+            var merry = roster.Root.Q<Button>("fellowship-portrait-base.character.merry");
+            Assert.AreEqual(DisplayStyle.Flex, grey.Q("versions-badge").style.display.value);
+            Assert.AreEqual(DisplayStyle.None, merry.Q("versions-badge").style.display.value);
+            Assert.IsTrue(grey.ClassListContains(ChoiceGlow.ClassName), "The required version glows until chosen.");
+            Assert.IsFalse(gimli.ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(gimli.ClassListContains("selected"), "The compared companion is selected.");
+            StringAssert.StartsWith("Click to compare", grey.tooltip);
+            var crown = roster.Root.Q<Button>("starting-guide-" + Grey);
+            Assert.AreEqual(DisplayStyle.Flex, crown.style.display.value);
+            Assert.AreEqual(DisplayStyle.None, roster.Root.Q<Button>("starting-guide-base.character.merry").style.display.value);
+            StringAssert.StartsWith("Click to make", crown.tooltip);
+            CouncilDraft.Version(draft, option.CompanionVersions[0], "lords.character.gandalf-grey");
+            draft.Change(p => p.GuideId = Grey);
+            roster.Context(view, draft, new ActionDieContext(), true, Gimli);
+            Assert.IsFalse(grey.ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(crown.ClassListContains("selected"));
+            StringAssert.StartsWith("Starting Guide", crown.tooltip);
+            StringAssert.Contains("Alternate", grey.tooltip);
+            view.DecisionOwner = Side.Shadow;
+            roster.Context(view, draft, new ActionDieContext(), true);
+            Assert.AreEqual(DisplayStyle.None, grey.Q("versions-badge").style.display.value, "Nothing private shows without the decision.");
+            Assert.AreEqual(DisplayStyle.None, crown.style.display.value);
         }
 
         private static PlayerView Setup() => new PlayerView

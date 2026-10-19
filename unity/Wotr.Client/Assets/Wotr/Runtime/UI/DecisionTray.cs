@@ -11,7 +11,7 @@ namespace Wotr.Client
         private readonly VisualElement root;
         private readonly BoardPresentation data;
         private readonly CardInspector cards;
-        private readonly CompanionSetupPanel setup;
+        private readonly VersionComparison versions;
         public event Action<Action> DraftEdited;
         // UI-142: an edit that completes the decision (one figure to extend a siege) is sent at once.
         public event Action<Action> ChoiceCompleted;
@@ -61,11 +61,11 @@ namespace Wotr.Client
         private readonly List<Action> refreshChoices = new List<Action>();
 
         public DecisionTray(VisualElement root, BoardPresentation data = null, CardInspector cards = null,
-            CompanionSetupPanel setup = null)
+            VersionComparison versions = null)
         {
             this.root = root;
             this.cards = cards;
-            this.setup = setup;
+            this.versions = versions;
             this.data = data ?? BoardPresentation.Load();
         }
 
@@ -118,6 +118,8 @@ namespace Wotr.Client
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
                     : ResourcePresentation.PoolHint(view) is { Length: > 0 } pool ? pool
                     : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
+                    : CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions
+                    ? CompanionSetupPresentation.Hint(draft, DraftOptions.For(view, draft))
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
                     SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Owns(view)
@@ -360,7 +362,7 @@ namespace Wotr.Client
                     view, option, draft, action => DraftEdited?.Invoke(action), kind => ActionChosen?.Invoke(kind)));
             else if (ExpansionDraft.Handles(draft.Kind))
             {
-                var choices = new ExpansionChoices(root, view, draft, action => DraftEdited?.Invoke(action), data, setup);
+                var choices = new ExpansionChoices(root, view, draft, action => DraftEdited?.Invoke(action), data, versions);
                 refreshChoices.Add(choices.Refresh);
             }
             else if (option.EventRecruitment != null)

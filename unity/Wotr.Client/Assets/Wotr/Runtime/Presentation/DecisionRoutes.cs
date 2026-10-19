@@ -64,7 +64,8 @@ namespace Wotr.Client
             DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard => DecisionHost.Dice,
             DecisionKind.KeepActionDie => DecisionHost.Rings,
             DecisionKind.Dismay or DecisionKind.CouncilToken => DecisionHost.Resources,
-            DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands => DecisionHost.Setup,
+            DecisionKind.CouncilVersions => DecisionHost.Fellowship,
+            DecisionKind.CouncilHomelands => DecisionHost.Setup,
             DecisionKind.CorruptionTile => DecisionHost.Sovereigns,
             _ => DecisionHost.Window
         };

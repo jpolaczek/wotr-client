@@ -492,3 +492,27 @@ gesture, and the plan keeps its one confirmation. Required groups stay locked. A
 ordinary Character-die move starts over from that source, as before. Test:
 `CompanionGroupGestureTests`, `TravelActionTests`;
 `Strategy01NetworkTests` (Book of Mazarbul).
+
+## Private versions and the starting Guide on the portraits — UI-269 (2026-10-19)
+
+In a Lords game the Free Peoples choose, before the first turn and in private, the version of each companion that
+has two (Gandalf the Grey or the Keeper of Narya, required; with the Council of Rivendell and Fate of Erebor the
+other alternatives) and the starting Guide (Gandalf or Strider) — wotr-server rules L02/L03 (docs/rules/EXPANSIONS.md, T25–T26). The choice is made on the
+Fellowship panel, which unrolls and holds the decision (DecisionRoutes: Fellowship); the old Setup tab and window
+remain only for the Council's homelands (UI-270).
+
+1. Each companion with two versions shows a two-faces badge at its portrait's upper left
+   (`graphicalassets/ui/src/fellowship/versions.svg`); the required version glows until it is chosen. The portrait
+   shows the drafted version's art and name, and its tooltip says what its click does and which version is chosen.
+2. A click on such a portrait compares its two version cards side by side under the portraits (Original and
+   Alternate: level, movement, leadership, nation and abilities, each ability readable on focus); a click on a card
+   chooses that version. The panel widens for the two cards while the versions are chosen.
+3. Each starting Guide candidate wears a crown just above its portrait (`fellowship/guide-crown`, lit on the
+   chosen Guide); its click makes the starting Guide and its tooltip gives the Guide ability.
+4. The ✓ sends the whole choice once the required version and the Guide are chosen; until then a line says what is
+   missing. The draft survives a reconnect and a restart of the client.
+5. The Shadow sees none of it — no badge, crown or card — and its console reads "FREE PEOPLES PREPARE THE FELLOWSHIP".
+
+Tests: `CompanionSetupPanelTests` (cards, readiness, the portraits' badges and crowns, privacy);
+`CompanionSetupPanelNetworkTests` (every configuration, reconnect, keyboard, layouts at 1366/1920 and 100%/125%,
+the restart recovery); `BoardCompletionLayoutTests`, `BoardMenuDraftTests`, `BoardProfileDriverTests`.

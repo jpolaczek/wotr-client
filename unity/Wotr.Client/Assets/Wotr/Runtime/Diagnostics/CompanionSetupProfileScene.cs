@@ -24,7 +24,8 @@ namespace Wotr.Client.Diagnostics
             var option = board.View.Options.Single(candidate => candidate.Kind == CommandKind.ChooseCompanionVersions);
             groups = option.CompanionVersions.ToArray();
             guides = option.Targets.ToArray();
-            portraits = groups.Select(group => board.CompanionSetup.Root.Q<Button>("setup-portrait-" + group.FigureId)).ToArray();
+            // UI-269: the versions are compared and chosen on the Fellowship panel's portraits.
+            portraits = groups.Select(group => board.Fellowship.Root.Q<Button>("fellowship-portrait-" + group.FigureId)).ToArray();
             figure = groups[0].FigureId;
         }
 
@@ -41,32 +42,32 @@ namespace Wotr.Client.Diagnostics
                     break;
                 case 1:
                     selected = group.AlternateId;
-                    click(board.CompanionSetup.Root.Q<Button>("version-" + selected));
+                    click(board.Fellowship.Root.Q<Button>("version-" + selected));
                     break;
                 case 2:
                     guide = guides[(step / 4) % guides.Length];
-                    click(board.CompanionSetup.Root.Q<Button>("starting-guide-" + guide));
+                    click(board.Fellowship.Root.Q<Button>("starting-guide-" + guide));
                     break;
                 default:
                     selected = group.BaseId;
-                    click(board.CompanionSetup.Root.Q<Button>("version-" + selected));
+                    click(board.Fellowship.Root.Q<Button>("version-" + selected));
                     break;
             }
         }
 
         public void Verify()
         {
-            BoardProfileCheck.Require(board.CompanionSetup.IsOpen && board.Tray.parent == board.CompanionSetup.DecisionHost,
+            BoardProfileCheck.Require(board.Fellowship.IsOpen && board.Tray.parent == board.Fellowship.Root,
                 "The private setup lost its sole decision host.");
-            BoardProfileCheck.Require(board.CompanionSetup.ComparedFigure == figure, "Wrong compared companion.");
-            BoardProfileCheck.Selected(board.CompanionSetup.Root.Q<Button>("setup-portrait-" + figure), true);
+            BoardProfileCheck.Require(board.Fellowship.Versions.Figure == figure, "Wrong compared companion.");
+            BoardProfileCheck.Selected(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + figure), true);
             if (selected.Length > 0)
-                BoardProfileCheck.Selected(board.CompanionSetup.Root.Q<Button>("version-" + selected), true);
+                BoardProfileCheck.Selected(board.Fellowship.Root.Q<Button>("version-" + selected), true);
             if (guide.Length > 0)
-                BoardProfileCheck.Selected(board.CompanionSetup.Root.Q<Button>("starting-guide-" + guide), true);
+                BoardProfileCheck.Selected(board.Fellowship.Root.Q<Button>("starting-guide-" + guide), true);
             for (var index = 0; index < groups.Length; index++)
-                BoardProfileCheck.Require(ReferenceEquals(portraits[index], board.CompanionSetup.Root.Q<Button>(
-                    "setup-portrait-" + groups[index].FigureId)), "A setup selection rebuilt its unchanged portraits.");
+                BoardProfileCheck.Require(ReferenceEquals(portraits[index], board.Fellowship.Root.Q<Button>(
+                    "fellowship-portrait-" + groups[index].FigureId)), "A setup selection rebuilt its unchanged portraits.");
         }
     }
 }

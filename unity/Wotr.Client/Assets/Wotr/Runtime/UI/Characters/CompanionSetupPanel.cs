@@ -5,13 +5,13 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // A private host for the existing tray and sender, not another setup flow.
+    // A private host for the existing tray and sender, not another setup flow. UI-269: the homelands only; the private
+    // versions moved to the Fellowship panel.
     public sealed class CompanionSetupPanel
     {
         public VisualElement Root { get; } = new VisualElement { name = "companion-setup-panel", focusable = true };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "companion-setup-decision" };
         public Button Tab { get; }
-        public string ComparedFigure { get; set; } = "";
         public bool IsOpen => Root.style.display.value != DisplayStyle.None;
         public bool Active { get; private set; }
         public event Action Opening;
@@ -53,7 +53,6 @@ namespace Wotr.Client
             {
                 context = nextContext;
                 decision = "";
-                ComparedFigure = "";
                 Close();
             }
             Active = CompanionSetupPresentation.Owns(view);
@@ -70,10 +69,7 @@ namespace Wotr.Client
             Tab.style.display = Active ? DisplayStyle.Flex : DisplayStyle.None;
             var nextDecision = Active ? view.Decision.Id : "";
             if (!Active)
-            {
-                ComparedFigure = "";
                 Close();
-            }
             else if (decision != nextDecision)
                 Open();
             decision = nextDecision;
@@ -104,10 +100,11 @@ namespace Wotr.Client
             e.StopImmediatePropagation();
         }
 
+        // UI-269: the version cards, now on the Fellowship panel, keep the keyboard to themselves as well.
         public static bool ContainsInput(VisualElement element)
         {
             for (var current = element; current != null; current = current.parent)
-                if (current.name == "companion-setup-panel")
+                if (current.name is "companion-setup-panel" or "companion-setup-choices")
                     return true;
             return false;
         }

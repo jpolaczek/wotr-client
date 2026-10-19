@@ -83,6 +83,8 @@ namespace Wotr.EditorTests
             ("console/ring-nenya-keeper-lit", 32, 32, true), ("console/ring-nenya-keeper-captured", 32, 32, true),
             ("console/ring-narya", 32, 32, true), ("console/ring-narya-keeper-lit", 32, 32, true),
             ("console/ring-narya-keeper-captured", 32, 32, true),
+            ("fellowship/versions", 18, 18, true), ("fellowship/guide-crown", 20, 18, true),
+            ("fellowship/guide-crown-crown-on", 20, 18, true), ("fellowship/guide-crown-crown-hover", 20, 18, true),
             ("tokens/politics-token-free", 28, 28, true), ("tokens/politics-token-shadow", 28, 28, true),
             ("icons/cards", 26, 26, true), ("icons/ring", 26, 26, true), ("icons/ring-captured", 26, 26, true), ("icons/spent", 26, 26, true),
             ("icons/hunt", 26, 26, true), ("icons/out", 26, 26, true), ("icons/log", 20, 20, true),

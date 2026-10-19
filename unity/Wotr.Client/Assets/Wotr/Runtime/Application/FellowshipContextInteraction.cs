@@ -23,6 +23,7 @@ namespace Wotr.Client
             this.busy = busy;
             board.Fellowship.ActionSelected += Choose;
             board.Fellowship.PortraitSelected += Portrait;
+            board.Fellowship.GuideChosen += Guide;
             board.Fellowship.VisibilityChanged += HighlightDice;
             board.Map.MordorTrack.StepClicked += Step;
             board.Map.MordorTrack.GateClicked += Gate;
@@ -55,6 +56,15 @@ namespace Wotr.Client
 
         private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null ||
             FellowshipCardActions.Choice(view, kind).Length > 0;
+
+        // UI-269: a candidate's crown sets the starting Guide in the private versions' draft.
+        private void Guide(string id)
+        {
+            var option = CompanionSetupPresentation.VersionOption(view);
+            if (busy() || option == null || !option.Targets.Contains(id) || draft.Kind != CommandKind.ChooseCompanionVersions)
+                return;
+            edit(() => draft.Change(p => p.GuideId = id), false);
+        }
 
         private void Step(int step) => Choose(step == 0 && view?.Fellowship.MordorStep == null ? CommandKind.EnterMordor : CommandKind.MoveFellowship);
 
@@ -122,6 +132,7 @@ namespace Wotr.Client
         {
             board.Fellowship.ActionSelected -= Choose;
             board.Fellowship.PortraitSelected -= Portrait;
+            board.Fellowship.GuideChosen -= Guide;
             board.Fellowship.VisibilityChanged -= HighlightDice;
             board.Map.MordorTrack.StepClicked -= Step;
             board.Map.MordorTrack.GateClicked -= Gate;

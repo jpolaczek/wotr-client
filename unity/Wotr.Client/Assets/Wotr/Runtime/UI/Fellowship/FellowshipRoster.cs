@@ -10,9 +10,12 @@ namespace Wotr.Client
     {
         public VisualElement Root { get; } = BoardScreen.Row("fellowship-members");
         public event Action<string> Selected;
+        // UI-269: a candidate's crown chooses the starting Guide while the versions are chosen.
+        public event Action<string> GuideChosen;
         // False when the Guide has no portrait here (e.g. Gollum); the status row then names it.
         public bool ShowsGuide { get; private set; }
         private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
+        private readonly Dictionary<string, Button> crowns = new Dictionary<string, Button>();
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
         private readonly ChoicePulse pulse;
         private string roster = "";
@@ -31,6 +34,7 @@ namespace Wotr.Client
                 roster = key;
                 Root.Clear();
                 portraits.Clear();
+                crowns.Clear();
                 foreach (var id in ids)
                 {
                     var button = BoardScreen.Button("", () => Selected?.Invoke(id));
@@ -41,9 +45,17 @@ namespace Wotr.Client
                     button.Add(new Label { name = "portrait-name", pickingMode = PickingMode.Ignore });
                     var badge = new Label("Guide") { name = "guide-badge", pickingMode = PickingMode.Ignore };
                     button.Add(badge);
+                    button.Add(VersionsBadge());
                     button.userData = new DraftToken(DraftObject.FellowshipPortrait, id);
                     portraits.Add(id, button);
-                    Root.Add(button);
+                    // UI-269: the crown stands over the portrait's corner, beside it rather than inside its button.
+                    var cell = new VisualElement { name = "fellowship-cell-" + id };
+                    cell.AddToClassList("fellowship-portrait-cell");
+                    cell.Add(button);
+                    var crown = Crown(id);
+                    crowns.Add(id, crown);
+                    cell.Add(crown);
+                    Root.Add(cell);
                 }
             }
             var privateStats = view.OwnCompanions.ToDictionary(c => c.Id);
@@ -64,6 +76,24 @@ namespace Wotr.Client
             }
         }
 
+        // UI-269: two faces at the corner of a companion with two versions to choose from.
+        private static VisualElement VersionsBadge()
+        {
+            var badge = new VisualElement { name = "versions-badge", pickingMode = PickingMode.Ignore };
+            badge.AddToClassList("versions-badge");
+            badge.style.display = DisplayStyle.None;
+            return badge;
+        }
+
+        // UI-269: a starting Guide candidate's crown; lit on the chosen Guide.
+        private Button Crown(string id)
+        {
+            var crown = new Button(() => GuideChosen?.Invoke(id)) { name = "starting-guide-" + id };
+            crown.AddToClassList("guide-crown");
+            crown.style.display = DisplayStyle.None;
+            return crown;
+        }
+
         // UI-187: every ability of the companion in its short form, the Guide's among them; a card without short forms
         // keeps its Guide ability text.
         private static string Abilities(string version)
@@ -75,8 +105,14 @@ namespace Wotr.Client
         // Some portrait's click makes a choice now, so the panel's plaque invites a look.
         public bool Choosing { get; private set; }
 
-        public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled)
+        public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled, string compared = "")
         {
+            if (CompanionSetupPresentation.VersionOption(view) is { } versions)
+            {
+                Versions(view, draft, versions, enabled, compared);
+                return;
+            }
+            HideVersions();
             var choosing = false;
             foreach (var item in portraits)
             {
@@ -96,6 +132,58 @@ namespace Wotr.Client
             }
             Choosing = choosing;
             pulse.Run(choosing);
+        }
+
+        // UI-269: the private versions on the portraits — a two-faces badge on each companion with two versions (its
+        // click compares them), the drafted version's art and name, and a crown on each starting Guide candidate.
+        private void Versions(PlayerView view, TurnDraft draft, ActionOption option, bool enabled, string compared)
+        {
+            var choosing = false;
+            foreach (var item in portraits)
+            {
+                var group = option.CompanionVersions.FirstOrDefault(candidate => candidate.FigureId == item.Key);
+                var button = item.Value;
+                var badge = button.Q("versions-badge");
+                badge.style.display = group == null ? DisplayStyle.None : DisplayStyle.Flex;
+                var version = group == null ? "" : CouncilDraft.Version(draft.Payload, group);
+                var shown = version.Length > 0 ? version : group?.BaseId ?? item.Key;
+                FigureArtwork.Apply(button, FigureAppearances.Character(shown, Side.FreePeoples), Side.FreePeoples);
+                button.Q<Label>("portrait-name").text = CharacterLibrary.ShortName(shown);
+                var required = enabled && group != null && version.Length == 0;
+                choosing |= required;
+                ChoiceGlow.Apply(button, required);
+                button.SetEnabled(true);
+                button.EnableInClassList("legal-target", enabled && group != null);
+                button.EnableInClassList("selected", group != null && item.Key == compared);
+                var description = descriptions.TryGetValue(item.Key, out var text) ? text : "";
+                button.tooltip = group == null ? description : CompanionSetupPresentation.PortraitOffer(draft, group);
+                var crown = crowns[item.Key];
+                var candidate = option.Targets.Contains(item.Key);
+                crown.style.display = candidate ? DisplayStyle.Flex : DisplayStyle.None;
+                crown.EnableInClassList("selected", draft.Payload.GuideId == item.Key);
+                crown.SetEnabled(enabled && candidate);
+                crown.tooltip = candidate ? CompanionSetupPresentation.CrownOffer(draft, option, item.Key) : "";
+                button.EnableInClassList("current-guide", draft.Payload.GuideId == item.Key);
+                button.Q<Label>("guide-badge").style.display = DisplayStyle.None;
+            }
+            choosing |= enabled && !option.Targets.Contains(draft.Payload.GuideId);
+            Choosing = choosing;
+            pulse.Run(choosing);
+        }
+
+        private void HideVersions()
+        {
+            foreach (var button in portraits.Values)
+                button.Q("versions-badge").style.display = DisplayStyle.None;
+            foreach (var crown in crowns.Values)
+                crown.style.display = DisplayStyle.None;
+        }
+
+        // UI-269: a click on a portrait compares its versions now, before the next view arrives.
+        public void Compare(string figure)
+        {
+            foreach (var item in portraits)
+                item.Value.EnableInClassList("selected", item.Key == figure);
         }
 
         public static string Offer(PlayerView view, string id, CommandKind? kind) => kind switch

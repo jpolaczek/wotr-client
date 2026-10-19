@@ -2,9 +2,9 @@
   "task": "UI-86",
   "renderer": "headless Google Chrome",
   "shared_sha256": {
-    "palette.css": "318d9fd31f758433ebfe538856ba90b5b050f8feb59b2c3ec1db54573725dd8a",
+    "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "b433f8060716439ede4f049a935bdb5c5d7c31a073f01f5df829a93ec623bf7c"
+    "assets.json": "10c3cbcfe897d7d0ab01e608828187c89bb2490c39ed440c43c5ffb022dbaa53"
   },
   "assets": [
     {
@@ -4966,6 +4966,70 @@
       "alpha": true,
       "source_sha256": "df46d00940ac11a1b7ce4364017bddf9a0baa6fd578cf2f507240d194f64ea92",
       "png_sha256": "0eac7ef525c01e387bda06fdfe85767abe128d84cf73174d64ff2b691577bf6f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/versions.png",
+      "source": "src/fellowship/versions.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "56efa7f95cb9efa65153f2eba82d51aef25b82257e5b43c764764ac7775a2621",
+      "png_sha256": "eb6b50e5d01542f1f17d1ff9183197b80a96a127ad9919f51892d91889c90da8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/guide-crown.png",
+      "source": "src/fellowship/guide-crown.svg",
+      "variant": null,
+      "logical": [
+        20,
+        18
+      ],
+      "pixels": [
+        40,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
+      "png_sha256": "cf661e659e7a0d785d0c2ea8c959ef0cd606d84a263429907afb312abf3b0aa0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/guide-crown-crown-on.png",
+      "source": "src/fellowship/guide-crown.svg",
+      "variant": "crown-on",
+      "logical": [
+        20,
+        18
+      ],
+      "pixels": [
+        40,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
+      "png_sha256": "3038d749ccc78733d42a0f42b33edc0b77d8ea0634ef99013a7e706356ee5c62"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/guide-crown-crown-hover.png",
+      "source": "src/fellowship/guide-crown.svg",
+      "variant": "crown-hover",
+      "logical": [
+        20,
+        18
+      ],
+      "pixels": [
+        40,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
+      "png_sha256": "d2664d29b0d6c0f3504ace1c596cb10dcefa2f7d225a6e9d2402638a2ced594d"
     }
   ]
 }

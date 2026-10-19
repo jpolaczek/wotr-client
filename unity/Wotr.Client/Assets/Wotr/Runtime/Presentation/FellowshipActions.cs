@@ -8,6 +8,8 @@ namespace Wotr.Client
         public static bool UsesPanel(PlayerView view, TurnDraft draft) => view.Battle == null && view.EventLoss == null && !HuntActions.UsesPanel(view, draft) &&
             (view.Decision?.Kind is DecisionKind.FellowshipPhase or DecisionKind.Guide or
                 DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation ||
+                // UI-269: the private companion versions and the starting Guide are chosen on its portraits.
+                CompanionSetupPresentation.Versions(view) ||
                 draft?.Kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.DeclareFellowship or
                     CommandKind.RevealFellowship or CommandKind.SeparateCompanions or CommandKind.SelectGuide or CommandKind.EnterMordor);
 

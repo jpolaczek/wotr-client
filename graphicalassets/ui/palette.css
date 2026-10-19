@@ -111,6 +111,11 @@
   --keeper-aura-opacity: 0;
   --captured-halo-opacity: 0;
 
+  /* UI-269: the starting Guide's crown, dim until chosen (variants crown-on, crown-hover). */
+  --crown-light: #b7a682;
+  --crown-dark: #5e4d2c;
+  --crown-stone: #5a2a22;
+
   /* Hover glow, hidden unless a variant enables it. */
   --glow-opacity: 0;
 }

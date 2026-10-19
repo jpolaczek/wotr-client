@@ -64,17 +64,18 @@ namespace Wotr.PlayTests
 
         private static async Task ChooseVersions(MatchTestRoom room, MountedMatchClient client, ActionOption option)
         {
-            client.Board.CompanionSetup.Open();
+            // UI-269: on the Fellowship panel's portraits.
+            client.Board.Fellowship.Open();
             await room.Settle();
             foreach (var group in option.CompanionVersions)
             {
-                PointerGestureEvents.ClickAt(client.Board.Tray.Q<Button>("setup-portrait-" + group.FigureId));
+                PointerGestureEvents.ClickAt(client.Board.Fellowship.Root.Q<Button>("fellowship-portrait-" + group.FigureId));
                 await room.Settle();
                 var id = group.FigureId == "base.character.gandalf-grey" ? group.AlternateId : group.BaseId;
                 PointerGestureEvents.ClickAt(client.Board.Tray.Q<Button>("version-" + id));
                 await room.Settle();
             }
-            PointerGestureEvents.ClickAt(client.Board.Tray.Q<Button>("starting-guide-base.character.gandalf-grey"));
+            PointerGestureEvents.ClickAt(client.Board.Fellowship.Root.Q<Button>("starting-guide-base.character.gandalf-grey"));
         }
     }
 }

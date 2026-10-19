@@ -13,14 +13,14 @@ namespace Wotr.Client
         private readonly Action<Action> edit;
 
         public ExpansionChoices(VisualElement root, PlayerView view, TurnDraft draft, Action<Action> edit,
-            BoardPresentation data, CompanionSetupPanel setup = null)
+            BoardPresentation data, VersionComparison versions = null)
         {
             this.draft = draft;
             this.edit = edit;
             var option = DraftOptions.For(view, draft);
             if (CouncilDraft.Handles(draft.Kind))
             {
-                var council = new CouncilChoices(root, view, draft, edit, data, setup);
+                var council = new CouncilChoices(root, view, draft, edit, data, versions);
                 refresh.Add(council.Refresh);
                 return;
             }

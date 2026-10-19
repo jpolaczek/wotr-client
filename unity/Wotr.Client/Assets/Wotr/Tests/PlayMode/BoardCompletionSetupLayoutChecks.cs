@@ -19,16 +19,17 @@ namespace Wotr.PlayTests
             }
             var option = board.View.Options.Single(value => value.Kind == CommandKind.ChooseCompanionVersions);
             var camera = board.Map.Camera.Pan;
-            Assert.IsTrue(board.CompanionSetup.IsOpen);
-            Assert.AreSame(board.CompanionSetup.DecisionHost, board.Tray.parent);
+            // UI-269: the versions are chosen on the Fellowship panel's portraits.
+            Assert.IsTrue(board.Fellowship.IsOpen);
+            Assert.AreSame(board.Fellowship.Root, board.Tray.parent);
             Assert.AreEqual(board.View.Configuration.Council ? 7 : 1, option.CompanionVersions.Count);
             foreach (var group in option.CompanionVersions)
             {
-                await Press(room, board.Root.Q<Button>("setup-portrait-" + group.FigureId));
+                await Press(room, board.Root.Q<Button>("fellowship-portrait-" + group.FigureId));
                 Assert.IsNotNull(board.Tray.Q<Button>("version-" + group.BaseId));
                 Assert.IsNotNull(board.Tray.Q<Button>("version-" + group.AlternateId));
-                CheckPanel(board.CompanionSetup.Root, board.Map.parent.worldBound);
-                var abilities = board.CompanionSetup.Root.Query<Label>(className: "setup-version-ability").ToList();
+                CheckPanel(board.Fellowship.Root, board.Map.parent.worldBound);
+                var abilities = board.Tray.Query<Label>(className: "setup-version-ability").ToList();
                 Assert.IsNotEmpty(abilities);
                 foreach (var ability in abilities)
                 {
@@ -37,15 +38,14 @@ namespace Wotr.PlayTests
                 }
                 await ReadTooltip(room, client, abilities.OrderByDescending(label => label.tooltip.Length).First());
             }
-            await Press(room, board.Root.Q<Button>("setup-portrait-" + Grey));
+            await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Grey));
             await Press(room, board.Root.Q<Button>("version-" + option.CompanionVersions.Single(group => group.FigureId == Grey).BaseId));
             await Press(room, board.Root.Q<Button>("starting-guide-" + Strider));
             Assert.IsTrue(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
             if (board.View.Configuration.Council)
-                await Press(room, board.Root.Q<Button>("setup-portrait-" + Gimli));
-            await EscapeAndReopenSetup(room, board);
-            Assert.IsTrue(board.Tray.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
-            CheckPanel(board.CompanionSetup.Root, board.Map.parent.worldBound);
+                await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Gimli));
+            Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
+            CheckPanel(board.Fellowship.Root, board.Map.parent.worldBound);
             Assert.AreEqual(camera, board.Map.Camera.Pan);
         }
 

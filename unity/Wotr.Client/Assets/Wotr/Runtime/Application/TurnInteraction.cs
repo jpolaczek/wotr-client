@@ -71,7 +71,7 @@ namespace Wotr.Client
             sender = new CommandSender(api, persistence?.Actions);
             policy = new BattlePolicyInteraction(api, connection, board.BattlePolicy, persistence?.Policy);
             policy.Changed += PolicyChanged;
-            tray = new DecisionTray(board.Tray, board.Presentation, board.Cards, board.CompanionSetup);
+            tray = new DecisionTray(board.Tray, board.Presentation, board.Cards, board.Fellowship.Versions);
             tray.ActionChosen += Choose;
             tray.RulerTokenChosen += ChooseRulerToken;
             tray.DirectChosen += DirectBattleChoice;

@@ -102,6 +102,9 @@ namespace Wotr.Client
         {
             if (!owner.HasValue)
                 return BoardScreen.PhaseName(view.Phase).ToUpperInvariant();
+            // UI-269: the Free Peoples choose their private versions and starting Guide before the first turn.
+            if (view.Phase == GamePhase.Setup && owner == Side.FreePeoples && view.Configuration.Lords)
+                return "FREE PEOPLES PREPARE THE FELLOWSHIP";
             var context = view.Battle != null ? " · battle at " + regionName(view.Battle.RegionId)
                 : view.Hunt != null ? " · the Hunt"
                 : view.Phase == GamePhase.Fellowship ? " · Fellowship phase"

@@ -13,14 +13,14 @@ namespace Wotr.Client
         private readonly Action<Action> edit;
 
         public CouncilChoices(VisualElement root, PlayerView view, TurnDraft draft, Action<Action> edit,
-            BoardPresentation data, CompanionSetupPanel setup = null)
+            BoardPresentation data, VersionComparison versions = null)
         {
             this.draft = draft;
             this.edit = edit;
             var option = DraftOptions.For(view, draft);
             if (draft.Kind == CommandKind.ChooseCompanionVersions)
             {
-                var choices = new CompanionSetupChoices(root, option, draft, edit, setup);
+                var choices = new CompanionSetupChoices(root, option, draft, edit, versions);
                 refresh.Add(choices.Refresh);
             }
             else if (draft.Kind == CommandKind.ChooseCouncilHomelands)

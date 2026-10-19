@@ -50,13 +50,12 @@ namespace Wotr.PlayTests
             using var client = new MountedFlowClient(api, storage);
             await Open(client, match, token);
             var otherBefore = JsonConvert.SerializeObject(await shadow.Get<PlayerView>("api/matches/" + match, token));
-            await ClickReady(client.Root, "setup-portrait-" + Grey, token);
+            await ClickReady(client.Root, "fellowship-portrait-" + Grey, token);
             await ClickReady(client.Root, "version-lords.character.gandalf-grey", token);
-            await ClickReady(client.Root, "setup-portrait-" + Gimli, token);
+            await ClickReady(client.Root, "fellowship-portrait-" + Gimli, token);
             await ClickReady(client.Root, "version-fate.character.gimli-dwarven-lord", token);
             await ClickReady(client.Root, "starting-guide-" + Strider, token);
             await Until(() => client.Root.Q<Button>("confirm-decision").enabledInHierarchy, token);
-            await ClickReady(client.Root, "close-companion-setup", token);
             await client.LocalWrites;
             var saved = await LocalMatchPersistence.Open(storage, api.Address.AbsoluteUri, api.AccountId, match);
             Assert.IsNotNull(saved.Draft);
@@ -82,7 +81,7 @@ namespace Wotr.PlayTests
             var saved = await LocalMatchPersistence.Open(storage, api.Address.AbsoluteUri, api.AccountId, match);
             Assert.AreEqual(draft, JsonConvert.SerializeObject(saved.Draft));
             Assert.AreEqual(0, boundary.Commands);
-            client.Board.CompanionSetup.Open();
+            client.Board.Fellowship.Open();
             await Task.Delay(100, token);
             Assert.IsTrue(client.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
             boundary.HoldNextCommand = true;
