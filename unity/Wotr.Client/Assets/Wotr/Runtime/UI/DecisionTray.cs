@@ -401,31 +401,14 @@ namespace Wotr.Client
             }
             else if (CardDraft.UsesCards(draft.Kind))
             {
-                var choices = new CardChoices(root, footer, view, draft, action => DraftEdited?.Invoke(action), data, id => CardInspected?.Invoke(id), cards,
-                    ReinforcementsButton);
+                var choices = new CardChoices(root, view, draft, action => DraftEdited?.Invoke(action), data, cards, ReinforcementsButton);
                 refreshChoices.Add(choices.Refresh);
             }
             else if (BoardDraft.UsesBoard(draft.Kind))
             {
-                if (draft.Kind == CommandKind.AttackArmy)
-                {
-                    var choices = new AttackChoices(root, view, draft, action => DraftEdited?.Invoke(action), data);
-                    refreshChoices.Add(choices.Refresh);
-                }
-                else if (draft.Kind == CommandKind.MoveArmies)
-                {
-                    if (option.ArmyEvent?.RouteMovement == true)
-                    {
-                        var choices = new EventArmyChoices(root, view, draft, action => DraftEdited?.Invoke(action), data);
-                        refreshChoices.Add(choices.Refresh);
-                    }
-                    else
-                    {
-                        var choices = new ArmyChoices(root, view, draft, action => DraftEdited?.Invoke(action), data);
-                        refreshChoices.Add(choices.Refresh);
-                    }
-                }
-                else if (draft.Kind == CommandKind.RemoveExcess)
+                // UI-289: armies move and attack on the map and in the region panel (DirectArmy, CardArmyEvent); the
+                // tray keeps no figure lists for them.
+                if (draft.Kind == CommandKind.RemoveExcess)
                 {
                     var choices = new ExcessChoices(root, view, draft, action => DraftEdited?.Invoke(action));
                     refreshChoices.Add(choices.Refresh);

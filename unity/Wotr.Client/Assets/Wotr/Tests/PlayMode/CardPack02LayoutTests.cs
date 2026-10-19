@@ -25,16 +25,10 @@ namespace Wotr.PlayTests
                         client.Apply(Screen());
                         for (var frame = 0; frame < 12; frame++)
                             yield return null;
-                        foreach (var tab in client.Board.Tray.Query<Button>().ToList().Where(b => b.name.StartsWith("effect-tab-")))
-                        {
-                            CardNetworkTests.Click(tab);
-                            for (var frame = 0; frame < 4; frame++)
-                                yield return null;
-                            LayoutTests.Save(target, $"heroic-{tab.name}-{width}-{scale:0.00}.png");
-                            CheckVisible(client);
-                        }
-                        // UI-245: the Companions are their portraits in the Battle window; the leaders stay listed.
+                        CheckVisible(client);
+                        // UI-245/UI-289: the Companions and the leaders are their figures in the Battle window.
                         Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-base.character.aragorn"));
+                        Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-gondor-leader-0"));
                         CardNetworkTests.Click(client.Board.Tray.Q("portrait-base.character.aragorn"));
                         CardNetworkTests.Click(client.Board.Tray.Q<Button>("effect-choice-hits-3"));
                         for (var frame = 0; frame < 4; frame++)
@@ -79,7 +73,10 @@ namespace Wotr.PlayTests
                 for (var index = 0; index < 4; index++)
                 {
                     var id = nation + "-leader-" + index;
-                    view.Units.Add(new UnitView { Id = id, Nation = nation, Kind = UnitKind.Leader, Location = "minas-tirith", Side = Side.FreePeoples });
+                    var leader = new UnitView { Id = id, Nation = nation, Kind = UnitKind.Leader, Location = "minas-tirith", Side = Side.FreePeoples };
+                    view.Units.Add(leader);
+                    // As the server offers them: Heroic Death's figures belong to the battle's force.
+                    view.Battle.Attacker.Units.Add(leader);
                     option.EffectChoices.Add(new EffectChoiceView { Id = id, SelectionGroup = "Sacrifice" });
                 }
             foreach (var character in view.Characters)

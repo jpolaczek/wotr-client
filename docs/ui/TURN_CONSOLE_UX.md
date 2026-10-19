@@ -418,8 +418,10 @@ The decisions of expansions (Council, Kings, Lords) remain at their panels (Dice
   - Meals return from the console (status), and the flag in the tray is no longer visible, because
     the meal plan leaves the decision window closed (UI-160).
 - The decision window leaves the election without a separate object: general election figures ,
-  Companion and cards table ( `EffectFigurePicker` ), the king's destination, figure Army from
-  several regions, Captain's order, reactions and Skip.
+  Companion and cards table, the king's destination, figure Army from
+  several regions, Captain's order, reactions and Skip. (UI-289, 2026-10-19: the figure table
+  `EffectFigurePicker`, the king's destination and the Army figures of several regions left the
+  tray; they are chosen in the Battle window, the region panel and on the map.)
 
 
 <a id="scenariusze-i-właściciele"></a>

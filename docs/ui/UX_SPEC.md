@@ -1278,3 +1278,23 @@ ability and says "Click to use" or "Select an eligible die to use it". The contr
 (`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
 text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
 `ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
+
+## Unreachable tray fallbacks removed — UI-289 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 8): text-button fallbacks that
+no decision reaches any more are removed, each after its reachability was traced in the client and the server
+(base game, Lords, Kings and Fate content, the demo CPU):
+
+- `CardChoices.Event` (the card title, "Use as" and nation rows): every Event is played from its hand card with the
+  tray's `DirectCard`, so the tray returns before it; the use is the board's `CardCostPicker`, the nation the
+  highlighted nation.
+- The `ArmyFigure(s)` and `CompanionDestination` rows: those presentations come only from event steps outside any
+  battle or Hunt, so `CardFigureDraft` always hands them to the region panel and the map (UI-215).
+- `EffectFigurePicker` (figure tabs by nation): battle figure choices are the battle's own figures, chosen in the
+  Battle window (UI-245); no other step offers six or more figures in the tray.
+- `AttackChoices`, `ArmyChoices`, `EventArmyChoices` and `EventArmyPlans`: an army move or attack is always made on
+  the map and in the region panel (`DirectArmy`, `CardArmyEvent`); ruler tokens no longer pay for armies.
+
+`ExcessChoices` stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
+Tests: the layout fixtures of `CardPack02LayoutTests` and `Shadow02LayoutTests` now offer the battle's own figures as
+the server does; `CardFigureDraftTests`, `DecisionRoutesTests` and the army and card network tests are unchanged.

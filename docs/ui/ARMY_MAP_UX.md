@@ -347,6 +347,8 @@ Army traffic path inventory (2026-10-13):
 | card with route march (`ArmyEvent.RouteMovement`, e.g. Shadow marches) | `EventArmyChoices` | tray, whole plan and one approval | Several armies with a step limit are planned together (`SeparateRoutes`, `MaximumSteps`) |
 | card with rescue (`ArmyEventOrder.ReliefAttack`) | `AttackChoices` | tray | The entrance and attack form one plan |
 
+UI-289 (2026-10-19): the three tray paths above are gone. The server no longer lets a ruler token pay for armies (`KingsRulerTokens`), and every army event, route marches and relief attacks included, moves on the map and in the region panel (`CardArmyEvent`, UI-216), so `ArmyChoices`, `EventArmyChoices`, `EventArmyPlans` and `AttackChoices` were removed.
+
 The step-step movement that would still go through the tray is gone, so nothing moved. In the tray paths, the tag click continues to mark the entire army (`BoardDraft.SelectRegion`) as on the map. The transfer of the ruler's token to the map requires a change of server (step sequence without dice) and does not belong to UI-128.
 
 The dead branch of the Army drop was removed: `DraftGesture.Drop` rejects armies, and `BoardDraft.Drop` only supports figure from the reserve. Tests of the same branch were replaced by checking that the dropped army never changes draft (`BoardDraftTests.AnArmyDropNeverChangesTheDraft`, `BattleDraftTests.AttackClickPreservesOriginRequiresAUnitForAnyRearFigureAndIgnoresAnArmyDrop`).

@@ -404,7 +404,6 @@
 .tray .figure { height: 34px; min-height: 34px; }
 .tray .group-heading { height: 24px; min-height: 24px; }
 .tray.event-army-planning .action { min-height: 33px; height: 33px; }
-.tray.event-army-planning .figure-grid .figure-nation { flex-direction: row; align-items: center; max-width: none; }
 
 .resource-counts .unity-label { margin-right: 7px; font-size: 13px; }
 
@@ -451,15 +450,9 @@
 .card-inspector .action { min-height: 26px; height: 26px; font-size: 12px; margin: 0 0 0 4px; }
 .card-inspector .muted { margin-bottom: 4px; }
 .card-rules { white-space: normal; font-size: 14px; flex-shrink: 0; margin: 0; padding: 0; }
-.draft-card { border-left-width: 4px; border-left-color: rgb(241, 206, 119); }
 .effect-trail { flex-direction: row; flex-wrap: wrap; }
 .tray .committed-choice { font-size: 13px; height: 27px; min-height: 27px; background-color: rgb(43, 41, 38); }
 .tray .effect-companion { width: 62px; min-width: 62px; padding: 0; margin-left: 0; margin-right: 3px; font-size: 14px; }
-.tray .effect-unit { width: 33px; min-width: 33px; padding: 0; margin-right: 3px; }
-.effect-figure-tabs, .effect-figure-row { flex-direction: row; flex-wrap: wrap; }
-.effect-hit-controls { flex-shrink: 0; flex-wrap: nowrap; }
-.effect-figure-tabs .action { font-size: 13px; padding-left: 5px; padding-right: 5px; margin-right: 3px; }
-.effect-figure-tabs .contains-selection { border-bottom-color: #a2d3b0; border-bottom-width: 3px; }
 .card-planning .tray #confirm-decision { height: 33px; min-height: 33px; }
 .card-planning .tray .action, .event-loss-planning .tray .action, .loss-planning .tray .action { height: 33px; min-height: 33px; }
 .dice-panel .action { width: 32px; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 4px; }
@@ -668,11 +661,6 @@
 .information-characters { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
 .information-characters .unity-label { width: 50%; height: 18px; min-height: 18px; margin: 0; }
 #inspected-region-state { height: 18px; min-height: 18px; }
-
-.event-army-plans { flex-direction: row; }
-.event-army-plan { flex-grow: 1; flex-basis: 0; min-width: 0; }
-.event-army-plan .event-army-tab { flex-grow: 1; flex-basis: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 3px; padding-right: 3px; }
-.event-army-plan .event-army-remove { width: 33px; min-width: 33px; padding: 0; }
 
 .event-recruit-nation { margin-right: 7px; align-items: center; }
 .event-recruit-nation > Label { font-size: 12px; }

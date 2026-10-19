@@ -7,9 +7,9 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 
 | Kind | Count |
 | --- | --- |
-| icon | 58 |
-| text | 106 |
-| art | 62 |
+| icon | 56 |
+| text | 99 |
+| art | 60 |
 | glyph | 1 |
 
 | File | Line | Kind | Label or icon |
@@ -42,10 +42,6 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionResultView.cs` | 26 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionResultView.cs` | 31 | text | Full record |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/BattleArchiveSummary.cs` | 22 | text | View battle rounds |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/ArmyChoices.cs` | 19 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/ArmyChoices.cs` | 22 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/ArmyChoices.cs` | 56 | text | face == DieFace.Army ? "Army · up to two moves" : "Character · one led army" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/AttackChoices.cs` | 35 | text | face == DieFace.Army ? "Army attack" : "Led attack" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoicePip.cs` | 15 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 24 | text | Keep all |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 82 | icon | select-all |
@@ -65,8 +61,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardInformation.cs` | 25 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs` | 457 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs` | 512 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 70 | text | CardLibrary.Title(card.CardId) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 313 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 238 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardCostPicker.cs` | 30 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs` | 55 | icon | pin |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs` | 59 | icon | close |
@@ -76,8 +71,6 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/DeckView.cs` | 19 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectEntry.cs` | 21 | text | source.Title |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectEntry.cs` | 29 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectFigurePicker.cs` | 30 | text | FigureGrid.Name(key) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectFigurePicker.cs` | 53 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectSourceDetails.cs` | 104 | text | ⌖ … |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectTrailChoices.cs` | 63 | text | ✓ … |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectsScopeBadges.cs` | 47 | art | "" |
@@ -124,14 +117,10 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 239 | icon | confirm |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 240 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 348 | icon | reinforcements |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 493 | text | ContextualHunt && option.Kind == CommandKind.DeclineReaction ? "Skip" : Label(option.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 558 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 476 | text | ContextualHunt && option.Kind == CommandKind.DeclineReaction ? "Skip" : Label(option.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 541 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 36 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 52 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyChoices.cs` | 28 | text | Reset route |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyPlans.cs` | 22 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyPlans.cs` | 26 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyPlans.cs` | 39 | text | Add army |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 133 | text | dice.Count.ToString() |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 151 | text | (side == Side.FreePeoples ? "♛ " : "◈ ") + name.Substring(0 |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 163 | text | (token.Spent ? "×" : "") + |
