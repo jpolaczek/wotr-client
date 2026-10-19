@@ -43,9 +43,12 @@ namespace Wotr.PlayTests
                     break;
                 case CommandKind.ChooseSpecialDie:
                 case CommandKind.DiscardRulerDie:
-                    await room.Settle();
-                    inspect?.Invoke(client);
                     var revision = client.Board.View.Revision;
+                    await room.Settle();
+                    // UI-267: a special-die choice with one legal die is sent by the client itself.
+                    if (client.Board.View.Revision > revision)
+                        return true;
+                    inspect?.Invoke(client);
                     // UI-264: the die is chosen in its pool.
                     CardNetworkTests.Click(client.Board.OwnDice.Q<Button>(option.EligibleDice[0]));
                     await room.At(revision + 1);

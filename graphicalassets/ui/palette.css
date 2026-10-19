@@ -103,6 +103,10 @@
   --tab-glow: #ffd06a;
   --tab-glow-opacity: 0;
 
+  /* UI-267: the origin band of a Lords special die (dice/special); its variants give each origin its metal. */
+  --special-band-light: #e9c977;
+  --special-band-dark: #7a5822;
+
   /* Hover glow, hidden unless a variant enables it. */
   --glow-opacity: 0;
 }

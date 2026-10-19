@@ -134,6 +134,21 @@
 #opponent-dice .die.legal-target { border-color: rgb(144, 203, 172); }
 #opponent-dice .die.resource-candidate { border-color: rgb(231, 193, 107); }
 
+/* UI-267: the opponent's Lords special dice in their origin's art (Styles/DicePanel.uss), at the top bar's size. */
+#opponent-dice .die.lords-die { width: 29px; min-width: 29px; height: 29px; min-height: 29px; border-radius: 14.5px; }
+#opponent-dice .die.lords-die .die-origin-emblem { right: -3px; bottom: -3px; width: 12px; height: 12px; }
+#opponent-dice .die.lords-die .die-remove-star { right: -3px; top: -3px; width: 11px; height: 11px; }
+#opponent-dice .die.lords-die-vilya { background-image: resource("Wotr/Art/UI/dice/special-vilya"); }
+#opponent-dice .die.lords-die-vilya:hover, #opponent-dice .die.lords-die-vilya:focus { background-image: resource("Wotr/Art/UI/dice/special-vilya-hover"); }
+#opponent-dice .die.lords-die-nenya { background-image: resource("Wotr/Art/UI/dice/special-nenya"); }
+#opponent-dice .die.lords-die-nenya:hover, #opponent-dice .die.lords-die-nenya:focus { background-image: resource("Wotr/Art/UI/dice/special-nenya-hover"); }
+#opponent-dice .die.lords-die-narya { background-image: resource("Wotr/Art/UI/dice/special-narya"); }
+#opponent-dice .die.lords-die-narya:hover, #opponent-dice .die.lords-die-narya:focus { background-image: resource("Wotr/Art/UI/dice/special-narya-hover"); }
+#opponent-dice .die.lords-die-balrog { background-image: resource("Wotr/Art/UI/dice/special-balrog"); }
+#opponent-dice .die.lords-die-balrog:hover, #opponent-dice .die.lords-die-balrog:focus { background-image: resource("Wotr/Art/UI/dice/special-balrog-hover"); }
+#opponent-dice .die.lords-die-gothmog { background-image: resource("Wotr/Art/UI/dice/special-gothmog"); }
+#opponent-dice .die.lords-die-gothmog:hover, #opponent-dice .die.lords-die-gothmog:focus { background-image: resource("Wotr/Art/UI/dice/special-gothmog-hover"); }
+
 /* Opponent counters in a gilt cartouche, pushed right with the status, Menu and plaques.
    UI-98: each counter is its icon and number; the caption stays in the counter's description. */
 .opponent-summary {

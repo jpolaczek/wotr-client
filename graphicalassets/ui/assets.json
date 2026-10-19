@@ -245,6 +245,221 @@
       "--enamel-light": "#9a3a5a",
       "--enamel-mid": "#5e1c35",
       "--enamel-dark": "#33101e"
+    },
+    "vilya": {
+      "--enamel-light": "#4c7fd0",
+      "--enamel-mid": "#21478f",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae"
+    },
+    "vilya-hover": {
+      "--enamel-light": "#4c7fd0",
+      "--enamel-mid": "#21478f",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "vilya-lit": {
+      "--enamel-light": "#4c7fd0",
+      "--enamel-mid": "#21478f",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "vilya-pressed": {
+      "--enamel-light": "#21478f",
+      "--enamel-mid": "#0e2252",
+      "--enamel-dark": "#0e2252",
+      "--special-band-light": "#b9d6ff",
+      "--special-band-dark": "#2f5fae",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "nenya": {
+      "--enamel-light": "#8aa0b2",
+      "--enamel-mid": "#3f5466",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0"
+    },
+    "nenya-hover": {
+      "--enamel-light": "#8aa0b2",
+      "--enamel-mid": "#3f5466",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "nenya-lit": {
+      "--enamel-light": "#8aa0b2",
+      "--enamel-mid": "#3f5466",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "nenya-pressed": {
+      "--enamel-light": "#3f5466",
+      "--enamel-mid": "#18232d",
+      "--enamel-dark": "#18232d",
+      "--special-band-light": "#ffffff",
+      "--special-band-dark": "#8494a0",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "narya": {
+      "--enamel-light": "#c8463a",
+      "--enamel-mid": "#7d1c13",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c"
+    },
+    "narya-hover": {
+      "--enamel-light": "#c8463a",
+      "--enamel-mid": "#7d1c13",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "narya-lit": {
+      "--enamel-light": "#c8463a",
+      "--enamel-mid": "#7d1c13",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "narya-pressed": {
+      "--enamel-light": "#7d1c13",
+      "--enamel-mid": "#3d0905",
+      "--enamel-dark": "#3d0905",
+      "--special-band-light": "#ffc27a",
+      "--special-band-dark": "#b8461c",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "balrog": {
+      "--enamel-light": "#6a3218",
+      "--enamel-mid": "#2e120a",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b"
+    },
+    "balrog-hover": {
+      "--enamel-light": "#6a3218",
+      "--enamel-mid": "#2e120a",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "balrog-lit": {
+      "--enamel-light": "#6a3218",
+      "--enamel-mid": "#2e120a",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "balrog-pressed": {
+      "--enamel-light": "#2e120a",
+      "--enamel-mid": "#120604",
+      "--enamel-dark": "#120604",
+      "--special-band-light": "#ff9a45",
+      "--special-band-dark": "#8c1a0b",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "gothmog": {
+      "--enamel-light": "#66795f",
+      "--enamel-mid": "#334031",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b"
+    },
+    "gothmog-hover": {
+      "--enamel-light": "#66795f",
+      "--enamel-mid": "#334031",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "gothmog-lit": {
+      "--enamel-light": "#66795f",
+      "--enamel-mid": "#334031",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "gothmog-pressed": {
+      "--enamel-light": "#334031",
+      "--enamel-mid": "#151c15",
+      "--enamel-dark": "#151c15",
+      "--special-band-light": "#d9edc6",
+      "--special-band-dark": "#566f4b",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
     }
   },
   "assets": [
@@ -417,6 +632,57 @@
         "bottom": 10,
         "left": 10
       }
+    },
+    {
+      "source": "dice/special.svg",
+      "base": false,
+      "role": "UI-267: a Lords special die: the round action die with a rune-studded band and enamel in the colours of its origin (Vilya sapphire, Nenya mithril, Narya ruby, the Balrog's ember, Gothmog's Morgul green); hover and pressed as the other dice, lit while the special-die choice can keep it.",
+      "variants": [
+        "vilya",
+        "vilya-hover",
+        "vilya-lit",
+        "vilya-pressed",
+        "nenya",
+        "nenya-hover",
+        "nenya-lit",
+        "nenya-pressed",
+        "narya",
+        "narya-hover",
+        "narya-lit",
+        "narya-pressed",
+        "balrog",
+        "balrog-hover",
+        "balrog-lit",
+        "balrog-pressed",
+        "gothmog",
+        "gothmog-hover",
+        "gothmog-lit",
+        "gothmog-pressed"
+      ]
+    },
+    {
+      "source": "dice/remove-star.svg",
+      "role": "UI-267: the Remove star of a special die's face, a badge at the die's upper right."
+    },
+    {
+      "source": "dice/origins/vilya.svg",
+      "role": "UI-267: origin emblem of the Vilya die: gold ring with a sapphire."
+    },
+    {
+      "source": "dice/origins/nenya.svg",
+      "role": "UI-267: origin emblem of the Nenya die: mithril ring with an adamant."
+    },
+    {
+      "source": "dice/origins/narya.svg",
+      "role": "UI-267: origin emblem of the Narya die: gold ring with a ruby."
+    },
+    {
+      "source": "dice/origins/balrog.svg",
+      "role": "UI-267: origin emblem of the Balrog's die: a tongue of flame."
+    },
+    {
+      "source": "dice/origins/gothmog.svg",
+      "role": "UI-267: origin emblem of Gothmog's die: the pale moon of Minas Morgul."
     },
     {
       "source": "dice/faces/character.svg",

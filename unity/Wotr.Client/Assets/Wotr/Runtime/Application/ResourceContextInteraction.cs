@@ -12,6 +12,8 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private PlayerView view;
         private TurnDraft draft;
+        private string forcedSent = "";
+        private bool forcedScheduled;
 
         public ResourceContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -31,6 +33,33 @@ namespace Wotr.Client
             board.Root.EnableInClassList("sovereign-context", board.Sovereigns.DecisionTarget.Length > 0);
             HighlightCandidates();
             board.Sovereigns.Highlight(id => !busy() && ExpansionActions.Sovereign(view, draft, id) != null);
+            SendForcedChoice();
+        }
+
+        // UI-267: a special-die choice that allows one die (an Eye forced among several dice) is sent without a click,
+        // once per decision, after the refresh that showed it.
+        private void SendForcedChoice()
+        {
+            if (forcedScheduled || ForcedDie().Length == 0)
+                return;
+            forcedScheduled = true;
+            board.Root.schedule.Execute(() =>
+            {
+                forcedScheduled = false;
+                var die = ForcedDie();
+                if (die.Length == 0 || busy())
+                    return;
+                forcedSent = view.Decision.Id;
+                edit(() => draft.Change(p => p.DieId = die), true);
+            });
+        }
+
+        private string ForcedDie()
+        {
+            if (!SpecialDice.Choosing(view) || view.Decision.Id == forcedSent || !ExpansionActions.Immediate(draft?.Kind))
+                return "";
+            var option = DraftOptions.For(view, draft);
+            return option?.Enabled == true && option.EligibleDice.Count == 1 ? option.EligibleDice[0] : "";
         }
 
         private void HighlightCandidates()
@@ -55,7 +84,16 @@ namespace Wotr.Client
                     button.EnableInClassList("resource-candidate", eligible);
                     if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
                         button.SetEnabled(true);
+                    SpecialCandidate(button, token.Id, eligible);
                 }
+        }
+
+        // UI-267: during the special-die choice a die an Eye rules out is disabled (its tooltip, DieHints, says why).
+        private void SpecialCandidate(Button button, string id, bool eligible)
+        {
+            var die = view.Dice.FirstOrDefault(d => d.Id == id);
+            if (die != null && SpecialDice.Candidate(view, die))
+                button.SetEnabled(eligible);
         }
 
         public bool Die(string id)

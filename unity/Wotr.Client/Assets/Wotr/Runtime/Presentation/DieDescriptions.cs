@@ -51,7 +51,7 @@ namespace Wotr.Client
             if (die.SpecialDieChosen)
                 parts.Add("Chosen");
             if (die.RemoveSymbol)
-                parts.Add("Remove rune");
+                parts.Add("★ Remove");
             if (die.PermanentlyRemoved)
                 parts.Add("Removed for the game");
             return string.Join(" · ", parts);

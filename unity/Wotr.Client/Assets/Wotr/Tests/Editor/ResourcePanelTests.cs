@@ -88,7 +88,7 @@ namespace Wotr.EditorTests
                 RecoveryDescription = "Removed at Recover only if Gandalf the White is then in play."
             };
             // UI-97: one short line; the conditional recovery stays in the Why? and help panels.
-            Assert.AreEqual("Vilya · Army · Remove rune", ExpansionLabels.DieDetail(die));
+            Assert.AreEqual("Vilya · Army · ★ Remove", ExpansionLabels.DieDetail(die));
             StringAssert.DoesNotContain(die.RecoveryDescription, ExpansionLabels.DieDetail(die));
             StringAssert.DoesNotContain("Removed next recovery after use", ExpansionLabels.DieDetail(die));
         }

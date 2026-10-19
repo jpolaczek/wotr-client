@@ -2,9 +2,9 @@
   "task": "UI-86",
   "renderer": "headless Google Chrome",
   "shared_sha256": {
-    "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
+    "palette.css": "969975447b4ec151894f433a9eca28bea149d08f5cb676c010db19ddbec74a15",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "3d60896147de192afbb187ba77f3f9defab44a0ae99f102d2daabb91b0bc5089"
+    "assets.json": "c5b0154a97f30965f28f71d1e7496885ff7140b4a0e1722200f2378b9f448acd"
   },
   "assets": [
     {
@@ -726,6 +726,422 @@
       "alpha": true,
       "source_sha256": "677205137359b474b66d4bbb9dff10ca6963ce0c8c6f6551bcfb9663548d8786",
       "png_sha256": "deca592ee908465136d4f7df3b65e06cfc44173252684f2752212ba8831cbf78"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-vilya.png",
+      "source": "src/dice/special.svg",
+      "variant": "vilya",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "89ea57159dcc99250977ad50007db3a711a73fa4bc362d693c0a164ccef23d59"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-vilya-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "vilya-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "454cfffc061c3f926c9e1c343c9edcac163e8b932fc4696e76ac4dd6ab842824"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-vilya-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "vilya-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "6cd4f55a7df7131a1505500a13751fc4a25741d05cb905c3af164abb4ce3bf0f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-vilya-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "vilya-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "63ae31a1b0ac447512ca171ffb1b733cdb93c126c114ed91171c04b0b8e626be"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-nenya.png",
+      "source": "src/dice/special.svg",
+      "variant": "nenya",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "0cecc1dc8286be5270a039d70f1d61cc27e337fc142e50157ea6aeb084b3fe4d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-nenya-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "nenya-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "b60b3a1cf213b7839b16565891528cceda0de7b5eb2bca657a744ee27a3c881d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-nenya-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "nenya-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "d094aeba947781573f756eb5c6f750350c38737c0004721f315258075f8c58b1"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-nenya-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "nenya-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "51d72661610b3a216ef14c7e061af45dc935a0d95ae29ed32fed688a48482375"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-narya.png",
+      "source": "src/dice/special.svg",
+      "variant": "narya",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "476d733dfcbb304159b6c2141dbf7b7d8c0ee584980584db9ca12aba12ec419e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-narya-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "narya-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "f223eee8a9b2068dfd54b11f4f919e44806f01c544b8a4a550e1e5c2f86792a2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-narya-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "narya-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "1a07338397dc93c14dee7fedc3dd0be4c3a269bc267249e86e5474e6a669ed49"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-narya-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "narya-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "4b852152601984822650b1584ddd8994c2e56ee3366e978573ae3a350a9708a4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-balrog.png",
+      "source": "src/dice/special.svg",
+      "variant": "balrog",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "635c138cb3c1a66896fda275c8a1a7aec5092f2803d8a60931f1f7947d281062"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-balrog-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "balrog-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "3ca9a7859aa482889d8603cf6a23b41c270022c8a4e313efac46c8d0fb8a8fc0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-balrog-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "balrog-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "1f133378c9d027ea41736c20ac3f2e0508e97615e68313a5752f8ca42c425145"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-balrog-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "balrog-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "13203404e90831c3bae1a4ba8c56188b554fd3c22c8f6c5f0792e312504b6f98"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-gothmog.png",
+      "source": "src/dice/special.svg",
+      "variant": "gothmog",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "5dd502b73e004d6580c6808d87192174c7f5f0a5aca711335fe24a7d5cc20749"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-gothmog-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "gothmog-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "eed3b7682594386087eb41af602e97dd51438fc4ff4e31a522bb36eff9e71680"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-gothmog-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "gothmog-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "ecbbaf2f96adb3769920717d002673b0c0cc1e5b4846757637842c5fcee38351"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-gothmog-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "gothmog-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "f6dfea9ba8ac6184ee4769e2aee90636891d5f65934ff3fd71735d64557de75a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/remove-star.png",
+      "source": "src/dice/remove-star.svg",
+      "variant": null,
+      "logical": [
+        14,
+        14
+      ],
+      "pixels": [
+        28,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "1cee6f827e0307dc4232184bddbbdc54ec4c848adc48c121204f1b5d388303e3",
+      "png_sha256": "6890a254710b0d0fc0f64bc58aba40b3bb19f580e3cfb506b31bc484104c6b83"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/vilya.png",
+      "source": "src/dice/origins/vilya.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "cc00e64c27d4dff5136ff6302a2070b2ec9f9661a49adf45619e4bee2aa5a6e1",
+      "png_sha256": "c115301b0c543666904dd0c1e7bc30727fe83cfc92e0f4d3489eba84479e10ba"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/nenya.png",
+      "source": "src/dice/origins/nenya.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "4d8abfefcefb30e6b45237ad111903ca6396da8194e8c6051970bc3f60c6c1d7",
+      "png_sha256": "ad92d5c1194dae2ffaac532635fac86856e29acddeca6b8d6f9a93cdbfbd272a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/narya.png",
+      "source": "src/dice/origins/narya.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "5845dc72597bb42f71efd96cd6e74b216b307f77ff165815841287cccb897da7",
+      "png_sha256": "b236c418a9cfce8f418f9042b7c2dfba770d7a6d54197dd3176d0444860f677b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/balrog.png",
+      "source": "src/dice/origins/balrog.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "92c16187bdafb00903afc1c0b8a239638c1f81318864720cea0ff82c7bf5ef54",
+      "png_sha256": "b107824b1ebc8547a23de1bf09118a664cf9ba5f2ffc8d5ca399085445a962a9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/gothmog.png",
+      "source": "src/dice/origins/gothmog.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "9d1beb4d1466fe4bd805d4d9a68fda98505dd3ee957f47eba2b17b7ca7dc4e3b",
+      "png_sha256": "6a719593e4948c2ca14913bcd3eabc5722acae9113cad1956bc82c7643531db4"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/faces/character.png",

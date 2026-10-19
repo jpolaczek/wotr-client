@@ -14,7 +14,7 @@ namespace Wotr.Client
             DecisionKind.CouncilVersions => "Choose your companions · Private",
             DecisionKind.CouncilHomelands => "Starting positions · Private until confirmed",
             DecisionKind.CouncilToken => "Choose a Council token",
-            DecisionKind.SpecialDieChoice => "Choose the special die to keep",
+            DecisionKind.SpecialDieChoice => "Special dice",
             DecisionKind.RulerDiscard => "Choose a die to discard",
             DecisionKind.Dismay => "Dismay · Re-roll a Ruler die?",
             DecisionKind.KeepActionDie => "Vilya · Keep a die?",

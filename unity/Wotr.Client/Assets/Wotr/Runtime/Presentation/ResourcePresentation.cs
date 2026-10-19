@@ -46,13 +46,14 @@ namespace Wotr.Client
             view.DecisionOwner == view.You && !view.Winner.HasValue;
 
         // The console's hint says what a click on a lit die does.
-        public static string PoolHint(PlayerView view) => PoolDecision(view) ? Consequence(view, null) : "";
+        public static string PoolHint(PlayerView view) => !PoolDecision(view) ? ""
+            : SpecialDice.Choosing(view) ? SpecialDice.Hint(view) : Consequence(view, null);
 
         public static string Consequence(PlayerView view, TurnDraft draft) => CouncilPending(draft)
             ? "Choose a highlighted use. Chieftain entry also spends the exact die you select."
             : view.Decision?.Kind switch
         {
-            DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Other special dice are set aside.",
+            DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Your other special dice wait for the next turn.",
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
             DecisionKind.Dismay => "Choose a token, then either highlighted Ruler. The server rolls its new result.",
             DecisionKind.CouncilToken => "Choose one token. Its printed use can be taken later in an action.",

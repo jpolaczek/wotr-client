@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16">
+  <!-- UI-267: the Remove star printed on a special die's face: a red star on an ink disc in a gilt rim. -->
+  <g filter="url(#lift)">
+    <circle cx="8" cy="8" r="7.3" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.45"/>
+    <circle cx="8" cy="8" r="5.9" style="fill: var(--ink)"/>
+    <path d="M8 3.1 L9.25 6.55 L12.9 6.6 L10.0 8.85 L11.05 12.35 L8 10.3 L4.95 12.35 L6.0 8.85 L3.1 6.6 L6.75 6.55 Z"
+          fill="#d8342a" style="stroke: var(--ivory)" stroke-width="0.55" stroke-linejoin="round"/>
+  </g>
+</svg>

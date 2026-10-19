@@ -476,3 +476,33 @@ Ring", then "or Stay to finish after healing"; Stay is the console's only button
 
 While a payment has alternative dice, the dice pool's frame lights (`DiceDecision`) and the alternatives glow in the
 shared rhythm; the console and the decision window do not repeat them.
+
+## Lords special dice in the pool — UI-267 (2026-10-19)
+
+A Lords special die (Vilya, Nenya, Narya, the Balrog, Gothmog) is a round die in the art of its origin
+(`graphicalassets/ui/src/dice/special.svg`: a rune-studded band and enamel in the origin's colours — Vilya sapphire,
+Nenya mithril, Narya ruby, the Balrog's ember, Gothmog's Morgul green) with the face glyph, the origin emblem at its
+lower right (`dice/origins`: three rings with their stones, a flame, the moon of Minas Morgul) and, for a result
+printed with the Remove star, the star at its upper right (`dice/remove-star`). The same dice stand at the top bar's
+size among the opponent's dice. Ruler dice keep their tile until UI-273.
+
+The special-die choice (`SpecialDieChoice`, LORDS pp. 9–13, rules T24) is made in the own pool, as UI-264 routed it:
+
+1. The side that rolled more dice chooses first; on a tie the Free Peoples do. The console's headline reads
+   "Special dice" (the hint below explains the click) and the decision notice wears the required red variant.
+2. Each die the choice can keep shows its lit art; its tooltip says what the click keeps and does ("Click to keep
+   Vilya · Eye. This Eye goes to the Hunt Box and strengthens the Shadow's Hunt.") and, for a Remove star, when the
+   kept die leaves the game (at the next Recover if Gandalf the White, or for the Shadow the Witch-king, is then in
+   play). One click keeps it; there is no Confirm.
+3. An Eye among the dice forces the choice of an Eye. A die it rules out is disabled and says why; when only one die
+   is legal, the client sends the choice by itself once the decision arrives (`ResourceContextInteraction`), so the
+   player never clicks a forced answer.
+4. The dice not kept stay in their slot, dimmed (`set-aside`), until the next roll, in the own pool and in the
+   opponent's top bar; their tooltip says they were not kept and that an unkept Remove star removes nothing. They are
+   not counted among the dice out of play.
+
+Tests: `SpecialDiceTests` (origins, set-aside dice, forced Eye, tooltips); `SpecialDiceNetworkTests` (a tie lets the
+Free Peoples keep first, lit dice survive a reconnect, the set-aside dice in both views, the forced Eye kept without a
+click, layouts at 1366/1920 and 100%/125%, no generic window); `ResourcePanelNetworkTests` and
+`ExpansionDecisionNetworkTests` (both sides with two Eyes each, with the Ruler dice). Scenarios: seeder `ui267-tie`,
+`ui267-forced-eye`; test menu `lords-forced-eye`.

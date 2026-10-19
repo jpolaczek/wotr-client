@@ -134,6 +134,57 @@
 .dice-panel .die.special-die .die-origin { color: rgb(241, 223, 166); font-size: 9px; height: 11px; bottom: 2px; }
 .dice-panel .die .die-badge { color: rgb(255, 214, 120); }
 
+/* UI-267: a Lords special die is the round die in its origin's art (dice/special-<origin>) with the origin emblem at its
+   lower right and, for a Remove result, the star at its upper right. It is lit while the special-die choice can keep
+   it and dimmed in its slot when not kept this turn. The lit art carries the glow, so the generic candidate border
+   stays off. */
+.dice-panel .available-dice .die.lords-die { width: 36px; min-width: 36px; border-radius: 18px; }
+.dice-panel .available-dice .die.lords-die.resource-candidate { border-color: rgba(0, 0, 0, 0); }
+.dice-panel .die.lords-die-vilya { background-image: resource("Wotr/Art/UI/dice/special-vilya"); }
+.dice-panel .die.lords-die-vilya:hover, .dice-panel .die.lords-die-vilya:focus { background-image: resource("Wotr/Art/UI/dice/special-vilya-hover"); }
+.dice-panel .die.lords-die-vilya.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-vilya-lit"); }
+.dice-panel .die.lords-die-vilya:active { background-image: resource("Wotr/Art/UI/dice/special-vilya-pressed"); }
+.dice-panel .die.lords-die-nenya { background-image: resource("Wotr/Art/UI/dice/special-nenya"); }
+.dice-panel .die.lords-die-nenya:hover, .dice-panel .die.lords-die-nenya:focus { background-image: resource("Wotr/Art/UI/dice/special-nenya-hover"); }
+.dice-panel .die.lords-die-nenya.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-nenya-lit"); }
+.dice-panel .die.lords-die-nenya:active { background-image: resource("Wotr/Art/UI/dice/special-nenya-pressed"); }
+.dice-panel .die.lords-die-narya { background-image: resource("Wotr/Art/UI/dice/special-narya"); }
+.dice-panel .die.lords-die-narya:hover, .dice-panel .die.lords-die-narya:focus { background-image: resource("Wotr/Art/UI/dice/special-narya-hover"); }
+.dice-panel .die.lords-die-narya.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-narya-lit"); }
+.dice-panel .die.lords-die-narya:active { background-image: resource("Wotr/Art/UI/dice/special-narya-pressed"); }
+.dice-panel .die.lords-die-balrog { background-image: resource("Wotr/Art/UI/dice/special-balrog"); }
+.dice-panel .die.lords-die-balrog:hover, .dice-panel .die.lords-die-balrog:focus { background-image: resource("Wotr/Art/UI/dice/special-balrog-hover"); }
+.dice-panel .die.lords-die-balrog.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-balrog-lit"); }
+.dice-panel .die.lords-die-balrog:active { background-image: resource("Wotr/Art/UI/dice/special-balrog-pressed"); }
+.dice-panel .die.lords-die-gothmog { background-image: resource("Wotr/Art/UI/dice/special-gothmog"); }
+.dice-panel .die.lords-die-gothmog:hover, .dice-panel .die.lords-die-gothmog:focus { background-image: resource("Wotr/Art/UI/dice/special-gothmog-hover"); }
+.dice-panel .die.lords-die-gothmog.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-gothmog-lit"); }
+.dice-panel .die.lords-die-gothmog:active { background-image: resource("Wotr/Art/UI/dice/special-gothmog-pressed"); }
+.die.lords-die .die-origin-emblem {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 15px;
+    height: 15px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.die.lords-die .die-remove-star {
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    width: 13px;
+    height: 13px;
+    background-image: resource("Wotr/Art/UI/dice/remove-star");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.die-origin-vilya { background-image: resource("Wotr/Art/UI/dice/origins/vilya"); }
+.die-origin-nenya { background-image: resource("Wotr/Art/UI/dice/origins/nenya"); }
+.die-origin-narya { background-image: resource("Wotr/Art/UI/dice/origins/narya"); }
+.die-origin-balrog { background-image: resource("Wotr/Art/UI/dice/origins/balrog"); }
+.die-origin-gothmog { background-image: resource("Wotr/Art/UI/dice/origins/gothmog"); }
+.die.lords-die.set-aside { opacity: 0.5; -unity-background-image-tint-color: rgb(140, 140, 140); }
+.die.lords-die.set-aside > * { -unity-background-image-tint-color: rgb(150, 150, 150); }
+
 /* Counters: icon and count on a gilt-edged button; a click still opens both pools. */
 #board-screen .dice-panel .resource-locations { margin: 2px 0 0 0; }
 #board-screen .dice-panel .resource-locations .action {

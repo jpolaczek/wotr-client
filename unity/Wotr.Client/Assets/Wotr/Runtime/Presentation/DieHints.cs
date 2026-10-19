@@ -7,10 +7,16 @@ namespace Wotr.Client
     public static class DieHints
     {
         // UI-97: a short description with the uses legal right now; full conditions stay behind "Why?".
+        // UI-267: a Lords special die says what the special-die choice does with it, why it waits, or what its Remove
+        // star means.
         public static string Describe(PlayerView view, DieView die)
         {
+            var choice = SpecialDice.Tooltip(view, die);
+            if (choice.Length > 0)
+                return choice;
             var usable = die.Owner == view.You && die.Location == DieLocation.Available && view.Decision?.Kind == DecisionKind.Action;
-            return DieDescriptions.Tooltip(die, usable ? Uses(view, die.Id).Distinct().ToArray() : null);
+            var text = DieDescriptions.Tooltip(die, usable ? Uses(view, die.Id).Distinct().ToArray() : null);
+            return SpecialDice.IsLords(die) && die.RemoveSymbol ? text + "\n" + SpecialDice.RemoveLine(die, true) : text;
         }
 
         private static IEnumerable<string> Uses(PlayerView view, string die)

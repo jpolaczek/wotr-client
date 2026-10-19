@@ -79,7 +79,9 @@ namespace Wotr.EditorTests
             pool.Apply(root, view, Side.Shadow, true);
             Assert.IsNotNull(root.Q<Button>("gothmog"));
             StringAssert.Contains("Gothmog", root.Q<Button>("gothmog").tooltip);
-            Assert.AreEqual("×", root.Q<Button>("gothmog").Q<Label>(className: "die-badge").text);
+            // UI-267: the Remove star is a badge of the die's own art, not a text mark.
+            Assert.IsNotNull(root.Q<Button>("gothmog").Q("die-remove-star"));
+            Assert.IsNull(root.Q<Button>("gothmog").Q<Label>(className: "die-badge"));
             pool.Apply(root, view, Side.FreePeoples, true);
             Assert.AreEqual("1", root.Q<Button>("pool-Hunt").text, "UI-97: icon and count; the name leads the description.");
             StringAssert.StartsWith("Hunt\n", root.Q<Button>("pool-Hunt").tooltip);

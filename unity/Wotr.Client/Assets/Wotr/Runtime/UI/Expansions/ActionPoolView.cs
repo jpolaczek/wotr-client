@@ -26,6 +26,8 @@ namespace Wotr.Client
 
         private readonly Action<string> dieChosen;
         private readonly Action<string> tokenChosen;
+        public const string LordsDieClass = "lords-die";
+        public const string SetAsideClass = "set-aside";
         public Action<string> CouncilChosen { get; set; }
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
 
@@ -46,7 +48,9 @@ namespace Wotr.Client
             snapshots[root] = snapshot;
             root.Clear();
             root.EnableInClassList("expanded-resources", view.Configuration.Lords || view.Configuration.Kings);
-            var visibleDice = view.Dice.Where(d => d.Owner == side && (DiceOutsidePool.InPool(d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
+            // UI-267: a special die not kept this turn keeps its slot, dimmed, until the next roll.
+            var visibleDice = view.Dice.Where(d => d.Owner == side &&
+                (DiceOutsidePool.InPool(d) || SpecialDice.SetAside(d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
             root.EnableInClassList("dense-resources", visibleDice.Length > 8);
             // Opponent counters live in the top bar's OpponentSummary.
             root.Add(own ? Header(side) : OwnerLabel(side));
@@ -93,7 +97,8 @@ namespace Wotr.Client
 
         private Button Die(DieView die, bool own)
         {
-            var special = ExpansionLabels.Special(die);
+            var lordsOrigin = SpecialDice.Origin(die);
+            var special = ExpansionLabels.Special(die) && lordsOrigin.Length == 0;
             var button = BoardScreen.Die("", () => dieChosen(die.Id));
             button.Add(new DieFaceIcon(die.Face));
             button.name = die.Id;
@@ -101,22 +106,48 @@ namespace Wotr.Client
             button.AddToClassList(die.Owner == Side.FreePeoples ? "die-free" : "die-shadow");
             button.EnableInClassList("special-die", special);
             button.EnableInClassList("paid-die", die.Location == DieLocation.Resolving);
-            if (special)
+            button.userData = new DraftToken(DraftObject.Die, die.Id);
+            if (lordsOrigin.Length > 0)
+                LordsDie(button, die, lordsOrigin);
+            else if (special)
             {
                 var origin = new Label(ExpansionLabels.DieSource(die)) { pickingMode = PickingMode.Ignore };
                 origin.AddToClassList("die-origin");
                 button.Add(origin);
             }
-            if (die.Location == DieLocation.Resolving || die.RemoveSymbol)
+            if (die.Location == DieLocation.Resolving || die.RemoveSymbol && lordsOrigin.Length == 0)
             {
                 var badge = new Label(die.Location == DieLocation.Resolving ? "•" : "×") { pickingMode = PickingMode.Ignore };
                 badge.AddToClassList("die-badge");
                 button.Add(badge);
             }
-            button.userData = new DraftToken(DraftObject.Die, die.Id);
             // An opponent's retained Ruler die can be the target of Dismay.
-            button.SetEnabled(die.Location != DieLocation.Resolving);
+            button.SetEnabled(die.Location != DieLocation.Resolving && !SpecialDice.SetAside(die));
             return button;
+        }
+
+        // UI-267: a Lords special die wears its origin's art and emblem and, for a Remove result, the star; a die not
+        // kept this turn stays dimmed in its slot.
+        private static void LordsDie(Button button, DieView die, string origin)
+        {
+            button.AddToClassList(LordsDieClass);
+            button.AddToClassList(LordsDieClass + "-" + origin);
+            var emblem = new VisualElement { name = "die-origin-emblem", pickingMode = PickingMode.Ignore };
+            emblem.AddToClassList("die-origin-emblem");
+            emblem.AddToClassList("die-origin-" + origin);
+            button.Add(emblem);
+            if (die.RemoveSymbol)
+            {
+                var star = new VisualElement { name = "die-remove-star", pickingMode = PickingMode.Ignore };
+                star.AddToClassList("die-remove-star");
+                button.Add(star);
+            }
+            var setAside = SpecialDice.SetAside(die);
+            button.EnableInClassList(SetAsideClass, setAside);
+            if (setAside)
+                button.tooltip = SpecialDice.SetAsideTooltip(die);
+            else if (die.RemoveSymbol)
+                button.tooltip += "\n" + SpecialDice.RemoveLine(die, true);
         }
 
         private void Locations(VisualElement root, PlayerView view, Side side)
@@ -125,8 +156,10 @@ namespace Wotr.Client
             root.Add(row);
             foreach (var location in new[] { DieLocation.Spent, DieLocation.Hunt, DieLocation.Discarded })
             {
+                // UI-267: a special die set aside this turn stands in the pool's row, not among the dice out of play.
                 var dice = view.Dice.Where(d => location == DieLocation.Spent
-                    ? d.Location == location && (d.SpentWith ?? d.Owner) == side : d.Location == location && d.Owner == side).ToList();
+                    ? d.Location == location && (d.SpentWith ?? d.Owner) == side
+                    : d.Location == location && d.Owner == side && !SpecialDice.SetAside(d)).ToList();
                 var label = location == DieLocation.Discarded ? "Out" : location.ToString();
                 // UI-97: icon and count, as in the top bar; the name leads the description. UI-230: the count is
                 // information only; a die there that a decision may choose stands in the pool's row instead.
