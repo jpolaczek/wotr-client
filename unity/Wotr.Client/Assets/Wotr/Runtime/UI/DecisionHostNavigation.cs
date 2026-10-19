@@ -16,8 +16,6 @@ namespace Wotr.Client
                 board.ResourceDecision.Open();
             else if (parent == board.Characters.DecisionHost)
                 board.Characters.OpenDecision();
-            else if (parent == board.CompanionSetup.DecisionHost)
-                board.CompanionSetup.Open();
             else if (parent == board.Fellowship.Root)
                 board.Fellowship.Open();
             else if (parent == board.Battles.Root)

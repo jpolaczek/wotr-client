@@ -29,6 +29,7 @@ namespace Wotr.Client
             board.Hunt.Dice.Selected += Reroll;
             board.Hunt.Guides.Selected += Guide;
             board.Hunt.Responses.Selected += Respond;
+            board.Hunt.Responses.GuideResponse += GuideResponse;
             board.Hunt.Tile.Selected += ApplyResponse;
         }
 
@@ -94,6 +95,19 @@ namespace Wotr.Client
                 CompleteResponse(response);
         }
 
+        // UI-270: an alternate companion's Guide response, sent with its click.
+        private void GuideResponse(string id)
+        {
+            if (busy() || draft == null || !HuntGuideResponses.InRow(view, id))
+                return;
+            edit(() =>
+            {
+                if (draft.Kind != CommandKind.RespondEffect)
+                    draft.Choose(CommandKind.RespondEffect);
+                draft.Change(p => p.ReactionId = id);
+            }, true);
+        }
+
         private void ApplyResponse()
         {
             if (draft?.HuntChoice is { } response)
@@ -135,6 +149,7 @@ namespace Wotr.Client
             board.Hunt.Dice.Selected -= Reroll;
             board.Hunt.Guides.Selected -= Guide;
             board.Hunt.Responses.Selected -= Respond;
+            board.Hunt.Responses.GuideResponse -= GuideResponse;
             board.Hunt.Tile.Selected -= ApplyResponse;
         }
     }

@@ -8,8 +8,9 @@ namespace Wotr.Client
     // objects by changing the host here and adding the gesture there. Window is the generic list, the fallback for a
     // choice no object owns yet.
     // UI-264: every expansion decision has a host. The dice pool takes the special-die pick and the Ruler discard; the
-    // panels the expansion UI already uses (Resources, Setup, Sovereigns) stay hosts until the expansion tasks move
-    // their decisions onto objects (UI-268, UI-269, UI-270, UI-274, UI-276) — then they leave this list.
+    // panels the expansion UI already uses (Resources, Sovereigns) stay hosts until the expansion tasks move their
+    // decisions onto objects (UI-274, UI-276) — then they leave this list. UI-268–UI-270 moved Vilya to its ring, the
+    // Council's setup to the Fellowship panel and its token choice to the Shadow pool.
     public enum DecisionHost
     {
         None,
@@ -26,7 +27,6 @@ namespace Wotr.Client
         Characters,
         Console,
         Resources,
-        Setup,
         Sovereigns,
         Window
     }
@@ -63,9 +63,10 @@ namespace Wotr.Client
         {
             DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard => DecisionHost.Dice,
             DecisionKind.KeepActionDie => DecisionHost.Rings,
-            DecisionKind.Dismay or DecisionKind.CouncilToken => DecisionHost.Resources,
+            DecisionKind.CouncilToken => DecisionHost.Dice,
+            DecisionKind.Dismay => DecisionHost.Resources,
             DecisionKind.CouncilVersions => DecisionHost.Fellowship,
-            DecisionKind.CouncilHomelands => DecisionHost.Setup,
+            DecisionKind.CouncilHomelands => DecisionHost.Fellowship,
             DecisionKind.CorruptionTile => DecisionHost.Sovereigns,
             _ => DecisionHost.Window
         };

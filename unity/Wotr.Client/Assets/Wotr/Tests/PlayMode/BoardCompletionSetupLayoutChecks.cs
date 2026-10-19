@@ -58,29 +58,29 @@ namespace Wotr.PlayTests
                 return;
             }
             Assert.AreEqual(DecisionKind.CouncilHomelands, board.View.Decision.Kind);
-            Assert.AreSame(board.CompanionSetup.DecisionHost, board.Tray.parent);
-            Assert.AreEqual(5, board.CompanionSetup.Root.Query<Button>(className: "homeland-portrait").ToList().Count);
+            // UI-270: the homelands on the Fellowship panel's portraits.
+            Assert.AreSame(board.Fellowship.Root, board.Tray.parent);
+            Assert.AreEqual(5, board.Fellowship.Root.Query<Button>(className: "companion-token").ToList().Count(b => b.ClassListContains("legal-target")));
             var camera = board.Map.Camera.Pan;
-            await Press(room, board.Root.Q<Button>("homeland-character-" + Gimli));
+            await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Gimli));
             Assert.AreEqual(camera, board.Map.Camera.Pan);
             await PlaceHomeland(room, board, "iron-hills", false);
             await PlaceHomeland(room, board, "ered-luin", true);
             Assert.AreEqual("Shadow chooses one", board.Root.Q<Label>("homeland-token-effect").text);
             await Press(room, board.Root.Q<Button>("homeland-stay"));
-            Assert.AreEqual("Fellowship", HomelandLocation(board));
+            Assert.AreEqual("", HomelandLocation(board));
             Assert.AreEqual("No tokens", board.Root.Q<Label>("homeland-token-effect").text);
             await PlaceHomeland(room, board, "ered-luin", false);
-            await EscapeAndReopenSetup(room, board);
             Assert.AreEqual("→ Ered Luin", HomelandLocation(board));
-            CheckPanel(board.CompanionSetup.Root, board.Map.parent.worldBound);
+            CheckPanel(board.Fellowship.Root, board.Map.parent.worldBound);
         }
 
         private static string HomelandLocation(BoardScreen board) =>
-            board.Root.Q<Button>("homeland-character-" + Gimli).Q<Label>("homeland-location").text;
+            board.Root.Q<Button>("fellowship-portrait-" + Gimli).Q<Label>("homeland-location").text;
 
         private static async Task PlaceHomeland(MatchTestRoom room, BoardScreen board, string region, bool drag)
         {
-            var portrait = board.Root.Q<Button>("homeland-character-" + Gimli);
+            var portrait = board.Root.Q<Button>("fellowship-portrait-" + Gimli);
             await Press(room, portrait);
             Assert.IsTrue(board.Map.DraftOverlay.Targets.Contains(region));
             // Deliberate camera navigation exposes terrain beside the private setup panel.
@@ -105,27 +105,13 @@ namespace Wotr.PlayTests
             Assert.AreEqual(zoom, board.Map.Camera.Zoom);
         }
 
-        private static async Task EscapeAndReopenSetup(MatchTestRoom room, BoardScreen board)
-        {
-            board.CompanionSetup.Root.Focus();
-            BoardMenuLayoutTests.Key(board.CompanionSetup.Root, true);
-            BoardMenuLayoutTests.Key(board.Root, false);
-            await room.Settle();
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
-            Assert.AreSame(board.CompanionSetup.Tab, board.Root.panel.focusController.focusedElement);
-            await Press(room, board.CompanionSetup.Tab);
-            Assert.IsTrue(board.CompanionSetup.IsOpen);
-        }
-
         private static void AssertPrivateSetup(BoardScreen board)
         {
             Assert.IsNull(board.View.Decision);
             Assert.IsEmpty(board.View.OwnCompanionVersions);
             Assert.IsEmpty(board.View.OwnCompanions);
-            Assert.IsFalse(board.CompanionSetup.Active);
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, board.CompanionSetup.Tab.resolvedStyle.display);
-            Assert.IsEmpty(board.CompanionSetup.DecisionHost.Children());
+            Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
+            Assert.AreNotSame(board.Fellowship.Root, board.Tray.parent);
             Assert.IsNull(board.Root.Q("companion-setup-choices"));
             Assert.IsNull(board.Root.Q("council-homeland-choices"));
         }

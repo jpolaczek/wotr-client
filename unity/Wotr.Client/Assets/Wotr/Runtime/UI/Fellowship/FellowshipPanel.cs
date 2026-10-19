@@ -112,6 +112,7 @@ namespace Wotr.Client
             view = latest;
             this.data = data;
             status.Apply(view.Fellowship, data, view.Winner.HasValue);
+            roster.RegionName = id => data.Regions.TryGetValue(id, out var region) ? region.Name : id;
             focusButton.tooltip = status.Description + (view.Fellowship.MordorStep.HasValue ? "\nClick to focus the Mordor track"
                 : "\nClick to center the map on the last known position");
             roster.Apply(view);
@@ -141,6 +142,7 @@ namespace Wotr.Client
                 Versions.Reset();
             choosingVersions = versions;
             Root.EnableInClassList("fellowship-versions", versions);
+            Root.EnableInClassList("fellowship-homelands", CompanionSetupPresentation.Homelands(latest));
             roster.Context(latest, draft, context, enabled && !hunt, Versions.Figure);
             var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;

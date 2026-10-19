@@ -42,16 +42,13 @@ namespace Wotr.PlayTests
                 var board = room.Fp.Board;
                 if (!configuration.Lords)
                 {
-                    Assert.IsFalse(CompanionSetupPresentation.Versions(board.View));
-                    Assert.IsFalse(board.CompanionSetup.IsOpen);
+                    Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
                     continue;
                 }
                 await room.Settle();
                 var option = board.View.Options.Single(o => o.Kind == CommandKind.ChooseCompanionVersions);
                 Assert.AreSame(board.Fellowship.Root, board.Tray.parent, "The versions are chosen on the Fellowship panel.");
                 Assert.IsTrue(board.Fellowship.IsOpen);
-                Assert.IsFalse(board.CompanionSetup.IsOpen);
-                Assert.AreEqual(DisplayStyle.None, board.CompanionSetup.Tab.style.display.value, "No Setup tab for the versions.");
                 Assert.AreEqual(configuration.Council ? 7 : 1, option.CompanionVersions.Count);
                 Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
                 var revision = board.View.Revision;
@@ -97,7 +94,7 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(confirm);
                 RepeatClick(board.Root, confirmPoint);
                 await room.At(revision + 1);
-                Assert.AreEqual(configuration.Council, board.CompanionSetup.Active);
+                Assert.AreEqual(configuration.Council, CompanionSetupPresentation.Homelands(board.View));
                 Assert.IsNull(board.Tray.Q<VisualElement>("companion-setup-choices"));
                 Assert.AreNotEqual(decision, board.View.Decision.Id);
                 Assert.AreEqual(configuration.Council ? DecisionKind.CouncilHomelands : DecisionKind.FellowshipPhase,
@@ -219,12 +216,8 @@ namespace Wotr.PlayTests
         // prepare the Fellowship.
         private static void AssertPrivate(BoardScreen board)
         {
-            Assert.IsFalse(board.CompanionSetup.Active);
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, board.CompanionSetup.Tab.style.display.value);
             Assert.IsEmpty(board.View.OwnCompanionVersions);
-            Assert.IsEmpty(board.CompanionSetup.DecisionHost.Children());
-            Assert.IsFalse(CompanionSetupPresentation.Versions(board.View));
+            Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
             Assert.AreNotSame(board.Fellowship.Root, board.Tray.parent);
             Assert.IsTrue(board.Root.Query(className: "versions-badge").ToList().All(b => b.style.display.value == DisplayStyle.None));
             Assert.IsTrue(board.Root.Query<Button>(className: "guide-crown").ToList().All(c => c.style.display.value == DisplayStyle.None));

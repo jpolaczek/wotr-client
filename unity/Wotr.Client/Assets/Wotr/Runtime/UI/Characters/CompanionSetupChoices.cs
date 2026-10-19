@@ -38,6 +38,16 @@ namespace Wotr.Client
                 versions.Show = Compare;
         }
 
+        // UI-269/UI-270: the version cards and the homelands' panel part keep the keyboard to themselves; Enter there never
+        // sends the private setup.
+        public static bool ContainsInput(VisualElement element)
+        {
+            for (var current = element; current != null; current = current.parent)
+                if (current.name is "companion-setup-choices" or "council-homeland-choices")
+                    return true;
+            return false;
+        }
+
         // The compared companion: the one asked for, else the first whose version is still required, else the first.
         private string First(string asked)
         {

@@ -24,14 +24,14 @@ namespace Wotr.PlayTests
                     var choice = board.View.Options.Single().CharacterActions.Single();
                     CollectionAssert.AreEquivalent(new[] { "iron-hills", "ered-luin" }, choice.Targets);
                     CollectionAssert.DoesNotContain(choice.Targets, "erebor");
-                    Assert.AreEqual("—", Portrait(board, Gimli).Q<Label>("homeland-nation").text);
+                    // UI-270: the portrait's tooltip names the homelands and that this version activates no nation.
                     StringAssert.Contains("No nation icon", Portrait(board, Gimli).tooltip);
                     var politics = JsonConvert.SerializeObject(board.View.Nations);
                     var shadow = JsonConvert.SerializeObject(room.Sh.Board.View);
                     await Place(room, Gimli, "iron-hills", false);
                     await Place(room, Gimli, "ered-luin", true);
                     await Press(room, board, "homeland-stay");
-                    Assert.AreEqual("Fellowship", Portrait(board, Gimli).Q<Label>("homeland-location").text);
+                    Assert.AreEqual("", Portrait(board, Gimli).Q<Label>("homeland-location").text);
                     Assert.AreEqual("No tokens", Effect(board));
                     await Place(room, Gimli, destination, destination == "ered-luin");
                     Assert.AreEqual(0, room.Boundary.Commands);

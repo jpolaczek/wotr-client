@@ -66,7 +66,6 @@ namespace Wotr.Client
 
         public void Attach()
         {
-            Add(board.CompanionSetup.Root, board.CompanionSetup.Close, board.CompanionSetup.Tab);
             Add(board.Characters.Inspector.Root, board.Characters.Close, board.Characters.Tab);
             Add(board.Characters.Root, board.Characters.Close, board.Characters.Tab);
             Add(board.Log.Popup, board.Log.CloseCard, board.Log.Toggle);

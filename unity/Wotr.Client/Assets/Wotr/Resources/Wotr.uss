@@ -1303,42 +1303,14 @@
 .character-inspector #character-actions .action { min-height: 32px; margin: 2px; }
 .character-inspector #character-entry { font-size: 12px; }
 
-/* UI-68: private companion versions and Guide share one decision host. */
-.companion-setup-panel {
-    position: absolute; top: 8px; left: 116px; width: 820px;
-    padding: 8px; background-color: rgb(41, 38, 36);
-    border-top-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px;
-    border-top-color: rgb(164, 145, 97); border-bottom-color: rgb(164, 145, 97);
-    border-left-color: rgb(164, 145, 97); border-right-color: rgb(164, 145, 97);
-}
-.companion-setup-tab { position: absolute; left: 8px; top: 180px; }
-.companion-setup-panel .tray { padding: 0; margin: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; }
-.companion-setup-panel .unity-label { margin: 0; padding: 0; flex-shrink: 0; }
-.companion-setup-panel .window-header { margin-bottom: 4px; }
-.setup-portraits, .setup-guides, .setup-comparison, .setup-version-heading { flex-direction: row; }
-.setup-portraits { margin-bottom: 6px; }
-.companion-setup-panel .setup-portraits .action {
-    flex-grow: 1; flex-basis: 0; min-width: 0; max-width: 110px; height: 50px; min-height: 50px;
-    margin: 0 3px 0 0; padding: 3px; font-size: 14px;
-}
-.setup-portraits .setup-portrait-version { font-size: 12px; color: rgb(202, 191, 157); }
+/* UI-68/UI-269: the version cards of the private setup, now shown on the Fellowship panel. */
+.setup-comparison, .setup-version-heading { flex-direction: row; }
 .setup-comparison { align-items: stretch; }
-.companion-setup-panel .tray .setup-version-card {
-    flex-grow: 1; flex-basis: 0; min-width: 0; height: auto; min-height: 150px;
-    margin: 0 4px 0 0; padding: 7px; align-items: stretch;
-    background-color: rgb(52, 49, 45); white-space: normal;
-}
-.companion-setup-panel .tray .setup-version-card.selected { background-color: rgb(60, 70, 60); }
 .setup-version-heading { justify-content: space-between; font-size: 12px; color: rgb(202, 191, 157); }
 .setup-version-title { font-size: 16px; -unity-font-style: bold; white-space: normal; }
 .setup-version-statistics { font-size: 12px; white-space: normal; margin-bottom: 4px; }
 .setup-version-ability { font-size: 13px; white-space: normal; margin: 1px 0; }
 .setup-version-ability:focus { color: rgb(245, 212, 133); }
-.setup-guides { align-items: center; margin-top: 6px; }
-.setup-guides > Label { width: 94px; font-size: 13px; }
-.companion-setup-panel .setup-guides .action { flex-grow: 0; width: 150px; min-width: 0; padding: 0 5px; margin: 0 3px 0 0; font-size: 13px; }
-.companion-setup-panel .decision-choice-footer { justify-content: flex-end; margin-top: 4px; }
-.companion-setup-panel #confirm-decision { min-width: 48px; }
 
 /* UI-70: board navigation; no game pause or changes to mechanic shortcuts. */
 .board-menu { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
@@ -1352,25 +1324,21 @@
 .board-menu-panel > .action { height: 36px; min-height: 36px; margin: 2px 0; -unity-text-align: middle-left; }
 .board-menu-status { white-space: normal; font-size: 13px; color: rgb(245, 212, 133); margin: 8px 2px 4px; }
 
-/* UI-69: a compact map-based homeland choice, separate from versions. */
-.companion-setup-panel.council-homeland-panel { width: 548px; }
-.homeland-portraits { flex-direction: row; margin: 6px 0; }
-.companion-setup-panel.council-homeland-panel .tray .homeland-portrait {
-    flex-grow: 1; flex-basis: 0; min-width: 0; height: 100px; min-height: 100px;
-    margin: 0 3px 0 0; padding: 3px; white-space: normal; font-size: 14px;
+/* UI-69/UI-270: the homelands on the Fellowship panel: the destination over a placed companion's portrait, the hint,
+   Keep with the Fellowship and the Council Action Tokens the Shadow will receive. */
+.illustrated-companion .portrait-homeland {
+    position: absolute; left: 0; right: 0; top: 1px; height: 13px; margin: 0; padding: 0 2px;
+    font-size: 9px; -unity-text-align: middle-center; color: rgb(245, 212, 133); background-color: rgba(24, 22, 20, .88);
 }
-.homeland-portrait-symbol { font-size: 19px; color: rgb(231, 211, 160); }
-.homeland-location { font-size: 12px; white-space: normal; -unity-text-align: middle-center; }
-.homeland-placed .homeland-location { color: rgb(245, 212, 133); }
-.homeland-nation { font-size: 12px; color: rgb(193, 203, 193); }
 .homeland-hint { font-size: 13px; white-space: normal; }
-.council-homeland-panel #homeland-stay { align-self: flex-start; min-height: 30px; margin: 0 0 5px 0; }
-.homeland-tokens { flex-direction: row; align-items: center; }
-.council-homeland-panel .homeland-token { padding: 4px 6px; margin-right: 5px; font-size: 13px; border-bottom-width: 2px; }
+.homeland-tokens { flex-direction: row; align-items: center; flex-wrap: wrap; }
+.fellowship-homelands #homeland-stay { min-height: 30px; margin: 0 6px 0 0; }
+.fellowship-homelands .homeland-token { padding: 4px 6px; margin-right: 5px; font-size: 13px; border-bottom-width: 2px; }
 .homeland-token-none { opacity: 0.4; }
 .homeland-token-choice { border-bottom-color: rgb(220, 179, 83); }
 .homeland-token-granted { color: rgb(154, 216, 174); border-bottom-color: rgb(154, 216, 174); }
 #homeland-token-effect { flex-grow: 1; flex-basis: 0; min-width: 0; font-size: 13px; white-space: normal; }
+.fellowship-panel.fellowship-homelands { width: 420px; }
 
 /* UI-75/76: map artwork and paired decision windows. */
 .board-screen > .map { flex-shrink: 0; }
@@ -1425,6 +1393,17 @@
 .fellowship-portrait-cell > .guide-crown:hover:enabled { background-image: resource("Wotr/Art/UI/fellowship/guide-crown-crown-hover"); background-color: rgba(0, 0, 0, 0); }
 .fellowship-portrait-cell > .guide-crown.selected { background-image: resource("Wotr/Art/UI/fellowship/guide-crown-crown-on"); }
 .fellowship-portrait-cell > .guide-crown:active { scale: 0.9 0.9; }
+/* UI-270: the owner's mark of a companion in its alternate version: at a Fellowship portrait's upper right (the Guide
+   badge keeps the left), at a Characters row portrait's lower left. */
+.illustrated-companion .alternate-badge, .character-roster-portrait .alternate-badge {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background-image: resource("Wotr/Art/UI/fellowship/alternate");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.illustrated-companion .alternate-badge { right: 1px; top: 1px; }
+.character-roster-portrait .alternate-badge { left: 0; bottom: 0; }
 .illustrated-companion .versions-badge {
     position: absolute;
     left: 1px;

@@ -155,6 +155,17 @@ namespace Wotr.Client
 
         private void Council(string id)
         {
+            // UI-270: the Council's token choice is made on the offered token in the pool, sent at once.
+            if (view != null && !busy() && CouncilTokenSlots.Offered(view, id))
+            {
+                edit(() =>
+                {
+                    if (draft.Kind != CommandKind.ChooseCouncilToken)
+                        draft.Choose(CommandKind.ChooseCouncilToken);
+                    draft.Change(p => p.Ids = new System.Collections.Generic.List<string> { id });
+                }, true);
+                return;
+            }
             if (view == null || busy() || !ResourcePresentation.CanSelectCouncil(view, id))
                 return;
             var die = draft.Payload.DieId;

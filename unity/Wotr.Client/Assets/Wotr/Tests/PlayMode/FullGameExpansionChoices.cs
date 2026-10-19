@@ -36,10 +36,11 @@ namespace Wotr.PlayTests
                     await ChooseVersions(room, client, option);
                     break;
                 case CommandKind.ChooseCouncilHomelands:
-                    client.Board.CompanionSetup.Open();
+                    // UI-270: on the Fellowship panel; no companion shows a homeland.
+                    client.Board.Fellowship.Open();
                     await room.Settle();
-                    Assert.IsTrue(client.Board.Tray.Query<Label>("homeland-location").ToList()
-                        .All(label => label.text == "Fellowship"), "This script explicitly confirms an empty homeland set.");
+                    Assert.IsTrue(client.Board.Fellowship.Root.Query<Label>("homeland-location").ToList()
+                        .All(label => label.text.Length == 0), "This script explicitly confirms an empty homeland set.");
                     break;
                 case CommandKind.ChooseSpecialDie:
                 case CommandKind.DiscardRulerDie:

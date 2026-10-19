@@ -36,7 +36,7 @@ namespace Wotr.PlayTests
             foreach (var room in new[] { empty, stay })
             {
                 AssertPrivate(room.Sh.Board);
-                Assert.AreSame(room.Fp.Board.CompanionSetup.DecisionHost, room.Fp.Board.Tray.parent);
+                Assert.AreSame(room.Fp.Board.Fellowship.Root, room.Fp.Board.Tray.parent, "UI-270: the homelands are on the Fellowship panel.");
                 Assert.AreEqual("No tokens", Effect(room.Fp.Board));
                 var revision = room.Fp.Board.View.Revision;
                 await Confirm(room);
@@ -61,17 +61,28 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(0, room.Boundary.Commands);
                 await Confirm(room);
                 Assert.AreEqual(DecisionKind.CouncilToken, room.Sh.Board.View.Decision.Kind);
-                Assert.AreSame(room.Sh.Board.ResourceDecision.DecisionHost, room.Sh.Board.Tray.parent);
-                Assert.IsTrue(room.Sh.Board.ResourceDecision.IsOpen);
-                Assert.IsFalse(room.Fp.Board.CompanionSetup.Active);
+                // UI-270: the Shadow takes its token on the lit medallion in its pool; no panel or window opens.
+                await room.Settle();
+                Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(room.Sh.Board.View));
+                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen);
+                Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen);
+                foreach (var id in CouncilTokenSlots.Ids)
+                {
+                    var slot = room.Sh.Board.OwnDice.Q<Button>("pool-" + id);
+                    Assert.IsTrue(slot.ClassListContains("legal-target"), id + " is offered.");
+                    StringAssert.StartsWith("Click to take", slot.tooltip);
+                }
+                Assert.IsFalse(CompanionSetupPresentation.Setup(room.Fp.Board.View));
                 Assert.IsEmpty(room.Sh.Board.View.CouncilTokens);
                 Assert.AreEqual("erebor", room.Sh.Board.View.Characters.Single(c => c.Id == Gimli).Location);
                 Assert.IsFalse(room.Sh.Board.View.Nations.Single(n => n.Id == "dwarves").Active);
                 Assert.IsTrue(room.Sh.Board.View.Fellowship.RevealedCompanionVersions.ContainsKey(Gimli));
                 var revision = room.Sh.Board.View.Revision;
-                await Press(room, room.Sh.Board, "council-token-" + token);
+                await Press(room, room.Sh.Board, "pool-" + token);
                 await room.At(revision + 1);
                 Assert.AreEqual(token, room.Sh.Board.View.CouncilTokens.Single().Id);
+                var other = CouncilTokenSlots.Ids.Single(id => id != token);
+                Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + other).ClassListContains("council-spent"), "The token not taken stays dim.");
                 Assert.IsFalse(room.Sh.Board.View.CouncilTokens.Single().Spent);
                 Assert.AreEqual(DecisionKind.FellowshipPhase, room.Fp.Board.View.Decision.Kind);
             }
@@ -92,9 +103,9 @@ namespace Wotr.PlayTests
                     var choice = choices[index];
                     await Place(room, choice.CharacterId, choice.Targets.Single(), index % 2 == 0);
                 }
-                await Press(room, board, "homeland-character-" + choices[0].CharacterId);
+                await Press(room, board, "fellowship-portrait-" + choices[0].CharacterId);
                 await Press(room, board, "homeland-stay");
-                Assert.AreEqual("Fellowship", Portrait(board, choices[0].CharacterId).Q<Label>("homeland-location").text);
+                Assert.AreEqual("", Portrait(board, choices[0].CharacterId).Q<Label>("homeland-location").text);
                 Assert.AreEqual(count == 2 ? "Shadow chooses one" : "Shadow receives both", Effect(board));
                 await Place(room, choices[0].CharacterId, choices[0].Targets.Single(), false);
                 Assert.AreEqual("Shadow receives both", Effect(board));
@@ -120,15 +131,15 @@ namespace Wotr.PlayTests
 
         private static string Public(PlayerView view) => JsonConvert.SerializeObject(view).Replace(view.MatchId, "same-match");
         private static string Effect(BoardScreen board) => board.Tray.Q<Label>("homeland-token-effect").text;
-        private static Button Portrait(BoardScreen board, string id) => board.Tray.Q<Button>("homeland-character-" + id);
+        private static Button Portrait(BoardScreen board, string id) => board.Fellowship.Root.Q<Button>("fellowship-portrait-" + id);
 
         private static void AssertPrivate(BoardScreen board)
         {
             Assert.IsNull(board.View.Decision);
             Assert.IsEmpty(board.View.OwnCompanions);
             Assert.IsEmpty(board.View.OwnCompanionVersions);
-            Assert.IsFalse(board.CompanionSetup.Active);
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
+            Assert.IsTrue(board.Root.Query<Label>("homeland-location").ToList().All(l => l.style.display.value == DisplayStyle.None));
             Assert.IsNull(board.Root.Q<VisualElement>("council-homeland-choices"));
         }
 

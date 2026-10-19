@@ -28,6 +28,7 @@ namespace Wotr.Client
         private readonly Action<string> tokenChosen;
         public const string LordsDieClass = "lords-die";
         public const string SetAsideClass = "set-aside";
+        public const string CouncilTokenClass = "council-token";
         public Action<string> CouncilChosen { get; set; }
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
 
@@ -154,13 +155,18 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row("resource-locations");
             root.Add(row);
-            foreach (var location in new[] { DieLocation.Spent, DieLocation.Hunt, DieLocation.Discarded })
+            var locations = new List<DieLocation> { DieLocation.Spent, DieLocation.Hunt, DieLocation.Discarded };
+            // UI-270: in a Council game the Free Peoples' dice in the Fellowship Box (Strider, Dúnadan) have a fourth count.
+            if (side == Side.FreePeoples && view.Configuration.Council)
+                locations.Add(DieLocation.FellowshipBox);
+            foreach (var location in locations)
             {
                 // UI-267: a special die set aside this turn stands in the pool's row, not among the dice out of play.
                 var dice = view.Dice.Where(d => location == DieLocation.Spent
                     ? d.Location == location && (d.SpentWith ?? d.Owner) == side
                     : d.Location == location && d.Owner == side && !SpecialDice.SetAside(d)).ToList();
-                var label = location == DieLocation.Discarded ? "Out" : location.ToString();
+                var label = location == DieLocation.Discarded ? "Out" : location == DieLocation.FellowshipBox ? "Fellowship Box"
+                    : location.ToString();
                 // UI-97: icon and count, as in the top bar; the name leads the description. UI-230: the count is
                 // information only; a die there that a decision may choose stands in the pool's row instead.
                 var button = BoardScreen.Button(dice.Count.ToString(), null);
@@ -190,16 +196,28 @@ namespace Wotr.Client
                 button.userData = new DraftToken(DraftObject.RulerToken, token.Id);
                 row.Add(button);
             }
-            if (side == Side.Shadow)
-                foreach (var token in view.CouncilTokens)
-                {
-                    var button = BoardScreen.Button((token.Spent ? "×" : "") +
-                        (token.Id == ExpansionDraft.CouncilPolitics ? "C·P" : "C·T"), () => CouncilChosen?.Invoke(token.Id));
-                    button.name = "pool-" + token.Id;
-                    button.tooltip = ResourcePresentation.WithExplanation(view, token.Id, ExpansionLabels.CouncilToken(token.Id));
-                    button.EnableInClassList("resource-unavailable", token.Spent || token.UsedTokenThisTurn);
-                    row.Add(button);
-                }
+            if (!CouncilTokenSlots.Shown(view, side))
+                return;
+            // UI-270: the two Council Action Tokens in fixed slots, as medallions; RefreshDetails gives their state.
+            foreach (var id in CouncilTokenSlots.Ids)
+            {
+                var token = id;
+                var button = new Button(() => CouncilChosen?.Invoke(token)) { name = "pool-" + token };
+                button.AddToClassList(CouncilTokenClass);
+                button.AddToClassList(CouncilTokenClass + "-" + CouncilTokenSlots.Key(token));
+                row.Add(button);
+            }
+        }
+
+        // UI-270: a Council token's slot shows whether it was received, is offered, ready, usable now or spent.
+        private static void CouncilToken(Button button, PlayerView view)
+        {
+            var id = button.name.Substring("pool-".Length);
+            var state = CouncilTokenSlots.State(view, id);
+            button.tooltip = CouncilTokenSlots.Tooltip(view, id);
+            button.EnableInClassList("legal-target", state is CouncilTokenState.Offered or CouncilTokenState.Usable);
+            button.EnableInClassList("council-spent", state is CouncilTokenState.Spent or CouncilTokenState.Missing);
+            button.SetEnabled(state is CouncilTokenState.Offered or CouncilTokenState.Usable or CouncilTokenState.Ready);
         }
 
         private static void RefreshDetails(VisualElement root, PlayerView view, bool own)
@@ -214,13 +232,8 @@ namespace Wotr.Client
                         (view.You == Side.FreePeoples ? "Ruler token · " : "Dismay · ") + ExpansionLabels.Token(view, ruler.Id));
                     button.EnableInClassList("resource-unavailable", !DraftOptions.CanSelectToken(view, ruler.Id));
                 }
-                else if (button.name.StartsWith("pool-council."))
-                {
-                    var id = button.name.Substring("pool-".Length);
-                    button.tooltip = ResourcePresentation.WithExplanation(view, id, ExpansionLabels.CouncilToken(id));
-                    var ready = ResourcePresentation.CanSelectCouncil(view, id);
-                    button.EnableInClassList("legal-target", ready);
-                }
+                else if (button.ClassListContains(CouncilTokenClass))
+                    CouncilToken(button, view);
             }
         }
     }

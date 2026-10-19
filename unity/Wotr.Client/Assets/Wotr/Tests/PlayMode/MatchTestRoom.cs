@@ -158,7 +158,7 @@ namespace Wotr.PlayTests
                 submitted.Add(client, new SubmittedChoice { Revision = view.Revision });
             }
             VisualElement button = TrayOrConsole(client, name) ?? Reinforcement(client, name) ?? PanelFigure(client, name) ??
-                ObjectChoice(client, name);
+                ObjectChoice(client, name) ?? FellowshipControl(client, name);
             if (button == null && name.StartsWith("companion-"))
             {
                 if (client.Board.Tray.parent == client.Board.Hunt.DecisionHost)
@@ -174,6 +174,15 @@ namespace Wotr.PlayTests
             }
             CardNetworkTests.Click(button);
         }
+        // UI-269/UI-270: the Council's setup choices on the Fellowship panel's portraits (a portrait, its crown).
+        internal static Button FellowshipControl(MountedMatchClient client, string name)
+        {
+            if (!name.StartsWith("fellowship-portrait-") && !name.StartsWith("starting-guide-"))
+                return null;
+            client.Board.Fellowship.Open();
+            return client.Board.Fellowship.Root.Q<Button>(name);
+        }
+
         // UI-245/UI-246/UI-249: a card's choice made on its object — a battle die, portrait, figure stack, Leadership
         // or hit pip, a Companion on the Hunt panel's roster, or There Is Another Way's track and Ring.
         internal static VisualElement ObjectChoice(MountedMatchClient client, string name)
@@ -183,6 +192,12 @@ namespace Wotr.PlayTests
             var id = name.Substring("effect-choice-".Length);
             var view = client.Board.View;
             var tray = client.Board.Tray;
+            // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row.
+            if (view.Hunt != null && client.Board.Hunt.Root.Q<Button>(name) is { } response)
+            {
+                client.Board.Hunt.Open();
+                return response;
+            }
             if (view.Battle != null)
             {
                 // UI-246: a Leadership point is clicked on the figure that has it (its choice's source).

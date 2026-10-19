@@ -14,6 +14,7 @@ namespace Wotr.Client
         private readonly Label title = new Label { name = "character-roster-title" };
         private readonly VisualElement statusIcon = new VisualElement { name = "character-roster-status", pickingMode = PickingMode.Ignore };
         private readonly Label detail = new Label { name = "character-roster-detail" };
+        private readonly VisualElement alternate = new VisualElement { name = "alternate-badge", pickingMode = PickingMode.Ignore };
         private string status = "";
         private string description = "";
         private CharacterRosterView shown;
@@ -33,6 +34,10 @@ namespace Wotr.Client
             portrait.AddToClassList("character-roster-portrait");
             level.AddToClassList("character-roster-level");
             portrait.Add(level);
+            // UI-270: the owner's mark of a companion in its alternate version.
+            alternate.AddToClassList("alternate-badge");
+            alternate.style.display = DisplayStyle.None;
+            portrait.Add(alternate);
             title.AddToClassList("character-roster-title");
             statusIcon.AddToClassList("character-status-icon");
             detail.AddToClassList("character-roster-detail");
@@ -57,6 +62,8 @@ namespace Wotr.Client
             portrait.sprite = FigureArtwork.Sprite(FigureAppearances.Character(definition, entry.Side));
             portrait.EnableInClassList("free-peoples", entry.Side == Side.FreePeoples);
             portrait.EnableInClassList("shadow", entry.Side == Side.Shadow);
+            alternate.style.display = entry.Side == Side.FreePeoples && CompanionSetupPresentation.Alternate(entry.FigureId, definition)
+                ? DisplayStyle.Flex : DisplayStyle.None;
             var location = data.Regions.TryGetValue(entry.RegionId, out var region) ? region.Name : "";
             var state = CharacterCardFacts.Status(entry, location);
             statusText = state.Short;

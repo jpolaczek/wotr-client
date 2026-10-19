@@ -109,7 +109,6 @@ namespace Wotr.Client
         // UI-134: the Reinforcements panel presses hand cards through the hand's own selection.
         public SovereignPanel Sovereigns { get; }
         public CharacterRosterPanel Characters { get; }
-        public CompanionSetupPanel CompanionSetup { get; } = new CompanionSetupPanel();
         public FellowshipPanel Fellowship { get; }
         public HuntPanel Hunt { get; }
         public BattleReport BattleReport { get; }
@@ -218,8 +217,6 @@ namespace Wotr.Client
             stage.Add(ResourceDecision.Tab);
             stage.Add(ResourceDecision.Root);
             stage.Add(Reinforcements.Root);
-            stage.Add(CompanionSetup.Tab);
-            stage.Add(CompanionSetup.Root);
             stage.Add(Cards.Root);
             stage.Add(Log.Root);
             stage.Add(Log.Popup);
@@ -232,10 +229,6 @@ namespace Wotr.Client
             Hover = new RegionHover(Root, stage, Map);
             DecisionWindow.Opening += Hover.Close;
             DecisionWindow.Opening += Cards.CloseTransient;
-            CompanionSetup.Opening += Hover.Close;
-            CompanionSetup.Opening += Cards.CloseTransient;
-            CompanionSetup.Opening += Nations.CloseTransient;
-            CompanionSetup.Opening += HandDrawer.CloseTransient;
             Hover.Panel.EffectInspected += tableEffects.Inspect;
             tableEffects.Opening += Hover.Close;
             tableEffects.Opening += Log.CloseTransient;
@@ -339,13 +332,11 @@ namespace Wotr.Client
             tableEffects.Attach(Tray, decisionDock);
             ResourceDecision.Attach(Tray, decisionDock);
             Sovereigns.Attach(Tray, decisionDock);
-            CompanionSetup.Attach(Tray, decisionDock);
             Map.RegisterCallback<GeometryChangedEvent>(_ => Sovereigns.RequestPosition());
             stage.Insert(stage.IndexOf(Cards.Root), Battles.Root);
             var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, GameChat.Icon, GameChat.Root, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
-                HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root,
-                CompanionSetup.Tab, CompanionSetup.Root };
+                HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root };
             bool Occupied(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None &&
                 element.resolvedStyle.visibility == Visibility.Visible && element.worldBound.width > 0 && element.worldBound.height > 0 &&
                 (element.childCount > 0 || element is TextElement);
@@ -354,7 +345,7 @@ namespace Wotr.Client
             // UI-98: the Fellowship and Hunt plaques sit in the corner tab, a summary one hover away from the full
             // panels; like the hand, a decision window may cover it when the board has no other room (overlays).
             var fixedControls = new VisualElement[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, GameChat.Icon, Nations.Root,
-                tableEffects.Tab, HandDrawer.Tab, ResourceDecision.Tab, Victory.Tab, Victory.Banner, CompanionSetup.Tab };
+                tableEffects.Tab, HandDrawer.Tab, ResourceDecision.Tab, Victory.Tab, Victory.Banner };
             foreach (var control in fixedControls)
             {
                 control.AddToClassList("map-edge-control");
@@ -424,7 +415,6 @@ namespace Wotr.Client
         {
             _ = new FloatingWindow(Information.Root, Windows);
             _ = new FloatingWindow(ResourceDecision.Root, Windows);
-            _ = new FloatingWindow(CompanionSetup.Root, Windows);
             _ = new FloatingWindow(BattleReport.Root, Windows);
             Log.Window = new FloatingWindow(Log.Root, Windows);
             ActionHistory = new ActionContextRouter(this);

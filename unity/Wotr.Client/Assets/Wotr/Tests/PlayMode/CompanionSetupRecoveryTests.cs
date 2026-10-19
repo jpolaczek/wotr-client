@@ -109,8 +109,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, boundary.Commands);
             Assert.AreEqual(command.ExpectedRevision + 1, client.Board.View.Revision);
             Assert.AreEqual(DecisionKind.CouncilHomelands, client.Board.View.Decision.Kind);
-            Assert.IsTrue(client.Board.CompanionSetup.Active);
-            Assert.AreSame(client.Board.CompanionSetup.DecisionHost, client.Board.Tray.parent);
+            Assert.IsTrue(CompanionSetupPresentation.Homelands(client.Board.View));
+            Assert.AreSame(client.Board.Fellowship.Root, client.Board.Tray.parent);
             Assert.IsNull(client.Board.Tray.Q<VisualElement>("companion-setup-choices"));
             var other = await shadow.Get<PlayerView>("api/matches/" + match, token);
             Assert.IsNull(other.Decision);

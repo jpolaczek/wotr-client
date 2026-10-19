@@ -47,7 +47,6 @@ namespace Wotr.Client
             AddTab(board.Nations.Root, "Politics", "politics");
             AddTab(board.Reinforcements.Tab, "Reserve", "reinforcements");
             AddTab(board.Characters.Tab, "Characters", "characters");
-            AddTab(board.CompanionSetup.Tab, "Setup", "characters");
             AddTab(board.TableEffects.Tab, "Effects", "effects");
             DockLeft(board.Nations.Drawer, "politics");
             DockLeft(board.Reinforcements.Root, "reinforcements");

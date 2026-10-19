@@ -62,6 +62,7 @@ namespace Wotr.Client
         {
             if (source == null || target == null || view.Decision == null)
                 return false;
+            // UI-270: a companion's portrait on the Fellowship panel dropped on its homeland.
             if (source.Object == DraftObject.CouncilPortrait && target.Object == DraftObject.Region && draft.Kind == CommandKind.ChooseCouncilHomelands)
             {
                 var choice = DraftOptions.For(view, draft)?.CharacterActions.FirstOrDefault(c => c.CharacterId == source.Id);

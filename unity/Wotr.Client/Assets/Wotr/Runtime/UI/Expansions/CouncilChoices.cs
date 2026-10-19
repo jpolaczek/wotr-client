@@ -28,30 +28,7 @@ namespace Wotr.Client
                 var choices = new CouncilHomelandChoices(root, view, option, draft, edit, data);
                 refresh.Add(choices.Refresh);
             }
-            else
-                Tokens(root, option);
-        }
-
-        private void Tokens(VisualElement root, ActionOption option)
-        {
-            var row = BoardScreen.Row();
-            root.Add(row);
-            foreach (var id in option.EligibleIds)
-            {
-                var button = Choice(ExpansionLabels.CouncilToken(id), "council-token-" + id,
-                    () => draft.Payload.Ids.Contains(id), () => CardDraft.Choose(draft, id));
-                button.tooltip = id == ExpansionDraft.CouncilPolitics ? "One action to advance a Shadow nation, without a die."
-                    : "One action to move Nazgûl and Minions, without a die.";
-                row.Add(button);
-            }
-        }
-
-        private Button Choice(string label, string name, Func<bool> selected, Action change)
-        {
-            var button = BoardScreen.Button(label, () => edit(change));
-            button.name = name;
-            refresh.Add(() => button.EnableInClassList("selected", selected()));
-            return button;
+            // UI-270: the Council's token choice is made on the tokens in the Shadow's pool (CouncilTokenSlots).
         }
 
         public void Refresh()

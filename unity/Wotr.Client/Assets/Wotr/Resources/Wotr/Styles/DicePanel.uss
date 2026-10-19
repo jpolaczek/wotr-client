@@ -221,6 +221,7 @@
 .pool-count-spent #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/spent"); }
 .pool-count-hunt #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/hunt"); }
 .pool-count-discarded #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/out"); }
+.pool-count-fellowshipbox #pool-count-icon { background-image: resource("Wotr/Art/UI/icons/fellowship-box"); }
 
 /* Elven Rings as ring icons; a selected ring keeps the gold outline. */
 #board-screen .dice-panel .pool-tokens { margin: 2px 0 0 0; }
@@ -238,6 +239,32 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 #board-screen .dice-panel .pool-tokens .pool-ring.selected { border-color: rgb(245, 212, 133); }
+
+
+/* UI-270: the Shadow's Council of Rivendell tokens in two fixed slots: lit while offered or usable now, dim when not
+   received or spent; the medallion shows the state, never a button plate. */
+#board-screen .dice-panel .pool-tokens .council-token {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    margin: 0 3px 0 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .dice-panel .pool-tokens .council-token:disabled { opacity: 1; }
+#board-screen .dice-panel .pool-tokens .council-token-politics { background-image: resource("Wotr/Art/UI/tokens/council-politics-council"); }
+#board-screen .dice-panel .pool-tokens .council-token-politics:hover:enabled { background-image: resource("Wotr/Art/UI/tokens/council-politics-council-hover"); background-color: rgba(0, 0, 0, 0); }
+#board-screen .dice-panel .pool-tokens .council-token-politics.legal-target, #board-screen .dice-panel .pool-tokens .council-token-politics.selected { background-image: resource("Wotr/Art/UI/tokens/council-politics-council-lit"); }
+#board-screen .dice-panel .pool-tokens .council-token-politics.council-spent { background-image: resource("Wotr/Art/UI/tokens/council-politics-council-spent"); }
+#board-screen .dice-panel .pool-tokens .council-token-travel { background-image: resource("Wotr/Art/UI/tokens/council-travel-council"); }
+#board-screen .dice-panel .pool-tokens .council-token-travel:hover:enabled { background-image: resource("Wotr/Art/UI/tokens/council-travel-council-hover"); background-color: rgba(0, 0, 0, 0); }
+#board-screen .dice-panel .pool-tokens .council-token-travel.legal-target, #board-screen .dice-panel .pool-tokens .council-token-travel.selected { background-image: resource("Wotr/Art/UI/tokens/council-travel-council-lit"); }
+#board-screen .dice-panel .pool-tokens .council-token-travel.council-spent { background-image: resource("Wotr/Art/UI/tokens/council-travel-council-spent"); }
+#board-screen .dice-panel .pool-tokens .council-token:active { scale: 0.92 0.92; }
 
 /* UI-183: while the player's decision takes dice from the pool (the Hunt allocation, an armed Elven Ring, a card that
    waits for its die) the pool's frame glows gold, with the padding narrowed so no die moves; each die the Hunt can

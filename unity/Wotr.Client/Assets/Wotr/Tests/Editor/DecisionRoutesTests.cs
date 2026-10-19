@@ -46,9 +46,9 @@ namespace Wotr.EditorTests
         [TestCase(DecisionKind.RulerDiscard, DecisionHost.Dice)]
         [TestCase(DecisionKind.KeepActionDie, DecisionHost.Rings)]      // UI-268: Vilya socket and the paid die
         [TestCase(DecisionKind.Dismay, DecisionHost.Resources)]         // UI-276: glowing Ruler dice
-        [TestCase(DecisionKind.CouncilToken, DecisionHost.Resources)]   // UI-270: Shadow pool token slots
+        [TestCase(DecisionKind.CouncilToken, DecisionHost.Dice)]         // UI-270: the tokens in the Shadow pool
         [TestCase(DecisionKind.CouncilVersions, DecisionHost.Fellowship)] // UI-269: Fellowship portraits
-        [TestCase(DecisionKind.CouncilHomelands, DecisionHost.Setup)]   // UI-270: Fellowship portraits and regions
+        [TestCase(DecisionKind.CouncilHomelands, DecisionHost.Fellowship)] // UI-270: Fellowship portraits and regions
         [TestCase(DecisionKind.CorruptionTile, DecisionHost.Sovereigns)] // UI-274: beside the sovereign's portrait
         public void ExpansionDecisionsHaveTheirHosts(DecisionKind kind, DecisionHost host) =>
             Assert.AreEqual(host, DecisionRoutes.Of(Own(kind, "")));

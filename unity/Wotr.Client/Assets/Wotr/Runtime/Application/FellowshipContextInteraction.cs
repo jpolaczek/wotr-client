@@ -120,6 +120,14 @@ namespace Wotr.Client
 
         private void Portrait(string id)
         {
+            // UI-270: a companion who may start in its homeland is selected by its click; its homelands light on the map.
+            if (CompanionSetupPresentation.HomelandOption(view) is { } homelands)
+            {
+                if (!busy() && draft.Kind == CommandKind.ChooseCouncilHomelands && draft.Payload.CharacterId != id &&
+                    homelands.CharacterActions.Any(c => c.CharacterId == id))
+                    edit(() => draft.Change(p => p.CharacterId = id), false);
+                return;
+            }
             var kind = FellowshipActions.PortraitKind(view, board.ActionDie, id, draft);
             if (busy() || !kind.HasValue || HuntActions.UsesPanel(view, draft))
                 return;

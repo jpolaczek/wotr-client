@@ -14,6 +14,8 @@ namespace Wotr.Client
         public event Action<string> GuideChosen;
         // False when the Guide has no portrait here (e.g. Gollum); the status row then names it.
         public bool ShowsGuide { get; private set; }
+        // UI-270: the name of a region, for a homeland's destination.
+        public Func<string, string> RegionName { get; set; } = id => id;
         private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
         private readonly Dictionary<string, Button> crowns = new Dictionary<string, Button>();
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
@@ -46,6 +48,8 @@ namespace Wotr.Client
                     var badge = new Label("Guide") { name = "guide-badge", pickingMode = PickingMode.Ignore };
                     button.Add(badge);
                     button.Add(VersionsBadge());
+                    button.Add(AlternateBadge());
+                    button.Add(HomelandLabel());
                     button.userData = new DraftToken(DraftObject.FellowshipPortrait, id);
                     portraits.Add(id, button);
                     // UI-269: the crown stands over the portrait's corner, beside it rather than inside its button.
@@ -69,10 +73,13 @@ namespace Wotr.Client
                 FigureArtwork.Apply(item.Value, FigureAppearances.Character(shownDefinition, Side.FreePeoples), Side.FreePeoples);
                 item.Value.Q<Label>("portrait-name").text = CharacterLibrary.ShortName(version.Length > 0 ? version : item.Key);
                 item.Value.EnableInClassList("current-guide", guide);
+                var alternate = character != null && CompanionSetupPresentation.Alternate(item.Key, version);
+                item.Value.Q("alternate-badge").style.display = alternate ? DisplayStyle.Flex : DisplayStyle.None;
                 item.Value.Q<Label>("guide-badge").style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
                 item.Value.tooltip = descriptions[item.Key] = CharacterLibrary.Name(version.Length > 0 ? version : item.Key) +
                     (character == null ? "" : $" · Level {character.Level} · Leadership {character.Leadership} · {FigureGrid.Name(character.NationIcon)}") +
-                    (version.Length > 0 ? "\n" + Abilities(version) : view.Configuration.Lords ? "\nVersion unrevealed" : "");
+                    (version.Length > 0 ? "\n" + Abilities(version) : view.Configuration.Lords ? "\nVersion unrevealed" : "") +
+                    (alternate ? "\n" + CompanionSetupPresentation.AlternateTooltip : "");
             }
         }
 
@@ -83,6 +90,24 @@ namespace Wotr.Client
             badge.AddToClassList("versions-badge");
             badge.style.display = DisplayStyle.None;
             return badge;
+        }
+
+        // UI-270: the owner's mark of a companion in its alternate version.
+        private static VisualElement AlternateBadge()
+        {
+            var badge = new VisualElement { name = "alternate-badge", pickingMode = PickingMode.Ignore };
+            badge.AddToClassList("alternate-badge");
+            badge.style.display = DisplayStyle.None;
+            return badge;
+        }
+
+        // UI-270: where a companion starts when it leaves for its homeland.
+        private static Label HomelandLabel()
+        {
+            var label = new Label { name = "homeland-location", pickingMode = PickingMode.Ignore };
+            label.AddToClassList("portrait-homeland");
+            label.style.display = DisplayStyle.None;
+            return label;
         }
 
         // UI-269: a starting Guide candidate's crown; lit on the chosen Guide.
@@ -113,6 +138,12 @@ namespace Wotr.Client
                 return;
             }
             HideVersions();
+            if (CompanionSetupPresentation.HomelandOption(view) is { } homelands)
+            {
+                Homelands(view, draft, homelands, enabled);
+                return;
+            }
+            HideHomelands();
             var choosing = false;
             foreach (var item in portraits)
             {
@@ -145,6 +176,7 @@ namespace Wotr.Client
                 var button = item.Value;
                 var badge = button.Q("versions-badge");
                 badge.style.display = group == null ? DisplayStyle.None : DisplayStyle.Flex;
+                button.Q("alternate-badge").style.display = DisplayStyle.None;
                 var version = group == null ? "" : CouncilDraft.Version(draft.Payload, group);
                 var shown = version.Length > 0 ? version : group?.BaseId ?? item.Key;
                 FigureArtwork.Apply(button, FigureAppearances.Character(shown, Side.FreePeoples), Side.FreePeoples);
@@ -169,6 +201,45 @@ namespace Wotr.Client
             choosing |= enabled && !option.Targets.Contains(draft.Payload.GuideId);
             Choosing = choosing;
             pulse.Run(choosing);
+        }
+
+        // UI-270: the Council's homelands — each companion who may start outside glows; its click selects it and lights
+        // its homelands on the map (a drag onto one is a shortcut); a placed companion shows where it starts.
+        private void Homelands(PlayerView view, TurnDraft draft, ActionOption option, bool enabled)
+        {
+            var choosing = false;
+            var own = view.OwnCompanions.ToDictionary(character => character.Id);
+            foreach (var item in portraits)
+            {
+                var button = item.Value;
+                var choice = option.CharacterActions.FirstOrDefault(candidate => candidate.CharacterId == item.Key);
+                var placement = draft.Payload.Placements.FirstOrDefault(p => p.UnitId == item.Key);
+                var location = button.Q<Label>("homeland-location");
+                location.text = placement == null ? "" : "→ " + RegionName(placement.RegionId);
+                location.style.display = placement == null ? DisplayStyle.None : DisplayStyle.Flex;
+                var offered = enabled && choice != null;
+                choosing |= offered;
+                ChoiceGlow.Apply(button, offered && draft.Payload.CharacterId != item.Key);
+                button.SetEnabled(true);
+                button.EnableInClassList("legal-target", offered);
+                button.EnableInClassList("selected", choice != null && draft.Payload.CharacterId == item.Key);
+                button.userData = new DraftToken(choice != null ? DraftObject.CouncilPortrait : DraftObject.FellowshipPortrait, item.Key);
+                var description = descriptions.TryGetValue(item.Key, out var text) ? text : "";
+                button.tooltip = choice == null ? description + "\nStays with the Fellowship"
+                    : CompanionSetupPresentation.HomelandOffer(draft, choice, RegionName,
+                        own.TryGetValue(item.Key, out var character) ? character.NationIcon : "");
+            }
+            Choosing = choosing;
+            pulse.Run(choosing);
+        }
+
+        private void HideHomelands()
+        {
+            foreach (var item in portraits)
+            {
+                item.Value.Q<Label>("homeland-location").style.display = DisplayStyle.None;
+                item.Value.userData = new DraftToken(DraftObject.FellowshipPortrait, item.Key);
+            }
         }
 
         private void HideVersions()

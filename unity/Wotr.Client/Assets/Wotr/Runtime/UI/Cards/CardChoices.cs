@@ -147,6 +147,9 @@ namespace Wotr.Client
                 if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
+                // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row.
+                if (HuntGuideResponses.InRow(view, id))
+                    continue;
                 // UI-268: Nenya's response is its glowing ring socket in the console.
                 if (NamedRings.OnSocket(view, id))
                 {

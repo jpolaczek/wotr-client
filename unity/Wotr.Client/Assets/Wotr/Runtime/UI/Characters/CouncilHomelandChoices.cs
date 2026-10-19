@@ -6,11 +6,13 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // UI-270: the Council's homelands on the Fellowship panel. The companions are chosen on its portraits and their
+    // homelands on the map; here the panel says what to do, keeps the selected companion with the Fellowship, and shows
+    // which Council Action Tokens the Shadow will receive. The ✓ sends the choice, an empty one included.
     public sealed class CouncilHomelandChoices
     {
         private readonly TurnDraft draft;
-        private readonly BoardPresentation data;
-        private readonly Dictionary<string, CouncilHomelandPortrait> portraits = new Dictionary<string, CouncilHomelandPortrait>();
+        private readonly HashSet<string> eligible = new HashSet<string>();
         private readonly Label consequence = new Label { name = "homeland-token-effect" };
         private readonly Label politics = new Label("◇ Politics");
         private readonly Label travel = new Label("→ Travel");
@@ -21,60 +23,38 @@ namespace Wotr.Client
             Action<Action> edit, BoardPresentation data)
         {
             this.draft = draft;
-            this.data = data;
             if (!CouncilHomelandPresentation.Owns(view))
                 return;
-            var choices = new VisualElement { name = "council-homeland-choices" };
+            foreach (var choice in option.CharacterActions)
+                eligible.Add(choice.CharacterId);
+            var choices = new VisualElement { name = "council-homeland-choices", focusable = true };
             root.Add(choices);
             hint.AddToClassList("homeland-hint");
+            hint.AddToClassList("draft-status");
             choices.Add(hint);
-            var row = BoardScreen.Row("homeland-portraits");
-            choices.Add(row);
-            var own = view.OwnCompanions.ToDictionary(character => character.Id);
-            foreach (var optionCharacter in option.CharacterActions)
-            {
-                var id = optionCharacter.CharacterId;
-                var portrait = new CouncilHomelandPortrait(optionCharacter, own.TryGetValue(id, out var character) ? character : null,
-                    () => Select(id, edit));
-                portraits.Add(id, portrait);
-                row.Add(portrait.Root);
-            }
-            stay = BoardScreen.Button("Fellowship", () => edit(() => CouncilDraft.Homeland(draft, draft.Payload.CharacterId, "")));
+            stay = BoardScreen.Button("Keep with the Fellowship", () => edit(() => CouncilDraft.Homeland(draft, draft.Payload.CharacterId, "")));
             stay.name = "homeland-stay";
             stay.tooltip = "Keep the selected companion with the Fellowship · Undo their placement";
-            choices.Add(stay);
             var tokens = BoardScreen.Row("homeland-tokens");
             politics.AddToClassList("homeland-token");
             travel.AddToClassList("homeland-token");
+            tokens.Add(stay);
             tokens.Add(politics);
             tokens.Add(travel);
             tokens.Add(consequence);
             choices.Add(tokens);
         }
 
-        private void Select(string id, Action<Action> edit)
-        {
-            if (draft.Payload.CharacterId != id)
-                edit(() => draft.Change(payload => payload.CharacterId = id));
-        }
-
         public void Refresh()
         {
             if (stay == null)
                 return;
-            foreach (var pair in portraits)
-            {
-                var placement = draft.Payload.Placements.FirstOrDefault(value => value.UnitId == pair.Key);
-                var region = placement != null && data.Regions.TryGetValue(placement.RegionId, out var definition)
-                    ? definition.Name : "";
-                pair.Value.Refresh(pair.Key == draft.Payload.CharacterId, region);
-            }
-            var selected = portraits.ContainsKey(draft.Payload.CharacterId);
+            var selected = eligible.Contains(draft.Payload.CharacterId);
             stay.SetEnabled(selected);
             stay.EnableInClassList("selected", selected && draft.Payload.Placements.All(value => value.UnitId != draft.Payload.CharacterId));
-            hint.text = portraits.Count == 0 ? "All companions stay with the Fellowship."
-                : selected ? "Choose a highlighted homeland, or stay with the Fellowship."
-                : "Select a companion, then choose a highlighted homeland.";
+            hint.text = eligible.Count == 0 ? "All companions stay with the Fellowship."
+                : selected ? "Click a lit homeland on the map, or keep the companion with the Fellowship."
+                : "Click a glowing companion, then a lit homeland on the map; dragging the portrait works too.";
             var count = draft.Payload.Placements.Count;
             consequence.text = CouncilHomelandPresentation.TokenEffect(count);
             consequence.tooltip = CouncilHomelandPresentation.TokenDetail(count);

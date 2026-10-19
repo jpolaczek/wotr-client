@@ -516,3 +516,37 @@ remain only for the Council's homelands (UI-270).
 Tests: `CompanionSetupPanelTests` (cards, readiness, the portraits' badges and crowns, privacy);
 `CompanionSetupPanelNetworkTests` (every configuration, reconnect, keyboard, layouts at 1366/1920 and 100%/125%,
 the restart recovery); `BoardCompletionLayoutTests`, `BoardMenuDraftTests`, `BoardProfileDriverTests`.
+
+## The Council of Rivendell on its objects — UI-270 (2026-10-19)
+
+The rest of the Council of Rivendell (wotr-server rules L03, docs/rules/T26-COUNCIL.md) is played on its objects; no
+Council decision opens the generic window, and the separate Setup window and its rail tab are retired.
+
+1. **Homelands.** After the versions, the Fellowship panel holds the private homelands. Each companion who may start
+   in its homeland glows; a click selects it and lights its homelands on the map, and a click on one places it (a drag
+   of the portrait onto the region is a shortcut). The portrait then shows where it starts ("→ Ered Luin"), and its
+   tooltip names the homelands and the version's nation ("Leaving activates the Elves", or that a version without a
+   nation icon activates none). "Keep with the Fellowship" sets the selected companion down again; the line beside it
+   says which Council Action Tokens the Shadow will receive (none, a choice of one, both). The ✓ sends, an empty choice
+   included. Enter in the panel's part never sends; Escape passes the held panel by.
+2. **Council Action Tokens.** In a Council game the Shadow's pool has two fixed token slots, Politics (a war banner
+   stepping forward) and Travel (the wings of a fell beast) — `graphicalassets/ui/src/tokens/council-*.svg`. A token
+   not received or spent is greyed; a ready one shows plain; while the Council's choice offers both (one companion
+   left) they glow and a click takes one at once; during an action a usable token glows and its click starts its use.
+3. **The alternate Guides' responses.** In the Hunt's Guide window the alternates' responses — Boromir, Gimli and
+   Legolas separate and reduce the damage; both alternate Hobbits cancel the tile; Fate's Gimli, Dwarven Lord, leaves
+   as the Guide — stand as response objects in the Hunt window's response row (portrait, name, what it does); a click
+   uses one, Skip declines. The base Guides' responses keep their place.
+4. **Art of Disappearing.** A Hobbit alternate eliminated in a battle chooses its adjacent region on the map, as every
+   region step (also during the battle).
+5. **The Fellowship Box.** In a Council game the Free Peoples' pool counts the dice in the Fellowship Box (Strider,
+   Dúnadan) as a fourth counter beside Spent, Hunt and Out (`icons/fellowship-box`).
+6. **Alternate versions.** An alternate keeps its base portrait; only its owner sees the alternate mark
+   (`fellowship/alternate`: the two faces with the alternate lit) on its Fellowship portrait and Characters row, and
+   its tooltip says so.
+
+Tests: `CouncilHomelandPanelTests`, `CouncilObjectsTests`, `CompanionSetupPanelTests`, `DecisionRoutesTests`;
+`CouncilHomelandPanelNetworkTests` (empty, stay, one token each, two and five departures, Fate homelands, layouts,
+restarts), `ExpansionDecisionNetworkTests`, `CompanionSetupPanelNetworkTests`, `BoardCompletionLayoutTests`,
+`BoardCompletionContextNetworkTests`, `BoardProfileDriverTests`, `ExpansionTokenNetworkTests`,
+`CharacterRosterActionNetworkTests`, `FateGimliNetworkTests`.

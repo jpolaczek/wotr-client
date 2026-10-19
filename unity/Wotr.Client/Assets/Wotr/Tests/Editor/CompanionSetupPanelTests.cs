@@ -51,50 +51,20 @@ namespace Wotr.EditorTests
             Assert.AreEqual(Gimli, CompanionSetupPresentation.Definition(draft, option, Gimli));
         }
 
-        // UI-269: the setup panel hosts only the homelands.
+        // UI-270: only the Free Peoples' own, unfinished setup decision is private setup.
         [Test]
-        public void CloseSurvivesSameDecisionRefreshAndNextDecisionReleasesTheOnlyTray()
+        public void OtherSideBaseAndFinishedGameNeverOwnThePrivateSetup()
         {
             var view = Setup();
-            view.Decision.Kind = DecisionKind.CouncilHomelands;
-            var panel = new CompanionSetupPanel();
-            var tray = new VisualElement();
-            var dock = new VisualElement();
-            dock.Add(tray);
-            panel.Attach(tray, dock);
-            panel.Context(view);
-            Assert.IsTrue(panel.IsOpen);
-            Assert.AreSame(panel.DecisionHost, tray.parent);
-            panel.Close();
-            view.Revision++;
-            panel.Context(view);
-            Assert.IsFalse(panel.IsOpen);
-            panel.Open();
-            Assert.IsTrue(panel.IsOpen);
-            view.Decision.Kind = DecisionKind.FellowshipPhase;
-            panel.Context(view);
-            Assert.IsFalse(panel.IsOpen);
-            Assert.IsFalse(panel.Active);
-            Assert.AreSame(dock, tray.parent);
-            Assert.AreEqual(DisplayStyle.None, panel.Tab.style.display.value);
-        }
-
-        [Test]
-        public void OtherSideBaseAndFinishedGameNeverOwnThePrivatePanel()
-        {
-            var view = Setup();
-            var panel = new CompanionSetupPanel();
+            Assert.IsTrue(CompanionSetupPresentation.Setup(view));
             view.You = Side.Shadow;
-            panel.Context(view);
-            Assert.IsFalse(panel.Active);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(view));
             view.You = Side.FreePeoples;
             view.Decision = null;
-            panel.Context(view);
-            Assert.IsFalse(panel.Active);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(view));
             view.Decision = Setup().Decision;
             view.Winner = Side.Shadow;
-            panel.Context(view);
-            Assert.IsFalse(panel.Active);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(view));
         }
 
         [Test]

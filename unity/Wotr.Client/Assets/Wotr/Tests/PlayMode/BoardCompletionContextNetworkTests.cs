@@ -80,11 +80,13 @@ namespace Wotr.PlayTests
             var revision = board.View.Revision;
             Assert.AreEqual(DecisionKind.CouncilHomelands, board.View.Decision.Kind);
             var shadowBefore = JsonConvert.SerializeObject(room.Sh.Board.View);
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("homeland-character-" + Gimli));
+            board.Fellowship.Open();
+            await room.Settle();
+            PointerGestureEvents.ClickAt(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + Gimli));
             await room.Settle();
             board.Map.Select("ered-luin");
             await room.Settle();
-            var selected = board.Tray.Q<Button>("homeland-character-" + Gimli).Q<Label>("homeland-location").text;
+            var selected = board.Fellowship.Root.Q<Button>("fellowship-portrait-" + Gimli).Q<Label>("homeland-location").text;
             StringAssert.Contains("Ered Luin", selected);
             var privatePage = await History(room, room.Fp);
             var privateStep = privatePage.Steps.Single(step => step.Command == CommandKind.ChooseCompanionVersions);
@@ -97,14 +99,13 @@ namespace Wotr.PlayTests
             StringAssert.Contains("Selected version · Gimli · Fate · Alternate", HistoryText(board));
             StringAssert.Contains("Selected version · Legolas · Lords", HistoryText(board));
             StringAssert.Contains("Guide · Strider · Lords", HistoryText(board));
-            Assert.AreSame(board.CompanionSetup.DecisionHost, board.Tray.parent);
+            Assert.AreSame(board.Fellowship.Root, board.Tray.parent);
             LayoutTests.Save(room.Fp.Viewport, "ui71-setup-own-history.png");
             board.Log.CloseCard();
-            board.CompanionSetup.Close();
             PointerGestureEvents.ClickAt(board.Notice.Button);
             await room.Settle();
-            Assert.IsTrue(board.CompanionSetup.IsOpen);
-            Assert.AreEqual(selected, board.Tray.Q<Button>("homeland-character-" + Gimli).Q<Label>("homeland-location").text);
+            Assert.IsTrue(board.Fellowship.IsOpen);
+            Assert.AreEqual(selected, board.Fellowship.Root.Q<Button>("fellowship-portrait-" + Gimli).Q<Label>("homeland-location").text);
 
             var publicPage = await History(room, room.Sh);
             var publicText = JsonConvert.SerializeObject(publicPage);
@@ -134,7 +135,9 @@ namespace Wotr.PlayTests
             await room.At(revision + 1);
             Assert.AreEqual("ered-luin", room.Sh.Board.View.Characters.Single(c => c.Id == Gimli).Location);
             Assert.AreEqual(DecisionKind.CouncilToken, room.Sh.Board.View.Decision.Kind);
-            Assert.AreSame(room.Sh.Board.ResourceDecision.DecisionHost, room.Sh.Board.Tray.parent);
+            // UI-270: the Shadow takes its token in its pool; no panel hosts the decision.
+            Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(room.Sh.Board.View));
+            Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen);
             var oldRecord = await room.Sh.Api.Get<ActionLogView>("api/matches/" + board.View.MatchId +
                 "/actions/" + guideGroup.Id, room.Token);
             Assert.IsFalse(oldRecord.Steps.Any(step => step.Facts.Targets.Contains("fate.character.gimli-dwarven-lord")),

@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "10c3cbcfe897d7d0ab01e608828187c89bb2490c39ed440c43c5ffb022dbaa53"
+    "assets.json": "d7cf41aea01657ffc8cf557b1ef49989516bcf03f36e14e00e39d643d3afe3f1"
   },
   "assets": [
     {
@@ -5030,6 +5030,166 @@
       "alpha": true,
       "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
       "png_sha256": "d2664d29b0d6c0f3504ace1c596cb10dcefa2f7d225a6e9d2402638a2ced594d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-politics-council.png",
+      "source": "src/tokens/council-politics.svg",
+      "variant": "council",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "a8ef299204aa80c72f7b863e240f9243c3b86c5c80bff3720094c5be23ea77d4",
+      "png_sha256": "385a320cd403793ce8415cd342df27c4b14e58383b4866f68a5f33481fb36ab0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-politics-council-lit.png",
+      "source": "src/tokens/council-politics.svg",
+      "variant": "council-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "a8ef299204aa80c72f7b863e240f9243c3b86c5c80bff3720094c5be23ea77d4",
+      "png_sha256": "6a51a3f420681dc4e03b00bccb33af5803e1606f2fc36fd80e6cce2c4217da3b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-politics-council-hover.png",
+      "source": "src/tokens/council-politics.svg",
+      "variant": "council-hover",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "a8ef299204aa80c72f7b863e240f9243c3b86c5c80bff3720094c5be23ea77d4",
+      "png_sha256": "b1ee152849defbab96f5df910f9360232fe961cb7c6d486c0b8b609820be95f8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-politics-council-spent.png",
+      "source": "src/tokens/council-politics.svg",
+      "variant": "council-spent",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "a8ef299204aa80c72f7b863e240f9243c3b86c5c80bff3720094c5be23ea77d4",
+      "png_sha256": "80c6e92aae4f483169e986244c8551c663176ce4e5c6a4951deab6bdfa98fcf7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-travel-council.png",
+      "source": "src/tokens/council-travel.svg",
+      "variant": "council",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "dcf9334d77601675f2e37be417311ce9671ec566529a4d6b02e58580e759c62e",
+      "png_sha256": "bc1d78fb1a127f963b319b0421df211197fcb27e1ab248506d37d373e6485520"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-travel-council-lit.png",
+      "source": "src/tokens/council-travel.svg",
+      "variant": "council-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "dcf9334d77601675f2e37be417311ce9671ec566529a4d6b02e58580e759c62e",
+      "png_sha256": "1d3610fd8818ec1d7de11f5cc54349a9249380c09524aee639c3b0414a96b8d6"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-travel-council-hover.png",
+      "source": "src/tokens/council-travel.svg",
+      "variant": "council-hover",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "dcf9334d77601675f2e37be417311ce9671ec566529a4d6b02e58580e759c62e",
+      "png_sha256": "ce6b2954fb8e7a1386596f90daf002326d65ed2857498e166a9945276429ba29"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/council-travel-council-spent.png",
+      "source": "src/tokens/council-travel.svg",
+      "variant": "council-spent",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "dcf9334d77601675f2e37be417311ce9671ec566529a4d6b02e58580e759c62e",
+      "png_sha256": "08ac9feedf0ee45278ea90368a383e269dc318167a5252cce911251b4b25ac6d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/alternate.png",
+      "source": "src/fellowship/alternate.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "faef52629da1e0d97fdfb1e71be96c538a5ecf8e06ecaaf1988c1a4cab7c4b79",
+      "png_sha256": "979421243959801f7fb34fee5f2218bc131d378682df2a8a7ab59eafd1a9bb33"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/fellowship-box.png",
+      "source": "src/icons/fellowship-box.svg",
+      "variant": null,
+      "logical": [
+        17,
+        17
+      ],
+      "pixels": [
+        34,
+        34
+      ],
+      "alpha": true,
+      "source_sha256": "86e65fd9eff5ee6ed8b9d6a99098efc87c8459ee41c40b5ce4a0f8574e7b67ff",
+      "png_sha256": "7b6d6408e21250f7ccf4f1577a844c60d726b1d4a07854e0ced1087a6bce51aa"
     }
   ]
 }

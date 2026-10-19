@@ -59,9 +59,9 @@ namespace Wotr.PlayTests
             using var shadow = await fixture.Login(Side.Shadow, token, address: address);
             using var client = new MountedFlowClient(api, storage);
             await Open(client, match, token);
-            await StrictPress(client.Root, "setup-portrait-base.character.gandalf-grey", token);
+            await StrictPress(client.Root, "fellowship-portrait-base.character.gandalf-grey", token);
             await StrictPress(client.Root, "version-base.character.gandalf-grey", token);
-            await StrictPress(client.Root, "setup-portrait-" + Gimli, token);
+            await StrictPress(client.Root, "fellowship-portrait-" + Gimli, token);
             await StrictPress(client.Root, "version-fate.character.gimli-dwarven-lord", token);
             await StrictPress(client.Root, "starting-guide-base.character.strider", token);
             await StrictPress(client.Root, "confirm-decision", token);
@@ -70,7 +70,6 @@ namespace Wotr.PlayTests
             var other = JsonConvert.SerializeObject(await shadow.Get<PlayerView>("api/matches/" + match, token));
             await Place(client.Board, () => Task.Delay(100, token), Gimli, "iron-hills", false);
             await Place(client.Board, () => Task.Delay(100, token), Gimli, "ered-luin", true);
-            await StrictPress(client.Root, "close-companion-setup", token);
             await client.LocalWrites;
             var saved = await LocalMatchPersistence.Open(storage, api.Address.AbsoluteUri, api.AccountId, match);
             Assert.IsNotNull(saved.Draft);
@@ -94,7 +93,7 @@ namespace Wotr.PlayTests
             var saved = await LocalMatchPersistence.Open(storage, api.Address.AbsoluteUri, api.AccountId, match);
             Assert.AreEqual(draft, JsonConvert.SerializeObject(saved.Draft));
             Assert.AreEqual(0, boundary.Commands);
-            client.Board.CompanionSetup.Open();
+            client.Board.Fellowship.Open();
             await Task.Delay(100, token);
             Assert.AreEqual("→ Ered Luin", Portrait(client.Board, Gimli).Q<Label>("homeland-location").text);
             return await LoseResponse(client, api, boundary, storage, match, "confirm-decision",
@@ -111,7 +110,7 @@ namespace Wotr.PlayTests
             await Open(client, match, token);
             await ReturnRecoveryTests.EmptyJournal(storage, api, match, false, token);
             AssertRecovered(boundary, client.Board, command);
-            Assert.IsFalse(client.Board.CompanionSetup.Active);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(client.Board.View));
             var other = await shadow.Get<PlayerView>("api/matches/" + match, token);
             Assert.AreEqual(DecisionKind.CouncilToken, other.Decision.Kind);
             Assert.IsEmpty(other.CouncilTokens);
@@ -135,13 +134,13 @@ namespace Wotr.PlayTests
             await Open(client, match, token);
             Assert.AreEqual(DecisionKind.CouncilToken, client.Board.View.Decision.Kind);
             Assert.IsEmpty(client.Board.View.CouncilTokens);
-            Assert.AreSame(client.Board.ResourceDecision.DecisionHost, client.Board.Tray.parent);
-            Assert.IsTrue(client.Board.ResourceDecision.IsOpen);
-            foreach (var id in new[] { ExpansionDraft.CouncilPolitics, ExpansionDraft.CouncilTravel })
-                Assert.IsFalse(client.Root.Q<Button>("council-token-" + id).ClassListContains("selected"));
+            // UI-270: the token is taken on its lit medallion in the Shadow's pool; no panel opens.
+            Assert.IsFalse(client.Board.ResourceDecision.IsOpen);
+            foreach (var id in CouncilTokenSlots.Ids)
+                Assert.IsTrue(client.Board.OwnDice.Q<Button>("pool-" + id).ClassListContains("legal-target"));
             Assert.AreEqual(0, boundary.Commands);
             return await LoseResponse(client, api, boundary, storage, match,
-                "council-token-" + ExpansionDraft.CouncilTravel, CommandKind.ChooseCouncilToken, token);
+                "pool-" + ExpansionDraft.CouncilTravel, CommandKind.ChooseCouncilToken, token);
         }
 
         private static async Task RecoverCouncilToken(ReturnTestFixture fixture, string address, string storage,

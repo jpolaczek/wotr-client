@@ -478,6 +478,42 @@
       "--crown-dark": "#9a7a3c",
       "--crown-stone": "#9a3a2c",
       "--glow-opacity": "0.45"
+    },
+    "council": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09"
+    },
+    "council-lit": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "council-hover": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "council-spent": {
+      "--enamel-light": "#57524c",
+      "--enamel-mid": "#36322e",
+      "--enamel-dark": "#1e1c19",
+      "--gilt-highlight": "#9a8f72",
+      "--gilt-light": "#7a6f57",
+      "--gilt-mid": "#5c5341",
+      "--gilt-shadow": "#3d3628",
+      "--ivory": "#9a927f",
+      "--ember": "#6a5a50"
     }
   },
   "assets": [
@@ -1565,6 +1601,36 @@
         "crown-on",
         "crown-hover"
       ]
+    },
+    {
+      "source": "tokens/council-politics.svg",
+      "role": "UI-270: the Shadow's Council of Rivendell token Advance Politics: a war banner stepping forward, in its fixed slot of the Shadow pool; lit while usable or chosen now, dim once spent.",
+      "variants": [
+        "council",
+        "council-lit",
+        "council-hover",
+        "council-spent"
+      ],
+      "base": false
+    },
+    {
+      "source": "tokens/council-travel.svg",
+      "role": "UI-270: the Shadow's Council of Rivendell token Move Nazgûl and Minions: the spread wings of a fell beast, in its fixed slot of the Shadow pool; lit while usable or chosen now, dim once spent.",
+      "variants": [
+        "council",
+        "council-lit",
+        "council-hover",
+        "council-spent"
+      ],
+      "base": false
+    },
+    {
+      "source": "fellowship/alternate.svg",
+      "role": "UI-270: the owner's mark of a companion in its alternate version, on its portrait; only the Free Peoples see it."
+    },
+    {
+      "source": "icons/fellowship-box.svg",
+      "role": "UI-270: counter of action dice in the Fellowship Box (Strider, Dúnadan, Council of Rivendell)."
     }
   ],
   "previews": [

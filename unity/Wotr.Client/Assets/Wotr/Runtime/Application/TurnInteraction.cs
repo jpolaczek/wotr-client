@@ -815,7 +815,6 @@ namespace Wotr.Client
             resources.Refresh(view, draft);
             components.Refresh(view, draft, !SelectionBusy);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
-            board.CompanionSetup.Context(view);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
                 view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.MoveArmies;
             board.Root.EnableInClassList("direct-army", directArmy || travel.Active);
@@ -863,7 +862,6 @@ namespace Wotr.Client
                 ExpansionDraft.Handles(draft.Kind) || fellowship || battle);
             board.Root.EnableInClassList("expansion-planning", ExpansionDraft.Handles(draft.Kind));
             board.Root.EnableInClassList("council-planning", view.Decision?.Kind is DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands);
-            board.Root.EnableInClassList("companion-setup-context", CompanionSetupPresentation.Owns(view));
             board.Root.EnableInClassList("battle-planning", battle);
             board.Root.EnableInClassList("event-loss-planning", view.EventLoss != null);
             board.Root.EnableInClassList("loss-planning", draft.Kind is CommandKind.TakeBattleLosses or CommandKind.TakeEventLosses);
@@ -905,8 +903,6 @@ namespace Wotr.Client
                 board.TableEffects.Open();
             else if (board.Tray.parent == board.Characters.DecisionHost)
                 board.Characters.OpenDecision();
-            else if (board.Tray.parent == board.CompanionSetup.DecisionHost)
-                board.CompanionSetup.Open();
             else if (board.Tray.parent == board.Fellowship.Root)
                 board.Fellowship.Open();
         }

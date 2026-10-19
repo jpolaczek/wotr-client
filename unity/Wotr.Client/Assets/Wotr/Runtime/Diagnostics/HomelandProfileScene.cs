@@ -11,7 +11,6 @@ namespace Wotr.Client.Diagnostics
     {
         private readonly BoardScreen board;
         private readonly Action<Button> click;
-        private readonly Action<VisualElement, KeyCode> key;
         private readonly CharacterActionOption companion;
         private readonly Button[] portraits;
         private int step;
@@ -26,11 +25,11 @@ namespace Wotr.Client.Diagnostics
         {
             this.board = board;
             this.click = click;
-            this.key = key;
             var option = board.View.Options.Single(candidate => candidate.Kind == CommandKind.ChooseCouncilHomelands);
             companion = option.CharacterActions.Single(character => character.CharacterId == "base.character.gimli");
-            portraits = option.CharacterActions.Select(character => board.CompanionSetup.Root.Q<Button>(
-                "homeland-character-" + character.CharacterId)).ToArray();
+            // UI-270: the homelands are chosen on the Fellowship panel's portraits and the map.
+            portraits = option.CharacterActions.Select(character => board.Fellowship.Root.Q<Button>(
+                "fellowship-portrait-" + character.CharacterId)).ToArray();
         }
 
         public void Tick()
@@ -40,12 +39,11 @@ namespace Wotr.Client.Diagnostics
             switch (step++ % 6)
             {
                 case 0:
-                    click(board.CompanionSetup.Root.Q<Button>("homeland-character-" + companion.CharacterId));
+                    click(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + companion.CharacterId));
                     break;
                 case 1:
-                    // A real Escape exposes the legal map target while preserving the private draft.
-                    key(board.CompanionSetup.Root, KeyCode.Escape);
-                    open = false;
+                    // A second click on the selected companion keeps its selection; Escape would be the board's Back.
+                    click(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + companion.CharacterId));
                     break;
                 case 2:
                     destination = companion.Targets[cycle % companion.Targets.Count];
@@ -58,11 +56,10 @@ namespace Wotr.Client.Diagnostics
                     BoardTerrainInput.Click(board.Map, region);
                     break;
                 case 4:
-                    click(board.CompanionSetup.Tab);
-                    open = true;
+                    click(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + companion.CharacterId));
                     break;
                 default:
-                    click(board.CompanionSetup.Root.Q<Button>("homeland-stay"));
+                    click(board.Fellowship.Root.Q<Button>("homeland-stay"));
                     region = "";
                     break;
             }
@@ -72,17 +69,17 @@ namespace Wotr.Client.Diagnostics
         {
             if (NavigationPerformed)
                 BoardProfileCheck.Require(board.Map.Camera.Pan == ExpectedCamera, "The explicit homeland pan did not keep its resulting camera.");
-            BoardProfileCheck.Require(board.CompanionSetup.IsOpen == open && board.Tray.parent == board.CompanionSetup.DecisionHost,
+            BoardProfileCheck.Require(board.Fellowship.IsOpen == open && board.Tray.parent == board.Fellowship.Root,
                 "Homeland inspection lost its panel or decision host.");
-            var portrait = board.CompanionSetup.Root.Q<Button>("homeland-character-" + companion.CharacterId);
+            var portrait = board.Fellowship.Root.Q<Button>("fellowship-portrait-" + companion.CharacterId);
             BoardProfileCheck.Selected(portrait, true);
-            var location = region.Length == 0 ? "Fellowship" : "→ " + board.Presentation.Regions[region].Name;
+            var location = region.Length == 0 ? "" : "→ " + board.Presentation.Regions[region].Name;
             BoardProfileCheck.Require(portrait.Q<Label>("homeland-location").text == location, "Homeland draft did not render its location.");
-            var tokens = board.CompanionSetup.Root.Q<Label>("homeland-token-effect").text;
+            var tokens = board.Fellowship.Root.Q<Label>("homeland-token-effect").text;
             BoardProfileCheck.Require(tokens == CouncilHomelandPresentation.TokenEffect(region.Length == 0 ? 0 : 1),
                 "Homeland draft did not render its exact token consequence.");
             foreach (var button in portraits)
-                BoardProfileCheck.Require(ReferenceEquals(button, board.CompanionSetup.Root.Q<Button>(button.name)),
+                BoardProfileCheck.Require(ReferenceEquals(button, board.Fellowship.Root.Q<Button>(button.name)),
                     "A homeland edit rebuilt unchanged portraits.");
         }
     }

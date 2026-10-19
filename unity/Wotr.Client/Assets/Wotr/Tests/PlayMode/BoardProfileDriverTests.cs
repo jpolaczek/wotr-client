@@ -89,7 +89,7 @@ namespace Wotr.PlayTests
             if (board.Fellowship.Versions.Figure.Length > 0)
                 compared.Add(board.Fellowship.Versions.Figure);
             states.Add(board.Menu.IsOpen ? "menu" : "board");
-            var location = board.CompanionSetup.Root.Q<Button>("homeland-character-base.character.gimli")?.Q<Label>("homeland-location");
+            var location = board.Fellowship.Root.Q<Button>("fellowship-portrait-base.character.gimli")?.Q<Label>("homeland-location");
             if (location != null)
                 states.Add(location.text);
         }
@@ -104,7 +104,7 @@ namespace Wotr.PlayTests
                 CollectionAssert.AreEquivalent(board.View.Options.Single(option => option.Kind == CommandKind.ChooseCompanionVersions)
                     .CompanionVersions.Select(group => group.FigureId), compared);
             if (kind == "homelands-fp")
-                foreach (var expected in new[] { "Fellowship", "→ Iron Hills", "→ Ered Luin" })
+                foreach (var expected in new[] { "", "→ Iron Hills", "→ Ered Luin" }) // UI-270: "" stays with the Fellowship
                     CollectionAssert.Contains(states, expected);
             if (kind.StartsWith("menu-", StringComparison.Ordinal) || kind == "setup-waiting-sh" || kind == "homelands-sh")
                 foreach (var expected in new[] { "menu", "board" })

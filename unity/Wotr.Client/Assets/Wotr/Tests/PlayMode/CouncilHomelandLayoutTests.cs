@@ -59,33 +59,34 @@ namespace Wotr.PlayTests
                 "api/matches/" + room.Sh.Board.View.MatchId, room.Token)));
         }
 
+        // UI-270: Enter in the homelands' panel part never confirms; Escape is the board's Back, so it undoes the last
+        // placement and keeps the held Fellowship panel and the camera.
         private static async Task CheckHomelandKeyboard(UI10TestRoom room)
         {
             var board = room.Fp.Board;
-            board.CompanionSetup.Root.Focus();
-            UI10TestRoom.Key(board.CompanionSetup.Root, true);
-            UI10TestRoom.Key(board.CompanionSetup.Root, false);
+            var choices = board.Fellowship.Root.Q("council-homeland-choices");
+            choices.Focus();
+            UI10TestRoom.Key(choices, true);
+            UI10TestRoom.Key(choices, false);
             await room.Settle();
             Assert.AreEqual(0, room.Boundary.Commands, "Enter on information cannot confirm a strategic choice.");
-            using (var escape = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.Escape }))
-                board.CompanionSetup.Root.SendEvent(escape);
-            await room.Settle();
-            Assert.IsFalse(board.CompanionSetup.IsOpen);
-            using (var escape = KeyUpEvent.GetPooled(new Event { type = EventType.KeyUp, keyCode = KeyCode.Escape }))
-                board.CompanionSetup.Tab.SendEvent(escape);
             var camera = board.Map.Camera.Pan;
-            PointerGestureEvents.ClickAt(board.CompanionSetup.Tab);
+            using (var escape = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.Escape }))
+                board.Fellowship.Root.SendEvent(escape);
+            using (var escape = KeyUpEvent.GetPooled(new Event { type = EventType.KeyUp, keyCode = KeyCode.Escape }))
+                board.Fellowship.Root.SendEvent(escape);
             await room.Settle();
-            Assert.IsTrue(board.CompanionSetup.IsOpen);
+            Assert.IsTrue(board.Fellowship.IsOpen, "The Fellowship panel holds the homelands.");
             Assert.AreEqual(camera, board.Map.Camera.Pan);
-            Assert.AreEqual("→ Ered Luin", Portrait(board, Gimli).Q<Label>("homeland-location").text);
+            Assert.AreEqual("→ Iron Hills", Portrait(board, Gimli).Q<Label>("homeland-location").text, "Escape undid the last placement.");
+            Assert.AreEqual(0, room.Boundary.Commands);
         }
 
         private static void AssertHomelandPanel(BoardScreen board)
         {
-            var panel = board.CompanionSetup.Root;
+            var panel = board.Fellowship.Root;
             var viewport = board.Map.parent.worldBound;
-            Assert.AreEqual(5, panel.Query<Button>(className: "homeland-portrait").ToList().Count);
+            Assert.AreEqual(5, panel.Query<Button>(className: "companion-token").ToList().Count(b => b.ClassListContains("legal-target")));
             Assert.GreaterOrEqual(panel.worldBound.xMin, viewport.xMin - 1);
             Assert.GreaterOrEqual(panel.worldBound.yMin, viewport.yMin - 1);
             Assert.LessOrEqual(panel.worldBound.xMax, viewport.xMax + 1);

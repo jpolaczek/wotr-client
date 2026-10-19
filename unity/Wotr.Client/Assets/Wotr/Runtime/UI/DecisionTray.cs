@@ -122,7 +122,7 @@ namespace Wotr.Client
                     ? CompanionSetupPresentation.Hint(draft, DraftOptions.For(view, draft))
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
-                    SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Owns(view)
+                    SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Homelands(view)
                     ? "" : DecisionObjects.Confirm(view, draft);
                 status.style.display = status.text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
                 HintChanged?.Invoke(status.text, status.text);
@@ -195,7 +195,7 @@ namespace Wotr.Client
                 footer.AddToClassList("battle-choice-footer");
                 PlayerSide(footer, view);
             }
-            if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
+            if (!ContextualHunt && !CompanionSetupPresentation.Setup(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
                 !ResourcePresentation.PoolDecision(view) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && (view.Decision.Kind is DecisionKind.Action or DecisionKind.Reaction or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
@@ -296,7 +296,7 @@ namespace Wotr.Client
 
         private void AddContext(PlayerView view, TurnDraft draft)
         {
-            if (CompanionSetupPresentation.Owns(view))
+            if (CompanionSetupPresentation.Setup(view))
                 return;
             var title = BoardScreen.Title(view.Decision == null ? "Waiting for " + (view.DecisionOwner.HasValue ? BoardScreen.SideName(view.DecisionOwner.Value) : "opponent")
                 : view.Decision.Window == "hunt.guide" ? "Guide response" : view.Decision.Window == "hunt.table" ? "Table response"

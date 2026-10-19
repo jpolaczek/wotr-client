@@ -31,19 +31,20 @@ namespace Wotr.PlayTests
                 Assert.IsEmpty(room.Sh.Board.Tray.Query<Button>().ToList());
                 await Layout(room, room.Fp, "versions", "ui09");
                 Click(room.Fp, "version-base.character.gandalf-grey");
-                Click(room.Fp, "setup-portrait-base.character.gimli");
+                Click(room.Fp, "fellowship-portrait-base.character.gimli");
                 Click(room.Fp, "version-fate.character.gimli-dwarven-lord");
                 Click(room.Fp, "starting-guide-base.character.strider");
                 await Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);
                 Assert.AreEqual(DecisionKind.CouncilHomelands, room.Fp.Board.View.Decision.Kind);
                 Assert.IsFalse(room.Sh.Board.View.Fellowship.RevealedCompanionVersions.ContainsKey("base.character.gimli"));
-                Click(room.Fp, "homeland-character-base.character.gimli");
+                // UI-270: the homelands on the Fellowship panel's portraits; a drag onto the map places one.
+                Click(room.Fp, "fellowship-portrait-base.character.gimli");
                 await room.Settle();
                 await CardGestureNetworkTests.Drop(room, room.Fp,
-                    room.Fp.Board.Tray.Q<Button>("homeland-character-base.character.gimli"),
+                    room.Fp.Board.Fellowship.Root.Q<Button>("fellowship-portrait-base.character.gimli"),
                     room.Fp.Board.Map, false, dropPoint: MapContourProbe.ReachRegion(room.Fp.Board.Map, "ered-luin"));
-                Assert.AreEqual("→ Ered Luin", room.Fp.Board.Tray.Q<Button>("homeland-character-base.character.gimli")
+                Assert.AreEqual("→ Ered Luin", room.Fp.Board.Fellowship.Root.Q<Button>("fellowship-portrait-base.character.gimli")
                     .Q<Label>("homeland-location").text);
                 await Layout(room, room.Fp, "homeland", "ui09");
                 await Reconnect(room, room.Fp);
@@ -52,7 +53,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.CouncilToken, room.Sh.Board.View.Decision.Kind);
                 await Layout(room, room.Sh, "council-token", "ui09");
                 var revision = room.Sh.Board.View.Revision;
-                Click(room.Sh, "council-token-council.advance-politics");
+                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>("pool-council.advance-politics"));
                 await room.At(revision + 1);
                 Assert.IsTrue(room.Sh.Board.View.CouncilTokens.Any(t => t.Id == "council.advance-politics" && !t.Spent));
                 Assert.IsTrue(room.Fp.Board.View.Configuration.NewCities);
