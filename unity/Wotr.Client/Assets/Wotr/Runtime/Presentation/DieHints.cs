@@ -14,6 +14,11 @@ namespace Wotr.Client
             var choice = SpecialDice.Tooltip(view, die);
             if (choice.Length > 0)
                 return choice;
+            // UI-273: a die the Ruler discard may take says what its click does; a discarded one when it comes back.
+            if (RulerDice.Candidate(view, die))
+                return RulerDice.CandidateTooltip(die);
+            if (RulerDice.Discarded(view, die))
+                return RulerDice.DiscardedTooltip(die);
             var usable = die.Owner == view.You && die.Location == DieLocation.Available && view.Decision?.Kind == DecisionKind.Action;
             var text = DieDescriptions.Tooltip(die, usable ? Uses(view, die.Id).Distinct().ToArray() : null);
             return SpecialDice.IsLords(die) && die.RemoveSymbol ? text + "\n" + SpecialDice.RemoveLine(die, true) : text;

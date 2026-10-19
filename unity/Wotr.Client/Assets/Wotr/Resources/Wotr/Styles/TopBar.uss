@@ -249,3 +249,6 @@
 .topbar-compact #opponent-dice .die.special-die { width: 42px; min-width: 42px; height: 32px; min-height: 32px; border-radius: 5px; }
 .topbar-compact #opponent-dice .special-die .action-symbol { left: 12px; top: 1px; width: 16px; height: 16px; }
 .topbar-compact #open-board-menu { width: 56px; min-width: 56px; }
+/* UI-273: the opponent's Ruler die keeps its crown; a die discarded after the roll stays dimmed. */
+#opponent-dice .die.ruler-die > .ruler-crown { top: -7px; translate: -7px 0; width: 14px; height: 9px; }
+#opponent-dice .die.ruler-discarded { opacity: 0.45; }

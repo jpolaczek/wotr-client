@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "4ecb8d29c1157c8a2b83adbe0f0a2f761e07d860c8715ef3fb78d1e0f042152c"
+    "assets.json": "ac28bfaf46e2bb154d8bb4a6b6bb1e9c0a62af161f1d859d18a9e244f4c630d9"
   },
   "assets": [
     {
@@ -1126,6 +1126,22 @@
       "alpha": true,
       "source_sha256": "92c16187bdafb00903afc1c0b8a239638c1f81318864720cea0ff82c7bf5ef54",
       "png_sha256": "b107824b1ebc8547a23de1bf09118a664cf9ba5f2ffc8d5ca399085445a962a9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/ruler-crown.png",
+      "source": "src/dice/ruler-crown.svg",
+      "variant": null,
+      "logical": [
+        18,
+        12
+      ],
+      "pixels": [
+        36,
+        24
+      ],
+      "alpha": true,
+      "source_sha256": "61c08c3c0c91a36054e1e6ef7ddc0f2dd605948ea4eb652ad95f37628bb9158e",
+      "png_sha256": "77f6996f985483c76dfba9db37f291992bcf6e0b6bcc53a269fa7f1511982e02"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/gothmog.png",

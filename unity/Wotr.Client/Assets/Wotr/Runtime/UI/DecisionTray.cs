@@ -108,31 +108,55 @@ namespace Wotr.Client
                 message.text = pendingProblem.Length > 0 ? pendingProblem : "The response was interrupted. Recover its result to continue.";
             if (status != null)
             {
-                status.text = busy ? "Waiting for the server…" : draft.Kind == CommandKind.UseRing ? RingChoice.Hint(draft)
-                    : draft.Kind == CommandKind.AllocateHunt ? HuntAllocationText.Hint(draft, HuntActions.Allocation(view))
-                    : draft.Kind == CommandKind.DiscardCards
-                    ? "Click a card, then click it again to discard it face down."
-                    : NazgulFlightDraft.Active(view, draft) ? NazgulFlightDraft.Hint(view, draft)
-                    : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)
-                    : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
-                    : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
-                    : CostDice.RingHint(view, draft) is { Length: > 0 } ring ? ring
-                    : LoreChoice.Hint(view, draft) is { Length: > 0 } lore ? lore
-                    : RingRecovery.Hint(view, draft) is { Length: > 0 } recovery ? recovery
-                    : InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it"
-                    : ResourcePresentation.PoolHint(view) is { Length: > 0 } pool ? pool
-                    : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
-                    : CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions
-                    ? CompanionSetupPresentation.Hint(draft, DraftOptions.For(view, draft))
-                    : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
-                    ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
-                    SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Homelands(view)
-                    ? "" : DecisionObjects.Confirm(view, draft);
+                // UI-273: with Lords and Kings, a step before the first action is numbered.
+                status.text = busy ? "Waiting for the server…" : PreActionSteps.Label(view, StatusHint(view, draft));
                 status.style.display = status.text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
                 HintChanged?.Invoke(status.text, status.text);
             }
             else
                 HintChanged?.Invoke(busy ? "Waiting for the server…" : "", "");
+        }
+
+        // What the step waits for, as the console's hint; empty when its objects say it themselves.
+        private string StatusHint(PlayerView view, TurnDraft draft)
+        {
+            if (draft.Kind == CommandKind.UseRing)
+                return RingChoice.Hint(draft);
+            if (draft.Kind == CommandKind.AllocateHunt)
+                return HuntAllocationText.Hint(draft, HuntActions.Allocation(view));
+            if (draft.Kind == CommandKind.DiscardCards)
+                return "Click a card, then click it again to discard it face down.";
+            if (NazgulFlightDraft.Active(view, draft))
+                return NazgulFlightDraft.Hint(view, draft);
+            if (CardFigureDraft.Active(view, draft))
+                return CardFigureDraft.Hint(view, draft);
+            if (CardArmyEvent.Active(view, draft))
+                return CardArmyEvent.Hint(view, draft);
+            var objectHint = ObjectHint(view, draft);
+            if (objectHint.Length > 0)
+                return objectHint;
+            if (draft.Kind == CommandKind.SelectGuide && ContextualFellowship)
+                return FellowshipGuideText.ChooseHint;
+            if (CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions)
+                return CompanionSetupPresentation.Hint(draft, DraftOptions.For(view, draft));
+            var silent = ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
+                ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
+                SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Homelands(view);
+            return silent ? "" : DecisionObjects.Confirm(view, draft);
+        }
+
+        // The hint of a choice made on a board object: an entry's region, a Ring, a die, a card in the drawer.
+        private static string ObjectHint(PlayerView view, TurnDraft draft)
+        {
+            foreach (var hint in new[]
+            {
+                CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
+                RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
+                ResourcePresentation.PoolHint(view)
+            })
+                if (hint.Length > 0)
+                    return hint;
+            return "";
         }
 
         private void Build(PlayerView view, TurnDraft draft, bool uncertain)

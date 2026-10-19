@@ -72,7 +72,9 @@ namespace Wotr.EditorTests
             var view = View(kind);
             Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
             Assert.IsTrue(ResourcePresentation.PoolDecision(view));
-            StringAssert.StartsWith("Click a highlighted die", ResourcePresentation.PoolHint(view));
+            // UI-273: the Ruler discard's hint says the click discards and when the die returns.
+            StringAssert.StartsWith(kind == DecisionKind.RulerDiscard ? "Click a glowing die to discard it" : "Click a highlighted die",
+                ResourcePresentation.PoolHint(view));
             view.You = Side.Shadow;
             Assert.IsFalse(ResourcePresentation.PoolDecision(view), "The opponent's pick lights nothing.");
             Assert.AreEqual("", ResourcePresentation.PoolHint(view));

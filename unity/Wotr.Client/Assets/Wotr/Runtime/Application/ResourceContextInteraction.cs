@@ -56,7 +56,9 @@ namespace Wotr.Client
 
         private string ForcedDie()
         {
-            if (!SpecialDice.Choosing(view) || view.Decision.Id == forcedSent || !ExpansionActions.Immediate(draft?.Kind))
+            // UI-273: so is a Ruler discard with a single eligible die.
+            if (!(SpecialDice.Choosing(view) || RulerDice.Discarding(view)) || view.Decision.Id == forcedSent ||
+                !ExpansionActions.Immediate(draft?.Kind))
                 return "";
             var option = DraftOptions.For(view, draft);
             return option?.Enabled == true && option.EligibleDice.Count == 1 ? option.EligibleDice[0] : "";

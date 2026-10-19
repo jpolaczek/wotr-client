@@ -68,7 +68,7 @@ namespace Wotr.EditorTests
             ("dice/faces/eye", 24, 24, true), ("dice/faces/card-draw", 24, 24, true), ("dice/faces/use-balrog", 24, 24, true),
             ("dice/tile", 44, 36, true), ("dice/tile-hover", 44, 36, true),
             ("dice/special-vilya", 40, 40, true), ("dice/special-vilya-hover", 40, 40, true), ("dice/special-vilya-lit", 40, 40, true),
-            ("dice/special-vilya-pressed", 40, 40, true), ("dice/origins/vilya", 16, 16, true),
+            ("dice/special-vilya-pressed", 40, 40, true), ("dice/origins/vilya", 16, 16, true), ("dice/ruler-crown", 18, 12, true),
             ("dice/special-nenya", 40, 40, true), ("dice/special-nenya-hover", 40, 40, true), ("dice/special-nenya-lit", 40, 40, true),
             ("dice/special-nenya-pressed", 40, 40, true), ("dice/origins/nenya", 16, 16, true),
             ("dice/special-narya", 40, 40, true), ("dice/special-narya-hover", 40, 40, true), ("dice/special-narya-lit", 40, 40, true),

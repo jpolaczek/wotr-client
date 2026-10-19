@@ -79,13 +79,49 @@ namespace Wotr.PlayTests
                     Assert.IsNull(actor.Board.Tray.Q<Button>("cost-" + id), "Choose the actual die in its pool, without a duplicate picker.");
                     Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
                     Assert.IsNull(actor.Board.Tray.Q<Button>("decision-back"), "A single pool choice has nothing to go back to.");
-                    StringAssert.StartsWith("Click a highlighted die", actor.Board.Tray.Q<Label>(className: "draft-status").text);
+                    // UI-273: with Lords and Kings the hint numbers the step before the first action.
+                    var hint = actor.Board.Tray.Q<Label>(className: "draft-status").text;
+                    StringAssert.StartsWith(kind == DecisionKind.SpecialDieChoice ? "Step 1 of 4 · " : "Step 2 of 4 · ", hint);
+                    StringAssert.Contains(kind == DecisionKind.SpecialDieChoice ? "Click a highlighted die" : "Click a glowing die to discard it", hint);
+                    if (kind == DecisionKind.RulerDiscard)
+                        RulerDiscardCandidates(actor);
                     await Layout(room, actor, kind + "-" + actor.Board.View.You, "ui58");
                     PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(id));
                     await room.At(before + 1);
                     Assert.AreEqual(kind == DecisionKind.SpecialDieChoice ? DieLocation.Hunt : DieLocation.Discarded,
                         actor.Board.View.Dice.Single(d => d.Id == id).Location);
+                    if (kind == DecisionKind.RulerDiscard)
+                        await DiscardedDieStaysDimmed(room, actor, opponent, id);
                 }
+        }
+
+        // UI-273: the eligible dice say what their click does; no Lords special die is among them; the Ruler die wears
+        // its crown.
+        private static void RulerDiscardCandidates(MountedMatchClient actor)
+        {
+            var view = actor.Board.View;
+            var eligible = view.Options.Single().EligibleDice;
+            foreach (var die in view.Dice.Where(d => d.Owner == view.You && d.Location == DieLocation.Available))
+            {
+                var button = actor.Board.OwnDice.Q<Button>(die.Id);
+                Assert.AreEqual(eligible.Contains(die.Id), button.ClassListContains("resource-candidate"), die.Id);
+                if (eligible.Contains(die.Id))
+                    StringAssert.StartsWith("Click to discard this die", button.tooltip);
+            }
+            Assert.IsFalse(eligible.Any(id => SpecialDice.IsLords(view.Dice.Single(d => d.Id == id))), "A Lords special die is never discarded.");
+            var ruler = view.Dice.Single(d => d.Owner == view.You && RulerDice.IsRuler(d));
+            Assert.IsNotNull(actor.Board.OwnDice.Q<Button>(ruler.Id).Q("ruler-crown"));
+        }
+
+        // UI-273: the discarded die keeps its slot, dimmed, for both players, and leaves the Out count.
+        private static async Task DiscardedDieStaysDimmed(MatchTestRoom room, MountedMatchClient actor, MountedMatchClient opponent, string id)
+        {
+            await room.Settle();
+            var own = actor.Board.OwnDice.Q<Button>(id);
+            Assert.IsTrue(own.ClassListContains(ActionPoolView.DiscardedClass) && !own.enabledSelf);
+            StringAssert.EndsWith("Discarded · Returns at the next Recover", own.tooltip);
+            Assert.IsTrue(opponent.Board.OpponentDice.Q<Button>(id).ClassListContains(ActionPoolView.DiscardedClass));
+            Assert.AreEqual("0", actor.Board.OwnDice.Q<Button>("pool-Discarded").text);
         }
 
         private static async Task Dismay()

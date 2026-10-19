@@ -530,3 +530,19 @@ Tests: `NamedRingsTests` (fixed sockets and art, the Nenya and Vilya Keeper step
 `ExpansionWindowNetworkTests.NenyaTransfersOnlyItsOwnRingAndResumesTheHunt` and
 `ExpansionDecisionNetworkTests.VilyaKeepsTheResolvingDieAvailable` (socket glow, one click, reconnect, layouts, no
 window); `ExpansionDecisionNetworkTests.NaryaActivatesItsNationWithTheChosenDie` (the nation row).
+
+## Ruler dice and the steps before the first action — UI-273 (2026-10-19)
+
+- **The Ruler die** wears a gilt crown on its top edge (`dice/ruler-crown`), in the own pool and the opponent's row.
+- **The Ruler discard** after the roll is made in the pool for each side that rolled its Ruler die (Shadow first): the
+  eligible standard and Ruler dice glow and their tooltip starts "Click to discard this die · It returns at the next
+  Recover"; a Lords special die is never eligible. One click discards; a single eligible die is discarded without a
+  click (as the forced special die, UI-267). No panel or window opens.
+- **A discarded die** keeps its slot in a Kings game, dimmed and disabled, for both players, with "Discarded · Returns
+  at the next Recover"; it leaves the Out count (`RulerDice.Discarded`, `ActionPoolView.DiscardedClass`).
+- **Lords with Kings**: the console's hint numbers the step before the first action — "Step 1 of 4" special dice,
+  "Step 2 of 4" Ruler discards, "Step 3 of 4" Dismay, "Step 4 of 4" The Lore of the Elven Rings (`PreActionSteps`); a
+  step whose objects speak for themselves shows its name. The tray's hint is built by `DecisionTray.StatusHint`.
+
+Tests: `RulerDiceTests`, `UiArtKitTests`, `ResourcePanelNetworkTests.SpecialChoicesAndBothDiscards…` (both sides,
+candidates, crown, dimmed slot, step hints, four layouts).

@@ -28,6 +28,9 @@ namespace Wotr.Client
         private readonly Action<string> tokenChosen;
         public const string LordsDieClass = "lords-die";
         public const string SetAsideClass = "set-aside";
+        // UI-273: the Kings Ruler die's crown, and a die discarded after the roll dimmed in its slot.
+        public const string RulerDieClass = "ruler-die";
+        public const string DiscardedClass = "ruler-discarded";
         public const string CouncilTokenClass = "council-token";
         public Action<string> CouncilChosen { get; set; }
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
@@ -49,15 +52,16 @@ namespace Wotr.Client
             snapshots[root] = snapshot;
             root.Clear();
             root.EnableInClassList("expanded-resources", view.Configuration.Lords || view.Configuration.Kings);
-            // UI-267: a special die not kept this turn keeps its slot, dimmed, until the next roll.
-            var visibleDice = view.Dice.Where(d => d.Owner == side &&
-                (DiceOutsidePool.InPool(d) || SpecialDice.SetAside(d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
+            // UI-267: a special die not kept this turn keeps its slot, dimmed, until the next roll; UI-273: so does a die
+            // discarded after the roll in a Kings game, until the next Recover.
+            var visibleDice = view.Dice.Where(d => d.Owner == side && (DiceOutsidePool.InPool(d) || SpecialDice.SetAside(d) ||
+                RulerDice.Discarded(view, d) || own && DiceOutsidePool.Offered(view, d))).ToArray();
             root.EnableInClassList("dense-resources", visibleDice.Length > 8);
             // Opponent counters live in the top bar's OpponentSummary.
             root.Add(own ? Header(side) : OwnerLabel(side));
             var available = BoardScreen.Row("available-dice");
             foreach (var die in visibleDice)
-                available.Add(Die(die, own));
+                available.Add(Die(die, own, RulerDice.Discarded(view, die)));
             if (!own)
             {
                 root.Add(available);
@@ -96,7 +100,7 @@ namespace Wotr.Client
                 string.Join("|", view.CouncilTokens.Select(t => t.Id + ":" + t.Spent + ":" + t.UsedTokenThisTurn))
                 : "");
 
-        private Button Die(DieView die, bool own)
+        private Button Die(DieView die, bool own, bool discarded)
         {
             var lordsOrigin = SpecialDice.Origin(die);
             var special = ExpansionLabels.Special(die) && lordsOrigin.Length == 0;
@@ -122,9 +126,23 @@ namespace Wotr.Client
                 badge.AddToClassList("die-badge");
                 button.Add(badge);
             }
+            if (RulerDice.IsRuler(die))
+                Crown(button);
+            button.EnableInClassList(DiscardedClass, discarded);
+            if (discarded)
+                button.tooltip = RulerDice.DiscardedTooltip(die);
             // An opponent's retained Ruler die can be the target of Dismay.
-            button.SetEnabled(die.Location != DieLocation.Resolving && !SpecialDice.SetAside(die));
+            button.SetEnabled(die.Location != DieLocation.Resolving && !SpecialDice.SetAside(die) && !discarded);
             return button;
+        }
+
+        // UI-273: the Ruler die wears its crown on its top edge.
+        private static void Crown(Button button)
+        {
+            button.AddToClassList(RulerDieClass);
+            var crown = new VisualElement { name = "ruler-crown", pickingMode = PickingMode.Ignore };
+            crown.AddToClassList("ruler-crown");
+            button.Add(crown);
         }
 
         // UI-267: a Lords special die wears its origin's art and emblem and, for a Remove result, the star; a die not
@@ -164,7 +182,7 @@ namespace Wotr.Client
                 // UI-267: a special die set aside this turn stands in the pool's row, not among the dice out of play.
                 var dice = view.Dice.Where(d => location == DieLocation.Spent
                     ? d.Location == location && (d.SpentWith ?? d.Owner) == side
-                    : d.Location == location && d.Owner == side && !SpecialDice.SetAside(d)).ToList();
+                    : d.Location == location && d.Owner == side && !SpecialDice.SetAside(d) && !RulerDice.Discarded(view, d)).ToList();
                 var label = location == DieLocation.Discarded ? "Out" : location == DieLocation.FellowshipBox ? "Fellowship Box"
                     : location.ToString();
                 // UI-97: icon and count, as in the top bar; the name leads the description. UI-230: the count is

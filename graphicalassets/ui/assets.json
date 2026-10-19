@@ -735,6 +735,10 @@
       "role": "UI-267: origin emblem of the Balrog's die: a tongue of flame."
     },
     {
+      "source": "dice/ruler-crown.svg",
+      "role": "UI-273: the crown a Kings Ruler die wears on its top edge."
+    },
+    {
       "source": "dice/origins/gothmog.svg",
       "role": "UI-267: origin emblem of Gothmog's die: the pale moon of Minas Morgul."
     },

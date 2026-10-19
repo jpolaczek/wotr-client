@@ -304,3 +304,17 @@
 }
 #board-screen .dice-panel .die.hunt-allocated { border-width: 2px; border-color: rgb(247, 213, 120); border-radius: 18px; }
 
+
+/* UI-273: the Kings Ruler die wears its crown on its top edge; a die discarded after the roll keeps its slot, dimmed. */
+.die.ruler-die { overflow: visible; }
+.die.ruler-die > .ruler-crown {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    translate: -9px 0;
+    width: 18px;
+    height: 12px;
+    background-image: resource("Wotr/Art/UI/dice/ruler-crown");
+    -unity-background-scale-mode: scale-to-fit;
+}
+.dice-panel .die.ruler-discarded { opacity: 0.45; }

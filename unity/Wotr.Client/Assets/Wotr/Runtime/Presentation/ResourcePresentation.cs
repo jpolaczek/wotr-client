@@ -50,7 +50,7 @@ namespace Wotr.Client
 
         // The console's hint says what a click on a lit die does.
         public static string PoolHint(PlayerView view) => !PoolDecision(view) ? ""
-            : SpecialDice.Choosing(view) ? SpecialDice.Hint(view) : Consequence(view, null);
+            : SpecialDice.Choosing(view) ? SpecialDice.Hint(view) : RulerDice.Discarding(view) ? RulerDice.Hint(view) : Consequence(view, null);
 
         public static string Consequence(PlayerView view, TurnDraft draft) => CouncilPending(draft)
             ? "Choose a highlighted use. Chieftain entry also spends the exact die you select."
