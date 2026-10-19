@@ -32,7 +32,8 @@ namespace Wotr.Client
             var sovereignContext = SovereignPresentation.OwnsDecision(view, draft);
             if (!sovereignContext && draft.Kind is CommandKind.AwakenSovereign or CommandKind.RemoveCorruptedSovereign or CommandKind.AttemptCorruption)
                 Sovereigns(root, view, option);
-            if (!sovereignContext)
+            // UI-268: Vilya's die is the lit die in the pool.
+            if (!sovereignContext && draft.Kind != CommandKind.UseVilya)
                 Dice(root, view, option);
             if (draft.Kind == CommandKind.UseDismay)
                 Dismay(root, view, option);
@@ -43,8 +44,6 @@ namespace Wotr.Client
             }
             if (draft.Kind == CommandKind.UseNarya)
                 root.Add(new Label("Narya → " + string.Join(" · ", option.Targets.Select(FigureGrid.Name)) + " at war"));
-            if (draft.Kind == CommandKind.UseVilya)
-                root.Add(new Label("Vilya → Keep the selected die available"));
         }
 
         private void Dice(VisualElement root, PlayerView view, ActionOption option)

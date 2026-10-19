@@ -17,7 +17,7 @@ namespace Wotr.Client
             DecisionKind.SpecialDieChoice => "Special dice",
             DecisionKind.RulerDiscard => "Choose a die to discard",
             DecisionKind.Dismay => "Dismay · Re-roll a Ruler die?",
-            DecisionKind.KeepActionDie => "Vilya · Keep a die?",
+            DecisionKind.KeepActionDie => "Keep the die?",
             _ => ""
         };
 
@@ -43,7 +43,7 @@ namespace Wotr.Client
         };
 
         public static IEnumerable<ActionOption> Alternatives(PlayerView view, TurnDraft draft) =>
-            view.Decision.Kind is DecisionKind.Dismay or DecisionKind.KeepActionDie or DecisionKind.CorruptionTile
+            view.Decision.Kind is DecisionKind.Dismay or DecisionKind.CorruptionTile
                 ? view.Options.Where(o => o.Kind != draft.Kind) : Enumerable.Empty<ActionOption>();
     }
 }

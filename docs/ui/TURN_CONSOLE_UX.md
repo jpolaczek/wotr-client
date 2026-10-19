@@ -506,3 +506,27 @@ Free Peoples keep first, lit dice survive a reconnect, the set-aside dice in bot
 click, layouts at 1366/1920 and 100%/125%, no generic window); `ResourcePanelNetworkTests` and
 `ExpansionDecisionNetworkTests` (both sides with two Eyes each, with the Ruler dice). Scenarios: seeder `ui267-tie`,
 `ui267-forced-eye`; test menu `lords-forced-eye`.
+
+## Named Elven Rings — UI-268 (2026-10-19)
+
+A Lords game replaces the three Elven Rings with Vilya, Nenya and Narya (LORDS pp. 15, 19–20; rules T24). They stand in
+fixed console sockets in that order, each in its own art (`graphicalassets/ui/src/console/ring-<name>.svg`): Vilya a
+gold band with a great sapphire between two wings of air, Nenya a mithril band with a white adamant glinting like a
+star, Narya a red-gold band with a ruby crowned by flame. The captured art wears an ember halo; the lit art the gold
+aura of a Keeper ability offered now (`keeper-ready`). A base game keeps its plain rings.
+
+1. Every named ring still changes a die like any Elven Ring: click the socket, then a die and its new face (UI-161).
+   The tooltip names the ring, its owner and its Keeper ability.
+2. Nenya: in the Hunt's tile step, when Galadriel can replace a drawn Eye tile, the Nenya socket glows; its click
+   removes the tile from the game and draws another, and Nenya passes to the Shadow. The Hunt window lists no Nenya
+   button; a line in it points at the ring, and Skip declines.
+3. Vilya: after a paid action Elrond can keep the action's die. The paid die glows in the pool and the Vilya socket
+   glows; a click on either keeps the die (one paid die makes the socket's click complete) and Vilya passes to the
+   Shadow. "Spend the die" is the console's button (`action-DeclineVilya`). No panel or window opens.
+4. Narya: Gandalf's activation stays on the nation's row of the Politics panel (`nation-activate-<nation>`); the
+   Narya socket's tooltip says so.
+
+Tests: `NamedRingsTests` (fixed sockets and art, the Nenya and Vilya Keeper steps, the console's Spend the die);
+`ExpansionWindowNetworkTests.NenyaTransfersOnlyItsOwnRingAndResumesTheHunt` and
+`ExpansionDecisionNetworkTests.VilyaKeepsTheResolvingDieAvailable` (socket glow, one click, reconnect, layouts, no
+window); `ExpansionDecisionNetworkTests.NaryaActivatesItsNationWithTheChosenDie` (the nation row).

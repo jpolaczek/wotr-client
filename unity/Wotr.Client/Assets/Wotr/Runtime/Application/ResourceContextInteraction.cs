@@ -135,6 +135,17 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || busy())
                 return false;
+            // UI-268: the glowing Nenya socket answers the Hunt's tile step with its Keeper ability.
+            if (id == NamedRings.Nenya && NamedRings.NenyaResponse(view) != null)
+            {
+                edit(() =>
+                {
+                    if (draft.Kind != CommandKind.RespondEffect)
+                        draft.Choose(CommandKind.RespondEffect);
+                    draft.Change(p => p.ReactionId = NamedRings.NenyaReaction);
+                }, true);
+                return true;
+            }
             var next = draft.Fork();
             if (!ExpansionActions.Ring(view, next, id))
                 return false;

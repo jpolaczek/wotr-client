@@ -460,6 +460,12 @@
       "--gilt-mid": "#765820",
       "--gilt-shadow": "#4b3512",
       "--glow-opacity": "0.15"
+    },
+    "keeper-lit": {
+      "--keeper-aura-opacity": "1"
+    },
+    "keeper-captured": {
+      "--captured-halo-opacity": "1"
     }
   },
   "assets": [
@@ -766,6 +772,30 @@
       "role": "Counter: Elven Rings held; on a console socket the ring a player can use. The captured variant is a ring the Shadow took (red stone).",
       "variants": [
         "captured"
+      ]
+    },
+    {
+      "source": "console/ring-vilya.svg",
+      "role": "UI-268: Vilya, Elrond's Ring of Air: gold band, great sapphire between two wings of air. Its console socket in a Lords of Middle-earth game; lit while its Keeper ability is offered now, captured with an ember halo once the Shadow holds it.",
+      "variants": [
+        "keeper-lit",
+        "keeper-captured"
+      ]
+    },
+    {
+      "source": "console/ring-nenya.svg",
+      "role": "UI-268: Nenya, Galadriel's Ring of Water: mithril band, white adamant glinting like a star. Its console socket in a Lords of Middle-earth game; lit while its Keeper ability is offered now, captured with an ember halo once the Shadow holds it.",
+      "variants": [
+        "keeper-lit",
+        "keeper-captured"
+      ]
+    },
+    {
+      "source": "console/ring-narya.svg",
+      "role": "UI-268: Narya, Gandalf's Ring of Fire: red-gold band, ruby crowned by flame. Its console socket in a Lords of Middle-earth game; lit while its Keeper ability is offered now, captured with an ember halo once the Shadow holds it.",
+      "variants": [
+        "keeper-lit",
+        "keeper-captured"
       ]
     },
     {

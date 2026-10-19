@@ -11,7 +11,8 @@ namespace Wotr.Client
             if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
                 return false;
             // UI-264: the special-die pick and the Ruler discard are made on the dice in the pool, not in this panel.
-            return view.Decision.Kind is DecisionKind.CouncilToken or DecisionKind.Dismay or DecisionKind.KeepActionDie ||
+            // UI-268: Vilya's decision is made on the paid die and the Vilya socket, with Spend the die in the console.
+            return view.Decision.Kind is DecisionKind.CouncilToken or DecisionKind.Dismay ||
                 view.Decision.Kind == DecisionKind.EffectChoice && view.Decision.Presentation == "DieAndResult" ||
                 view.Decision.Kind == DecisionKind.Action && CouncilPending(draft);
         }
@@ -42,7 +43,7 @@ namespace Wotr.Client
 
         // UI-264: the special-die pick and the Ruler discard are made on the lit dice in the pool.
         public static bool PoolDecision(PlayerView view) =>
-            view?.Decision?.Kind is DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard &&
+            view?.Decision?.Kind is DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard or DecisionKind.KeepActionDie &&
             view.DecisionOwner == view.You && !view.Winner.HasValue;
 
         // The console's hint says what a click on a lit die does.
@@ -57,7 +58,7 @@ namespace Wotr.Client
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
             DecisionKind.Dismay => "Choose a token, then either highlighted Ruler. The server rolls its new result.",
             DecisionKind.CouncilToken => "Choose one token. Its printed use can be taken later in an action.",
-            DecisionKind.KeepActionDie => "Vilya keeps the die that paid for the completed action. Keeping the Ring spends that die.",
+            DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or spend the die and keep Vilya.",
             _ => "Choose the exact die and its new face. Changing the face does not use the die."
         };
 

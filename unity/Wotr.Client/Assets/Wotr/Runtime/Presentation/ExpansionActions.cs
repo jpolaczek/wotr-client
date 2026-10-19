@@ -22,10 +22,17 @@ namespace Wotr.Client
             var option = DraftOptions.For(view, draft, kind);
             if (option?.Enabled != true || !option.EligibleIds.Contains(id))
                 return false;
-            var die = option.EligibleDice.Contains(draft.Payload.DieId) ? draft.Payload.DieId : "";
+            // UI-268: Vilya keeps the action's die; with one such die the socket's click is the whole answer.
+            var die = option.EligibleDice.Contains(draft.Payload.DieId) ? draft.Payload.DieId
+                : kind == CommandKind.UseVilya && option.EligibleDice.Count == 1 ? option.EligibleDice[0] : "";
             if (draft.Kind != kind)
                 draft.Choose(kind, die);
-            draft.Change(p => p.RingId = id);
+            draft.Change(p =>
+            {
+                p.RingId = id;
+                if (die.Length > 0)
+                    p.DieId = die;
+            });
             return true;
         }
 

@@ -255,6 +255,19 @@
 .console-ring-socket.pressed > .console-ring-image { scale: 0.9 0.9; }
 .ring-removed > .console-ring-image { -unity-background-image-tint-color: rgb(128, 128, 128); opacity: 0.35; }
 
+/* UI-268: a Lords game's named rings in their own art (console/ring-<name>): the captured art wears an ember halo,
+   the lit art the gold aura of a Keeper ability offered now; a lit ring shows at full brightness. */
+.ring-vilya > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-vilya"); }
+.ring-vilya.ring-captured > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-vilya-keeper-captured"); }
+.ring-vilya.keeper-ready > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-vilya-keeper-lit"); }
+.ring-nenya > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-nenya"); }
+.ring-nenya.ring-captured > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-nenya-keeper-captured"); }
+.ring-nenya.keeper-ready > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-nenya-keeper-lit"); }
+.ring-narya > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-narya"); }
+.ring-narya.ring-captured > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-narya-keeper-captured"); }
+.ring-narya.keeper-ready > .console-ring-image { background-image: resource("Wotr/Art/UI/console/ring-narya-keeper-lit"); }
+.console-ring-socket.keeper-ready > .console-ring-image { -unity-background-image-tint-color: rgb(255, 255, 255); }
+
 /* The four permanent actions; a greyed one keeps its place. */
 /* Two by two: back and confirm above, pass and discard below. */
 .console-actions { width: 80px; flex-shrink: 0; flex-direction: row; flex-wrap: wrap; align-content: center; justify-content: space-between; }

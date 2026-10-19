@@ -62,7 +62,8 @@ namespace Wotr.Client
         public static DecisionHost Expansion(DecisionKind kind) => kind switch
         {
             DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard => DecisionHost.Dice,
-            DecisionKind.KeepActionDie or DecisionKind.Dismay or DecisionKind.CouncilToken => DecisionHost.Resources,
+            DecisionKind.KeepActionDie => DecisionHost.Rings,
+            DecisionKind.Dismay or DecisionKind.CouncilToken => DecisionHost.Resources,
             DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands => DecisionHost.Setup,
             DecisionKind.CorruptionTile => DecisionHost.Sovereigns,
             _ => DecisionHost.Window

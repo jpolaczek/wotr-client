@@ -107,6 +107,10 @@
   --special-band-light: #e9c977;
   --special-band-dark: #7a5822;
 
+  /* UI-268: the named Elven Rings' gold aura while a Keeper ability is offered, and their ember halo once captured. */
+  --keeper-aura-opacity: 0;
+  --captured-halo-opacity: 0;
+
   /* Hover glow, hidden unless a variant enables it. */
   --glow-opacity: 0;
 }

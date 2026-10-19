@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 using static Wotr.PlayTests.KingsCardNetworkChecks;
@@ -42,17 +43,25 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-268: in the Hunt's tile step the Nenya socket glows and its click replaces the Eye tile; the Hunt window
+        // lists no Nenya button and no window opens.
         private static async Task Nenya()
         {
             using (var room = await Connect("t34-nenya", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 Assert.IsNull(room.Sh.Board.View.Decision);
-                var choice = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.RespondEffect)
-                    .EffectChoices.Single(c => c.Cost == "TransferNenya");
-                Click(room.Fp, "effect-choice-" + choice.Id);
-                await Layout(room, room.Fp, "nenya", "t34");
+                await room.Settle();
+                watch.OnItsObject(room.Fp);
+                NenyaReady(room.Fp);
+                await Layout(room, room.Fp, "nenya", "ui268");
                 await Reconnect(room, room.Fp);
-                await room.Confirm(room.Fp);
+                NenyaReady(room.Fp);
+                var revision = room.Fp.Board.View.Revision;
+                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For(NamedRings.Nenya));
+                await room.At(revision + 1);
+                Assert.IsTrue(room.Fp.Board.Console.Rings.For(NamedRings.Nenya).ClassListContains("ring-captured"));
+                watch.NeverOpened();
                 Assert.AreEqual(Side.Shadow, room.Sh.Board.View.Rings.Single(r => r.Id == "lords.ring.nenya").Owner);
                 Assert.AreEqual(DecisionKind.HuntDamage, room.Fp.Board.View.Decision.Kind);
                 Assert.AreEqual("base.hunt.standard.3.0.1", room.Sh.Board.View.Hunt.TileId);
@@ -61,6 +70,16 @@ namespace Wotr.PlayTests
                 await room.At(damageRevision + 1);
                 Assert.AreEqual(3, room.Sh.Board.View.Fellowship.Corruption);
             }
+        }
+
+        private static void NenyaReady(MountedMatchClient client)
+        {
+            var socket = client.Board.Console.Rings.For(NamedRings.Nenya);
+            Assert.IsTrue(socket.ClassListContains(ConsoleRings.KeeperReadyClass), "Nenya's socket glows in the tile step.");
+            StringAssert.Contains("Click to remove this Eye tile", socket.tooltip);
+            Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-" + NamedRings.NenyaReaction), "Nenya is answered on its ring.");
+            Assert.IsNotNull(client.Board.Tray.Q<Label>("nenya-socket-hint"));
+            Assert.IsFalse(client.Board.Console.Rings.For(NamedRings.Vilya).ClassListContains(ConsoleRings.KeeperReadyClass));
         }
 
         private static async Task Lore(bool hunt)

@@ -147,6 +147,14 @@ namespace Wotr.Client
                 if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
+                // UI-268: Nenya's response is its glowing ring socket in the console.
+                if (NamedRings.OnSocket(view, id))
+                {
+                    var hint = new Label("Nenya can replace this Eye tile: click the glowing Nenya in the console.") { name = "nenya-socket-hint" };
+                    hint.AddToClassList("draft-status");
+                    root.Add(hint);
+                    continue;
+                }
                 var choice = option.EffectChoices.FirstOrDefault(c => c.Id == id) ?? new EffectChoiceView { Id = id };
                 if (row == null || choice.SelectionGroup != currentGroup)
                 {

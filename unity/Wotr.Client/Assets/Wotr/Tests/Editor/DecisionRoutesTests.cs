@@ -44,7 +44,7 @@ namespace Wotr.EditorTests
         // panels that host them until their tasks move them onto objects.
         [TestCase(DecisionKind.SpecialDieChoice, DecisionHost.Dice)]
         [TestCase(DecisionKind.RulerDiscard, DecisionHost.Dice)]
-        [TestCase(DecisionKind.KeepActionDie, DecisionHost.Resources)]  // UI-268: Vilya socket
+        [TestCase(DecisionKind.KeepActionDie, DecisionHost.Rings)]      // UI-268: Vilya socket and the paid die
         [TestCase(DecisionKind.Dismay, DecisionHost.Resources)]         // UI-276: glowing Ruler dice
         [TestCase(DecisionKind.CouncilToken, DecisionHost.Resources)]   // UI-270: Shadow pool token slots
         [TestCase(DecisionKind.CouncilVersions, DecisionHost.Setup)]    // UI-269: Fellowship portraits

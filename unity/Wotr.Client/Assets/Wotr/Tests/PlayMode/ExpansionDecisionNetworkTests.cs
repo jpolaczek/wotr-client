@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 using static Wotr.PlayTests.KingsCardNetworkChecks;
@@ -132,21 +133,42 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-268: Vilya's socket glows beside the lit paid die; Spend the die is the console's button; one click on the
+        // socket keeps the die, with no window.
         private static async Task Vilya()
         {
             using (var room = await Connect("ui09-vilya", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 Assert.AreEqual(DecisionKind.KeepActionDie, room.Fp.Board.View.Decision.Kind);
-                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For("lords.ring.vilya"));
+                await room.Settle();
+                watch.OnItsObject(room.Fp);
                 var die = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.UseVilya).EligibleDice.Single();
-                await Layout(room, room.Fp, "vilya", "ui09");
+                VilyaReady(room.Fp, die);
+                await Layout(room, room.Fp, "vilya", "ui268");
                 await Reconnect(room, room.Fp);
+                VilyaReady(room.Fp, die);
                 var revision = room.Fp.Board.View.Revision;
-                Click(room.Fp, "cost-" + die);
+                CardNetworkTests.Click(room.Fp.Board.Console.Rings.For(NamedRings.Vilya));
                 await room.At(revision + 1);
+                watch.NeverOpened();
                 Assert.AreEqual(DieLocation.Available, room.Sh.Board.View.Dice.Single(d => d.Id == die).Location);
                 Assert.AreEqual(Side.Shadow, room.Sh.Board.View.Rings.Single(r => r.Id.EndsWith("vilya")).Owner);
             }
+        }
+
+        private static void VilyaReady(MountedMatchClient client, string die)
+        {
+            var socket = client.Board.Console.Rings.For(NamedRings.Vilya);
+            Assert.IsTrue(socket.ClassListContains(ConsoleRings.KeeperReadyClass), "Vilya's socket glows for its Keeper ability.");
+            Assert.IsTrue(socket.ClassListContains("ring-vilya"));
+            StringAssert.Contains("Click to keep the die that paid for this action", socket.tooltip);
+            Assert.IsTrue(client.Board.OwnDice.Q<Button>(die).ClassListContains("resource-candidate"), "The paid die glows in the pool.");
+            Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + die), "No second die picker.");
+            var spend = client.Board.Console.Status.Options.Q<Button>("action-DeclineVilya");
+            Assert.IsNotNull(spend, "Spend the die is the console's button.");
+            Assert.AreEqual("Spend the die", spend.text);
+            Assert.IsFalse(client.Board.ResourceDecision.IsOpen, "No resource panel opens.");
         }
 
         private static async Task Awaken()

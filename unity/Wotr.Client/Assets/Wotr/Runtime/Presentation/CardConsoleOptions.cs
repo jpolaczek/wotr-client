@@ -46,7 +46,8 @@ namespace Wotr.Client
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
         public static bool Owns(PlayerView view, TurnDraft draft) =>
-            Card(view, draft) && !RegionChoice(view) || Reaction(view, draft) && ReactionOptions(view).Count <= Limit;
+            Card(view, draft) && !RegionChoice(view) || Reaction(view, draft) && ReactionOptions(view).Count <= Limit ||
+            NamedRings.VilyaDecision(view);
 
         // A region's alternatives (Dreadful Spells) are console buttons; the region itself stays a map click.
         public static bool HostsAlternatives(PlayerView view, TurnDraft draft) => Card(view, draft) && RegionChoice(view);
@@ -57,6 +58,9 @@ namespace Wotr.Client
                 return CardArmyEvent.Alternatives(view, draft);
             if (Card(view, draft))
                 return CardOptions(view, draft);
+            // UI-268: Vilya is kept on its socket; spending the die is the console's button.
+            if (NamedRings.VilyaDecision(view))
+                return NamedRings.SpendTheDie(view) is { } spend ? new List<ConsoleOption> { spend } : None;
             return Owns(view, draft) ? ReactionOptions(view) : None;
         }
 

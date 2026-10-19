@@ -2,9 +2,9 @@
   "task": "UI-86",
   "renderer": "headless Google Chrome",
   "shared_sha256": {
-    "palette.css": "969975447b4ec151894f433a9eca28bea149d08f5cb676c010db19ddbec74a15",
+    "palette.css": "318d9fd31f758433ebfe538856ba90b5b050f8feb59b2c3ec1db54573725dd8a",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "c5b0154a97f30965f28f71d1e7496885ff7140b4a0e1722200f2378b9f448acd"
+    "assets.json": "b433f8060716439ede4f049a935bdb5c5d7c31a073f01f5df829a93ec623bf7c"
   },
   "assets": [
     {
@@ -1462,6 +1462,150 @@
       "alpha": true,
       "source_sha256": "92f23fe9fbc4fac92c515753ce638d5ad20c0c385efd810ddcceb2f7fac9ac4d",
       "png_sha256": "ec8e88eafa42d8ab3dc6a35c74646e55d3c415e164e98f79c70e0c4d85922090"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-vilya.png",
+      "source": "src/console/ring-vilya.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "4c5c4bac8fb43f8a8944c31c2e12affc7e1afeb9f8c5d93ed425cb3d61d09a5a",
+      "png_sha256": "b45d265cc485ec5490702af016ccb33fdf89538915efff576ea34f882af1b5dc"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-vilya-keeper-lit.png",
+      "source": "src/console/ring-vilya.svg",
+      "variant": "keeper-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "4c5c4bac8fb43f8a8944c31c2e12affc7e1afeb9f8c5d93ed425cb3d61d09a5a",
+      "png_sha256": "da8a940f7effc9deec6bd8f85eae725b732b708e320c1b1a34bced294e03584e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-vilya-keeper-captured.png",
+      "source": "src/console/ring-vilya.svg",
+      "variant": "keeper-captured",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "4c5c4bac8fb43f8a8944c31c2e12affc7e1afeb9f8c5d93ed425cb3d61d09a5a",
+      "png_sha256": "5ee51c714aa58d167fbe3259b44c6523ed356bdabbacaea276916e1d98214e03"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-nenya.png",
+      "source": "src/console/ring-nenya.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "45e61f233a3328362b88709edbab402f4e0b3f3c3b5b06a33e57f49f6fac4890",
+      "png_sha256": "8b9028f0b5220ac50a5ce83f454b5a9e5843409cdb9c1ffa78d8ddf03161abd8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-nenya-keeper-lit.png",
+      "source": "src/console/ring-nenya.svg",
+      "variant": "keeper-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "45e61f233a3328362b88709edbab402f4e0b3f3c3b5b06a33e57f49f6fac4890",
+      "png_sha256": "a5b3feb4c8fd09557a44034ce9a5e6767631a03dd949b7870f21b0229ae376d9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-nenya-keeper-captured.png",
+      "source": "src/console/ring-nenya.svg",
+      "variant": "keeper-captured",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "45e61f233a3328362b88709edbab402f4e0b3f3c3b5b06a33e57f49f6fac4890",
+      "png_sha256": "4004dcb12481d36b23486e2a9f1e6743596b37d1141981661e5e50a4326e254e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-narya.png",
+      "source": "src/console/ring-narya.svg",
+      "variant": null,
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "d0dc563f82b7e32a24163e12211d09994df91461260605a00544f54b2d4dfe1f",
+      "png_sha256": "9c1682ec3b275c289615098d0fec701e705467a8f6e9bcd12cbaa9fc598cb527"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-narya-keeper-lit.png",
+      "source": "src/console/ring-narya.svg",
+      "variant": "keeper-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "d0dc563f82b7e32a24163e12211d09994df91461260605a00544f54b2d4dfe1f",
+      "png_sha256": "b7bcb4dbfed920d2a11286c7a632b1952666262cb07da119f774d0daf8bb6b0f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/console/ring-narya-keeper-captured.png",
+      "source": "src/console/ring-narya.svg",
+      "variant": "keeper-captured",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "d0dc563f82b7e32a24163e12211d09994df91461260605a00544f54b2d4dfe1f",
+      "png_sha256": "e4ef405d58866096b9e9c8c1caa3e82af8fa17c9bc1da5b8322ef688d3eea52e"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/icons/spent.png",
