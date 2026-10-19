@@ -180,6 +180,17 @@
         256,
         190
       ]
+    },
+    {
+      "key": "erebor-shadow",
+      "source": "v1/raw/erebor-shadow.png",
+      "sourceSha256": "82921cb99129667b9aad581ac4b574a4e74763b892114a79d86253331332c585",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/map-landmarks/erebor-shadow.png",
+      "outputSha256": "5302898b3a18777ea6eb6be224eef6a7708a35cc72054c8ea0b2c58bcd72fab0",
+      "size": [
+        256,
+        213
+      ]
     }
   ]
 }

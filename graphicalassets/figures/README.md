@@ -90,3 +90,12 @@ of the five corrupted sovereigns, keyed like their cells (`PortraitArtwork.Key`:
 "brand-corrupted-portrait", "black-serpent"). Lords versions of base characters reuse the base art with an owner-only
 badge (owner decision 2026-10-19). Nothing is generated yet: ART-05 (Fate), ART-06 (Lords) and ART-07 (Kings) run
 `v3/generate.py` for their keys and review the results.
+
+## Fate of Erebor — ART-05 (2026-10-19)
+
+Generated with `v3/generate.py` (logged in `v3/generations.jsonl`): `gimli-dwarven-lord` (figure, stature 0.74 like
+Gimli) and `gimli-dwarven-lord-portrait`, reviewed for the house style (painted resin figure; candlelit oil bust with
+a gilded crowned helm, no actor likeness). `scripts/build_figure_art.py` now builds the atlases from the items that
+have raw images and lists the rest as `pending` in `docs/sources/ART-FIGURES.json` (the Lords and Kings characters,
+ART-06 and ART-07), instead of refusing to build.
+

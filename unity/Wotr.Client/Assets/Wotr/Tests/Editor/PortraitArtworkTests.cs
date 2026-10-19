@@ -48,6 +48,8 @@ namespace Wotr.Client.Tests
             }
             Assert.AreEqual(10, expansions.Where(id => id.StartsWith("kings.character.") && id.Count(c => c == '.') == 3)
                 .Select(PortraitArtwork.Key).Distinct().Count(), "Five sovereigns, two states each.");
+            // ART-05: Fate's Dwarven Lord has his painted portrait.
+            Assert.IsNotNull(PortraitArtwork.Sprite("fate.character.gimli-dwarven-lord"));
         }
 
         [Test]

@@ -25,7 +25,7 @@ WIDTH = 2048
 # Relative height of a figure in its cell, so a regular stands lower than its elite and a hobbit lower than a
 # man wherever the cell is shown at one size; the figure stands on the cell's bottom edge.
 STATURE = {'-regular': 0.78, '-leader': 0.88, 'merry': 0.62, 'pippin': 0.62, 'ring-bearers': 0.64, 'gollum': 0.55,
-           'gimli': 0.74}
+           'gimli': 0.74, 'gimli-dwarven-lord': 0.74}
 # style -> (atlas name, cell height, widest cell)
 ATLASES = {
     'unit': ('units-v3', 240, 400),
@@ -94,15 +94,16 @@ def cells(atlas, boxes):
 
 def build():
     spec = json.loads((SOURCE / 'prompts.json').read_text())
-    outputs, sources = {}, {}
+    outputs, sources, pending = {}, {}, []
     for style, (name, height, widest) in ATLASES.items():
         keys = [key for key, (kind, _) in spec['items'].items() if kind == style]
+        # ART-04: an item whose art is not generated yet (its expansion's ART task) waits outside the atlas; the
+        # client shows the figure silhouette for it until then.
+        pending += [key for key in keys if not (SOURCE / 'raw' / (key + '.png')).exists()]
+        keys = [key for key in keys if key not in pending]
         if not keys:
             continue
         paths = {key: SOURCE / 'raw' / (key + '.png') for key in keys}
-        missing = [key for key, path in paths.items() if not path.exists()]
-        if missing:
-            raise SystemExit('Missing raw images: ' + ', '.join(missing))
         # A portrait's cell takes its character's key ("strider-portrait" -> "strider"), as PortraitArtwork asks.
         images = {key.removesuffix('-portrait'): portrait(path, height) if style == 'portrait'
                   else figure(path, key, height, widest) for key, path in paths.items()}
@@ -115,18 +116,19 @@ def build():
         outputs[name + '.png'] = png.getvalue()
         outputs[name + '.json'] = (json.dumps(definition, indent=2) + '\n').encode()
         sources.update({str(path.relative_to(ROOT)): sha(path.read_bytes()) for path in paths.values()})
-    return outputs, sources
+    return outputs, sources, pending
 
 
-def report(outputs, sources):
+def report(outputs, sources, pending):
     return {
-        'version': 'art-figures-1', 'tasks': ['ART-01', 'ART-02'],
+        'version': 'art-figures-1', 'tasks': ['ART-01', 'ART-02', 'ART-04', 'ART-05'],
         'sources': {**sources, 'graphicalassets/figures/v3/prompts.json': sha((SOURCE / 'prompts.json').read_bytes()),
                     'scripts/build_figure_art.py': sha(Path(__file__).read_bytes())},
         'tools': {'Pillow': PIL.__version__},
         'atlases': {name: {'cellHeight': height, 'widestCell': widest} for _, (name, height, widest) in ATLASES.items()},
         'stature': STATURE,
         'outputs': {str((ART / name).relative_to(ROOT)): sha(data) for name, data in sorted(outputs.items())},
+        'pending': sorted(pending),
     }
 
 
@@ -134,9 +136,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true', help='verify that the committed atlases match their sources')
     args = parser.parse_args()
-    outputs, sources = build()
+    outputs, sources, pending = build()
     files = {ART / name: data for name, data in outputs.items()}
-    files[REPORT] = (json.dumps(report(outputs, sources), indent=2) + '\n').encode()
+    files[REPORT] = (json.dumps(report(outputs, sources, pending), indent=2) + '\n').encode()
     for path, data in files.items():
         if args.check:
             if not path.exists() or path.read_bytes() != data:

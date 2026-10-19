@@ -1235,6 +1235,13 @@ the plaque closes it. No new window is made. Details: [TURN_CONSOLE_UX](TURN_CON
 [CARD_CHOICES_UX](CARD_CHOICES_UX.md). Tests: `RequiredDecisionTests`,
 `BoardInteractionTests.RequiredExcessOpensItsRegionPanelFromThePlaqueAndTheNotice`.
 
+## Fate of Erebor art — ART-05 (2026-10-19)
+
+Generated and built with the existing pipelines: the Dwarven Lord Gimli's figure and portrait (`gimli-dwarven-lord`
+in `characters-v1` and `battle-portraits-v2`) and the Shadow-held Erebor landmark (`map-landmarks/erebor-shadow`),
+which UI-265 draws in Erebor's place in a Fate game. The base Gimli keeps his cells for Fate's standard version.
+Details: `graphicalassets/figures/README.md`, `graphicalassets/landmarks/README.md`.
+
 ## Expansion characters: portrait keys and ability lines — ART-04 (2026-10-19)
 
 A character's portrait and figure cell is its definition id after "<module>.character.", dots as dashes

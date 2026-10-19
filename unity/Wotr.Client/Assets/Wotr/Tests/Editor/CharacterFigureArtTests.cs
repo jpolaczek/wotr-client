@@ -19,7 +19,9 @@ namespace Wotr.EditorTests
         [Test]
         public void EveryBaseCharacterHasItsOwnFigure()
         {
-            CollectionAssert.AreEquivalent(BaseCharacters, FigureArtwork.Characters.Names);
+            // ART-05: the expansions' own characters join the atlas as their art is generated (Fate's Dwarven Lord now).
+            CollectionAssert.AreEquivalent(BaseCharacters.Append("gimli-dwarven-lord"), FigureArtwork.Characters.Names);
+            Assert.AreEqual("gimli-dwarven-lord", FigureAppearances.Character("fate.character.gimli-dwarven-lord", Side.FreePeoples).Key);
             foreach (var key in BaseCharacters)
             {
                 var side = key is "saruman" or "mouth-of-sauron" or "witch-king" ? Side.Shadow : Side.FreePeoples;
