@@ -105,7 +105,7 @@ namespace Wotr.Client
             huntContext = new HuntContextInteraction(board, EditSelection, () => SelectionBusy);
             resources = new ResourceContextInteraction(board, EditSelection,
                 () => SelectionBusy);
-            sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy, () => online);
+            sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy);
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);

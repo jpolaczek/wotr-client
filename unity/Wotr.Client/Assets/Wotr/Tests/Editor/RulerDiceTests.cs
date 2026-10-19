@@ -20,7 +20,7 @@ namespace Wotr.EditorTests
             StringAssert.StartsWith("Click to discard this die", DieHints.Describe(view, standard));
             Assert.AreEqual("Click a glowing die to discard it · It returns at the next Recover", RulerDice.Hint(view));
             view.Options[0].EligibleDice.Remove("ruler");
-            StringAssert.StartsWith("Your only eligible die", RulerDice.Hint(view));
+            StringAssert.StartsWith("Click your only eligible die", RulerDice.Hint(view));
 
             standard.Location = DieLocation.Discarded;
             Assert.IsTrue(RulerDice.Discarded(view, standard));

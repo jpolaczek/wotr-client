@@ -72,16 +72,23 @@ Superseded by [UI-279](#every-choice-waits-for-a-click--ui-279-2026-10-19): with
 ## Every choice waits for a click — UI-279 (2026-10-19)
 
 Owner decision 2026-10-19: the client never sends a decision without a click, even when only one option is legal. This
-rule replaces UI-151's automatic No card. Automatic single choices cost later work, and opening a saved game must not
-submit anything (UI-12). The single option glows, and its tooltip says what the click does:
+rule replaces the expansions program's "a single legal choice is sent automatically" and UI-151's automatic No card.
+Automatic single choices cost later work: UI-274's forced draw clashed with UI-12, because opening a saved game must
+not submit it. The single option glows, and its tooltip says what the click does:
 
 - a Combat choice without a legal card: No card glows and says "No legal Combat card · Click to fight this round
-  without one" (UI-151).
+  without one" (UI-151);
+- a special-die choice with a forced Eye: the Eye glows (UI-267);
+- a Ruler discard with one eligible die: that die glows, and the hint reads "Click your only eligible die to discard
+  it" (UI-273);
+- a corruption draw that is the only legal step: the console's Draw tiles; a single remaining tile: that tile (UI-274).
 
 A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
-payment method. The player's own "Skip cards this battle" policy (UI-11) stays, because the player chose it. Tests:
-`BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`; `MatchTestRoom.NoCard` clicks No card for every
-own Combat choice.
+payment method, and awakening a king to his only destination. The player's own "Skip cards this battle" policy (UI-11)
+stays, because the player chose it. Tests: `BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`,
+`SpecialDiceNetworkTests.AnEyeForcedAmongTheDiceWaitsForItsClick`, `RulerDiceTests`, `ExpansionCorruptionNetworkTests`,
+`SovereignPanelNetworkTests`, `KingsCards02NetworkTests`; `MatchTestRoom.NoCard` clicks No card for every own Combat
+choice.
 
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150
@@ -1318,9 +1325,8 @@ Owner decision 2026-10-19: the kings' decisions are made on their objects, and n
   only special Eyes remain, the button stays disabled and says "Click the special Eye that pays in the Hunt Box
   first." The drawn tiles stand beside the king: values for the Shadow, backs for the Free Peoples. The Shadow's
   click attaches a tile. In Sequential corruption the latest tile's click keeps it, and "Draw again" stays in the
-  console. A draw that is the only legal step, and a choice with one tile left, are sent without a click when they
-  arise during play. Opening a game sends nothing (UI-12): a draw already waiting then is the console's Draw tiles, and
-  a single tile waits for its click.
+  console; otherwise every draw is the console's Draw tiles. Since UI-279 nothing is sent without a click: a draw that is
+  the only legal step waits for Draw tiles, and a single remaining tile waits for its click.
 - **Awakening.** Die → glowing king (portrait or his force on the map) → destination. A single destination (his
   besieged home, for one) is sent with the king's click.
 - **Cards and the cleanse.** A card's choice of a king lights his portrait ("Click to …"). The inspection's tiles stand

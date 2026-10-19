@@ -13,8 +13,8 @@ namespace Wotr.PlayTests
 {
     // UI-267: the Lords special-die choice in the dice pool on two clients. The kept die is chosen by a click on its lit
     // medallion; the dice not kept stay dimmed in their slot, in the own pool and in the opponent's top bar; a tie in
-    // rolled dice lets the Free Peoples choose first; an Eye forced among several dice is kept without a click; a
-    // reconnect keeps the lit dice; no window opens.
+    // rolled dice lets the Free Peoples choose first; an Eye forced among several dice glows alone and waits for its
+    // click (UI-279); a reconnect keeps the lit dice; no window opens.
     public sealed class SpecialDiceNetworkTests
     {
         private const string Vilya = "lords.die.vilya";
@@ -26,7 +26,7 @@ namespace Wotr.PlayTests
         public IEnumerator OnATieTheFreePeoplesKeepFirstAndTheOtherDiceWaitDimmedInTheirSlots() => Wait(Tie());
 
         [UnityTest]
-        public IEnumerator AnEyeForcedAmongTheDiceIsKeptWithoutAClick() => Wait(ForcedEye());
+        public IEnumerator AnEyeForcedAmongTheDiceWaitsForItsClick() => Wait(ForcedEye());
 
         private static async Task Tie()
         {
@@ -76,8 +76,14 @@ namespace Wotr.PlayTests
                 Lit(room.Sh, Gothmog, "Click to keep Gothmog · Card Draw.");
                 var revision = room.Sh.Board.View.Revision;
                 await Keep(room, room.Sh, Balrog);
-                // Vilya rolled an Eye and Nenya a Character: the Eye is the Free Peoples' only choice and needs no click.
-                await room.At(revision + 2);
+                // Vilya rolled an Eye and Nenya a Character: the Eye is the Free Peoples' only choice, and it still
+                // waits for its click.
+                await room.Until(() => room.Fp.Board.View.Decision?.Kind == DecisionKind.SpecialDieChoice);
+                await room.Settle();
+                Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision, "Nothing is sent without a click.");
+                StringAssert.StartsWith("An Eye must be kept", SpecialDice.Hint(room.Fp.Board.View));
+                Lit(room.Fp, Vilya, "Click to keep Vilya");
+                await Keep(room, room.Fp, Vilya);
                 Assert.AreEqual(DieLocation.Hunt, room.Sh.Board.View.Dice.Single(d => d.Id == Vilya).Location);
                 SetAside(room.Fp.Board.OwnDice, Nenya);
                 SetAside(room.Sh.Board.OpponentDice, Nenya);

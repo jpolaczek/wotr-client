@@ -495,14 +495,14 @@ The special-die choice (`SpecialDieChoice`, LORDS pp. 9–13, rules T24) is made
    kept die leaves the game (at the next Recover if Gandalf the White, or for the Shadow the Witch-king, is then in
    play). One click keeps it; there is no Confirm.
 3. An Eye among the dice forces the choice of an Eye. A die it rules out is disabled and says why; when only one die
-   is legal, the client sends the choice by itself once the decision arrives (`ResourceContextInteraction`), so the
-   player never clicks a forced answer.
+   is legal, it glows alone and the hint reads "An Eye must be kept: click a highlighted Eye" — since UI-279 the
+   player clicks it (nothing is sent without a click).
 4. The dice not kept stay in their slot, dimmed (`set-aside`), until the next roll, in the own pool and in the
    opponent's top bar; their tooltip says they were not kept and that an unkept Remove star removes nothing. They are
    not counted among the dice out of play.
 
 Tests: `SpecialDiceTests` (origins, set-aside dice, forced Eye, tooltips); `SpecialDiceNetworkTests` (a tie lets the
-Free Peoples keep first, lit dice survive a reconnect, the set-aside dice in both views, the forced Eye kept without a
+Free Peoples keep first, lit dice survive a reconnect, the set-aside dice in both views, the forced Eye waiting for its
 click, layouts at 1366/1920 and 100%/125%, no generic window); `ResourcePanelNetworkTests` and
 `ExpansionDecisionNetworkTests` (both sides with two Eyes each, with the Ruler dice). Scenarios: seeder `ui267-tie`,
 `ui267-forced-eye`; test menu `lords-forced-eye`.
@@ -536,8 +536,8 @@ window); `ExpansionDecisionNetworkTests.NaryaActivatesItsNationWithTheChosenDie`
 - **The Ruler die** wears a gilt crown on its top edge (`dice/ruler-crown`), in the own pool and the opponent's row.
 - **The Ruler discard** after the roll is made in the pool for each side that rolled its Ruler die (Shadow first): the
   eligible standard and Ruler dice glow and their tooltip starts "Click to discard this die · It returns at the next
-  Recover"; a Lords special die is never eligible. One click discards; a single eligible die is discarded without a
-  click (as the forced special die, UI-267). No panel or window opens.
+  Recover"; a Lords special die is never eligible. One click discards; since UI-279 a single eligible die also waits
+  for its click ("Click your only eligible die to discard it"). No panel or window opens.
 - **A discarded die** keeps its slot in a Kings game, dimmed and disabled, for both players, with "Discarded · Returns
   at the next Recover"; it leaves the Out count (`RulerDice.Discarded`, `ActionPoolView.DiscardedClass`).
 - **Lords with Kings**: the console's hint numbers the step before the first action — "Step 1 of 4" special dice,

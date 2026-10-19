@@ -12,8 +12,6 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private PlayerView view;
         private TurnDraft draft;
-        private string forcedSent = "";
-        private bool forcedScheduled;
 
         public ResourceContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -33,35 +31,6 @@ namespace Wotr.Client
             board.Root.EnableInClassList("sovereign-context", board.Sovereigns.DecisionTarget.Length > 0);
             HighlightCandidates();
             board.Sovereigns.Highlight(id => !busy() && ExpansionActions.Sovereign(view, draft, id) != null);
-            SendForcedChoice();
-        }
-
-        // UI-267: a special-die choice that allows one die (an Eye forced among several dice) is sent without a click,
-        // once per decision, after the refresh that showed it.
-        private void SendForcedChoice()
-        {
-            if (forcedScheduled || ForcedDie().Length == 0)
-                return;
-            forcedScheduled = true;
-            board.Root.schedule.Execute(() =>
-            {
-                forcedScheduled = false;
-                var die = ForcedDie();
-                if (die.Length == 0 || busy())
-                    return;
-                forcedSent = view.Decision.Id;
-                edit(() => draft.Change(p => p.DieId = die), true);
-            });
-        }
-
-        private string ForcedDie()
-        {
-            // UI-273: so is a Ruler discard with a single eligible die.
-            if (!(SpecialDice.Choosing(view) || RulerDice.Discarding(view)) || view.Decision.Id == forcedSent ||
-                !ExpansionActions.Immediate(draft?.Kind))
-                return "";
-            var option = DraftOptions.For(view, draft);
-            return option?.Enabled == true && option.EligibleDice.Count == 1 ? option.EligibleDice[0] : "";
         }
 
         private void HighlightCandidates()

@@ -178,12 +178,15 @@ namespace Wotr.PlayTests
             {
                 var option = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.AwakenSovereign && o.EligibleIds.Contains("kings.sovereign.dain"));
                 await ComponentGestures.Cost(room, room.Fp, option.EligibleDice[0]);
-                CardNetworkTests.Click(await BoardNavigation.Sovereign(room.Fp.Board, "kings.sovereign.dain"));
                 await Layout(room, room.Fp, "awaken", "ui09");
-                await Reconnect(room, room.Fp);
+                // UI-274: Erebor is Dáin's only destination, so the click on his lit portrait completes the awakening
+                // along his route from the Iron Hills (UI-142: a click that completes a choice sends it).
+                var portrait = await BoardNavigation.Sovereign(room.Fp.Board, "kings.sovereign.dain");
+                StringAssert.StartsWith("Click to awaken", portrait.tooltip);
                 var revision = room.Fp.Board.View.Revision;
-                FellowshipGestures.FinishRoute(room.Fp, "erebor");
+                CardNetworkTests.Click(portrait);
                 await room.At(revision + 1);
+                await Reconnect(room, room.Fp);
                 Assert.AreEqual(SovereignStatus.Awakened, room.Sh.Board.View.Sovereigns.Single(s => s.Id.EndsWith("dain")).Status);
                 Assert.AreEqual("erebor", room.Sh.Board.View.Characters.Single(c => c.Id.EndsWith("dain")).Location);
             }

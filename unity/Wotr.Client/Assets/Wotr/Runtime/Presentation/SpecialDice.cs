@@ -6,8 +6,8 @@ namespace Wotr.Client
 {
     // UI-267: the Lords special dice in the dice pool (LORDS pp. 9–13, docs/rules/T24-LORDS-DICE-RINGS.md). Each wears
     // the art and emblem of its origin; after the special-die choice the dice not kept stay in their slot, dimmed,
-    // until the next turn's roll; during the choice a lit die says what keeping it does, and a choice that allows a
-    // single die (an Eye forced among several dice) is sent without a click.
+    // until the next turn's roll; during the choice a lit die says what keeping it does. A choice that allows a single
+    // die (an Eye forced among several dice) still waits for its click (UI-279).
     public static class SpecialDice
     {
         private static readonly IReadOnlyDictionary<string, string> Origins = new Dictionary<string, string>

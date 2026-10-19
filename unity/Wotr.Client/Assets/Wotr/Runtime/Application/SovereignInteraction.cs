@@ -1,34 +1,26 @@
 using System;
 using System.Linq;
-using UnityEngine.UIElements;
 using Wotr.Contracts;
 
 namespace Wotr.Client
 {
     // UI-274 (UX_SPEC): the kings' decisions on their objects in the Characters panel: a portrait's choice in a card's
-    // step or the cleanse, the attempt button beside an Initial king, the tiles beside a king. A draw that is the only
-    // legal step, and a choice with one tile left, are sent without a click, once per step, when they arise during play;
-    // one already waiting when the game is opened waits for the console's Draw tiles or the tile's click.
+    // step or the cleanse, the attempt button beside an Initial king, the tiles beside a king. Nothing is sent without a
+    // click (UI-279): a draw that is the only legal step waits for the console's Draw tiles, a last tile for its click.
     public sealed class SovereignInteraction : IDisposable
     {
         private readonly BoardScreen board;
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
-        private readonly Func<bool> online;
         private readonly Func<string, bool> previousActivate;
         private PlayerView view;
         private TurnDraft draft;
-        private const long ForcedRetryMilliseconds = 150;
-        private string forced = "";
-        private string match = "";
-        private IVisualElementScheduledItem forcedStep;
 
-        public SovereignInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, Func<bool> online)
+        public SovereignInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
             this.board = board;
             this.edit = edit;
             this.busy = busy;
-            this.online = online;
             previousActivate = board.Sovereigns.Activate;
             board.Sovereigns.Activate = id => previousActivate?.Invoke(id) == true || Portrait(id);
             board.Sovereigns.Choice = Choice;
@@ -40,13 +32,6 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            // UI-12: opening a game never submits; a step already waiting when the game is shown waits for its click.
-            if (view.MatchId != match)
-            {
-                match = view.MatchId;
-                forced = Key();
-            }
-            SendForcedStep();
         }
 
         private SovereignChoice Choice(string id) =>
@@ -97,49 +82,10 @@ namespace Wotr.Client
             }, true);
         }
 
-        // After the refresh that showed it, so the player sees the step being taken; while the board is busy (a pending
-        // send) or not yet online (the first view after connecting) it waits and tries again, once per decision and
-        // revision.
-        private void SendForcedStep()
-        {
-            var key = Key();
-            if (key.Length == 0 || key == forced)
-                return;
-            var tile = SovereignAttempt.ForcedTile(view);
-            if (!SovereignAttempt.ForcedDraw(view) && tile.Length == 0)
-                return;
-            forced = key;
-            forcedStep?.Pause();
-            forcedStep = board.Root.schedule.Execute(() => TryForcedStep(key, tile)).Every(ForcedRetryMilliseconds);
-        }
-
-        private void TryForcedStep(string key, string tile)
-        {
-            if (Key() != key)
-            {
-                forcedStep.Pause();
-                return;
-            }
-            if (busy() || !online())
-                return;
-            forcedStep.Pause();
-            if (tile.Length > 0)
-                AttachTile(tile);
-            else
-                edit(() =>
-                {
-                    if (draft.Kind != CommandKind.DrawCorruptionTile)
-                        draft.Choose(CommandKind.DrawCorruptionTile);
-                }, true);
-        }
-
-        private string Key() => view?.Decision == null ? "" : view.Decision.Id + "/" + view.Revision;
-
         private ActionOption EffectOption() => view?.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.ChooseEffect);
 
         public void Dispose()
         {
-            forcedStep?.Pause();
             board.Sovereigns.Activate = previousActivate;
             board.Sovereigns.Choice = _ => null;
             board.Sovereigns.AttemptChosen -= Attempt;

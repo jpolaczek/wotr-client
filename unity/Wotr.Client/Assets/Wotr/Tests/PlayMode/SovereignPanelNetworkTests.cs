@@ -109,8 +109,8 @@ namespace Wotr.PlayTests
             watch.NeverOpened();
         }
 
-        // UI-274: a draw already waiting when the game is opened is not sent by the opening (UI-12); the console's Draw
-        // tiles takes it. The replacing Eye stays public and the Kings tile ends the attempt.
+        // UI-279: a draw that is the only legal step waits for the console's Draw tiles; opening the game sends nothing
+        // (UI-12). The replacing Eye stays public and the Kings tile ends the attempt.
         private static async Task Replacement()
         {
             using var room = await Connect("ui59-replacement-kings", ScenarioKind.Interaction, openPanels: false);

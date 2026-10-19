@@ -4,8 +4,8 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-273 (TURN_CONSOLE_UX): the Kings Ruler die wears a crown; after the roll each side with a Ruler die discards one
-    // of its dice in the pool: the eligible dice glow (never a Lords special die) and say what their click does, one click
-    // discards, and a single eligible die is sent without a click. A die discarded in a Kings game keeps its slot,
+    // of its dice in the pool: the eligible dice glow (never a Lords special die) and say what their click does, and one
+    // click discards, even when a single die is eligible (UI-279). A die discarded in a Kings game keeps its slot,
     // dimmed, until the next Recover.
     public static class RulerDice
     {
@@ -32,7 +32,7 @@ namespace Wotr.Client
         public static string Hint(PlayerView view)
         {
             var option = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.DiscardRulerDie);
-            return option?.EligibleDice.Count == 1 ? "Your only eligible die is discarded · It returns at the next Recover"
+            return option?.EligibleDice.Count == 1 ? "Click your only eligible die to discard it · It returns at the next Recover"
                 : "Click a glowing die to discard it · It returns at the next Recover";
         }
     }

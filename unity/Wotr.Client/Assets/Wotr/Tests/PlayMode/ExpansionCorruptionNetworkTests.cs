@@ -18,9 +18,9 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator SequentialCorruptionCanDrawAgainInsteadOfStopping() => Wait(Attempt("draw", true, false));
 
         // UI-274: the Lords special Eye (Nenya) pays only when clicked first in the Hunt Box, where it stands in the
-        // Shadow's row; the attempt button beside the king starts the attempt. Hidden and Visible draws are taken without
-        // a click; the tiles stand beside the king and the click on one attaches it. Sequential's Draw again is the
-        // console's button. No window opens.
+        // Shadow's row; the attempt button beside the king starts the attempt. Every draw is the console's Draw tiles
+        // (Draw again in Sequential), even when it is the only legal step (UI-279); the tiles stand beside the king and
+        // the click on one attaches it. No window opens.
         private static async Task Attempt(string scenario, bool sequential, bool stop)
         {
             using (var room = await Connect("ui09-corruption-" + scenario, ScenarioKind.CardPack))
@@ -48,7 +48,7 @@ namespace Wotr.PlayTests
                 Assert.IsEmpty(room.Fp.Board.View.CorruptionAttempt.OwnChoices);
                 Assert.IsEmpty(room.Fp.Board.View.Sovereigns.Single(s => s.Id == sovereign).Tiles);
                 if (!sequential)
-                    await room.Until(() => room.Sh.Board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile));
+                    await DrawTiles(room, room.Sh);
                 var tile = room.Sh.Board.View.CorruptionAttempt.OwnChoices.First().TileId;
                 Assert.IsNull(room.Fp.Board.Root.Q<Button>("corruption-choice-" + tile));
                 await SovereignPanelLayoutChecks.Slots(room, room.Sh, "choice-" + scenario);
@@ -100,5 +100,6 @@ namespace Wotr.PlayTests
                 await Layout(room, room.Fp, "corrupt-public-" + scenario, "ui09");
             }
         }
+
     }
 }

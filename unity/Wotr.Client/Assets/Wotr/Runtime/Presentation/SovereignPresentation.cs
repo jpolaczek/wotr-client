@@ -37,7 +37,7 @@ namespace Wotr.Client
                 return "";
             if (SovereignAttempt.OwnAttempt(view))
                 return view.CorruptionAttempt?.Sequential == true ? "Click the latest tile beside the king to keep it · Or draw again"
-                    : SovereignAttempt.ForcedDraw(view) ? "Draw the Corruption tiles for the attempt" : "Click a glowing tile beside the king to attach it";
+                    : SovereignAttempt.MustDraw(view) ? "Click Draw tiles to draw the Corruption tiles" : "Click a glowing tile beside the king to attach it";
             if (view.Decision.Presentation == SovereignChoices.Inspection)
                 return "Click a tile beside the king to return it to the Hunt Pool · Or keep the tiles";
             if (view.Decision.Presentation == "CorruptionRemoval")

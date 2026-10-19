@@ -92,12 +92,9 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-west-draw", ScenarioKind.CardPack))
             {
-                // UI-274: a draw already waiting when the game is opened is the console's Draw tiles (UI-12: opening sends nothing).
-                var draw = room.Sh.Board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
-                Assert.IsNotNull(draw);
-                await room.Until(() => draw.enabledInHierarchy);
-                PointerGestureEvents.ClickAt(draw);
-                await room.Until(() => room.Sh.Board.View.CorruptionAttempt?.OwnChoices.Count == 2);
+                // UI-279: each draw is the console's Draw tiles; nothing is drawn by itself.
+                await DrawTiles(room, room.Sh);
+                Assert.AreEqual(2, room.Sh.Board.View.CorruptionAttempt.OwnChoices.Count);
                 var choices = room.Sh.Board.View.CorruptionAttempt.OwnChoices;
                 await room.Until(() => room.Fp.Board.View.Revision == room.Sh.Board.View.Revision);
                 Assert.IsEmpty(room.Fp.Board.View.CorruptionAttempt.OwnChoices);

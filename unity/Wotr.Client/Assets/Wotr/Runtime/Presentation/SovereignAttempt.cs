@@ -18,7 +18,8 @@ namespace Wotr.Client
     // UI-274 (UX_SPEC): the Shadow's corruption attempt starts at the button beside an Initial king's portrait. Its click
     // pays a standard Shadow Eye from the Hunt Box (then a Ruler Eye); a Lords special Eye pays only when the player
     // clicked it first. The tiles drawn for the attempt stand beside the king: the Shadow sees their values, the Free
-    // Peoples their backs; a click on one attaches it. A draw that is the only legal step is sent without a click.
+    // Peoples their backs; a click on one attaches it. Every draw is the console's button, even when it is the only legal
+    // step (UI-279).
     public static class SovereignAttempt
     {
         public const string ActionId = "attempt-corruption";
@@ -90,24 +91,15 @@ namespace Wotr.Client
         }
 
         // A draw that is the only legal step (Hidden or Visible corruption before the limit).
-        public static bool ForcedDraw(PlayerView view) => OwnAttempt(view) && view.CorruptionAttempt?.Sequential == false &&
+        public static bool MustDraw(PlayerView view) => OwnAttempt(view) && view.CorruptionAttempt?.Sequential == false &&
             view.Options.Any(o => o.Enabled && o.Kind == CommandKind.DrawCorruptionTile) &&
             !view.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile);
-
-        // A choice with one tile left to attach.
-        public static string ForcedTile(PlayerView view)
-        {
-            if (!OwnAttempt(view) || view.Options.Any(o => o.Enabled && o.Kind == CommandKind.DrawCorruptionTile))
-                return "";
-            var choose = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile);
-            return choose?.EligibleIds.Count == 1 ? choose.EligibleIds[0] : "";
-        }
 
         public static bool OwnAttempt(PlayerView view) => view?.Decision?.Kind == DecisionKind.CorruptionTile &&
             view.DecisionOwner == view.You && !view.Winner.HasValue;
 
         // The draw is the console's button: Draw again in Sequential corruption (a click on the latest tile keeps it),
-        // Draw tiles otherwise (taken without a click when the step arises during play).
+        // Draw tiles otherwise.
         public static IReadOnlyList<ConsoleOption> ConsoleOptions(PlayerView view)
         {
             var options = new List<ConsoleOption>();
