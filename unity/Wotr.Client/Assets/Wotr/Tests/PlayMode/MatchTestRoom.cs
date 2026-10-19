@@ -174,6 +174,9 @@ namespace Wotr.PlayTests
             }
             CardNetworkTests.Click(button);
         }
+        // UI-285: the response object of a table card in the Hunt window's response row.
+        internal static Button HuntCard(MountedMatchClient client, string id) => client.Board.Hunt.Root.Q<Button>("effect-choice-" + id);
+
         // UI-245/UI-246/UI-249: a card's choice made on its object — a battle die, portrait, figure stack, Leadership
         // or hit pip, a Companion on the Hunt panel's roster, or There Is Another Way's track and Ring.
         internal static VisualElement ObjectChoice(MountedMatchClient client, string name)
@@ -183,6 +186,12 @@ namespace Wotr.PlayTests
             var id = name.Substring("effect-choice-".Length);
             var view = client.Board.View;
             var tray = client.Board.Tray;
+            // UI-285: a table card's Hunt response is a card object in the Hunt window's response row.
+            if (HuntCardResponses.InRow(view, id))
+            {
+                client.Board.Hunt.Open();
+                return HuntCard(client, id);
+            }
             if (view.Battle != null)
             {
                 // UI-246: a Leadership point is clicked on the figure that has it (its choice's source).

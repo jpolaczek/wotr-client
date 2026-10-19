@@ -30,7 +30,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(2, board.View.Fellowship.MordorStep);
             AssertNoRoll(room, 0);
             room.Boundary.HoldNextCommand = true;
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("effect-choice-card.mithril-replace"));
+            // UI-285: Mithril is a card object in the Hunt window's response row.
+            PointerGestureEvents.ClickAt(board.Hunt.Root.Q<Button>("effect-choice-card.mithril-replace"));
             await room.Until(() => room.Boundary.CommandHeld);
             await room.At(2);
             Assert.AreEqual("base.hunt.standard.1.0.1", board.View.Hunt.TileId);

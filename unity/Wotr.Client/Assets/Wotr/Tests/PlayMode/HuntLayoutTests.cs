@@ -137,8 +137,20 @@ namespace Wotr.PlayTests
                         if (kind == CommandKind.RespondEffect)
                         {
                             Assert.AreEqual("Skip", board.Tray.Q<Button>("action-DeclineReaction").text);
-                            Assert.IsTrue(board.Tray.Q<Button>("effect-choice-card.mithril-replace").ClassListContains("legal-target"));
-                            Assert.AreEqual(DisplayStyle.None, board.Hunt.Responses.Root.style.display.value);
+                            // UI-285: Mithril is a glowing card object in the response row, not a tray choice.
+                            var mithril = board.Hunt.Root.Q<Button>("effect-choice-card.mithril-replace");
+                            Assert.IsTrue(mithril.ClassListContains("legal-target"));
+                            Assert.IsTrue(mithril.ClassListContains(ChoiceGlow.ClassName));
+                            Assert.IsNull(board.Tray.Q<Button>("effect-choice-card.mithril-replace"));
+                            Assert.AreEqual(DisplayStyle.Flex, board.Hunt.Responses.Root.style.display.value);
+                            // The object fills its row, so its pulse must not swell it past the window's frame.
+                            for (var sample = 0; sample < 8; sample++)
+                            {
+                                var frame = board.Hunt.Root.worldBound;
+                                Assert.GreaterOrEqual(mithril.worldBound.xMin, frame.xMin, "The pulsing card stays inside the Hunt window");
+                                Assert.LessOrEqual(mithril.worldBound.xMax, frame.xMax, "The pulsing card stays inside the Hunt window");
+                                yield return new WaitForSecondsRealtime(.25f);
+                            }
                         }
                         // UI-141: the pool list opens from the header icon and fits beside every decision. UI-184: under
                         // way it drops over the window's content, so the window neither moves nor grows.
@@ -440,6 +452,7 @@ namespace Wotr.PlayTests
                 else if (kind == CommandKind.RespondEffect)
                 {
                     view.Decision.Window = "hunt.replace";
+                    view.Players.Add(new PlayerSummary { Side = Side.FreePeoples, TableCards = { "base.fp.character.05" } });
                     option.EffectChoices.Add(new EffectChoiceView { Id = "card.mithril-replace", SourceId = "base.fp.character.05",
                         Title = "Replace tile", Detail = "Draw a replacement before determining damage. The new tile is unknown.", Cost = "DiscardTableCard" });
                     view.Characters.Add(new CharacterView { Id = "lords.character.galadriel", DefinitionId = "lords.character.galadriel" });

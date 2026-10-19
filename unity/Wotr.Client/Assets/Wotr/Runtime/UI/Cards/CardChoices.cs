@@ -147,6 +147,9 @@ namespace Wotr.Client
                 if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
+                // UI-285: a table card's Hunt response is a card object in the Hunt window's response row.
+                if (HuntCardResponses.InRow(view, id))
+                    continue;
                 var choice = option.EffectChoices.FirstOrDefault(c => c.Id == id) ?? new EffectChoiceView { Id = id };
                 if (row == null || choice.SelectionGroup != currentGroup)
                 {
@@ -297,7 +300,9 @@ namespace Wotr.Client
         private void InspectSource(Button button, EffectChoiceView choice)
         {
             button.tooltip = choice.Detail.Length > 0 ? choice.Detail : choice.Cost == "DiscardTableCard" ? "Discard this table card to respond" : "Use this response";
-            if (!CardLibrary.Cards.ContainsKey(choice.SourceId))
+            // UI-285: a Hunt response sends with its click, so it pins no card that would read as a confirmation still
+            // waiting; its tooltip says what it does and the Effects panel shows the card.
+            if (!CardLibrary.Cards.ContainsKey(choice.SourceId) || view.Hunt != null && draft.Kind == CommandKind.RespondEffect)
                 return;
             inspector?.Observe(button, choice.SourceId,
                 avoid: view.Hunt != null && draft.Kind == CommandKind.RespondEffect ? () => HuntReactionView.Panel(button) : null);
