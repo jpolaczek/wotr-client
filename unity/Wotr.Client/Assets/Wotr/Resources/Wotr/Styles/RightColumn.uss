@@ -197,21 +197,23 @@
     right: 0;
     top: 0;
     bottom: 0;
-    border-width: 3px;
-    border-color: rgb(255, 214, 112);
-    border-radius: 4px;
-    background-color: rgba(255, 196, 84, 0.16);
+    border-width: 4px;
+    border-color: rgb(255, 222, 120);
+    border-radius: 5px;
+    background-color: rgba(255, 196, 84, 0.26);
 }
 #board-screen .edge-corner-tab.fellowship-usable .edge-corner-usable { display: flex; }
-#board-screen .edge-corner-tab.fellowship-usable .plaque-caption { color: rgb(255, 226, 150); }
+#board-screen .edge-corner-tab.fellowship-usable .plaque-main,
+#board-screen .edge-corner-tab.fellowship-usable .plaque-caption,
+#board-screen .edge-corner-tab.fellowship-usable .plaque-number { color: rgb(255, 226, 150); }
 .motion-enabled #board-screen .edge-corner-tab .edge-corner-usable {
     transition-property: border-color, background-color;
     transition-duration: 750ms;
     transition-timing-function: ease-in-out-sine;
 }
 .motion-enabled #board-screen .board-dropdowns.edge-tabs-pulse .edge-corner-tab.fellowship-usable .edge-corner-usable {
-    border-color: rgba(255, 214, 112, 0.45);
-    background-color: rgba(255, 196, 84, 0.05);
+    border-color: rgba(255, 214, 112, 0.55);
+    background-color: rgba(255, 196, 84, 0.12);
 }
 .edge-corner-divider {
     width: 8px;

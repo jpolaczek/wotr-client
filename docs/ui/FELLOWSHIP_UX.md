@@ -570,7 +570,7 @@ current Guide."), as the fixed-places rule asks; it still leaves the row while a
 The owner's decision: while anything in the Fellowship panel can be used now — a Guide's or character's skill such as
 Gandalf the Grey's draw, the Guide's choice, a move, hiding, Finish phase, a separation — the whole corner tab that
 carries the plaque lights up like a usable left tab (UI-223): a bright gold rim laid over the tab, a warmer plate and a
-gold caption, pulsing in the shared 750 ms rhythm (`BoardEdgeLayout.UsableClass`, `RightColumn.uss`); Reduced motion
+gold caption and values, pulsing in the shared 750 ms rhythm (`BoardEdgeLayout.UsableClass`, `RightColumn.uss`); Reduced motion
 keeps it bright and still. The rim lies over the tab, so nothing in it moves. The opponent's Fellowship decision lights
 nothing on this side (`FellowshipPanel.Usable` now checks the decision's owner). The plaque's thin green rim is gone.
 Test: `FellowshipPanelNetworkTests` (both cases).

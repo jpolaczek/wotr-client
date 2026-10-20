@@ -493,3 +493,9 @@ to …" tooltip only when the click opens the decision's window, battle, Hunt, F
 the end of the game, or the notice's region, sovereign or hand (`DecisionNotice.Opens`, `DecisionHostNavigation.Hosted`);
 otherwise it is read-only (`ReadOnlyControl`). The headline and the arrival flash still announce the turn. Test:
 `TurnRibbonTests` (the action's plaque stays unlit and read-only).
+
+UI-291 follow-up (2026-10-20): a reaction the console hosts no longer shows the tray's generic "Select the highlighted
+choices, then confirm."; the console's hint says where the response is and that Pass skips it ("Click the Guide's
+glowing portrait in the Fellowship panel to use Draw matching card · or Pass to skip it.", otherwise "Use a glowing
+response, or Pass to skip …"). Test: `MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics`
+(Gandalf the Grey's draw after an Event die: no Decline anywhere, Pass lit and named, the Fellowship tab lit).

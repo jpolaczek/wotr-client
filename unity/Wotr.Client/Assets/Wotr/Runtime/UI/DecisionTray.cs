@@ -118,7 +118,9 @@ namespace Wotr.Client
                     : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
                     : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
+                    // UI-291: a reaction the console hosts is guided by the console's own hint (TurnConsoleState).
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
+                    view.Decision?.Kind == DecisionKind.Reaction && CardConsoleOptions.Owns(view, draft) ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
                     SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Owns(view)
                     ? "" : DecisionObjects.Confirm(view, draft);

@@ -28,6 +28,14 @@ namespace Wotr.Client
             return "Pass · Skip these responses:\n" + string.Join("\n", skipped);
         }
 
+        // The console's hint for a reaction window whose responses glow at their sources.
+        public static string Guidance(PlayerView view)
+        {
+            var skipped = Skipped(view);
+            return "Use a glowing response, or Pass to skip " +
+                (skipped.Count == 0 ? "this response window" : string.Join(" or ", skipped)) + ".";
+        }
+
         public static IReadOnlyList<string> Skipped(PlayerView view)
         {
             var respond = view.Options.FirstOrDefault(o => o.Kind == CommandKind.RespondEffect && o.Enabled);

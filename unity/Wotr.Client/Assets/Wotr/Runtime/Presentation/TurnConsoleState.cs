@@ -61,6 +61,7 @@ namespace Wotr.Client
             DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
             DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
                 "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Pass to skip it.",
+            DecisionKind.Reaction when ReactionSkip.Option(view) != null => ReactionSkip.Guidance(view),
             _ => "Click the status to open this decision."
         };
 
