@@ -7,7 +7,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 
 | Kind | Count |
 | --- | --- |
-| icon | 56 |
+| icon | 57 |
 | text | 98 |
 | art | 59 |
 | glyph | 1 |
@@ -109,15 +109,15 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 35 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 107 | text | option.Label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionNotice.cs` | 21 | text | ◎ Your decision |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 142 | text | Check result |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 200 | icon | back |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 210 | text | Label(alternative.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 219 | text | Label(alternative.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 233 | icon | confirm |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 234 | text | text |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 342 | icon | reinforcements |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 475 | text | Label(option.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 540 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 144 | text | Check result |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 202 | icon | back |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 212 | text | Label(alternative.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 221 | text | Label(alternative.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 235 | icon | confirm |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 236 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 344 | icon | reinforcements |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 477 | text | Label(option.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 542 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 36 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 52 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 133 | text | dice.Count.ToString() |
@@ -211,9 +211,10 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 168 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 363 | glyph | × |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/SoundSettingsSection.cs` | 33 | text | Test sound |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 28 | icon | back |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 65 | text | tab |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 87 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 32 | icon | back |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 45 | icon | close |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 93 | text | tab |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 122 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestSessionBar.cs` | 45 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 40 | text | Restart and update |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 42 | text | Retry |

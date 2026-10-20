@@ -561,3 +561,12 @@ when an update is available, downloading, ready or required, with a small note (
 under the button on the sign-in card, inside the button on the right in the menu's column. Nothing moves; the download
 and What's new are in Settings. Details: UX_SPEC (updates). Tests: `FirstMenuUpdateTests` (EditMode),
 `MainMenuLayoutTests` (the note in four layouts on both screens).
+
+## Test scenarios are found by name — UI-295 (2026-10-20)
+
+The owner's request: the Test scenarios menu has a search field under its tabs ("Search scenarios by name"). Typing
+keeps only the scenarios whose title or id holds every word of the query, from all three tabs, ignoring case and
+accents ("smeagol" finds "Sméagol", "nazgul strike" finds "The Nazgûl Strike!"); results stand under their full group
+names, no tab is marked as the list meanwhile, and a query that matches nothing says so. The × beside the field clears
+it, and so does a click on a tab, which shows that tab again (`TestScenarioSearch`, `TestScenarioList.Find`). Tests:
+`TestScenarioClientTests.TheSearchFindsScenariosByNameAcrossTabs`, `TestScenarioNetworkTests` (typing in the real menu).
