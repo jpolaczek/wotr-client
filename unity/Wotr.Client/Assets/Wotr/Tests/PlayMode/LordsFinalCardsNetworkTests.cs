@@ -72,7 +72,10 @@ namespace Wotr.PlayTests
                 var board = room.Sh.Board;
                 var inspectionRevision = board.View.Revision;
                 board.Cards.Close();
-                await ComponentGestures.Hover(board.Tray.Q<Button>("effect-choice-lords.we-shall-get-it"));
+                // UI-285: the table card's Hunt response is a card object in the Hunt window's response row.
+                board.Hunt.Open();
+                await room.Settle();
+                await ComponentGestures.Hover(HuntCard(room.Sh, "lords.we-shall-get-it"));
                 Assert.IsEmpty(board.Cards.CardId, "Hovering a final reaction must not inspect or execute it.");
                 PointerGestureEvents.ClickAt(board.TableEffects.Tab);
                 await room.Settle();
@@ -96,7 +99,9 @@ namespace Wotr.PlayTests
                 {
                     await room.Settle();
                     var revision = room.Sh.Board.View.Revision;
-                    PointerGestureEvents.ClickAt(room.Sh.Board.Tray.Q<Button>("effect-choice-lords.we-shall-get-it"));
+                    room.Sh.Board.Hunt.Open();
+                    await room.Settle();
+                    PointerGestureEvents.ClickAt(HuntCard(room.Sh, "lords.we-shall-get-it"));
                     await room.At(revision + 1);
                     await Layout(room, room.Sh, "special-replace");
                 }
