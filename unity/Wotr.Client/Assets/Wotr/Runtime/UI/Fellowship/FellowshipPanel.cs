@@ -64,9 +64,11 @@ namespace Wotr.Client
             close.tooltip = "Close Fellowship panel · Keep your selection";
             heading.Add(close);
             Root.Add(heading);
+            // UI-299 (owner's decision): nothing separates the Fellowship's members from its two tracks; Finish phase and
+            // every other control (and the decision tray, added last) sit under the members.
             Root.Add(status.Root);
-            Root.Add(controls.Root);
             Root.Add(roster.Root);
+            Root.Add(controls.Root);
             controls.Selected += kind => ActionSelected?.Invoke(kind);
             status.MoveRequested += () => ActionSelected?.Invoke(CommandKind.MoveFellowship);
             roster.Selected += id => PortraitSelected?.Invoke(id);

@@ -643,3 +643,12 @@ Undo step and Cancel of a drawn route, Stay, the ruler's travel modes, the more-
 × stay. Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
 `BoardCompletionHostTests`, and the Fellowship recovery flows (`FellowshipPanelNetworkTests`, `FellowshipGuideNetworkTests`,
 `MordorNetworkTests`, `FellowshipRoutesNetworkTests`) through `PendingRecovery`.
+
+<a id="ui-299"></a>
+## The members sit right under the tracks — UI-299 (2026-10-22)
+
+The owner's decision: nothing separates the Fellowship's members from its two tracks. The panel reads, top to bottom,
+the heading, the tracks (progress or Mordor, and corruption), the members' portraits, then Finish phase and its hint,
+and last the decision tray when the panel hosts it (`FellowshipPanel`). Finish phase and every other control of the
+panel therefore sit under the members. Test: `FellowshipTrackLayoutTests` (at 1366 and 1920 px and both scales the
+members follow the corruption track and the controls follow the members).
