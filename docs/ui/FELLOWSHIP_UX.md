@@ -606,3 +606,14 @@ the Swifter when they move a companion outside it) is made on the map only (`Com
 Gwaihir's and Swifter's separation of the Fellowship's own companions keeps the Fellowship panel. Tests:
 `CompanionJourneyMapTests`, `DecisionRoutesTests`, `Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
 `Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`, `CardPack03NetworkTests`.
+
+<a id="ui-296"></a>
+## The panel opens on the Guide's own response — UI-296 (2026-10-22)
+
+The owner's report: playing Book of Mazarbul with the Event die while Gandalf the Grey guided, the draw "was not
+there". The server offered it (`event.completed`), but its control — Gandalf's glowing portrait (UI-247) — sat in the
+rolled-up Fellowship panel, so only the console's hint mentioned it. Now a reaction window that offers the Guide's own
+skill is hosted by the Fellowship panel (`FellowshipActions.GuideResponse`): the panel opens and stays open on it, the
+Guide's portrait glows in view and one click uses the skill; the console's Pass skips it (UI-291) and the plaque reopens
+the panel. Test: `GuideDrawNetworkTests.BookWithTheEventDieOpensTheFellowshipPanelOnGandalfsDraw` (the test scenario
+from the menu, the Event die, the portrait's click draws the card).

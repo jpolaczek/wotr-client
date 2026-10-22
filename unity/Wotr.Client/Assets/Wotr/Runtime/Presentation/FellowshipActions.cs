@@ -5,11 +5,12 @@ namespace Wotr.Client
 {
     public static class FellowshipActions
     {
-        // UI-294: a card's journey of companions outside the Fellowship is made on the map, not in the panel.
+        // UI-294: a card's journey of companions outside the Fellowship is made on the map, not in the panel. UI-296: the
+        // Guide's own response (Gandalf the Grey's draw) is its portrait, so the panel opens and holds it in view.
         public static bool UsesPanel(PlayerView view, TurnDraft draft) => view.Battle == null && view.EventLoss == null && !HuntActions.UsesPanel(view, draft) &&
             !CompanionJourneyDraft.Active(view, draft) &&
             (view.Decision?.Kind is DecisionKind.FellowshipPhase or DecisionKind.Guide or
-                DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation ||
+                DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation || GuideResponse(view) ||
                 draft?.Kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.DeclareFellowship or
                     CommandKind.RevealFellowship or CommandKind.SeparateCompanions or CommandKind.SelectGuide or CommandKind.EnterMordor);
 
@@ -73,6 +74,10 @@ namespace Wotr.Client
         }
 
         // Whether this reaction is used on the Guide's portrait, so the console does not repeat it.
+        // UI-296: the player's reaction window offers the Guide's own skill on its portrait.
+        public static bool GuideResponse(PlayerView view) => view.Decision?.Kind == DecisionKind.Reaction && view.Fellowship != null &&
+            RosterReaction(view, view.Fellowship.Guide) != null;
+
         public static bool ReactionOnRoster(PlayerView view, string reactionId) =>
             view?.Fellowship != null && RosterReaction(view, view.Fellowship.Guide)?.Id == reactionId;
 
