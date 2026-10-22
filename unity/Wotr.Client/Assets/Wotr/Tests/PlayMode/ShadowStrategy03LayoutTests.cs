@@ -92,7 +92,7 @@ namespace Wotr.PlayTests
             {
                 Assert.AreEqual(DecisionKind.RemoveExcess, client.Board.View.Decision.Kind);
                 Assert.AreEqual(6, client.Board.View.EffectTrail.Count(step => step.TargetId.Length > 0));
-                Assert.AreEqual(4, tray.Query<Button>(className: "committed-choice").ToList().Count);
+                Assert.AreEqual(4, client.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().Count);
             }
             if (scenario == "sh-str03-hill-trolls")
             {

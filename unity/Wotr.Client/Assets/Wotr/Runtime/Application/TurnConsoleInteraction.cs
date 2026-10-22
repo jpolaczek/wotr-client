@@ -68,6 +68,7 @@ namespace Wotr.Client
             // UI-292: the plaque glows and presses only when its click opens something.
             var clickable = Clickable(choices);
             board.Console.Status.Apply(state, clickable ? Opens(choices) : "");
+            board.Console.Status.SetTrail(view, board.Presentation, ToggleCard);
             ReadOnlyControl.Apply(board.Console.Status.Plaque, clickable);
             board.Console.Status.SetYourTurn(idle && clickable && TurnSignal.Waiting(view, draft));
             board.Console.Status.SetMustAct(idle && clickable && TurnSignal.MustAct(view));
@@ -238,6 +239,20 @@ namespace Wotr.Client
                     return Host.Effects;
             }
             return own ? Host.Notice : Host.None;
+        }
+
+        // UI-297: a committed step's card opens with one click on its chip and closes with the next.
+        private void ToggleCard(string id)
+        {
+            if (board.Cards.CardId == id && board.Cards.Root.style.display == DisplayStyle.Flex)
+            {
+                board.Cards.Close();
+                return;
+            }
+            if (view?.Battle != null)
+                board.Cards.ShowCombat(id);
+            else
+                board.Cards.Show(id, true);
         }
 
         private bool Clickable(bool choices)

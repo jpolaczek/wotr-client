@@ -259,9 +259,6 @@ namespace Wotr.Client
             return die != null ? die.Result + (die.ConvertedHit ? " → Hit" : "") : CardLibrary.Title(id);
         }
 
-        public static void Trail(VisualElement root, PlayerView view, BoardPresentation data, Action<string> inspect, CardInspector inspector = null) =>
-            EffectTrailChoices.Render(root, view, data, inspect);
-
         public void Refresh()
         {
             foreach (var update in refresh)

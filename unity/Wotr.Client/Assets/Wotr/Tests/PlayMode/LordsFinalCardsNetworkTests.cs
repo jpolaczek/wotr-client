@@ -23,7 +23,7 @@ namespace Wotr.PlayTests
             {
                 var revision = room.Sh.Board.View.Revision;
                 Assert.IsNull(room.Fp.Board.View.Decision);
-                CardNetworkTests.Click(room.Sh.Board.Tray.Query<Button>(className: "committed-choice").ToList().First());
+                CardNetworkTests.Click(room.Sh.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().First());
                 await room.Settle();
                 var region = MapContourProbe.ReachRegion(room.Sh.Board.Map, "eagles-eyrie");
                 MapContourProbe.Hover(room.Sh.Board.Root, region);

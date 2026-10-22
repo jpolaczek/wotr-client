@@ -161,7 +161,8 @@ namespace Wotr.EditorTests
             var root = new VisualElement();
             var tray = new DecisionTray(root);
             tray.Render(view, new TurnDraft(), false, false);
-            Assert.IsNotNull(root.Q(className: "committed-choice"));
+            Assert.IsNull(root.Q(className: "committed-choice"));
+            Assert.IsNotNull(EffectTrailTests.Console(view).Q(className: "committed-choice"));
             Assert.IsFalse(tray.HasChoices);
         }
 

@@ -499,3 +499,19 @@ choices, then confirm."; the console's hint says where the response is and that 
 glowing portrait in the Fellowship panel to use Draw matching card · or Pass to skip it.", otherwise "Use a glowing
 response, or Pass to skip …"). Test: `MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics`
 (Gandalf the Grey's draw after an Event die: no Decline anywhere, Pass lit and named, the Fellowship tab lit).
+
+<a id="ui-297"></a>
+## The played card is recalled only in the console — UI-297 (2026-10-22)
+
+The owner's decision: the chip that recalls a played card or effect ("✓ Book of Mazarbul", a sovereign's choice, the
+figures a card committed) appears only in the console, left of the hint (`ConsoleStatus.Trail`, `console-trail`), and a
+second click on it closes the card it opened (`TurnConsoleInteraction.ToggleCard`; in a battle the card opens in its
+combat form). This is the default for every card and effect. No window, panel or tray repeats the chips
+(`DecisionTray` renders no `committed-choice`), so a decision whose only content was the trail no longer opens the
+decision window. The strip is rebuilt only when the trail changes, holds at most 45 % of the line, and its chips are
+shortened with an ellipsis (the tooltip keeps the full text). The tray's ⟵ (`decision-back`) is gone from reactions,
+where it did nothing; it stays where it steps back (an action's draft, an ArmyEvent, a die-and-result or region
+choice). Tests: `GuideDrawNetworkTests` (no ⟵ and no tray chip in Gandalf's draw; the console chip opens Book of Mazarbul
+and its second click closes it), `EffectTrailTests`, `NazgulFlightDraftTests`, `CardConsoleOptionsTests`,
+`CardNetworkTests`, `CardInteractionTests`, `ShadowStrategy03LayoutTests`, `KingsCards01NetworkTests`,
+`KingsCards04NetworkTests`, `LordsFinalCardsNetworkTests`.

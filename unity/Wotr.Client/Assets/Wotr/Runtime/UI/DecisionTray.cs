@@ -49,7 +49,6 @@ namespace Wotr.Client
         public string ConfirmTitle => confirm?.tooltip ?? "";
         public string Problem { get; private set; } = "";
         private bool cardDecision;
-        private bool trailRecallsOnly;
         public bool DirectArmy { get; set; }
         public bool DirectCard { get; set; }
         public bool DirectMuster { get; set; }
@@ -72,7 +71,6 @@ namespace Wotr.Client
         public void Render(PlayerView view, TurnDraft draft, bool busy, bool uncertain, string pendingProblem = "")
         {
             cardDecision = CardDecisions.Owns(view, draft);
-            trailRecallsOnly = cardDecision || CardConsoleOptions.Owns(view, draft) || WaitingOutsideHosts(view);
             root.EnableInClassList("event-army-planning", view.Decision?.Kind == DecisionKind.ArmyEvent);
             root.EnableInClassList("table-card-removal", draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardDenethor or CommandKind.DiscardLore or CommandKind.DiscardGates or CommandKind.DiscardWelcome);
             root.EnableInClassList("corruption-planning", view.Decision?.Kind == DecisionKind.CorruptionTile);
@@ -196,7 +194,7 @@ namespace Wotr.Client
                 PlayerSide(footer, view);
             }
             if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
-                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && (view.Decision.Kind is DecisionKind.Action or DecisionKind.Reaction or DecisionKind.ArmyEvent ||
+                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
             {
                 var back = IconButton.Create("back", "Back", () => Cancel?.Invoke());
@@ -335,7 +333,6 @@ namespace Wotr.Client
                     (view.Decision == null ? " · Waiting for opponent" : " · " +
                         (view.Decision.Presentation == "VoluntaryLosses" ? "Choose a sacrifice" : view.Decision.Presentation == "NazgulLeadership" ? NazgulLeadershipSummary.Title(view) : BattleTitle(view.Decision.Kind)));
             }
-            CardChoices.Trail(root, view, data, id => CardInspected?.Invoke(id));
         }
 
         // UI-130/UI-131: reopens the Reinforcements panel, where card and ability recruitment take place.
@@ -420,14 +417,10 @@ namespace Wotr.Client
                 Choices(view, draft, option);
         }
 
-        // In a card decision the console confirms (UI-211). In a decision the console hosts, and while the other side
-        // decides outside a battle and the Hunt, a committed step of the effect trail only recalls what the card did
-        // (UI-212, UI-214, UI-164 CC09). Neither is a choice of the window.
+        // In a card decision the console confirms (UI-211), so its Confirm is no choice of the window. UI-297: the
+        // effect trail is recalled only in the console, never in the tray.
         private bool Offered(Button button) => button.name is not ("decision-back" or "open-reinforcements") &&
-            !(cardDecision && button == confirm) && !(trailRecallsOnly && button.ClassListContains("committed-choice")) && Shown(button);
-
-        private static bool WaitingOutsideHosts(PlayerView view) =>
-            view.Decision == null && view.Battle == null && view.Hunt == null && view.EventLoss == null;
+            !(cardDecision && button == confirm) && Shown(button);
 
         private bool Shown(VisualElement element)
         {

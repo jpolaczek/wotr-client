@@ -121,9 +121,9 @@ floating decision window (UI-160).
   armed marker (`armed-force`, the selected plinth), lights the movable figures in the region panel and draws
   the flown Nazgûl as ghosts (`MapCanvas.PlannedFlights`, without ×). A map click releases the armed region,
   flies to a lit destination or arms a lit source (and opens its panel); any other region opens its panel.
-  `DecisionTray` builds no flight choices and hints in the console. In a card decision, the committed steps of
-  the effect trail (`committed-choice`) do not open the window either; outside card decisions they still do,
-  because the battle window's host depends on it (ShadowStrategy02 Corsairs).
+  `DecisionTray` builds no flight choices and hints in the console. Since UI-297 the committed steps of the effect
+  trail (`committed-choice`) are recalled only in the console and never open a window
+  ([TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-297)).
 - **UI-213.** `EventRecruitDraft.Drop` keeps an armed token armed with its group's next free figure while the
   card's limits leave it a region (`Next`), and releases it otherwise. With a token armed, a click on another
   token switches it instead of filling the last region; region first works as before when nothing is armed.
