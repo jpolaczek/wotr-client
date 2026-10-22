@@ -157,6 +157,6 @@ namespace Wotr.PlayTests
         }
 
         private static Button Portrait(BoardScreen board, string id) => board.Fellowship.Root.Q<Button>("fellowship-portrait-" + id);
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

@@ -97,7 +97,7 @@ namespace Wotr.Client
             actions.Invite(actions.Pass, passable);
             ConsoleActions.Set(actions.Discard, idle && discard?.Enabled == true,
                 Tooltip("Discard the selected die without effect", CommandKind.DiscardDie, discard));
-            ConsoleActions.Set(actions.Back, idle && onBoard && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
+            ConsoleActions.Set(actions.Back, idle && (onBoard || FellowshipBack()) && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
                 "Back · Undo the last unsent step");
             var finishing = Finishing();
             var card = CardChoice(onBoard);
@@ -106,6 +106,8 @@ namespace Wotr.Client
                 : finishing ? "Finish · End this action; saved steps stay"
                 : card ? ConfirmChoiceTooltip()
                 : "Finish · Available during an action of several steps");
+            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it.
+            actions.Invite(actions.Confirm, uncertain && tray.RecoversInConsole);
             RefreshAllocation();
         }
 
@@ -189,6 +191,10 @@ namespace Wotr.Client
         }
 
         private bool OnBoard() => board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen;
+
+        // UI-298: the Fellowship panel shows no arrow for a move, hide or entry left after a failed send; the console's
+        // Back drops it.
+        private bool FellowshipBack() => FellowshipActions.UsesPanel(view, draft) && FellowshipActions.SentOnClick(draft.Kind);
 
         private bool Allocating() => HuntActions.Allocation(view) is { } option && draft.Kind == CommandKind.AllocateHunt &&
             draft.Ready(option);

@@ -321,6 +321,8 @@
     opacity: 1;
 }
 #board-screen .fellowship-track-move:disabled > .fellowship-track-symbol { opacity: 1; }
+/* UI-298: the corruption track never moves the Fellowship; its symbol is a picture in the same place, not a button. */
+#board-screen .fellowship-track-plain-symbol { flex-shrink: 0; margin: 0; padding: 0; }
 .track-move-glow {
     display: none;
     position: absolute;

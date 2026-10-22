@@ -49,6 +49,9 @@ namespace Wotr.Client
         public string ConfirmTitle => confirm?.tooltip ?? "";
         public string Problem { get; private set; } = "";
         private bool cardDecision;
+        // UI-298: in the Fellowship panel an interrupted response is checked with the console's glowing ✓ alone.
+        public bool RecoversInConsole { get; private set; }
+        public const string ConsoleCheckHint = "Click the glowing ✓ in the console to check its result.";
         public bool DirectArmy { get; set; }
         public bool DirectCard { get; set; }
         public bool DirectMuster { get; set; }
@@ -103,7 +106,7 @@ namespace Wotr.Client
                 confirm.tooltip = draft.Payload.Ids.Count == 0 ? "Keep this result without using optional rerolls" : "Roll only the selected failed dice";
             }
             if (uncertain && root.Q<Label>("pending-command-message") is { } message)
-                message.text = pendingProblem.Length > 0 ? pendingProblem : "The response was interrupted. Recover its result to continue.";
+                message.text = PendingMessage(pendingProblem);
             if (status != null)
             {
                 status.text = busy ? "Waiting for the server…" : draft.Kind == CommandKind.UseRing ? RingChoice.Hint(draft)
@@ -135,10 +138,13 @@ namespace Wotr.Client
             confirm = null;
             status = null;
             battlePreview = null;
+            RecoversInConsole = uncertain && FellowshipHost;
             if (uncertain)
             {
                 root.Add(BoardScreen.Title("Confirming the last action"));
                 root.Add(new Label { name = "pending-command-message" });
+                if (RecoversInConsole)
+                    return;
                 confirm = BoardScreen.Button("Check result", () => Confirm?.Invoke());
                 root.Add(confirm);
                 return;
@@ -194,7 +200,8 @@ namespace Wotr.Client
                 PlayerSide(footer, view);
             }
             if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
-                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
+                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
+                (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
             {
                 var back = IconButton.Create("back", "Back", () => Cancel?.Invoke());
@@ -421,6 +428,16 @@ namespace Wotr.Client
         // effect trail is recalled only in the console, never in the tray.
         private bool Offered(Button button) => button.name is not ("decision-back" or "open-reinforcements") &&
             !(cardDecision && button == confirm) && Shown(button);
+
+        // The tray sits in the Fellowship panel (FellowshipActions.UsesPanel), not in the Hunt window.
+        private bool FellowshipHost => ContextualFellowship && !ContextualHunt;
+
+        private string PendingMessage(string problem)
+        {
+            if (!RecoversInConsole)
+                return problem.Length > 0 ? problem : "The response was interrupted. Recover its result to continue.";
+            return (problem.Length > 0 ? problem + " · " : "The response was interrupted. ") + ConsoleCheckHint;
+        }
 
         private bool Shown(VisualElement element)
         {

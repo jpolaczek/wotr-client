@@ -35,7 +35,7 @@ namespace Wotr.Client
         private readonly Label summaryCorruption = new Label { name = "fellowship-status-corruption", pickingMode = PickingMode.Ignore };
         private readonly FellowshipTrackRow journey = new FellowshipTrackRow("journey-track", "journey", 12, "journey-step-", "journey-label");
         private readonly FellowshipTrackRow mordor = new FellowshipTrackRow("mordor-track", "mordor-gate", 5, "mordor-step-", "mordor-label");
-        private readonly FellowshipTrackRow corruption = new FellowshipTrackRow("corruption-track", "corruption", 12, "corruption-step-", "corruption-label");
+        private readonly FellowshipTrackRow corruption = new FellowshipTrackRow("corruption-track", "corruption", 12, "corruption-step-", "corruption-label", movable: false);
         private bool inMordor;
 
         public const string HideClass = "fellowship-hide-target";

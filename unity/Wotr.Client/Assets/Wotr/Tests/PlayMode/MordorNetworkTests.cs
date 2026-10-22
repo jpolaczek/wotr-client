@@ -375,6 +375,6 @@ namespace Wotr.PlayTests
             await room.At(revision + 1);
         }
 
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

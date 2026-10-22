@@ -129,7 +129,7 @@ namespace Wotr.PlayTests
         }
 
         private static Button Confirm(BoardScreen board) => board.Tray.Q<Button>("confirm-decision");
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
         private static Task<ActionLogPage> Log(MatchTestRoom room, MountedMatchClient client) =>
             client.Api.Get<ActionLogPage>("api/matches/" + client.Board.View.MatchId + "/actions?limit=50", room.Token);
 

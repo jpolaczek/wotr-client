@@ -31,10 +31,19 @@ namespace Wotr.Client
                 return false;
             var token = draft.Payload.RulerTokenId;
             var ability = option.RulerTravel?.AbilityId == draft.Payload.AbilityId ? draft.Payload.AbilityId : "";
-            draft.Choose(kind, option.EligibleDice.Count > 0 ? context.DieId : "");
-            draft.Change(p => { p.RulerTokenId = token; p.AbilityId = ability; });
+            // UI-298: choosing the action is one undo step, so the first Back drops it.
+            draft.Gesture(() =>
+            {
+                draft.Choose(kind, option.EligibleDice.Count > 0 ? context.DieId : "");
+                draft.Change(p => { p.RulerTokenId = token; p.AbilityId = ability; });
+            });
             return true;
         }
+
+        // UI-298: the move, the hide and the entry into Mordor are sent with their click; their draft outlives only a
+        // failed send, and the console's Back, not an arrow in the panel, drops it.
+        public static bool SentOnClick(CommandKind? kind) =>
+            kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.EnterMordor;
 
         public static CommandKind? PortraitKind(PlayerView view, ActionDieContext context, string id, TurnDraft draft = null)
         {

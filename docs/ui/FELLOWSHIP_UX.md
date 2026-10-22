@@ -617,3 +617,29 @@ skill is hosted by the Fellowship panel (`FellowshipActions.GuideResponse`): the
 Guide's portrait glows in view and one click uses the skill; the console's Pass skips it (UI-291) and the plaque reopens
 the panel. Test: `GuideDrawNetworkTests.BookWithTheEventDieOpensTheFellowshipPanelOnGandalfsDraw` (the test scenario
 from the menu, the Event die, the portrait's click draws the card).
+
+<a id="ui-298"></a>
+## No control in the panel that does nothing or repeats another — UI-298 (2026-10-22)
+
+The owner's decision, after the inventory of the panel's buttons (UI-297):
+
+- **No ⟵ for a move, hide or entry.** The Fellowship's move, hide and entry into Mordor are sent with their click
+  (`FellowshipActions.SentOnClick`); their draft outlives only a failed send. The panel shows no arrow for it, and the
+  console's Back (enabled while the panel holds such a draft) drops it. Choosing a Fellowship action is one undo step
+  (`TurnDraft.Gesture`), so the first Back — or Esc — really drops it; before, the first press restored the same draft.
+- **No Check result in the panel.** An interrupted response in the Fellowship panel shows "Confirming the last action"
+  and its message, which ends with "Click the glowing ✓ in the console to check its result."; the console's ✓ glows
+  (`DecisionTray.RecoversInConsole`). Other hosts keep their Check result.
+- **The corruption track's symbol is a picture.** The corruption track never moves the Fellowship, so its symbol is no
+  longer a disabled button (`FellowshipTrackRow`, `movable: false`, `corruption-track-symbol`).
+- **No portrait twice.** In the panel the tray shows only the eligible companions the roster lacks (Gollum as a Guide);
+  the Fellowship's own companions are chosen on the roster (`FellowshipChoices.PortraitIds`). Outside the panel the
+  tray keeps every portrait.
+- **Cancel waits for something to clear.** A route's Cancel is disabled while it would change nothing
+  (`FellowshipDraft.CancelChanges`): a forced separation starts with its companions chosen, and a mandatory reveal
+  without a drawn route has nothing to clear.
+
+Undo step and Cancel of a drawn route, Stay, the ruler's travel modes, the more-than-three reaction buttons, Locate and
+× stay. Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
+`BoardCompletionHostTests`, and the Fellowship recovery flows (`FellowshipPanelNetworkTests`, `FellowshipGuideNetworkTests`,
+`MordorNetworkTests`, `FellowshipRoutesNetworkTests`) through `PendingRecovery`.

@@ -372,6 +372,6 @@ namespace Wotr.PlayTests
             Assert.Greater(room.Boundary.ReceiptLookups, 0);
         }
 
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

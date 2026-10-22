@@ -80,8 +80,7 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(board.Notice.Button);
             await room.Settle();
             Assert.IsTrue(board.Fellowship.IsOpen);
-            Assert.AreEqual(2, board.Tray.Query<Button>(className: "companion-portrait").ToList()
-                .Count(button => button.ClassListContains("selected")));
+            Assert.AreEqual(2, FellowshipChoiceMarks.Chosen(board));
             Assert.AreSame(board.Fellowship.Root, board.Tray.parent);
             revision = board.View.Revision;
             FellowshipGestures.FinishRoute(client, "north-dunland");

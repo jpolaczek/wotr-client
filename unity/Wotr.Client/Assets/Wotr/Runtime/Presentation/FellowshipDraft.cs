@@ -37,6 +37,14 @@ namespace Wotr.Client
                 draft.Choose(kind);
         }
 
+        // UI-298: whether CancelRoute would change the local selection at all.
+        public static bool CancelChanges(TurnDraft draft, PlayerView view)
+        {
+            var cancelled = draft.Fork();
+            CancelRoute(cancelled, view);
+            return !DraftReconciliation.Same(draft, cancelled);
+        }
+
         public static void Respond(TurnDraft draft, HuntResponse response) => draft.Change(p =>
         {
             draft.HuntChoice = response;

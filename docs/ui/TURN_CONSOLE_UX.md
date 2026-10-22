@@ -515,3 +515,11 @@ choice). Tests: `GuideDrawNetworkTests` (no ⟵ and no tray chip in Gandalf's dr
 and its second click closes it), `EffectTrailTests`, `NazgulFlightDraftTests`, `CardConsoleOptionsTests`,
 `CardNetworkTests`, `CardInteractionTests`, `ShadowStrategy03LayoutTests`, `KingsCards01NetworkTests`,
 `KingsCards04NetworkTests`, `LordsFinalCardsNetworkTests`.
+
+<a id="ui-298"></a>
+## Back and ✓ for the Fellowship panel — UI-298 (2026-10-22)
+
+The console's Back, otherwise enabled only while the tray waits on the board, is also enabled while the Fellowship panel
+holds a move, hide or entry left after a failed send, which the panel no longer offers an arrow for. While the panel
+holds an interrupted response, the console's ✓ glows and is its only Check result. Details:
+[FELLOWSHIP_UX](FELLOWSHIP_UX.md#ui-298).
