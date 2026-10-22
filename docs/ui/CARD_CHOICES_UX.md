@@ -127,7 +127,7 @@ floating decision window (UI-160).
 - **UI-213.** `EventRecruitDraft.Drop` keeps an armed token armed with its group's next free figure while the
   card's limits leave it a region (`Next`), and releases it otherwise. With a token armed, a click on another
   token switches it instead of filling the last region; region first works as before when nothing is armed.
-  Choosable Reserve tokens carry `eligible-token` (tinted slot, full glow); the tab keeps `legal-target`. ↶
+  Choosable Reserve tokens carry `eligible-token` (ChoiceGlow since UI-301, full glow); the tab keeps `legal-target`. ↶
   restores the last placement's armed token. Details: [POLITICS_REINFORCEMENTS_UX](POLITICS_REINFORCEMENTS_UX.md).
 - **UI-214.** `CardConsoleOptions` (presentation) lists the console's buttons (`ConsoleOption`): the choices of
   CaptainOrder, LureCompanion (named after its Companion), FellowshipAction (There is Another Way) and NazgulStrike,

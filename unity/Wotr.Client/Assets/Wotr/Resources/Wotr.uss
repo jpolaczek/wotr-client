@@ -878,8 +878,17 @@
 /* UI-185: a region's figures and portraits are large enough to read their artwork. */
 .region-hover .hover-figure { width: 42px; min-width: 42px; height: 46px; min-height: 46px; }
 .region-hover .hover-portrait { width: 46px; min-width: 46px; height: 46px; min-height: 46px; font-size: 13px; border-radius: 14px; }
-.eligible-figure { border-color: rgb(121, 193, 156); border-width: 2px; }
-.region-hover .selected { border-color: rgb(255, 215, 122); background-color: rgb(81, 71, 44); }
+/* UI-301: a figure or portrait a click may choose wears the shared ChoiceGlow — a thick gold rim on a warm plate that
+   RegionHoverPanel pulses in the 750 ms rhythm (still under Reduced motion); a chosen one shows its selection. */
+.region-hover .eligible-figure { border-color: rgb(255, 214, 112); border-width: 3px; background-color: rgba(120, 88, 24, 0.55); }
+.motion-enabled .region-hover .eligible-figure {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .region-hover.choice-glow-pulse .eligible-figure { border-color: rgba(255, 214, 112, 0.4); background-color: rgba(70, 52, 18, 0.3); }
+.region-hover .selected,
+.motion-enabled .region-hover.choice-glow-pulse .eligible-figure.selected { border-color: rgb(255, 215, 122); background-color: rgb(81, 71, 44); }
 .region-hover.compact-hover { padding: 6px; }
 .region-hover.compact-hover .action { height: 28px; min-height: 28px; }
 .region-hover.compact-hover .hover-figure, .region-hover.compact-hover .hover-portrait { height: 40px; min-height: 40px; }
@@ -1391,7 +1400,14 @@
 .illustrated-figure.figure-free-peoples { border-bottom-color: rgb(141, 199, 218); border-bottom-width: 2px; }
 .illustrated-figure.figure-shadow { border-bottom-color: rgb(222, 140, 126); border-bottom-width: 2px; }
 .illustrated-figure.selected { border-width: 2px; border-color: rgb(241, 209, 122); background-color: rgba(199, 164, 70, .15); }
-.illustrated-figure.eligible-figure { border-width: 2px; border-color: rgb(121, 193, 156); }
+.region-hover .illustrated-figure.eligible-figure { border-width: 3px; border-color: rgb(255, 214, 112); background-color: rgba(120, 88, 24, 0.55); }
+.motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.eligible-figure { border-color: rgba(255, 214, 112, 0.4); background-color: rgba(70, 52, 18, 0.3); }
+.region-hover .illustrated-figure.eligible-figure.selected,
+.motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.eligible-figure.selected {
+    border-width: 2px;
+    border-color: rgb(241, 209, 122);
+    background-color: rgba(199, 164, 70, .15);
+}
 .figure-garrison { border-bottom-width: 3px; border-bottom-color: rgb(188, 180, 153); border-radius: 4px; }
 .figure-motion-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 /* UI-185/UI-192: the flying figures are as large as the map's figures; MapFigureMotion places them by their feet. */

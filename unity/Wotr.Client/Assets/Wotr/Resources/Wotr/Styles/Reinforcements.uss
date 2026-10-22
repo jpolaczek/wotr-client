@@ -75,10 +75,32 @@
     -unity-slice-scale: 0.5px;
 }
 #board-screen .reinforcement-figures > .reserve-token.selected { background-image: resource("Wotr/Art/UI/armies/reserve-slot-selected"); }
-/* UI-213: a token that can be chosen now is lit (the eligible green of the region panel's figures) without moving
-   its figure: a tinted slot and a full glow. */
-#board-screen .reinforcement-figures > .reserve-token.eligible-token { -unity-background-image-tint-color: rgb(170, 230, 195); }
+/* UI-213: a token that can be chosen now is lit without moving its figure. UI-301: it wears the shared ChoiceGlow —
+   a thick gold rim on a warm plate over its slot (reserve-choice-glow) that pulses in the 750 ms rhythm with its row
+   (ReinforcementRowView) and stays still under Reduced motion — and a full gilt glow. */
+#board-screen .reinforcement-figures > .reserve-token > .reserve-choice-glow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: none;
+    border-width: 3px;
+    border-radius: 8px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+#board-screen .reinforcement-figures > .reserve-token.eligible-token > .reserve-choice-glow { display: flex; }
 #board-screen .reinforcement-figures > .reserve-token.eligible-token > .icon-glow { opacity: 1; }
+.motion-enabled #board-screen .reinforcement-figures > .reserve-token > .reserve-choice-glow {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .reinforcement-figures.choice-glow-pulse > .reserve-token.eligible-token > .reserve-choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+}
 #board-screen .reinforcement-figures > .reserve-token.pressed { background-image: resource("Wotr/Art/UI/armies/reserve-slot-pressed"); }
 #board-screen .reinforcement-figures > .reserve-token:disabled { opacity: 0.45; }
 /* Outside a recruitment the reserves are there to read, at full strength. */

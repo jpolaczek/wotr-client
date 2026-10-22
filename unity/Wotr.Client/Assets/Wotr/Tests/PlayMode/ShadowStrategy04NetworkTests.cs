@@ -171,6 +171,8 @@ namespace Wotr.PlayTests
             Assert.IsTrue(reserve.Tab.ClassListContains("legal-target"), "The Reserve tab is lit.");
             var token = reserve.Root.Q<Button>("event-reserve-" + nation + "-" + kind);
             Assert.IsTrue(token.ClassListContains("eligible-token"), "The token the card may place is lit.");
+            // UI-301: with the shared ChoiceGlow rim and plate.
+            Assert.AreEqual(DisplayStyle.Flex, token.Q("reserve-choice-glow").resolvedStyle.display);
             CardNetworkTests.Click(token);
             await room.Settle();
             Assert.IsTrue(token.ClassListContains("selected"));

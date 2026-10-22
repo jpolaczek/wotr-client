@@ -15,8 +15,8 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | File | Line | Kind | Label or icon |
 | --- | --- | --- | --- |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Application/ClientBootstrap.cs` | 88 | text | Quit |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 330 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 546 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 333 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 550 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapFellowshipMarker.cs` | 22 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 19 | icon | help |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 29 | icon | political |
@@ -165,7 +165,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Menu/ConfirmationDialog.cs` | 35 | text | Cancel |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Menu/GameDeletedNotice.cs` | 29 | text | Main menu |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/PlannedReinforcementsView.cs` | 50 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementRowView.cs` | 94 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementRowView.cs` | 101 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementsPanel.cs` | 45 | text | Reserve |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Observing/ViewingBar.cs` | 47 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 26 | art | (new Button) |
@@ -175,9 +175,9 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 88 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 39 | text | Politics |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 51 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 136 | text | ◇ … |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 193 | icon | select-all |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 203 | text | symbol |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 139 | text | ◇ … |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 196 | icon | select-all |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 206 | text | symbol |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionInformation.cs` | 27 | text | ForceName(force.Side |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionInformation.cs` | 34 | text | Characters |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Replays/ReplayBar.cs` | 31 | art | (new Button) |

@@ -148,7 +148,8 @@ User request of 2026-10-16 ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)): one click on
 distribute it on the board while the rules allow.
 
 - A token the player may choose now (an open, interactive use; Muster or a plan) is lit with
-  `eligible-token`: a green-tinted slot and a full glow, without changing its size or moving its figure. The
+  `eligible-token`: since UI-301 the shared ChoiceGlow rim and plate over its slot, pulsing with its row, and a full
+  glow, without changing its size or moving its figure. The
   tab keeps its `legal-target` glow during the use.
 - A card's recruitment (`EventRecruitDraft`): an armed token stays armed after each placement, with its group's
   next free figure, while the card's limits (per region, per nation, in total) leave that figure a region; at a
