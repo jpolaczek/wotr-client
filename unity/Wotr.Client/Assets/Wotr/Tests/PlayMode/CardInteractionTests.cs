@@ -170,7 +170,7 @@ namespace Wotr.PlayTests
                 view.EffectTrail.Add(new EffectTrailView { SourceId = "base.fp.strategy.20", ChoiceId = "lorien" });
                 client.Apply(view);
                 yield return Settle();
-                Assert.AreEqual(2, client.Board.Tray.Query<Button>(className: "committed-choice").ToList().Count);
+                Assert.AreEqual(2, client.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().Count);
                 client.Board.Map.Focus("ered-luin");
                 yield return Settle();
                 FellowshipGestures.Region(client, "ered-luin");

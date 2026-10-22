@@ -40,7 +40,8 @@ window. MVP scope: base-game cards. Expansion decisions stay on their own panels
    Fellowship panel and Politics keep hosting the decisions that belong to them (they are part
    of the fixed UI). A list that cannot fit in the console is the only exception and has to be
    named in the inventory below.
-6. **Fewest clicks.** A single legal option is applied without a click (as today). A click that
+6. **Fewest clicks.** Nothing is sent without a click, even a single legal option (UI-279, owner
+   decision 2026-10-19); the single option glows and says what its click does. A click that
    completes a choice sends it. Counting what still has to be chosen stays visible in the
    console, so the player never needs to open a panel to see progress.
 
@@ -64,7 +65,7 @@ floating decision window (UI-160).
 | Companions with a destination | Dead Men of Dunharrow | Companion buttons and Confirm in the window; destination on the map | Companions highlighted on the map and in the region panel; destination on the map; ✓ in the console | UI-215 |
 | Excess figures after a card | Stack limit after card recruitment (`RemoveExcess`) | Figure list and Confirm in the window | Region panel with the excess figures highlighted; ✓ in the console | UI-215 |
 | Card army events (`ArmyEvent`) | Help Unlooked For, Paths of the Woses, Through a Day and a Night, Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Corsairs of Umbar, The Ringwraiths Are Abroad and The Black Captain Commands (manoeuvre), Grond, The Fighting Uruk-hai | Plan list, routes and Confirm in the window | Armies highlighted on the map; army moves and attacks with the map and region panel as with an Army die (UI-105); "Skip manoeuvre" and progress in the console; ✓ in the console | UI-216 |
-| Fellowship, Hunt, battle and Politics hosts | Gwaihir, We Prove the Swifter, Book of Mazarbul, Fear! Fire! Foes!, I Will Go Alone, There and Back Again; Breaking of the Fellowship, Worn with Sorrow and Toil, Hunt tile cards and table-card reactions; event losses and combat cards; Wisdom of Elrond, Stormcrow (nation) | Their panels and windows | Unchanged | — |
+| Fellowship, Hunt, battle and Politics hosts | Gwaihir, We Prove the Swifter, Book of Mazarbul, Fear! Fire! Foes!, I Will Go Alone, There and Back Again; Breaking of the Fellowship, Worn with Sorrow and Toil, Hunt tile cards and table-card reactions; event losses and combat cards; Wisdom of Elrond, Stormcrow (nation) | Their panels and windows | Unchanged (UI-294, 2026-10-20: a journey of companions outside the Fellowship moved to the map with the console's ✓, FELLOWSHIP_UX) | — |
 
 ## Interaction details
 
@@ -120,13 +121,13 @@ floating decision window (UI-160).
   armed marker (`armed-force`, the selected plinth), lights the movable figures in the region panel and draws
   the flown Nazgûl as ghosts (`MapCanvas.PlannedFlights`, without ×). A map click releases the armed region,
   flies to a lit destination or arms a lit source (and opens its panel); any other region opens its panel.
-  `DecisionTray` builds no flight choices and hints in the console. In a card decision, the committed steps of
-  the effect trail (`committed-choice`) do not open the window either; outside card decisions they still do,
-  because the battle window's host depends on it (ShadowStrategy02 Corsairs).
+  `DecisionTray` builds no flight choices and hints in the console. Since UI-297 the committed steps of the effect
+  trail (`committed-choice`) are recalled only in the console and never open a window
+  ([TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-297)).
 - **UI-213.** `EventRecruitDraft.Drop` keeps an armed token armed with its group's next free figure while the
   card's limits leave it a region (`Next`), and releases it otherwise. With a token armed, a click on another
   token switches it instead of filling the last region; region first works as before when nothing is armed.
-  Choosable Reserve tokens carry `eligible-token` (tinted slot, full glow); the tab keeps `legal-target`. ↶
+  Choosable Reserve tokens carry `eligible-token` (ChoiceGlow since UI-301, full glow); the tab keeps `legal-target`. ↶
   restores the last placement's armed token. Details: [POLITICS_REINFORCEMENTS_UX](POLITICS_REINFORCEMENTS_UX.md).
 - **UI-214.** `CardConsoleOptions` (presentation) lists the console's buttons (`ConsoleOption`): the choices of
   CaptainOrder, LureCompanion (named after its Companion), FellowshipAction (There is Another Way) and NazgulStrike,

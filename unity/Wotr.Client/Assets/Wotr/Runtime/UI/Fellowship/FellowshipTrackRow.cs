@@ -17,17 +17,23 @@ namespace Wotr.Client
         private const float OverflowWidth = 9;
         public VisualElement Root { get; }
         public Label Value { get; }
-        // UI-110: the symbol's button; enabled and glowing only while the chosen die can move the Fellowship.
+        // UI-110: the symbol's button; enabled and glowing only while the chosen die can move the Fellowship. UI-298: a
+        // track that never moves it (corruption) has no button, only its symbol.
         public Button Move { get; }
         public event Action Activated;
+        // UI-293 (owner's decision): the Fellowship's marker on the track is the Hide control.
+        public VisualElement Marker => marker;
+        public bool MarkerOffered { get; private set; }
+        public event Action MarkerActivated;
         private readonly Label[] cells;
         private readonly VisualElement lane;
         private readonly Image marker;
         private readonly Label overflow = new Label("+") { pickingMode = PickingMode.Ignore };
         private int selected = -1;
         private readonly IVisualElementScheduledItem pulse;
+        private readonly ChoicePulse markerPulse;
 
-        public FellowshipTrackRow(string name, string icon, int maximum, string cellPrefix, string valueName)
+        public FellowshipTrackRow(string name, string icon, int maximum, string cellPrefix, string valueName, bool movable = true)
         {
             Root = new VisualElement { name = name, focusable = true };
             Root.AddToClassList("fellowship-track");
@@ -35,16 +41,15 @@ namespace Wotr.Client
             var symbol = FellowshipArtwork.Image(icon);
             symbol.AddToClassList("fellowship-track-symbol");
             symbol.pickingMode = PickingMode.Ignore;
-            Move = new Button(() => Activated?.Invoke()) { name = name + "-move" };
-            Move.AddToClassList("fellowship-track-move");
-            var glow = new VisualElement { name = name + "-glow", pickingMode = PickingMode.Ignore };
-            glow.AddToClassList("track-move-glow");
-            Move.Add(glow);
-            Move.Add(symbol);
-            Move.SetEnabled(false);
-            Root.Add(Move);
-            pulse = Move.schedule.Execute(() => Move.ToggleInClassList(BrightClass)).Every(PulseMilliseconds);
-            pulse.Pause();
+            if (movable)
+            {
+                Move = MoveButton(name, symbol);
+                Root.Add(Move);
+                pulse = Move.schedule.Execute(() => Move.ToggleInClassList(BrightClass)).Every(PulseMilliseconds);
+                pulse.Pause();
+            }
+            else
+                Root.Add(PlainSymbol(name, symbol));
             lane = new VisualElement { name = name + "-lane", pickingMode = PickingMode.Ignore };
             lane.AddToClassList("fellowship-track-lane");
             Root.Add(lane);
@@ -71,13 +76,40 @@ namespace Wotr.Client
             marker = FellowshipArtwork.Image(icon);
             marker.name = name + "-marker";
             marker.AddToClassList("fellowship-track-marker");
+            marker.AddToClassList(PressFeedback.PressableClass);
+            marker.AddManipulator(new Clickable(() =>
+            {
+                if (MarkerOffered)
+                    MarkerActivated?.Invoke();
+            }));
             lane.Add(marker);
+            markerPulse = new ChoicePulse(lane);
             lane.RegisterCallback<GeometryChangedEvent>(_ => Place(false));
             overflow.AddToClassList("fellowship-track-overflow");
             lane.Add(overflow);
             Value = new Label { name = valueName, pickingMode = PickingMode.Ignore };
             Value.AddToClassList("fellowship-track-value");
             Root.Add(Value);
+        }
+
+        private Button MoveButton(string name, VisualElement symbol)
+        {
+            var move = new Button(() => Activated?.Invoke()) { name = name + "-move" };
+            move.AddToClassList("fellowship-track-move");
+            var glow = new VisualElement { name = name + "-glow", pickingMode = PickingMode.Ignore };
+            glow.AddToClassList("track-move-glow");
+            move.Add(glow);
+            move.Add(symbol);
+            move.SetEnabled(false);
+            return move;
+        }
+
+        private static VisualElement PlainSymbol(string name, VisualElement symbol)
+        {
+            var plate = new VisualElement { name = name + "-symbol", pickingMode = PickingMode.Ignore };
+            plate.AddToClassList("fellowship-track-plain-symbol");
+            plate.Add(symbol);
+            return plate;
         }
 
         // UI-231: the Mordor track's steps are stones on a line of embers, unlike the progress and corruption cells.
@@ -91,6 +123,8 @@ namespace Wotr.Client
         // Only the visible track carries the move; its name stays the Fellowship's progress action.
         public void Offer(bool offered, string name, string tooltip)
         {
+            if (Move == null)
+                return;
             Move.name = name;
             Move.SetEnabled(offered);
             Move.EnableInClassList(MoveClass, offered);
@@ -103,6 +137,23 @@ namespace Wotr.Client
                 Move.RemoveFromClassList(BrightClass);
             }
         }
+
+        // UI-293: while hiding is legal the marker glows and pulses (ChoiceGlow) and says what a click does; otherwise it is
+        // a picture that takes no pointer.
+        public void OfferMarker(bool offered, string tooltip)
+        {
+            MarkerOffered = offered;
+            marker.pickingMode = offered ? PickingMode.Position : PickingMode.Ignore;
+            marker.focusable = offered;
+            marker.EnableInClassList(FellowshipStatus.HideClass, offered);
+            ChoiceGlow.Apply(marker, offered);
+            marker.tooltip = offered ? tooltip : "";
+            markerPulse.Run(offered);
+        }
+
+        // The row's own controls: the symbol's move and, while it hides, the marker.
+        public bool Controls(VisualElement target) => Move != null && (target == Move || Move.Contains(target)) ||
+            MarkerOffered && target == marker;
 
         public void Apply(FellowshipTrackState state)
         {

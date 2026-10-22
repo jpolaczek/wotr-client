@@ -67,7 +67,21 @@ Mordor's track is drawn on the map as a stone trail in ink from Morannon and Min
 <a id="no-card-bez-kliknięcia--ui-151"></a>
 ## "No card" without clicking — UI-151
 
-Without legal card the client sends the fight himself “No card”, once per decision; in the stage cards button is in footer, greyed while waiting. Details: [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md).
+Superseded by [UI-279](#every-choice-waits-for-a-click--ui-279-2026-10-19): without a legal card the player clicks No card, which glows alone and says why. In the cards stage the button keeps its place in the footer, greyed while waiting. Details: [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md).
+
+## Every choice waits for a click — UI-279 (2026-10-19)
+
+Owner decision 2026-10-19: the client never sends a decision without a click, even when only one option is legal. This
+rule replaces UI-151's automatic No card. Automatic single choices cost later work, and opening a saved game must not
+submit anything (UI-12). The single option glows, and its tooltip says what the click does:
+
+- a Combat choice without a legal card: No card glows and says "No legal Combat card · Click to fight this round
+  without one" (UI-151).
+
+A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
+payment method. The player's own "Skip cards this battle" policy (UI-11) stays, because the player chose it. Tests:
+`BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`; `MatchTestRoom.NoCard` clicks No card for every
+own Combat choice.
 
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150
@@ -1241,3 +1255,46 @@ After choosing a die the available left tabs' icons jumped off their medallions:
 inner edge, which moves with the border (1 px at rest, 3 px when available, UI-223), while the medallion art keeps its
 centre (47, 22). Each state now places the 24 px icon on that centre (`LeftRail.uss`). Test:
 `BoardInteractionTests.LeftRailIconsStayOnTheirMedallionsWhenATabIsAvailable` (within 0.75 px in both states).
+
+## Cards among the effects are cards — UI-288 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 7): a card among the Effects
+tab's sources (a card kept on the table or a card whose effect lasts) is a small parchment card as in the hand, with
+the symbol printed on its corner and its title in dark ink (`EffectEntry.CardTile`, `LeftRail.uss`); a source a click
+can use now takes the hand's playable parchment. An ability or another effect keeps its plain tile. The Hunt's
+responses show pictures as well (HUNT_UX, UI-288). Test:
+`HuntAndEffectPicturesTests.TableCardsAmongTheEffectsAreParchmentCardsAndAbilitiesStayPlain`.
+
+## Character abilities are small pictures — UI-286 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 4): a character's ability in the
+region panel, the Characters inspector and the decision dock is no longer a text button ("★ Saruman" twice for the
+Voice) but a small picture on the square gilt frame of what it does (`AbilityPictures`): a muster flag for Voice ·
+recruit, the upgrade star for Voice · upgrade, the Politics track for Gimli's, Boromir's and Legolas's political
+abilities, the boot or the crossed swords for the Mouth of Sauron's move or attack, the board pin for an entry, and the
+ability scroll otherwise. The picture glows and pulses with the shared ChoiceGlow only while a click can use it (its
+die is chosen and the board is free); otherwise it stays in its place greyed out. Its tooltip names the owner and the
+ability and says "Click to use" or "Select an eligible die to use it". The controls keep their names
+(`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
+text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
+`ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
+
+## Unreachable tray fallbacks removed — UI-289 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 8): text-button fallbacks that
+no decision reaches any more are removed, each after its reachability was traced in the client and the server
+(base game, Lords, Kings and Fate content, the demo CPU):
+
+- `CardChoices.Event` (the card title, "Use as" and nation rows): every Event is played from its hand card with the
+  tray's `DirectCard`, so the tray returns before it; the use is the board's `CardCostPicker`, the nation the
+  highlighted nation.
+- The `ArmyFigure(s)` and `CompanionDestination` rows: those presentations come only from event steps outside any
+  battle or Hunt, so `CardFigureDraft` always hands them to the region panel and the map (UI-215).
+- `EffectFigurePicker` (figure tabs by nation): battle figure choices are the battle's own figures, chosen in the
+  Battle window (UI-245); no other step offers six or more figures in the tray.
+- `AttackChoices`, `ArmyChoices`, `EventArmyChoices` and `EventArmyPlans`: an army move or attack is always made on
+  the map and in the region panel (`DirectArmy`, `CardArmyEvent`); ruler tokens no longer pay for armies.
+
+`ExcessChoices` stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
+Tests: the layout fixtures of `CardPack02LayoutTests` and `Shadow02LayoutTests` now offer the battle's own figures as
+the server does; `CardFigureDraftTests`, `DecisionRoutesTests` and the army and card network tests are unchanged.

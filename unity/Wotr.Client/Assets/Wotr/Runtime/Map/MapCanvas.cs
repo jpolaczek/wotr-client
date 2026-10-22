@@ -42,12 +42,16 @@ namespace Wotr.Client
         public MapPlannedRecruits PlannedRecruits { get; }
         // UI-212: a card's planned Nazgûl flights at their destinations.
         public MapPlannedRecruits PlannedFlights { get; }
+        // UI-294: the companions a card's journey moves, drawn faintly at their destinations.
+        public MapPlannedRecruits PlannedJourneys { get; }
         public bool Panning => panning;
         public MapFellowshipMarker FellowshipMarker { get; }
         public MapMordorTrack MordorTrack { get; }
         // The HUD panels over the map; region names hide under them (UI-199: forces do not avoid them).
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
+        // UI-301: the armies a click may choose pulse together in ChoiceGlow's rhythm.
+        private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
         private readonly Dictionary<(string, Side, bool), Marker> markers = new Dictionary<(string, Side, bool), Marker>();
@@ -85,6 +89,7 @@ namespace Wotr.Client
             name = "map";
             focusable = true;
             AddToClassList("map");
+            armyPulse = new ChoicePulse(this);
             Renderer.Prepare(data);
             Renderer.SetPoliticalView(ViewPreference.Political);
             Add(Renderer.Root);
@@ -145,6 +150,7 @@ namespace Wotr.Client
             Figures = new MapFigureMotion(this);
             PlannedRecruits = new MapPlannedRecruits(this);
             PlannedFlights = new MapPlannedRecruits(this, "planned-flight", removable: false);
+            PlannedJourneys = new MapPlannedRecruits(this, "planned-journey", removable: false);
         }
 
         private void PointerDown(PointerDownEvent e)
@@ -415,6 +421,7 @@ namespace Wotr.Client
                 sourceRegions.Add(source.Item1);
             foreach (var marker in markers.Values)
                 marker.Button.EnableInClassList("eligible-army", eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison)));
+            armyPulse.Run(eligibleSources.Count > 0);
             Redraw();
         }
 
@@ -450,6 +457,7 @@ namespace Wotr.Client
             UpdateGhost();
             PlannedRecruits?.Layout();
             PlannedFlights?.Layout();
+            PlannedJourneys?.Layout();
             HistoryOverlay?.Layout();
             Figures?.Layout();
             covered.AddRange(used);

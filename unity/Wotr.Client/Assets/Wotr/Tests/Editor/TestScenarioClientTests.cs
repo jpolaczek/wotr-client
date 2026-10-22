@@ -43,6 +43,42 @@ namespace Wotr.Client.Tests
             Assert.IsNull(list.Root.Q<Button>("test-scenario-sh-army-move"), "A new catalog replaces the rows.");
         }
 
+        // UI-295: a search by name finds scenarios in every tab, ignoring case and accents; a tab's click clears it.
+        [Test]
+        public void TheSearchFindsScenariosByNameAcrossTabs()
+        {
+            var catalog = Catalog();
+            catalog.Scenarios.Add(Scenario("card-base.fp.character.01-event", "Free Peoples cards · Character", "Elven Cloaks · Event", Side.FreePeoples));
+            catalog.Scenarios.Add(Scenario("card-base.sh.character.19-event", "Shadow cards · Character", "Sméagol Helps Nice Master · Event", Side.Shadow));
+            var list = new TestScenarioList();
+            list.Show(catalog);
+
+            list.Find("SMEAGOL");
+            CollectionAssert.AreEqual(new[] { "test-scenario-card-base.sh.character.19-event" },
+                list.Root.Query<Button>(className: "test-scenario").ToList().Select(b => b.name), "Case and accents do not matter.");
+            CollectionAssert.AreEqual(new[] { "Shadow cards · Character" },
+                list.Root.Query<Label>(className: "test-scenario-group").ToList().Select(l => l.text), "A result names its full group.");
+            Assert.IsFalse(list.Root.Query<Button>(className: "test-scenario-tab").ToList().Any(t => t.ClassListContains("selected")),
+                "While searching no tab is the list.");
+            Assert.IsTrue(list.Root.Q<Button>("clear-test-scenario-search").enabledSelf);
+
+            list.Find("move armies");
+            CollectionAssert.AreEquivalent(new[] { "test-scenario-fp-army-move", "test-scenario-sh-army-move" },
+                list.Root.Query<Button>(className: "test-scenario").ToList().Select(b => b.name), "Every word must match.");
+            list.Find("army-move");
+            Assert.AreEqual(2, list.Root.Query<Button>(className: "test-scenario").ToList().Count, "The id is a name too.");
+
+            list.Find("nothing like this");
+            Assert.IsEmpty(list.Root.Query<Button>(className: "test-scenario").ToList());
+            StringAssert.Contains("nothing like this", list.Root.Q<Label>(className: "test-scenario-none").text);
+
+            list.Select(TestScenarioTabs.FreePeoplesCards);
+            Assert.AreEqual("", list.Search.value, "A tab's click clears the search.");
+            Assert.IsNotNull(list.Root.Q<Button>("test-scenario-card-base.fp.character.01-event"));
+            Assert.IsFalse(list.Root.Q<Button>("clear-test-scenario-search").enabledSelf);
+            Assert.IsTrue(TestScenarioSearch.Matches(Scenario("x", "g", "The Nazgûl Strike!", Side.Shadow), "nazgul strike"));
+        }
+
         // TEST-09: card scenarios stand in their side's tab; the dice and game scenarios keep the first tab.
         [Test]
         public void CardScenariosStandInTheirSidesTab()

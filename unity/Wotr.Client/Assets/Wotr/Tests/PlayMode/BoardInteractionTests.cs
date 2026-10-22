@@ -281,10 +281,11 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-151: a Combat choice without a legal card goes as No card without a click, once per decision; while the
-        // opponent chooses, No card stays in the footer, greyed out.
+        // UI-279 (replacing UI-151's answer without a click): a Combat choice without a legal card waits for the click on
+        // No card, which glows alone and says why; the click sends it once. While the opponent chooses, No card stays in
+        // the footer, greyed out.
         [UnityTest]
-        public IEnumerator UI151NoLegalCombatCardSendsNoCardOnceAndKeepsTheButton()
+        public IEnumerator UI279NoLegalCombatCardWaitsForTheNoCardClickAndKeepsTheButton()
         {
             var view = BattleScreenFixture.Create(CommandKind.CommitCombatCard);
             view.Battle.Stage = "DefenderCard";
@@ -292,7 +293,13 @@ namespace Wotr.PlayTests
             using (var test = new Harness(view))
             {
                 yield return new WaitForSeconds(.3f);
-                Assert.AreEqual(1, test.Backend.Commands, "Without a legal card, No card goes without a click.");
+                Assert.AreEqual(0, test.Backend.Commands, "Nothing is sent without a click, even the only choice.");
+                var only = test.Board.Tray.Q<Button>("battle-no-card");
+                Assert.IsTrue(only.ClassListContains(ChoiceGlow.ClassName), "The only choice glows.");
+                StringAssert.StartsWith("No legal Combat card · Click", only.tooltip);
+                Click(only);
+                yield return new WaitForSeconds(.3f);
+                Assert.AreEqual(1, test.Backend.Commands);
                 Assert.AreEqual(CommandKind.CommitCombatCard, test.Backend.Last.Kind);
                 Assert.IsTrue(string.IsNullOrEmpty(test.Backend.Last.Payload.CardId));
                 test.Push();
@@ -670,6 +677,38 @@ namespace Wotr.PlayTests
             var contrast = Contrast(text.resolvedStyle.color, field.resolvedStyle.backgroundColor);
             Assert.GreaterOrEqual(contrast, 7f, "Typed chat text reads against its field.");
             Assert.Greater(text.resolvedStyle.color.grayscale, field.resolvedStyle.backgroundColor.grayscale, "Light text on a dark field.");
+        }
+
+        // UI-281: the board's chat opens on its newest message, also when the messages came while it was rolled up and
+        // after the player scrolled up before closing it.
+        [UnityTest]
+        public IEnumerator ChatOpensOnItsNewestMessage()
+        {
+            using var test = new Harness();
+            yield return Settle();
+            var chat = test.Board.GameChat;
+            chat.Available(true);
+            var view = new RoomChatView { Latest = 40 };
+            for (var sequence = 1; sequence <= 40; sequence++)
+                view.Messages.Add(new RoomChatMessage
+                {
+                    Sequence = sequence, Author = "frodo", Role = RoomRole.Player, Side = Side.FreePeoples, Text = "Message " + sequence
+                });
+            chat.Chat.Show(view);
+            yield return Settle();
+            var log = chat.Root.Q<ScrollView>("room-chat-log");
+
+            chat.Open();
+            yield return Settle();
+            Assert.Greater(log.verticalScroller.highValue, 0f, "The messages overflow the list.");
+            Assert.AreEqual(log.verticalScroller.highValue, log.verticalScroller.value, 1f, "Opened on the newest message.");
+            log.scrollOffset = Vector2.zero;
+            yield return Settle();
+            chat.Close();
+            yield return Settle();
+            chat.Open();
+            yield return Settle();
+            Assert.AreEqual(log.verticalScroller.highValue, log.verticalScroller.value, 1f, "Reopened on the newest message.");
         }
 
         private static float Contrast(Color a, Color b)

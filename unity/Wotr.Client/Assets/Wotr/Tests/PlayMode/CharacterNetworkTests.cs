@@ -87,12 +87,13 @@ namespace Wotr.PlayTests
                 await Respond(room, "pippin-guide");
                 await Respond(room, "gollum-reveal");
                 Assert.AreEqual(DecisionKind.CompanionSeparation, room.Fp.Board.View.Decision.Kind);
-                Assert.AreEqual(2, room.Fp.Board.Tray.Query<Button>(className: "companion-portrait").ToList().Count(b => b.ClassListContains("selected")));
-                // UI-105: a separation has no drawn steps; Cancel keeps the pending decision and the chosen companions.
+                Assert.AreEqual(2, FellowshipChoiceMarks.Chosen(room.Fp.Board));
+                // UI-105: a separation has no drawn steps. UI-298: its companions are forced, so Cancel has nothing to clear
+                // and stays disabled.
                 Assert.IsNull(room.Fp.Board.Tray.Q<Button>("route-undo"));
-                PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("route-cancel"));
+                Assert.IsFalse(room.Fp.Board.Tray.Q<Button>("route-cancel").enabledSelf);
                 Assert.AreEqual(DecisionKind.CompanionSeparation, room.Fp.Board.View.Decision.Kind);
-                Assert.AreEqual(2, room.Fp.Board.Tray.Query<Button>(className: "companion-portrait").ToList().Count(b => b.ClassListContains("selected")));
+                Assert.AreEqual(2, FellowshipChoiceMarks.Chosen(room.Fp.Board));
                 await room.Settle();
                 var placedAt = room.Fp.Board.View.Revision;
                 FellowshipGestures.FinishRoute(room.Fp, "south-dunland");

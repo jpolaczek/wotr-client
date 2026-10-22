@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -45,6 +46,49 @@ namespace Wotr.PlayTests
                 yield return new WaitForSeconds(.1f);
                 Assert.AreEqual(2, backend.Commands);
             }
+        }
+
+        // UI-281: Enter typed in the board's open chat sends the message and is not the board's confirmation, even
+        // while a choice (here the Hunt allocation) is ready; Enter outside the chat still confirms it.
+        [UnityTest]
+        public IEnumerator EnterInTheOpenChatSendsTheMessageAndConfirmsNothing()
+        {
+            var backend = new DelayedBackend();
+            using (var client = new MountedMatchClient("http://127.0.0.1:5088", "input-fixture", backend))
+            {
+                client.Apply(backend.View);
+                client.SetOnline();
+                yield return UntilReady(client);
+                Assert.IsTrue(AllocationReady(client));
+                var chat = client.Board.GameChat;
+                var sent = new List<string>();
+                chat.Chat.Sent += sent.Add;
+                chat.Available(true);
+                chat.Open();
+                chat.Chat.Input.value = "Ready when you are";
+                yield return null;
+                var line = chat.Chat.Input.Q(className: "unity-base-text-field__input") ?? chat.Chat.Input;
+                Key(line, KeyCode.Return, true);
+                Key(line, KeyCode.Return, false);
+                yield return new WaitForSeconds(.1f);
+                CollectionAssert.AreEqual(new[] { "Ready when you are" }, sent);
+                Assert.AreEqual(0, backend.Commands, "The chat's Enter is not the board's confirmation.");
+                client.Board.Root.Focus();
+                yield return UntilReady(client);
+                Assert.IsTrue(AllocationReady(client), "The allocation still waits for its confirmation.");
+                Key(client.Board.Root, KeyCode.Return, true);
+                Key(client.Board.Root, KeyCode.Return, false);
+                yield return new WaitForSeconds(.1f);
+                Assert.AreEqual(1, backend.Commands);
+                Assert.AreEqual(CommandKind.AllocateHunt, backend.LastCommand.Kind);
+            }
+        }
+
+        // The delayed preview makes the allocation ready after about .6 s; a loaded machine may need longer.
+        private static IEnumerator UntilReady(MountedMatchClient client)
+        {
+            for (var waited = 0f; !AllocationReady(client) && waited < 5f; waited += Time.unscaledDeltaTime)
+                yield return null;
         }
 
         [UnityTest]

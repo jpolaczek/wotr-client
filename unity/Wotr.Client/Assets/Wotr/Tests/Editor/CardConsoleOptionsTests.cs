@@ -119,20 +119,23 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void AReactionKeepsItsCardAtTheHandAndPutsTheOtherResponsesAndDeclineInTheConsole()
+        public void AReactionKeepsItsCardAtTheHandAndPutsTheOtherResponsesInTheConsole()
         {
             var view = Reaction(1);
             var draft = Draft(CommandKind.RespondEffect);
             var options = CardConsoleOptions.For(view, draft);
-            CollectionAssert.AreEqual(new[] { "effect-choice-ability-0", "action-DeclineReaction" }, options.Select(o => o.Name));
-            CollectionAssert.AreEqual(new[] { ConsoleOptionKind.Reaction, ConsoleOptionKind.Decline }, options.Select(o => o.Kind));
+            // UI-291: the console's Pass declines the window; no Decline option.
+            CollectionAssert.AreEqual(new[] { "effect-choice-ability-0" }, options.Select(o => o.Name));
+            CollectionAssert.AreEqual(new[] { ConsoleOptionKind.Reaction }, options.Select(o => o.Kind));
+            StringAssert.StartsWith("Pass · Skip these responses:", ReactionSkip.Tooltip(view));
+            StringAssert.Contains("Gandalf the Grey · Draw · 0", ReactionSkip.Tooltip(view));
             Assert.IsFalse(WindowChoices(view, draft), "The card in hand answers with its preview's Use.");
         }
 
-        // The Ents Awake follow-up: a free Character Event from the hand or Decline in the console; the effect trail
+        // The Ents Awake follow-up: a free Character Event from the hand, or the console's Pass (UI-291); the effect trail
         // only recalls the played card and opens no window.
         [Test]
-        public void AFollowUpWithItsTrailDeclinesInTheConsoleWithoutAWindow()
+        public void AFollowUpWithItsTrailIsSkippedWithPassWithoutAWindow()
         {
             var view = new PlayerView
             {
@@ -143,7 +146,9 @@ namespace Wotr.EditorTests
             };
             view.EffectTrail.Add(new EffectTrailView { SourceId = "base.fp.character.20" });
             var draft = new TurnDraft();
-            CollectionAssert.AreEqual(new[] { "action-DeclineReaction" }, CardConsoleOptions.For(view, draft).Select(o => o.Name));
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft), "No option hides the console's hint.");
+            Assert.IsNotNull(ReactionSkip.Option(view));
+            Assert.AreEqual("Pass · Skip the free Character Event of " + CardLibrary.Title("base.fp.character.20"), ReactionSkip.Tooltip(view));
             Assert.IsFalse(WindowChoices(view, draft));
         }
 
@@ -156,15 +161,18 @@ namespace Wotr.EditorTests
             var root = new VisualElement();
             var tray = new DecisionTray(root);
             tray.Render(view, new TurnDraft(), false, false);
-            Assert.IsNotNull(root.Q(className: "committed-choice"));
+            Assert.IsNull(root.Q(className: "committed-choice"));
+            Assert.IsNotNull(EffectTrailTests.Console(view).Q(className: "committed-choice"));
             Assert.IsFalse(tray.HasChoices);
         }
 
         [Test]
         public void AReactionWithTooManyResponsesOrInTheHuntKeepsItsHost()
         {
-            Assert.IsFalse(CardConsoleOptions.Owns(Reaction(3), Draft(CommandKind.RespondEffect)), "Four buttons do not fit the console.");
-            Assert.IsEmpty(CardConsoleOptions.For(Reaction(3), Draft(CommandKind.RespondEffect)));
+            // UI-291: three responses fit the console now that Pass, not a fourth button, declines.
+            Assert.IsTrue(CardConsoleOptions.Owns(Reaction(3), Draft(CommandKind.RespondEffect)), "Three responses fit the console.");
+            Assert.IsFalse(CardConsoleOptions.Owns(Reaction(4), Draft(CommandKind.RespondEffect)), "Four buttons do not fit the console.");
+            Assert.IsEmpty(CardConsoleOptions.For(Reaction(4), Draft(CommandKind.RespondEffect)));
             Assert.IsFalse(CardConsoleOptions.Owns(Reaction(1, hunt: true), Draft(CommandKind.RespondEffect)), "The Hunt panel hosts its reactions.");
         }
     }

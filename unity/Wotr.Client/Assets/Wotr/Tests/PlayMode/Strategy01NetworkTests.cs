@@ -48,22 +48,27 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("strategy-book", ScenarioKind.CardPack))
             {
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("action-SeparateCompanions"));
-                Click(room.Fp, "companion-base.character.gimli");
                 await room.Settle();
-                MapContourProbe.ClickRegion(room.Fp.Board.Map, "erebor");
+                var board = room.Fp.Board;
+                // UI-294: the journey is made on the map; the window lists no companions, groups, Stay all or Stay here.
+                foreach (var name in new[] { "action-SeparateCompanions", "companion-base.character.gimli", "travel-stay-all", "travel-stay" })
+                    Assert.IsNull(board.Root.Q<Button>(name), name);
+                Assert.IsNull(board.Root.Q<Label>("companion-group-progress"));
+                Assert.IsFalse(board.DecisionWindow.IsOpen, "Only the console's ✓ finishes the journey.");
+                Assert.IsFalse(board.Fellowship.IsOpen, "The Fellowship panel does not host it.");
+                StringAssert.Contains("Click a lit companion", board.Console.Status.Hint.text);
+                var revision = board.View.Revision;
+                // Gimli stands alone in the Iron Hills: a click on his region chooses him; Erebor is his destination.
+                FellowshipGestures.Region(room.Fp, "iron-hills");
                 await room.Settle();
-                // UI-250: Gimli's group has its route, so Legolas starts the next group; no group button.
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("new-companion-group"));
-                var progress = room.Fp.Board.Tray.Q<Label>("companion-group-progress");
-                StringAssert.Contains("Erebor", progress.tooltip, "Gimli's route: " + progress.text + " · " + progress.tooltip);
-                Assert.IsTrue(room.Fp.Board.Tray.Q<Button>("companion-base.character.legolas").enabledInHierarchy, "Legolas starts the next group.");
-                Click(room.Fp, "companion-base.character.legolas");
+                StringAssert.Contains("Click a highlighted destination", board.Console.Status.Hint.text);
+                FellowshipGestures.Destination(room.Fp, "erebor");
                 await room.Settle();
-                // The tray is laid out again after the click; read its new progress label.
-                progress = room.Fp.Board.Tray.Q<Label>("companion-group-progress");
-                Assert.AreEqual("Group 2 / 2", progress.text, progress.tooltip);
-                Click(room.Fp, "travel-stay");
+                Assert.AreEqual(revision, board.View.Revision, "A journey of several companions waits for ✓.");
+                CollectionAssert.AreEqual(new[] { "erebor" }, board.Map.PlannedJourneys.Regions.ToArray(), "Gimli stands faintly at Erebor.");
+                StringAssert.Contains("Click a lit companion", board.Console.Status.Hint.text, "Gimli is released for the next pick.");
+                LayoutTests.Save(room.Fp.Viewport, "ui294-book-journey.png");
+                // Legolas stays in Dale without any click.
                 await Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);
                 Assert.AreEqual("erebor", room.Sh.Board.View.Characters.Single(c => c.Id == "base.character.gimli").Location);

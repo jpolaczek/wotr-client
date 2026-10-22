@@ -4,8 +4,8 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-247: a character's reaction in a battle — Gandalf the White's White Rider, the Witch-king's Sorcerer draw — is
-    // used on that character's portrait in the Battle window with one click; Decline stays a button. A character with
-    // more than one reaction at once keeps the list.
+    // used on that character's portrait in the Battle window with one click; the console's Pass declines (UI-291). A
+    // character with more than one reaction at once keeps the list.
     public static class BattleReactions
     {
         public static ActionOption Option(PlayerView view) =>

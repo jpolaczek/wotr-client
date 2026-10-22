@@ -69,7 +69,14 @@ namespace Wotr.PlayTests
             await Send(room, room.Sh, CommandKind.AllocateHunt, new CommandPayload { Ids = dice });
             await room.Until(() => fp.Console.Status.Flashes == 1);
             Assert.AreEqual(0, fp.Ribbon.Shown, "Reduced motion: no ribbon, one flash of the console.");
-            await room.Until(() => fp.Console.Status.YourTurn);
+            await room.Until(() => fp.View?.Decision?.Kind == DecisionKind.Action && fp.View.DecisionOwner == Side.FreePeoples);
+            await room.Settle();
+            // UI-292: the action's plaque opens nothing, so it neither glows nor presses; the headline and the flash
+            // announce the turn.
+            Assert.IsFalse(fp.Console.Status.YourTurn);
+            Assert.IsFalse(fp.Console.Status.MustAct);
+            Assert.IsTrue(ReadOnlyControl.Is(fp.Console.Status.Plaque));
+            StringAssert.StartsWith("YOUR ACTION", fp.Console.Status.Headline.text);
             var die = fp.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Location == DieLocation.Available && d.Face.HasValue).Id;
             ArmyGestures.Die(room.Fp, die);
             await room.Settle();

@@ -418,8 +418,10 @@ The decisions of expansions (Council, Kings, Lords) remain at their panels (Dice
   - Meals return from the console (status), and the flag in the tray is no longer visible, because
     the meal plan leaves the decision window closed (UI-160).
 - The decision window leaves the election without a separate object: general election figures ,
-  Companion and cards table ( `EffectFigurePicker` ), the king's destination, figure Army from
-  several regions, Captain's order, reactions and Skip.
+  Companion and cards table, the king's destination, figure Army from
+  several regions, Captain's order, reactions and Skip. (UI-289, 2026-10-19: the figure table
+  `EffectFigurePicker`, the king's destination and the Army figures of several regions left the
+  tray; they are chosen in the Battle window, the region panel and on the map.)
 
 
 <a id="scenariusze-i-właściciele"></a>
@@ -470,3 +472,54 @@ Ring", then "or Stay to finish after healing"; Stay is the console's only button
 
 While a payment has alternative dice, the dice pool's frame lights (`DiceDecision`) and the alternatives glow in the
 shared rhythm; the console and the decision window do not repeat them.
+
+## Pass also declines a reaction — UI-291 (2026-10-20)
+
+The owner's decision: the console's Pass also declines the player's own reaction window — a Guide's or character's
+skill (Gandalf the Grey's draw, the White Rider, Merry's or Pippin's separation, Gollum's reveal), a table card's or a
+hand card's response, the Ents' free Event. It lights with the shared ChoiceGlow whenever a click can use it (a legal
+Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Gandalf the Grey · Draw matching
+card"; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
+"Decline"/"Skip" buttons are gone, so the console keeps its hint ("… · or Pass to skip it."), and three object-less
+responses now fit the console. The opponent's window never enables it. Tests: `CardConsoleOptionsTests`,
+`ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
+`CardPack04NetworkTests`.
+
+## The status plaque lights only when its click opens something — UI-292 (2026-10-20)
+
+The owner's decision: the plaque ("YOUR ACTION", "YOUR DECISION · …") no longer glows, pulses or presses when its click
+would open nothing — a plain action whose choices are the dice and the map, for example. It lights and keeps its "Click
+to …" tooltip only when the click opens the decision's window, battle, Hunt, Fellowship or Effects panel, Reinforcements,
+the end of the game, or the notice's region, sovereign or hand (`DecisionNotice.Opens`, `DecisionHostNavigation.Hosted`);
+otherwise it is read-only (`ReadOnlyControl`). The headline and the arrival flash still announce the turn. Test:
+`TurnRibbonTests` (the action's plaque stays unlit and read-only).
+
+UI-291 follow-up (2026-10-20): a reaction the console hosts no longer shows the tray's generic "Select the highlighted
+choices, then confirm."; the console's hint says where the response is and that Pass skips it ("Click the Guide's
+glowing portrait in the Fellowship panel to use Draw matching card · or Pass to skip it.", otherwise "Use a glowing
+response, or Pass to skip …"). Test: `MultiUseDiceNetworkTests.OneDieClickExposesArmiesRecruitmentAndPolitics`
+(Gandalf the Grey's draw after an Event die: no Decline anywhere, Pass lit and named, the Fellowship tab lit).
+
+<a id="ui-297"></a>
+## The played card is recalled only in the console — UI-297 (2026-10-22)
+
+The owner's decision: the chip that recalls a played card or effect ("✓ Book of Mazarbul", a sovereign's choice, the
+figures a card committed) appears only in the console, left of the hint (`ConsoleStatus.Trail`, `console-trail`), and a
+second click on it closes the card it opened (`TurnConsoleInteraction.ToggleCard`; in a battle the card opens in its
+combat form). This is the default for every card and effect. No window, panel or tray repeats the chips
+(`DecisionTray` renders no `committed-choice`), so a decision whose only content was the trail no longer opens the
+decision window. The strip is rebuilt only when the trail changes, holds at most 45 % of the line, and its chips are
+shortened with an ellipsis (the tooltip keeps the full text). The tray's ⟵ (`decision-back`) is gone from reactions,
+where it did nothing; it stays where it steps back (an action's draft, an ArmyEvent, a die-and-result or region
+choice). Tests: `GuideDrawNetworkTests` (no ⟵ and no tray chip in Gandalf's draw; the console chip opens Book of Mazarbul
+and its second click closes it), `EffectTrailTests`, `NazgulFlightDraftTests`, `CardConsoleOptionsTests`,
+`CardNetworkTests`, `CardInteractionTests`, `ShadowStrategy03LayoutTests`, `KingsCards01NetworkTests`,
+`KingsCards04NetworkTests`, `LordsFinalCardsNetworkTests`.
+
+<a id="ui-298"></a>
+## Back and ✓ for the Fellowship panel — UI-298 (2026-10-22)
+
+The console's Back, otherwise enabled only while the tray waits on the board, is also enabled while the Fellowship panel
+holds a move, hide or entry left after a failed send, which the panel no longer offers an arrow for. While the panel
+holds an interrupted response, the console's ✓ glows and is its only Check result. Details:
+[FELLOWSHIP_UX](FELLOWSHIP_UX.md#ui-298).

@@ -8,6 +8,14 @@ namespace Wotr.EditorTests
 {
     public class EffectTrailTests
     {
+        // UI-297: the effect trail is recalled only in the turn console.
+        public static VisualElement Console(PlayerView view)
+        {
+            var status = new ConsoleStatus();
+            status.SetTrail(view, BoardPresentation.Load(), _ => { });
+            return status.Trail;
+        }
+
         [Test]
         public void CompactFiguresKeepTypesNationDetailsAndOriginalHistory()
         {
@@ -17,8 +25,7 @@ namespace Wotr.EditorTests
             Add(view, "e", "sauron", UnitKind.Elite, "source", "moria");
             Add(view, "n", "sauron", UnitKind.Nazgul, "source", "moria");
             var original = view.EffectTrail.ToArray();
-            var root = new VisualElement();
-            CardChoices.Trail(root, view, BoardPresentation.Load(), _ => { });
+            var root = Console(view);
             var button = root.Query<Button>().ToList().Single();
             Assert.That(button.text, Does.Contain("●2").And.Contain("◆1").And.Contain("N1").And.Contain("Moria"));
             Assert.That(button.tooltip, Does.Contain("1 × Sauron Regular").And.Contain("1 × Isengard Regular")
@@ -34,8 +41,7 @@ namespace Wotr.EditorTests
             Add(view, "r2", "sauron", UnitKind.Regular, "second", "moria");
             Add(view, "r3", "sauron", UnitKind.Regular, "first", "orthanc");
             view.EffectTrail.Add(new EffectTrailView { SourceId = "first", ChoiceId = "moria" });
-            var root = new VisualElement();
-            CardChoices.Trail(root, view, BoardPresentation.Load(), _ => { });
+            var root = Console(view);
             var buttons = root.Query<Button>().ToList();
             Assert.AreEqual(4, buttons.Count);
             Assert.IsNotNull(root.Q<Button>("committed-figures-first-moria"));
@@ -54,8 +60,7 @@ namespace Wotr.EditorTests
             if (hasLeader)
                 view.Units.Add(new UnitView { Id = id, Nation = "gondor", Kind = UnitKind.Leader, Location = "minas-tirith" });
             view.EffectTrail.Add(new EffectTrailView { SourceId = "kings.sh.strategy.26", ChoiceId = id, TargetId = "minas-tirith" });
-            var root = new VisualElement();
-            CardChoices.Trail(root, view, BoardPresentation.Load(), _ => { });
+            var root = Console(view);
             Assert.AreEqual("✓ Denethor → Minas Tirith", root.Query<Button>().ToList().Single().text);
         }
 

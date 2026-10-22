@@ -15,8 +15,11 @@ namespace Wotr.Client
         public const string Version = "mordor-track-1";
         public const int LastStep = 5;
         // Steps and gates keep this far from a settlement symbol, and steps this far from each other.
+        // UI-283: the step stones are twice as large as at first, so they keep twice as far from settlement symbols and
+        // from each other; the gates stay at their regions' edges.
         public const float SettlementClearance = 20;
-        public const float MinimumSpacing = 18;
+        public const float StepClearance = 40;
+        public const float MinimumSpacing = 40;
         private const float Tolerance = 4;
         private static readonly string[] EntranceRegions = { "morannon", "minas-morgul" };
 
@@ -100,10 +103,14 @@ namespace Wotr.Client
                 MapContourValidation.Require(Vector2.Distance(track.Step(step - 1), track.Step(step)) >= MinimumSpacing,
                     "Mordor steps overlap.");
             var anchors = geometry.Regions.Where(r => r.Anchor.Length == 2).Select(r => Point(r.Anchor)).ToList();
-            var marks = Enumerable.Range(0, LastStep + 1).Select(track.Step).Concat(track.Entrances.Select(e => e.Gate));
-            MapContourValidation.Require(marks.All(mark => anchors.All(anchor => Vector2.Distance(mark, anchor) >= SettlementClearance)),
-                "A Mordor step covers a settlement symbol.");
+            var steps = Enumerable.Range(0, LastStep + 1).Select(track.Step);
+            var gates = track.Entrances.Select(e => e.Gate);
+            MapContourValidation.Require(steps.All(step => Clear(step, anchors, StepClearance)) &&
+                gates.All(gate => Clear(gate, anchors, SettlementClearance)), "A Mordor step covers a settlement symbol.");
         }
+
+        private static bool Clear(Vector2 mark, IEnumerable<Vector2> anchors, float clearance) =>
+            anchors.All(anchor => Vector2.Distance(mark, anchor) >= clearance);
 
         // The path starts at step 0, ends at the Crack of Doom and passes every step in order.
         private static void RequireStepsOnPath(MordorTrackGeometry track)

@@ -71,7 +71,9 @@ namespace Wotr.PlayTests
                 Assert.AreEqual("hunt.guide", board.View.Decision.Window);
                 var revision = board.View.Revision;
                 LayoutTests.Save(room.Fp.Viewport, "ui52-hunt-aftermath-" + source + ".png");
-                await Click(room, board.Tray.Q<Button>("action-DeclineReaction"));
+                // UI-291: the console's Pass declines the Guide's window.
+                Assert.IsNull(board.Tray.Q<Button>("action-DeclineReaction"));
+                await Click(room, board.Console.Actions.Pass);
                 await room.At(revision + 1);
                 Assert.AreEqual(DecisionKind.HuntDamage, board.View.Decision.Kind);
                 if (source == "moria")

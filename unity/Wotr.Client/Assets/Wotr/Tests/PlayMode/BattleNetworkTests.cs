@@ -31,7 +31,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.CombatCard, room.Fp.Board.View.Decision.Kind);
                 Assert.IsNull(room.Sh.Board.View.Decision);
                 Assert.IsNull(room.Fp.Board.Tray.Q<Button>("confirm-decision"));
-                // UI-151: the Shadow may answer No card itself, so the hidden commitment is read from its first view.
+                // The Shadow sees the attacker's hidden commitment in the first view after it.
                 PlayerView hidden = null;
                 void Seen(PlayerView view)
                 {

@@ -285,6 +285,6 @@ namespace Wotr.PlayTests
         }
 
         private static Button Row(BoardScreen board, string id) => board.Characters.Root.Q<Button>("character-roster-" + id);
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

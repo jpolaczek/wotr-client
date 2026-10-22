@@ -38,10 +38,19 @@ namespace Wotr.PlayTests
                             }
                             if (mode == "book")
                             {
-                                MatchTestRoom.Click(client, "companion-base.character.gimli");
+                                // UI-294: the companion is chosen in its region's panel and moved by its destination's
+                                // click; the window lists none of the journey's controls.
+                                var gimli = view.Characters.Single(c => c.Id == "base.character.gimli");
+                                FellowshipGestures.Figure(client, gimli.Location, gimli.Id);
                                 for (var frame = 0; frame < 3; frame++)
                                     yield return null;
-                                MatchTestRoom.Click(client, "travel-stay");
+                                MapContourProbe.ClickRegion(client.Board.Map, "lossarnach");
+                                for (var frame = 0; frame < 3; frame++)
+                                    yield return null;
+                                foreach (var name in new[] { "companion-base.character.gimli", "travel-stay-all", "travel-stay" })
+                                    Assert.IsNull(client.Board.Root.Q<Button>(name), name);
+                                Assert.IsFalse(client.Board.DecisionWindow.IsOpen);
+                                Assert.IsTrue(client.Board.Map.PlannedJourneys.Regions.Contains("lossarnach"));
                             }
                             if (mode == "scouts")
                                 MatchTestRoom.Click(client, "effect-choice-scouts.shelter");

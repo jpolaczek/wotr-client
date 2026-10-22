@@ -345,3 +345,33 @@ buttons with the Guide line, and drawn tiles or rolled dice looked like buttons 
 While The Breaking of the Fellowship's tile asks for Companions, the Hunt panel shows its roster row (the one the
 forced Guide uses) with the candidates glowing; clicking a portrait selects or releases it, and the panel's
 confirmation sends the set. The decision tray no longer lists the Companions by name. See FELLOWSHIP_UX, UI-249.
+
+<a id="ui-285"></a>
+## Table cards answer in the response row — UI-285 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, "Axe and Bow"): a table card that answers
+in the Hunt — Axe and Bow, Mithril Coat and Sting, Horn of Gondor, Wizard's Staff, Flocks of Crebain — no longer falls
+to the generic choice list as a text rectangle whose button also pinned the full card with a disabled Play button.
+
+- `HuntCardResponses.Offered` lists the Reaction's legal `RespondEffect` choices whose source is a card on a player's
+  table (or a lasting effect's card); `HuntResponsesView` shows each as a card object in its own row under the Ring,
+  Guide and random-companion objects: a small card face, the card's name and the consequence. Legal objects glow with
+  the shared ChoiceGlow and pulse.
+- One click uses the card (UI-142): `HuntContextInteraction.CardResponse` sets the draft's reaction and sends it;
+  the console's Pass declines (UI-291). The tooltip names the cost ("Click to discard Axe and Bow · Reduce damage …").
+- `CardChoices` leaves these choices out of the tray and no Hunt reaction pins the card inspector; the card can still be
+  read in the Effects panel. A reaction whose source is not a table card (Nenya, a character's ability) stays in the tray.
+- Tests: `HuntLayoutTests` (RespondEffect), `CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients`,
+  `CardPack02NetworkTests.StaffPreventsAnUnseenTileAndAdvancesMordor`, `HuntRecoveryNetworkTests`,
+  `MordorNetworkTests.MithrilReplacesStopBeforeAdvancingAndSpendsItsCardOnce`, `Shadow01NetworkTests`,
+  `Shadow03NetworkTests`; `MatchTestRoom.ObjectChoice` finds the card object in the Hunt window.
+
+<a id="ui-288"></a>
+## Pictures on the responses — UI-288 (2026-10-19)
+
+The owner's decision after the object controls audit (finding 7): the response objects show pictures instead of the
+glyphs ○ ★ ?. The Ring shows the Ring with its drop of Corruption (`hunt/choice-corruption`), the Guide the current
+Guide's own figure in a gilt medallion (the version the Fellowship panel shows; it follows a change of Guide), the
+random casualty the Companions' stack (`hunt/choice-random`), and a table card's response (UI-285) a small parchment
+card with the symbol printed on the card's corner (`CardLibrary.Face`). The pictures are 28 points, 22 in a short
+window. Tests: `HuntAndEffectPicturesTests`, `HuntLayoutTests` (all four layouts).

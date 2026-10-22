@@ -40,6 +40,8 @@ namespace Wotr.Client
         {
             this.button = button;
             button.AddToClassList("illustrated-army");
+            // UI-301: the ChoiceGlow halo of an army a click may choose, behind the artwork (Armies.uss).
+            button.Add(Ignored("army-choice-glow"));
             Root.Add(Ignored("army-plinth"));
             // Every shadow goes first, so no shadow falls on the figure beside it.
             for (var i = 0; i < shadows.Length; i++)

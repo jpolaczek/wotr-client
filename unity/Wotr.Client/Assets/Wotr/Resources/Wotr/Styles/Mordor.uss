@@ -33,10 +33,10 @@
     left: 0;
     right: 0;
     top: 0;
-    bottom: 5px;
+    bottom: 10px;
     margin: 0;
     padding: 0;
-    font-size: 12px;
+    font-size: 22px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     color: rgb(58, 57, 52);
@@ -90,17 +90,21 @@
 .map .mordor-track-pulse .mordor-slab,
 .map .mordor-track-pulse .mordor-crack,
 .map .mordor-track-pulse .mordor-gate { scale: 1.3 1.3; }
-.map .fellowship-marker.fellowship-hide-target {
-    border-width: 2px;
-    border-color: rgb(144, 203, 172);
-}
-/* UI-236: the figure that declares its position glows like the other legal targets on the map. */
-.map .fellowship-marker.fellowship-declare-target {
-    border-width: 2px;
-    border-color: rgb(144, 203, 172);
+/* UI-236, UI-280, UI-282: the figure that declares its position, moves or hides wears the shared ChoiceGlow — a thick
+   gold rim on a warm plate that pulses in the 750 ms rhythm under .motion-enabled, still under Reduced motion — on its
+   region as on the Mordor track. */
+.map .fellowship-marker.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
     border-radius: 8px;
 }
-.map .fellowship-marker.fellowship-declare-target:hover { scale: 1.08 1.08; }
+.motion-enabled .map .fellowship-marker.choice-glow.choice-glow-pulse {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
+.map .fellowship-marker.choice-glow:hover { scale: 1.1 1.1; }
 
 
 /* UI-231: in the Fellowship panel the Mordor track is its own thing: a dark basalt band with an ember rim, on which

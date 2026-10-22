@@ -36,6 +36,10 @@
 .frontend .test-scenario-tab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 34px; min-height: 34px; margin: 0 6px 0 0;
     padding: 0 6px; font-size: 15px; white-space: nowrap; -unity-text-align: middle-center; }
 .frontend .test-scenario-tab:last-child { margin-right: 0; }
+/* UI-295: the search by name sits under the tabs; its × clears it. */
+.frontend .test-scenario-search-row { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 0 6px 0; }
+.frontend .test-scenario-list .test-scenario-search { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0 6px 0 0; }
+.frontend .test-scenario-none { margin: 10px 0; white-space: normal; color: rgb(190, 204, 200); }
 .frontend .test-scenario-group { margin: 10px 0 4px 0; font-size: 14px; -unity-font-style: bold; color: rgb(231, 209, 160); }
 .frontend .test-scenario { flex-direction: column; align-items: stretch; margin: 2px 0; padding: 6px 10px; }
 .frontend .test-scenario-title { -unity-font-style: bold; -unity-text-align: middle-left; }

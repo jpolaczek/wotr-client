@@ -404,7 +404,6 @@
 .tray .figure { height: 34px; min-height: 34px; }
 .tray .group-heading { height: 24px; min-height: 24px; }
 .tray.event-army-planning .action { min-height: 33px; height: 33px; }
-.tray.event-army-planning .figure-grid .figure-nation { flex-direction: row; align-items: center; max-width: none; }
 
 .resource-counts .unity-label { margin-right: 7px; font-size: 13px; }
 
@@ -451,15 +450,9 @@
 .card-inspector .action { min-height: 26px; height: 26px; font-size: 12px; margin: 0 0 0 4px; }
 .card-inspector .muted { margin-bottom: 4px; }
 .card-rules { white-space: normal; font-size: 14px; flex-shrink: 0; margin: 0; padding: 0; }
-.draft-card { border-left-width: 4px; border-left-color: rgb(241, 206, 119); }
 .effect-trail { flex-direction: row; flex-wrap: wrap; }
 .tray .committed-choice { font-size: 13px; height: 27px; min-height: 27px; background-color: rgb(43, 41, 38); }
 .tray .effect-companion { width: 62px; min-width: 62px; padding: 0; margin-left: 0; margin-right: 3px; font-size: 14px; }
-.tray .effect-unit { width: 33px; min-width: 33px; padding: 0; margin-right: 3px; }
-.effect-figure-tabs, .effect-figure-row { flex-direction: row; flex-wrap: wrap; }
-.effect-hit-controls { flex-shrink: 0; flex-wrap: nowrap; }
-.effect-figure-tabs .action { font-size: 13px; padding-left: 5px; padding-right: 5px; margin-right: 3px; }
-.effect-figure-tabs .contains-selection { border-bottom-color: #a2d3b0; border-bottom-width: 3px; }
 .card-planning .tray #confirm-decision { height: 33px; min-height: 33px; }
 .card-planning .tray .action, .event-loss-planning .tray .action, .loss-planning .tray .action { height: 33px; min-height: 33px; }
 .dice-panel .action { width: 32px; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 4px; }
@@ -520,14 +513,20 @@
 .hunt-panel .companion-token { width: 61px; min-width: 32px; flex-shrink: 1; height: 44px; min-height: 44px; flex-direction: column; justify-content: center; align-items: center; padding: 0; margin-right: 5px; }
 .hunt-panel .fellowship-members { flex-wrap: nowrap; }
 .hunt-response-objects { flex-direction: row; justify-content: center; margin-top: 4px; }
+/* UI-285: the table cards' responses, each a small parchment card with its name and what it does. */
+.hunt-card-responses { flex-direction: row; justify-content: center; margin-top: 4px; }
+/* UI-288: the card face carries the symbol printed on the card's corner, in ink. */
+.hunt-response-card { width: 21px; height: 28px; margin-right: 5px; justify-content: center; align-items: center; background-image: resource("Wotr/Art/UI/cards/parchment"); -unity-background-scale-mode: stretch-to-fill; border-width: 1px; border-color: rgb(160, 132, 82); border-radius: 2px; }
+.hunt-response-card > .action-symbol { position: relative; left: 0; top: 0; width: 15px; height: 15px; margin: 0; }
 .hunt-panel .hunt-response-object { height: 68px; min-height: 68px; min-width: 0; flex-grow: 1; flex-basis: 0; flex-direction: column; align-items: center; justify-content: center; padding: 2px; }
 .hunt-response-heading { flex-direction: row; align-items: center; justify-content: center; }
-.hunt-response-icon { width: 24px; height: 24px; margin-right: 4px; justify-content: center; align-items: center; }
-.hunt-response-object #hunt-response-symbol { margin: 0; padding: 0; font-size: 16px; }
-.hunt-guide-portrait { background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 12px; }
-.hunt-random-stack { margin-right: 6px; }
-.hunt-card-back { position: absolute; left: 4px; top: 1px; width: 17px; height: 21px; background-color: rgb(86, 82, 76); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; }
-.hunt-random-stack #hunt-response-symbol { width: 17px; height: 24px; font-size: 15px; background-color: rgb(51, 49, 45); border-width: 1px; border-color: rgb(160, 177, 181); border-radius: 2px; -unity-text-align: middle-center; }
+/* UI-288: pictures instead of glyphs: the Ring with its drop of Corruption, the Guide's figure in a gilt medallion,
+   the Companions' stack for a random casualty. */
+.hunt-response-icon { width: 28px; height: 28px; margin-right: 5px; justify-content: center; align-items: center; -unity-background-scale-mode: scale-to-fit; }
+.hunt-response-ring { background-image: resource("Wotr/Art/UI/hunt/choice-corruption"); }
+.hunt-response-random { background-image: resource("Wotr/Art/UI/hunt/choice-random"); }
+.hunt-guide-portrait { overflow: hidden; background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 14px; }
+.hunt-guide-portrait > .figure-art-image { position: absolute; left: 1px; right: 1px; top: 1px; bottom: 0; }
 .hunt-response-object #hunt-response-name { margin: 0; padding: 0; font-size: 13px; }
 .hunt-response-object #hunt-response-consequence { margin: 1px 0 0 0; padding: 0; font-size: 12px; white-space: pre; -unity-text-align: middle-center; }
 .hunt-panel #hunt-guide-order { margin: 1px 0; padding: 0; font-size: 12px; color: rgb(231, 209, 160); }
@@ -662,11 +661,6 @@
 .information-characters { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
 .information-characters .unity-label { width: 50%; height: 18px; min-height: 18px; margin: 0; }
 #inspected-region-state { height: 18px; min-height: 18px; }
-
-.event-army-plans { flex-direction: row; }
-.event-army-plan { flex-grow: 1; flex-basis: 0; min-width: 0; }
-.event-army-plan .event-army-tab { flex-grow: 1; flex-basis: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 3px; padding-right: 3px; }
-.event-army-plan .event-army-remove { width: 33px; min-width: 33px; padding: 0; }
 
 .event-recruit-nation { margin-right: 7px; align-items: center; }
 .event-recruit-nation > Label { font-size: 12px; }
@@ -884,8 +878,17 @@
 /* UI-185: a region's figures and portraits are large enough to read their artwork. */
 .region-hover .hover-figure { width: 42px; min-width: 42px; height: 46px; min-height: 46px; }
 .region-hover .hover-portrait { width: 46px; min-width: 46px; height: 46px; min-height: 46px; font-size: 13px; border-radius: 14px; }
-.eligible-figure { border-color: rgb(121, 193, 156); border-width: 2px; }
-.region-hover .selected { border-color: rgb(255, 215, 122); background-color: rgb(81, 71, 44); }
+/* UI-301: a figure or portrait a click may choose wears the shared ChoiceGlow — a thick gold rim on a warm plate that
+   RegionHoverPanel pulses in the 750 ms rhythm (still under Reduced motion); a chosen one shows its selection. */
+.region-hover .eligible-figure { border-color: rgb(255, 214, 112); border-width: 3px; background-color: rgba(120, 88, 24, 0.55); }
+.motion-enabled .region-hover .eligible-figure {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .region-hover.choice-glow-pulse .eligible-figure { border-color: rgba(255, 214, 112, 0.4); background-color: rgba(70, 52, 18, 0.3); }
+.region-hover .selected,
+.motion-enabled .region-hover.choice-glow-pulse .eligible-figure.selected { border-color: rgb(255, 215, 122); background-color: rgb(81, 71, 44); }
 .region-hover.compact-hover { padding: 6px; }
 .region-hover.compact-hover .action { height: 28px; min-height: 28px; }
 .region-hover.compact-hover .hover-figure, .region-hover.compact-hover .hover-portrait { height: 40px; min-height: 40px; }
@@ -1003,6 +1006,10 @@
 .component-actions { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; margin-left: 10px; margin-right: 10px; }
 .component-actions > Button { min-width: 33px; padding-left: 7px; padding-right: 7px; }
 .region-hover .component-actions > Button { width: auto; font-size: 13px; }
+/* UI-286: a character's ability is a small picture on the square gilt frame; it glows only while a click can use it. */
+.component-actions > .action.icon-button.ability-icon,
+.region-hover .component-actions > .action.icon-button.ability-icon { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 2px 4px 2px 0; }
+.component-actions > .ability-icon > .icon-glyph { max-width: 24px; max-height: 24px; }
 
 .recruit-palette .reserve-piece { width: 30px; min-width: 30px; margin-right: 1px; }
 
@@ -1393,7 +1400,14 @@
 .illustrated-figure.figure-free-peoples { border-bottom-color: rgb(141, 199, 218); border-bottom-width: 2px; }
 .illustrated-figure.figure-shadow { border-bottom-color: rgb(222, 140, 126); border-bottom-width: 2px; }
 .illustrated-figure.selected { border-width: 2px; border-color: rgb(241, 209, 122); background-color: rgba(199, 164, 70, .15); }
-.illustrated-figure.eligible-figure { border-width: 2px; border-color: rgb(121, 193, 156); }
+.region-hover .illustrated-figure.eligible-figure { border-width: 3px; border-color: rgb(255, 214, 112); background-color: rgba(120, 88, 24, 0.55); }
+.motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.eligible-figure { border-color: rgba(255, 214, 112, 0.4); background-color: rgba(70, 52, 18, 0.3); }
+.region-hover .illustrated-figure.eligible-figure.selected,
+.motion-enabled .region-hover.choice-glow-pulse .illustrated-figure.eligible-figure.selected {
+    border-width: 2px;
+    border-color: rgb(241, 209, 122);
+    background-color: rgba(199, 164, 70, .15);
+}
 .figure-garrison { border-bottom-width: 3px; border-bottom-color: rgb(188, 180, 153); border-radius: 4px; }
 .figure-motion-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 /* UI-185/UI-192: the flying figures are as large as the map's figures; MapFigureMotion places them by their feet. */

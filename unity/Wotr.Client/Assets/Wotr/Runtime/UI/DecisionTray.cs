@@ -49,7 +49,9 @@ namespace Wotr.Client
         public string ConfirmTitle => confirm?.tooltip ?? "";
         public string Problem { get; private set; } = "";
         private bool cardDecision;
-        private bool trailRecallsOnly;
+        // UI-298: in the Fellowship panel an interrupted response is checked with the console's glowing ✓ alone.
+        public bool RecoversInConsole { get; private set; }
+        public const string ConsoleCheckHint = "Click the glowing ✓ in the console to check its result.";
         public bool DirectArmy { get; set; }
         public bool DirectCard { get; set; }
         public bool DirectMuster { get; set; }
@@ -72,7 +74,6 @@ namespace Wotr.Client
         public void Render(PlayerView view, TurnDraft draft, bool busy, bool uncertain, string pendingProblem = "")
         {
             cardDecision = CardDecisions.Owns(view, draft);
-            trailRecallsOnly = cardDecision || CardConsoleOptions.Owns(view, draft) || WaitingOutsideHosts(view);
             root.EnableInClassList("event-army-planning", view.Decision?.Kind == DecisionKind.ArmyEvent);
             root.EnableInClassList("table-card-removal", draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardDenethor or CommandKind.DiscardLore or CommandKind.DiscardGates or CommandKind.DiscardWelcome);
             root.EnableInClassList("corruption-planning", view.Decision?.Kind == DecisionKind.CorruptionTile);
@@ -105,7 +106,7 @@ namespace Wotr.Client
                 confirm.tooltip = draft.Payload.Ids.Count == 0 ? "Keep this result without using optional rerolls" : "Roll only the selected failed dice";
             }
             if (uncertain && root.Q<Label>("pending-command-message") is { } message)
-                message.text = pendingProblem.Length > 0 ? pendingProblem : "The response was interrupted. Recover its result to continue.";
+                message.text = PendingMessage(pendingProblem);
             if (status != null)
             {
                 status.text = busy ? "Waiting for the server…" : draft.Kind == CommandKind.UseRing ? RingChoice.Hint(draft)
@@ -113,11 +114,14 @@ namespace Wotr.Client
                     : draft.Kind == CommandKind.DiscardCards
                     ? "Click a card, then click it again to discard it face down."
                     : NazgulFlightDraft.Active(view, draft) ? NazgulFlightDraft.Hint(view, draft)
+                    : CompanionJourneyDraft.Active(view, draft) ? CompanionJourneyDraft.Hint(view, draft)
                     : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)
                     : CardArmyEvent.Active(view, draft) ? CardArmyEvent.Hint(view, draft)
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
                     : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
+                    // UI-291: a reaction the console hosts is guided by the console's own hint (TurnConsoleState).
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
+                    view.Decision?.Kind == DecisionKind.Reaction && CardConsoleOptions.Owns(view, draft) ||
                     ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
                     SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Owns(view)
                     ? "" : DecisionObjects.Confirm(view, draft);
@@ -134,10 +138,13 @@ namespace Wotr.Client
             confirm = null;
             status = null;
             battlePreview = null;
+            RecoversInConsole = uncertain && FellowshipHost;
             if (uncertain)
             {
                 root.Add(BoardScreen.Title("Confirming the last action"));
                 root.Add(new Label { name = "pending-command-message" });
+                if (RecoversInConsole)
+                    return;
                 confirm = BoardScreen.Button("Check result", () => Confirm?.Invoke());
                 root.Add(confirm);
                 return;
@@ -193,7 +200,8 @@ namespace Wotr.Client
                 PlayerSide(footer, view);
             }
             if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
-                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && (view.Decision.Kind is DecisionKind.Action or DecisionKind.Reaction or DecisionKind.ArmyEvent ||
+                !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
+                (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
             {
                 var back = IconButton.Create("back", "Back", () => Cancel?.Invoke());
@@ -202,14 +210,7 @@ namespace Wotr.Client
                     ? root.Q<Button>("travel-stay")?.parent : null;
                 (route ?? footer).Add(back);
             }
-            if (view.Decision.Kind == DecisionKind.Reaction && view.Options.Any(o => o.Kind == CommandKind.DeclineReaction && o.Enabled) &&
-                !CardConsoleOptions.Owns(view, draft))
-            {
-                var decline = BoardScreen.Button(ContextualHunt ? "Skip" : "Decline", () => ActionChosen?.Invoke(CommandKind.DeclineReaction));
-                decline.name = "action-DeclineReaction";
-                decline.tooltip = "Continue without using a reaction in this window";
-                footer.Add(decline);
-            }
+            // UI-291: a reaction window is declined with the console's Pass, not a Decline or Skip button here.
             if (view.Decision.Kind == DecisionKind.ArmyEvent && !CardArmyEvent.Active(view, draft))
                 foreach (var alternative in view.Options.Where(o => o.Kind != draft.Kind))
                 {
@@ -339,7 +340,6 @@ namespace Wotr.Client
                     (view.Decision == null ? " · Waiting for opponent" : " · " +
                         (view.Decision.Presentation == "VoluntaryLosses" ? "Choose a sacrifice" : view.Decision.Presentation == "NazgulLeadership" ? NazgulLeadershipSummary.Title(view) : BattleTitle(view.Decision.Kind)));
             }
-            CardChoices.Trail(root, view, data, id => CardInspected?.Invoke(id));
         }
 
         // UI-130/UI-131: reopens the Reinforcements panel, where card and ability recruitment take place.
@@ -382,6 +382,10 @@ namespace Wotr.Client
             {
                 // UI-212: the flights are chosen on the map; the console confirms them.
             }
+            else if (CompanionJourneyDraft.Active(view, draft))
+            {
+                // UI-294: the companions move on the map; the console's ✓ finishes the journey.
+            }
             else if (CardFigureDraft.Active(view, draft))
             {
                 // UI-215: the figures are chosen in the region panel; the console confirms them.
@@ -401,31 +405,14 @@ namespace Wotr.Client
             }
             else if (CardDraft.UsesCards(draft.Kind))
             {
-                var choices = new CardChoices(root, footer, view, draft, action => DraftEdited?.Invoke(action), data, id => CardInspected?.Invoke(id), cards,
-                    ReinforcementsButton);
+                var choices = new CardChoices(root, view, draft, action => DraftEdited?.Invoke(action), data, cards, ReinforcementsButton);
                 refreshChoices.Add(choices.Refresh);
             }
             else if (BoardDraft.UsesBoard(draft.Kind))
             {
-                if (draft.Kind == CommandKind.AttackArmy)
-                {
-                    var choices = new AttackChoices(root, view, draft, action => DraftEdited?.Invoke(action), data);
-                    refreshChoices.Add(choices.Refresh);
-                }
-                else if (draft.Kind == CommandKind.MoveArmies)
-                {
-                    if (option.ArmyEvent?.RouteMovement == true)
-                    {
-                        var choices = new EventArmyChoices(root, view, draft, action => DraftEdited?.Invoke(action), data);
-                        refreshChoices.Add(choices.Refresh);
-                    }
-                    else
-                    {
-                        var choices = new ArmyChoices(root, view, draft, action => DraftEdited?.Invoke(action), data);
-                        refreshChoices.Add(choices.Refresh);
-                    }
-                }
-                else if (draft.Kind == CommandKind.RemoveExcess)
+                // UI-289: armies move and attack on the map and in the region panel (DirectArmy, CardArmyEvent); the
+                // tray keeps no figure lists for them.
+                if (draft.Kind == CommandKind.RemoveExcess)
                 {
                     var choices = new ExcessChoices(root, view, draft, action => DraftEdited?.Invoke(action));
                     refreshChoices.Add(choices.Refresh);
@@ -437,14 +424,20 @@ namespace Wotr.Client
                 Choices(view, draft, option);
         }
 
-        // In a card decision the console confirms (UI-211). In a decision the console hosts, and while the other side
-        // decides outside a battle and the Hunt, a committed step of the effect trail only recalls what the card did
-        // (UI-212, UI-214, UI-164 CC09). Neither is a choice of the window.
+        // In a card decision the console confirms (UI-211), so its Confirm is no choice of the window. UI-297: the
+        // effect trail is recalled only in the console, never in the tray.
         private bool Offered(Button button) => button.name is not ("decision-back" or "open-reinforcements") &&
-            !(cardDecision && button == confirm) && !(trailRecallsOnly && button.ClassListContains("committed-choice")) && Shown(button);
+            !(cardDecision && button == confirm) && Shown(button);
 
-        private static bool WaitingOutsideHosts(PlayerView view) =>
-            view.Decision == null && view.Battle == null && view.Hunt == null && view.EventLoss == null;
+        // The tray sits in the Fellowship panel (FellowshipActions.UsesPanel), not in the Hunt window.
+        private bool FellowshipHost => ContextualFellowship && !ContextualHunt;
+
+        private string PendingMessage(string problem)
+        {
+            if (!RecoversInConsole)
+                return problem.Length > 0 ? problem : "The response was interrupted. Recover its result to continue.";
+            return (problem.Length > 0 ? problem + " · " : "The response was interrupted. ") + ConsoleCheckHint;
+        }
 
         private bool Shown(VisualElement element)
         {
@@ -486,11 +479,12 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row();
             root.Add(row);
-            // UI-247: reactions used on their portraits in the Battle window need no Respond step here.
-            foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind != CommandKind.PlayEvent &&
+            // UI-247: reactions used on their portraits in the Battle window need no Respond step here. UI-291: the
+            // console's Pass declines a reaction window.
+            foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind is not (CommandKind.PlayEvent or CommandKind.DeclineReaction) &&
                 !(o.Kind == CommandKind.RespondEffect && BattleReactions.AllOnPortraits(view))))
             {
-                var button = BoardScreen.Button(ContextualHunt && option.Kind == CommandKind.DeclineReaction ? "Skip" : Label(option.Kind), () => ActionChosen?.Invoke(option.Kind));
+                var button = BoardScreen.Button(Label(option.Kind), () => ActionChosen?.Invoke(option.Kind));
                 button.SetEnabled(option.Enabled);
                 button.name = "action-" + option.Kind;
                 button.userData = new DraftToken(DraftObject.Action, action: option.Kind);

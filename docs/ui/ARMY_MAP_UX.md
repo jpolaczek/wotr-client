@@ -82,7 +82,7 @@ The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 
 | Status | Class | Appearance |
 | --- | --- | --- |
 | Hover | `:hover` | base game Lightening |
-| Legal Source | `eligible-army` | green glow under base game |
+| Legal Source | `eligible-army` | ChoiceGlow halo behind the marker (UI-301): gold rim on a warm plate, pulsing |
 | Chosen Army | `selected-force` | Gold border and lift 2 |
 | Capacity owner | `ability-owner` | gold border without lifting |
 | Pressing | `pressed` | principle UI-114 |
@@ -346,6 +346,8 @@ Army traffic path inventory (2026-10-13):
 | King's ruler's token paying for the action army | `RulerTokenId` in the sketch, `ArmyChoices` | tray, whole plan and one approval | `ActionStepRules.Matches` takes another step without a token and with paid dice; the plan of the two armies must hit one command |
 | card with route march (`ArmyEvent.RouteMovement`, e.g. Shadow marches) | `EventArmyChoices` | tray, whole plan and one approval | Several armies with a step limit are planned together (`SeparateRoutes`, `MaximumSteps`) |
 | card with rescue (`ArmyEventOrder.ReliefAttack`) | `AttackChoices` | tray | The entrance and attack form one plan |
+
+UI-289 (2026-10-19): the three tray paths above are gone. The server no longer lets a ruler token pay for armies (`KingsRulerTokens`), and every army event, route marches and relief attacks included, moves on the map and in the region panel (`CardArmyEvent`, UI-216), so `ArmyChoices`, `EventArmyChoices`, `EventArmyPlans` and `AttackChoices` were removed.
 
 The step-step movement that would still go through the tray is gone, so nothing moved. In the tray paths, the tag click continues to mark the entire army (`BoardDraft.SelectRegion`) as on the map. The transfer of the ruler's token to the map requires a change of server (step sequence without dice) and does not belong to UI-128.
 
@@ -634,3 +636,22 @@ The user's application from 2026-10-16: figure and the units in the panels are t
   under figure. The frame and filling appear only for the state: selected (gold), legal target
   (green), loss selected in battle (gold).
 - The character medallions in the battle window remain because it is designed to frame the portrait.
+
+<a id="ui-301"></a>
+## Choosable units glow like the tabs and portraits — UI-301 (2026-10-22)
+
+The owner's decision: the highlight of units a click may choose was visible but its own green; it now reads like the
+usable tabs and the Fellowship's portraits — the shared ChoiceGlow, a thick gold rim (`rgb(255, 214, 112)`, 3 px) on a
+warm plate, pulsing in the 750 ms rhythm under Motion and bright and still under Reduced motion.
+
+- **Armies on the map** (`eligible-army`): a halo behind the marker (`army-choice-glow`, 5 px larger than it, rounded
+  to the token or the base), so the plinth and figures keep their pictures and size; the halo also swells a little
+  with the pulse, which `MapCanvas` runs while any army is choosable. The `-eligible` plinth pictures are no longer
+  used. A chosen, armed or acting army shows its selection instead of the halo.
+- **Figures and portraits in the region panel** (`eligible-figure`): the gold rim and plate instead of the thin green
+  border, pulsed by `RegionHoverPanel`; a selected figure shows its selection.
+- **Reserve tokens** (`eligible-token`): the gold rim and plate over the slot (`reserve-choice-glow`), pulsed by
+  `ReinforcementRowView`, instead of the green tint.
+
+Tests: `MapArmyArtworkTests` (every state's plinth picture, and the halo only on a choosable army, larger than the
+marker), `MapVisibilityTests` (the panel figure's gold rim), `ShadowStrategy04NetworkTests` (the token's rim).

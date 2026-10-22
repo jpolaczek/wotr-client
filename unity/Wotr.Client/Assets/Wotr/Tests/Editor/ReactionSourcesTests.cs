@@ -8,7 +8,8 @@ using Wotr.Fixtures;
 namespace Wotr.EditorTests
 {
     // UI-247: a character's reaction is used at its source — the White Rider on Gandalf the White's portrait in the Battle
-    // window, Gandalf the Grey's draw on the Guide's portrait in the Fellowship panel — and Decline stays a button.
+    // window, Gandalf the Grey's draw on the Guide's portrait in the Fellowship panel — and the console's Pass declines
+    // (UI-291).
     public sealed class ReactionSourcesTests
     {
         [Test]
@@ -47,7 +48,7 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void GandalfTheGreysDrawIsUsedOnTheGuidesPortraitAndDeclineStaysInTheConsole()
+        public void GandalfTheGreysDrawIsUsedOnTheGuidesPortraitAndPassSkipsIt()
         {
             var view = new PlayerView
             {
@@ -77,9 +78,12 @@ namespace Wotr.EditorTests
             StringAssert.StartsWith("Click to use Draw matching card", gandalf.tooltip);
             Assert.IsTrue(roster.Choosing, "The panel's plaque invites a look.");
 
-            CollectionAssert.AreEqual(new[] { "decline" }, CardConsoleOptions.For(view, new TurnDraft()).Select(o => o.Id).ToArray(),
-                "The console keeps only Decline.");
-            StringAssert.StartsWith("Click the Guide's glowing portrait", TurnConsoleState.For(view, new TurnDraft(), context, id => id).Guidance);
+            // UI-291: the console keeps its hint; its Pass skips the draw and names it.
+            Assert.IsEmpty(CardConsoleOptions.For(view, new TurnDraft()), "No option hides the console's hint.");
+            var guidance = TurnConsoleState.For(view, new TurnDraft(), context, id => id).Guidance;
+            StringAssert.StartsWith("Click the Guide's glowing portrait", guidance);
+            StringAssert.EndsWith("or Pass to skip it.", guidance);
+            Assert.AreEqual("Pass · Skip Gandalf the Grey · Draw matching card", ReactionSkip.Tooltip(view));
             var draft = new TurnDraft();
             Assert.IsTrue(FellowshipActions.Portrait(view, draft, context, "base.character.gandalf-grey"));
             Assert.AreEqual(CommandKind.RespondEffect, draft.Kind);

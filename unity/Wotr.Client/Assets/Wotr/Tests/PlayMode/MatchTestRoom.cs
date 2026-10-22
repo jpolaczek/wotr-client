@@ -174,6 +174,9 @@ namespace Wotr.PlayTests
             }
             CardNetworkTests.Click(button);
         }
+        // UI-285: the response object of a table card in the Hunt window's response row.
+        internal static Button HuntCard(MountedMatchClient client, string id) => client.Board.Hunt.Root.Q<Button>("effect-choice-" + id);
+
         // UI-245/UI-246/UI-249: a card's choice made on its object — a battle die, portrait, figure stack, Leadership
         // or hit pip, a Companion on the Hunt panel's roster, or There Is Another Way's track and Ring.
         internal static VisualElement ObjectChoice(MountedMatchClient client, string name)
@@ -183,6 +186,12 @@ namespace Wotr.PlayTests
             var id = name.Substring("effect-choice-".Length);
             var view = client.Board.View;
             var tray = client.Board.Tray;
+            // UI-285: a table card's Hunt response is a card object in the Hunt window's response row.
+            if (HuntCardResponses.InRow(view, id))
+            {
+                client.Board.Hunt.Open();
+                return HuntCard(client, id);
+            }
             if (view.Battle != null)
             {
                 // UI-246: a Leadership point is clicked on the figure that has it (its choice's source).
@@ -206,8 +215,12 @@ namespace Wotr.PlayTests
                 client.Board.Fellowship.Open();
                 return client.Board.Fellowship.Root.Q<Button>("fellowship-progress");
             }
+            // UI-293: There Is Another Way's Hide is the Fellowship's marker on its track.
             if (id == FellowshipCardActions.Hide)
-                return client.Board.Fellowship.IsOpen ? client.Board.Fellowship.PanelRing : client.Board.Fellowship.Ring;
+            {
+                client.Board.Fellowship.Open();
+                return client.Board.Fellowship.HideMarker;
+            }
             return null;
         }
 
@@ -216,8 +229,12 @@ namespace Wotr.PlayTests
             (VisualElement)TrayOrConsole(client, name) ?? ObjectChoice(client, name);
 
         // UI-214: a card's object-less options and a reaction's responses are buttons in the console, named as in the tray.
+        // UI-291: a reaction window is declined with the console's Pass.
         internal static Button TrayOrConsole(MountedMatchClient client, string name) =>
-            client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);
+            name == DeclineName ? client.Board.Console.Actions.Pass
+                : client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);
+
+        internal const string DeclineName = "action-DeclineReaction";
 
         // UI-215: a card's figure choice (and excess outside a battle) is made in the open region panel.
         internal static Button PanelFigure(MountedMatchClient client, string name)
@@ -374,12 +391,12 @@ namespace Wotr.PlayTests
             await At(revision + 1);
         }
 
-        // UI-151: without a legal Combat card the client answers No card itself; with one the player clicks it.
+        // UI-279: the player clicks No card for an own Combat choice, even without a legal card (UI-151 sent it by itself).
         public async Task NoCard(MountedMatchClient client)
         {
+            await Settle();
             var view = client.Board.View;
-            var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
-            if (view.Decision?.Kind == DecisionKind.CombatCard && view.DecisionOwner == view.You && option?.EligibleIds.Count > 0)
+            if (view.Decision?.Kind == DecisionKind.CombatCard && view.DecisionOwner == view.You)
             {
                 await Direct(client, "battle-no-card");
                 return;

@@ -7,24 +7,24 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 
 | Kind | Count |
 | --- | --- |
-| icon | 58 |
-| text | 107 |
-| art | 61 |
+| icon | 57 |
+| text | 98 |
+| art | 59 |
 | glyph | 1 |
 
 | File | Line | Kind | Label or icon |
 | --- | --- | --- | --- |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Application/ClientBootstrap.cs` | 88 | text | Quit |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 327 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 542 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapFellowshipMarker.cs` | 21 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 333 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 550 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapFellowshipMarker.cs` | 22 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 19 | icon | help |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 29 | icon | political |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapPlannedRecruits.cs` | 71 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapPlannedRecruits.cs` | 79 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 39 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 137 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 149 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapPlannedRecruits.cs` | 75 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapPlannedRecruits.cs` | 83 | icon | close |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 40 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 138 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 150 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionLogList.cs` | 139 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionLogList.cs` | 148 | icon | expand |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionLogPanel.cs` | 55 | text | Log |
@@ -42,14 +42,10 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionResultView.cs` | 26 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/ActionResultView.cs` | 31 | text | Full record |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Activity/BattleArchiveSummary.cs` | 22 | text | View battle rounds |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/ArmyChoices.cs` | 19 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/ArmyChoices.cs` | 22 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/ArmyChoices.cs` | 56 | text | face == DieFace.Army ? "Army · up to two moves" : "Character · one led army" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/AttackChoices.cs` | 35 | text | face == DieFace.Army ? "Army attack" : "Led attack" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoicePip.cs` | 15 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 24 | text | Keep all |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 82 | icon | select-all |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 116 | text | title |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 126 | text | title |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleCombatHand.cs` | 46 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleCombatHand.cs` | 63 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleContext.cs` | 234 | text | label + (force.CardCancelled ? " · Cancelled" : "") |
@@ -65,8 +61,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardInformation.cs` | 25 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs` | 457 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs` | 512 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 70 | text | CardLibrary.Title(card.CardId) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 308 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 238 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardCostPicker.cs` | 30 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs` | 55 | icon | pin |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs` | 59 | icon | close |
@@ -75,9 +70,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CorruptionInspectionChoices.cs` | 26 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/DeckView.cs` | 19 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectEntry.cs` | 21 | text | source.Title |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectEntry.cs` | 27 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectFigurePicker.cs` | 30 | text | FigureGrid.Name(key) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectFigurePicker.cs` | 53 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectEntry.cs` | 29 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectSourceDetails.cs` | 104 | text | ⌖ … |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectTrailChoices.cs` | 63 | text | ✓ … |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/EffectsScopeBadges.cs` | 47 | art | "" |
@@ -113,29 +106,24 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Chat/GameChatPanel.cs` | 23 | icon | chat |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleRings.cs` | 16 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleRings.cs` | 29 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 35 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 107 | text | option.Label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 40 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 130 | text | option.Label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionNotice.cs` | 21 | text | ◎ Your decision |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 141 | text | Check result |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 199 | icon | back |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 208 | text | ContextualHunt ? "Skip" : "Decline" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 216 | text | Label(alternative.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 225 | text | Label(alternative.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 239 | icon | confirm |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 240 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 148 | text | Check result |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 207 | icon | back |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 217 | text | Label(alternative.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 226 | text | Label(alternative.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 240 | icon | confirm |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 241 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 348 | icon | reinforcements |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 493 | text | ContextualHunt && option.Kind == CommandKind.DeclineReaction ? "Skip" : Label(option.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 558 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 487 | text | Label(option.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 552 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 36 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 52 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyChoices.cs` | 28 | text | Reset route |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyPlans.cs` | 22 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyPlans.cs` | 26 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/EventArmyPlans.cs` | 39 | text | Add army |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 133 | text | dice.Count.ToString() |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 151 | text | (side == Side.FreePeoples ? "♛ " : "◈ ") + name.Substring(0 |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 163 | text | (token.Spent ? "×" : "") + |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ComponentActionView.cs` | 35 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ComponentActionView.cs` | 65 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/CouncilChoices.cs` | 51 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ExpansionChoices.cs` | 118 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ResourcePanel.cs` | 24 | text | Dice & tokens |
@@ -143,14 +131,13 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/SovereignInspector.cs` | 38 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/SovereignInspector.cs` | 43 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/SovereignPanel.cs` | 91 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipChoices.cs` | 176 | text | label |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipControls.cs` | 36 | text | text |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipPanel.cs` | 54 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipPanel.cs` | 59 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipRingControl.cs` | 20 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipChoices.cs` | 205 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipControls.cs` | 37 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipPanel.cs` | 57 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipPanel.cs` | 62 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipRoster.cs` | 36 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipStatus.cs` | 53 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipTrackRow.cs` | 38 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipStatus.cs` | 47 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Fellowship/FellowshipTrackRow.cs` | 97 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 39 | text | Name(group.Key) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 53 | text | All / none |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/FigureGrid.cs` | 73 | text | (required ? "◇ " : "") + piece.Label |
@@ -164,9 +151,10 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntPanel.cs` | 100 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntReportStrip.cs` | 24 | icon | back |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntReportStrip.cs` | 27 | icon | next |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntResponsesView.cs` | 21 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntResponsesView.cs` | 30 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntResponsesView.cs` | 73 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Hunt/HuntTileView.cs` | 11 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/IconButton.cs` | 21 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/IconButton.cs` | 49 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/InterfaceSettingsPanel.cs` | 34 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/InterfaceSettingsPanel.cs` | 73 | text | Reset window positions |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/InterfaceSettingsPanel.cs` | 87 | text | Settings |
@@ -177,7 +165,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Menu/ConfirmationDialog.cs` | 35 | text | Cancel |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Menu/GameDeletedNotice.cs` | 29 | text | Main menu |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/PlannedReinforcementsView.cs` | 50 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementRowView.cs` | 94 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementRowView.cs` | 101 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementsPanel.cs` | 45 | text | Reserve |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Observing/ViewingBar.cs` | 47 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 26 | art | (new Button) |
@@ -187,9 +175,9 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 88 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 39 | text | Politics |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 51 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 136 | text | ◇ … |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 193 | icon | select-all |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 203 | text | symbol |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 139 | text | ◇ … |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 196 | icon | select-all |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 206 | text | symbol |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionInformation.cs` | 27 | text | ForceName(force.Side |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionInformation.cs` | 34 | text | Characters |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Replays/ReplayBar.cs` | 31 | art | (new Button) |
@@ -204,9 +192,8 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/HostGameForm.cs` | 94 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/HostGameForm.cs` | 114 | text | Back |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/HostGameForm.cs` | 120 | text | Create game |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 87 | text | Send |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 91 | art | "" |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 103 | text | Send challenge |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 101 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/LobbyPanel.cs` | 116 | text | Send challenge |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 135 | icon | refresh |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 210 | text | Join |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/MainMenuScreen.cs` | 215 | text | Observe |
@@ -224,9 +211,10 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 168 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Rooms/WaitingRoomScreen.cs` | 363 | glyph | × |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/SoundSettingsSection.cs` | 33 | text | Test sound |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 28 | icon | back |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 65 | text | tab |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 87 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 32 | icon | back |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 45 | icon | close |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 93 | text | tab |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestScenarioList.cs` | 122 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Testing/TestSessionBar.cs` | 45 | text | text |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 40 | text | Restart and update |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Updates/UpdateRequiredOverlay.cs` | 42 | text | Retry |

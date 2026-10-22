@@ -30,7 +30,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(2, board.View.Fellowship.MordorStep);
             AssertNoRoll(room, 0);
             room.Boundary.HoldNextCommand = true;
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("effect-choice-card.mithril-replace"));
+            // UI-285: Mithril is a card object in the Hunt window's response row.
+            PointerGestureEvents.ClickAt(board.Hunt.Root.Q<Button>("effect-choice-card.mithril-replace"));
             await room.Until(() => room.Boundary.CommandHeld);
             await room.At(2);
             Assert.AreEqual("base.hunt.standard.1.0.1", board.View.Hunt.TileId);
@@ -76,7 +77,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(Side.Shadow, board.View.Dice.Single(d => d.Id == cost).Owner);
                 AssertNoRoll(room, 0);
                 Assert.AreEqual("base.sh.character.05", board.View.Hunt.SourceId);
-                PointerGestureEvents.ClickAt(board.Tray.Q<Button>("action-DeclineReaction"));
+                // UI-291: the console's Pass declines the window.
+                PointerGestureEvents.ClickAt(board.Console.Actions.Pass);
                 await room.At(2);
                 Assert.IsNull(board.View.Hunt);
                 Assert.AreEqual(4, board.View.Fellowship.Corruption);
@@ -373,6 +375,6 @@ namespace Wotr.PlayTests
             await room.At(revision + 1);
         }
 
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

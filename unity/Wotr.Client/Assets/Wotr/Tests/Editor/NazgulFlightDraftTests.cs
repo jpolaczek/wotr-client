@@ -109,7 +109,8 @@ namespace Wotr.EditorTests
             var root = new VisualElement();
             var tray = new DecisionTray(root);
             tray.Render(view, draft, false, false);
-            Assert.IsNotNull(root.Q(className: "committed-choice"), "The trail recalls the played card.");
+            Assert.IsNull(root.Q(className: "committed-choice"), "UI-297: the trail is recalled in the console, not the tray.");
+            Assert.IsNotNull(EffectTrailTests.Console(view).Q(className: "committed-choice"), "The trail recalls the played card.");
             Assert.IsFalse(tray.HasChoices, "The flights are chosen on the map and the trail is no choice: no window.");
             Assert.IsNull(root.Q<Button>("new-companion-group"));
         }

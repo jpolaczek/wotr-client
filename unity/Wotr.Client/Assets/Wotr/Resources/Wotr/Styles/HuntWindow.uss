@@ -64,10 +64,10 @@
 #board-screen.short-viewport .hunt-window .hunt-report-strip { margin: 1px 0; }
 #board-screen.short-viewport .hunt-window .hunt-tile-card { height: 44px; min-height: 44px; }
 #board-screen.short-viewport .hunt-window .hunt-response-object { height: 56px; min-height: 56px; }
-/* UI-184: in the 56-point response the symbol, the name and two lines of consequence fit without squeezing the name. */
-#board-screen.short-viewport .hunt-window .hunt-response-icon { width: 20px; height: 20px; }
-#board-screen.short-viewport .hunt-window .hunt-response-object #hunt-response-symbol { font-size: 14px; }
+/* UI-184: in the 56-point response the picture (UI-288), the name and two lines of consequence fit without squeezing the name. */
+#board-screen.short-viewport .hunt-window .hunt-response-icon { width: 22px; height: 22px; }
+#board-screen.short-viewport .hunt-window .hunt-response-card { width: 17px; height: 22px; }
+#board-screen.short-viewport .hunt-window .hunt-response-card > .action-symbol { width: 12px; height: 12px; }
 #board-screen.short-viewport .hunt-window .hunt-response-heading { flex-shrink: 0; }
 #board-screen.short-viewport .hunt-window .hunt-response-object #hunt-response-consequence { font-size: 11px; }
-#board-screen.short-viewport .hunt-window .hunt-random-stack #hunt-response-symbol { width: 15px; height: 20px; font-size: 13px; }
 #board-screen.short-viewport .hunt-window .hunt-roll-die { height: 46px; min-height: 46px; }

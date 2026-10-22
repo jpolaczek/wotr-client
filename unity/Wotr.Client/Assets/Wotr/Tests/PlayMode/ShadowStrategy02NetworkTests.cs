@@ -191,8 +191,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.BattleRetreat, room.Fp.Board.View.Decision.Kind);
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("action-StopBattle"));
                 await room.Direct(room.Fp, "action-HoldBattle");
-                // QUAL-19: another round is what this test guards. Without a legal Combat card each side's round-2 card
-                // choice is sent as No card at once (UI-151), so the decision itself may already be past.
+                // QUAL-19: another round is what this test guards; each side's round-2 card choice waits for its click
+                // (UI-279).
                 Assert.AreEqual(2, room.Sh.Board.View.Battle.Round);
                 Assert.AreEqual(2, room.Fp.Board.View.Battle.Round);
             }
