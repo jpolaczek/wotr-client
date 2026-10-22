@@ -10,6 +10,11 @@ User application from 2026-10-14:
 
 and the note: "Let's add the game end and the victory screen to this plan."
 
+> **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
+> the played public card and move the camera without a click, before the resulting decision opens, with one
+> transient Skip target. This limited exception and everything it supersedes are specified in
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force.
+
 The decisions of the user from this conversation:
 
 1. **action opponent: just a stack of flags**, without a toast being made. card opened from the flag

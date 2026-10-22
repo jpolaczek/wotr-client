@@ -237,6 +237,11 @@ All eight combinations and required variants use the same language. Council show
 <a id="u11--powiadomienia-i-powrót"></a>
 ## U11 — notifications and return
 
+> **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
+> the played public card and move the camera without a click, before the resulting decision opens, with one
+> transient Skip target. This limited exception and everything it supersedes are specified in
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force.
+
 The incoming decision shows the notification in the application and backlights the location. Only a click of the notifications moves the camera to the location and opens the panel, e.g. the battle region. No automatic view acquisition. The information can be read during waiting/offline; execution requires a current decision.
 
 Reconct restores the current state and the sequence started from the server. Unsent local selection retains legal elements without changing the cost. Timeout recovers the same commandId/receipt. Ongoing upload and revision changes do not allow you to double click on the next decision. We do not force the animation to be played.

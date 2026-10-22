@@ -27,6 +27,11 @@ The two complementary panels have a common upper edge and lie side by side withi
 <a id="figury-i-animacja"></a>
 ## figure and animation
 
+> **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
+> the played public card and move the camera without a click, before the resulting decision opens, with one
+> transient Skip target. This limited exception and everything it supersedes are specified in
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force.
+
 Simple rasters have a clear background, a recognizable type figure, a separate page designation and a replaceable resource directory. The stack on the map uses several silhouettes and a discrete number; in the composition we choose specific ID. base game garrison differs from the field army. We do not change the geometry of the hit-test depending on the details of the illustration.
 
 The traffic after the server confirmation takes about 0,65–1,05 p. figure or a compact group clearly moves from a known source to a target. Animation is only a presentation of subsequent public projections: without RNG , sending commands or queue blocking next choice. We do not add the supposed intermediate fields. Hidden progress Fellowship the first view, the reconnet and the revision gap show the current score without replay. Reduced motion skips the move and leaves a short accent. After animation, the actual target stack remains visible also at the distance, until the next projection or reset connection. This result indication does not open the preview, does not change the selection and does not show the secret route. UI-95 another projection that leaves flying figure for their purpose (e.g. next step turn right after the declaration Fellowship ), does not interrupt the flight; this new move figure replaces it and her disappearance ends. Corruption on track Fellowship moves smoothly to the new field (approx. 260 ms), and the first position and the change of scale set it immediately.
