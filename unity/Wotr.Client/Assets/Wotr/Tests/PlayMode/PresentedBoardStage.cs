@@ -63,6 +63,31 @@ namespace Wotr.PlayTests
 
         public PlayerView Latest() => Next(before);
 
+        // Reserve figures of the presented view.
+        public List<string> Reserve(string nation, UnitKind kind, int count) =>
+            Board.View.Units.Where(u => u.Nation == nation && u.Kind == kind && u.Location == "reserve").Take(count).Select(u => u.Id).ToList();
+
+        // A figure change as the engine records it: the same participant before and after, between two places.
+        public ActionFigureChange Change(string id, string from, string to)
+        {
+            var unit = Board.View.Units.Single(u => u.Id == id);
+            var figure = new ActionParticipant { Id = id, Side = unit.Side, NationId = unit.Nation, UnitKind = unit.Kind };
+            return new ActionFigureChange { Before = figure, After = figure, From = from, To = to };
+        }
+
+        public ActionLogStep Recruits(ActionLogStep step, IEnumerable<string> ids, string region)
+        {
+            foreach (var id in ids)
+                step.Facts.Figures.Add(Change(id, "reserve", region));
+            return step;
+        }
+
+        public static void Place(PlayerView view, IEnumerable<string> ids, string region)
+        {
+            foreach (var unit in view.Units.Where(u => ids.Contains(u.Id)))
+                unit.Location = region;
+        }
+
         public PlayerView Next(PlayerView view)
         {
             var next = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(view));

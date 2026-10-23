@@ -182,6 +182,14 @@
     -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
 }
 
+/* UI-308: the opponent's revealed card marks the half that was used with the observed treatment (the inspector's own
+   focused-effect heading looks the same as the other half on the parchment). */
+#board-screen .card-inspector.presented-card .card-effect.focused-effect {
+    border-left-width: 3px;
+    border-left-color: rgba(98, 172, 214, 1);
+    background-color: rgba(146, 212, 242, 0.18);
+}
+
 /* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). */
 .motion-enabled .presenting-politics .nation-token,
 .motion-enabled .presenting-politics .icon-glow {

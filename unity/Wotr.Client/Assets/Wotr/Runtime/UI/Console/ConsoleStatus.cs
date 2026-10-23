@@ -21,6 +21,7 @@ namespace Wotr.Client
         public VisualElement Trail { get; } = new VisualElement { name = "console-trail" };
         private readonly VisualElement line = new VisualElement { name = "console-line" };
         private string trailKey = "";
+        private Button presented;
         public event Action Clicked;
         public event Action<ConsoleOption> OptionChosen;
         public bool YourTurn => Plaque.ClassListContains("your-turn");
@@ -98,6 +99,34 @@ namespace Wotr.Client
             Trail.Clear();
             if (view != null)
                 EffectTrailChoices.Render(Trail, view, data, inspect);
+            if (presented != null)
+                Trail.Add(presented);
+            Trail.style.display = Trail.childCount == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+        }
+
+        // UI-308: the opponent's card a presentation docked here ("✓ Orcs Multiplying Again"): the compact source of the
+        // rest of the presentation, opening and closing the same read-only card, removed when the presentation ends.
+        public Button PresentSource(string label, Action inspect)
+        {
+            EndSource();
+            presented = BoardScreen.Button("✓ " + label, inspect);
+            presented.name = "console-presented-source";
+            presented.AddToClassList("committed-choice");
+            presented.AddToClassList("presented-source");
+            presented.tooltip = "Played card · Inspect";
+            Trail.Add(presented);
+            Trail.style.display = DisplayStyle.Flex;
+            return presented;
+        }
+
+        public bool HasSource => presented != null;
+
+        public void EndSource()
+        {
+            if (presented == null)
+                return;
+            presented.RemoveFromHierarchy();
+            presented = null;
             Trail.style.display = Trail.childCount == 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
 

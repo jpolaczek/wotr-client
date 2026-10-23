@@ -44,6 +44,10 @@ namespace Wotr.Client
         private bool anchorPinnedSource;
         private Func<VisualElement> currentAvoid;
         private Vector2 defaultAnchor = new Vector2(342, 8);
+        // UI-308: a presentation's reveal stands at the top of this stage area, on its left or right side.
+        private (Rect Area, bool Left)? presentation;
+        // UI-308: the status line of a card an opponent presentation shows ("Event played"), instead of a play hint.
+        public string Note { get; set; } = "";
 
         public CardInspector()
         {
@@ -121,6 +125,8 @@ namespace Wotr.Client
         public void Close()
         {
             Pinned = false;
+            presentation = null;
+            Note = "";
             CardId = "";
             currentAvoid = null;
             tableSource = false;
@@ -221,6 +227,13 @@ namespace Wotr.Client
             PositionHover();
         }
 
+        // UI-308: the opponent's revealed card stands in the half of the map away from the action's first effect.
+        public void PlaceIn(Rect area, bool left)
+        {
+            presentation = (area, left);
+            PositionHover();
+        }
+
         public void SetDefaultAnchor(Vector2 anchor)
         {
             if (defaultAnchor == anchor)
@@ -230,6 +243,14 @@ namespace Wotr.Client
         }
 
         public bool Inspecting(VisualElement source) => currentAvoid?.Invoke() == source;
+
+        // The window's right/top anchor for a card at the top of the area on the chosen side.
+        private Vector2 Anchor((Rect Area, bool Left) at)
+        {
+            var width = Root.layout.width > 0 && !float.IsNaN(Root.layout.width) ? Root.layout.width : 336;
+            var left = at.Left ? at.Area.xMin : at.Area.xMax - width;
+            return new Vector2(Root.parent.contentRect.xMax - left - width, at.Area.yMin);
+        }
 
         private void PositionHover()
         {
@@ -243,7 +264,7 @@ namespace Wotr.Client
             var obstacle = currentAvoid?.Invoke();
             if (obstacle?.panel == null)
             {
-                Window.SetDefaultAnchor(defaultAnchor);
+                Window.SetDefaultAnchor(presentation.HasValue ? Anchor(presentation.Value) : defaultAnchor);
                 return;
             }
             if (Root.layout.width <= 0 || Root.layout.height <= 0 ||
@@ -303,6 +324,8 @@ namespace Wotr.Client
             if (!allowPlay && combatWindow) window.text = "Choose Combat cards in the battle window";
             if (tableSource && !allowPlay)
                 window.text = IsActiveSource(CardId) ? "In play" : "Effect ended";
+            if (Note.Length > 0 && !allowPlay)
+                window.text = Note;
             ShowReaction();
         }
 

@@ -4,7 +4,8 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // UI-305/UI-306: the production presenters of the opponent's actions on one mounted board, in beat order — the cost
-    // die, the camera, then the families (army movement, attack, control, figure changes, politics) — with the Skip
+    // die, the camera, the revealed card, then the families (army movement, attack, control, figure changes, politics) —
+    // with the Skip
     // target, Esc (only when nothing else owns it) and the pause while the player reads a card opened during the
     // presentation. The family presenters of UI-308–UI-312 register after these. One staged board and one map trace serve every presenter of a presentation.
     public sealed class OpponentPresenters : IDisposable
@@ -16,6 +17,7 @@ namespace Wotr.Client
         private readonly PresentationCamera camera;
         private readonly StagedBoard staged;
         private readonly PoliticsPresenter politics;
+        private readonly CardRevealPresenter cards;
         public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
@@ -34,6 +36,8 @@ namespace Wotr.Client
             Skip = new SkipControl(board, layer, Playback, SkipNow);
             Playback.Register(cost);
             Playback.Register(camera);
+            cards = new CardRevealPresenter(board, Playback, camera, layer);
+            Playback.Register(cards);
             Playback.Register(new ArmyMovementPresenter(board, staged, Trace));
             Playback.Register(new AttackPresenter(board, Trace));
             Playback.Register(new ControlPresenter(board, staged, Trace));
@@ -69,7 +73,7 @@ namespace Wotr.Client
         private bool Reading()
         {
             reading &= board.Cards.Pinned && board.Cards.Root.resolvedStyle.display != DisplayStyle.None;
-            return reading;
+            return reading || cards.Reading;
         }
 
         private bool Escape()
@@ -95,6 +99,7 @@ namespace Wotr.Client
             camera.Released();
             Trace.Clear();
             politics.Released();
+            cards.Released();
             staged.Reset();
             reading = false;
         }

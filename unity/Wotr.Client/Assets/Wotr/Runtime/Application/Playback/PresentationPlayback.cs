@@ -42,6 +42,8 @@ namespace Wotr.Client
         // The latest view was applied: per-presentation state (a source symbol, a camera takeover) ends here.
         public event Action Released;
         public int Queued => queue.Count;
+        // UI-308: the cues still waiting behind the current one (a card's reveal looks ahead to its first effect).
+        public IReadOnlyCollection<PresentationCue> Upcoming => queue;
         public ClientDiagnostics Diagnostics { get; set; } = ClientDiagnostics.Unity;
 
         public PresentationPlayback(Action<PlayerView> present, Action<bool> hold, Func<double> clock)

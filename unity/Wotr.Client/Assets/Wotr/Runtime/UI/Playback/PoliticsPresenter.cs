@@ -1,5 +1,4 @@
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Wotr.Client
@@ -92,7 +91,7 @@ namespace Wotr.Client
             private readonly int fromSteps;
             private readonly int toSteps;
             private readonly double start;
-            private readonly VisualElement ring = new VisualElement { name = "presentation-politics-ring", pickingMode = PickingMode.Ignore };
+            private readonly LayerRing ring;
             private Label caption;
             private int phase;
 
@@ -106,8 +105,7 @@ namespace Wotr.Client
                 activation = !wasActive && active;
                 moves = fromSteps != toSteps;
                 start = now;
-                ring.AddToClassList("observed-ring");
-                owner.layer.Root.Add(ring);
+                ring = new LayerRing(owner.layer, "presentation-politics-ring");
                 Follow();
             }
 
@@ -137,7 +135,7 @@ namespace Wotr.Client
 
             private bool End()
             {
-                ring.RemoveFromHierarchy();
+                ring.End();
                 caption?.RemoveFromHierarchy();
                 owner.Panel.Drawer.RemoveFromClassList(MovingClass);
                 return true;
@@ -145,16 +143,7 @@ namespace Wotr.Client
 
             private void Follow()
             {
-                var anchor = owner.Anchor(id);
-                var bounds = owner.layer.Local(anchor.worldBound);
-                const float gap = 3;
-                var radius = Mathf.Min(bounds.width, bounds.height) / 2 + gap;
-                ring.style.left = bounds.x - gap;
-                ring.style.top = bounds.y - gap;
-                ring.style.width = bounds.width + 2 * gap;
-                ring.style.height = bounds.height + 2 * gap;
-                ring.style.borderTopLeftRadius = ring.style.borderTopRightRadius = radius;
-                ring.style.borderBottomLeftRadius = ring.style.borderBottomRightRadius = radius;
+                ring.Follow(owner.Anchor(id));
                 if (caption != null)
                     PlaceCaption();
             }

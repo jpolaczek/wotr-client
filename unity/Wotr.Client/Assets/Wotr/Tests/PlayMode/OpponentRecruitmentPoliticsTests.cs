@@ -21,13 +21,13 @@ namespace Wotr.PlayTests
         {
             using var stage = new PresentedBoardStage(1366, 1f, false);
             yield return stage.Ready();
-            var reserve = Reserve(stage, "sauron", UnitKind.Regular, 6);
+            var reserve = stage.Reserve("sauron", UnitKind.Regular, 6);
             var latest = stage.Latest();
-            Place(latest, reserve.Take(3), "dol-guldur");
-            Place(latest, reserve.Skip(3), "mount-gundabad");
+            PresentedBoardStage.Place(latest, reserve.Take(3), "dol-guldur");
+            PresentedBoardStage.Place(latest, reserve.Skip(3), "mount-gundabad");
             var before = stage.Buttons();
-            stage.Play(latest, "grey-havens", Recruits(stage, Cost(stage.Step(1)), reserve.Take(3), "dol-guldur"),
-                Recruits(stage, stage.Step(2), reserve.Skip(3), "mount-gundabad"));
+            stage.Play(latest, "grey-havens", stage.Recruits(Cost(stage.Step(1)), reserve.Take(3), "dol-guldur"),
+                stage.Recruits(stage.Step(2), reserve.Skip(3), "mount-gundabad"));
             yield return stage.Until(() => Delta(stage, "+3") != null && stage.Army("dol-guldur") == 3);
             var first = Delta(stage, "+3");
             Assert.IsNotNull(first.Q(className: "nation-emblem-sauron"), "The badge carries the nation's crest.");
@@ -53,11 +53,11 @@ namespace Wotr.PlayTests
         {
             using var stage = new PresentedBoardStage(1366, 1f, false);
             yield return stage.Ready();
-            var sauron = Reserve(stage, "sauron", UnitKind.Regular, 2);
-            var isengard = Reserve(stage, "isengard", UnitKind.Elite, 1);
+            var sauron = stage.Reserve("sauron", UnitKind.Regular, 2);
+            var isengard = stage.Reserve("isengard", UnitKind.Elite, 1);
             var latest = stage.Latest();
-            Place(latest, sauron.Concat(isengard), "dol-guldur");
-            stage.Play(latest, "between:dol-guldur:dol-guldur", Recruits(stage, stage.Step(1), sauron.Concat(isengard), "dol-guldur"));
+            PresentedBoardStage.Place(latest, sauron.Concat(isengard), "dol-guldur");
+            stage.Play(latest, "between:dol-guldur:dol-guldur", stage.Recruits(stage.Step(1), sauron.Concat(isengard), "dol-guldur"));
             yield return stage.Until(() => stage.Board.Map.Q("observed-delta") != null);
             var entries = stage.Board.Map.Q("observed-delta").Query(className: "observed-delta-entry").ToList();
             Assert.AreEqual(2, entries.Count);
@@ -74,13 +74,13 @@ namespace Wotr.PlayTests
             using var stage = new PresentedBoardStage(1366, 1f, false);
             var regulars = stage.Put("sauron", UnitKind.Regular, "dol-guldur", 2);
             yield return stage.Ready();
-            var elite = Reserve(stage, "sauron", UnitKind.Elite, 1).Single();
+            var elite = stage.Reserve("sauron", UnitKind.Elite, 1).Single();
             var latest = stage.Latest();
-            Place(latest, new[] { regulars[0] }, "reserve");
-            Place(latest, new[] { elite }, "dol-guldur");
+            PresentedBoardStage.Place(latest, new[] { regulars[0] }, "reserve");
+            PresentedBoardStage.Place(latest, new[] { elite }, "dol-guldur");
             var upgrade = stage.Step(1);
-            upgrade.Facts.Figures.Add(Change(stage, regulars[0], "dol-guldur", "reserve"));
-            upgrade.Facts.Figures.Add(Change(stage, elite, "reserve", "dol-guldur"));
+            upgrade.Facts.Figures.Add(stage.Change(regulars[0], "dol-guldur", "reserve"));
+            upgrade.Facts.Figures.Add(stage.Change(elite, "reserve", "dol-guldur"));
             stage.Play(latest, "between:dol-guldur:dol-guldur", upgrade);
             yield return stage.Until(() => stage.Board.Map.Q("observed-delta") != null);
             var marker = Marker(stage, "dol-guldur");
@@ -94,9 +94,9 @@ namespace Wotr.PlayTests
             yield return stage.Released();
             stage.AssertFinal(latest);
             var removal = stage.Next(latest);
-            Place(removal, new[] { regulars[1] }, "reserve");
+            PresentedBoardStage.Place(removal, new[] { regulars[1] }, "reserve");
             var step = stage.Step(1, 2);
-            step.Facts.Figures.Add(Change(stage, regulars[1], "dol-guldur", "reserve"));
+            step.Facts.Figures.Add(stage.Change(regulars[1], "dol-guldur", "reserve"));
             stage.Play(removal, null, step);
             yield return stage.Until(() => Delta(stage, "−1") != null);
             Assert.AreEqual(1, stage.Army("dol-guldur"), "The returned figure leaves the stack after its commit.");
@@ -173,11 +173,11 @@ namespace Wotr.PlayTests
             var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
             sauron.StepsToWar = 2;
             yield return stage.Ready();
-            var reserve = Reserve(stage, "sauron", UnitKind.Regular, 3);
+            var reserve = stage.Reserve("sauron", UnitKind.Regular, 3);
             var latest = stage.Latest();
-            Place(latest, reserve, "dol-guldur");
+            PresentedBoardStage.Place(latest, reserve, "dol-guldur");
             Nation(latest, "sauron", true, 1);
-            stage.Play(latest, "grey-havens", Recruits(stage, Cost(stage.Step(1)), reserve, "dol-guldur"), Politics(stage.Step(2), "sauron", true, 2, true, 1));
+            stage.Play(latest, "grey-havens", stage.Recruits(Cost(stage.Step(1)), reserve, "dol-guldur"), Politics(stage.Step(2), "sauron", true, 2, true, 1));
             yield return stage.Until(() => stage.Presenters.Skip.Button.parent != null);
             PointerGestureEvents.ClickAt(stage.Presenters.Skip.Button);
             yield return stage.Released();
@@ -195,13 +195,13 @@ namespace Wotr.PlayTests
             sauron.Active = false;
             sauron.StepsToWar = 1;
             yield return stage.Ready();
-            var reserve = Reserve(stage, "sauron", UnitKind.Regular, 6);
+            var reserve = stage.Reserve("sauron", UnitKind.Regular, 6);
             var latest = stage.Latest();
-            Place(latest, reserve.Take(3), "dol-guldur");
-            Place(latest, reserve.Skip(3), "mount-gundabad");
+            PresentedBoardStage.Place(latest, reserve.Take(3), "dol-guldur");
+            PresentedBoardStage.Place(latest, reserve.Skip(3), "mount-gundabad");
             Nation(latest, "sauron", true, 0);
-            stage.Play(latest, "grey-havens", Recruits(stage, Cost(stage.Step(1)), reserve.Take(3), "dol-guldur"),
-                Recruits(stage, stage.Step(2), reserve.Skip(3), "mount-gundabad"), Politics(stage.Step(3), "sauron", false, 1, true, 0));
+            stage.Play(latest, "grey-havens", stage.Recruits(Cost(stage.Step(1)), reserve.Take(3), "dol-guldur"),
+                stage.Recruits(stage.Step(2), reserve.Skip(3), "mount-gundabad"), Politics(stage.Step(3), "sauron", false, 1, true, 0));
             var frame = 0;
             while (stage.Playback.Holding && frame < 80)
             {
@@ -211,15 +211,6 @@ namespace Wotr.PlayTests
             }
             Assert.IsFalse(stage.Playback.Holding);
             stage.AssertFinal(latest);
-        }
-
-        private static List<string> Reserve(PresentedBoardStage stage, string nation, UnitKind kind, int count) =>
-            stage.Board.View.Units.Where(u => u.Nation == nation && u.Kind == kind && u.Location == "reserve").Take(count).Select(u => u.Id).ToList();
-
-        private static void Place(PlayerView view, IEnumerable<string> ids, string region)
-        {
-            foreach (var unit in view.Units.Where(u => ids.Contains(u.Id)))
-                unit.Location = region;
         }
 
         private static void Nation(PlayerView view, string id, bool active, int steps)
@@ -233,21 +224,6 @@ namespace Wotr.PlayTests
         {
             step.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = PresentedBoardStage.Die, Owner = Side.Shadow, Face = DieFace.Muster, Use = DieFace.Muster });
             return step;
-        }
-
-        // As the engine records a recruit: the same participant before and after, from the reserve to the region.
-        private static ActionLogStep Recruits(PresentedBoardStage stage, ActionLogStep step, IEnumerable<string> ids, string region)
-        {
-            foreach (var id in ids)
-                step.Facts.Figures.Add(Change(stage, id, "reserve", region));
-            return step;
-        }
-
-        private static ActionFigureChange Change(PresentedBoardStage stage, string id, string from, string to)
-        {
-            var unit = stage.Board.View.Units.Single(u => u.Id == id);
-            var figure = new ActionParticipant { Id = id, Side = unit.Side, NationId = unit.Nation, UnitKind = unit.Kind };
-            return new ActionFigureChange { Before = figure, After = figure, From = from, To = to };
         }
 
         private static ActionLogStep Politics(ActionLogStep step, string id, bool wasActive, int previous, bool active, int steps)
