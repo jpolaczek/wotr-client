@@ -135,3 +135,57 @@
 }
 .observed-badge-free { color: rgb(146, 196, 236); }
 .observed-badge-shadow { color: rgb(236, 128, 112); }
+
+/* UI-307: the delta badge beside a force — unit art, the nation's crest and a signed count per entry. */
+.observed-delta {
+    position: absolute;
+    flex-direction: column;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.observed-delta-entry {
+    flex-direction: row;
+    align-items: center;
+}
+.observed-delta-figure {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.observed-delta-entry > .nation-emblem {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+.observed-delta-entry > .unity-label {
+    margin: 0 0 0 2px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
+/* UI-307: an optional short caption ("At war"): a dark plate, never a sentence. */
+.presentation-caption {
+    position: absolute;
+    margin: 0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+    color: rgb(231, 228, 215);
+    font-size: 13px;
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
+/* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). */
+.motion-enabled .presenting-politics .nation-token,
+.motion-enabled .presenting-politics .icon-glow {
+    transition-property: left;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-in-out;
+}

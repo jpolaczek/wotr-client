@@ -50,4 +50,31 @@ namespace Wotr.Client
 
         public void Finish() => set.End();
     }
+
+    // UI-306/UI-307: a traced dwell after which the staged board becomes the map's figure baseline.
+    public sealed class SettledBeat : IPresentationBeat
+    {
+        private readonly TracedBeat traced;
+        private readonly StagedBoard staged;
+
+        public SettledBeat(MapObservedTrace.TraceSet set, StagedBoard staged, double now, double seconds)
+        {
+            traced = new TracedBeat(set, now, seconds);
+            this.staged = staged;
+        }
+
+        public bool Advance(double now)
+        {
+            if (!traced.Advance(now))
+                return false;
+            staged.Settle();
+            return true;
+        }
+
+        public void Finish()
+        {
+            traced.Finish();
+            staged.Settle();
+        }
+    }
 }

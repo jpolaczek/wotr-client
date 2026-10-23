@@ -4,9 +4,9 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // UI-305/UI-306: the production presenters of the opponent's actions on one mounted board, in beat order — the cost
-    // die, the camera, then the families (army movement, attack, control) — with the Skip target, Esc (only when nothing
-    // else owns it) and the pause while the player reads a card opened during the presentation. The family presenters of
-    // UI-307–UI-312 register after these. One staged board and one map trace serve every presenter of a presentation.
+    // die, the camera, then the families (army movement, attack, control, figure changes, politics) — with the Skip
+    // target, Esc (only when nothing else owns it) and the pause while the player reads a card opened during the
+    // presentation. The family presenters of UI-308–UI-312 register after these. One staged board and one map trace serve every presenter of a presentation.
     public sealed class OpponentPresenters : IDisposable
     {
         private readonly BoardScreen board;
@@ -15,6 +15,7 @@ namespace Wotr.Client
         private readonly CostEmphasis cost;
         private readonly PresentationCamera camera;
         private readonly StagedBoard staged;
+        private readonly PoliticsPresenter politics;
         public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
@@ -36,6 +37,9 @@ namespace Wotr.Client
             Playback.Register(new ArmyMovementPresenter(board, staged, Trace));
             Playback.Register(new AttackPresenter(board, Trace));
             Playback.Register(new ControlPresenter(board, staged, Trace));
+            Playback.Register(new FigureChangePresenter(board, staged, Trace));
+            politics = new PoliticsPresenter(board, staged, layer);
+            Playback.Register(politics);
             Playback.Paused = Reading;
             Playback.Released += Released;
             binding.Ticked += Skip.Refresh;
@@ -90,6 +94,7 @@ namespace Wotr.Client
             cost.Clear();
             camera.Released();
             Trace.Clear();
+            politics.Released();
             staged.Reset();
             reading = false;
         }

@@ -52,6 +52,74 @@ namespace Wotr.Client
             Changed = true;
         }
 
+        // UI-307: one recorded figure change — a recruit or a character entering, an upgrade's halves, a removal to the
+        // reserve or the casualties, a transformation, a Companion leaving the Fellowship. A known figure takes its
+        // recorded place (and kind or version); an unknown one arriving on the board is added from its record.
+        public void Apply(ActionFigureChange change)
+        {
+            var figure = change.After ?? change.Before;
+            if (figure == null)
+                return;
+            var unit = View.Units.FirstOrDefault(u => u.Id == figure.Id);
+            var character = View.Characters.FirstOrDefault(c => c.Id == figure.Id);
+            if (unit != null)
+                Place(unit, change);
+            else if (character != null)
+                Place(character, change);
+            else if (change.After != null)
+                Add(change.After, change.To);
+            Changed = true;
+        }
+
+        // UI-307: a recorded political change of one nation.
+        public void Nation(string id, bool active, int stepsToWar)
+        {
+            var nation = View.Nations.FirstOrDefault(n => n.Id == id);
+            if (nation == null)
+                return;
+            nation.Active = active;
+            nation.StepsToWar = stepsToWar;
+        }
+
+        // Draw the staged nations on the Politics panel.
+        public void ShowNations() => board.Nations.Apply(View);
+
+        private static void Place(UnitView unit, ActionFigureChange change)
+        {
+            unit.Location = change.To;
+            if (change.After == null)
+                return;
+            unit.Garrison = change.After.Garrison;
+            if (change.After.UnitKind.HasValue)
+                unit.Kind = change.After.UnitKind.Value;
+        }
+
+        private static void Place(CharacterView character, ActionFigureChange change)
+        {
+            character.Location = change.To;
+            if (change.After == null)
+                return;
+            character.Garrison = change.After.Garrison;
+            if (change.After.DefinitionId.Length > 0)
+                character.DefinitionId = change.After.DefinitionId;
+        }
+
+        private void Add(ActionParticipant figure, string region)
+        {
+            if (figure.UnitKind.HasValue)
+                View.Units.Add(new UnitView
+                {
+                    Id = figure.Id, Nation = figure.NationId, Side = figure.Side, Kind = figure.UnitKind.Value, Location = region,
+                    Garrison = figure.Garrison
+                });
+            else
+                View.Characters.Add(new CharacterView
+                {
+                    Id = figure.Id, DefinitionId = figure.DefinitionId, Side = figure.Side, Location = region, Garrison = figure.Garrison,
+                    Level = figure.Level ?? 0, Leadership = figure.Leadership ?? 0
+                });
+        }
+
         // Draw the staged markers and settlements on the presented board.
         public void Show() => board.Stage(View);
 

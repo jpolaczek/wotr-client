@@ -46,31 +46,5 @@ namespace Wotr.Client
                 return ("−" + region.VictoryPoints + " VP", change.Before.Value);
             return null;
         }
-
-        private sealed class SettledBeat : IPresentationBeat
-        {
-            private readonly TracedBeat traced;
-            private readonly StagedBoard staged;
-
-            public SettledBeat(MapObservedTrace.TraceSet set, StagedBoard staged, double now, double seconds)
-            {
-                traced = new TracedBeat(set, now, seconds);
-                this.staged = staged;
-            }
-
-            public bool Advance(double now)
-            {
-                if (!traced.Advance(now))
-                    return false;
-                staged.Settle();
-                return true;
-            }
-
-            public void Finish()
-            {
-                traced.Finish();
-                staged.Settle();
-            }
-        }
     }
 }

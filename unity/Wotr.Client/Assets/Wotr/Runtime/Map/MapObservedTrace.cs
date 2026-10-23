@@ -72,6 +72,8 @@ namespace Wotr.Client
                 new List<(VisualElement, string, Side, bool)>();
             private readonly List<(VisualElement Element, string Region)> settlements = new List<(VisualElement, string)>();
             private readonly List<(VisualElement Element, string Region)> badges = new List<(VisualElement, string)>();
+            private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison)> deltas =
+                new List<(VisualElement, string, Side, bool)>();
             private readonly List<string> regions = new List<string>();
             private bool ended;
             public VisualElement Root { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -121,6 +123,22 @@ namespace Wotr.Client
                 return this;
             }
 
+            // UI-307: a delta badge beside a force — per entry its figure art (an upgrade's two with an arrow), the nation's
+            // crest and a signed count — so region, unit type, nation and amount read from the picture.
+            public TraceSet Delta(string region, Side side, bool garrison, IEnumerable<FigureDelta> entries)
+            {
+                var badge = new VisualElement { name = "observed-delta", pickingMode = PickingMode.Ignore };
+                badge.AddToClassList("observed-delta");
+                foreach (var entry in entries)
+                    badge.Add(Entry(entry));
+                Root.Add(badge);
+                deltas.Add((badge, region, side, garrison));
+                Layout();
+                return this;
+            }
+
+            public IEnumerable<VisualElement> Deltas => deltas.Select(d => d.Element);
+
             public IEnumerable<VisualElement> Rings => forces.Select(f => f.Element).Concat(settlements.Select(s => s.Element));
             public IEnumerable<Label> Badges => badges.Select(b => (Label)b.Element);
 
@@ -149,7 +167,45 @@ namespace Wotr.Client
                     element.style.left = anchor.x + SettlementRing + 4;
                     element.style.top = anchor.y - SettlementRing - 6;
                 }
+                foreach (var (element, region, side, garrison) in deltas)
+                {
+                    var marker = owner.map.MarkerBounds(region, side, garrison);
+                    var anchor = owner.Anchor(region);
+                    element.style.left = marker.HasValue ? marker.Value.xMax + 4 : anchor.x + 12;
+                    element.style.top = marker.HasValue ? marker.Value.y : anchor.y - 14;
+                }
                 Root.MarkDirtyRepaint();
+            }
+
+            private static VisualElement Entry(FigureDelta delta)
+            {
+                var row = new VisualElement { pickingMode = PickingMode.Ignore };
+                row.AddToClassList("observed-delta-entry");
+                if (delta.From.HasValue)
+                {
+                    row.Add(Figure(delta.From.Value));
+                    row.Add(new Label("→") { pickingMode = PickingMode.Ignore });
+                }
+                row.Add(Figure(delta.Art));
+                if (delta.Nation.Length > 0)
+                {
+                    var crest = new VisualElement { pickingMode = PickingMode.Ignore };
+                    crest.AddToClassList("nation-emblem");
+                    crest.AddToClassList("nation-emblem-" + delta.Nation);
+                    row.Add(crest);
+                }
+                var count = new Label(delta.Text) { name = "observed-delta-count", pickingMode = PickingMode.Ignore };
+                count.AddToClassList(delta.Count < 0 ? "observed-delta-loss" : "observed-delta-gain");
+                row.Add(count);
+                return row;
+            }
+
+            private static VisualElement Figure(FigureArt art)
+            {
+                var image = FigureArtwork.Image(art);
+                image.pickingMode = PickingMode.Ignore;
+                image.AddToClassList("observed-delta-figure");
+                return image;
             }
 
             private VisualElement NewRing()
