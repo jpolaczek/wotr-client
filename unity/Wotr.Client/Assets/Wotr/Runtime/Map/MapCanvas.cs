@@ -49,6 +49,8 @@ namespace Wotr.Client
         public MapMordorTrack MordorTrack { get; }
         // The HUD panels over the map; region names hide under them (UI-199: forces do not avoid them).
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
+        // UI-305: the player moved the camera (wheel zoom or a right/middle-drag pan), never a programmatic move.
+        public event Action Steered;
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
         // UI-301: the armies a click may choose pulse together in ChoiceGlow's rhythm.
         private readonly ChoicePulse armyPulse;
@@ -120,6 +122,7 @@ namespace Wotr.Client
             {
                 Camera.ZoomAt(e.localMousePosition, Mathf.Exp(-e.delta.y * .06f));
                 Refresh();
+                Steered?.Invoke();
                 e.StopPropagation();
             });
             RegisterCallback<PointerDownEvent>(PointerDown);
@@ -221,6 +224,7 @@ namespace Wotr.Client
             Camera.Pan += now - previous;
             previous = now;
             Refresh();
+            Steered?.Invoke();
         }
 
         public bool CancelPan()

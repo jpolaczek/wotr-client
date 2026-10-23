@@ -222,6 +222,68 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "move" }, marches.Begun);
         }
 
+        [Test]
+        public void EveryPresenterThatShowsACuePlaysItsBeatInRegistrationOrder()
+        {
+            var camera = Timed(PresentationCueKind.March, .5);
+            var effect = Timed(PresentationCueKind.March, .5);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(0);
+            CollectionAssert.AreEqual(new[] { "move" }, camera.Begun);
+            CollectionAssert.IsEmpty(effect.Begun, "The effect waits for the camera to settle.");
+            Tick(.5);
+            CollectionAssert.AreEqual(new[] { "move" }, effect.Begun);
+            Assert.AreEqual("move", Key(playback.Current), "Both beats belong to the same cue.");
+            Tick(.5);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+        }
+
+        [Test]
+        public void APauseStopsThePresentationClockAndNothingIsReleasedMeanwhile()
+        {
+            var presenter = Timed(PresentationCueKind.March, .5);
+            var reading = false;
+            playback.Paused = () => reading;
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(0);
+            Tick(.25);
+            reading = true;
+            Tick(5);
+            CollectionAssert.AreEqual(new long[] { 0 }, presented, "The player reads a card; the board waits.");
+            reading = false;
+            Tick(.125);
+            Assert.AreEqual(0, presenter.Finished);
+            CollectionAssert.AreEqual(new long[] { 0 }, presented, "0.375 s of the beat have passed, not 5.375 s.");
+            Tick(.125);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+        }
+
+        [Test]
+        public void PresentingLastsWhileACueIsShownOrQueuedAndReleasedFollowsEachEnd()
+        {
+            Timed(PresentationCueKind.March, .5);
+            var released = 0;
+            playback.Released += () => released++;
+            playback.Receive(View(1));
+            Assert.IsTrue(playback.Holding);
+            Assert.IsFalse(playback.Presenting, "A quiet revision's history read shows no Skip target.");
+            playback.Enqueue(new[] { March(1, "move") });
+            Assert.IsTrue(playback.Presenting);
+            playback.HistoryRead(1);
+            Tick(0);
+            Assert.IsTrue(playback.Presenting);
+            Tick(.5);
+            Assert.IsFalse(playback.Presenting);
+            Assert.AreEqual(1, released);
+            playback.Receive(View(2));
+            playback.SetConnection("Reconnecting");
+            Assert.AreEqual(2, released, "A rebase ends the presentation too.");
+        }
+
         private void Present(PlayerView view)
         {
             if (failing > 0)

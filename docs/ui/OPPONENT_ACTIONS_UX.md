@@ -218,6 +218,69 @@ with the observed trace and the delta badge, for the same dwell.
 The existing subtle cues, once per actual beat, through the current `GameSounds` policy: muted means silent, no
 replay after focus or mute returns, first view and reconnect silent. The presentation never relies on a sound.
 
+<a id="wdrozone-305"></a>
+### 6.9 Shipped in UI-305 (2026-10-23): cost, camera and Skip
+
+UI-305 registers the first production presenters, so the playback of §7.1 is live in every player's session (observers
+and replays are unchanged). Code: `Runtime/UI/Playback`, registered by `OpponentPresenters` in `MatchSession` and the
+PlayMode `MountedMatchClient`.
+
+- **Beat order per cue.** Every presenter that shows a cue plays its beat in registration order: `CostEmphasis`, then
+  `PresentationCamera`, then the family presenters of UI-306–UI-312.
+- **Cost (§6.1).** A die cost shows the observed trace over the die in the presented opponent pool, by its stable id,
+  for 350 ms. The pool is never touched, and its die keeps its own tooltip and inspection. If the pool no longer holds
+  the die, a copy stands at the die's last known place, or after the pool's last die. A die used as another face adds
+  a badge with an arrow and the used face. The mark stays as the action's source symbol until a cue of another action
+  begins or the presentation ends. A later presentation of the same action shows no cost again, because UI-303's
+  memory never repeats it.
+- **Camera (§6.5).** Map families get a camera beat: marches, travel, attack, retreat, advance, figure changes,
+  control and a visible Fellowship. Battle, Hunt, card, cost, dice and politics cues play in their own windows and rows.
+  - The safe area is the map minus every HUD rectangle the map already avoids (top bar, notices, console, open panels
+    and windows, the card inspector) and the left and right columns. Each occluder cuts the area to the largest band
+    beside it (`SafeMapArea`).
+  - **No move** when every anchor of the cue already lies 48 pt inside the safe area, whatever zoom the player chose.
+  - Otherwise `CameraState.TryFrame` frames source and destination together at a readable zoom: at least 1.2 × the fit
+    zoom, the threshold below which the map shrinks armies to tokens. If they don't fit at that zoom, the camera frames
+    the source, then the destination.
+  - The travel eases over 450–750 ms by distance and zoom change (`CameraTravel`); Reduced motion jumps.
+  - Edge pan is suspended during the travel (`MapEdgePan.Suspended`).
+  - A wheel zoom or a right/middle-drag pan (`MapCanvas.Steered`) ends the travel at once, and the camera follows
+    nothing more until the presentation ends.
+  - The camera stays where the last map effect left it.
+- **Skip (§6.3).** `SkipControl` is a 36 pt round icon button (`actions/skip`) with the tooltip "Skip presentation",
+  standard press feedback, focus and Enter/Space. It sits in the presentation layer, 8 pt above the console and 8 pt
+  left of the right column. It exists only while `PresentationPlayback.Presenting`, that is while a cue plays or waits;
+  a quiet revision's history read shows nothing.
+  - A click releases the latest view on the next frame.
+  - **Esc** reaches it through `BoardEscape.SkipPresentation`, after every window, menu, gesture and pan.
+  - An Esc from inside the card inspector only closes the card.
+- **Reading a card (§6.2).** A card the player opens (pins) while a presentation plays pauses the presentation clock
+  (`PresentationPlayback.Paused`), and closing it resumes. A card already open before the presentation does not hold
+  it.
+- **Hooks for UI-306–UI-312.**
+  - `PresentationLayer` holds marks above the HUD that ignore the pointer.
+  - `ObservedTrace.ClassName` and `Styles/Presentation.uss` give the ring and its fades.
+  - `TimedBeat` is a dwell beat.
+  - `PresentationCamera.Frames` and `SafeArea()`.
+  - `PresentationPlayback.Released` ends per-presentation state.
+- **Interpretations (record).**
+  - "Legible" ignores zoom, so a player who plays zoomed out is not zoomed in on every opponent action.
+  - The source symbol lives for the presentation, not across later presentations of the same action.
+  - Only a card opened during a presentation holds it.
+- **Checks.**
+  - EditMode `OpponentPresentationQueueTests`: presenter order, paused clock, `Presenting` and `Released`.
+  - EditMode `PresentationCameraTests`: safe-area cuts, travel endpoints and durations.
+  - PlayMode `OpponentPresentationLayoutTests`:
+    - at all four size/scale combinations: the die's mark over an unreflowed pool, exactly one added control, the
+      medallion's size and place clear of the HUD, no caption, both regions in the safe area after the travel, and
+      nothing left behind;
+    - Reduced motion jumps;
+    - an already visible march does not move the camera;
+    - Skip on the next frame leaves the camera;
+    - Esc closes a read card first, then skips;
+    - a wheel zoom during the travel wins;
+    - frames `ui305-*` in `.artifacts/screenshots`.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -268,7 +331,7 @@ Code: `Runtime/Application/Playback` — `PresentationPlayback` (pure, clock-dri
   move. A deferred release that throws is reported (`[wotr] presentation …`) and applied again on the next tick, up to
   three times (QUAL-09), and the gate then opens.
 - **Dormant until UI-305.** Without a registered presenter, and whenever the session is not live, every view is applied
-  at once exactly as before; production registers no presenter yet, so UI-304 changes nothing a player sees. The family
+  at once exactly as before; UI-304 alone changed nothing a player sees, and UI-305 (§6.9) registered the first ones. The family
   tasks register theirs with `MatchSession.Playback.Register`. A beat stages its change on the presented board, ends by
   `Advance(now)` or at once by `Finish()`, and leaves no override behind.
 - **Checks.** EditMode `OpponentPresentationQueueTests` (ordering, history wait, late cues, private versions, Skip,
@@ -477,7 +540,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | --- | --- |
 | UI-303 Semantic events (shipped) | §9 data mapping and gaps; the All feed; grouping by step, revision and ActionId; privacy — delivered as §9.1 |
 | UI-304 Playback and synchronization (shipped) | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history; consumes `CuesReady` (§9.1) — delivered as §7.1 |
-| UI-305 Camera, source, Skip | §6.1–§6.6; §5 observed trace; the manual takeover; registers the first presenters (§7.1) and puts the Skip target and Esc on `PresentationPlayback.Skip` |
+| UI-305 Camera, source, Skip (shipped) | §6.1–§6.6; §5 observed trace; the manual takeover; registers the first presenters (§7.1) and puts the Skip target and Esc on `PresentationPlayback.Skip` — delivered as §6.9 |
 | UI-306 Army movement | §8 army march, attack, retreat; storyboards A and C1–C3 |
 | UI-307 Recruitment and politics | §8 recruitment and politics; the delta badge; storyboard B4–B5 |
 | UI-308 Public cards | §6.2 reveal and dock; §8 event card; storyboard B |

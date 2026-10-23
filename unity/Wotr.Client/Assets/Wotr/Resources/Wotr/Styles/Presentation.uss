@@ -1,0 +1,100 @@
+/* UI-305 (OPPONENT_ACTIONS_UX §5–§6): marks of the opponent's presentation over the board and its one Skip target.
+   Every mark ignores the pointer; it fades in over 200 ms and out over 400 ms, and appears without fades under
+   Reduced motion. Imported after Interaction.uss, so the Skip medallion's pressed rule wins over the icon frame's. */
+.presentation-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* The observed trace: a 2 pt pale-blue ring, no plate, no pulse, no lift (never a legal target or a choice). */
+.observed-trace {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-width: 2px;
+    border-color: rgba(146, 212, 242, 0.85);
+}
+
+.presentation-cost {
+    position: absolute;
+    opacity: 0;
+}
+.presentation-cost.shown { opacity: 1; }
+.motion-enabled .presentation-cost { transition-property: opacity; transition-duration: 0.4s; }
+.motion-enabled .presentation-cost.shown { transition-duration: 0.2s; }
+
+/* A spent die's copy at its last place, drawn like the opponent's pool medallions (TopBar.uss). */
+.presentation-die {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    right: 3px;
+    bottom: 3px;
+    border-radius: 14.5px;
+    background-image: resource("Wotr/Art/UI/dice/medallion");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.presentation-die.die-free { background-image: resource("Wotr/Art/UI/dice/medallion-free"); }
+.presentation-die.die-shadow { background-image: resource("Wotr/Art/UI/dice/medallion-shadow"); }
+.presentation-die .die-face { position: absolute; left: 4px; top: 4px; right: 4px; bottom: 4px; }
+
+/* The face the die was used as (Will of the West): an arrow and the used face under the die. */
+.presentation-used-face {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 2px;
+    flex-direction: row;
+    align-items: center;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.presentation-used-face > .unity-label {
+    margin: 0 2px 0 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(231, 228, 215);
+}
+.presentation-used-face > .die-face {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+}
+
+/* The Skip target: a 36 pt round medallion with the skip glyph. */
+#board-screen .unity-button.action.icon-button.presentation-skip,
+.unity-button.action.icon-button.presentation-skip {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    margin: 0;
+    border-width: 2px;
+    border-radius: 18px;
+    border-color: rgb(201, 169, 100);
+    background-image: none;
+    background-color: rgb(38, 34, 30);
+}
+#board-screen .unity-button.action.icon-button.presentation-skip:hover,
+#board-screen .unity-button.action.icon-button.presentation-skip:focus {
+    border-color: rgb(245, 212, 133);
+    background-color: rgb(52, 46, 40);
+}
+#board-screen .unity-button.action.icon-button.presentation-skip.pressed {
+    background-image: none;
+    background-color: rgb(24, 22, 20);
+    border-color: rgb(170, 140, 82);
+}
+.presentation-skip > .icon-glyph {
+    width: 22px;
+    height: 22px;
+}

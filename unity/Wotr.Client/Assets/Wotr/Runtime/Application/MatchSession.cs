@@ -16,6 +16,7 @@ namespace Wotr.Client
         private readonly ActionNoticeController notices;
         private readonly GameSounds sounds;
         private readonly PlaybackBinding playback;
+        private readonly OpponentPresenters presenters;
         // REPLAY-04: Save replay on the end screen; none without a library.
         private readonly ReplaySaver saver;
         private bool disposed;
@@ -39,6 +40,7 @@ namespace Wotr.Client
             notices = new ActionNoticeController(api, matchId, board, persistence?.Notifications);
             chat = RoomChatController.ForGame(api, board.GameChat, matchId);
             playback = new PlaybackBinding(board, notices, Present, turns.Hold);
+            presenters = new OpponentPresenters(board, playback);
             connection.Updated += playback.Receive;
             connection.StatusChanged += ConnectionChanged;
             this.sounds = sounds == null ? null : new GameSounds(sounds, board, turns);
@@ -86,6 +88,7 @@ namespace Wotr.Client
                 return;
             disposed = true;
             connection.Updated -= playback.Receive;
+            presenters.Dispose();
             playback.Dispose();
             connection.StatusChanged -= ConnectionChanged;
             sounds?.Dispose();

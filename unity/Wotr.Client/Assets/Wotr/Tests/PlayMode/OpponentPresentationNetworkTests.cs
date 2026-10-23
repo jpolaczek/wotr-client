@@ -123,7 +123,8 @@ namespace Wotr.PlayTests
                     DieId = ArmyDie(sh.Board.View), MovementCost = DieFace.Army,
                     Moves = { new ArmyMoveChoice { From = attack.RegionId, To = "north-ithilien", UnitIds = attack.UnitIds, CharacterIds = attack.CharacterIds } }
                 });
-                await session.Until(() => fp.Playback.Current?.Kind == PresentationCueKind.Attack);
+                // UI-305: the production camera frames the attack first; the stand-in's beat follows on the same cue.
+                await session.Until(() => presenter.Begun.Any(cue => cue.Kind == PresentationCueKind.Attack));
                 Assert.IsNull(fp.Board.View.Battle, "The battle is not on the board before its attack is shown.");
                 Assert.IsFalse(opened[0], "Its window opens only when the attack ends.");
                 fp.Playback.Skip();

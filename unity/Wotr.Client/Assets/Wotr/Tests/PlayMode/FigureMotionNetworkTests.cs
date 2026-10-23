@@ -51,18 +51,23 @@ namespace Wotr.PlayTests
             var fpBefore = fp.Board.View;
             var first = ArmyCommand(fp, "minas-tirith", "osgiliath");
             Assert.IsTrue((await Post(fp, first, token)).Accepted);
-            await Until(() => fp.Board.View.Revision == 1 && sh.Board.View.Revision == 1, token);
+            await Until(() => fp.Board.View.Revision == 1, token);
             AssertJourney(fp, "minas-tirith", "osgiliath", Side.FreePeoples);
-            AssertJourney(sh, "minas-tirith", "osgiliath", Side.FreePeoples);
             var fpAfter = fp.Board.View;
             var before = fp.Board.Map.Figures.Root.Children().First().transform.position;
             await Task.Delay(240, token);
             var during = fp.Board.Map.Figures.Root.Children().First().transform.position;
             Assert.Greater(Vector2.Distance(before, during), 2);
             LayoutTests.Save(fp.Viewport, "ui76-network-army-fp-middle.png");
+            // UI-305: the observer first presents the opponent's march (its die, the camera if needed); the move then
+            // plays on its board when the playback releases the view.
+            await Until(() => sh.Board.View.Revision == 1, token);
+            AssertJourney(sh, "minas-tirith", "osgiliath", Side.FreePeoples);
+            await Task.Delay(240, token);
             LayoutTests.Save(sh.Viewport, "ui76-network-army-sh-observer-middle.png");
             await Task.Delay(1100, token);
             Assert.AreEqual(0, fp.Board.Map.Figures.ActiveCount);
+            Assert.AreEqual(0, sh.Board.Map.Figures.ActiveCount);
             foreach (var client in new[] { fp, sh })
             {
                 Assert.IsFalse(client.Board.Map.MarkerVisibility.Detail);
@@ -76,9 +81,10 @@ namespace Wotr.PlayTests
             var shBefore = sh.Board.View;
             var second = ArmyCommand(sh, "orthanc", "gap-of-rohan");
             Assert.IsTrue((await Post(sh, second, token)).Accepted);
-            await Until(() => fp.Board.View.Revision == 2 && sh.Board.View.Revision == 2, token);
-            AssertJourney(fp, "orthanc", "gap-of-rohan", Side.Shadow);
+            await Until(() => sh.Board.View.Revision == 2, token);
             AssertJourney(sh, "orthanc", "gap-of-rohan", Side.Shadow);
+            await Until(() => fp.Board.View.Revision == 2, token);
+            AssertJourney(fp, "orthanc", "gap-of-rohan", Side.Shadow);
             Export("armies", new Dictionary<string, PlayerView>
             {
                 ["motion-army-fp"] = fpBefore, ["motion-army-fp-after"] = fpAfter,
@@ -151,9 +157,10 @@ namespace Wotr.PlayTests
                 Route = { "rivendell", "fords-of-bruinen" }
             });
             Assert.IsTrue((await Post(room.Fp, separate, room.Token)).Accepted);
-            await room.Until(() => room.Fp.Board.View.Revision == 3 && room.Sh.Board.View.Revision == 3);
+            // UI-305: each board when it shows the separation — the Free Peoples' at once, the Shadow's after presenting it.
             foreach (var client in new[] { room.Fp, room.Sh })
             {
+                await room.Until(() => client.Board.View.Revision == 3);
                 var arrival = client.Board.Map.Figures.Moves.Single(m => m.To.Key == "character:base.character.gimli");
                 Assert.IsTrue(arrival.IsArrival, "Unknown fellowship progress cannot become a claimed map origin.");
                 Assert.AreEqual("fords-of-bruinen", arrival.From.Region);

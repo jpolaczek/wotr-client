@@ -11,7 +11,9 @@ namespace Wotr.Client
     // drains the beat and the backlog to the latest view on the next tick, so the skip click cannot reach a control the
     // release opens. Without a registered presenter, or when the session is not live (offline, reconnecting, an
     // unfocused window), a view is applied at once, exactly as before UI-304; cues of a presented revision are dropped,
-    // so a late history page never plays an old move.
+    // so a late history page never plays an old move. Every presenter that shows a cue plays its beat in registration
+    // order (UI-305: the camera, then the family's effect), on a presentation clock that stops while Paused (the player
+    // reads a card).
     public sealed class PresentationPlayback : IDisposable
     {
         public const double HistoryWait = 1.0;
@@ -22,6 +24,9 @@ namespace Wotr.Client
         private readonly List<ICuePresenter> presenters = new List<ICuePresenter>();
         private readonly Queue<PresentationCue> queue = new Queue<PresentationCue>();
         private IPresentationBeat beat;
+        private int next;
+        private double elapsed;
+        private double? lastTick;
         private double receivedAt;
         private long historyRevision = -1;
         private bool connected, focused = true, skipped, disposed;
@@ -30,7 +35,12 @@ namespace Wotr.Client
         public long PresentedRevision { get; private set; } = -1;
         public PresentationCue Current { get; private set; }
         public bool Holding { get; private set; }
+        // A cue is shown or waits: the Skip target exists only then, not while a quiet revision's history is read.
+        public bool Presenting => Holding && (Current != null || queue.Count > 0);
         public bool Live => connected && focused;
+        public Func<bool> Paused { get; set; }
+        // The latest view was applied: per-presentation state (a source symbol, a camera takeover) ends here.
+        public event Action Released;
         public int Queued => queue.Count;
         public ClientDiagnostics Diagnostics { get; set; } = ClientDiagnostics.Unity;
 
@@ -81,17 +91,26 @@ namespace Wotr.Client
         public void Tick()
         {
             if (disposed || !Holding)
+            {
+                lastTick = null;
                 return;
+            }
             var now = clock();
             if (skipped)
             {
                 Release();
                 return;
             }
-            if (beat != null && !Advance(now))
+            var paused = Paused?.Invoke() == true;
+            if (lastTick.HasValue && !paused)
+                elapsed += now - lastTick.Value;
+            lastTick = now;
+            if (paused)
                 return;
-            EndBeat();
-            if (StartNext(now))
+            if (beat != null && !Advance(elapsed))
+                return;
+            beat = null;
+            if (StartNext(elapsed))
                 return;
             if (historyRevision >= Latest.Revision || now - receivedAt >= HistoryWait)
                 Release();
@@ -149,40 +168,52 @@ namespace Wotr.Client
                 PresentedRevision = Latest.Revision;
             }
             SetHold(false);
+            NotifyReleased();
         }
 
+        // The next beat: of the current cue's next presenter, else of the next queued cue.
         private bool StartNext(double now)
+        {
+            while (Current != null || Dequeue())
+            {
+                while (next < presenters.Count)
+                {
+                    var started = Begin(presenters[next++], Current, now);
+                    if (started == null)
+                        continue;
+                    beat = started;
+                    return true;
+                }
+                Current = null;
+            }
+            return false;
+        }
+
+        private bool Dequeue()
         {
             while (queue.Count > 0)
             {
                 var cue = queue.Dequeue();
                 if (cue.Revision <= PresentedRevision)
                     continue;
-                beat = Begin(cue, now);
-                if (beat == null)
-                    continue;
                 Current = cue;
+                next = 0;
                 return true;
             }
             return false;
         }
 
-        private IPresentationBeat Begin(PresentationCue cue, double now)
+        private IPresentationBeat Begin(ICuePresenter presenter, PresentationCue cue, double now)
         {
-            foreach (var presenter in presenters)
+            try
             {
-                try
-                {
-                    var started = presenter.Begin(cue, now);
-                    if (started != null)
-                        return started;
-                }
-                catch (Exception error)
-                {
-                    Report(error);
-                }
+                return presenter.Begin(cue, now);
             }
-            return null;
+            catch (Exception error)
+            {
+                Report(error);
+                return null;
+            }
         }
 
         private bool Advance(double now)
@@ -219,6 +250,19 @@ namespace Wotr.Client
             }
             failures = 0;
             SetHold(false);
+            NotifyReleased();
+        }
+
+        private void NotifyReleased()
+        {
+            try
+            {
+                Released?.Invoke();
+            }
+            catch (Exception error)
+            {
+                Report(error);
+            }
         }
 
         private void Present(PlayerView view)
@@ -240,13 +284,9 @@ namespace Wotr.Client
                     Report(error);
                 }
             }
-            EndBeat();
-        }
-
-        private void EndBeat()
-        {
             beat = null;
             Current = null;
+            next = 0;
         }
 
         private void SetHold(bool value)

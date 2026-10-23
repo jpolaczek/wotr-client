@@ -33,6 +33,7 @@
 @import url("Wotr/Styles/Updates.uss");
 /* UI-114: press states; imported last so its rules win ties with the sheets above. */
 @import url("Wotr/Styles/Interaction.uss");
+@import url("Wotr/Styles/Presentation.uss");
 
 .board-screen {
     flex-grow: 1;

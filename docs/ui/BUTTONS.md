@@ -7,7 +7,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 
 | Kind | Count |
 | --- | --- |
-| icon | 57 |
+| icon | 58 |
 | text | 98 |
 | art | 59 |
 | glyph | 1 |
@@ -15,8 +15,8 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | File | Line | Kind | Label or icon |
 | --- | --- | --- | --- |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Application/ClientBootstrap.cs` | 88 | text | Quit |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 333 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 550 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 337 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapCanvas.cs` | 554 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapFellowshipMarker.cs` | 22 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 19 | icon | help |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 29 | icon | political |
@@ -168,6 +168,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementRowView.cs` | 101 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Muster/ReinforcementsPanel.cs` | 45 | text | Reserve |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Observing/ViewingBar.cs` | 47 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Playback/SkipControl.cs` | 26 | icon | skip |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 26 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 51 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 65 | icon | next |

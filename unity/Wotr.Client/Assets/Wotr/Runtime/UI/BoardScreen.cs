@@ -689,7 +689,7 @@ namespace Wotr.Client
                 Ribbon.Show(text, side);
         }
 
-        private bool ReducedMotion()
+        public bool ReducedMotion()
         {
             for (var element = Root; element != null; element = element.parent)
                 if (element.ClassListContains("reduced-motion"))

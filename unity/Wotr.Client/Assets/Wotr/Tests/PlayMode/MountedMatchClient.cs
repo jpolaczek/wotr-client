@@ -22,6 +22,8 @@ namespace Wotr.PlayTests
         private readonly BattleReportController reports;
         public ActionNoticeController Activity { get; }
         private readonly PlaybackBinding playback;
+        // UI-305: the production presenters, as MatchSession registers them.
+        public OpponentPresenters Presenters { get; }
         // UI-304: the same playback coordinator MatchSession binds; tests register presenters here.
         public PresentationPlayback Playback => playback.Playback;
         public TurnInteraction Interaction => interaction;
@@ -91,6 +93,7 @@ namespace Wotr.PlayTests
             reports = new BattleReportController(Api, match, Board.BattleReport, reads ?? persistence?.Notifications);
             Activity = new ActionNoticeController(Api, match, Board, reads ?? persistence?.Notifications);
             playback = new PlaybackBinding(Board, Activity, Present, held => interaction.Hold(held));
+            Presenters = new OpponentPresenters(Board, playback);
             Connection.Updated += Refresh;
             Connection.StatusChanged += status =>
             {
@@ -113,6 +116,7 @@ namespace Wotr.PlayTests
 
         public void Dispose()
         {
+            Presenters.Dispose();
             playback.Dispose();
             Sounds?.Dispose();
             interaction.Dispose();

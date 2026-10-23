@@ -15,6 +15,8 @@ namespace Wotr.Client
         private readonly IVisualElementScheduledItem ticks;
         private bool disposed;
         public PresentationPlayback Playback { get; }
+        // After every tick of the coordinator (UI-305: the Skip target follows Presenting).
+        public event Action Ticked;
 
         public PlaybackBinding(BoardScreen board, ActionNoticeController notices, Action<PlayerView> present, Action<bool> hold)
         {
@@ -23,7 +25,13 @@ namespace Wotr.Client
             notices.CuesReady += Playback.Enqueue;
             notices.HistoryRead += Playback.HistoryRead;
             Application.focusChanged += Playback.SetFocus;
-            ticks = board.Root.schedule.Execute(Playback.Tick).Every(TickMilliseconds);
+            ticks = board.Root.schedule.Execute(Tick).Every(TickMilliseconds);
+        }
+
+        private void Tick()
+        {
+            Playback.Tick();
+            Ticked?.Invoke();
         }
 
         public void Receive(PlayerView view)
