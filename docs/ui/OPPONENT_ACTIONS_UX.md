@@ -289,7 +289,8 @@ PlayMode `MountedMatchClient`.
     - Esc closes a read card first, then skips;
     - a wheel zoom during the travel wins;
     - frames `ui305-*` in `.artifacts/screenshots`: far, crowded, legible, Reduced motion, spent die, card reading and
-      manual takeover.
+      manual takeover, and the far march as clips (`ui305-clip-far-normal-*` and `-reduced-*`, one frame every 80 ms;
+      the test environment has no video encoder).
 
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating

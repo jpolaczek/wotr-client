@@ -45,6 +45,32 @@ namespace Wotr.PlayTests
         public IEnumerator AMarchBesideACrowdedRegionIsFramedWithEveryStackReadable() =>
             Scene(1366, 1.25f, false, FarAway, "crowded", new StageOptions { Stress = true, Source = "minas-morgul", Destination = "osgiliath" });
 
+        // Clips as frame sequences (no video encoder in the test environment): one frame every 80 ms from the march's
+        // arrival to half a second after its release, at normal speed and under Reduced motion.
+        [UnityTest]
+        public IEnumerator TheFarMarchIsRecordedAsAClipAtNormalSpeedAndUnderReducedMotion()
+        {
+            foreach (var reduced in new[] { false, true })
+            {
+                using var stage = new Stage(1366, 1f, reduced);
+                yield return stage.Ready();
+                stage.Start(FarAway);
+                var name = "ui305-clip-far-" + (reduced ? "reduced" : "normal") + "-";
+                var frame = 0;
+                var released = -1f;
+                while (frame < 40 && (released < 0 || Time.realtimeSinceStartup - released < .5f))
+                {
+                    LayoutTests.Save(stage.Texture, name + frame.ToString("00") + ".png");
+                    frame++;
+                    if (released < 0 && !stage.Playback.Holding)
+                        released = Time.realtimeSinceStartup;
+                    yield return new WaitForSecondsRealtime(.08f);
+                }
+                Assert.Greater(released, 0, "The presentation ended within the clip.");
+                Assert.AreEqual(1, stage.Board.View.Revision);
+            }
+        }
+
         [UnityTest]
         public IEnumerator ASpentOrChangedDieKeepsACopyAtItsPlaceWithItsUsedFace()
         {
