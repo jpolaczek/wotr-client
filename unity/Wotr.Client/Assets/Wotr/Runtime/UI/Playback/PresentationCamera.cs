@@ -27,20 +27,23 @@ namespace Wotr.Client
             Map.Steered += Steer;
         }
 
-        // Map effects only; battles, the Hunt, cards, costs, dice and politics play in their own windows and rows.
+        // Map effects only; battles, the Hunt, cards, costs, dice and politics play in their own windows and rows. Inside a
+        // battle only the attack, a retreat, an advance and a capture return to the map (§8); its casualties and other
+        // figure changes stay in the battle window.
         public static bool Frames(PresentationCue cue) => cue.Kind switch
         {
             PresentationCueKind.March or PresentationCueKind.Travel or PresentationCueKind.Attack or PresentationCueKind.Retreat or
-                PresentationCueKind.Advance or PresentationCueKind.Recruit or PresentationCueKind.Upgrade or
-                PresentationCueKind.Removal or PresentationCueKind.Entry or PresentationCueKind.Transformation or
-                PresentationCueKind.Relocation or PresentationCueKind.Control or PresentationCueKind.Fellowship => true,
-            PresentationCueKind.Losses => cue.BattleId.Length == 0,
+                PresentationCueKind.Advance or PresentationCueKind.Control => true,
+            PresentationCueKind.Recruit or PresentationCueKind.Upgrade or PresentationCueKind.Removal or PresentationCueKind.Entry or
+                PresentationCueKind.Transformation or PresentationCueKind.Relocation or PresentationCueKind.Fellowship or
+                PresentationCueKind.Losses => cue.BattleId.Length == 0,
             _ => false
         };
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
-            if (steered || !Frames(cue))
+            // The exception is for the opponent's actions; after the player's own click the camera stays theirs.
+            if (steered || cue.OwnCommand || !Frames(cue))
                 return null;
             var anchors = Anchors(cue);
             var safe = SafeArea();

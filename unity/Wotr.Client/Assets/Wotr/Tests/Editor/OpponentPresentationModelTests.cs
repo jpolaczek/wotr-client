@@ -86,6 +86,19 @@ namespace Wotr.EditorTests
         }
 
         [Test]
+        public void SharedResultsOfOurOwnClickAreMarkedSoTheCameraStaysOurs()
+        {
+            var shadow = Replay(Fixture("attack-shadow"), out _);
+            var free = Replay(Fixture("attack-free-peoples"), out _);
+            var advance = shadow.Single(cue => cue.Kind == PresentationCueKind.Advance);
+            Assert.IsTrue(advance.OwnCommand, "The Shadow's own advance, recorded on an automatic step.");
+            Assert.IsTrue(shadow.Where(cue => cue.Kind == PresentationCueKind.Losses && cue.Revision == 5).All(cue => cue.OwnCommand),
+                "The Shadow chose those casualties.");
+            Assert.IsTrue(shadow.Where(cue => cue.Revision == 3).All(cue => !cue.OwnCommand), "The Free Peoples' commit caused revision 3.");
+            Assert.IsFalse(free.Single(cue => cue.Kind == PresentationCueKind.Advance).OwnCommand, "For the Free Peoples it is the opponent's advance.");
+        }
+
+        [Test]
         public void ABattleWithoutItsOpeningSnapshotIsABeatNotALateAttack()
         {
             var fixture = Fixture("attack-free-peoples");

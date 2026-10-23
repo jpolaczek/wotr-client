@@ -42,6 +42,9 @@ namespace Wotr.Client
         public ActionDieChange Die { get; }
         public ActionResourceChange Resource { get; }
         public ActionOutcome Outcome { get; }
+        // UI-305: the revision holds the player's own decision, so this cue is a shared result of their own click (a
+        // roll, their retreat or advance). It still plays in its window, but the camera never moves for it.
+        public bool OwnCommand { get; internal set; }
 
         internal PresentationCue(ActionLogStep step, PresentationCueKind kind, string key, CuePayload payload)
         {

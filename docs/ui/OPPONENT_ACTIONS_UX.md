@@ -235,6 +235,11 @@ PlayMode `MountedMatchClient`.
   memory never repeats it.
 - **Camera (§6.5).** Map families get a camera beat: marches, travel, attack, retreat, advance, figure changes,
   control and a visible Fellowship. Battle, Hunt, card, cost, dice and politics cues play in their own windows and rows.
+  Inside a battle only the attack, a retreat, an advance and a capture return to the map; its casualties and other
+  figure changes stay in the battle window.
+  - **Only the opponent's actions move the camera.** A cue whose revision holds the player's own decision
+    (`PresentationCue.OwnCommand`) is a shared result of their own click, such as their own retreat, advance or the
+    rolls they completed. It plays, but the camera stays where the player put it.
   - The safe area is the map minus every HUD rectangle the map already avoids (top bar, notices, console, open panels
     and windows, the card inspector) and the left and right columns. Each occluder cuts the area to the largest band
     beside it (`SafeMapArea`).
@@ -267,6 +272,8 @@ PlayMode `MountedMatchClient`.
   - "Legible" ignores zoom, so a player who plays zoomed out is not zoomed in on every opponent action.
   - The source symbol lives for the presentation, not across later presentations of the same action.
   - Only a card opened during a presentation holds it.
+  - The camera exception covers only revisions the opponent caused; the player's own click never moves it, even when
+    its shared result (a retreat, an advance) is presented.
 - **Checks.**
   - EditMode `OpponentPresentationQueueTests`: presenter order, paused clock, `Presenting` and `Released`.
   - EditMode `PresentationCameraTests`: safe-area cuts, travel endpoints and durations.

@@ -72,6 +72,7 @@ namespace Wotr.Client
         private List<PresentationCue> Build(List<ActionLogStep> steps)
         {
             var cues = new List<PresentationCue>();
+            var own = steps.Where(step => step.Actor == You).Select(step => step.Revision).ToHashSet();
             var groups = steps.GroupBy(step => (step.Revision, step.ActionId))
                 .OrderBy(group => group.Key.Revision).ThenBy(group => group.Min(step => step.Order));
             foreach (var group in groups)
@@ -83,7 +84,10 @@ namespace Wotr.Client
                     continue;
                 var presentation = Presentation(group.Key.ActionId);
                 foreach (var cue in released)
+                {
+                    cue.OwnCommand = own.Contains(cue.Revision);
                     presentation.Add(cue);
+                }
                 cues.AddRange(released);
             }
             return cues;
