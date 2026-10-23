@@ -23,6 +23,9 @@ namespace Wotr.Client
         private readonly IVisualElementScheduledItem timer;
         private double started;
         private bool disposed;
+        // UI-306: a presentation flew moves and rebased on its staged view; the release that brings nothing new keeps
+        // the presented result (its revealed destinations) instead of clearing it.
+        private bool presented;
         private bool observingFocus;
 
         public MapFigureMotion(MapCanvas map)
@@ -59,8 +62,10 @@ namespace Wotr.Client
             if (sameGame && view.Revision <= current.Revision)
                 return;
             var moves = changes.Apply(view, map.Data.Regions.ContainsKey);
+            var released = presented;
+            presented = false;
             // UI-95: a projection that leaves every flying figure at its destination lets the flights finish.
-            if (moves.Count == 0 && sameGame && FlightsHold(changes.Current))
+            if (moves.Count == 0 && sameGame && (released || FlightsHold(changes.Current)))
                 return;
             Present(moves);
         }
@@ -100,6 +105,26 @@ namespace Wotr.Client
                 new BoardFigureSnapshot(after, map.Data.Regions.ContainsKey)));
         }
 #endif
+
+        // UI-306: recorded moves of a presented opponent action, flown on the presented board.
+        public void Fly(IReadOnlyList<BoardFigureMove> moves)
+        {
+            if (!disposed)
+                Present(moves);
+        }
+
+        // UI-306: the staged view of a presentation is the baseline of the next projection, so its moves never replay.
+        public void Rebase(PlayerView staged)
+        {
+            changes.Rebase(staged, map.Data.Regions.ContainsKey);
+            presented = true;
+        }
+
+        // UI-306: Skip shows the latest state; the next projection moves nothing.
+        public void Quiet() => changes.Quiet();
+
+        // UI-306: a skipped presentation's flights end at once, at their destinations.
+        public void Land() => Clear();
 
         public bool Arriving(string region, Side side, bool garrison) => arrivals.Contains((region, side, garrison));
         public bool Reveals(string region) => revealedRegions.Contains(region);

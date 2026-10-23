@@ -36,6 +36,22 @@ namespace Wotr.EditorTests
             Assert.AreEqual(Rect.MinMaxRect(40, 0, 1366, 768), safe, "A 40 pt strip on the left loses less than 48 pt below.");
         }
 
+        // UI-306: a capture moves the victory points of a scoring settlement only — to the side that takes it from its
+        // original owner, or away from the side whose capture is retaken.
+        [Test]
+        public void ACaptureCountsOnlyAScoringSettlementForTheSideItMovesPointsFor()
+        {
+            var city = new Wotr.Contracts.RegionDefinition { Id = "edoras", OriginalOwner = Wotr.Contracts.Side.FreePeoples, VictoryPoints = 1 };
+            var field = new Wotr.Contracts.RegionDefinition { Id = "osgiliath", OriginalOwner = Wotr.Contracts.Side.FreePeoples };
+            var capture = new Wotr.Contracts.ActionControlChange
+                { RegionId = "edoras", Before = Wotr.Contracts.Side.FreePeoples, After = Wotr.Contracts.Side.Shadow };
+            var retaken = new Wotr.Contracts.ActionControlChange
+                { RegionId = "edoras", Before = Wotr.Contracts.Side.Shadow, After = Wotr.Contracts.Side.FreePeoples };
+            Assert.AreEqual(("+1 VP", Wotr.Contracts.Side.Shadow), ControlPresenter.Points(city, capture));
+            Assert.AreEqual(("−1 VP", Wotr.Contracts.Side.Shadow), ControlPresenter.Points(city, retaken));
+            Assert.IsNull(ControlPresenter.Points(field, capture), "A region without a scoring settlement gains no point.");
+        }
+
         [Test]
         public void ATravelStartsAndEndsAtItsFramingsAndKeepsTheFocusLine()
         {

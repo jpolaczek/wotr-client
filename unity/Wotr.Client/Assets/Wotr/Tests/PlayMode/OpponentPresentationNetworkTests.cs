@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,16 +82,32 @@ namespace Wotr.PlayTests
                 var sh = session.Client(Side.Shadow);
                 var march = Movable(sh.Board.View, null);
                 var board = new List<string>();
+                var staged = new List<int>();
+                var flown = 0;
                 var presenter = new ScriptedCuePresenter(new Dictionary<PresentationCueKind, double> { [PresentationCueKind.March] = 1 },
-                    cue => board.Add(Board(fp, march.Army)));
+                    cue =>
+                    {
+                        board.Add(Board(fp, march.Army));
+                        staged.Add(fp.Board.Presentation.Armies.Where(a => a.RegionId == march.Target.RegionId && a.Side == Side.Shadow).Sum(a => a.Total));
+                    });
                 fp.Playback.Register(presenter);
                 await session.Send(Side.Shadow, CommandKind.MoveArmies, Move(ArmyDie(sh.Board.View), march.Army, march.Target));
-                await session.Until(() => presenter.Begun.Count == 1);
-                Assert.AreEqual("source;die", board[0]);
-                Assert.AreEqual(0, fp.Board.Map.Figures.ActiveCount, "Nothing flies while the source is shown.");
+                await session.Until(() =>
+                {
+                    if (fp.Playback.Holding && fp.Board.Map.Figures.ActiveCount > 0)
+                        flown = Math.Max(flown, fp.Board.Map.Figures.Moves.Count(m => m.To.Region == march.Target.RegionId));
+                    return presenter.Begun.Count == 1;
+                });
+                Assert.AreEqual("source;die", board[0], "The board's view still has the army at its source and the die unspent.");
+                Assert.AreEqual(march.Army.UnitIds.Count, flown, "The recorded movers flew while the view was held.");
+                var settled = fp.Playback.Latest.Units.Count(u => u.Side == Side.Shadow && u.Location == march.Target.RegionId && !u.Garrison) +
+                    fp.Playback.Latest.Characters.Count(c => c.Side == Side.Shadow && c.Location == march.Target.RegionId && !c.Garrison);
+                Assert.AreEqual(settled, staged[0], "The presented destination settled with its true composition.");
+                // UI-306: the production movement presenter flew the recorded movers before the stand-in's beat, on the
+                // presented board (its view still shows them at the source); the release then replays nothing.
                 await session.Until(() => !fp.Playback.Holding);
-                Assert.Greater(fp.Board.Map.Figures.ActiveCount, 0, "The released march moves its figures.");
-                Assert.IsTrue(fp.Board.Map.Figures.Moves.All(m => m.From.Region == march.Army.RegionId && m.To.Region == march.Target.RegionId));
+                Assert.AreEqual(0, fp.Board.Map.Figures.ActiveCount, "The release does not replay the presented march.");
+                Assert.IsTrue(fp.Board.View.Units.Where(u => march.Army.UnitIds.Contains(u.Id)).All(u => u.Location == march.Target.RegionId));
             }
             finally
             {

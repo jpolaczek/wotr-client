@@ -574,6 +574,10 @@ namespace Wotr.Client
                 covered.AddRange(Occlusions().Where(r => r.Overlaps(contentRect)));
         }
 
+        // UI-306: where one force's marker stands (map-local), for an observed trace; null while it is not shown.
+        public Rect? MarkerBounds(string region, Side side, bool garrison) =>
+            markers.TryGetValue((region, side, garrison), out var marker) && marker.Visible ? marker.Bounds : (Rect?)null;
+
         public IEnumerable<Rect> MarkerBounds(string region)
         {
             foreach (var marker in markers.Values)

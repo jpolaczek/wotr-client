@@ -199,6 +199,34 @@ namespace Wotr.EditorTests
             finally { Object.DestroyImmediate(decoded); }
         }
 
+        // UI-306: a presentation flew one march on a staged copy of the presented revision; the release moves only the
+        // march it did not show, and after Skip nothing.
+        [Test]
+        public void ARebasedStagedViewMovesOnlyWhatThePresentationDidNotShowAndQuietMovesNothing()
+        {
+            var view = View();
+            view.Units.Add(Unit("second", "pelargir"));
+            var changes = Online(view);
+            var staged = View();
+            staged.Units.Add(Unit("second", "pelargir"));
+            staged.Units[0].Location = "osgiliath";
+            changes.Rebase(staged, Region);
+            var latest = View();
+            latest.Revision = 1;
+            latest.Units.Add(Unit("second", "osgiliath"));
+            latest.Units[0].Location = "osgiliath";
+            var moves = changes.Apply(latest, Region);
+            Assert.AreEqual(1, moves.Count, "The presented march does not replay.");
+            Assert.AreEqual("unit:second", moves[0].To.Key);
+            changes.Quiet();
+            latest.Revision = 2;
+            latest.Units[1].Location = "minas-tirith";
+            Assert.IsEmpty(changes.Apply(latest, Region), "After Skip the latest state is shown without moves.");
+            latest.Revision = 3;
+            latest.Units[1].Location = "pelargir";
+            Assert.AreEqual(1, changes.Apply(latest, Region).Count, "Quiet lasts one projection.");
+        }
+
         private static BoardFigureChanges Online(PlayerView view)
         {
             var changes = new BoardFigureChanges();

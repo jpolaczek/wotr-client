@@ -542,6 +542,14 @@ namespace Wotr.Client
         // Whether a step's presentation (flights, the second stage of the tracks) is still going on.
         public bool Presenting => Map.Figures.ActiveCount > 0 || TracksStaged;
 
+        // UI-306: a presentation's staged view of the presented revision (recorded movers relocated, a region's control
+        // changed) drives only the map's markers and settlements; the board's view, decision and windows stay as they are.
+        public void Stage(PlayerView staged)
+        {
+            Presentation.Apply(staged);
+            Map.UpdateData(Presentation);
+        }
+
         public void Apply(PlayerView view)
         {
             if (view == null)

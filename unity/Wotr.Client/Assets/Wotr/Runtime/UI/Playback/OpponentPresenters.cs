@@ -3,9 +3,10 @@ using UnityEngine.UIElements;
 
 namespace Wotr.Client
 {
-    // UI-305: the production presenters of the opponent's actions on one mounted board, in beat order — the cost die,
-    // then the camera — with the Skip target, Esc (only when nothing else owns it) and the pause while the player reads a
-    // card opened during the presentation. The family presenters of UI-306–UI-312 register after these.
+    // UI-305/UI-306: the production presenters of the opponent's actions on one mounted board, in beat order — the cost
+    // die, the camera, then the families (army movement, attack, control) — with the Skip target, Esc (only when nothing
+    // else owns it) and the pause while the player reads a card opened during the presentation. The family presenters of
+    // UI-307–UI-312 register after these. One staged board and one map trace serve every presenter of a presentation.
     public sealed class OpponentPresenters : IDisposable
     {
         private readonly BoardScreen board;
@@ -13,6 +14,8 @@ namespace Wotr.Client
         private readonly PresentationLayer layer;
         private readonly CostEmphasis cost;
         private readonly PresentationCamera camera;
+        private readonly StagedBoard staged;
+        public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
         private PresentationPlayback Playback => binding.Playback;
@@ -25,9 +28,14 @@ namespace Wotr.Client
             layer = new PresentationLayer(board);
             cost = new CostEmphasis(board, layer);
             camera = new PresentationCamera(board);
-            Skip = new SkipControl(board, layer, Playback);
+            staged = new StagedBoard(board);
+            Trace = new MapObservedTrace(board.Map);
+            Skip = new SkipControl(board, layer, Playback, SkipNow);
             Playback.Register(cost);
             Playback.Register(camera);
+            Playback.Register(new ArmyMovementPresenter(board, staged, Trace));
+            Playback.Register(new AttackPresenter(board, Trace));
+            Playback.Register(new ControlPresenter(board, staged, Trace));
             Playback.Paused = Reading;
             Playback.Released += Released;
             binding.Ticked += Skip.Refresh;
@@ -43,6 +51,7 @@ namespace Wotr.Client
             Playback.Released -= Released;
             Playback.Paused = null;
             camera.Dispose();
+            Trace.Root.RemoveFromHierarchy();
             layer.Root.RemoveFromHierarchy();
         }
 
@@ -63,14 +72,25 @@ namespace Wotr.Client
         {
             if (!Playback.Presenting)
                 return false;
-            Playback.Skip();
+            SkipNow();
             return true;
+        }
+
+        // Skip shows the latest state: nothing that was skipped moves afterwards.
+        private void SkipNow()
+        {
+            if (!Playback.Presenting)
+                return;
+            board.Map.Figures.Quiet();
+            Playback.Skip();
         }
 
         private void Released()
         {
             cost.Clear();
             camera.Released();
+            Trace.Clear();
+            staged.Reset();
             reading = false;
         }
     }

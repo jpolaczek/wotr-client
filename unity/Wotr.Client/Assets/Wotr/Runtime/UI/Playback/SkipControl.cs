@@ -18,12 +18,12 @@ namespace Wotr.Client
         private readonly PresentationPlayback playback;
         public Button Button { get; }
 
-        public SkipControl(BoardScreen board, PresentationLayer layer, PresentationPlayback playback)
+        public SkipControl(BoardScreen board, PresentationLayer layer, PresentationPlayback playback, System.Action skip)
         {
             this.board = board;
             this.layer = layer;
             this.playback = playback;
-            Button = IconButton.Create("skip", "Skip presentation", playback.Skip);
+            Button = IconButton.Create("skip", "Skip presentation", skip);
             Button.name = Name;
             Button.AddToClassList(Name);
         }

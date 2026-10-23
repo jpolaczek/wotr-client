@@ -98,3 +98,40 @@
     width: 22px;
     height: 22px;
 }
+
+/* UI-306: observed traces on the map (MapObservedTrace): a set fades in and out together. */
+.map-observed-trace {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+.observed-set {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+}
+.observed-set.shown { opacity: 1; }
+.motion-enabled .observed-set { transition-property: opacity; transition-duration: 0.4s; }
+.motion-enabled .observed-set.shown { transition-duration: 0.2s; }
+.observed-ring {
+    position: absolute;
+    border-width: 2px;
+    border-color: rgba(146, 212, 242, 0.85);
+}
+/* The delta badge: a small dark plate with a signed count in the enamel of the side it counts for. */
+.observed-badge {
+    position: absolute;
+    margin: 0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+    font-size: 13px;
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.observed-badge-free { color: rgb(146, 196, 236); }
+.observed-badge-shadow { color: rgb(236, 128, 112); }
