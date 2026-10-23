@@ -23,6 +23,9 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator AnAttackOpensItsDecisionsAtTheirBoundariesThroughSkipAReactionAndOurOwnCommand() => Wait(Attack());
 
+        [UnityTest]
+        public IEnumerator AMarchKeepsItsSourceUntilItsBeatEndsAndThenItsFiguresMove() => Wait(Movement());
+
         private static async Task Marches()
         {
             var session = await TestScenarioRoom.Start("sh-army-move");
@@ -61,6 +64,33 @@ namespace Wotr.PlayTests
                 await Task.Delay(1500);
                 Assert.AreEqual(2, presenter.Begun.Count, "Missed history never replays a move.");
                 Assert.IsTrue(fp.Board.View.Units.Where(u => second.Army.UnitIds.Contains(u.Id)).All(u => u.Location == second.Target.RegionId));
+            }
+            finally
+            {
+                await session.End();
+            }
+        }
+
+        // The board's own figure motion (UI-77) still runs after the release: the held march flies from its source.
+        private static async Task Movement()
+        {
+            var session = await TestScenarioRoom.Start("sh-army-move");
+            try
+            {
+                var fp = session.Client(Side.FreePeoples);
+                var sh = session.Client(Side.Shadow);
+                var march = Movable(sh.Board.View, null);
+                var board = new List<string>();
+                var presenter = new ScriptedCuePresenter(new Dictionary<PresentationCueKind, double> { [PresentationCueKind.March] = 1 },
+                    cue => board.Add(Board(fp, march.Army)));
+                fp.Playback.Register(presenter);
+                await session.Send(Side.Shadow, CommandKind.MoveArmies, Move(ArmyDie(sh.Board.View), march.Army, march.Target));
+                await session.Until(() => presenter.Begun.Count == 1);
+                Assert.AreEqual("source;die", board[0]);
+                Assert.AreEqual(0, fp.Board.Map.Figures.ActiveCount, "Nothing flies while the source is shown.");
+                await session.Until(() => !fp.Playback.Holding);
+                Assert.Greater(fp.Board.Map.Figures.ActiveCount, 0, "The released march moves its figures.");
+                Assert.IsTrue(fp.Board.Map.Figures.Moves.All(m => m.From.Region == march.Army.RegionId && m.To.Region == march.Target.RegionId));
             }
             finally
             {

@@ -274,7 +274,8 @@ Code: `Runtime/Application/Playback` — `PresentationPlayback` (pure, clock-dri
 - **Checks.** EditMode `OpponentPresentationQueueTests` (ordering, history wait, late cues, private versions, Skip,
   rebase, disposal, failed release, presenter choice); PlayMode `OpponentPresentationNetworkTests` with two real clients
   and a stand-in presenter on the test scenarios `sh-army-move` (the source army and the unspent die stay until the
-  march's beat ends; a second march queues behind it; a reconnect shows the latest state and replays nothing) and
+  march's beat ends and nothing flies meanwhile, then the board's figure motion moves it from its source; a second
+  march queues behind the first; a reconnect shows the latest state and replays nothing) and
   `sh-army-attack` (no battle window before the attack's beat ends; Skip on the next frame; the Shadow's Combat card
   choice is presented before ours opens; our click sends one command and the shared rolls it completes play before
   the next decision).
