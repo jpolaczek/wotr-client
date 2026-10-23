@@ -42,6 +42,28 @@ namespace Wotr.PlayTests
         public IEnumerator AMarchAlreadyInViewDoesNotMoveTheCamera() => Scene(1920, 1f, false, Between, "legible");
 
         [UnityTest]
+        public IEnumerator AMarchBesideACrowdedRegionIsFramedWithEveryStackReadable() =>
+            Scene(1366, 1.25f, false, FarAway, "crowded", new StageOptions { Stress = true, Source = "minas-morgul", Destination = "osgiliath" });
+
+        [UnityTest]
+        public IEnumerator ASpentOrChangedDieKeepsACopyAtItsPlaceWithItsUsedFace()
+        {
+            using var stage = new Stage(1366, 1f, false, new StageOptions { Spent = true, Used = DieFace.Muster });
+            yield return stage.Ready();
+            Assert.IsNull(stage.Board.OpponentDice.Q<Button>(Die), "The presented pool no longer holds the die.");
+            stage.Start(FarAway);
+            yield return stage.Until(() => stage.Mark != null);
+            yield return new WaitForSecondsRealtime(.25f);
+            var mark = stage.Mark;
+            Assert.IsNotNull(mark.Q("presentation-die"), "A copy stands where the die was.");
+            Assert.IsNotNull(mark.Q("presentation-used-face"), "The face it was used as.");
+            Assert.IsTrue(stage.Board.OpponentDice.worldBound.Overlaps(mark.worldBound) || mark.worldBound.xMin >= stage.Board.OpponentDice.worldBound.xMax - 1,
+                "The copy stands at the opponent's pool.");
+            LayoutTests.Save(stage.Texture, "ui305-spent-1366-1.00.png");
+            yield return stage.Until(() => !stage.Playback.Holding);
+        }
+
+        [UnityTest]
         public IEnumerator SkipEndsThePresentationOnTheNextFrameWithoutMovingTheCamera()
         {
             using var stage = new Stage(1366, 1f, false);
@@ -69,6 +91,7 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => stage.Mark != null);
             stage.Board.Cards.Show(Card, true, allowPlay: false);
             yield return new WaitForSecondsRealtime(1.6f);
+            LayoutTests.Save(stage.Texture, "ui305-card-reading-1366-1.00.png");
             Assert.IsTrue(stage.Playback.Holding, "A card opened during the presentation holds it.");
             Assert.AreEqual(PresentationCueKind.Cost, stage.Playback.Current?.Kind, "Nothing advanced while the card was read.");
             // The player clicked the card, so the key comes from inside it.
@@ -97,15 +120,17 @@ namespace Wotr.PlayTests
             using (var wheel = WheelEvent.GetPooled(new Event { type = EventType.ScrollWheel, mousePosition = map.worldBound.center, delta = new Vector2(0, -1) }))
                 map.SendEvent(wheel);
             var taken = stage.CameraNow;
+            LayoutTests.Save(stage.Texture, "ui305-takeover-1-wheel-1366-1.00.png");
             yield return stage.Until(() => !stage.Playback.Holding);
+            LayoutTests.Save(stage.Texture, "ui305-takeover-2-after-1366-1.00.png");
             Assert.AreEqual(taken, stage.CameraNow, "Manual navigation wins.");
             Assert.IsFalse(map.EdgePan.Suspended);
         }
 
-        private static IEnumerator Scene(int width, float scale, bool reduced, string start, string name)
+        private static IEnumerator Scene(int width, float scale, bool reduced, string start, string name, StageOptions options = null)
         {
             var file = "ui305-" + name + "-" + width + "-" + scale.ToString("0.00");
-            using var stage = new Stage(width, scale, reduced);
+            using var stage = new Stage(width, scale, reduced, options);
             yield return stage.Ready();
             stage.Start(start);
             var before = stage.Buttons();
@@ -127,7 +152,7 @@ namespace Wotr.PlayTests
             Assert.IsNull(stage.Board.Root.Q(className: "presentation-caption"), "These beats need no caption.");
             Assert.AreEqual(1, stage.Board.View.Revision);
             var safe = stage.Presenters.Camera.SafeArea();
-            foreach (var region in new[] { Source, Destination })
+            foreach (var region in new[] { stage.Options.Source, stage.Options.Destination })
                 Assert.IsTrue(safe.Contains(stage.Board.Map.Camera.ToScreen(Anchor(stage.Board, region))),
                     region + " ends in the safe map area (" + file + ").");
             if (start == Between)
@@ -183,6 +208,16 @@ namespace Wotr.PlayTests
         private static Vector2 Anchor(BoardScreen board, string region) =>
             new Vector2(board.Map.Data.Shapes[region].Anchor[0], board.Map.Data.Shapes[region].Anchor[1]);
 
+        private sealed class StageOptions
+        {
+            public bool Stress { get; set; }
+            // The presented pool already lost the die (its copy stands in), or the die was used as another face.
+            public bool Spent { get; set; }
+            public DieFace Used { get; set; } = DieFace.Army;
+            public string Source { get; set; } = OpponentPresentationLayoutTests.Source;
+            public string Destination { get; set; } = OpponentPresentationLayoutTests.Destination;
+        }
+
         // One mounted board at one layout, with the Shadow's march received while the camera looks elsewhere.
         private sealed class Stage : IDisposable
         {
@@ -190,6 +225,7 @@ namespace Wotr.PlayTests
             private readonly List<string> moved;
             private readonly PlayerView before;
             public RenderTexture Texture { get; }
+            public StageOptions Options { get; }
             public BoardScreen Board => client.Board;
             public PresentationPlayback Playback => client.Playback;
             public OpponentPresenters Presenters => client.Presenters;
@@ -197,18 +233,23 @@ namespace Wotr.PlayTests
             public VisualElement Mark => Board.Root.Q(CostEmphasis.MarkName);
             public (float, Vector2) CameraNow => (Board.Map.Camera.Zoom, Board.Map.Camera.Pan);
 
-            public Stage(int width, float scale, bool reduced)
+            public Stage(int width, float scale, bool reduced, StageOptions options = null)
             {
+                Options = options ?? new StageOptions();
                 client = new MountedMatchClient("http://localhost", "ui305-presentation");
                 Texture = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
                 Texture.Create();
                 client.Panel.targetTexture = Texture;
                 client.Interface.Preferences.SetScale(scale);
                 client.Interface.Preferences.SetReducedMotion(reduced);
-                var fixture = new BoardFixture();
+                var fixture = new BoardFixture(Options.Stress);
                 before = fixture.View;
-                before.Dice.Add(new DieView { Id = Die, Owner = Side.Shadow, Face = DieFace.Army, Source = "standard", Location = DieLocation.Available });
-                moved = Enumerable.Range(0, 3).Select(_ => fixture.Put("sauron", UnitKind.Regular, Source).Id).ToList();
+                before.Dice.Add(new DieView
+                {
+                    Id = Die, Owner = Side.Shadow, Face = DieFace.Army, Source = "standard",
+                    Location = Options.Spent ? DieLocation.Spent : DieLocation.Available
+                });
+                moved = Enumerable.Range(0, 3).Select(_ => fixture.Put("sauron", UnitKind.Regular, Options.Source).Id).ToList();
                 client.Apply(before);
             }
 
@@ -221,7 +262,7 @@ namespace Wotr.PlayTests
             public void Start(string focus)
             {
                 if (focus == Between)
-                    Board.Map.FocusOn((Anchor(Board, Source) + Anchor(Board, Destination)) / 2, Board.Map.FitZoom * 1.4f);
+                    Board.Map.FocusOn((Anchor(Board, Options.Source) + Anchor(Board, Options.Destination)) / 2, Board.Map.FitZoom * 1.4f);
                 else
                     Board.Map.FocusOn(Anchor(Board, focus), Board.Map.FitZoom * 2.2f);
                 Playback.SetConnection("Connected");
@@ -229,7 +270,7 @@ namespace Wotr.PlayTests
                 after.Revision = 1;
                 after.Dice.Single(d => d.Id == Die).Location = DieLocation.Spent;
                 foreach (var unit in after.Units.Where(u => moved.Contains(u.Id)))
-                    unit.Location = Destination;
+                    unit.Location = Options.Destination;
                 client.Refresh(after);
                 Playback.Enqueue(Cues());
                 Playback.HistoryRead(1);
@@ -253,10 +294,10 @@ namespace Wotr.PlayTests
                 {
                     Id = "ui305-march", ActionId = "ui305-action", Revision = 1, Order = 1, Actor = Side.Shadow, Kind = "ArmiesMoved"
                 };
-                step.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = Die, Owner = Side.Shadow, Face = DieFace.Army, Use = DieFace.Army });
+                step.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = Die, Owner = Side.Shadow, Face = DieFace.Army, Use = Options.Used });
                 step.Movements.Add(new ActionMovement
                 {
-                    Kind = ActionMovementKind.March, From = Source, To = Destination,
+                    Kind = ActionMovementKind.March, From = Options.Source, To = Options.Destination,
                     Participants = moved.Select(id => new ActionParticipant { Id = id, Side = Side.Shadow, UnitKind = UnitKind.Regular }).ToList()
                 });
                 var model = new OpponentPresentationModel(Side.FreePeoples, Board.Presentation);

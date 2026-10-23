@@ -283,10 +283,13 @@ PlayMode `MountedMatchClient`.
       nothing left behind;
     - Reduced motion jumps;
     - an already visible march does not move the camera;
+    - a march beside a crowded region (stress board, 1366 / 125 %) is framed clear of the open hand;
+    - a die the presented pool no longer holds stands as a copy, with its used face;
     - Skip on the next frame leaves the camera;
     - Esc closes a read card first, then skips;
     - a wheel zoom during the travel wins;
-    - frames `ui305-*` in `.artifacts/screenshots`.
+    - frames `ui305-*` in `.artifacts/screenshots`: far, crowded, legible, Reduced motion, spent die, card reading and
+      manual takeover.
 
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
