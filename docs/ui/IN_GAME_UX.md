@@ -247,3 +247,12 @@ message, also when messages came while it was rolled up or the player had scroll
 scrolls to its end on the tick after it is laid out (`RoomChatPanel.ShowLatest`). Tests:
 `DraftInputTests.EnterInTheOpenChatSendsTheMessageAndConfirmsNothing` (a ready Hunt allocation stays unconfirmed by
 the chat's Enter and is confirmed by Enter outside it), `BoardInteractionTests.ChatOpensOnItsNewestMessage`.
+
+<a id="karta-przeciwnika--ui-308"></a>
+## The opponent's card during a presentation — UI-308 (2026-10-24)
+
+The card inspector may open without a click for one case only: the opponent's public Event during its presentation
+([OPPONENT_ACTIONS_UX §6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308)). It is transient and read-only, stands in the half
+of the map away from the card's first effect, keeps the inspector's viewport rules (no shrunk text, no scrolling), and
+closes into the console trail after 3 s; a click pins it and holds the presentation until it is closed. The inspector's
+remembered position, pinning and Esc behave as before.

@@ -392,6 +392,52 @@ plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
     - muted clips `ui307-clip-*` at 1920 / 125 %.
   - `OpponentRecruitmentPoliticsNetworkTests` with two real clients on `sh-muster-recruit` and `sh-muster-politics`.
 
+<a id="wdrozone-308"></a>
+### 6.12 Shipped in UI-308 (2026-10-24): the public card and its chained effects
+
+Code: `Runtime/UI/Playback/CardRevealPresenter.cs` and `LayerRing.cs`, plus `CardInspector.PlaceIn`/`Note`,
+`ConsoleStatus.PresentSource`/`EndSource` and `PresentationPlayback.Upcoming`.
+
+- **Reveal.** Only a recorded public Event (`ActionCardUse.Event` with an id) introduces a face-up card. Commits and
+  draws never do, and combat reveals belong to the battle window.
+  - The card opens in the existing CardInspector, read-only: no Play bar, and the status line "Event played".
+  - It opens at its own readable width (the inspector's viewport rules; text is never shrunk and nothing scrolls).
+  - The used Event half carries the observed treatment: a pale-blue bar and tint. The inspector's own
+    `focused-effect` heading was indistinguishable on the board's parchment.
+  - It stands at the top of the half of the safe map area away from the action's first effect (the first upcoming cue
+    of the action with a region). It never covers the console or that effect.
+  - It holds for **3 s**. It is a transient view, so it never pauses itself.
+- **Read.** A click on the shown card pins it, and the presentation holds until the player closes it (its × or Esc). No
+  Read, Pause or Resume control exists. Inspecting the source card is read-only: it never plays or discards a card and
+  never marks a pennant read; pennants keep their manual-read behaviour.
+- **Dock.** After the hold the card closes and docks as a source chip in the console trail ("✓ Orcs Multiplying Again").
+  - The chip opens and closes the same read-only card, and stays through every effect beat.
+  - It is presentation-only: the server projects only the viewer's own trail.
+  - It returns, without a new reveal, when a later presentation continues the same action (after a real choice).
+  - It leaves at the release.
+- **Effects.** Each committed effect plays through its own presenter, in causal order, under that one source: movement
+  (§6.10), recruitment, upgrades, removals and politics (§6.11), and later characters, the Fellowship and battle. The
+  reveal, the cost and the side name are not repeated per effect.
+- **Choices.** A real choice ends the committed presentation, and its decision opens on its own host at the release. No
+  preview of what the opponent might choose is invented.
+- **Table cards.** A card kept on the table settles at the Effects tab with a brief ring (`TableEntered`). Its later
+  removal (`TableRemoved`) is a brief ring at its tile, or at the tab when the panel is closed. Neither is a new
+  reveal.
+- **Cancelled / No effect.** No history fact records a cancellation or a void effect today, so no such caption is shown
+  (§6.4).
+- **Hooks for UI-309–UI-311.** `CardRevealPresenter` (reveal, dock and recall) and `LayerRing`.
+- **Checks.**
+  - PlayMode `OpponentCardPresentationTests` on the shared `PresentedBoardStage`:
+    - the reveal (read-only, used half marked, clear of the console and of the first effect), the 3 s hold, the dock
+      and both recruitment regions under one source;
+    - a reading click held for 4 s and resumed by closing;
+    - 1366 × 768 at 125 % with rules text of at least 14 pt, unclipped and without scrolling;
+    - Skip during the reveal;
+    - table entry and removal;
+    - a muted clip with a reading click (`ui308-clip-*`).
+  - `OpponentCardPresentationNetworkTests` with two real clients on `sh-muster-event` (Orcs Multiplying Again) and
+    `sh-character-event` (Flocks of Crebain, kept on the table).
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -654,7 +700,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-305 Camera, source, Skip (shipped) | §6.1–§6.6; §5 observed trace; the manual takeover; registers the first presenters (§7.1) and puts the Skip target and Esc on `PresentationPlayback.Skip` — delivered as §6.9 |
 | UI-306 Army movement (shipped) | §8 army march, attack, retreat; storyboards A and C1–C3 — delivered as §6.10; reusable `StagedBoard`, `MapObservedTrace`, movement/capture presenters |
 | UI-307 Recruitment and politics (shipped) | §8 recruitment and politics; the delta badge; storyboard B4–B5 — delivered as §6.11; reusable figure-change and politics presenters |
-| UI-308 Public cards | §6.2 reveal and dock; §8 event card; storyboard B |
+| UI-308 Public cards (shipped) | §6.2 reveal and dock; §8 event card; storyboard B — delivered as §6.12; reusable reveal/dock/recall and `LayerRing` |
 | UI-309 Characters | §8 characters |
 | UI-310 Fellowship and Hunt | §8 Fellowship/Hunt; storyboard D |
 | UI-311 Battle | §8 battle round; storyboard C4–C9 |
