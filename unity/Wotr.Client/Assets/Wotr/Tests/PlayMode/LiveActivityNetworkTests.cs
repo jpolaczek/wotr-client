@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -19,6 +20,7 @@ namespace Wotr.PlayTests
         {
             using var room = await Connect("ui47-live-activity", ScenarioKind.BaseAcceptance, openPanels: false);
             await ActionNoticeNetworkTests.Loaded(room);
+            using var cues = new OpponentCueLog(room);
             var die = ArmyGestures.ArmyDie(room.Fp);
             ArmyGestures.Die(room.Fp, die);
             await ArmyGestures.All(room.Fp, "minas-tirith");
@@ -76,8 +78,50 @@ namespace Wotr.PlayTests
             Assert.IsFalse(room.Fp.Board.View.Units.Any(u => u.Side == Side.FreePeoples && u.Location == "osgiliath"));
             Assert.IsNull(room.Fp.Board.View.Battle);
             Assert.AreEqual(BattleReportStatus.Completed, room.Fp.Board.Log.Card.Archive.Displayed.Status);
+            await VerifyCues(room, cues, movement);
             await VerifyHistory(room, battleId, movement);
         }
+
+        // UI-303: each player is shown the other's moves, attack, commits and results once, the shared steps alike, and
+        // the shown movements end where both final boards have the figures.
+        private static async Task VerifyCues(MatchTestRoom room, OpponentCueLog cues, string movementId)
+        {
+            await room.Until(() => cues.Fp.Any(cue => cue.Kind == PresentationCueKind.Advance) &&
+                cues.Sh.Any(cue => cue.Kind == PresentationCueKind.Retreat));
+            await room.Settle();
+            cues.AssertConsistent();
+            var moves = cues.Sh.Where(cue => cue.ActionId == movementId).ToList();
+            Assert.AreEqual(1, moves.Count(cue => cue.Kind == PresentationCueKind.Cost), "Two moves share one cost.");
+            CollectionAssert.AreEqual(new[] { "minas-tirith>osgiliath", "edoras>westemnet" },
+                moves.Where(cue => cue.Kind == PresentationCueKind.March).Select(cue => cue.Movement.From + ">" + cue.Movement.To));
+            var attack = cues.Fp.Single(cue => cue.Kind == PresentationCueKind.Attack);
+            CollectionAssert.AreEqual(new[] { "north-ithilien", "osgiliath" }, attack.Regions);
+            Assert.AreEqual(1, cues.Fp.Count(cue => cue.ActionId == attack.ActionId && cue.Kind == PresentationCueKind.Cost));
+            Assert.IsFalse(cues.Sh.Any(cue => cue.Kind is PresentationCueKind.Attack or PresentationCueKind.Cost && cue.ActionId == attack.ActionId),
+                "The Shadow's own attack and its die are not played back to the Shadow.");
+            Assert.IsTrue(CommittedBack(cues.Fp, Side.Shadow) && CommittedBack(cues.Sh, Side.FreePeoples), "A commitment is a card back.");
+            var reveals = new[] { "base.sh.strategy.01", "base.fp.strategy.01" };
+            CollectionAssert.AreEquivalent(reveals, OpponentCueLog.Reveals(cues.Fp));
+            CollectionAssert.AreEquivalent(reveals, OpponentCueLog.Reveals(cues.Sh));
+            var advance = cues.Fp.Last(cue => cue.Kind == PresentationCueKind.Advance).Movement;
+            var retreat = cues.Sh.Last(cue => cue.Kind == PresentationCueKind.Retreat).Movement;
+            Assert.AreEqual("osgiliath", advance.To);
+            Assert.AreEqual("minas-tirith", retreat.To);
+            foreach (var client in new[] { room.Fp, room.Sh })
+            {
+                var units = client.Board.View.Units;
+                CollectionAssert.AreEquivalent(units.Where(u => u.Side == Side.Shadow && u.Location == "osgiliath").Select(u => u.Id),
+                    advance.Participants.Select(p => p.Id), "The advance cue ends where the board has the Shadow army.");
+                Assert.IsTrue(retreat.Participants.All(p => units.Any(u => u.Id == p.Id && u.Location == "minas-tirith")));
+                var returned = cues.Of(client).SelectMany(cue => cue.Losses).Select(loss => loss.ReplacementId).ToHashSet();
+                var lost = cues.Of(client).SelectMany(cue => cue.Losses).Select(loss => loss.Figure.Id).Where(id => !returned.Contains(id));
+                Assert.IsFalse(lost.Any(id => units.Any(u => u.Id == id && client.Board.Presentation.Regions.ContainsKey(u.Location))),
+                    "A figure shown as a casualty is off the board.");
+            }
+        }
+
+        private static bool CommittedBack(IEnumerable<PresentationCue> cues, Side owner) => cues.Any(cue =>
+            cue.Kind == PresentationCueKind.Card && cue.Card.Use == ActionCardUse.CombatCommit && cue.Card.Owner == owner && cue.Card.Id.Length == 0);
 
         private static async Task CombatCard(MatchTestRoom room, MountedMatchClient client, string id)
         {

@@ -13,7 +13,9 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
-> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force.
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-304–UI-313 ship, the rules below stay in force.
+> UI-303 (2026-10-23) shipped only the data layer, with no visible change: see
+> [Opponent presentation cues](#wskazówki-prezentacji-ui-303).
 
 The decisions of the user from this conversation:
 
@@ -131,6 +133,26 @@ With the results above 3, the third line is “+N more”. action without any re
 ### Clear cross — UI-177 (2026-10-15)
 
 User application: closing cross card   action The opponent was small and blurred (24 pt, mark around 17 pt) Header card has now 34 pt, a pin and a cross 30×30 pt with a sign 22 Holy Cross stands last, in the upper right corner card, and closes it with one click. `ActionNoticeCompactTests` checks its size, location and operation.
+
+<a id="wskazówki-prezentacji-ui-303"></a>
+### Opponent presentation cues — UI-303 (2026-10-23)
+
+No visible change: pennants, the compact card, read markers and the Log behave as above. UI-303 is the data layer the
+playback (UI-304) will consume; its contract is [OPPONENT_ACTIONS_UX §9.1](OPPONENT_ACTIONS_UX.md#kontrakt-wskazowek).
+
+- `ActionNoticeController` now reads new steps from the **All** history feed (`filter=All`), so the automatic
+  consequences (`Actor=null`) of an opponent action, and the shared Battle/Hunt steps, reach the client. The first load
+  adds the newest All page (the presentation's baseline and the cursor) to the opponent's history, which it still reads
+  with the Opponent filter. `ActionNoticeModel` still makes pennants only from the opponent's steps: the pennants, their
+  grouping and what an explicit display marks read are unchanged (EditMode
+  `TheAllFeedGivesThePennantsTheOpponentFeedGave`, PlayMode `ActionNotice*`).
+- The same pages build `OpponentPresentationModel` (`Runtime/Presentation/Opponent`): ordered, deduplicated, immutable
+  `PresentationCue`s per recorded fact, released only when the board shows their revision (`CuesReady`). The first load
+  is remembered and never played.
+- Privacy is unchanged: a committed Combat card is a back, the opponent's draws are counts, and the player's own steps
+  never become cues.
+- Tests: EditMode `OpponentPresentationModelTests` (18 cases) on fixtures recorded from the real engine; PlayMode
+  `LiveActivityNetworkTests` compares both clients' cues with each other and with their final boards.
 
 <a id="b-sygnał-twoja-tura--ui-167"></a>
 ## B. Signal ‘Your turn’ — UI-167

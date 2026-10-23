@@ -285,6 +285,57 @@ not by notification sentences or today's unit counts.
 Privacy: private steps are filtered by the server before paging; the presentation adds no inference (no route for a
 hidden Fellowship, no card identity from a commit or a draw, no opponent selection before it is committed).
 
+<a id="kontrakt-wskazowek"></a>
+### 9.1 The cue contract (UI-303, shipped 2026-10-23)
+
+UI-303 ships the data layer only; nothing is played yet and the pennants, read markers and Log are unchanged.
+Code: `Runtime/Presentation/Opponent`.
+
+- **Feed.** `ActionNoticeController` reads the newest page of `actions?filter=All` first: it is the presentation's
+  baseline and its cursor continues the All feed. The pennants still read the opponent's whole history backwards with
+  the Opponent filter, so a first load costs one page more than before (the All history of a battle is about five
+  times the opponent's in bytes, measured on the recorded attack). Later fetches read the All feed `after` the cursor.
+  `ActionNoticeModel` makes pennants only from the opponent's steps, so the pennants and read state are those the
+  Opponent feed gave. `OpponentPresentationModel` never reads or marks a notification and never sends a command.
+- **Lifecycle.** The first load (and a reload after a discarded cursor) is the **baseline**: remembered, never played.
+  `Merge(pages)` takes one fetch and `Advance(revision)` takes each new `PlayerView`; a step newer than the shown view
+  waits for it (`Held`), a repeated step is dropped by its id, and the steps of one fetch are grouped by
+  (`Revision`, `ActionId`) and ordered by revision and `Order`, so page boundaries, duplicates and arrival order cannot
+  change the cues. `CuesReady` publishes the released cues in causal order — UI-304 consumes it.
+- **Selection.** A revision group shows the opponent's steps (its reactions during the player's action included), the
+  automatic steps (`Actor=null`) of an action the opponent started or of a revision in which it acted, and every
+  shared Battle/Hunt step (`Context.BattleId` or `HuntChainId`), also when the player's click completed it (C8, D6).
+  The player's own steps and legacy steps release nothing, but they are **remembered**: the attacker's own attack is
+  no attack scene for the attacker, and its die no cost.
+- **Cue.** `PresentationCue` is immutable and holds copies of its facts: `Id` = `ActionId/Kind/key`, `Kind`, `StepId`,
+  `Revision`, `Order`, `Actor`, `BattleId`, `HuntChainId`, `Regions` (in camera order) and one payload (`Cost`, `Card`,
+  `Movement`, `Figures`, `Losses`, `Battle`, `Hunt`, `FellowshipBefore/After`, `Nation`, `Control`, `Die`, `Resource`,
+  `Outcome`). `ActionPresentation` collects the cues of one action with its `Initiator`, Event `CardId` and `Cost`.
+  Within a step the order is cost → card → movement → figure changes → losses → battle → Hunt → Fellowship →
+  politics → control → dice → resources → outcome.
+- **Kinds and keys.** `Cost` (die or resource; card, figure and free costs have none — the card or figure cue shows
+  them); `Card` (public Event, CombatReveal and table entry/removal with the id; an opponent's CombatCommit as a back
+  keyed by battle and round); `Draw` (the opponent's draws and discards as counts, no id); `March`/`Travel`/`Retreat`/
+  `Advance` (route and participant ids); `Attack` (the battle's opening snapshot — round 1, no committed card, no dice —
+  with the attacker region, then the defender region; a battle first seen later, e.g. opened in legacy history, has
+  beats only); `Battle` (each later snapshot whose public state changed — UI-311 diffs consecutive ones);
+  `Losses` (`LossDetails`, a downgrade with its replacement); `Recruit`, `Upgrade` (a Regular leaving and an Elite of
+  its nation arriving in the region — one replacement), `Removal`, `Entry`, `Transformation` (a new version of a
+  character replaces the figure), `Relocation` (a Companion leaving the Fellowship); `Fellowship`, `Hunt`,
+  `Politics`, `Control`, `Die` (the opponent's dice other than the paying die), `Resource`, `Outcome`.
+- **One fact, one cue.** Figure changes a movement or a loss already describes make no figure cue; a producer step
+  repeating the primary step's facts, a repeated page and a later continuation of the same action reuse the action's
+  memory of released keys, costs and battles, so nothing is shown twice. Both players give a shared step the same cue
+  ids (history battle snapshots are public: no card identity before the reveal).
+- **Fallback.** Only recorded facts make cues; a step without a representable fact makes none and the board shows the
+  latest view. Politics after-only values and per-roll deltas stay with their family tasks (UI-307, UI-311).
+- **Fixtures.** `Tests/Editor/OpponentActions/*.json` are recorded from the real engine by the server test
+  `OpponentActionFixtureRecorder` (`WOTR_RECORD_OPPONENT_FIXTURES=<folder>`): storyboard A (`march`), B
+  (`card-recruit`), C (`attack`, both viewers), D (`hunt`, both viewers) and an opponent reaction during the
+  player's move (`reaction`). Each holds the baseline page and every later page with the view revision it arrived in.
+- **Checks.** EditMode `OpponentPresentationModelTests`; PlayMode `LiveActivityNetworkTests` records both clients'
+  cues (`OpponentCueLog`) and compares them with each other and with both final boards.
+
 <a id="scenorysy"></a>
 ## 10. Storyboards
 
@@ -384,8 +435,8 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 
 | Task | Takes from this specification |
 | --- | --- |
-| UI-303 Semantic events | §9 data mapping and gaps; the All feed; grouping by step, revision and ActionId; privacy |
-| UI-304 Playback and synchronization | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history |
+| UI-303 Semantic events (shipped) | §9 data mapping and gaps; the All feed; grouping by step, revision and ActionId; privacy — delivered as §9.1 |
+| UI-304 Playback and synchronization | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history; consumes `CuesReady` (§9.1) |
 | UI-305 Camera, source, Skip | §6.1–§6.6; §5 observed trace; the manual takeover |
 | UI-306 Army movement | §8 army march, attack, retreat; storyboards A and C1–C3 |
 | UI-307 Recruitment and politics | §8 recruitment and politics; the delta badge; storyboard B4–B5 |
