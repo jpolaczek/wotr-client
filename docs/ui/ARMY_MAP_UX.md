@@ -655,3 +655,20 @@ warm plate, pulsing in the 750 ms rhythm under Motion and bright and still under
 
 Tests: `MapArmyArtworkTests` (every state's plinth picture, and the halo only on a choosable army, larger than the
 marker), `MapVisibilityTests` (the panel figure's gold rim), `ShadowStrategy04NetworkTests` (the token's rim).
+
+<a id="ruch-przeciwnika--ui-306"></a>
+## The opponent's armies on the presented board — UI-306 (2026-10-23)
+
+An opponent's march, travel, retreat, advance, attack and capture now play on the map before the newest view is
+applied ([OPPONENT_ACTIONS_UX §6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)). The markers keep the rules above: one
+marker per region, side and field/garrison, figures or tokens by zoom, the moved and ghost states only for the player's
+own draft. During an opponent presentation:
+
+- the markers follow a staged copy of the presented view where only the recorded movers have moved, so the source shows
+  its rear guard and the destination its true count (dimmed until the flight lands);
+- only the recorded participants fly, with the same flight figures, sizes and timing as today's figure motion;
+- attackers stay at their origin; a retreat into a stronghold lands on its garrison row and a sortie leaves it;
+- a pale-blue observed ring marks the acting stack, never the legal-target, choice, selected or ghost treatments;
+- the release applies the latest view without replaying the presented flights.
+
+The player's own moves are unchanged: they move by clicks and fly when the server's projection arrives.

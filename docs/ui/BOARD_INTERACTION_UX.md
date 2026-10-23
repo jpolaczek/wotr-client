@@ -37,7 +37,12 @@ The two complementary panels have a common upper edge and lie side by side withi
 > to the camera:** an opponent's map action (march, attack, retreat, advance, figure change, control) is framed in the
 > safe map area unless it is already in view, the player's wheel or drag pan takes over, the camera stays at the final
 > effect, and one Skip target (bottom-right of the map, above the console) shows while it plays
-> ([§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305)). The player's own actions and every other rule below are unchanged.
+> ([§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305)). **UI-306** moves the opponent's armies on the presented board from the
+> recorded facts — only the participants fly, the rear guard stays, attackers stay at their origin, a capture changes
+> the gem with its points — and the release replays no presented move
+> ([§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)); the figure-motion rule below ("only between consecutive projections")
+> still governs the player's own moves and anything no presenter showed. The player's own actions and every other rule
+> below are unchanged.
 
 Simple rasters have a clear background, a recognizable type figure, a separate page designation and a replaceable resource directory. The stack on the map uses several silhouettes and a discrete number; in the composition we choose specific ID. base game garrison differs from the field army. We do not change the geometry of the hit-test depending on the details of the illustration.
 

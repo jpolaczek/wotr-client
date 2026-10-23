@@ -292,6 +292,59 @@ PlayMode `MountedMatchClient`.
       manual takeover, and the far march as clips (`ui305-clip-far-normal-*` and `-reduced-*`, one frame every 80 ms;
       the test environment has no video encoder).
 
+<a id="wdrozone-306"></a>
+### 6.10 Shipped in UI-306 (2026-10-23): army movement, attack and capture
+
+Code: `Runtime/UI/Playback` (`StagedBoard`, `ArmyMovementPresenter`, `AttackPresenter`, `ControlPresenter`) and
+`Runtime/Map/MapObservedTrace.cs`. These presenters register after the cost die and the camera, so the camera always
+settles first.
+
+- **Staged board.** The presented revision as the presentation stages it: a copy of the board's view (made once per
+  presentation) in which only recorded facts change, namely the recorded movers relocated or one region's control.
+  `BoardScreen.Stage` draws it on the map's markers and settlements. `board.View`, the decision tray, the windows and
+  the region panels stay on the presented view. When a beat ends, the staged view becomes the map's figure baseline
+  (`MapFigureMotion.Rebase`), so the release moves only what the presentation did not show and keeps the presented
+  destinations revealed. The staged board is discarded at the release.
+- **March, travel, retreat, advance.**
+  1. The source stack is traced (350 ms).
+  2. Exactly the recorded participants fly from source to destination with the board's own figure motion
+     (`MapFigureMotion.Fly`, 0.65–1.05 s, or an in-place arrival under Reduced motion).
+  3. Meanwhile the staged source shows the rear guard, and the staged destination its true final composition, dimmed
+     until the figures land.
+  4. The destination is traced for 0.6 s.
+  - Successive marches with one die are successive beats on the same staged board with one cost mark (§6.1). A merge
+    never doubles the count, and a partial move never hides the rear guard.
+  - Field and garrison follow the recorded participants: a retreat into a stronghold lands on the walls, and a sortie
+    leaves them in the same region.
+  - An advance without participants moves nothing.
+- **Attack.** A recorded attack is intent, not occupation. The attackers are traced where they stand (1 s), together
+  with the defending force and an outline of the defended region. The battle window opens at the release, at its
+  normal host.
+- **Capture.** The settlement's gem takes the new controller's colour on the staged board, with a ring (1 s).
+  - A settlement that scores shows a delta badge (`RegionDefinition.VictoryPoints`): "+N VP" for the side that takes it
+    from its original owner, "−N VP" for the side whose capture is retaken, in that side's enamel.
+  - A region without a scoring settlement shows no point.
+  - Control and points change only with the recorded control fact, never before.
+- **Observed trace on the map.** `MapObservedTrace` draws rings around a force's marker or a settlement, region
+  outlines and delta badges. A set appears together (200 ms), follows the camera and the markers, and fades together
+  (400 ms). Nothing in it takes the pointer, a tooltip or a cursor.
+- **Skip and Reduced motion.** Skip lands the running flights and quiets the next projection
+  (`MapFigureMotion.Land`, `Quiet`), so nothing skipped moves afterwards. Skip and Reduced motion end on the same
+  field and garrison counts and control as a full presentation.
+- **Game end.** The game-end screen opens in the released view, after the presentation's last beat, as before.
+- **Checks.**
+  - EditMode `BoardFigureChangesTests` (re-base and quiet) and `PresentationCameraTests` (capture points).
+  - PlayMode `OpponentArmyPresentationTests` on a mounted board:
+    - two marches with one die (exact mover ids, rear guard, merge, one cost mark);
+    - an off-screen source framed before any figure moves;
+    - a retreat into a stronghold and a sortie;
+    - a partial and an empty advance;
+    - capture, recapture and a non-scoring capture;
+    - the attack hand-off;
+    - Skip and Reduced motion ending on the latest counts without a replay;
+    - clips at 1366 / 100 % and 1920 / 125 % (`ui306-clip-marches-*`).
+  - The network motion tests read the observer's flight during its presentation.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -552,7 +605,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-303 Semantic events (shipped) | §9 data mapping and gaps; the All feed; grouping by step, revision and ActionId; privacy — delivered as §9.1 |
 | UI-304 Playback and synchronization (shipped) | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history; consumes `CuesReady` (§9.1) — delivered as §7.1 |
 | UI-305 Camera, source, Skip (shipped) | §6.1–§6.6; §5 observed trace; the manual takeover; registers the first presenters (§7.1) and puts the Skip target and Esc on `PresentationPlayback.Skip` — delivered as §6.9 |
-| UI-306 Army movement | §8 army march, attack, retreat; storyboards A and C1–C3 |
+| UI-306 Army movement (shipped) | §8 army march, attack, retreat; storyboards A and C1–C3 — delivered as §6.10; reusable `StagedBoard`, `MapObservedTrace`, movement/capture presenters |
 | UI-307 Recruitment and politics | §8 recruitment and politics; the delta badge; storyboard B4–B5 |
 | UI-308 Public cards | §6.2 reveal and dock; §8 event card; storyboard B |
 | UI-309 Characters | §8 characters |

@@ -382,3 +382,13 @@ the client alongside the opponent's decisions. The pennants, their BattleId grou
 
 Checks: EditMode `OpponentPresentationModelTests` on the recorded attack and Hunt (both viewers); PlayMode
 `LiveActivityNetworkTests` compares both clients' cues and their final boards.
+
+<a id="atak-i-zdobycie--ui-306"></a>
+## Attack, retreat, advance and capture on the map — UI-306 (2026-10-23)
+
+An opponent's attack is shown before its battle window opens: the attackers are traced where they stand and the
+defended force and region are traced too, without moving anything; the window opens at the release, at its normal
+host. A retreat or advance returns to the map as a recorded movement of exactly its participants (an empty advance
+moves nothing), and a capture changes the settlement's gem with a "+N VP" / "−N VP" badge only for a scoring
+settlement ([OPPONENT_ACTIONS_UX §6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)). Casualties and other figure changes inside
+a battle stay in the battle window. The player's own click (their retreat, their advance) moves no camera.
