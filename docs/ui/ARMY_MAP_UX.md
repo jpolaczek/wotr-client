@@ -672,3 +672,12 @@ own draft. During an opponent presentation:
 - the release applies the latest view without replaying the presented flights.
 
 The player's own moves are unchanged: they move by clicks and fly when the server's projection arrives.
+
+<a id="rekrutacja-przeciwnika--ui-307"></a>
+## The opponent's recruits, upgrades and removals — UI-307 (2026-10-23)
+
+An opponent's recruitment, upgrade, removal, character entry or transformation is staged on the presented board region
+by region ([OPPONENT_ACTIONS_UX §6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)): the force's marker settles to its true
+count, new figures land with the arrival accent, and a delta badge beside the marker shows the figure art, the nation's
+crest and a signed count — an upgrade as the Regular replaced by the Elite, never an extra figure. The badge and the
+trace ignore the pointer; the marker keeps its own inspection.

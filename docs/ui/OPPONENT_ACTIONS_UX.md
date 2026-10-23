@@ -345,6 +345,53 @@ settles first.
     - clips at 1366 / 100 % and 1920 / 125 % (`ui306-clip-marches-*`).
   - The network motion tests read the observer's flight during its presentation.
 
+<a id="wdrozone-307"></a>
+### 6.11 Shipped in UI-307 (2026-10-23): recruitment, upgrades and political tracks
+
+Code: `Runtime/UI/Playback/FigureChangePresenter.cs` and `PoliticsPresenter.cs`, `StagedBoard.Apply` and `Nation`,
+plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
+
+- **Figure changes.** Each recorded group of one kind in one region is one beat: recruits, an upgrade, a removal to the
+  reserve or the casualties, a character entering or transforming, a Companion leaving the Fellowship.
+  - The camera frames it (§6.9) and the region's force is traced.
+  - The staged board takes the recorded changes, so the stack settles to its true count. New figures land in place
+    with the board's arrival accent.
+  - A **delta badge** beside the stack shows each kind's figure art, the nation's crest and a signed count ("+3",
+    "−1").
+  - An upgrade is one replacement (Regular → Elite, no extra figure), and so is a new version of a character.
+  - Several regions of one source are successive beats under one cost mark, and equivalent units of one place form one
+    entry.
+  - A battle's own figure changes stay in its window.
+  - The engine records a recruit with the same participant before and after, from `reserve` to the region; the
+    classification depends only on the places.
+- **Excess units.** The player's own excess choice is their decision on the region's figures. An opponent's returned
+  excess is a removal, presented only from its committed step.
+- **Political track.**
+  - The Politics panel opens read-only for the beat, never while it is live for the player's own decision (a legal
+    target on its tab or a station).
+  - A panel the player had open stays open; one the presentation opened closes at the release.
+  - A panel the player closes during the presentation is not reopened by its later beats.
+  - The nation's token is traced. An **activation** lights the crest first, then the token travels its recorded steps
+    (an eased 0.6 s `left` transition only while `presenting-politics` is set; a jump under Reduced motion).
+  - **Reaching war** adds the short caption "At war" beside the War station.
+  - A before-value the record lacks comes from the presented view.
+  - With opponent rows hidden, the trace marks the Politics tab.
+- **Controls.** No Recruit, Politics or Continue control is added; only Skip shows while it plays.
+- **Hooks for UI-308/UI-309.** Event cards and character abilities reuse these presenters through their recorded
+  facts: `FigureChangePresenter` (unit deltas), `PoliticsPresenter` (nation transitions), `TraceSet.Delta` and
+  `FigureDelta`.
+- **Checks.**
+  - EditMode `FigureDeltaTests`.
+  - PlayMode `OpponentRecruitmentPoliticsTests` on the shared `PresentedBoardStage`:
+    - two distant sites under one source with the camera visiting each;
+    - several nations in one region;
+    - an upgrade as a replacement, and a removal;
+    - activation, then advancement, then war with its caption;
+    - a user-open panel kept and a closed one not reopened;
+    - Skip on the latest counts and tracks;
+    - muted clips `ui307-clip-*` at 1920 / 125 %.
+  - `OpponentRecruitmentPoliticsNetworkTests` with two real clients on `sh-muster-recruit` and `sh-muster-politics`.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -606,7 +653,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-304 Playback and synchronization (shipped) | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history; consumes `CuesReady` (§9.1) — delivered as §7.1 |
 | UI-305 Camera, source, Skip (shipped) | §6.1–§6.6; §5 observed trace; the manual takeover; registers the first presenters (§7.1) and puts the Skip target and Esc on `PresentationPlayback.Skip` — delivered as §6.9 |
 | UI-306 Army movement (shipped) | §8 army march, attack, retreat; storyboards A and C1–C3 — delivered as §6.10; reusable `StagedBoard`, `MapObservedTrace`, movement/capture presenters |
-| UI-307 Recruitment and politics | §8 recruitment and politics; the delta badge; storyboard B4–B5 |
+| UI-307 Recruitment and politics (shipped) | §8 recruitment and politics; the delta badge; storyboard B4–B5 — delivered as §6.11; reusable figure-change and politics presenters |
 | UI-308 Public cards | §6.2 reveal and dock; §8 event card; storyboard B |
 | UI-309 Characters | §8 characters |
 | UI-310 Fellowship and Hunt | §8 Fellowship/Hunt; storyboard D |

@@ -13,10 +13,11 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
-> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-307–UI-313 ship, the rules below stay in force except where
-> UI-305 and UI-306 already apply the exception (the camera frames an opponent's map action, one Skip target shows
-> while it plays, and the opponent's armies move, attack and capture on the presented board:
-> [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305), [§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)).
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-308–UI-313 ship, the rules below stay in force except where
+> UI-305–UI-307 already apply the exception (the camera frames an opponent's map action, one Skip target shows while it
+> plays, the opponent's armies move, attack and capture, and their recruits, upgrades and political steps are staged on
+> the presented board: [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305), [§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306),
+> [§6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)).
 > UI-303 (2026-10-23) shipped only the data layer, with no visible change: see
 > [Opponent presentation cues](#wskazówki-prezentacji-ui-303). UI-304 (2026-10-23) shipped the playback coordinator,
 > dormant until a presenter registers: see [OPPONENT_ACTIONS_UX §7.1](OPPONENT_ACTIONS_UX.md#koordynator).

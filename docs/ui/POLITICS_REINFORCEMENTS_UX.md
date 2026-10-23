@@ -168,3 +168,14 @@ distribute it on the board while the rules allow.
 | PR03 | UI-179 | die Muster: Reinformments page developed and held; recruiting highlighted lines, other non-clip; track and status missing. |
 | PR04 | UI-179 | Plan  card: source title, slots, ✓  Confirm,  figure with × in the tab; when closed, it is closed for next use. |
 | PR05 | UI-179 | No recruitment: tab shows reserves, all non-climatic lines; no separate window. |
+
+<a id="tor-przeciwnika--ui-307"></a>
+## The opponent's political steps — UI-307 (2026-10-23)
+
+An opponent's recorded political change opens this panel read-only during its presentation
+([OPPONENT_ACTIONS_UX §6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)): the nation's token is traced, an activation lights
+its crest first, then the token travels its recorded steps along the rail, and reaching the War medallion adds the
+short caption "At war". The panel is never opened while it is live for the player's own decision; a panel the player
+had open stays open, one the presentation opened closes again, and one the player closes is not reopened by the same
+presentation. The track's stations, arrow and activation controls keep their rules above; nothing is added to the row.
+The Reserve panel does not open for an opponent's recruitment: recruits appear on the map with their delta badge.
