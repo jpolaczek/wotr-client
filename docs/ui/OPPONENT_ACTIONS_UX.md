@@ -240,6 +240,45 @@ replay after focus or mute returns, first view and reconnect silent. The present
 - **Duplicates and order:** pages are processed in order, duplicates by stable step, figure and cost ids are dropped,
   and facts newer than the received view wait for it.
 
+<a id="koordynator"></a>
+### 7.1 The playback coordinator (UI-304, shipped 2026-10-23)
+
+Code: `Runtime/Application/Playback` — `PresentationPlayback` (pure, clock-driven), `PlaybackBinding` (the board's
+16 ms scheduler and `Application.focusChanged`), `ICuePresenter`/`IPresentationBeat` (the presenter hooks).
+
+- **Intake.** `MatchSession` (and the PlayMode `MountedMatchClient`, through the same binding) sends every view the
+  connection accepted to the history feed first (`ActionNoticeController.Update`: cues and the read mark of the
+  revision) and then to the coordinator. A released view goes through one `Present` chain: `BoardScreen.Apply`,
+  `TurnInteraction.Update` (draft reconciliation, decision, turn ribbon), `GameSounds`, the Log and the seen marker —
+  so its decision, auto-opened windows, turn signal and sound come once, at the release.
+- **Hold.** A newer revision is held while its history is read (`ActionNoticeController.HistoryRead`, at most **1 s**
+  after the view arrived) and while its cues play, one beat at a time through the first presenter that accepts each cue
+  (a cue no presenter shows takes no time). Views arriving meanwhile replace `Latest`; their cues queue behind the
+  current beat; a coalesced revision is never applied on its own. A private-only update (same revision) waits for the
+  release while holding and is applied at once otherwise.
+- **Gate.** While holding, `TurnInteraction.Hold` closes every new-command path: `SelectionBusy` (map, figures, dice,
+  cards, contexts, Characters), `Drop`, `CanChoose`, the `Submit` guard, the tray, the console (Pass, Back, ✓, plaques),
+  rings and the battle policy. Inspection, the menu, the Log, pennants and connection feedback stay usable; a command
+  already sent keeps recovering its receipt.
+- **Release.** At the end the latest view is applied with its revision, private version and `Decision.Id`. **Skip**
+  (`PresentationPlayback.Skip`) ends the beat and the backlog and releases on the next tick, so the skip click cannot
+  reach a control the release opens; it neither answers a decision nor marks a notice read. A **disconnect**, a
+  **reconnect** or a **lost focus** ends the beat and applies the latest view at once (no catch-up), **disposal** ends the
+  beat and applies nothing more, and cues of an already presented revision are dropped, so a late page never restarts a
+  move. A deferred release that throws is reported (`[wotr] presentation …`) and applied again on the next tick, up to
+  three times (QUAL-09), and the gate then opens.
+- **Dormant until UI-305.** Without a registered presenter, and whenever the session is not live, every view is applied
+  at once exactly as before; production registers no presenter yet, so UI-304 changes nothing a player sees. The family
+  tasks register theirs with `MatchSession.Playback.Register`. A beat stages its change on the presented board, ends by
+  `Advance(now)` or at once by `Finish()`, and leaves no override behind.
+- **Checks.** EditMode `OpponentPresentationQueueTests` (ordering, history wait, late cues, private versions, Skip,
+  rebase, disposal, failed release, presenter choice); PlayMode `OpponentPresentationNetworkTests` with two real clients
+  and a stand-in presenter on the test scenarios `sh-army-move` (the source army and the unspent die stay until the
+  march's beat ends; a second march queues behind it; a reconnect shows the latest state and replays nothing) and
+  `sh-army-attack` (no battle window before the attack's beat ends; Skip on the next frame; the Shadow's Combat card
+  choice is presented before ours opens; our click sends one command and the shared rolls it completes play before
+  the next decision).
+
 <a id="rodziny"></a>
 ## 8. Presentation families
 
@@ -436,8 +475,8 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | Task | Takes from this specification |
 | --- | --- |
 | UI-303 Semantic events (shipped) | §9 data mapping and gaps; the All feed; grouping by step, revision and ActionId; privacy — delivered as §9.1 |
-| UI-304 Playback and synchronization | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history; consumes `CuesReady` (§9.1) |
-| UI-305 Camera, source, Skip | §6.1–§6.6; §5 observed trace; the manual takeover |
+| UI-304 Playback and synchronization (shipped) | §7 lifecycle and gate; release; real choices; first load, reconnect and missing history; consumes `CuesReady` (§9.1) — delivered as §7.1 |
+| UI-305 Camera, source, Skip | §6.1–§6.6; §5 observed trace; the manual takeover; registers the first presenters (§7.1) and puts the Skip target and Esc on `PresentationPlayback.Skip` |
 | UI-306 Army movement | §8 army march, attack, retreat; storyboards A and C1–C3 |
 | UI-307 Recruitment and politics | §8 recruitment and politics; the delta badge; storyboard B4–B5 |
 | UI-308 Public cards | §6.2 reveal and dock; §8 event card; storyboard B |

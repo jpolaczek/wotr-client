@@ -23,6 +23,8 @@ namespace Wotr.Client
         public OpponentPresentationModel Presentation { get; private set; }
         // Cues that became presentable, in causal order; the playback coordinator (UI-304) consumes them.
         public event Action<IReadOnlyList<PresentationCue>> CuesReady;
+        // UI-304: the history is complete up to this revision (published after the fetch's cues).
+        public event Action<long> HistoryRead;
         public Task LocalWrites => reads.Flushed;
 
         public ActionNoticeController(GameApi api, string match, BoardScreen board, NotificationReadStore reads = null)
@@ -66,12 +68,15 @@ namespace Wotr.Client
         {
             busy = true;
             dirty = false;
+            // A fetch started after a view arrived holds every step of that view's revision.
+            var covers = revision;
             try
             {
                 var fetched = Loaded && cursor.Length > 0 ? await FetchNewer() : await FetchFirst();
                 if (!fetched) return;
                 Loaded = true;
                 ReadStatus();
+                HistoryRead?.Invoke(covers);
             }
             catch (OperationCanceledException) { }
             catch (ApiException error) when (error.Status == 400 && cursor.Length > 0)

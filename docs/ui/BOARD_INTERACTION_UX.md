@@ -31,6 +31,9 @@ The two complementary panels have a common upper edge and lie side by side withi
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
 > [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force.
+> UI-304 (2026-10-23) added the playback coordinator that will hold a new view while its opponent action plays and
+> close every command path meanwhile ([§7.1](OPPONENT_ACTIONS_UX.md#koordynator)); it is dormant until UI-305 registers
+> a presenter, so today's figure motion and auto-opened windows are unchanged.
 
 Simple rasters have a clear background, a recognizable type figure, a separate page designation and a replaceable resource directory. The stack on the map uses several silhouettes and a discrete number; in the composition we choose specific ID. base game garrison differs from the field army. We do not change the geometry of the hit-test depending on the details of the illustration.
 

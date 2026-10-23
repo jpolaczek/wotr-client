@@ -523,3 +523,13 @@ The console's Back, otherwise enabled only while the tray waits on the board, is
 holds a move, hide or entry left after a failed send, which the panel no longer offers an arrow for. While the panel
 holds an interrupted response, the console's ✓ glows and is its only Check result. Details:
 [FELLOWSHIP_UX](FELLOWSHIP_UX.md#ui-298).
+
+<a id="blokada-odtwarzania--ui-304"></a>
+## The playback gate — UI-304 (2026-10-23)
+
+While an opponent presentation plays or waits for its history
+([OPPONENT_ACTIONS_UX §7.1](OPPONENT_ACTIONS_UX.md#koordynator)), `TurnInteraction.Hold` keeps the console and the
+decision tray in their fixed places but disabled: Pass, Back, ✓, the plaques, console options, rings and the battle
+policy start nothing, and Enter does not confirm. The tray and console keep the presented view's state, and the
+decision of the newest view appears once, at the release. A command already sent keeps recovering its receipt. The gate
+is dormant until UI-305 registers a presenter, so the console behaves exactly as before.

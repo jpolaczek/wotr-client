@@ -21,6 +21,10 @@ namespace Wotr.PlayTests
         private readonly ActionLogController history;
         private readonly BattleReportController reports;
         public ActionNoticeController Activity { get; }
+        private readonly PlaybackBinding playback;
+        // UI-304: the same playback coordinator MatchSession binds; tests register presenters here.
+        public PresentationPlayback Playback => playback.Playback;
+        public TurnInteraction Interaction => interaction;
         private readonly bool ownsApi;
         private readonly LocalMatchPersistence persistence;
         private bool fixtureOnline;
@@ -42,13 +46,15 @@ namespace Wotr.PlayTests
         }
 
         // Same path as a received snapshot, preserving the current interaction/draft.
-        public void Refresh(PlayerView view)
+        public void Refresh(PlayerView view) => playback.Receive(view);
+
+        // As MatchSession presents a view the playback released.
+        private void Present(PlayerView view)
         {
             Board.Apply(view);
             interaction.Update(view);
             Sounds?.Update(view);
             history.Update(view);
-            Activity.Update(view);
             if (fixtureOnline)
                 interaction.SetConnection("Connected");
         }
@@ -84,6 +90,7 @@ namespace Wotr.PlayTests
             history = new ActionLogController(Api, match, Board.Log);
             reports = new BattleReportController(Api, match, Board.BattleReport, reads ?? persistence?.Notifications);
             Activity = new ActionNoticeController(Api, match, Board, reads ?? persistence?.Notifications);
+            playback = new PlaybackBinding(Board, Activity, Present, held => interaction.Hold(held));
             Connection.Updated += Refresh;
             Connection.StatusChanged += status =>
             {
@@ -94,6 +101,7 @@ namespace Wotr.PlayTests
                 interaction.SetConnection(status);
                 history.SetConnection(status);
                 Activity.SetConnection(status);
+                Playback.SetConnection(status);
             };
         }
 
@@ -105,6 +113,7 @@ namespace Wotr.PlayTests
 
         public void Dispose()
         {
+            playback.Dispose();
             Sounds?.Dispose();
             interaction.Dispose();
             history.Dispose();

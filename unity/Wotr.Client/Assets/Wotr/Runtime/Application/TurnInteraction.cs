@@ -53,12 +53,15 @@ namespace Wotr.Client
         private long requiredRevision = -1;
         private CancellationTokenSource previewLifetime;
         private bool sending;
+        // UI-304: an opponent presentation plays or waits for its history; no new command leaves until it ends.
+        private bool held;
         private bool online;
         private bool previewLegal;
         private int generation;
         private int connectionEpoch;
         private string recoveryShown = "";
-        private bool SelectionBusy => sending || sender.Pending != null || policy.Busy || view?.Revision < requiredRevision;
+        private bool CommandBusy => sending || sender.Pending != null || policy.Busy || held;
+        private bool SelectionBusy => CommandBusy || view?.Revision < requiredRevision;
 
         public TurnInteraction(GameApi api, MatchConnection connection, BoardScreen board, LocalMatchPersistence persistence = null)
         {
@@ -348,7 +351,7 @@ namespace Wotr.Client
 
         private bool Drop(DraftToken source, DraftToken target)
         {
-            if (sending || sender.Pending != null || policy.Busy || view == null)
+            if (CommandBusy || view == null)
                 return false;
             if (draft.Kind == CommandKind.DiscardCards)
                 return false;
@@ -510,6 +513,17 @@ namespace Wotr.Client
                 DraftGesture.Choose(draft, view, mandatory.Value);
         }
 
+        // UI-304: the playback gate. While held, the tray, console, rings, battle policy, keyboard, map, figure, die and card
+        // callbacks start no new command; a command already sent keeps recovering its receipt.
+        public void Hold(bool value)
+        {
+            if (held == value)
+                return;
+            held = value;
+            if (view != null)
+                Render();
+        }
+
         public void SetConnection(string status)
         {
             var connected = status == "Connected";
@@ -542,7 +556,7 @@ namespace Wotr.Client
 
         private void PersistDraft() => persistence?.SaveDraft(session.Save());
 
-        private bool CanChoose(CommandKind kind) => !sending && sender.Pending == null && !policy.Busy &&
+        private bool CanChoose(CommandKind kind) => !CommandBusy &&
             view != null && view.Revision >= requiredRevision && DraftOptions.All(view, draft).Any(o => o.Kind == kind && o.Enabled);
 
         // UI-214: an option of a card or a reaction chosen in the console (or a table card at its ×) completes the
@@ -737,7 +751,7 @@ namespace Wotr.Client
                 tray.Notice("Refreshing the saved result…");
                 return;
             }
-            if (sending || sender.Pending != null || policy.Busy)
+            if (CommandBusy)
                 return;
             if (!draft.Kind.HasValue && board.ActionDie.Choices.Count > 0)
             {
@@ -852,10 +866,10 @@ namespace Wotr.Client
             board.Root.EnableInClassList("character-planning", CharacterDraft.UsesCharacters(draft.Kind));
             board.Root.EnableInClassList("character-action-context", CharacterRosterActions.OwnsDecision(view, draft));
             board.RefreshHand(draft);
-            policy.Render(view, online, sending || sender.Pending != null);
-            tray.Render(view, draft, sending || policy.Busy, sender.Pending != null && !sending, pendingProblem);
-            console.Refresh(view, draft, online, sending || policy.Busy, sender.Pending != null);
-            rings.Refresh(view, draft, online && !sending && !policy.Busy && sender.Pending == null);
+            policy.Render(view, online, sending || sender.Pending != null || held);
+            tray.Render(view, draft, sending || policy.Busy || held, sender.Pending != null && !sending, pendingProblem);
+            console.Refresh(view, draft, online, sending || policy.Busy || held, sender.Pending != null);
+            rings.Refresh(view, draft, online && !CommandBusy);
             RevealRecovery();
             board.Map.DraftOverlay.Apply(view, draft, context.ArmyActive || muster.Active ? board.ActionDie : null);
         }
@@ -941,7 +955,7 @@ namespace Wotr.Client
         private async Task Submit(bool immediate = false)
         {
             if (sending || policy.Busy || !online || view == null || view.Revision < requiredRevision ||
-                sender.Pending == null && (view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
+                sender.Pending == null && (held || view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
                 return;
             sending = true;
             CommandSending?.Invoke();
