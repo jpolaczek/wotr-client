@@ -284,7 +284,7 @@ namespace Wotr.PlayTests
         }
 
         // The Shadow watches a hidden Fellowship at Rivendell: progress 1, corruption 2, Gimli its Guide, four Companions.
-        private static PresentedBoardStage Watching(bool revealed = false, int width = 1366, float scale = 1f)
+        internal static PresentedBoardStage Watching(bool revealed = false, int width = 1366, float scale = 1f)
         {
             var stage = new PresentedBoardStage(width, scale, false, Side.Shadow);
             var fellowship = stage.Before.Fellowship;
@@ -300,7 +300,7 @@ namespace Wotr.PlayTests
 
         // A successful Hunt: two successes, a 2-damage tile taken as corruption with the Ring (progress 1 → 2, corruption
         // 2 → 4); with a casualty, a Companion leaves as well.
-        private static ActionLogStep[] Hit(PresentedBoardStage stage, out PlayerView latest, bool casualty = false)
+        internal static ActionLogStep[] Hit(PresentedBoardStage stage, out PlayerView latest, bool casualty = false)
         {
             var roll = Snapshot("BeforeDraw", 6, 5, 2);
             var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw"))

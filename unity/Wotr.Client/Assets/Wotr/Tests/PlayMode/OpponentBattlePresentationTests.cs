@@ -21,8 +21,8 @@ namespace Wotr.PlayTests
     {
         private const string BattleId = "presented-battle";
         private const string WitchKing = "base.character.witch-king";
-        private const string ShadowCard = "base.sh.strategy.13";
-        private const string FreeCard = "base.fp.strategy.14";
+        internal const string ShadowCard = "base.sh.strategy.13";
+        internal const string FreeCard = "base.fp.strategy.14";
 
         [UnityTest]
         public IEnumerator TheAttackOpensTheBattleWindowAfterItsTraceAndTheReleaseGivesBackTheControls()
@@ -323,7 +323,7 @@ namespace Wotr.PlayTests
 
         // The Free Peoples watch the Shadow's attack on Osgiliath: Sauron's three Regulars, an Elite and the Witch-king from
         // Minas Morgul against Gondor's Regular and Elite. The attack's own step records the battle's opening state.
-        private static PresentedBoardStage Attack(out Fight fight, int width = 1366, float scale = 1f)
+        internal static PresentedBoardStage Attack(out Fight fight, int width = 1366, float scale = 1f)
         {
             var stage = new PresentedBoardStage(width, scale, false);
             stage.Put("sauron", UnitKind.Regular, "minas-morgul", 3);
@@ -336,7 +336,7 @@ namespace Wotr.PlayTests
         }
 
         // The attack's revision plays and its window stays open; the next revisions continue the battle.
-        private static IEnumerator Open(PresentedBoardStage stage, Fight fight)
+        internal static IEnumerator Open(PresentedBoardStage stage, Fight fight)
         {
             yield return stage.Ready();
             stage.Play(fight.Latest(), null, fight.Steps.ToArray());
@@ -368,7 +368,7 @@ namespace Wotr.PlayTests
             force.CardBack = "strategy";
         }
 
-        private static void Faces(BattleView battle)
+        internal static void Faces(BattleView battle)
         {
             battle.CardsRevealed = true;
             battle.Stage = "BeforeRoll";
@@ -377,7 +377,7 @@ namespace Wotr.PlayTests
             battle.Defender.CardId = FreeCard;
         }
 
-        private static void Roll(BattleForceView force, string prefix, params int[] results)
+        internal static void Roll(BattleForceView force, string prefix, params int[] results)
         {
             force.Dice = results.Select((result, index) => new BattleDieView
             {
@@ -400,7 +400,7 @@ namespace Wotr.PlayTests
         // One revision of a battle as the engine records it: the decision's step (with its actor) records the revision's
         // final state, the automatic steps after it the states on the way; a reveal records no state. Every step belongs to
         // the attack's action.
-        private sealed class Fight
+        internal sealed class Fight
         {
             private readonly PresentedBoardStage stage;
             private readonly long revision;

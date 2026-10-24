@@ -164,7 +164,7 @@ namespace Wotr.PlayTests
         }
 
         // The Shadow's Event die pays Orcs Multiplying Again; its recruits land in Dol Guldur, then in Mount Gundabad.
-        private static PlayerView Play(PresentedBoardStage stage, string focus)
+        internal static PlayerView Play(PresentedBoardStage stage, string focus)
         {
             var reserve = stage.Reserve("sauron", UnitKind.Regular, 6);
             var latest = stage.Latest();
