@@ -392,3 +392,11 @@ leads to opens ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310
 - **No choices.** The window hosts no choice during the presentation. A real response, Guide or damage decision opens
   on its usual host at the release. No Continue or result window is added.
 - **Afterwards.** The Fellowship's tracks, a reveal's relocation and the progress move after the Hunt's entries.
+
+<a id="ui-318"></a>
+## The Shadow's allocation lights the Eye count — UI-318 (2026-10-24)
+
+When the opponent's presentation shows the Shadow allocating dice to the Hunt, only the Hunt plaque's Eye medallion and
+its number glow while the count rises (`HuntBoxView.EyeCount`), not the whole plaque (owner request). The Hunt's own
+start, when its window opens, still marks the Hunt Box
+([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).

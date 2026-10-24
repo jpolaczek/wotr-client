@@ -68,6 +68,8 @@ namespace Wotr.PlayTests
             var started = Time.realtimeSinceStartup;
             yield return stage.Until(() => stage.Lit.Count == 3);
             Assert.AreNotEqual(eyes, stage.Board.Hunt.Box.Counts.Q<Label>("hunt-eyes").text, "The Hunt Box counts the allocated die.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Hunt.Box.EyeCount), "UI-318: the Eye and its number glow.");
+            Assert.IsFalse(PresentationGlow.IsLit(stage.Board.Hunt.Tab), "UI-318: not the whole Hunt plaque.");
             Assert.IsTrue(stage.Board.OpponentDice.Q<Button>("shadow-1").Q(className: "die-face-army") != null, "The rolled faces show.");
             // UI-314: the glow has faded in.
             yield return new WaitForSecondsRealtime(.3f);

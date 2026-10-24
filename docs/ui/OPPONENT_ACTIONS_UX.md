@@ -638,7 +638,7 @@ Code: `Runtime/UI/Playback/ResourcePresenter.cs` and `PresentationMarks.cs`, `St
   | --- | --- | --- |
   | A Ring's cost | ringed at its console socket; the new holder shows at the release with the socket's own pulse | 0.6 s (0.7 s, UI-315) |
   | The die a Ring changed | ringed in the opponent's pool, its old → new face under it | 1 s |
-  | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque ringed as its Eyes count rises; silent — the released view sounds the roll, so a decision passed with it keeps AUDIO-05's one tone | 1 s |
+  | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque's Eye and number lit as the count rises (UI-318: not the whole plaque); silent — the released view sounds the roll, so a decision passed with it keeps AUDIO-05's one tone | 1 s |
   | Draws or discards | one beat for a run of them at the opponent's hand count: card backs and the signed count, never an identity | 0.8 s (since UI-315 lit 0.7 s first, then changed and held 0.8 s) |
   | A forfeited die | its cost copy (§6.1) | 0.35 s |
   | A pass, a decline, "No card", a technical completion | no scene: nothing is recorded to show | — |
@@ -841,7 +841,9 @@ Code: `Runtime/UI/Playback/PresentationPace.cs` and the presenters that use it.
 - **Dice and the Ring.**
   - A Ring's socket glows (0.7 s).
   - The die it changed then glows on its old face, turns to the new face with the old → new plate, and holds.
-  - An allocation and the action-dice roll light the dice and the Hunt plaque first, then change them.
+  - An allocation and the action-dice roll light the dice and the Hunt plaque's Eye count first, then change them.
+    Since UI-318 (owner request) only the Eye medallion and its number glow (`HuntBoxView.EyeCount`), not the
+    whole plaque; the Hunt's own start still marks the Hunt Box.
   - The Ring itself leaves at the release with its socket's own pulse: the console's Rings are not staged.
 - **The Fellowship.**
   - Hiding or revealing lights the plaque's state (Hidden, Revealed) before it turns.

@@ -84,13 +84,14 @@ namespace Wotr.Client
             });
         }
 
-        // The dice that will change, where they stand now, and the Hunt plaque an allocation will raise.
+        // The dice that will change, where they stand now, and the plaque's Eye count an allocation will raise (UI-318:
+        // the Eye and its number, not the whole plaque).
         private void LightBefore(IEnumerable<ActionDieChange> changes, bool hunted)
         {
             foreach (var change in changes)
                 marks.Light(board.OpponentDice.Q<Button>(change.Id));
             if (hunted)
-                marks.Light(board.Hunt.Tab);
+                marks.Light(board.Hunt.Box.EyeCount);
         }
 
         private void ChangeDice(IReadOnlyList<ActionDieChange> changes, bool hunted)
@@ -105,7 +106,7 @@ namespace Wotr.Client
                 foreach (var change in changes)
                     MarkDie(change);
                 if (hunted)
-                    marks.Light(board.Hunt.Tab);
+                    marks.Light(board.Hunt.Box.EyeCount);
             });
         }
 

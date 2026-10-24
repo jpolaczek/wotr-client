@@ -19,6 +19,9 @@ namespace Wotr.Client
         private readonly Label freeEntry = new Label { name = "hunt-box-free" };
         private string shown;
 
+        // UI-318: the plaque's Eye medallion and its number, the one part a Shadow allocation changes.
+        public VisualElement EyeCount => eyes.parent;
+
         public HuntBoxView()
         {
             Counts.AddToClassList("hunt-box-counts");
