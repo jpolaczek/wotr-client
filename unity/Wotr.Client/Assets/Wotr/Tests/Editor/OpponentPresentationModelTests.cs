@@ -234,6 +234,34 @@ namespace Wotr.EditorTests
             Assert.Greater(reordered, 0, "A revision records states on the way after its decision.");
         }
 
+        // UI-312: an empty decline records nothing to show — ten of them make no scene — and a repeated revision never
+        // charges a Ring twice.
+        [Test]
+        public void EmptyDeclinesMakeNoSceneAndARepeatedRingCostShowsOnce()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var declines = Enumerable.Range(0, 10).Select(i =>
+            {
+                var step = Step("decline-" + i, 2, i + 1, Side.Shadow, "ActionDecision");
+                step.Command = CommandKind.DeclineReaction;
+                return step;
+            }).ToArray();
+            model.Advance(2);
+            CollectionAssert.IsEmpty(model.Merge(new[] { Page(declines) }), "Ten empty declines, no scene.");
+            var ring = Step("ring", 3, 1, Side.Shadow, "ActionDecision");
+            ring.Costs.Add(new ActionCost { Kind = ActionCostKind.Ring, Id = "base.ring.1", Owner = Side.Shadow });
+            ring.Facts.Dice.Add(new ActionDieChange
+            {
+                Id = "Shadow.standard.1", Owner = Side.Shadow, Before = DieFace.Army, After = DieFace.Muster, From = DieLocation.Available,
+                To = DieLocation.Available
+            });
+            model.Advance(3);
+            var cues = model.Merge(new[] { Page(ring) }).Concat(model.Merge(new[] { Page(ring) })).ToList();
+            Assert.AreEqual(1, cues.Count(cue => cue.Kind == PresentationCueKind.Cost), "The Ring is charged once.");
+            Assert.AreEqual(1, cues.Count(cue => cue.Kind == PresentationCueKind.Die), "Its die changes once.");
+        }
+
         [Test]
         public void TheOpponentsDrawsAreCountsWithoutIdentities()
         {

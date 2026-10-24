@@ -38,9 +38,8 @@ namespace Wotr.Client
         private readonly PresentationLayer layer;
         private readonly PresentationSoundSink sounds;
         private readonly HashSet<string> revealed = new HashSet<string>();
-        private readonly List<VisualElement> marks = new List<VisualElement>();
+        private readonly PresentationMarks marks;
         private BattleView shown;
-        private int version;
 
         public BattlePresenter(BoardScreen board, StagedBoard staged, PresentationPlayback playback, PresentationLayer layer,
             PresentationSoundSink sounds)
@@ -50,6 +49,7 @@ namespace Wotr.Client
             this.playback = playback;
             this.layer = layer;
             this.sounds = sounds;
+            marks = new PresentationMarks(layer, RingName, PlateName);
         }
 
         private RegionalBattlePanel Window => board.Battles;
@@ -155,7 +155,7 @@ namespace Wotr.Client
             {
                 var column = Column(battle, figure.Side);
                 foreach (var character in cue.Figures.Select(change => change.Before ?? change.After).Where(CharacterMarks.Named))
-                    Ring(column?.Q("portrait-" + character.Id));
+                    marks.Ring(column?.Q("portrait-" + character.Id));
                 Plate(column?.Q("battle-composition"), FigureChangePresenter.Deltas(cue));
             });
             return new TimedBeat(now, LossSeconds);
@@ -223,15 +223,7 @@ namespace Wotr.Client
             Window.Presented.Q(battle.Attacker.Side == side ? "battle-attacker" : "battle-defender");
 
         // The beat's marks — dice and card rings, delta plates — once the window's new content is laid out.
-        private void Mark(Action place)
-        {
-            var current = ++version;
-            layer.Root.schedule.Execute(() =>
-            {
-                if (current == version)
-                    place();
-            });
-        }
+        private void Mark(Action place) => marks.Place(place);
 
         private void Rolled(IEnumerable<string> ids)
         {
@@ -249,38 +241,14 @@ namespace Wotr.Client
                 Window.Presented.Q("battle-card-" + role)?.AddToClassList(CardMarkClass);
         }
 
-        private void Ring(VisualElement target)
-        {
-            if (!PresentationTargets.Shown(target))
-                return;
-            var ring = new LayerRing(layer, RingName);
-            ring.Follow(target);
-            marks.Add(ring.Root);
-        }
-
         private void Plate(VisualElement target, IEnumerable<FigureDelta> entries)
         {
             var list = entries.ToList();
-            if (list.Count == 0 || !PresentationTargets.Shown(target))
-                return;
-            var plate = ObservedDelta.Plate(list);
-            plate.name = PlateName;
-            plate.style.position = Position.Absolute;
-            // At the right of the figures' row, where the column has room; never over its statistics.
-            var bounds = layer.Local(target.worldBound);
-            plate.style.right = layer.Root.contentRect.width - bounds.xMax + 4;
-            plate.style.top = bounds.yMin;
-            layer.Root.Add(plate);
-            marks.Add(plate);
+            if (list.Count > 0)
+                marks.Plate(target, ObservedDelta.Plate(list));
         }
 
-        private void EndMarks()
-        {
-            version++;
-            foreach (var mark in marks)
-                mark.RemoveFromHierarchy();
-            marks.Clear();
-        }
+        private void EndMarks() => marks.End();
 
         private static BattleView Copy(BattleView battle) => JsonConvert.DeserializeObject<BattleView>(JsonConvert.SerializeObject(battle));
     }

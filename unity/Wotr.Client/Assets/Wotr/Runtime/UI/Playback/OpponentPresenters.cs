@@ -7,8 +7,8 @@ namespace Wotr.Client
     // die, the camera, the revealed card, the character's moment or ability source (UI-309), then the families (army
     // movement, attack, the battle window's rounds (UI-311), control, figure changes, politics, the Hunt and the
     // Fellowship, UI-310) — with the Skip target, Esc (only when nothing else owns it) and the pause while the player
-    // reads a card opened during the presentation. UI-312's presenters register after these. One staged board and one
-    // map trace serve every presenter of a presentation.
+    // reads a card opened during the presentation, and last the opponent's resources (Rings, dice, cards drawn, UI-312).
+    // One staged board and one map trace serve every presenter of a presentation; none of them reads or marks a notice.
     public sealed class OpponentPresenters : IDisposable
     {
         private readonly BoardScreen board;
@@ -24,6 +24,7 @@ namespace Wotr.Client
         private readonly HuntPresenter hunt;
         private readonly FellowshipPresenter fellowship;
         private readonly BattlePresenter battles;
+        private readonly ResourcePresenter resources;
         public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
@@ -61,6 +62,8 @@ namespace Wotr.Client
             Playback.Register(hunt);
             fellowship = new FellowshipPresenter(board, staged, layer, fellowshipPanel, Sounds);
             Playback.Register(fellowship);
+            resources = new ResourcePresenter(board, staged, Playback, layer, Sounds);
+            Playback.Register(resources);
             Playback.Paused = Reading;
             Playback.Released += Released;
             binding.Ticked += Skip.Refresh;
@@ -121,6 +124,7 @@ namespace Wotr.Client
             characters.Released();
             hunt.Released();
             battles.Released();
+            resources.Released();
             fellowship.Released();
             fellowshipPanel.Released();
             staged.Reset();

@@ -125,6 +125,25 @@ namespace Wotr.Client
         private static bool SameEntry(HuntReportEntryView a, HuntReportEntryView b) => a.Kind == b.Kind && a.Revision == b.Revision &&
             a.HuntId == b.HuntId && a.CharacterId == b.CharacterId && a.Response == b.Response;
 
+        // UI-312: a recorded change of one die — its face (once rolled or changed by a Ring) and its place.
+        public void Die(ActionDieChange change)
+        {
+            var die = View.Dice.FirstOrDefault(d => d.Id == change.Id);
+            if (die == null)
+                return;
+            if (change.After.HasValue)
+                die.Face = change.After;
+            die.Location = change.To;
+        }
+
+        // UI-312: a side's hand after drawing (+) or discarding (−) cards.
+        public void Hand(Side side, int change)
+        {
+            var player = View.Players.FirstOrDefault(p => p.Side == side);
+            if (player != null)
+                player.HandCount = System.Math.Max(0, player.HandCount + change);
+        }
+
         // UI-307: a recorded political change of one nation.
         public void Nation(string id, bool active, int stepsToWar)
         {

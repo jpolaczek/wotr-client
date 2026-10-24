@@ -563,6 +563,12 @@ namespace Wotr.Client
             presentedFellowship = fellowship;
         }
 
+        // UI-312: the opponent's dice pool and its top bar summary (the hand count) as a presentation stages them; the
+        // released view redraws both.
+        public void StageOpponentDice(PlayerView staged) => actionPool.Apply(OpponentDice, staged, Opponent(staged), false);
+        public void StageOpponentSummary(PlayerView staged) => TopBar.Opponent.Apply(staged, Opponent(staged));
+        private static Side Opponent(PlayerView view) => view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+
         // UI-311: a recorded battle state in its window — a new battle's window opens as it does for a new battle (UI-149),
         // and a window the player closed during this battle stays closed.
         public void StageBattle(PlayerView staged)

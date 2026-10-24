@@ -267,6 +267,29 @@
 }
 .regional-battle .battle-presented .battle-die.presented-roll-lift { scale: 1.12 1.12; }
 
+/* UI-312: the opponent's draws or discards beside its hand count: small card backs and the signed count. */
+.presentation-card-backs {
+    flex-direction: row;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.presentation-card-back {
+    width: 14px;
+    height: 20px;
+    margin-right: 2px;
+    -unity-background-scale-mode: stretch-to-fill;
+    background-image: resource("Wotr/Art/UI/cards/back");
+}
+.presentation-card-backs > .unity-label {
+    margin: 0 0 0 2px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
 /* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). */
 .motion-enabled .presenting-politics .nation-token,
 .motion-enabled .presenting-politics .icon-glow {
