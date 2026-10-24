@@ -274,3 +274,27 @@ The opponent's played Event grows out of their hand count into its read-only pla
 into the console trail where it docks — or, for a card that stays on the table, drifts to the Effects tab, which lights up
 ([OPPONENT_ACTIONS_UX §6.20](OPPONENT_ACTIONS_UX.md#wdrozone-316)). Only its translate, scale and opacity move; under
 Reduced motion it fades in and out. A click pins it at its place at once.
+
+<a id="karta-fizyczna--ui-320"></a>
+## Every card view looks like a physical card — UI-320 (2026-10-24)
+
+Owner request after UI-316: the card view should look more like a real physical card, as tidy as a regular panel. Owner
+decisions: every card view (the opponent's presented card, the player's hand card with its play bar, table and console
+cards) and the wide shape (the readable width of before).
+
+- **Card.** A dark framed edge (3 pt) with rounded corners and a soft shadow around the parchment face.
+- **Banner.** The title stands light on a banner in its side's enamel (Shadow deep red, Free Peoples deep blue, neither
+  brown). The pin and close are small round badges on the banner.
+- **Under the banner.** The deck and side ("Strategy · Shadow") in small italics, then the play bar or note, then the
+  Event half.
+- **The halves.** An ornamental divider (a rule, ✦, a rule) replaces the old line between the halves. The Combat heading
+  ("COMBAT · Onslaught") has the initiative in a round badge beside it.
+- **Unchanged.** Every name, control, the observed treatment of a presented card's used half and the playable half's
+  green bar.
+- **Opening.** A card that opens fades in over 0.18 s; a presented card keeps its flight (UI-316).
+- **Text.** Its size is unchanged, and every text still fits at 1366 × 768 at 125 % without scrolling.
+
+Code: `CardInspector` (the deck line, divider and initiative badge; `card-side-*` classes), `CardTextFormat.SideOf` and
+`DeckLine`, Cards.uss. Tests: `CardViewportLayoutTests` (dark ink on the parchment, a light title on a dark banner),
+CardInteraction, HandCardLayout, the card pack layouts, OpponentCardPresentation and the presentation matrix (which now
+measures the presented card once it stands still).

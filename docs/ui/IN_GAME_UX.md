@@ -256,3 +256,8 @@ The card inspector may open without a click for one case only: the opponent's pu
 of the map away from the card's first effect, keeps the inspector's viewport rules (no shrunk text, no scrolling), and
 closes into the console trail after 3 s; a click pins it and holds the presentation until it is closed. The inspector's
 remembered position, pinning and Esc behave as before.
+
+<a id="karta-fizyczna--ui-320"></a>
+## Card views look like physical cards — UI-320 (2026-10-24)
+
+Every card view is a physical card: a framed parchment face with rounded corners and a shadow, the title on a banner in its side's enamel with the deck and side under it, an ornamental divider between the halves and the initiative in a round badge ([CARD_CHOICES_UX](CARD_CHOICES_UX.md#karta-fizyczna--ui-320)).

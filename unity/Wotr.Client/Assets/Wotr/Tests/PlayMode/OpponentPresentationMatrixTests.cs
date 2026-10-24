@@ -52,7 +52,7 @@ namespace Wotr.PlayTests
                 OpponentCardPresentationTests.Play(stage, "grey-havens");
                 var cards = stage.Board.Cards;
                 yield return Watch(stage, controls, "ui313-card-" + width + "-" + scale + ".png",
-                    () => cards.Root.style.display.value == DisplayStyle.Flex, () => Clear(stage, cards.Root));
+                    () => OpponentCardPresentationTests.Standing(cards), () => Clear(stage, cards.Root));
             }
         }
 

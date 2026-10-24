@@ -150,23 +150,62 @@
 #hand-card-compact #hand-card-title { -unity-text-align: middle-left; }
 #hand-card-full #hand-card-hint { -unity-text-align: middle-center; }
 
-/* UI-106: the opened hand card is parchment like the hand and the recorded actions: dark ink, a red rubric
-   for the Event and Combat headings and the square buttons of the board's windows. */
+/* UI-106: the opened hand card is parchment like the hand and the recorded actions: dark ink, a red rubric for the
+   Event and Combat headings. UI-320 (owner review): it looks like a physical card — a dark framed edge with rounded
+   corners and a shadow around the parchment face; the title on a banner in its side's enamel with the deck and side
+   under it; the Event half above an ornamental divider and the Combat half below it with its initiative in a round
+   badge; the pin and close as small round badges on the banner. Every name, control and size of the text stays. */
 #board-screen .card-inspector {
-    padding: 10px 12px 12px 12px;
-    border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
+    padding: 0 0 10px 0;
+    border-width: 3px;
+    border-color: rgb(74, 52, 26);
+    border-radius: 14px;
+    background-color: rgb(233, 214, 172);
     background-image: resource("Wotr/Art/UI/cards/parchment");
     -unity-slice-top: 28;
     -unity-slice-right: 28;
     -unity-slice-bottom: 28;
     -unity-slice-left: 28;
     -unity-slice-scale: 0.5px;
+    overflow: hidden;
+    filter: drop-shadow(0px 6px 12px rgba(0, 0, 0, 0.55));
 }
+#board-screen .card-inspector > * { margin-left: 12px; margin-right: 12px; }
 #board-screen .card-inspector Label { color: rgb(58, 42, 24); }
-#board-screen .card-inspector .card-header .title { font-size: 16px; -unity-font-style: bold; color: rgb(58, 42, 24); }
-#board-screen .card-inspector #card-window { color: rgb(122, 74, 30); }
-#board-screen .card-inspector .card-effect { border-left-color: rgba(140, 106, 51, 0.7); background-color: rgba(0, 0, 0, 0); }
+#board-screen .card-inspector > .card-header {
+    margin: 0 0 0 0;
+    padding: 6px 8px 6px 12px;
+    align-items: center;
+    background-color: rgb(92, 66, 34);
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(196, 160, 92);
+}
+#board-screen .card-inspector.card-side-shadow > .card-header { background-color: rgb(104, 28, 20); }
+#board-screen .card-inspector.card-side-free > .card-header { background-color: rgb(30, 56, 98); }
+#board-screen .card-inspector .card-header .title {
+    flex-grow: 1;
+    font-size: 16px;
+    -unity-font-style: bold;
+    letter-spacing: 0.6px;
+    color: rgb(246, 232, 196);
+}
+#board-screen .card-inspector #card-deck {
+    margin-top: 4px;
+    margin-bottom: 2px;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    -unity-font-style: italic;
+    color: rgb(122, 74, 30);
+}
+#board-screen .card-inspector #card-window { margin: 0 12px 4px 12px; color: rgb(122, 74, 30); }
+/* The divider replaces the old rule between the halves (Wotr.uss #card-combat-section). */
+#board-screen .card-inspector #card-combat-section { margin-top: 2px; border-top-width: 0; }
+#board-screen .card-inspector .card-effect {
+    margin-top: 4px;
+    padding-left: 0;
+    border-left-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
 #board-screen .card-inspector .card-effect-heading,
 #board-screen .card-inspector .focused-effect .card-effect-heading {
     font-size: 11px;
@@ -174,22 +213,49 @@
     -unity-font-style: bold;
     color: rgb(122, 26, 16);
 }
-#board-screen .card-inspector .card-effect.playable-effect { border-left-color: rgb(46, 112, 84); background-color: rgba(46, 112, 84, 0.12); }
+#board-screen .card-inspector .card-effect.playable-effect { padding-left: 6px; border-left-width: 3px; border-left-color: rgb(46, 112, 84); background-color: rgba(46, 112, 84, 0.12); }
 #board-screen .card-inspector .card-rules { color: rgb(58, 42, 24); }
+#board-screen .card-inspector .card-divider {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+#board-screen .card-inspector .card-divider-line { flex-grow: 1; height: 1px; background-color: rgba(122, 74, 30, 0.55); }
+#board-screen .card-inspector .card-divider-ornament { margin: 0 8px; padding: 0; font-size: 12px; color: rgb(122, 74, 30); }
+#board-screen .card-inspector .card-combat-title { flex-direction: row; align-items: center; margin-bottom: 4px; }
+#board-screen .card-inspector .card-combat-title > .card-effect-heading { margin: 0; flex-shrink: 1; }
+#board-screen .card-inspector .card-initiative {
+    width: 22px;
+    height: 22px;
+    margin: 0 6px 0 0;
+    padding: 0;
+    border-width: 2px;
+    border-radius: 11px;
+    border-color: rgb(122, 26, 16);
+    background-color: rgb(246, 232, 196);
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    font-size: 12px;
+    color: rgb(122, 26, 16);
+}
 #board-screen .card-inspector .card-header Button {
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
-    border-width: 0;
-    border-radius: 0;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    margin-left: 4px;
+    color: rgb(246, 232, 196);
+    background-color: rgba(0, 0, 0, 0.25);
+    background-image: none;
+    border-width: 1px;
+    border-color: rgba(246, 232, 196, 0.6);
+    border-radius: 11px;
 }
 #board-screen .card-inspector .card-header Button:hover,
-#board-screen .card-inspector .card-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+#board-screen .card-inspector .card-header Button:focus { background-color: rgba(246, 232, 196, 0.22); }
+/* UI-320, the animation rule: a card that opens fades in (a presentation's flight sets its own opacity over it). */
+#board-screen .card-inspector.card-appearing { opacity: 0; }
+.motion-enabled #board-screen .card-inspector { transition-property: opacity; transition-duration: 0.18s; }
 
 
 /* UI-111: cards that cannot be committed in this battle stay visible but dimmed, with their unmet condition. */

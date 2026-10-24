@@ -94,16 +94,22 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(root.Query<ScrollView>().ToList());
         }
 
-        // UI-106: the opened hand card is parchment with dark ink, like the hand and the recorded actions.
+        // UI-106: the opened hand card is parchment with dark ink, like the hand and the recorded actions. UI-320: its title
+        // stands light on the card's dark banner.
         private static void AssertParchment(VisualElement card)
         {
             Assert.AreEqual("parchment", card.resolvedStyle.backgroundImage.texture?.name);
+            var banner = card.Q(className: "card-header");
             foreach (var label in card.Query<Label>().ToList().Where(l => l.resolvedStyle.display != DisplayStyle.None &&
-                         l.text.Length > 0 && !(l.parent is Button) && !(l is Button)))
+                         l.text.Length > 0 && !(l.parent is Button) && !(l is Button) && !banner.Contains(l)))
             {
                 var color = label.resolvedStyle.color;
                 Assert.Less(color.r + color.g + color.b, 1.5f, "Dark ink on parchment: " + label.name);
             }
+            var shade = banner.resolvedStyle.backgroundColor;
+            var title = banner.Q<Label>(className: "title").resolvedStyle.color;
+            Assert.Less(shade.r + shade.g + shade.b, 1.2f, "A dark title banner.");
+            Assert.Greater(title.r + title.g + title.b, 2.4f, "A light title on it.");
         }
 
         private static void AssertRulesExposed(BoardScreen board)

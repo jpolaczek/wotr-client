@@ -32,6 +32,11 @@ namespace Wotr.Client
         private readonly Label eventHeading = new Label { name = "card-event-heading" };
         private readonly Label combatHeading = new Label { name = "card-combat-heading" };
         private readonly Label combatText = new Label { name = "card-combat-text" };
+        // UI-320: a physical card's parts — the deck line under the title, the divider between the halves and the round
+        // initiative badge beside the Combat heading.
+        private readonly Label deck = new Label { name = "card-deck" };
+        private readonly VisualElement divider = new VisualElement { name = "card-divider", pickingMode = PickingMode.Ignore };
+        private readonly Label initiative = new Label { name = "card-initiative" };
         private readonly VisualElement toolbar = BoardScreen.Row("card-toolbar");
         private readonly CardPlayButtons plays;
         private readonly CardViewportLayout viewportLayout;
@@ -65,6 +70,8 @@ namespace Wotr.Client
             close.tooltip = "Close card";
             header.Add(close);
             Root.Add(header);
+            deck.AddToClassList("card-deck");
+            Root.Add(deck);
             plays = new CardPlayButtons(face => PlayRequested?.Invoke(CardId, face), () => ReactionRequested?.Invoke(CardId));
             toolbar.Add(plays.Root);
             Root.Add(toolbar);
@@ -75,9 +82,14 @@ namespace Wotr.Client
             combatHeading.AddToClassList("card-effect-heading");
             eventSection.Add(eventHeading);
             eventSection.Add(text);
-            combatSection.Add(combatHeading);
+            var combatTitle = BoardScreen.Row("card-combat-title");
+            initiative.AddToClassList("card-initiative");
+            combatTitle.Add(initiative);
+            combatTitle.Add(combatHeading);
+            combatSection.Add(combatTitle);
             combatSection.Add(combatText);
             Root.Add(eventSection);
+            Root.Add(Divider());
             Root.Add(combatSection);
             eventSection.RegisterCallback<ClickEvent>(_ => RequestDiscard(eventSection));
             combatSection.RegisterCallback<ClickEvent>(_ => RequestDiscard(combatSection));
@@ -116,10 +128,35 @@ namespace Wotr.Client
             tableSource = !allowPlay && IsActiveSource(id);
             anchorPinnedSource = keep && !Pinned && avoid != null;
             Pinned |= keep;
-            Root.style.display = DisplayStyle.Flex;
+            Appear();
             Root.BringToFront();
             Refresh();
             OpenedFrom?.Invoke(origin);
+        }
+
+        // UI-320: a card that opens fades in (Cards.uss, under .motion-enabled) instead of appearing in one frame; a
+        // presentation's flight sets its own opacity over it (UI-316).
+        private void Appear()
+        {
+            if (Root.style.display == DisplayStyle.Flex)
+                return;
+            Root.AddToClassList("card-appearing");
+            Root.style.display = DisplayStyle.Flex;
+            Root.schedule.Execute(() => Root.RemoveFromClassList("card-appearing"));
+        }
+
+        // A short rule, an ornament and a short rule between the Event and the Combat halves.
+        private VisualElement Divider()
+        {
+            divider.AddToClassList("card-divider");
+            foreach (var part in new[] { "card-divider-line", "card-divider-ornament", "card-divider-line" })
+            {
+                var piece = part == "card-divider-ornament" ? new Label("✦") : new VisualElement();
+                piece.pickingMode = PickingMode.Ignore;
+                piece.AddToClassList(part);
+                divider.Add(piece);
+            }
+            return divider;
         }
 
         public void Close()
@@ -214,11 +251,17 @@ namespace Wotr.Client
             if (!CardLibrary.Cards.TryGetValue(CardId, out var card))
                 return;
             title.text = card.Title;
+            deck.text = CardTextFormat.DeckLine(card);
+            var side = CardTextFormat.SideOf(card.Id);
+            Root.EnableInClassList("card-side-shadow", side == Side.Shadow);
+            Root.EnableInClassList("card-side-free", side == Side.FreePeoples);
             eventHeading.text = card.Deck == "special" ? "SPECIAL EVENT" : card.EventType.ToUpperInvariant() + " · EVENT";
-            combatHeading.text = "COMBAT · " + string.Join(" / ", card.Initiative) + " · " + card.CombatTitle;
+            initiative.text = string.Join("/", card.Initiative);
+            combatHeading.text = "COMBAT · " + card.CombatTitle;
             text.text = CardLibrary.EventText(card, view?.Configuration);
             combatText.text = card.Combat;
             combatSection.style.display = card.HasCombat ? DisplayStyle.Flex : DisplayStyle.None;
+            divider.style.display = combatSection.style.display;
             RefreshPlay(card);
             FitViewport();
             IconButton.SetIcon(pin, Pinned ? "pinned" : "pin");

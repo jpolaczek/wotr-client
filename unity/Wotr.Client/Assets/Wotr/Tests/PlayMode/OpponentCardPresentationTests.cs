@@ -246,7 +246,7 @@ namespace Wotr.PlayTests
 
         // The Shadow's Event die pays Orcs Multiplying Again; its recruits land in Dol Guldur, then in Mount Gundabad.
         // UI-316: the card stands at its place — no flight is set on it.
-        private static bool Standing(CardInspector cards) => cards.Root.style.display.value == DisplayStyle.Flex &&
+        internal static bool Standing(CardInspector cards) => cards.Root.style.display.value == DisplayStyle.Flex &&
             cards.Root.style.opacity.keyword == StyleKeyword.Null && cards.Root.style.scale.keyword == StyleKeyword.Null;
 
         internal static PlayerView Play(PresentedBoardStage stage, string focus)
