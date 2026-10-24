@@ -836,6 +836,15 @@ Code: `Runtime/UI/Playback/PresentationPace.cs` and the presenters that use it.
   5. Row and token stay lit at the new station.
 
   "At war" stays the one caption.
+
+  Since UI-319 (owner: "make it smoother") the step is one motion:
+  - the token flares — its glow fades in with a swell to 1.2 × (0.35 s);
+  - it settles back to its size as its crest crossfades from passive to active (0.6 s) or as it slides
+    (0.7 s);
+  - it fades out with its row.
+
+  The transitions are on from the flare onwards (`presenting-politics`), so nothing in the row cuts.
+  Under Skip animations the station and crest change at once with the same marks.
 - **The opponent's card counter.** It lights up first. Its number then changes while it is lit, with the card backs
   and the signed count beside it, and it holds.
 - **Dice and the Ring.**

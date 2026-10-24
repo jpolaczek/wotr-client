@@ -188,6 +188,13 @@ The Politics panel the opponent's step opens settles for 0.4 s; the chosen natio
 before anything changes, an activation lights the crest, the token slides its step in 0.7 s and row and token stay lit at
 the new station for 0.8 s ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
 
+<a id="tor-przeciwnika--ui-319"></a>
+## The opponent's political step flares, slides and fades — UI-319 (2026-10-24)
+
+The chosen nation's token flares up (its glow with a brief swell), settles back as it slides to its next station or as its
+crest crossfades from passive to active, and fades out with its row: one smooth motion instead of separate cuts
+([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
+
 <a id="ui-317"></a>
 ## A Muster die that cannot recruit opens no Reserve — UI-317 (2026-10-24)
 

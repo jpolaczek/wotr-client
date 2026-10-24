@@ -302,10 +302,21 @@
     -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
 }
 
-/* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). */
-.motion-enabled .presenting-politics .nation-token,
+/* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). UI-319: it
+   flares first — a swell with its glow — and settles back to its size as it slides; an activation crossfades its crest. */
+.motion-enabled .presenting-politics .nation-token {
+    transition-property: left, scale;
+    transition-duration: 0.7s, 0.35s;
+    transition-timing-function: ease-in-out, ease-out-sine;
+}
 .motion-enabled .presenting-politics .icon-glow {
     transition-property: left;
     transition-duration: 0.7s;
+    transition-timing-function: ease-in-out;
+}
+.motion-enabled .presenting-politics .nation-token.presentation-flare { scale: 1.2 1.2; }
+.motion-enabled .presenting-politics .nation-token > .nation-emblem {
+    transition-property: -unity-background-image-tint-color, opacity;
+    transition-duration: 0.6s;
     transition-timing-function: ease-in-out;
 }

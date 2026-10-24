@@ -145,6 +145,7 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => panel.Drawer.style.display.value == DisplayStyle.Flex);
             Assert.IsTrue(token.ClassListContains("passive-nation"), "The token starts as it was presented.");
             yield return stage.Until(() => token.ClassListContains("active-nation"));
+            Assert.IsTrue(panel.Drawer.ClassListContains(PoliticsPresenter.MovingClass), "UI-319: the crest crossfades instead of swapping.");
             Assert.IsFalse(panel.Drawer.Q("nation-track-sauron").ClassListContains("nation-at-war"), "Activation alone is not war.");
             LayoutTests.Save(stage.Texture, "ui307-politics-1-activation.png");
             yield return stage.Until(() => stage.Board.Root.Q(PoliticsPresenter.CaptionName) != null);
@@ -180,7 +181,10 @@ namespace Wotr.PlayTests
             var station = token.resolvedStyle.left;
             yield return new WaitForSecondsRealtime((float)PresentationPace.MarkSeconds - .2f);
             Assert.AreEqual(station, token.resolvedStyle.left, "The token is lit before it moves.");
+            Assert.IsTrue(token.ClassListContains(PoliticsPresenter.FlareClass), "UI-319: it flares.");
+            Assert.Greater(token.resolvedStyle.scale.value.x, 1.05f, "It swells with its glow.");
             yield return stage.Until(() => token.resolvedStyle.left != station);
+            Assert.IsFalse(token.ClassListContains(PoliticsPresenter.FlareClass), "It settles back as it slides.");
             yield return new WaitForSecondsRealtime((float)PresentationPace.ChangeSeconds);
             Assert.IsTrue(PresentationGlow.IsLit(token), "It stays lit at its new station.");
             Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Nations.Drawer.Q("nation-track-sauron")), "The chosen nation's row is lit.");

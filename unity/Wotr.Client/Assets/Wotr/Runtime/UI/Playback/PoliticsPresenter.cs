@@ -13,6 +13,7 @@ namespace Wotr.Client
     {
         public const string CaptionName = "presentation-caption";
         public const string MovingClass = "presenting-politics";
+        public const string FlareClass = "presentation-flare";
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly PresentationLayer layer;
@@ -105,6 +106,7 @@ namespace Wotr.Client
             private readonly ObjectGlow glow = new ObjectGlow();
             private readonly ObjectGlow row = new ObjectGlow();
             private Label caption;
+            private bool flared;
             private int phase;
 
             public Beat(PoliticsPresenter owner, string id, bool wasActive, int fromSteps, bool active, int toSteps, bool settle, double now)
@@ -123,21 +125,28 @@ namespace Wotr.Client
                 Advance(now);
             }
 
-            // The settled panel, then the lit token, then the crest, then the slide, then the hold at the new station.
+            // UI-319: the settled panel, then the token flares (its glow and a swell), then it settles back as its crest
+            // crossfades or it slides, then it holds and fades out with its row.
             public bool Advance(double now)
             {
                 if (now >= markAt)
                     Follow();
+                if (!flared && now >= markAt)
+                {
+                    flared = true;
+                    owner.Panel.Drawer.AddToClassList(MovingClass);
+                    Flare(true);
+                }
                 if (phase == 0 && now >= activateAt)
                 {
                     phase = 1;
+                    Flare(false);
                     if (activation)
                         owner.Stage(id, true, fromSteps);
                 }
                 if (phase == 1 && now >= moveAt)
                 {
                     phase = 2;
-                    owner.Panel.Drawer.AddToClassList(MovingClass);
                     owner.Stage(id, active, toSteps);
                     if (toSteps == 0 && moves)
                         Caption();
@@ -149,12 +158,15 @@ namespace Wotr.Client
 
             private bool End()
             {
+                Flare(false);
                 glow.End();
                 row.End();
                 caption?.RemoveFromHierarchy();
                 owner.Panel.Drawer.RemoveFromClassList(MovingClass);
                 return true;
             }
+
+            private void Flare(bool on) => owner.Token(id)?.EnableInClassList(FlareClass, on);
 
             private void Follow()
             {
