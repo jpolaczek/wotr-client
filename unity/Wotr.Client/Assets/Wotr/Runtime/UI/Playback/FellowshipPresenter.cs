@@ -21,7 +21,7 @@ namespace Wotr.Client
         public const double SettleSeconds = .25;
         public const double StageSeconds = .6;
         public const double FlightSeconds = 1.1;
-        public const string RingName = "presentation-fellowship-ring";
+
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly FellowshipReading reading;
@@ -35,7 +35,7 @@ namespace Wotr.Client
             this.staged = staged;
             this.reading = reading;
             this.sounds = sounds;
-            mark = new PresentationMark(layer, RingName);
+            mark = new PresentationMark(layer);
         }
 
         public IPresentationBeat Begin(PresentationCue cue, double now)

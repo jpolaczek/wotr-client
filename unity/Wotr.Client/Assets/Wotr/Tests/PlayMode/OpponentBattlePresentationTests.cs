@@ -183,8 +183,8 @@ namespace Wotr.PlayTests
             var final = round.Latest();
             final.Characters.RemoveAll(c => c.Id == WitchKing);
             stage.Play(final, null, round.Steps.ToArray());
-            yield return stage.Until(() => stage.Board.Root.Q(BattlePresenter.RingName) is { } ring &&
-                stage.Board.Battles.Presented.Q("portrait-" + WitchKing) is { } portrait && ring.worldBound.Overlaps(portrait.worldBound));
+            yield return stage.Until(() => stage.Board.Battles.Presented.Q("portrait-" + WitchKing) is { } portrait &&
+                PresentationGlow.IsLit(portrait));
             LayoutTests.Save(stage.Texture, "ui311-character-lost.png");
             yield return stage.Released();
         }
@@ -279,7 +279,7 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(stage.Presenters.Skip.Button);
             yield return stage.Released();
             Assert.IsFalse(stage.Board.Battles.Presenting);
-            Assert.IsNull(stage.Board.Root.Q(BattlePresenter.RingName));
+            Assert.IsEmpty(stage.Lit);
             Assert.IsNull(stage.Board.Root.Q(BattlePresenter.PlateName));
         }
 

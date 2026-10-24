@@ -10,9 +10,13 @@ namespace Wotr.Client
     // upgrade replaces its Regular by the Elite (never an extra figure); new figures land with the board's arrival accent;
     // a delta badge beside the stack shows unit art, the nation's crest and a signed count. Several regions of one source
     // are successive beats (the camera visits each), and a battle's own figure changes stay in its window.
+    // UI-314 (owner review): the force glows instead of a ring, and figures that arrive keep glowing for 1.5 s after they
+    // land (MapFigureMotion's 0.45 s arrival), so new recruits mark their presence.
     public sealed class FigureChangePresenter : ICuePresenter
     {
         public const double Seconds = 1;
+        public const double LandingSeconds = .45;
+        public const double ArrivalGlowSeconds = 1.5;
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly MapObservedTrace trace;
@@ -39,13 +43,14 @@ namespace Wotr.Client
             foreach (var change in cue.Figures)
                 staged.Apply(change);
             staged.Show();
-            Land(before, cue.Figures);
+            var arrived = Land(before, cue.Figures);
             var set = trace.Begin().Force(region, figure.Side, garrison).Delta(region, figure.Side, garrison, Deltas(cue));
-            return new SettledBeat(set, staged, now, Seconds);
+            return new SettledBeat(set, staged, now, arrived ? LandingSeconds + ArrivalGlowSeconds : Seconds);
         }
 
-        // New figures on the board land in place with the arrival accent; removed ones simply leave the stack.
-        private void Land(BoardFigureSnapshot before, IEnumerable<ActionFigureChange> changes)
+        // New figures on the board land in place with the arrival accent; removed ones simply leave the stack. True when
+        // any figure arrived.
+        private bool Land(BoardFigureSnapshot before, IEnumerable<ActionFigureChange> changes)
         {
             var after = new BoardFigureSnapshot(staged.View, board.Map.Data.Regions.ContainsKey);
             var arrivals = changes.Select(change => change.After ?? change.Before).Where(f => f != null).Select(Key)
@@ -53,6 +58,7 @@ namespace Wotr.Client
                 .Select(key => new BoardFigureMove(after.Figures[key], after.Figures[key])).ToList();
             if (arrivals.Count > 0)
                 board.Map.Figures.Fly(arrivals);
+            return arrivals.Count > 0;
         }
 
         public static IEnumerable<FigureDelta> Deltas(PresentationCue cue)

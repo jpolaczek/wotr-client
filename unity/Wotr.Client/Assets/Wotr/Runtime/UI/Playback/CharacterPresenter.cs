@@ -16,25 +16,23 @@ namespace Wotr.Client
     public sealed class CharacterPresenter : ICuePresenter
     {
         public const double MomentSeconds = 1;
-        public const string SourceRingName = "presentation-source-ring";
+
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly MapObservedTrace trace;
         private readonly PresentationCamera camera;
-        private readonly PresentationLayer layer;
+
         private MapObservedTrace.TraceSet moment;
         private MapObservedTrace.TraceSet source;
-        private LayerRing sourceRing;
+        private readonly ObjectGlow sourcePortrait = new ObjectGlow();
         private string sourceAction = "";
 
-        public CharacterPresenter(BoardScreen board, StagedBoard staged, MapObservedTrace trace, PresentationCamera camera,
-            PresentationLayer layer)
+        public CharacterPresenter(BoardScreen board, StagedBoard staged, MapObservedTrace trace, PresentationCamera camera)
         {
             this.board = board;
             this.staged = staged;
             this.trace = trace;
             this.camera = camera;
-            this.layer = layer;
         }
 
         public static bool Shows(PresentationCue cue) => cue.BattleId.Length == 0 &&
@@ -86,8 +84,7 @@ namespace Wotr.Client
             var portrait = ShownPortrait(figure, identity);
             if (portrait != null)
             {
-                sourceRing = new LayerRing(layer, SourceRingName);
-                sourceRing.Follow(portrait);
+                sourcePortrait.Follow(portrait);
                 return new TimedBeat(now, MomentSeconds);
             }
             if (figure == null || !board.Map.Data.Shapes.ContainsKey(figure.Location))
@@ -120,8 +117,7 @@ namespace Wotr.Client
         {
             source?.End();
             source = null;
-            sourceRing?.End();
-            sourceRing = null;
+            sourcePortrait.End();
             sourceAction = "";
         }
 

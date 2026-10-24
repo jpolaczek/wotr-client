@@ -163,8 +163,7 @@ namespace Wotr.PlayTests
             var move = stage.Board.Map.Figures.Moves.Single(m => m.To.Key == "character:" + Gimli);
             Assert.AreEqual("rivendell", move.From.Region, "The public Fellowship region is the origin.");
             Assert.IsFalse(move.IsArrival);
-            Assert.IsTrue(Rings(stage).Any(ring => ring.Overlaps(stage.Board.Map.FellowshipMarker.Bounds("rivendell").Value)),
-                "The Fellowship's figure is the traced source.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Map.FellowshipMarker.Root), "The Fellowship's figure is the glowing source.");
             yield return stage.Until(() => stage.Identities() == "Gimli");
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui309-separation-known.png");
@@ -183,8 +182,7 @@ namespace Wotr.PlayTests
             var arrival = stage.Board.Map.Figures.Moves.Single(m => m.To.Key == "character:" + Gimli);
             Assert.IsTrue(arrival.IsArrival, "Unknown progress is never a claimed origin.");
             Assert.AreEqual("fords-of-bruinen", arrival.From.Region);
-            Assert.IsFalse(Rings(stage).Any(ring => ring.Overlaps(stage.Board.Map.FellowshipMarker.Bounds("rivendell") ?? Rect.zero)),
-                "The last known region is not traced.");
+            Assert.IsFalse(PresentationGlow.IsLit(stage.Board.Map.FellowshipMarker.Root), "The last known region is not traced.");
             yield return stage.Released();
             stage.AssertFinal(latest);
         }
@@ -235,7 +233,7 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => stage.Moments() == "The Witch-king");
             Assert.AreEqual(zoom, stage.Board.Map.Camera.Zoom, "The player's own action keeps the camera.");
             Assert.AreEqual(pan, stage.Board.Map.Camera.Pan);
-            Assert.IsTrue(Rings(stage).Any(), "The source's force is traced.");
+            Assert.IsTrue(stage.Presenters.Trace.Lit.Any(), "The source's force glows.");
             Assert.AreEqual(buttons + 1, stage.Buttons(), "Only the Skip target is added.");
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui309-reaction-source.png");
@@ -338,9 +336,5 @@ namespace Wotr.PlayTests
             Kind = ActionMovementKind.Travel, From = from, To = to, Participants = participants.ToList()
         };
 
-        // The observed rings on the map, in map-local points.
-        private static List<Rect> Rings(PresentedBoardStage stage) =>
-            stage.Board.Map.Query(className: "observed-ring").ToList().Where(ring => ring.resolvedStyle.display == DisplayStyle.Flex)
-                .Select(ring => new Rect(ring.resolvedStyle.left, ring.resolvedStyle.top, ring.resolvedStyle.width, ring.resolvedStyle.height)).ToList();
     }
 }

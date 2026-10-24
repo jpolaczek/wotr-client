@@ -21,18 +21,18 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly PresentationPlayback playback;
         private readonly PresentationCamera camera;
-        private readonly PresentationLayer layer;
+
         private string revealed = "";
         // The card docked as the source of an action: later presentations of the same action recall it without a reveal.
         private string dockedAction = "";
         private string docked = "";
 
-        public CardRevealPresenter(BoardScreen board, PresentationPlayback playback, PresentationCamera camera, PresentationLayer layer)
+        public CardRevealPresenter(BoardScreen board, PresentationPlayback playback, PresentationCamera camera)
         {
             this.board = board;
             this.playback = playback;
             this.camera = camera;
-            this.layer = layer;
+
             Cards.Root.RegisterCallback<ClickEvent>(PinRevealed);
         }
 
@@ -110,9 +110,9 @@ namespace Wotr.Client
 
         private IPresentationBeat Table(VisualElement target, double now)
         {
-            var ring = new LayerRing(layer, "presentation-table-ring");
-            ring.Follow(target, round: false);
-            return new RingBeat(ring, now, TableSeconds);
+            var glow = new ObjectGlow();
+            glow.Follow(target);
+            return new GlowBeat(glow, now, TableSeconds);
         }
 
         // "A click on the shown card pins it"; the presentation then holds until it is closed.
@@ -189,14 +189,14 @@ namespace Wotr.Client
             }
         }
 
-        private sealed class RingBeat : IPresentationBeat
+        private sealed class GlowBeat : IPresentationBeat
         {
-            private readonly LayerRing ring;
+            private readonly ObjectGlow glow;
             private readonly double end;
 
-            public RingBeat(LayerRing ring, double now, double seconds)
+            public GlowBeat(ObjectGlow glow, double now, double seconds)
             {
-                this.ring = ring;
+                this.glow = glow;
                 end = now + seconds;
             }
 
@@ -204,11 +204,11 @@ namespace Wotr.Client
             {
                 if (now < end)
                     return false;
-                ring.End();
+                glow.End();
                 return true;
             }
 
-            public void Finish() => ring.End();
+            public void Finish() => glow.End();
         }
     }
 }

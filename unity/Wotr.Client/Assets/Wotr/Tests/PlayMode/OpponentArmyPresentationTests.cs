@@ -170,7 +170,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(3, stage.Army("minas-morgul"), "A recorded attack is not an occupation.");
             Assert.AreEqual(0, stage.Board.Map.Figures.ActiveCount);
             Assert.IsFalse(stage.Board.Battles.IsOpen);
-            Assert.AreEqual(2, stage.Board.Map.Query(className: "observed-ring").ToList().Count(ring => ring.resolvedStyle.display == DisplayStyle.Flex));
+            Assert.AreEqual(2, stage.Board.Map.Query(className: PresentationGlow.ClassName).ToList().Count,
+                "UI-314: both forces glow, the attackers and the defenders.");
             LayoutTests.Save(stage.Texture, "ui306-attack.png");
             yield return stage.Released();
             Assert.IsTrue(stage.Board.Battles.IsOpen, "The battle window opens at its normal host after the attack.");

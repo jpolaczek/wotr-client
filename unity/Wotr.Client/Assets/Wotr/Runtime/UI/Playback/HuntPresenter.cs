@@ -14,7 +14,7 @@ namespace Wotr.Client
     public sealed class HuntPresenter : ICuePresenter
     {
         public const double SettleSeconds = .25;
-        public const string RingName = "presentation-hunt-ring";
+
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly FellowshipReading reading;
@@ -28,7 +28,7 @@ namespace Wotr.Client
             this.staged = staged;
             this.reading = reading;
             this.sounds = sounds;
-            mark = new PresentationMark(layer, RingName);
+            mark = new PresentationMark(layer);
         }
 
         // How long an entry holds; the tracks, the reveal, the progress and a Companion's placing have their own objects.

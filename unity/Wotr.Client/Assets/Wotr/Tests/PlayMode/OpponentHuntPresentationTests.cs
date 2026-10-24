@@ -38,9 +38,9 @@ namespace Wotr.PlayTests
             var progress = Plaque(stage, "progress");
             var before = progress.text;
             stage.Play(script.Latest, null, steps);
-            yield return stage.Until(() => stage.Board.Root.Q(HuntPresenter.RingName) != null);
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Hunt.Tab));
             Assert.AreEqual(DisplayStyle.Flex, stage.Board.Hunt.Root.style.display.value, "The Hunt window opens on the Hunt's start.");
-            Assert.IsTrue(stage.Board.Root.Q(HuntPresenter.RingName).worldBound.Overlaps(stage.Board.Hunt.Tab.worldBound), "The Hunt Box is traced.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Hunt.Tab), "The Hunt Box glows.");
             yield return stage.Until(() => Die(stage, "d0") != null);
             Assert.AreEqual(before, progress.text, "The progress waits for the Hunt.");
             yield return new WaitForSecondsRealtime(.3f);
@@ -92,8 +92,7 @@ namespace Wotr.PlayTests
             yield return stage.Ready();
             var steps = Hit(stage, out var latest);
             stage.Play(latest, null, steps);
-            yield return stage.Until(() => Ring(stage, HuntPresenter.RingName) is { } ring &&
-                ring.worldBound.Overlaps(stage.Board.Fellowship.Status.Q("fellowship-ring").worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Status.Q("fellowship-ring")));
             LayoutTests.Save(stage.Texture, "ui310-ring-response.png");
             yield return stage.Released();
         }
@@ -119,8 +118,7 @@ namespace Wotr.PlayTests
             var flight = stage.Board.Map.Figures.Moves.Single(move => move.To.Key == "fellowship");
             Assert.AreEqual(("rivendell", "moria"), (flight.From.Region, flight.To.Region), "The revealed figure flies between public regions.");
             Assert.IsTrue(stage.Board.Hunt.Tile.Root.resolvedStyle.display == DisplayStyle.Flex, "The tile came first.");
-            yield return stage.Until(() => Ring(stage, FellowshipPresenter.RingName) is { } ring &&
-                ring.worldBound.Overlaps(stage.Board.Fellowship.Status.Q("fellowship-ring").worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Status.Q("fellowship-ring")));
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui310-reveal.png");
             yield return stage.Released();
@@ -143,8 +141,7 @@ namespace Wotr.PlayTests
             script.Latest.Fellowship.CompanionIdentities.Remove("merry");
             script.Latest.Fellowship.CompanionCount = 3;
             stage.Play(script.Latest, null, steps);
-            yield return stage.Until(() => Ring(stage, HuntPresenter.RingName) is { } ring && Portrait(stage, "merry") is { } merry &&
-                ring.worldBound.Overlaps(merry.worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(Portrait(stage, "merry")));
             yield return new WaitForSecondsRealtime(.2f);
             LayoutTests.Save(stage.Texture, "ui310-casualty.png");
             yield return stage.Until(() => Portrait(stage, "merry") == null);
@@ -166,7 +163,7 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => Portrait(stage, "legolas")?.ClassListContains("current-guide") == true);
             Assert.IsTrue(stage.Playback.Holding);
             Assert.IsFalse(Portrait(stage, "gimli").ClassListContains("current-guide"), "One Guide.");
-            yield return stage.Until(() => Ring(stage, HuntPresenter.RingName) is { } ring && ring.worldBound.Overlaps(Portrait(stage, "legolas").worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(Portrait(stage, "legolas")));
             yield return stage.Released();
         }
 
@@ -182,7 +179,7 @@ namespace Wotr.PlayTests
             var steps = script.Finish();
             var buttons = Controls(stage);
             stage.Play(script.Latest, null, steps);
-            yield return stage.Until(() => Ring(stage, HuntPresenter.RingName) is { } ring && ring.worldBound.Overlaps(stage.Board.TableEffects.Tab.worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.TableEffects.Tab));
             Assert.AreEqual(buttons + 1, Controls(stage), "Only the Skip target is added: no response, Continue or result window.");
             yield return stage.Released();
         }
@@ -199,8 +196,7 @@ namespace Wotr.PlayTests
             var hidden = stage.Latest();
             hidden.Fellowship.Hidden = true;
             stage.Play(hidden, null, hide);
-            yield return stage.Until(() => Ring(stage, FellowshipPresenter.RingName) is { } ring &&
-                ring.worldBound.Overlaps(stage.Board.Fellowship.Status.Q("fellowship-ring").worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Status.Q("fellowship-ring")));
             Assert.AreEqual("◇", stage.Board.Map.FellowshipMarker.Root.Q<Button>("fellowship-marker").text, "The figure is hidden in place.");
             Assert.AreEqual(0, stage.Board.Map.Figures.Moves.Count, "Hiding moves nothing.");
             yield return stage.Released();
@@ -215,7 +211,7 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => corruption.text != before && stage.Playback.Holding);
             var row = stage.Board.Fellowship.Root.Q("corruption-track");
             var target = PresentationTargets.Shown(row) ? row : corruption;
-            yield return stage.Until(() => Ring(stage, FellowshipPresenter.RingName) is { } ring && ring.worldBound.Overlaps(target.worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(target));
             LayoutTests.Save(stage.Texture, "ui310-healing.png");
             yield return stage.Released();
             Assert.AreEqual(1, stage.Board.View.Fellowship.Corruption);
@@ -237,8 +233,7 @@ namespace Wotr.PlayTests
             stage.Play(latest, "minas-morgul", enter);
             var pan = stage.Board.Map.Camera.Pan;
             yield return stage.Until(() => stage.Playback.Holding && stage.Board.Fellowship.Root.Q("mordor-track")?.resolvedStyle.display == DisplayStyle.Flex);
-            yield return stage.Until(() => Ring(stage, FellowshipPresenter.RingName) is { } ring &&
-                ring.worldBound.Overlaps(stage.Board.Fellowship.Root.Q("mordor-track").worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Root.Q("mordor-track")));
             Assert.AreEqual(pan, stage.Board.Map.Camera.Pan, "The Mordor track is no region to frame: the camera stays.");
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui310-mordor.png");
@@ -258,8 +253,7 @@ namespace Wotr.PlayTests
             yield return stage.Released();
             Assert.IsFalse(stage.Board.TracksStaged, "Skip shows the latest tracks at once.");
             Assert.AreEqual((2, 4), (stage.Board.View.Fellowship.Progress, stage.Board.View.Fellowship.Corruption));
-            Assert.IsNull(stage.Board.Root.Q(HuntPresenter.RingName));
-            Assert.IsNull(stage.Board.Root.Q(FellowshipPresenter.RingName));
+            Assert.IsEmpty(stage.Lit, "Nothing glows after Skip.");
         }
 
         [UnityTest]
@@ -353,8 +347,6 @@ namespace Wotr.PlayTests
             stage.Board.Fellowship.Status.Q<Label>("fellowship-status-" + value);
 
         private static VisualElement Die(PresentedBoardStage stage, string id) => stage.Board.Hunt.Root.Q("hunt-die-" + id);
-
-        private static VisualElement Ring(PresentedBoardStage stage, string name) => stage.Board.Root.Q(name);
 
         private static VisualElement Portrait(PresentedBoardStage stage, string identity) =>
             stage.Board.Fellowship.Root.Q("fellowship-portrait-" + identity);

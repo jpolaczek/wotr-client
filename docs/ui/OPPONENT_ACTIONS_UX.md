@@ -108,8 +108,11 @@ The new **observed trace** is the program's single result treatment, derived fro
 - **Regions:** a 2 pt pale-blue outline that fades in over 200 ms, holds for the beat and fades out over 400 ms. It
   never pulses and never fills, and it is hidden while the player drags, pans or has draft targets (as the history
   outline is today).
-- **Objects** (a figure stack, a die, a crest, a track marker, a portrait, a card): a 2 pt pale-blue ring with no plate,
-  no pulse and no lift, same fade.
+- **Objects** (a figure stack, a die, a crest, a track marker, a portrait, a card): the object's own **glow** — since
+  UI-314 (owner review 2026-10-24: "armies and characters are not marked by a rectangle around them but glow") a soft
+  pale-blue light around the object's own shape (`PresentationGlow`: a zero-offset `drop-shadow` filter, a tight
+  core and a wide halo), with no plate, no pulse and no lift, fading in over 200 ms and out over 400 ms. It is never
+  the gold ChoiceGlow halo. Before UI-314 this was a 2 pt pale-blue ring; settlements keep that ring.
 - **Delta badge:** beside the affected stack or row, a small dark plate with the unit-type icon or symbol, the nation
   crest and a signed count in Alegreya SemiBold ("+3", "−1"); for an upgrade, the regular and elite icons with an
   arrow. It appears with the change and fades with the beat.
@@ -758,6 +761,53 @@ New code: `OpponentPresentationAcceptanceNetworkTests`, `OpponentPresentationMat
   - the follow-ups recorded with the components: the Voice of Saruman's unnamed source (§6.13) and the header
     finding above.
 
+<a id="wdrozone-314"></a>
+### 6.18 Shipped in UI-314 (2026-10-24): the glow instead of a frame
+
+The owner's live review (2026-10-24), points 6 and 7: "armies and characters should not be marked with a rectangle around
+them but glow", and "units the opponent recruits should glow for a moment after they appear".
+
+Code: `Runtime/UI/Playback/PresentationGlow.cs` (`PresentationGlow`, `ObjectGlow`) and `.presentation-glow` in
+`Presentation.uss`. It replaces `LayerRing` and the force and Fellowship rings of `MapObservedTrace`. Also
+`MapCanvas.MarkerArtwork`, `PresentationMark`, `PresentationMarks.Light` and the new figures' hold in
+`FigureChangePresenter`.
+
+- **The glow.** A soft light around the object's own shape (§5): three zero-offset `drop-shadow` filters — a white
+  core, a light-blue glow and a wide saturated halo — so it reads on the parchment and on the dark HUD.
+  - It fades in over 200 ms and out over 400 ms (a `filter` transition under `.motion-enabled`); under Reduced motion
+    it appears and leaves at once.
+  - It changes only the object's filter. The object keeps its size, place, pointer, cursor and tooltip, and the
+    presentation adds no element.
+  - Two marks of one object share its glow, which goes out with the last of them.
+- **On the map.** Each of these glows around its plinth, figures, emblems and count:
+  - a presented force (a march's source and destination, an attack's two sides, a capture's force);
+  - a character's force;
+  - the Fellowship's figure at a separation's public origin.
+
+  The glow follows the marker through camera moves and moves to a marker the staged board rebuilds. Settlements keep
+  their 2 pt ring; region outlines, badges, deltas, portraits and identities are unchanged.
+- **In the HUD.** Each of these lights itself instead of a ring:
+  - a Ring's socket, the opponent's changed dice, the Hunt plaque and the opponent's card counter;
+  - the Hunt Box tab, the Fellowship's Ring, tracks and portraits;
+  - the Effects tab or a table card's tile, the politics token or the Politics tab;
+  - a battle portrait.
+- **New figures.** Figures that arrive (recruits, an upgrade's Elite, an entering character) land with the 0.45 s
+  arrival accent and keep their force's glow for 1.5 s (`FigureChangePresenter.ArrivalGlowSeconds`), with the delta
+  badge. A beat that only removes figures still lasts 1 s.
+- **Skip and the release** put every glow out at once, together with the beat's marks.
+- **Checks.**
+  - EditMode: 1075/1075.
+  - PlayMode offline, every presentation suite: 74/74, now asserting the glow of the marked object.
+  - `OpponentRecruitmentPoliticsTests.NewRecruitsGlowAroundTheirFiguresForAMomentAfterLanding`: no frame around the
+    force; it still glows 1.2 s after the landing; the beat holds the landing plus 1.5 s; nothing glows after the
+    release.
+  - Network: `OpponentPresentation`, `OpponentCard`, `OpponentCharacter`, `OpponentRecruitmentPolitics`,
+    `OpponentHunt`, `OpponentBattle`, `OpponentResource` and `OpponentPresentationAcceptance` network tests, and
+    `ActionNoticeNetworkTests`: 16/16.
+  - Frames reviewed: `ui313-march-*` (source and destination glowing, no rectangle), `ui307-clip-*` (recruits
+    landing), `ui314-recruit-glow` (the stack lit 1.2 s after the landing), `ui312-draws` and `ui312-ring` (the
+    counter and the socket lit in the HUD).
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -1029,4 +1079,5 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
 | UI-312 Resources and pennants (shipped) | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) — delivered as §6.16; reusable `PresentationMarks` and the pool and hand staging |
+| UI-314 Glow instead of a frame (shipped) | the owner's live review, points 6 and 7 — delivered as §6.18; reusable `PresentationGlow`/`ObjectGlow` for UI-315 and UI-316 |
 | UI-313 Acceptance (evidence recorded; the owner's live review open) | §11 and the shared acceptance checklist — recorded as §6.17 with the coverage matrix, measurements and open checks |

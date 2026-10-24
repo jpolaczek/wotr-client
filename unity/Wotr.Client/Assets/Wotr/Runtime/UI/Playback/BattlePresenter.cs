@@ -30,7 +30,7 @@ namespace Wotr.Client
         public const string RollClass = "presented-roll";
         public const string LiftClass = "presented-roll-lift";
         public const string CardMarkClass = "presented-card-mark";
-        public const string RingName = "presentation-battle-ring";
+
         public const string PlateName = "presentation-battle-plate";
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
@@ -49,7 +49,7 @@ namespace Wotr.Client
             this.playback = playback;
             this.layer = layer;
             this.sounds = sounds;
-            marks = new PresentationMarks(layer, RingName, PlateName);
+            marks = new PresentationMarks(layer, PlateName);
         }
 
         private RegionalBattlePanel Window => board.Battles;
@@ -155,7 +155,7 @@ namespace Wotr.Client
             {
                 var column = Column(battle, figure.Side);
                 foreach (var character in cue.Figures.Select(change => change.Before ?? change.After).Where(CharacterMarks.Named))
-                    marks.Ring(column?.Q("portrait-" + character.Id));
+                    marks.Light(column?.Q("portrait-" + character.Id));
                 Plate(column?.Q("battle-composition"), FigureChangePresenter.Deltas(cue));
             });
             return new TimedBeat(now, LossSeconds);

@@ -58,7 +58,7 @@ namespace Wotr.PlayTests
                 var sh = session.Client(Side.Shadow);
                 await session.Send(Side.Shadow, CommandKind.PlayEvent, Payload(sh.Board.View, Crebain));
                 await session.Until(() => fp.Playback.Holding && fp.Board.Cards.CardId == Crebain);
-                await session.Until(() => fp.Board.Root.Q("presentation-table-ring") != null || !fp.Playback.Holding);
+                await session.Until(() => PresentationGlow.IsLit(fp.Board.TableEffects.Tab) || !fp.Playback.Holding);
                 await session.Until(() => !fp.Playback.Holding);
                 Assert.IsTrue(fp.Board.View.Players.Any(p => p.TableCards.Contains(Crebain)), "The card is on the table.");
                 Assert.AreEqual(DisplayStyle.None, fp.Board.Cards.Root.style.display.value, "The reveal does not linger.");

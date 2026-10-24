@@ -14,7 +14,8 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
 > [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-313 ships, the rules below stay in force except where
-> UI-305–UI-312 already apply the exception (UI-313: the aggregate acceptance, its coverage matrix, measurements and
+> UI-305–UI-312 already apply the exception (UI-314: every presented figure and object glows around its own shape
+> instead of a frame, and new recruits glow 1.5 s after landing: [§6.18](OPPONENT_ACTIONS_UX.md#wdrozone-314); UI-313: the aggregate acceptance, its coverage matrix, measurements and
 > open checks: [§6.17](OPPONENT_ACTIONS_UX.md#akceptacja-313); UI-312: the opponent's Rings, dice and draws show at their own HUD
 > objects, and quiet events play no scene: [§6.16](OPPONENT_ACTIONS_UX.md#wdrozone-312); UI-311: a battle's recorded rounds play read-only in its window, which
 > opens after the attack: [§6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311); UI-308: the opponent's public Event card opens read-only by itself, then

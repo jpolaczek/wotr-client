@@ -6,8 +6,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // UI-306 (OPPONENT_ACTIONS_UX §5): the observed trace on the map — a 2 pt pale-blue ring around a force's marker or a
-    // settlement, a region's outline and a small delta badge. A set of them appears together (200 ms fade), follows the
+    // UI-306 (OPPONENT_ACTIONS_UX §5): the observed trace on the map — a force's figures glowing (UI-314, PresentationGlow;
+    // before it a ring), a 2 pt pale-blue ring around a settlement, a region's outline and a small delta badge. A set of them appears together (200 ms fade), follows the
     // camera and the markers, and fades out together (400 ms); none takes the pointer, a tooltip or a cursor, so the objects
     // under it keep their own inspection. It is never a legal target, a choice glow, a selection or a ghost.
     public sealed class MapObservedTrace
@@ -24,6 +24,8 @@ namespace Wotr.Client
         // as they are created, after the rings' layer), so a neighbouring stack never covers a name.
         public VisualElement Plates { get; } = new VisualElement { name = "map-observed-plates", pickingMode = PickingMode.Ignore };
         public int Count => sets.Count;
+        // UI-314: the figures the traces light now.
+        public IEnumerable<VisualElement> Lit => sets.SelectMany(set => set.Lit);
 
         public MapObservedTrace(MapCanvas map)
         {
@@ -79,8 +81,8 @@ namespace Wotr.Client
         public sealed class TraceSet
         {
             private readonly MapObservedTrace owner;
-            private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison)> forces =
-                new List<(VisualElement, string, Side, bool)>();
+            private readonly List<(ObjectGlow Glow, string Region, Side Side, bool Garrison)> forces =
+                new List<(ObjectGlow, string, Side, bool)>();
             private readonly List<(VisualElement Element, string Region)> settlements = new List<(VisualElement, string)>();
             private readonly List<(VisualElement Element, string Region)> badges = new List<(VisualElement, string)>();
             private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison)> deltas =
@@ -88,7 +90,7 @@ namespace Wotr.Client
             private readonly List<string> regions = new List<string>();
             private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison, Rect Safe)> portraits =
                 new List<(VisualElement, string, Side, bool, Rect)>();
-            private readonly List<(VisualElement Element, string Region)> fellowships = new List<(VisualElement, string)>();
+            private readonly List<(ObjectGlow Glow, string Region)> fellowships = new List<(ObjectGlow, string)>();
             private bool ended;
             public VisualElement Root { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
             public VisualElement Plates { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -113,9 +115,10 @@ namespace Wotr.Client
                 Plates.EnableInClassList("shown", shown);
             }
 
+            // UI-314: the force's own figures glow; the glow moves with its marker and to a rebuilt one.
             public TraceSet Force(string region, Side side, bool garrison)
             {
-                forces.Add((NewRing(), region, side, garrison));
+                forces.Add((new ObjectGlow(), region, side, garrison));
                 Layout();
                 return this;
             }
@@ -186,17 +189,21 @@ namespace Wotr.Client
                 return this;
             }
 
-            // UI-309: the ring around the Fellowship's figure on its region (a separation's public origin).
+            // UI-309: the Fellowship's figure on its region (a separation's public origin) glows (UI-314).
             public TraceSet Fellowship(string region)
             {
-                fellowships.Add((NewRing(), region));
+                fellowships.Add((new ObjectGlow(), region));
                 Layout();
                 return this;
             }
 
             public IEnumerable<VisualElement> Deltas => deltas.Select(d => d.Element);
 
-            public IEnumerable<VisualElement> Rings => forces.Select(f => f.Element).Concat(settlements.Select(s => s.Element));
+            public IEnumerable<VisualElement> Rings => settlements.Select(s => s.Element);
+
+            // The figures glowing now: the forces' markers and the Fellowship's figure.
+            public IEnumerable<VisualElement> Lit => forces.Select(f => f.Glow.Target).Concat(fellowships.Select(f => f.Glow.Target))
+                .Where(target => target != null);
             public IEnumerable<Label> Badges => badges.Select(b => (Label)b.Element);
 
             public void End()
@@ -206,6 +213,10 @@ namespace Wotr.Client
                 ended = true;
                 owner.Ended(this);
                 Shown(false);
+                foreach (var force in forces)
+                    force.Glow.End();
+                foreach (var fellowship in fellowships)
+                    fellowship.Glow.End();
                 Root.schedule.Execute(() =>
                 {
                     Root.RemoveFromHierarchy();
@@ -215,8 +226,8 @@ namespace Wotr.Client
 
             internal void Layout()
             {
-                foreach (var (element, region, side, garrison) in forces)
-                    Place(element, owner.map.MarkerBounds(region, side, garrison));
+                foreach (var (glow, region, side, garrison) in forces)
+                    glow.Follow(owner.map.MarkerArtwork(region, side, garrison));
                 foreach (var (element, region) in settlements)
                 {
                     var anchor = owner.Anchor(region);
@@ -240,8 +251,8 @@ namespace Wotr.Client
                     var anchor = owner.Anchor(region);
                     Above(element, owner.map.MarkerBounds(region, side, garrison) ?? new Rect(anchor.x - 12, anchor.y - 12, 24, 24), safe);
                 }
-                foreach (var (element, region) in fellowships)
-                    Place(element, owner.map.FellowshipMarker.Bounds(region));
+                foreach (var (glow, region) in fellowships)
+                    glow.Follow(owner.map.FellowshipMarker.Bounds(region).HasValue ? owner.map.FellowshipMarker.Root : null);
                 Root.MarkDirtyRepaint();
             }
 

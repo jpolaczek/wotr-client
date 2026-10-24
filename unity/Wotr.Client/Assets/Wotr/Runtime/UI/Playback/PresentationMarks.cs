@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UIElements;
 
 namespace Wotr.Client
@@ -8,23 +9,24 @@ namespace Wotr.Client
     // before it on the same line (the top bar's open middle).
     public enum PlateSide { Inside, Under, Before }
 
-    // UI-311/UI-312: a beat's marks over HUD objects — observed rings and small plates — placed once the objects are laid
-    // out (content a beat has just staged has no size before the next layout pass). A newer placement or the beat's end
-    // removes them; none takes the pointer.
+    // UI-311/UI-312: a beat's marks on HUD objects — the objects' own glow (UI-314) and small plates — placed once the
+    // objects are laid out (content a beat has just staged has no size before the next layout pass). A newer placement or
+    // the beat's end removes them; none takes the pointer.
     public sealed class PresentationMarks
     {
         private readonly PresentationLayer layer;
-        private readonly string ringName;
         private readonly string plateName;
-        private readonly List<VisualElement> marks = new List<VisualElement>();
+        private readonly List<VisualElement> plates = new List<VisualElement>();
+        private readonly List<ObjectGlow> glows = new List<ObjectGlow>();
         private int version;
 
-        public PresentationMarks(PresentationLayer layer, string ringName, string plateName)
+        public PresentationMarks(PresentationLayer layer, string plateName)
         {
             this.layer = layer;
-            this.ringName = ringName;
             this.plateName = plateName;
         }
+
+        public IEnumerable<VisualElement> Lit => glows.Select(glow => glow.Target);
 
         public void Place(Action place)
         {
@@ -37,13 +39,13 @@ namespace Wotr.Client
             });
         }
 
-        public void Ring(VisualElement target, bool round = true)
+        public void Light(VisualElement target)
         {
             if (!PresentationTargets.Shown(target))
                 return;
-            var ring = new LayerRing(layer, ringName);
-            ring.Follow(target, round);
-            marks.Add(ring.Root);
+            var glow = new ObjectGlow();
+            glow.Follow(target);
+            glows.Add(glow);
         }
 
         public void Plate(VisualElement target, VisualElement plate, PlateSide side = PlateSide.Inside)
@@ -70,15 +72,18 @@ namespace Wotr.Client
                     break;
             }
             layer.Root.Add(plate);
-            marks.Add(plate);
+            plates.Add(plate);
         }
 
         public void End()
         {
             version++;
-            foreach (var mark in marks)
-                mark.RemoveFromHierarchy();
-            marks.Clear();
+            foreach (var plate in plates)
+                plate.RemoveFromHierarchy();
+            plates.Clear();
+            foreach (var glow in glows)
+                glow.End();
+            glows.Clear();
         }
     }
 }

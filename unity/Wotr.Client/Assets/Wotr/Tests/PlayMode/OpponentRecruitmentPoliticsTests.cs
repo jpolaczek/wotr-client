@@ -48,6 +48,30 @@ namespace Wotr.PlayTests
             yield return stage.NothingFlies();
         }
 
+        // UI-314 (owner review): the recruited force glows around its own figures — no frame — and keeps glowing for 1.5 s
+        // after its new figures land; nothing glows after the release.
+        [UnityTest]
+        public IEnumerator NewRecruitsGlowAroundTheirFiguresForAMomentAfterLanding()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            yield return stage.Ready();
+            var reserve = stage.Reserve("sauron", UnitKind.Regular, 2);
+            var latest = stage.Latest();
+            PresentedBoardStage.Place(latest, reserve, "dol-guldur");
+            stage.Play(latest, "between:dol-guldur:dol-guldur", stage.Recruits(stage.Step(1), reserve, "dol-guldur"));
+            yield return stage.Until(() => stage.Army("dol-guldur") == 2 && stage.Presenters.Trace.Lit.Any());
+            var started = Time.realtimeSinceStartup;
+            Assert.IsEmpty(stage.Board.Map.Query(className: "observed-ring").ToList(), "No frame around the force.");
+            yield return new WaitForSecondsRealtime(1.2f);
+            Assert.IsTrue(stage.Presenters.Trace.Lit.Any(), "The recruits still glow after they have landed.");
+            LayoutTests.Save(stage.Texture, "ui314-recruit-glow.png");
+            yield return stage.Released();
+            Assert.GreaterOrEqual(Time.realtimeSinceStartup - started,
+                FigureChangePresenter.LandingSeconds + FigureChangePresenter.ArrivalGlowSeconds - .1f, "The glow holds 1.5 s after the landing.");
+            Assert.IsEmpty(stage.Lit, "Nothing glows after the release.");
+            stage.AssertFinal(latest);
+        }
+
         [UnityTest]
         public IEnumerator SeveralNationsArrivingInOneRegionShowOneEntryEach()
         {

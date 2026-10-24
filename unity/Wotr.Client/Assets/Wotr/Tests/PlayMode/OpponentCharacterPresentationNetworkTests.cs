@@ -45,12 +45,12 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 await ReactionGestures.Use(room, room.Fp, "character.white-rider");
                 var gandalf = room.Sh.Board.View.Characters.Single(c => c.DefinitionId == "base.character.gandalf-white");
-                await Seen(room, () => Ring(room.Sh) is VisualElement ring &&
-                    ring.worldBound.Overlaps(room.Sh.Board.Root.Q("portrait-" + gandalf.Id).worldBound), "Gandalf's battle portrait is the source.");
+                await Seen(room, () => PresentationGlow.IsLit(room.Sh.Board.Root.Q("portrait-" + gandalf.Id)),
+                    "Gandalf's battle portrait is the source.");
                 Assert.AreEqual(revision, room.Sh.Board.View.Revision, "The Shadow still presents the earlier view.");
                 await room.At(revision + 1);
                 Assert.IsTrue(room.Sh.Board.View.Battle.WhiteRiderActive);
-                Assert.IsNull(Ring(room.Sh), "The mark leaves with the presentation.");
+                Assert.IsEmpty(room.Sh.Board.Root.Query(className: PresentationGlow.ClassName).ToList(), "The mark leaves with the presentation.");
             }
         }
 
@@ -77,7 +77,7 @@ namespace Wotr.PlayTests
         private static string Moment(MountedMatchClient client) =>
             string.Join(",", client.Board.Map.Query<Label>("observed-portrait-name").ToList().Select(label => label.text));
 
-        private static VisualElement Ring(MountedMatchClient client) => client.Board.Root.Q(CharacterPresenter.SourceRingName);
+
 
         private static int Characters(MountedMatchClient client, string region, Side side) =>
             client.Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == side).Sum(a => a.Characters);

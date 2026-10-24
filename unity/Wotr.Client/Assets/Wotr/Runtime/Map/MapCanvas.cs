@@ -578,6 +578,11 @@ namespace Wotr.Client
         public Rect? MarkerBounds(string region, Side side, bool garrison) =>
             markers.TryGetValue((region, side, garrison), out var marker) && marker.Visible ? marker.Bounds : (Rect?)null;
 
+        // UI-314: the artwork of one force's marker (its plinth, figures, emblems and count), for the observed glow; null
+        // while it is not shown.
+        public VisualElement MarkerArtwork(string region, Side side, bool garrison) =>
+            markers.TryGetValue((region, side, garrison), out var marker) && marker.Visible ? marker.Artwork?.Root ?? marker.Button : null;
+
         public IEnumerable<Rect> MarkerBounds(string region)
         {
             foreach (var marker in markers.Values)

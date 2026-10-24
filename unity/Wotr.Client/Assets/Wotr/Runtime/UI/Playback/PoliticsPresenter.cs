@@ -91,7 +91,7 @@ namespace Wotr.Client
             private readonly int fromSteps;
             private readonly int toSteps;
             private readonly double start;
-            private readonly LayerRing ring;
+            private readonly ObjectGlow glow = new ObjectGlow();
             private Label caption;
             private int phase;
 
@@ -105,7 +105,6 @@ namespace Wotr.Client
                 activation = !wasActive && active;
                 moves = fromSteps != toSteps;
                 start = now;
-                ring = new LayerRing(owner.layer, "presentation-politics-ring");
                 Follow();
             }
 
@@ -135,7 +134,7 @@ namespace Wotr.Client
 
             private bool End()
             {
-                ring.End();
+                glow.End();
                 caption?.RemoveFromHierarchy();
                 owner.Panel.Drawer.RemoveFromClassList(MovingClass);
                 return true;
@@ -143,7 +142,7 @@ namespace Wotr.Client
 
             private void Follow()
             {
-                ring.Follow(owner.Anchor(id));
+                glow.Follow(owner.Anchor(id));
                 if (caption != null)
                     PlaceCaption();
             }

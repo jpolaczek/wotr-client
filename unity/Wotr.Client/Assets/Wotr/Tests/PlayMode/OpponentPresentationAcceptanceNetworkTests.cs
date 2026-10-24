@@ -32,13 +32,13 @@ namespace Wotr.PlayTests
                 var ring = sh.Board.View.Rings.First(r => r.Owner == Side.Shadow).Id;
                 var die = sh.Board.View.Dice.First(d => d.Owner == Side.Shadow && d.Face == DieFace.Army).Id;
                 await session.Send(Side.Shadow, CommandKind.UseRing, new CommandPayload { RingId = ring, DieId = die, Face = DieFace.Character });
-                await Seen(session, () => fp.Playback.Holding && fp.Board.Root.Q(ResourcePresenter.RingName) is { } mark &&
-                    mark.worldBound.Overlaps(fp.Board.Console.Rings.For(ring).worldBound), "The Ring is charged at its socket.");
+                await Seen(session, () => fp.Playback.Holding && PresentationGlow.IsLit(fp.Board.Console.Rings.For(ring)),
+                    "The Ring is charged at its socket.");
                 await Seen(session, () => fp.Board.Root.Q(ResourcePresenter.PlateName) != null, "Its die shows the old and the new face.");
                 await session.Until(() => !fp.Playback.Holding);
                 Assert.AreEqual(DieFace.Character, fp.Board.View.Dice.Single(d => d.Id == die).Face);
                 Assert.IsTrue(fp.Board.Console.Rings.For(ring).ClassListContains("ring-removed"), "The Ring left the game.");
-                Assert.IsNull(fp.Board.Root.Q(ResourcePresenter.RingName), "The marks leave with the presentation.");
+                Assert.IsEmpty(fp.Board.Root.Query(className: PresentationGlow.ClassName).ToList(), "The marks leave with the presentation.");
             }
             finally
             {

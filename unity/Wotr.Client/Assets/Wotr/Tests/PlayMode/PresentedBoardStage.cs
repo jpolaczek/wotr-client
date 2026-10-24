@@ -29,6 +29,8 @@ namespace Wotr.PlayTests
         public BoardScreen Board => client.Board;
         public PresentationPlayback Playback => client.Playback;
         public OpponentPresenters Presenters => client.Presenters;
+        // UI-314: the objects the presentation lights now (the observed glow).
+        public List<VisualElement> Lit => Board.Root.Query(className: PresentationGlow.ClassName).ToList();
         // The presented view before Ready(): a test may set its nations, control and figures.
         public PlayerView Before => before;
         public Side Viewer { get; }

@@ -37,12 +37,14 @@ namespace Wotr.PlayTests
             step.Facts.Resources.Add(new ActionResourceChange { Kind = ActionCostKind.Ring, Id = Ring, From = "Shadow", To = "removed" });
             var camera = stage.Board.Map.Camera.Pan;
             stage.Play(latest, null, step);
-            yield return stage.Until(() => Mark(stage) is { } ring && ring.worldBound.Overlaps(stage.Board.Console.Rings.For(Ring).worldBound));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Console.Rings.For(Ring)));
             yield return stage.Until(() => stage.Board.Root.Q(ResourcePresenter.PlateName) != null);
             var faces = stage.Board.Root.Q(ResourcePresenter.PlateName).Query(className: DieFaceIcon.ClassName).ToList();
             CollectionAssert.AreEqual(new[] { "die-face-army", "die-face-muster" }, faces.Select(f => f.GetClasses().Last()), "Old face → new face.");
-            Assert.IsTrue(Mark(stage).worldBound.Overlaps(stage.Board.OpponentDice.Q<Button>(PresentedBoardStage.Die).worldBound), "The die is ringed.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.OpponentDice.Q<Button>(PresentedBoardStage.Die)), "The die glows.");
             Assert.AreEqual(camera, stage.Board.Map.Camera.Pan, "Resources never move the camera.");
+            // UI-314: the glow has faded in.
+            yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui312-ring.png");
             yield return stage.Released();
         }
@@ -64,9 +66,11 @@ namespace Wotr.PlayTests
             Roll(step, latest, "shadow-2", DieFace.Character, DieLocation.Available);
             stage.Play(latest, null, step);
             var started = Time.realtimeSinceStartup;
-            yield return stage.Until(() => stage.Board.Root.Query(ResourcePresenter.RingName).ToList().Count == 3);
+            yield return stage.Until(() => stage.Lit.Count == 3);
             Assert.AreNotEqual(eyes, stage.Board.Hunt.Box.Counts.Q<Label>("hunt-eyes").text, "The Hunt Box counts the allocated die.");
             Assert.IsTrue(stage.Board.OpponentDice.Q<Button>("shadow-1").Q(className: "die-face-army") != null, "The rolled faces show.");
+            // UI-314: the glow has faded in.
+            yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui312-allocation.png");
             yield return stage.Released();
             Assert.Less(Time.realtimeSinceStartup - started, 2.2f, "Three dice, one beat.");
@@ -98,6 +102,8 @@ namespace Wotr.PlayTests
             Assert.AreNotEqual(hand, Hand(stage), "The hand count changes with the beat.");
             Assert.IsFalse(plate.Query<Label>().ToList().Any(l => l.text.Contains(".")), "No card identity.");
             Assert.AreEqual(PickingMode.Ignore, plate.pickingMode, "Nothing to click.");
+            // UI-314: the glow has faded in.
+            yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui312-draws.png");
             yield return stage.Released();
             Assert.AreEqual("5", Hand(stage));
@@ -153,7 +159,7 @@ namespace Wotr.PlayTests
             forfeit.Command = CommandKind.DiscardDie;
             stage.Play(latest, null, forfeit);
             yield return stage.Until(() => stage.Board.Root.Q(CostEmphasis.MarkName) != null);
-            Assert.IsNull(stage.Board.Root.Q(ResourcePresenter.RingName), "No other scene.");
+            Assert.IsEmpty(stage.Lit, "No other scene.");
             yield return stage.Released();
         }
 
@@ -174,7 +180,7 @@ namespace Wotr.PlayTests
             die.Location = to;
         }
 
-        private static VisualElement Mark(PresentedBoardStage stage) => stage.Board.Root.Q(ResourcePresenter.RingName);
+
 
         private static string Hand(PresentedBoardStage stage) =>
             stage.Board.TopBar.Opponent.Root.Q("opponent-cards")?.Q<Label>(className: "summary-value")?.text ?? "";

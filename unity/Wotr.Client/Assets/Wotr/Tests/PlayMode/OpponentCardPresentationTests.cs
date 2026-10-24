@@ -123,15 +123,14 @@ namespace Wotr.PlayTests
             entered.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.Event, Id = Crebain, Deck = "character" });
             entered.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.TableEntered, Id = Crebain, Deck = "character" });
             stage.Play(latest, null, entered);
-            yield return stage.Until(() => stage.Board.Root.Q("presentation-table-ring") != null);
-            var ring = stage.Board.Root.Q("presentation-table-ring").worldBound;
-            Assert.IsTrue(ring.Overlaps(stage.Board.TableEffects.Tab.worldBound), "The table card settles at the Effects tab.");
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.TableEffects.Tab));
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.TableEffects.Tab), "The table card settles at the Effects tab.");
             yield return stage.Released();
             var removal = stage.Next(latest);
             var removed = stage.Step(1, 2);
             removed.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.TableRemoved, Id = Crebain, Deck = "character" });
             stage.Play(removal, null, removed);
-            yield return stage.Until(() => stage.Board.Root.Q("presentation-table-ring") != null);
+            yield return stage.Until(() => stage.Lit.Count > 0);
             Assert.AreNotEqual(Crebain, stage.Board.Cards.CardId, "Its removal is a trace, not a new reveal.");
             yield return stage.Released();
         }

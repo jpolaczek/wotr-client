@@ -22,7 +22,7 @@ namespace Wotr.Client
         public const double DiceSeconds = 1;
         public const double CardsSeconds = .8;
         public const int MostBacks = 4;
-        public const string RingName = "presentation-resource-ring";
+
         public const string PlateName = "presentation-resource-plate";
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
@@ -35,7 +35,7 @@ namespace Wotr.Client
             this.board = board;
             this.staged = staged;
             this.playback = playback;
-            marks = new PresentationMarks(layer, RingName, PlateName);
+            marks = new PresentationMarks(layer, PlateName);
         }
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
@@ -63,7 +63,7 @@ namespace Wotr.Client
             var socket = board.Console.Rings.For(cue.Cost.Id);
             if (socket == null)
                 return null;
-            marks.Place(() => marks.Ring(socket));
+            marks.Place(() => marks.Light(socket));
             return new TimedBeat(now, RingSeconds);
         }
 
@@ -86,7 +86,7 @@ namespace Wotr.Client
                 foreach (var change in changes)
                     MarkDie(change);
                 if (hunted)
-                    marks.Ring(board.Hunt.Tab, round: false);
+                    marks.Light(board.Hunt.Tab);
             });
             return new TimedBeat(now, DiceSeconds);
         }
@@ -94,7 +94,7 @@ namespace Wotr.Client
         private void MarkDie(ActionDieChange change)
         {
             var die = board.OpponentDice.Q<Button>(change.Id);
-            marks.Ring(die);
+            marks.Light(die);
             if (change.Before.HasValue && change.After.HasValue && change.Before != change.After)
                 marks.Plate(die, Faces(change.Before.Value, change.After.Value), PlateSide.Under);
         }
@@ -114,7 +114,7 @@ namespace Wotr.Client
             var chip = board.TopBar.Opponent.Root.Q("opponent-cards");
             marks.Place(() =>
             {
-                marks.Ring(chip, round: false);
+                marks.Light(chip);
                 marks.Plate(chip, Backs(cards, count), PlateSide.Before);
             });
             return new TimedBeat(now, CardsSeconds);

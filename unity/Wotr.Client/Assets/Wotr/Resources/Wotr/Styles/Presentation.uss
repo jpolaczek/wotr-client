@@ -123,6 +123,18 @@
     border-width: 2px;
     border-color: rgba(146, 212, 242, 0.85);
 }
+/* UI-314 (owner review): the observed light (PresentationGlow) — a soft pale-blue glow around the marked object's own
+   shape — a white core, a light-blue glow and a wide saturated halo that reads on the parchment; never a frame, never
+   the gold ChoiceGlow. It fades in over 200 ms and out over 400 ms under .motion-enabled. */
+.presentation-glow {
+    filter: drop-shadow(0px 0px 2px rgb(255, 255, 255)) drop-shadow(0px 0px 6px rgb(150, 215, 255))
+        drop-shadow(0px 0px 14px rgba(84, 176, 245, 0.95));
+}
+.motion-enabled .presentation-glow-host {
+    transition-property: filter;
+    transition-duration: 0.4s;
+}
+.motion-enabled .presentation-glow-host.presentation-glow { transition-duration: 0.2s; }
 /* The delta badge: a small dark plate with a signed count in the enamel of the side it counts for. */
 .observed-badge {
     position: absolute;

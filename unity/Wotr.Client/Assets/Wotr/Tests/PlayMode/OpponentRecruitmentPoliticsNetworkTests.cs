@@ -64,7 +64,9 @@ namespace Wotr.PlayTests
                 var steps = fp.Board.View.Nations.Single(n => n.Id == nation).StepsToWar;
                 await session.Send(Side.Shadow, CommandKind.AdvancePolitics, new CommandPayload { DieId = MusterDie(sh.Board.View), NationId = nation });
                 await session.Until(() => fp.Playback.Holding && fp.Board.Nations.Drawer.style.display.value == DisplayStyle.Flex);
-                Assert.IsNotNull(fp.Board.Root.Q("presentation-politics-ring"), "The nation's token is traced.");
+                await session.Until(() => PresentationGlow.IsLit(fp.Board.Nations.Drawer.Q<Button>("nation-status-" + nation)) ||
+                    !fp.Playback.Holding);
+                Assert.IsTrue(PresentationGlow.IsLit(fp.Board.Nations.Drawer.Q<Button>("nation-status-" + nation)), "The nation's token glows.");
                 Assert.AreEqual(steps, fp.Board.View.Nations.Single(n => n.Id == nation).StepsToWar, "The board's view is still the presented one.");
                 await session.Until(() => !fp.Playback.Holding);
                 Assert.AreEqual(steps - 1, fp.Board.View.Nations.Single(n => n.Id == nation).StepsToWar);
