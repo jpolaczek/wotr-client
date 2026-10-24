@@ -375,3 +375,20 @@ Guide's own figure in a gilt medallion (the version the Fellowship panel shows; 
 random casualty the Companions' stack (`hunt/choice-random`), and a table card's response (UI-285) a small parchment
 card with the symbol printed on the card's corner (`CardLibrary.Face`). The pictures are 28 points, 22 in a short
 window. Tests: `HuntAndEffectPicturesTests`, `HuntLayoutTests` (all four layouts).
+
+<a id="ui-310"></a>
+## The Hunt in the opponent's presentation — UI-310 (2026-10-24)
+
+The shared Hunt plays in its existing window, entry by entry from the recorded snapshots, before the decision it
+leads to opens ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
+
+- **Opening.** The Hunt's start opens the window, as a new Hunt does today, with a trace on the Hunt Box plaque. A
+  window the player closed during this Hunt stays closed.
+- **Entries.**
+  - A roll shows its dice and successes for 1 s, with one dice sound.
+  - The drawn tile turns face up for 1 s, then the damage shows.
+  - A response is marked on its object: the Fellowship's Ring, a portrait, or a table card at the Effects tab.
+  - A casualty leaves the Fellowship's roster through its portrait. A new Guide takes the badge.
+- **No choices.** The window hosts no choice during the presentation. A real response, Guide or damage decision opens
+  on its usual host at the release. No Continue or result window is added.
+- **Afterwards.** The Fellowship's tracks, a reveal's relocation and the progress move after the Hunt's entries.

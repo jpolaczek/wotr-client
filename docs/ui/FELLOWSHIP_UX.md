@@ -665,3 +665,23 @@ The Shadow's board presents the Free Peoples' separation before it applies their
   and nothing traces the last known region. As on the board (UI-130), unknown progress is never a claimed origin.
 - Each Companion is named by its portrait and short name where it lands.
 - A hidden Fellowship move still shows no route.
+
+<a id="ui-310"></a>
+## The Fellowship in the opponent's presentation — UI-310 (2026-10-24)
+
+The watching board shows the Fellowship's recorded changes on their own objects, after the Hunt they caused
+([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
+
+- **The panel.** It opens read-only for the beat, never taken from the player's own decision, never reopened after the
+  player closed it, and closed at the release only when the presentation opened it.
+- **The tracks** move as separate stages in TrackSequence's order: on the journey progress first, then corruption; in
+  Mordor corruption first, then the step. Each stage traces its row (or the plaque's value) and sounds once.
+- **The figure.**
+  - A declaration, a reveal or a revealed move flies the figure between public regions, and the camera frames the new
+    one.
+  - Hiding or revealing in place marks the plaque's Ring.
+  - Entering Mordor puts the figure on the Mordor track and traces the panel's Mordor row. The camera stays.
+- **The roster.** A casualty is marked on its portrait and then leaves the roster. A new Guide takes the badge.
+- **Once.** The released view does not stage the tracks again (AUDIO-06's two stages run only when no presentation
+  showed them). Skip shows the latest tracks at once.
+- **Privacy.** A hidden move shows no route, region or trace on the map.

@@ -13,11 +13,13 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
-> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-310–UI-313 ship, the rules below stay in force except where
-> UI-305–UI-309 already apply the exception (UI-308: the opponent's public Event card opens read-only by itself, then
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-311–UI-313 ship, the rules below stay in force except where
+> UI-305–UI-310 already apply the exception (UI-308: the opponent's public Event card opens read-only by itself, then
 > docks in the console trail: [§6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308); UI-309: a character that enters,
 > transforms, leaves the Fellowship or is removed shows its portrait and title for a moment, and a moving group is
-> named where it lands: [§6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)) (the camera frames an opponent's map action, one Skip target shows while it
+> named where it lands: [§6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309); UI-310: the shared Hunt plays entry by entry in its
+> window and the Fellowship's tracks, figure and roster change after it, with the Fellowship panel opened read-only:
+> [§6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)) (the camera frames an opponent's map action, one Skip target shows while it
 > plays, the opponent's armies move, attack and capture, and their recruits, upgrades and political steps are staged on
 > the presented board: [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305), [§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306),
 > [§6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)).

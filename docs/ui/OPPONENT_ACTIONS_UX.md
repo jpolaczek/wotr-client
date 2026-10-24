@@ -507,6 +507,68 @@ identities in `Runtime/Map/MapObservedTrace.cs` (`CharacterMark`); the separatio
     - `entry`: Gandalf the White, the Witch-king and Aragorn;
     - `white-rider`: the ring on the battle portrait.
 
+<a id="wdrozone-310"></a>
+### 6.14 Shipped in UI-310 (2026-10-24): the Fellowship and the Hunt
+
+Code: `Runtime/UI/Playback/HuntPresenter.cs`, `FellowshipPresenter.cs` and `FellowshipReading.cs`;
+`StagedBoard.Hunt`/`Fellowship`/`Guide`/`Leave`; `BoardScreen.StageFellowship`/`StageHunt`/`StageRoster`/`QuietTracks`;
+`StepsBeat`; the cue order in `PresentationCueExtraction`; and `IPresentationSounds` in `GameSounds`.
+
+- **Order.** The engine records a move's progress on the move itself, before the Hunt it causes. A revision's
+  Fellowship cue therefore plays after that revision's last Hunt cue of the same chain. The paid die comes first, then
+  the Hunt, then the tracks, so a move's attempt never moves the progress token ahead of the roll and the tile.
+  - Storyboard D6 lists corruption before progress. The shipped AUDIO-06 order (`TrackSequence`) wins: on the journey
+    progress comes first, then corruption; in Mordor corruption comes first, then the step.
+  - A choice in the middle of a Hunt ends the presentation, and its revision's tracks are shown before the release. The
+    player's decision then sees the current tracks.
+- **The Hunt window.** It is staged entry by entry from the recorded snapshots and report: the window's own dice, tile
+  and report strip.
+  - The Hunt's start opens the window as a new Hunt does, with a trace on the Hunt Box plaque.
+  - A roll shows its dice and successes for 1 s, with one dice sound. A drawn tile shows face up for 1 s, and the damage
+    for 0.6 s.
+  - A response marks its object: the Fellowship's Ring, the Guide's or a Companion's portrait, or a table card at the
+    Effects tab.
+  - A casualty is marked on its portrait, then leaves the roster.
+  - A new Guide takes the badge on its portrait.
+  - The completed Hunt keeps its result in the open window, as today.
+  - The window hosts no choice here: a real response opens at the release.
+- **The Fellowship.**
+  - A declaration, a reveal or a revealed move flies the figure between the two public regions, and the camera frames
+    the new one. Entering Mordor puts the figure on the Mordor track and traces the panel's Mordor row; the track is
+    no region, so the camera stays.
+  - Hiding or revealing in place marks the plaque's Ring as the symbol changes.
+  - The tracks move as separate stages, each tracing its row (or the plaque's value) and sounding its cue once.
+    Healing is corruption going down.
+  - A hidden move never frames, relocates or traces anything on the map.
+- **The Fellowship panel** opens read-only for these beats, by the Politics panel's rule (§6.11). It is never taken
+  from the player's own decision, never reopened after the player closed it, and closed at the release only when the
+  presentation opened it. An open Hunt window steps aside from it.
+- **Once.** What the beats showed is the release's point of comparison (`BoardScreen.StageFellowship`): the released
+  view never stages the tracks again, and the map figure does not fly twice. After Skip the latest tracks show at once,
+  without a second stage.
+- **Sound.** A beat sounds its own fact through the game's sound policy, so muted, background and focus rules apply.
+  The view released after the presentation leaves those cues out (`GameSounds.Play`).
+- **Controls.** No response, Continue or result control is added; only Skip shows while it plays.
+- **Hooks for UI-311–UI-312:** `StepsBeat`, `IPresentationSounds` and `FellowshipReading`.
+- **Checks.**
+  - EditMode:
+    - `OpponentPresentationModelTests`: the Fellowship change follows its Hunt on the recorded `hunt-shadow` fixture,
+      and only a public relocation is framed;
+    - `GameSoundsTests`: a presented march is not sounded again.
+  - PlayMode `OpponentHuntPresentationTests` on the Shadow's `PresentedBoardStage`:
+    - a miss;
+    - a hit with both tracks in two stages;
+    - the Ring response;
+    - a reveal's flight;
+    - a casualty;
+    - a Guide change;
+    - a table card's response;
+    - hiding and healing;
+    - entering Mordor;
+    - Skip;
+    - muted clips `ui310-clip-1366-*` and `ui310-clip-1920-*` at both scales.
+  - `OpponentHuntPresentationNetworkTests` with two real clients on `fp-character-move-fellowship`.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -607,6 +669,7 @@ not by notification sentences or today's unit counts.
 | Event / combat card | Event `Cards.Use=Event` with id; CombatReveal step with id | CombatCommit carries only the deck back — never use it for a face |
 | Battle round | per-die results, rerolls and hits in the battle snapshot; `LossDetails` | no per-roll delta: diff consecutive snapshots |
 | Fellowship / Hunt | `FellowshipBefore/After`; Hunt steps with dice, tile, damage, casualty | — (hidden travel stays progress-only by design) |
+| Fellowship order | the move's progress is recorded on the move, before its Hunt | the Fellowship cue plays after the revision's Hunt cues (UI-310) |
 | Dice, rings, draws | die face before/after; ring ownership in `Resources`; draw count | Ring use is text only: take it from the Ring cost |
 | Pass, decline, siege shelter | text only | no scene needed; siege extension is a Figure cost |
 | Ordering | `Revision`, `Order`, `ActionId`, `ParentStepId` | revisions coalesce (the client sees only the latest view): stage from facts, never from snapshots |
@@ -774,7 +837,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-307 Recruitment and politics (shipped) | §8 recruitment and politics; the delta badge; storyboard B4–B5 — delivered as §6.11; reusable figure-change and politics presenters |
 | UI-308 Public cards (shipped) | §6.2 reveal and dock; §8 event card; storyboard B — delivered as §6.12; reusable reveal/dock/recall and `LayerRing` |
 | UI-309 Characters (shipped) | §8 characters — delivered as §6.13; reusable character moment, group identities, separation staging and `PresentationCamera.Frame` |
-| UI-310 Fellowship and Hunt | §8 Fellowship/Hunt; storyboard D |
+| UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle | §8 battle round; storyboard C4–C9 |
 | UI-312 Resources and pennants | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) |
 | UI-313 Acceptance | §11 and the shared acceptance checklist |

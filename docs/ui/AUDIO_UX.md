@@ -522,3 +522,16 @@ Measurement of the band (both variants): approx. 15% energy in 150–300 Hz and 
 the decision sound and the turn ribbon of a view held behind an opponent presentation come once, after it, and a
 coalesced revision makes no sound of its own. Per-beat sounds belong to the family presenters (§6.8). Without a
 registered presenter views are released at once, so today's sounds are unchanged.
+
+<a id="ui-310"></a>
+## Beat sounds of a presentation — UI-310 (2026-10-24)
+
+A presentation's beat sounds its own fact when it shows it: a Fellowship track stage (march or corruption) and the
+Hunt's roll ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
+
+- **Policy.** The sound goes through `GameSounds.Play` and the usual policy: muted means silent, a background window
+  hears nothing, and a first view or a catch-up plays nothing.
+- **Order.** The track stages follow the same order as AUDIO-06: on the journey march first, then corruption; in
+  Mordor corruption first, then the step.
+- **No repeat.** The view released after the presentation leaves those cues out, so a fact sounds once. A pair the
+  presentation already played is not played again as AUDIO-06's two-stage sequence.
