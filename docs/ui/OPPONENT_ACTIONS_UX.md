@@ -310,12 +310,12 @@ settles first.
   (`MapFigureMotion.Rebase`), so the release moves only what the presentation did not show and keeps the presented
   destinations revealed. The staged board is discarded at the release.
 - **March, travel, retreat, advance.**
-  1. The source stack is traced (350 ms).
+  1. The source stack is traced (350 ms; 0.7 s since UI-315, §6.19).
   2. Exactly the recorded participants fly from source to destination with the board's own figure motion
      (`MapFigureMotion.Fly`, 0.65–1.05 s, or an in-place arrival under Reduced motion).
   3. Meanwhile the staged source shows the rear guard, and the staged destination its true final composition, dimmed
      until the figures land.
-  4. The destination is traced for 0.6 s.
+  4. The destination is traced for 0.6 s (0.9 s since UI-315).
   - Successive marches with one die are successive beats on the same staged board with one cost mark (§6.1). A merge
     never doubles the count, and a partial move never hides the rear guard.
   - Field and garrison follow the recorded participants: a retreat into a stronghold lands on the walls, and a sortie
@@ -376,7 +376,8 @@ plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
   - A panel the player had open stays open; one the presentation opened closes at the release.
   - A panel the player closes during the presentation is not reopened by its later beats.
   - The nation's token is traced. An **activation** lights the crest first, then the token travels its recorded steps
-    (an eased 0.6 s `left` transition only while `presenting-politics` is set; a jump under Reduced motion).
+    (an eased 0.6 s `left` transition only while `presenting-politics` is set; a jump under Reduced motion). Since
+    UI-315 the settled panel, then the lit row and token, then a 0.7 s slide and a hold (§6.19).
   - **Reaching war** adds the short caption "At war" beside the War station.
   - A before-value the record lacks comes from the presented view.
   - With opponent rows hidden, the trace marks the Politics tab.
@@ -635,10 +636,10 @@ Code: `Runtime/UI/Playback/ResourcePresenter.cs` and `PresentationMarks.cs`, `St
 
   | Recorded fact | Where it shows | Beat |
   | --- | --- | --- |
-  | A Ring's cost | ringed at its console socket; the new holder shows at the release with the socket's own pulse | 0.6 s |
+  | A Ring's cost | ringed at its console socket; the new holder shows at the release with the socket's own pulse | 0.6 s (0.7 s, UI-315) |
   | The die a Ring changed | ringed in the opponent's pool, its old → new face under it | 1 s |
   | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque ringed as its Eyes count rises; silent — the released view sounds the roll, so a decision passed with it keeps AUDIO-05's one tone | 1 s |
-  | Draws or discards | one beat for a run of them at the opponent's hand count: card backs and the signed count, never an identity | 0.8 s |
+  | Draws or discards | one beat for a run of them at the opponent's hand count: card backs and the signed count, never an identity | 0.8 s (since UI-315 lit 0.7 s first, then changed and held 0.8 s) |
   | A forfeited die | its cost copy (§6.1) | 0.35 s |
   | A pass, a decline, "No card", a technical completion | no scene: nothing is recorded to show | — |
 
@@ -807,6 +808,65 @@ Code: `Runtime/UI/Playback/PresentationGlow.cs` (`PresentationGlow`, `ObjectGlow
   - Frames reviewed: `ui313-march-*` (source and destination glowing, no rectangle), `ui307-clip-*` (recruits
     landing), `ui314-recruit-glow` (the stack lit 1.2 s after the landing), `ui312-draws` and `ui312-ring` (the
     counter and the socket lit in the HUD).
+
+<a id="wdrozone-315"></a>
+### 6.19 Shipped in UI-315 (2026-10-24): mark, then change
+
+The owner's live review (2026-10-24), points 2 and 4: "windows open very fast and you often cannot see what really
+happens, e.g. on the political track — the track the opponent chose must be marked and visibly move"; "mark that the
+opponent drew a card: their counter clearly lights up and only then changes its number. Everything that changes the state
+must be clearly marked: an army's move, a Ring, the hidden state".
+
+Code: `Runtime/UI/Playback/PresentationPace.cs` and the presenters that use it.
+
+- **The pace.** One tempo for every presented change, which supersedes the component durations of §6.10–§6.16:
+  1. a panel the presentation opens settles first (0.4 s);
+  2. the object that will change glows with its old value (§6.18; 0.7 s);
+  3. the value changes with a visible motion while the object stays lit (a token's 0.7 s slide, a count or a face
+     turning);
+  4. the object stays lit at its new value (0.8 s), then its glow fades.
+
+  Re-marking the same object keeps its glow, so the light never dips between "before" and "after". Skip still ends
+  everything at once; the release, the command gate and the decision hosts are unchanged.
+- **Political track.**
+  1. The panel the step opens settles.
+  2. The chosen nation's whole row and its token light up.
+  3. An activation lights the crest.
+  4. The token slides its steps (0.7 s, eased; a jump under Reduced motion).
+  5. Row and token stay lit at the new station.
+
+  "At war" stays the one caption.
+- **The opponent's card counter.** It lights up first. Its number then changes while it is lit, with the card backs
+  and the signed count beside it, and it holds.
+- **Dice and the Ring.**
+  - A Ring's socket glows (0.7 s).
+  - The die it changed then glows on its old face, turns to the new face with the old → new plate, and holds.
+  - An allocation and the action-dice roll light the dice and the Hunt plaque first, then change them.
+  - The Ring itself leaves at the release with its socket's own pulse: the console's Rings are not staged.
+- **The Fellowship.**
+  - Hiding or revealing lights the plaque's state (Hidden, Revealed) before it turns.
+  - Each track stage lights its row before the token moves, then sounds its cue once as it moves.
+  - A reveal's flight follows the lit state.
+  - The panel the presentation opens settles (0.4 s instead of 0.25 s), as does the Hunt window before its Box is
+    marked.
+- **Armies.**
+  - A march glows at its source for 0.7 s before it flies (was 0.35 s) and at its destination for 0.9 s (was 0.6 s).
+  - An attack's two sides glow for 1.5 s.
+  - A capture lights its settlement before its gem turns, and the points join it as it turns.
+  - The battle window the presentation opens settles for 0.4 s more before its round plays.
+- **Checks.**
+  - EditMode: 1076/1076.
+  - PlayMode offline presentation suites (Army, RecruitmentPolitics, Card, Character, Hunt, Battle, Resource, Layout,
+    Matrix), with three new cases:
+    - `AStepToWarLightsTheTokenBeforeItSlidesAndHoldsItLit`: the panel settles; row and token are lit before the
+      token moves; it slides; both are lit at the new station.
+    - `TheHandCountLightsUpBeforeItsNumberChanges`: the old number shows while lit for the mark; the number changes
+      while lit.
+    - `HidingMarksTheRingAndHealingTheCorruptionTrack`: the state lights before it turns and turns while lit.
+  - The presentation network suites 12/12.
+  - FellowshipMotion, FigureMotion, HuntActivity, SoundResults, ActionNotice and Battle network suites 13/13.
+  - `MordorNetworkTests` 7/7, one at a time.
+  - Frame: `ui315-politics-held` (the Sauron row and token lit at the new station).
 
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
@@ -1079,5 +1139,6 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
 | UI-312 Resources and pennants (shipped) | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) — delivered as §6.16; reusable `PresentationMarks` and the pool and hand staging |
+| UI-315 Mark, then change (shipped) | the owner's live review, points 2 and 4 — delivered as §6.19; `PresentationPace` |
 | UI-314 Glow instead of a frame (shipped) | the owner's live review, points 6 and 7 — delivered as §6.18; reusable `PresentationGlow`/`ObjectGlow` for UI-315 and UI-316 |
 | UI-313 Acceptance (evidence recorded; the owner's live review open) | §11 and the shared acceptance checklist — recorded as §6.17 with the coverage matrix, measurements and open checks |

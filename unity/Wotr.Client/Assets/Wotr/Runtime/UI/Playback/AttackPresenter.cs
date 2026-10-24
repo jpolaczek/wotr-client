@@ -5,7 +5,8 @@ namespace Wotr.Client
     // the release, at its normal host.
     public sealed class AttackPresenter : ICuePresenter
     {
-        public const double Seconds = 1;
+        // UI-315: both sides glow long enough to be read before the battle window opens.
+        public const double Seconds = PresentationPace.MarkSeconds + PresentationPace.HoldSeconds;
         private readonly BoardScreen board;
         private readonly MapObservedTrace trace;
 

@@ -16,10 +16,10 @@ namespace Wotr.Client
     //   corruption then the step; healing is corruption going down. Each stage traces its track and sounds its cue once.
     // - A new Guide is marked on its portrait.
     // What the beat showed is the release's point of comparison (BoardScreen.StageFellowship), so nothing moves twice.
+    // UI-315 (owner review): at the shared pace — the opened panel settles; the object a stage changes (the plaque's Hidden
+    // or Revealed state, the track's row) glows first, then changes while lit and holds.
     public sealed class FellowshipPresenter : ICuePresenter
     {
-        public const double SettleSeconds = .25;
-        public const double StageSeconds = .6;
         public const double FlightSeconds = 1.1;
 
         private readonly BoardScreen board;
@@ -51,7 +51,7 @@ namespace Wotr.Client
                 board.StageFellowship(after);
                 return null;
             }
-            steps.Insert(0, (() => reading.Open(), SettleSeconds));
+            steps.Insert(0, (() => reading.Open(), PresentationPace.PanelSettleSeconds));
             return new StepsBeat(now, End, steps);
         }
 
@@ -66,22 +66,25 @@ namespace Wotr.Client
                 var from = current;
                 var placed = Copy(after);
                 placed.Corruption = before.Corruption;
-                steps.Add((() => Place(from, placed), Flight(from, placed) != null ? FlightSeconds : StageSeconds));
+                steps.Add((() => mark.Show(() => Changing(from, placed)), PresentationPace.MarkSeconds));
+                steps.Add((() => Place(from, placed), Flight(from, placed) != null ? FlightSeconds : PresentationPace.HoldSeconds));
                 current = placed;
             }
             else if (TrackSequence.Both(before, after))
             {
                 var first = TrackSequence.FirstStage(before, after);
-                steps.Add((() => Track(cue, before, first, 1), StageSeconds));
+                steps.Add((() => mark.Show(() => Row(before, first)), PresentationPace.MarkSeconds));
+                steps.Add((() => Track(cue, before, first, 1), PresentationPace.HoldSeconds));
                 current = first;
             }
             if (Moved(current, after))
             {
                 var from = current;
-                steps.Add((() => Track(cue, from, after, 2), StageSeconds));
+                steps.Add((() => mark.Show(() => Row(from, after)), PresentationPace.MarkSeconds));
+                steps.Add((() => Track(cue, from, after, 2), PresentationPace.HoldSeconds));
             }
             if (before.Guide != after.Guide)
-                steps.Add((() => Guide(after.Guide), StageSeconds));
+                steps.Add((() => Guide(after.Guide), PresentationPace.HoldSeconds));
             return steps;
         }
 
@@ -98,8 +101,13 @@ namespace Wotr.Client
             board.StageFellowship(to);
             if (flight != null)
                 board.Map.Figures.Fly(new[] { flight });
-            mark.Show(() => from.Hidden != to.Hidden ? board.Fellowship.Status.Q("fellowship-ring") : Row(from, to));
+            mark.Show(() => Changing(from, to));
         }
+
+        // What a new public position changes: the plaque's state (Hidden, Revealed) when it turns, else the row it is on.
+        private VisualElement Changing(FellowshipView from, FellowshipView to) => from.Hidden != to.Hidden
+            ? PresentationTargets.First(board.Fellowship.Status.Q("fellowship-status-condition"), board.Fellowship.Status.Q("fellowship-ring"))
+            : Row(from, to);
 
         // The figure's own relocation between two public map regions; the Mordor track places it without a flight.
         private BoardFigureMove Flight(FellowshipView from, FellowshipView to)

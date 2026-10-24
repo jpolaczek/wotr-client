@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
@@ -16,11 +17,11 @@ namespace Wotr.Client
     //   count, never an identity.
     // Passes, declines and "No card" record nothing to show and play no scene; a forfeited die keeps its cost copy
     // (CostEmphasis). None of this reads or marks a notice.
+    // UI-315 (owner review): at the shared pace — the Ring's socket glows before its die's beat; the dice and the hand
+    // count glow first with their old values, then change while lit and hold, so a draw shows the counter lighting up
+    // before its number changes.
     public sealed class ResourcePresenter : ICuePresenter
     {
-        public const double RingSeconds = .6;
-        public const double DiceSeconds = 1;
-        public const double CardsSeconds = .8;
         public const int MostBacks = 4;
 
         public const string PlateName = "presentation-resource-plate";
@@ -64,7 +65,7 @@ namespace Wotr.Client
             if (socket == null)
                 return null;
             marks.Place(() => marks.Light(socket));
-            return new TimedBeat(now, RingSeconds);
+            return new TimedBeat(now, PresentationPace.MarkSeconds);
         }
 
         private IPresentationBeat Dice(PresentationCue cue, double now)
@@ -75,10 +76,28 @@ namespace Wotr.Client
                 changes.Add(next.Die);
                 grouped.Add(next.Id);
             }
+            var hunted = changes.Any(change => change.To == DieLocation.Hunt && change.From != DieLocation.Hunt);
+            return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)>
+            {
+                (() => marks.Place(() => LightBefore(changes, hunted)), PresentationPace.MarkSeconds),
+                (() => ChangeDice(changes, hunted), PresentationPace.HoldSeconds)
+            });
+        }
+
+        // The dice that will change, where they stand now, and the Hunt plaque an allocation will raise.
+        private void LightBefore(IEnumerable<ActionDieChange> changes, bool hunted)
+        {
+            foreach (var change in changes)
+                marks.Light(board.OpponentDice.Q<Button>(change.Id));
+            if (hunted)
+                marks.Light(board.Hunt.Tab);
+        }
+
+        private void ChangeDice(IReadOnlyList<ActionDieChange> changes, bool hunted)
+        {
             foreach (var change in changes)
                 staged.Die(change);
             board.StageOpponentDice(staged.View);
-            var hunted = changes.Any(change => change.To == DieLocation.Hunt && change.From != DieLocation.Hunt);
             if (hunted)
                 board.StageHunt(staged.View);
             marks.Place(() =>
@@ -88,7 +107,6 @@ namespace Wotr.Client
                 if (hunted)
                     marks.Light(board.Hunt.Tab);
             });
-            return new TimedBeat(now, DiceSeconds);
         }
 
         private void MarkDie(ActionDieChange change)
@@ -109,15 +127,28 @@ namespace Wotr.Client
                 grouped.Add(next.Id);
             }
             var count = cards.Sum(card => card.Count) * (cue.Card.Use == ActionCardUse.Draw ? 1 : -1);
-            staged.Hand(cue.Card.Owner, count);
-            board.StageOpponentSummary(staged.View);
-            var chip = board.TopBar.Opponent.Root.Q("opponent-cards");
-            marks.Place(() =>
+            var owner = cue.Card.Owner;
+            return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)>
             {
-                marks.Light(chip);
+                (() => marks.Place(() => marks.Light(HandCount())), PresentationPace.MarkSeconds),
+                (() => ChangeHand(owner, cards, count), PresentationPace.HoldSeconds)
+            });
+        }
+
+        private VisualElement HandCount() => board.TopBar.Opponent.Root.Q("opponent-cards");
+
+        // The count changes while the counter is lit; the card backs and the signed count join it.
+        private void ChangeHand(Side owner, IReadOnlyList<ActionCardFact> cards, int count)
+        {
+            staged.Hand(owner, count);
+            board.StageOpponentSummary(staged.View);
+            marks.Add(() =>
+            {
+                var chip = HandCount();
+                if (!PresentationGlow.IsLit(chip))
+                    marks.Light(chip);
                 marks.Plate(chip, Backs(cards, count), PlateSide.Before);
             });
-            return new TimedBeat(now, CardsSeconds);
         }
 
         // The face the die had, an arrow and the face it has now (an Elven Ring's change).

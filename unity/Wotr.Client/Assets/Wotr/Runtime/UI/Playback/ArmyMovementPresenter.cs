@@ -14,8 +14,9 @@ namespace Wotr.Client
     // the board's own figure difference decides which.
     public sealed class ArmyMovementPresenter : ICuePresenter
     {
-        public const double SourceSeconds = .35;
-        public const double DwellSeconds = .6;
+        // UI-315 (owner review): the moving stack glows at its source before it flies, and at its destination after.
+        public const double SourceSeconds = PresentationPace.MarkSeconds;
+        public const double DwellSeconds = .9;
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly MapObservedTrace trace;

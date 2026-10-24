@@ -13,7 +13,7 @@ namespace Wotr.Client
     // (FellowshipPresenter). The window hosts no choice here: a real response opens at the release.
     public sealed class HuntPresenter : ICuePresenter
     {
-        public const double SettleSeconds = .25;
+
 
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
@@ -61,22 +61,24 @@ namespace Wotr.Client
             switch (entry.Kind)
             {
                 case HuntReportKind.Started:
+                    // UI-315: the window the Hunt opened settles before its Box is marked.
+                    steps.Add((() => { }, PresentationPace.PanelSettleSeconds));
                     steps.Add((() => mark.Show(() => board.Hunt.Tab), seconds));
                     break;
                 case HuntReportKind.Rolled or HuntReportKind.Rerolled:
                     steps.Add((() => sounds.Play(SoundCue.DiceRoll, "presented/" + cue.Id), seconds));
                     break;
                 case HuntReportKind.CompanionLeft or HuntReportKind.CharacterEliminated:
-                    steps.Add((() => reading.Open(), SettleSeconds));
+                    steps.Add((() => reading.Open(), PresentationPace.PanelSettleSeconds));
                     steps.Add((() => mark.Show(() => reading.Portrait(entry.CharacterId)), seconds));
                     steps.Add((() => Leave(entry.CharacterId), seconds));
                     break;
                 case HuntReportKind.GuideChanged:
-                    steps.Add((() => reading.Open(), SettleSeconds));
+                    steps.Add((() => reading.Open(), PresentationPace.PanelSettleSeconds));
                     steps.Add((() => Guide(entry.Outcome.GuideId), seconds));
                     break;
                 case HuntReportKind.Response or HuntReportKind.Reaction:
-                    steps.Add((() => reading.Open(), SettleSeconds));
+                    steps.Add((() => reading.Open(), PresentationPace.PanelSettleSeconds));
                     steps.Add((() => mark.Show(() => Response(entry)), seconds));
                     break;
                 default:

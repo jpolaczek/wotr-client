@@ -21,7 +21,8 @@ namespace Wotr.Client
     // - Later rounds stay in the same window; a retreat, an advance and a capture return to the map (their presenters).
     public sealed class BattlePresenter : ICuePresenter
     {
-        public const double OpenSeconds = .6;
+        // UI-315: the window the presentation opened settles before its round plays.
+        public const double OpenSeconds = PresentationPace.PanelSettleSeconds + .6;
         public const double RevealSeconds = 3;
         public const double RollSeconds = 1;
         public const double StateSeconds = .6;

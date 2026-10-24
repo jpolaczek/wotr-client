@@ -159,6 +159,37 @@ namespace Wotr.PlayTests
             Assert.IsTrue(panel.Drawer.Q("nation-track-sauron").ClassListContains("nation-at-war"), "The released row is at war.");
         }
 
+        // UI-315 (owner review): the panel the step opens settles, the nation's token glows before it moves, slides to its
+        // new station while lit and stays lit there — the step is seen, not flashed.
+        [UnityTest]
+        public IEnumerator AStepToWarLightsTheTokenBeforeItSlidesAndHoldsItLit()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            sauron.Active = true;
+            sauron.StepsToWar = 2;
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            Nation(latest, "sauron", true, 1);
+            var token = stage.Board.Nations.Drawer.Q<Button>("nation-status-sauron");
+            var started = Time.realtimeSinceStartup;
+            stage.Play(latest, null, Politics(stage.Step(1), "sauron", true, 2, true, 1));
+            yield return stage.Until(() => PresentationGlow.IsLit(token));
+            Assert.GreaterOrEqual(Time.realtimeSinceStartup - started, PresentationPace.PanelSettleSeconds - .1f,
+                "The panel the step opened settles before the token is marked.");
+            var station = token.resolvedStyle.left;
+            yield return new WaitForSecondsRealtime((float)PresentationPace.MarkSeconds - .2f);
+            Assert.AreEqual(station, token.resolvedStyle.left, "The token is lit before it moves.");
+            yield return stage.Until(() => token.resolvedStyle.left != station);
+            yield return new WaitForSecondsRealtime((float)PresentationPace.ChangeSeconds);
+            Assert.IsTrue(PresentationGlow.IsLit(token), "It stays lit at its new station.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Nations.Drawer.Q("nation-track-sauron")), "The chosen nation's row is lit.");
+            Assert.IsTrue(stage.Playback.Holding, "The hold belongs to the beat.");
+            LayoutTests.Save(stage.Texture, "ui315-politics-held.png");
+            yield return stage.Released();
+            Assert.IsEmpty(stage.Lit);
+        }
+
         [UnityTest]
         public IEnumerator APanelThePlayerOpenedStaysAndOneTheyClosedIsNotReopened()
         {

@@ -5,13 +5,12 @@ namespace Wotr.Client
 {
     // UI-307 (OPPONENT_ACTIONS_UX §8 politics): a recorded political change of one nation. The Politics panel opens read-only
     // — never while it is live for the player's own decision, and not again once the player closed it during this
-    // presentation; a panel the player had open stays open. The nation's token is traced; an activation lights its crest
-    // first, then the token moves its recorded steps (eased, a jump under Reduced motion); reaching war adds the short
-    // caption "At war". Values the record lacks come from the presented state.
+    // presentation; a panel the player had open stays open. UI-315 (owner review): at the shared pace — a panel the beat
+    // opened settles first; then the nation's row and token glow before anything changes; an activation lights its crest; the
+    // token slides its recorded steps (eased, a jump under Reduced motion) and stays lit at its new station; reaching war
+    // adds the short caption "At war". Values the record lacks come from the presented state.
     public sealed class PoliticsPresenter : ICuePresenter
     {
-        public const double TraceSeconds = .35;
-        public const double StepSeconds = .6;
         public const string CaptionName = "presentation-caption";
         public const string MovingClass = "presenting-politics";
         private readonly BoardScreen board;
@@ -43,8 +42,8 @@ namespace Wotr.Client
             var steps = change.PreviousStepsToWar ?? nation.StepsToWar;
             if (wasActive == change.Active && steps == change.StepsToWar)
                 return null;
-            OpenPanel();
-            return new Beat(this, change.Id, wasActive, steps, change.Active, change.StepsToWar, now);
+            var settle = OpenPanel();
+            return new Beat(this, change.Id, wasActive, steps, change.Active, change.StepsToWar, settle, now);
         }
 
         // The presentation ended: a panel it opened closes again.
@@ -56,15 +55,24 @@ namespace Wotr.Client
             dismissed = false;
         }
 
-        private void OpenPanel()
+        // True when the panel opened now, so the beat lets it settle before anything in it changes.
+        private bool OpenPanel()
         {
             if (Visible || dismissed || Live)
-                return;
+                return false;
             Panel.Open();
             opened = Visible;
+            return opened;
         }
 
         private VisualElement Token(string id) => Panel.Drawer.Q<Button>("nation-status-" + id);
+
+        // UI-315: the chosen nation's whole track row, while its row shows.
+        private VisualElement Row(string id)
+        {
+            var track = Panel.Drawer.Q("nation-track-" + id);
+            return Visible && PresentationTargets.Shown(track) ? track : null;
+        }
 
         // The token when its row shows, else the Politics tab (opponent rows hidden, or the panel closed).
         private VisualElement Anchor(string id)
@@ -90,12 +98,16 @@ namespace Wotr.Client
             private readonly bool active;
             private readonly int fromSteps;
             private readonly int toSteps;
-            private readonly double start;
+            private readonly double markAt;
+            private readonly double activateAt;
+            private readonly double moveAt;
+            private readonly double endAt;
             private readonly ObjectGlow glow = new ObjectGlow();
+            private readonly ObjectGlow row = new ObjectGlow();
             private Label caption;
             private int phase;
 
-            public Beat(PoliticsPresenter owner, string id, bool wasActive, int fromSteps, bool active, int toSteps, double now)
+            public Beat(PoliticsPresenter owner, string id, bool wasActive, int fromSteps, bool active, int toSteps, bool settle, double now)
             {
                 this.owner = owner;
                 this.id = id;
@@ -104,22 +116,25 @@ namespace Wotr.Client
                 this.toSteps = toSteps;
                 activation = !wasActive && active;
                 moves = fromSteps != toSteps;
-                start = now;
-                Follow();
+                markAt = now + (settle ? PresentationPace.PanelSettleSeconds : 0);
+                activateAt = markAt + PresentationPace.MarkSeconds;
+                moveAt = activateAt + (activation ? PresentationPace.ChangeSeconds : 0);
+                endAt = moveAt + (moves ? PresentationPace.ChangeSeconds : 0) + PresentationPace.HoldSeconds;
+                Advance(now);
             }
 
+            // The settled panel, then the lit token, then the crest, then the slide, then the hold at the new station.
             public bool Advance(double now)
             {
-                Follow();
-                var elapsed = now - start;
-                if (phase == 0 && elapsed >= TraceSeconds)
+                if (now >= markAt)
+                    Follow();
+                if (phase == 0 && now >= activateAt)
                 {
                     phase = 1;
                     if (activation)
                         owner.Stage(id, true, fromSteps);
                 }
-                var moveAt = TraceSeconds + (activation ? StepSeconds : 0);
-                if (phase == 1 && elapsed >= moveAt)
+                if (phase == 1 && now >= moveAt)
                 {
                     phase = 2;
                     owner.Panel.Drawer.AddToClassList(MovingClass);
@@ -127,7 +142,7 @@ namespace Wotr.Client
                     if (toSteps == 0 && moves)
                         Caption();
                 }
-                return phase == 2 && elapsed >= moveAt + StepSeconds * (moves ? 2 : 1) && End();
+                return phase == 2 && now >= endAt && End();
             }
 
             public void Finish() => End();
@@ -135,6 +150,7 @@ namespace Wotr.Client
             private bool End()
             {
                 glow.End();
+                row.End();
                 caption?.RemoveFromHierarchy();
                 owner.Panel.Drawer.RemoveFromClassList(MovingClass);
                 return true;
@@ -143,6 +159,7 @@ namespace Wotr.Client
             private void Follow()
             {
                 glow.Follow(owner.Anchor(id));
+                row.Follow(owner.Row(id));
                 if (caption != null)
                     PlaceCaption();
             }

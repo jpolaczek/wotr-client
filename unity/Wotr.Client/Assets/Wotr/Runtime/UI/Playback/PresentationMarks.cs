@@ -39,6 +39,17 @@ namespace Wotr.Client
             });
         }
 
+        // UI-315: more marks beside the current ones (a plate joining a lit object), placed after the next layout pass.
+        public void Add(Action place)
+        {
+            var current = version;
+            layer.Root.schedule.Execute(() =>
+            {
+                if (current == version)
+                    place();
+            });
+        }
+
         public void Light(VisualElement target)
         {
             if (!PresentationTargets.Shown(target))

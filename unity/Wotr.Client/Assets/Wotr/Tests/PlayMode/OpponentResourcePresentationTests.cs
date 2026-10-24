@@ -76,6 +76,29 @@ namespace Wotr.PlayTests
             Assert.Less(Time.realtimeSinceStartup - started, 2.2f, "Three dice, one beat.");
         }
 
+        // UI-315 (owner review): the opponent's card counter lights up first, then its number changes while it is lit.
+        [UnityTest]
+        public IEnumerator TheHandCountLightsUpBeforeItsNumberChanges()
+        {
+            using var stage = Watching();
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            latest.Players.Single(p => p.Side == Side.Shadow).HandCount = 5;
+            var draw = stage.Step(1);
+            draw.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.Draw, Deck = "character", Count = 1 });
+            var hand = Hand(stage);
+            var chip = stage.Board.TopBar.Opponent.Root.Q("opponent-cards");
+            stage.Play(latest, null, draw);
+            yield return stage.Until(() => PresentationGlow.IsLit(chip));
+            var lit = Time.realtimeSinceStartup;
+            Assert.AreEqual(hand, Hand(stage), "The counter lights up before its number changes.");
+            yield return stage.Until(() => Hand(stage) != hand);
+            Assert.GreaterOrEqual(Time.realtimeSinceStartup - lit, PresentationPace.MarkSeconds - .1f, "It stays lit for the mark first.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.TopBar.Opponent.Root.Q("opponent-cards")), "The number changes while it is lit.");
+            yield return stage.Released();
+            Assert.AreEqual("5", Hand(stage));
+        }
+
         [UnityTest]
         public IEnumerator DrawsAreOneBeatOfCardBacksAndTheHandCount()
         {

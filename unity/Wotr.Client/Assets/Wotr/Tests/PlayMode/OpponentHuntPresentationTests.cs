@@ -118,7 +118,7 @@ namespace Wotr.PlayTests
             var flight = stage.Board.Map.Figures.Moves.Single(move => move.To.Key == "fellowship");
             Assert.AreEqual(("rivendell", "moria"), (flight.From.Region, flight.To.Region), "The revealed figure flies between public regions.");
             Assert.IsTrue(stage.Board.Hunt.Tile.Root.resolvedStyle.display == DisplayStyle.Flex, "The tile came first.");
-            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Status.Q("fellowship-ring")));
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Status.Q("fellowship-status-condition")));
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui310-reveal.png");
             yield return stage.Released();
@@ -195,8 +195,13 @@ namespace Wotr.PlayTests
             hide.Facts.FellowshipAfter.Hidden = true;
             var hidden = stage.Latest();
             hidden.Fellowship.Hidden = true;
+            var state = stage.Board.Fellowship.Status.Q<Label>("fellowship-status-condition");
+            var shown = state.text;
             stage.Play(hidden, null, hide);
-            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.Fellowship.Status.Q("fellowship-ring")));
+            yield return stage.Until(() => PresentationGlow.IsLit(state));
+            Assert.AreEqual(shown, state.text, "UI-315: the Fellowship's state lights up before it turns.");
+            yield return stage.Until(() => state.text != shown);
+            Assert.IsTrue(PresentationGlow.IsLit(state), "It turns while lit.");
             Assert.AreEqual("◇", stage.Board.Map.FellowshipMarker.Root.Q<Button>("fellowship-marker").text, "The figure is hidden in place.");
             Assert.AreEqual(0, stage.Board.Map.Figures.Moves.Count, "Hiding moves nothing.");
             yield return stage.Released();

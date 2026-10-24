@@ -685,3 +685,10 @@ The watching board shows the Fellowship's recorded changes on their own objects,
 - **Once.** The released view does not stage the tracks again (AUDIO-06's two stages run only when no presentation
   showed them). Skip shows the latest tracks at once.
 - **Privacy.** A hidden move shows no route, region or trace on the map.
+
+<a id="ui-315"></a>
+## Mark, then change — UI-315 (2026-10-24)
+
+In the opponent's presentation the panel opened read-only settles for 0.4 s. The plaque's state (Hidden, Revealed) lights
+up before it turns, and each track stage lights its row before the token moves, sounding its cue as it moves; each change
+then holds lit for 0.8 s ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).

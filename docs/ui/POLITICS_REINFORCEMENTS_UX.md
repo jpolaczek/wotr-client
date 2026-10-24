@@ -181,6 +181,13 @@ had open stays open, one the presentation opened closes again, and one the playe
 presentation. The track's stations, arrow and activation controls keep their rules above; nothing is added to the row.
 The Reserve panel does not open for an opponent's recruitment: recruits appear on the map with their delta badge.
 
+<a id="tor-przeciwnika--ui-315"></a>
+## The opponent's political step at a pace the viewer can follow — UI-315 (2026-10-24)
+
+The Politics panel the opponent's step opens settles for 0.4 s; the chosen nation's whole row and its token then light up
+before anything changes, an activation lights the crest, the token slides its step in 0.7 s and row and token stay lit at
+the new station for 0.8 s ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
+
 <a id="ui-317"></a>
 ## A Muster die that cannot recruit opens no Reserve — UI-317 (2026-10-24)
 

@@ -306,6 +306,6 @@
 .motion-enabled .presenting-politics .nation-token,
 .motion-enabled .presenting-politics .icon-glow {
     transition-property: left;
-    transition-duration: 0.6s;
+    transition-duration: 0.7s;
     transition-timing-function: ease-in-out;
 }
