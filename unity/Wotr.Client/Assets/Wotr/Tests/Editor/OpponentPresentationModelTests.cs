@@ -172,6 +172,48 @@ namespace Wotr.EditorTests
             Assert.IsFalse(cues.Any(cue => cue.Kind is PresentationCueKind.Draw or PresentationCueKind.Card), "Our own card and draws are ours.");
         }
 
+        // UI-310: the engine records the move's progress on the move, before its Hunt; the Fellowship's change plays after
+        // the revision's last Hunt cue, so the tracks never move ahead of the roll and the tile. A hidden move is never framed.
+        [Test]
+        public void TheFellowshipsChangeFollowsTheHuntItCaused()
+        {
+            var cues = Replay(Fixture("hunt-shadow"), out _);
+            foreach (var revision in new long[] { 3, 5 })
+            {
+                var shown = cues.Where(cue => cue.Revision == revision).ToList();
+                var fellowship = shown.FindIndex(cue => cue.Kind == PresentationCueKind.Fellowship);
+                Assert.GreaterOrEqual(fellowship, 0, "Revision " + revision + " changes the Fellowship.");
+                Assert.Greater(fellowship, shown.FindLastIndex(cue => cue.Kind == PresentationCueKind.Hunt), "Revision " + revision);
+            }
+            Assert.AreEqual(PresentationCueKind.Cost, cues.First(cue => cue.Revision == 3).Kind, "The paid die comes first.");
+            Assert.IsTrue(cues.Where(cue => cue.Kind == PresentationCueKind.Fellowship).All(cue => cue.Regions.Count == 0),
+                "A hidden Fellowship's move and corruption are never framed.");
+        }
+
+        [Test]
+        public void OnlyAPublicRelocationOfTheFellowshipIsFramed()
+        {
+            var model = new OpponentPresentationModel(Side.Shadow, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var declared = Step("declare", 2, 1, Side.FreePeoples, "ActionDecision");
+            declared.Facts.FellowshipBefore = Outcome("rivendell", 2);
+            declared.Facts.FellowshipAfter = Outcome("moria", 0);
+            var entered = Step("enter", 3, 1, Side.FreePeoples, "ActionDecision");
+            entered.Facts.FellowshipBefore = Outcome("minas-morgul", 0);
+            entered.Facts.FellowshipAfter = Outcome("mordor-track", 0, 0);
+            var moved = Step("move", 4, 1, Side.FreePeoples, "ActionDecision");
+            moved.Facts.FellowshipBefore = Outcome("moria", 0);
+            moved.Facts.FellowshipAfter = Outcome("moria", 1);
+            model.Advance(4);
+            var cues = model.Merge(new[] { Page(declared, entered, moved) }).Where(cue => cue.Kind == PresentationCueKind.Fellowship).ToList();
+            CollectionAssert.AreEqual(new[] { "moria" }, cues[0].Regions, "A declaration's region is public.");
+            CollectionAssert.IsEmpty(cues[1].Regions, "The Mordor track is no region to frame.");
+            CollectionAssert.IsEmpty(cues[2].Regions, "A hidden move stays on its track.");
+        }
+
+        private static HuntOutcomeView Outcome(string region, int progress, int? mordorStep = null) =>
+            new HuntOutcomeView { RegionId = region, Progress = progress, MordorStep = mordorStep, Hidden = true };
+
         [Test]
         public void TheOpponentsDrawsAreCountsWithoutIdentities()
         {

@@ -9,6 +9,9 @@ namespace Wotr.Client
     public sealed class BoardScreen
     {
         private IVisualElementScheduledItem trackStage;
+        // UI-310: the Fellowship as the last presentation left the tracks, and whether a Skip asked for no second stage.
+        private FellowshipView presentedFellowship;
+        private bool quietTracks;
         public VisualElement Root { get; } = new VisualElement { name = "board-screen" };
         public MapCanvas Map
         {
@@ -550,12 +553,30 @@ namespace Wotr.Client
             Map.UpdateData(Presentation);
         }
 
+        // UI-310: a presentation's stage of the Fellowship — its figure and the Mordor track on the map, the plaque's and
+        // the panel's tracks. The next applied view is compared with what it showed, so nothing animates twice.
+        public void StageFellowship(FellowshipView fellowship)
+        {
+            Map.FellowshipMarker.Apply(fellowship, View.Hunt);
+            Map.MordorTrack.Apply(MordorTrackState.For(fellowship));
+            Fellowship.ShowTracks(fellowship);
+            presentedFellowship = fellowship;
+        }
+
+        // UI-310: the Fellowship's roster and the Hunt window as a presentation stages them; the released view replaces both.
+        public void StageRoster(PlayerView staged) => Fellowship.Apply(staged, Presentation);
+        public void StageHunt(PlayerView staged) => Hunt.Apply(staged);
+
+        // UI-310: after Skip the latest tracks show at once, never in two stages.
+        public void QuietTracks() => quietTracks = true;
+
         public void Apply(PlayerView view)
         {
             if (view == null)
                 return;
             IsFixture = false;
-            var previous = View?.MatchId == view.MatchId ? View.Fellowship : null;
+            var previous = presentedFellowship ?? (View?.MatchId == view.MatchId ? View.Fellowship : null);
+            presentedFellowship = null;
             View = view;
             loading.style.display = DisplayStyle.None;
             Tracks.style.display = DisplayStyle.None;
@@ -602,7 +623,9 @@ namespace Wotr.Client
         {
             trackStage?.Pause();
             trackStage = null;
-            if (quiet || previous == null || !TrackSequence.Both(previous, view.Fellowship))
+            var skipped = quietTracks;
+            quietTracks = false;
+            if (quiet || skipped || previous == null || !TrackSequence.Both(previous, view.Fellowship))
                 return view.Fellowship;
             trackStage = Root.schedule.Execute(() =>
             {

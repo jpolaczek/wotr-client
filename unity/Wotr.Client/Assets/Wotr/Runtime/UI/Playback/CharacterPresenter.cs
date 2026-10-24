@@ -110,17 +110,7 @@ namespace Wotr.Client
         private VisualElement ShownPortrait(CharacterView figure, string identity)
         {
             var portrait = board.Root.Q(figure == null ? "fellowship-portrait-" + identity : "portrait-" + figure.Id);
-            return Visible(portrait) ? portrait : null;
-        }
-
-        private static bool Visible(VisualElement element)
-        {
-            if (element == null || element.worldBound.width <= 0 || element.worldBound.height <= 0)
-                return false;
-            for (var node = element; node != null; node = node.parent)
-                if (node.resolvedStyle.display == DisplayStyle.None || node.resolvedStyle.visibility == Visibility.Hidden)
-                    return false;
-            return true;
+            return PresentationTargets.Shown(portrait) ? portrait : null;
         }
 
         private void Mark(CharacterView figure) => source = trace.Begin().Force(figure.Location, figure.Side, figure.Garrison)

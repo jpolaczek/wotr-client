@@ -25,6 +25,7 @@ namespace Wotr.Client
         {
             var steps = group.OrderBy(step => step.Order).ToList();
             var figures = FigureCuesByStep(steps, shown, data);
+            var released = new List<PresentationCue>();
             foreach (var step in steps)
             {
                 var cues = Costs(step, memory)
@@ -42,8 +43,25 @@ namespace Wotr.Client
                     .Concat(Outcome(step));
                 foreach (var cue in cues)
                     if (memory.Keys.Add(cue.Id) && shown.Contains(step))
-                        yield return cue;
+                        released.Add(cue);
             }
+            return AfterTheirHunt(released);
+        }
+
+        // UI-310: a revision's Fellowship change shows once its Hunt has shown its result. The engine records the move's
+        // progress on the move itself, before the Hunt it causes, so a Fellowship cue of a Hunt chain follows that chain's
+        // last Hunt cue of the revision: the tracks never move ahead of the roll and the tile.
+        private static List<PresentationCue> AfterTheirHunt(List<PresentationCue> cues)
+        {
+            foreach (var fellowship in cues.Where(cue => cue.Kind == PresentationCueKind.Fellowship && cue.HuntChainId.Length > 0).ToList())
+            {
+                var last = cues.FindLastIndex(cue => cue.Kind == PresentationCueKind.Hunt && cue.HuntChainId == fellowship.HuntChainId);
+                if (last <= cues.IndexOf(fellowship))
+                    continue;
+                cues.Remove(fellowship);
+                cues.Insert(last, fellowship);
+            }
+            return cues;
         }
 
         // A card's cost is the card itself, shown by its own cue (played, entered or removed from the table); a free action
@@ -194,9 +212,16 @@ namespace Wotr.Client
             if (after == null || before != null && Same(before, after))
                 yield break;
             var payload = new CuePayload { FellowshipBefore = before, FellowshipAfter = after };
-            if (!after.Hidden)
-                payload.Regions.Add(after.RegionId);
+            payload.Regions.AddRange(PublicRegions(before, after));
             yield return new PresentationCue(step, PresentationCueKind.Fellowship, State(after), payload);
+        }
+
+        // UI-310: where the camera may look — a revealed Fellowship's region, or a declared or revealed new position. A
+        // hidden move stays on its track, and the Mordor track is no region: neither is framed.
+        private static IEnumerable<string> PublicRegions(HuntOutcomeView before, HuntOutcomeView after)
+        {
+            if (!after.MordorStep.HasValue && (!after.Hidden || before != null && before.RegionId != after.RegionId))
+                yield return after.RegionId;
         }
 
         private static bool Same(HuntOutcomeView a, HuntOutcomeView b) => State(a) == State(b);

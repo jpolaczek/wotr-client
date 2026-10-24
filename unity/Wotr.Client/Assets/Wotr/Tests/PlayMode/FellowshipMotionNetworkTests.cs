@@ -29,6 +29,9 @@ namespace Wotr.PlayTests
             Assert.IsNotNull(marker, "The journey track has its marker.");
             Assert.IsNotNull(before.Decision, "The scenario opens on a decision.");
             var origin = marker.worldBound.center.x;
+            // UI-310: the Free Peoples' own declaration flies at their view; the Shadow's presentation flies it before its
+            // release, watched meanwhile.
+            var shadowFlew = room.Until(() => room.Sh.Board.Map.Figures.Root.Q("moving-fellowship") != null);
             var receipt = await room.Fp.Api.Post<CommandReceipt>($"api/matches/{before.MatchId}/commands", new GameCommand
             {
                 MatchId = before.MatchId, DecisionId = before.Decision.Id, ExpectedRevision = before.Revision,
@@ -36,13 +39,9 @@ namespace Wotr.PlayTests
                 Payload = new CommandPayload { Route = { "rivendell", "trollshaws" } }
             }, room.Token);
             Assert.IsTrue(receipt.Accepted, receipt.Error);
-            foreach (var client in new[] { room.Fp, room.Sh })
-            {
-                await room.Until(() => client.Board.View.Revision > before.Revision);
-                Assert.AreEqual("trollshaws", client.Board.View.Fellowship.RegionId);
-                Assert.IsNotNull(client.Board.Map.Figures.Root.Q("moving-fellowship"),
-                    "The declared Fellowship flies from its last known position · " + client.Board.View.You);
-            }
+            await room.Until(() => room.Fp.Board.View.Revision > before.Revision);
+            Assert.AreEqual("trollshaws", room.Fp.Board.View.Fellowship.RegionId);
+            Assert.IsNotNull(room.Fp.Board.Map.Figures.Root.Q("moving-fellowship"), "The declared Fellowship flies from its last known position · FreePeoples");
             await Task.Delay(120, room.Token);
             var middle = marker.worldBound.center.x;
             var start = track.Q<Label>("journey-step-0").worldBound.center.x;
@@ -52,6 +51,9 @@ namespace Wotr.PlayTests
             await Task.Delay(500, room.Token);
             Assert.That(marker.worldBound.center.x, Is.EqualTo(start).Within(1.5f), "The marker settles on step 0.");
             Assert.AreEqual(0, room.Fp.Board.Map.Figures.ActiveCount);
+            await shadowFlew;
+            await room.Until(() => room.Sh.Board.View.Revision > before.Revision);
+            Assert.AreEqual("trollshaws", room.Sh.Board.View.Fellowship.RegionId, "The Shadow's presentation releases the declared region.");
         }
     }
 }

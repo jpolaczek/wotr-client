@@ -84,6 +84,47 @@ namespace Wotr.Client
             Changed = true;
         }
 
+        // UI-310: the Fellowship as a recorded outcome left it — position, tracks, hiding and Guide.
+        public void Fellowship(HuntOutcomeView outcome)
+        {
+            var fellowship = View.Fellowship;
+            fellowship.RegionId = outcome.RegionId;
+            fellowship.Progress = outcome.Progress;
+            fellowship.MordorStep = outcome.MordorStep;
+            fellowship.Corruption = outcome.Corruption;
+            fellowship.Hidden = outcome.Hidden;
+            fellowship.Guide = outcome.GuideId;
+            Changed = true;
+        }
+
+        // UI-310: a new Guide recorded by the Hunt; the tracks wait for the Fellowship's own change.
+        public void Guide(string id) => View.Fellowship.Guide = id;
+
+        // UI-310: a Companion leaving the Fellowship through the Hunt (a casualty, a Hobbit separating as its guide).
+        public void Leave(string characterId)
+        {
+            var own = View.OwnCompanions.FirstOrDefault(c => c.Id == characterId);
+            View.Fellowship.CompanionIdentities.Remove(CharacterLibrary.Identity(own?.DefinitionId ?? characterId));
+            View.Fellowship.CompanionCount = System.Math.Max(0, View.Fellowship.CompanionCount - 1);
+            View.OwnCompanions.RemoveAll(c => c.Id == characterId);
+        }
+
+        // UI-310: the Hunt window as a recorded entry left it: the entry's snapshot (the last one when it has none) and the
+        // report up to that entry; a completed chain keeps only its report.
+        public void Hunt(string chain, HuntReportEntryView entry)
+        {
+            var report = View.HuntReport;
+            if (report == null || report.Id != chain)
+                View.HuntReport = report = new HuntReportView { Id = chain, StartedRevision = entry.Revision };
+            if (!report.Entries.Any(known => SameEntry(known, entry)))
+                report.Entries.Add(entry);
+            report.Completed = entry.Kind == HuntReportKind.HuntCompleted;
+            View.Hunt = report.Completed ? null : entry.Hunt ?? View.Hunt;
+        }
+
+        private static bool SameEntry(HuntReportEntryView a, HuntReportEntryView b) => a.Kind == b.Kind && a.Revision == b.Revision &&
+            a.HuntId == b.HuntId && a.CharacterId == b.CharacterId && a.Response == b.Response;
+
         // UI-307: a recorded political change of one nation.
         public void Nation(string id, bool active, int stepsToWar)
         {

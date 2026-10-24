@@ -44,6 +44,7 @@ namespace Wotr.Client
             connection.Updated += playback.Receive;
             connection.StatusChanged += ConnectionChanged;
             this.sounds = sounds == null ? null : new GameSounds(sounds, board, turns);
+            presenters.Sounds.Target = this.sounds;
             if (replays != null)
                 saver = new ReplaySaver(api, "api/matches/" + Uri.EscapeDataString(matchId) + "/replay", replays, board.GameEnd);
             connection.Start();

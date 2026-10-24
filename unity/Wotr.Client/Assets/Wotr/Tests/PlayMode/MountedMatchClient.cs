@@ -94,6 +94,7 @@ namespace Wotr.PlayTests
             Activity = new ActionNoticeController(Api, match, Board, reads ?? persistence?.Notifications);
             playback = new PlaybackBinding(Board, Activity, Present, held => interaction.Hold(held));
             Presenters = new OpponentPresenters(Board, playback);
+            Presenters.Sounds.Target = Sounds;
             Connection.Updated += Refresh;
             Connection.StatusChanged += status =>
             {
@@ -112,6 +113,8 @@ namespace Wotr.PlayTests
         {
             Sounds?.Dispose();
             Sounds = new GameSounds(Interface.Sounds, Board, interaction);
+            if (Presenters != null)
+                Presenters.Sounds.Target = Sounds;
         }
 
         public void Dispose()
