@@ -190,6 +190,69 @@
     background-color: rgba(146, 212, 242, 0.18);
 }
 
+/* UI-309: a character's larger moment above its force: its portrait in the side's medallion over its title. */
+.observed-portraits {
+    position: absolute;
+    flex-direction: row;
+    padding: 6px 6px 4px 6px;
+    border-radius: 6px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.observed-portrait {
+    align-items: center;
+    margin: 0 2px;
+}
+.observed-portrait-picture {
+    width: 72px;
+    height: 72px;
+    padding: 9px;
+    flex-shrink: 0;
+}
+.observed-portrait > .unity-label {
+    margin: 2px 0 0 0;
+    padding: 0;
+    font-size: 14px;
+    white-space: nowrap;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.observed-portrait-removed > .unity-label { color: rgb(158, 151, 140); }
+
+/* UI-309: who moves, beside the destination's force: small portraits with short names, identical figures with a count. */
+.observed-identities {
+    position: absolute;
+    flex-direction: column;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.observed-identity {
+    flex-direction: row;
+    align-items: center;
+}
+.observed-identity-picture {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+}
+.observed-identity-picture.observed-medallion-free,
+.observed-identity-picture.observed-medallion-shadow { padding: 3px; }
+.observed-identity > .unity-label {
+    margin: 0 0 0 4px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.observed-medallion-free {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/battle/portrait-medallion-free");
+}
+.observed-medallion-shadow {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/battle/portrait-medallion-shadow");
+}
+
 /* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). */
 .motion-enabled .presenting-politics .nation-token,
 .motion-enabled .presenting-politics .icon-glow {

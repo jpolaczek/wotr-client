@@ -15,18 +15,25 @@ namespace Wotr.Client
         public const long FadeOutMilliseconds = 400;
         private const float RingGap = 3;
         private const float SettlementRing = 15;
+        private const float PortraitGap = 6;
         private readonly MapCanvas map;
         private readonly List<TraceSet> sets = new List<TraceSet>();
         private readonly IVisualElementScheduledItem layout;
         public VisualElement Root { get; } = new VisualElement { name = "map-observed-trace", pickingMode = PickingMode.Ignore };
+        // UI-309: the plates — badges, deltas, portraits and identities — stand above every marker (markers join the map
+        // as they are created, after the rings' layer), so a neighbouring stack never covers a name.
+        public VisualElement Plates { get; } = new VisualElement { name = "map-observed-plates", pickingMode = PickingMode.Ignore };
         public int Count => sets.Count;
 
         public MapObservedTrace(MapCanvas map)
         {
             this.map = map;
-            Root.AddToClassList("map-observed-trace");
-            Root.StretchToParentSize();
-            map.Add(Root);
+            foreach (var layer in new[] { Root, Plates })
+            {
+                layer.AddToClassList("map-observed-trace");
+                layer.StretchToParentSize();
+                map.Add(layer);
+            }
             layout = Root.schedule.Execute(Layout).Every(16);
             layout.Pause();
         }
@@ -36,6 +43,8 @@ namespace Wotr.Client
             var set = new TraceSet(this);
             sets.Add(set);
             Root.Add(set.Root);
+            Plates.Add(set.Plates);
+            Plates.BringToFront();
             layout.Resume();
             return set;
         }
@@ -55,6 +64,8 @@ namespace Wotr.Client
 
         private void Layout()
         {
+            if (Plates.parent == map && map.IndexOf(Plates) != map.childCount - 1)
+                Plates.BringToFront();
             foreach (var set in sets)
                 set.Layout();
         }
@@ -75,18 +86,31 @@ namespace Wotr.Client
             private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison)> deltas =
                 new List<(VisualElement, string, Side, bool)>();
             private readonly List<string> regions = new List<string>();
+            private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison, Rect Safe)> portraits =
+                new List<(VisualElement, string, Side, bool, Rect)>();
+            private readonly List<(VisualElement Element, string Region)> fellowships = new List<(VisualElement, string)>();
             private bool ended;
             public VisualElement Root { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
+            public VisualElement Plates { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
             public IReadOnlyList<string> Regions => regions;
 
             internal TraceSet(MapObservedTrace owner)
             {
                 this.owner = owner;
-                Root.AddToClassList("observed-set");
-                Root.StretchToParentSize();
+                foreach (var layer in new[] { Root, Plates })
+                {
+                    layer.AddToClassList("observed-set");
+                    layer.StretchToParentSize();
+                }
                 Root.generateVisualContent += DrawOutlines;
                 // The next frame, so the fade-in has a start.
-                Root.schedule.Execute(() => Root.AddToClassList("shown"));
+                Root.schedule.Execute(() => Shown(true));
+            }
+
+            private void Shown(bool shown)
+            {
+                Root.EnableInClassList("shown", shown);
+                Plates.EnableInClassList("shown", shown);
             }
 
             public TraceSet Force(string region, Side side, bool garrison)
@@ -117,7 +141,7 @@ namespace Wotr.Client
                 var badge = new Label(text) { name = "observed-badge", pickingMode = PickingMode.Ignore };
                 badge.AddToClassList("observed-badge");
                 badge.AddToClassList(side == Side.FreePeoples ? "observed-badge-free" : "observed-badge-shadow");
-                Root.Add(badge);
+                Plates.Add(badge);
                 badges.Add((badge, region));
                 Layout();
                 return this;
@@ -131,8 +155,44 @@ namespace Wotr.Client
                 badge.AddToClassList("observed-delta");
                 foreach (var entry in entries)
                     badge.Add(Entry(entry));
-                Root.Add(badge);
+                Plates.Add(badge);
                 deltas.Add((badge, region, side, garrison));
+                Layout();
+                return this;
+            }
+
+            // UI-309: a character's larger moment above its force (below it when it would leave the safe area, given in
+            // map-local points): each portrait in its side's medallion over its title.
+            public TraceSet Portraits(string region, Side side, bool garrison, IEnumerable<CharacterMark> marks, Rect safe)
+            {
+                var plate = new VisualElement { name = "observed-portraits", pickingMode = PickingMode.Ignore };
+                plate.AddToClassList("observed-portraits");
+                foreach (var mark in marks)
+                    plate.Add(Portrait(mark));
+                Plates.Add(plate);
+                portraits.Add((plate, region, side, garrison, safe));
+                Layout();
+                return this;
+            }
+
+            // UI-309: who moves, beside the force where it lands, as the delta badge stands: small portraits with short
+            // names, identical figures with their count.
+            public TraceSet Identities(string region, Side side, bool garrison, IEnumerable<CharacterMark> marks)
+            {
+                var strip = new VisualElement { name = "observed-identities", pickingMode = PickingMode.Ignore };
+                strip.AddToClassList("observed-identities");
+                foreach (var mark in marks)
+                    strip.Add(Identity(mark));
+                Plates.Add(strip);
+                deltas.Add((strip, region, side, garrison));
+                Layout();
+                return this;
+            }
+
+            // UI-309: the ring around the Fellowship's figure on its region (a separation's public origin).
+            public TraceSet Fellowship(string region)
+            {
+                fellowships.Add((NewRing(), region));
                 Layout();
                 return this;
             }
@@ -148,8 +208,12 @@ namespace Wotr.Client
                     return;
                 ended = true;
                 owner.Ended(this);
-                Root.RemoveFromClassList("shown");
-                Root.schedule.Execute(Root.RemoveFromHierarchy).StartingIn(FadeOutMilliseconds);
+                Shown(false);
+                Root.schedule.Execute(() =>
+                {
+                    Root.RemoveFromHierarchy();
+                    Plates.RemoveFromHierarchy();
+                }).StartingIn(FadeOutMilliseconds);
             }
 
             internal void Layout()
@@ -174,6 +238,13 @@ namespace Wotr.Client
                     element.style.left = marker.HasValue ? marker.Value.xMax + 4 : anchor.x + 12;
                     element.style.top = marker.HasValue ? marker.Value.y : anchor.y - 14;
                 }
+                foreach (var (element, region, side, garrison, safe) in portraits)
+                {
+                    var anchor = owner.Anchor(region);
+                    Above(element, owner.map.MarkerBounds(region, side, garrison) ?? new Rect(anchor.x - 12, anchor.y - 12, 24, 24), safe);
+                }
+                foreach (var (element, region) in fellowships)
+                    Place(element, owner.map.FellowshipMarker.Bounds(region));
                 Root.MarkDirtyRepaint();
             }
 
@@ -205,6 +276,49 @@ namespace Wotr.Client
                 var image = FigureArtwork.Image(art);
                 image.pickingMode = PickingMode.Ignore;
                 image.AddToClassList("observed-delta-figure");
+                return image;
+            }
+
+            // Centred above its subject, kept inside the safe area: below the subject when there is no room above.
+            private static void Above(VisualElement element, Rect subject, Rect safe)
+            {
+                var width = Resolved(element.resolvedStyle.width);
+                var height = Resolved(element.resolvedStyle.height);
+                var top = subject.yMin - PortraitGap - height;
+                element.style.top = top < safe.yMin ? subject.yMax + PortraitGap : top;
+                element.style.left = Mathf.Clamp(subject.center.x - width / 2, safe.xMin, Mathf.Max(safe.xMin, safe.xMax - width));
+            }
+
+            private static float Resolved(float value) => float.IsNaN(value) ? 0 : value;
+
+            private static VisualElement Portrait(CharacterMark mark)
+            {
+                var item = new VisualElement { pickingMode = PickingMode.Ignore };
+                item.AddToClassList("observed-portrait");
+                item.EnableInClassList("observed-portrait-removed", mark.Removed);
+                item.Add(Picture(mark, "observed-portrait-picture"));
+                item.Add(new Label(mark.Text) { name = "observed-portrait-name", pickingMode = PickingMode.Ignore, enableRichText = false });
+                return item;
+            }
+
+            private static VisualElement Identity(CharacterMark mark)
+            {
+                var row = new VisualElement { pickingMode = PickingMode.Ignore };
+                row.AddToClassList("observed-identity");
+                row.Add(Picture(mark, "observed-identity-picture"));
+                row.Add(new Label(mark.Text) { name = "observed-identity-name", pickingMode = PickingMode.Ignore, enableRichText = false });
+                return row;
+            }
+
+            // A named character stands in its side's medallion; identical figures show their figure art alone.
+            private static Image Picture(CharacterMark mark, string className)
+            {
+                var image = new Image { sprite = mark.Picture, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                image.AddToClassList(className);
+                if (mark.DefinitionId.Length > 0)
+                    image.AddToClassList(mark.Side == Side.Shadow ? "observed-medallion-shadow" : "observed-medallion-free");
+                if (mark.Removed)
+                    image.tintColor = new Color(.55f, .55f, .55f, 1);
                 return image;
             }
 

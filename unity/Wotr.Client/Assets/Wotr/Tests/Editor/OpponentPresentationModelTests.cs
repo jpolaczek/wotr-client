@@ -277,6 +277,28 @@ namespace Wotr.EditorTests
         }
 
         [Test]
+        public void AMinionNewToTheGameEntersAndACompanionRecordedFromTheFellowshipLeavesIt()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new ActionLogPage[0], 1);
+            var step = Step("entry", 2, 1, Side.Shadow, "CharacterEntered");
+            step.Facts.Figures.Add(new ActionFigureChange
+            {
+                After = new ActionParticipant { Id = "witch", Side = Side.Shadow, DefinitionId = "base.character.witch-king" },
+                From = "fellowship", To = "minas-morgul"
+            });
+            step.Facts.Figures.Add(new ActionFigureChange
+            {
+                After = new ActionParticipant { Id = "gimli", Side = Side.FreePeoples, DefinitionId = "base.character.gimli" },
+                From = "fellowship", To = "moria"
+            });
+            model.Advance(2);
+            var cues = model.Merge(new[] { Page(step) });
+            Assert.AreEqual("minas-morgul", cues.Single(cue => cue.Kind == PresentationCueKind.Entry).Regions.Single());
+            Assert.AreEqual("moria", cues.Single(cue => cue.Kind == PresentationCueKind.Relocation).Regions.Single());
+        }
+
+        [Test]
         public void TheAllFeedGivesThePennantsTheOpponentFeedGave()
         {
             var fixture = Fixture("attack-free-peoples");

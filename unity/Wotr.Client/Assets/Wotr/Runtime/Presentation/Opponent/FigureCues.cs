@@ -52,7 +52,7 @@ namespace Wotr.Client
             if (Leaves(change, data))
                 return PresentationCueKind.Removal;
             // A separated Companion steps out of the Fellowship onto its region.
-            if ((OnBoard(change.From, data) || change.From == Fellowship) && OnBoard(change.To, data) && change.From != change.To)
+            if ((OnBoard(change.From, data) || FromFellowship(change)) && OnBoard(change.To, data) && change.From != change.To)
                 return PresentationCueKind.Relocation;
             return null;
         }
@@ -67,7 +67,12 @@ namespace Wotr.Client
 
         // Onto the board from the reserve or off-board; a Companion leaving the Fellowship is a relocation, not an entry.
         private static bool Arrives(ActionFigureChange change, BoardPresentation data) =>
-            change.After != null && OnBoard(change.To, data) && !OnBoard(change.From, data) && change.From != Fellowship;
+            change.After != null && OnBoard(change.To, data) && !OnBoard(change.From, data) && !FromFellowship(change);
+
+        // UI-309: the engine records a character new to the game (a Minion entering) from "fellowship", its default origin;
+        // the Shadow has no Fellowship, so only a Free Peoples character recorded from there leaves it.
+        private static bool FromFellowship(ActionFigureChange change) =>
+            change.From == Fellowship && (change.After ?? change.Before)?.Side != Side.Shadow;
 
         private static bool Leaves(ActionFigureChange change, BoardPresentation data) =>
             change.Before != null && OnBoard(change.From, data) && !OnBoard(change.To, data) && change.To != Fellowship;

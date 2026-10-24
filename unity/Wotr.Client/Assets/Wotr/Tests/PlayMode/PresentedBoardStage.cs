@@ -14,10 +14,12 @@ using Object = UnityEngine.Object;
 namespace Wotr.PlayTests
 {
     // UI-306/UI-307: one mounted board receiving the Shadow's recorded steps while it presents the Free Peoples' earlier
-    // view, at one layout; the presentation tests drive it.
+    // view, at one layout; the presentation tests drive it. UI-309: the Shadow may watch instead, with the Free Peoples'
+    // Will of the West die in play.
     internal sealed class PresentedBoardStage : IDisposable
     {
         public const string Die = "shadow-army";
+        public const string FreeDie = "free-will";
         private readonly MountedMatchClient client;
         private readonly BoardFixture fixture;
         private readonly PlayerView before;
@@ -29,9 +31,13 @@ namespace Wotr.PlayTests
         public OpponentPresenters Presenters => client.Presenters;
         // The presented view before Ready(): a test may set its nations, control and figures.
         public PlayerView Before => before;
+        public Side Viewer { get; }
+        public Side Opponent => Viewer == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+        public string OpponentDie => Viewer == Side.FreePeoples ? Die : FreeDie;
 
-        public PresentedBoardStage(int width, float scale, bool reduced)
+        public PresentedBoardStage(int width, float scale, bool reduced, Side viewer = Side.FreePeoples)
         {
+            Viewer = viewer;
             client = new MountedMatchClient("http://localhost", "presented-board");
             Texture = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
             Texture.Create();
@@ -40,7 +46,20 @@ namespace Wotr.PlayTests
             client.Interface.Preferences.SetReducedMotion(reduced);
             fixture = new BoardFixture();
             before = fixture.View;
-            before.Dice.Add(new DieView { Id = Die, Owner = Side.Shadow, Face = DieFace.Army, Source = "standard", Location = DieLocation.Available });
+            if (viewer == Side.Shadow)
+                Watch(before);
+            else
+                before.Dice.Add(new DieView { Id = Die, Owner = Side.Shadow, Face = DieFace.Army, Source = "standard", Location = DieLocation.Available });
+        }
+
+        // The Shadow's board while the Free Peoples act: no decision of its own, their Will of the West die available.
+        private static void Watch(PlayerView view)
+        {
+            view.You = Side.Shadow;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Decision = null;
+            view.Options.Clear();
+            view.Dice.Add(new DieView { Id = FreeDie, Owner = Side.FreePeoples, Face = DieFace.WillOfTheWest, Source = "standard", Location = DieLocation.Available });
         }
 
         public List<string> Put(string nation, UnitKind kind, string region, int count)
@@ -57,7 +76,7 @@ namespace Wotr.PlayTests
             yield return new WaitForSecondsRealtime(.3f);
             Board.SetConnection("Connected");
             Playback.SetConnection("Connected");
-            model = new OpponentPresentationModel(Side.FreePeoples, Board.Presentation);
+            model = new OpponentPresentationModel(Viewer, Board.Presentation);
             model.Baseline(new ActionLogPage[0], 0);
         }
 
@@ -82,6 +101,41 @@ namespace Wotr.PlayTests
             return step;
         }
 
+        // UI-309: a character on a view as the server projects it; its figure id stays across versions (Grey → White).
+        public static CharacterView Character(PlayerView view, string id, string definition, Side side, string region)
+        {
+            view.Characters.RemoveAll(c => c.Id == id);
+            var character = new CharacterView { Id = id, DefinitionId = definition, Side = side, Location = region, Level = 2, Leadership = 1 };
+            view.Characters.Add(character);
+            return character;
+        }
+
+        public static ActionParticipant Figure(CharacterView character) => new ActionParticipant
+        {
+            Id = character.Id, Side = character.Side, DefinitionId = character.DefinitionId, Garrison = character.Garrison,
+            Level = character.Level, Leadership = character.Leadership
+        };
+
+        public ActionParticipant Unit(string id)
+        {
+            var unit = Board.View.Units.Single(u => u.Id == id);
+            return new ActionParticipant { Id = id, Side = unit.Side, NationId = unit.Nation, UnitKind = unit.Kind };
+        }
+
+        // The opponent's die paid the step.
+        public ActionLogStep Paid(ActionLogStep step, DieFace face)
+        {
+            step.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = OpponentDie, Owner = Opponent, Face = face, Use = face });
+            return step;
+        }
+
+        public int Characters(string region, Side side) =>
+            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == side).Sum(a => a.Characters);
+
+        // The names on the character moments and the moving groups' identities now on the map.
+        public string Moments() => string.Join(",", Board.Map.Query<Label>("observed-portrait-name").ToList().Select(label => label.text));
+        public string Identities() => string.Join(",", Board.Map.Query<Label>("observed-identity-name").ToList().Select(label => label.text));
+
         public static void Place(PlayerView view, IEnumerable<string> ids, string region)
         {
             foreach (var unit in view.Units.Where(u => ids.Contains(u.Id)))
@@ -92,13 +146,13 @@ namespace Wotr.PlayTests
         {
             var next = JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(view));
             next.Revision = view.Revision + 1;
-            next.Dice.Single(d => d.Id == Die).Location = DieLocation.Spent;
+            next.Dice.Single(d => d.Id == OpponentDie).Location = DieLocation.Spent;
             return next;
         }
 
         public ActionLogStep Step(int order, long at = 1) => new ActionLogStep
         {
-            Id = "presented-" + at + "-" + order, ActionId = "presented-action-" + at, Revision = at, Order = order, Actor = Side.Shadow,
+            Id = "presented-" + at + "-" + order, ActionId = "presented-action-" + at, Revision = at, Order = order, Actor = Opponent,
             Kind = "ArmiesMoved"
         };
 
@@ -133,7 +187,7 @@ namespace Wotr.PlayTests
             new Vector2(Board.Map.Data.Shapes[region].Anchor[0], Board.Map.Data.Shapes[region].Anchor[1]);
 
         public int Army(string region, bool garrison = false) =>
-            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == Side.Shadow && a.Garrison == garrison).Sum(a => a.Total);
+            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == Opponent && a.Garrison == garrison).Sum(a => a.Total);
 
         public bool Flying(string destination) =>
             Board.Map.Figures.ActiveCount > 0 && Board.Map.Figures.Moves.Any(move => move.To.Region == destination);
@@ -153,12 +207,14 @@ namespace Wotr.PlayTests
             Assert.AreEqual(revision, Board.View.Revision);
         }
 
-        // The released board matches the latest view: every Shadow stack and settlement.
+        // The released board matches the latest view: every stack of the opponent (its units and characters) and settlement.
         public void AssertFinal(PlayerView latest)
         {
-            var expected = latest.Units.Where(u => u.Side == Side.Shadow && Board.Map.Data.Regions.ContainsKey(u.Location))
-                .GroupBy(u => (u.Location, u.Garrison)).ToDictionary(g => g.Key, g => g.Count());
-            var shown = Board.Presentation.Armies.Where(a => a.Side == Side.Shadow)
+            var figures = latest.Units.Where(u => u.Side == Opponent).Select(u => (u.Location, u.Garrison))
+                .Concat(latest.Characters.Where(c => c.Side == Opponent).Select(c => (c.Location, c.Garrison)));
+            var expected = figures.Where(f => Board.Map.Data.Regions.ContainsKey(f.Location))
+                .GroupBy(f => f).ToDictionary(g => g.Key, g => g.Count());
+            var shown = Board.Presentation.Armies.Where(a => a.Side == Opponent)
                 .ToDictionary(a => (a.RegionId, a.Garrison), a => a.Total);
             CollectionAssert.AreEquivalent(expected, shown);
             foreach (var region in latest.Control.Keys)

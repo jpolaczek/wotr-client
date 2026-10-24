@@ -62,6 +62,12 @@ namespace Wotr.Client
             if (previous == null || previous.MatchId != next.MatchId || previous.Viewer != next.Viewer ||
                 next.Revision != previous.Revision + 1)
                 return none;
+            return Moves(previous, next);
+        }
+
+        // UI-309: the moves between two positions of one board, also within one revision (a presentation's staged steps).
+        public static IReadOnlyList<BoardFigureMove> Moves(BoardFigureSnapshot previous, BoardFigureSnapshot next)
+        {
             var moves = new List<BoardFigureMove>();
             foreach (var position in next.Figures.Values)
             {

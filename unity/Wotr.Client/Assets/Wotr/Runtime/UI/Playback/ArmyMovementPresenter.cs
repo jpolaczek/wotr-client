@@ -9,6 +9,9 @@ namespace Wotr.Client
     // guard visibly stays (the staged source shows what remains, the destination settles with its true composition); the
     // destination is traced for a short dwell. Successive movements of one source accumulate on the same staged board, so
     // the destination is never counted twice and nothing replays at the release. An empty advance moves nothing.
+    // UI-309: a group with characters or Nazgûl is named beside its destination (CharacterMarks.Group). Companions leaving
+    // the Fellowship fly from its figure only while that position is known, else arrive in place (FellowshipSeparation);
+    // the board's own figure difference decides which.
     public sealed class ArmyMovementPresenter : ICuePresenter
     {
         public const double SourceSeconds = .35;
@@ -32,26 +35,42 @@ namespace Wotr.Client
             if (!Shows(cue) || !board.Map.Data.Shapes.ContainsKey(cue.Movement.From) || !board.Map.Data.Shapes.ContainsKey(cue.Movement.To))
                 return null;
             var movers = staged.Present(cue.Movement.Participants).ToList();
-            return movers.Count == 0 ? null : new Beat(this, cue.Movement, movers, now);
+            var leaving = FellowshipSeparation.Leaving(cue.Movement, staged.View);
+            return movers.Count + leaving.Count == 0 ? null : new Beat(this, cue.Movement, movers, leaving, now);
         }
 
         private bool SourceGarrison(ActionParticipant mover) =>
             staged.View.Units.FirstOrDefault(u => u.Id == mover.Id)?.Garrison ??
             staged.View.Characters.FirstOrDefault(c => c.Id == mover.Id)?.Garrison ?? false;
 
+        // The moving stack, or the Fellowship's figure a separation leaves from — untraced while its position is unknown.
+        private MapObservedTrace.TraceSet Source(ActionMovement movement, List<ActionParticipant> movers, Side side)
+        {
+            if (movers.Count > 0)
+                return trace.Begin().Force(movement.From, side, SourceGarrison(movers[0]));
+            return BoardFigureSnapshot.PositionKnown(staged.View.Fellowship, board.Map.Data.Regions.ContainsKey)
+                ? trace.Begin().Fellowship(movement.From) : null;
+        }
+
+        private MapObservedTrace.TraceSet Destination(ActionMovement movement, List<ActionParticipant> group, Side side)
+        {
+            var garrison = group[0].Garrison;
+            var set = trace.Begin().Force(movement.To, side, garrison);
+            var marks = CharacterMarks.Group(group);
+            return marks.Count == 0 ? set : set.Identities(movement.To, side, garrison, marks);
+        }
+
         // The staged board before and after, as the map's figure positions, so the flight is the board's own motion.
-        private List<BoardFigureMove> Fly(ActionMovement movement, List<ActionParticipant> movers)
+        private void Fly(ActionMovement movement, List<ActionParticipant> movers, List<ActionParticipant> leaving)
         {
             var before = new BoardFigureSnapshot(staged.View, board.Map.Data.Regions.ContainsKey);
+            staged.Separate(leaving, movement.To);
             staged.Move(movers, movement.To);
             var after = new BoardFigureSnapshot(staged.View, board.Map.Data.Regions.ContainsKey);
-            var moves = movers.Select(Key)
-                .Where(key => before.Figures.ContainsKey(key) && after.Figures.ContainsKey(key))
-                .Select(key => new BoardFigureMove(before.Figures[key], after.Figures[key]))
-                .ToList();
+            var keys = movers.Concat(leaving).Select(Key).ToHashSet();
+            var moves = BoardFigureChanges.Moves(before, after).Where(move => keys.Contains(move.To.Key)).ToList();
             staged.Show();
             board.Map.Figures.Fly(moves);
-            return moves;
         }
 
         private static string Key(ActionParticipant mover) => (mover.UnitKind.HasValue ? "unit:" : "character:") + mover.Id;
@@ -61,23 +80,24 @@ namespace Wotr.Client
             private readonly ArmyMovementPresenter owner;
             private readonly ActionMovement movement;
             private readonly List<ActionParticipant> movers;
+            private readonly List<ActionParticipant> leaving;
             private readonly Side side;
-            private readonly bool sourceGarrison;
             private readonly double start;
             private MapObservedTrace.TraceSet source;
             private MapObservedTrace.TraceSet destination;
             private double landed = -1;
             private bool flying;
 
-            public Beat(ArmyMovementPresenter owner, ActionMovement movement, List<ActionParticipant> movers, double now)
+            public Beat(ArmyMovementPresenter owner, ActionMovement movement, List<ActionParticipant> movers,
+                List<ActionParticipant> leaving, double now)
             {
                 this.owner = owner;
                 this.movement = movement;
                 this.movers = movers;
-                side = movers[0].Side;
-                sourceGarrison = owner.SourceGarrison(movers[0]);
+                this.leaving = leaving;
+                side = movers.Concat(leaving).First().Side;
                 start = now;
-                source = owner.trace.Begin().Force(movement.From, side, sourceGarrison);
+                source = owner.Source(movement, movers, side);
             }
 
             public bool Advance(double now)
@@ -87,8 +107,8 @@ namespace Wotr.Client
                 if (!flying)
                 {
                     flying = true;
-                    owner.Fly(movement, movers);
-                    destination = owner.trace.Begin().Force(movement.To, side, movers[0].Garrison);
+                    owner.Fly(movement, movers, leaving);
+                    destination = owner.Destination(movement, movers.Concat(leaving).ToList(), side);
                     return false;
                 }
                 if (owner.board.Map.Figures.ActiveCount > 0)

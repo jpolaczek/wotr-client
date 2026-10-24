@@ -26,6 +26,19 @@ namespace Wotr.Client
         public IEnumerable<ActionParticipant> Present(IEnumerable<ActionParticipant> participants) =>
             participants.Where(p => View.Units.Any(u => u.Id == p.Id) || View.Characters.Any(c => c.Id == p.Id));
 
+        // UI-309: Companions leaving the Fellowship stand at their destination, and the staged Fellowship no longer holds
+        // them, so the figure difference shows their separation exactly as the board would (FellowshipSeparation).
+        public void Separate(IEnumerable<ActionParticipant> companions, string region)
+        {
+            foreach (var companion in companions)
+            {
+                View.Fellowship.CompanionIdentities.Remove(CharacterLibrary.Identity(companion.DefinitionId));
+                View.Fellowship.CompanionCount = System.Math.Max(0, View.Fellowship.CompanionCount - 1);
+                Add(companion, region);
+            }
+            Changed = true;
+        }
+
         public void Move(IEnumerable<ActionParticipant> movers, string region)
         {
             foreach (var mover in movers)

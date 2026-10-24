@@ -160,16 +160,18 @@ namespace Wotr.PlayTests
                 Route = { "rivendell", "fords-of-bruinen" }
             });
             Assert.IsTrue((await Post(room.Fp, separate, room.Token)).Accepted);
-            // UI-305: each board when it shows the separation — the Free Peoples' at once, the Shadow's after presenting it.
+            // UI-309: each board shows the separation as an arrival — the Free Peoples' at once, the Shadow's while its
+            // presentation plays it — never as a route from the Fellowship's last known region.
             foreach (var client in new[] { room.Fp, room.Sh })
             {
-                await room.Until(() => client.Board.View.Revision == 3);
+                await room.Until(() => client.Board.Map.Figures.Moves.Any(m => m.To.Key == "character:base.character.gimli"));
                 var arrival = client.Board.Map.Figures.Moves.Single(m => m.To.Key == "character:base.character.gimli");
                 Assert.IsTrue(arrival.IsArrival, "Unknown fellowship progress cannot become a claimed map origin.");
                 Assert.AreEqual("fords-of-bruinen", arrival.From.Region);
                 Assert.AreEqual("fords-of-bruinen", arrival.To.Region);
                 Assert.IsTrue(client.Board.Map.Figures.Root.Children().Single().ClassListContains("figure-arrival"));
             }
+            await room.At(3);
             Export("fellowship", new Dictionary<string, PlayerView>
             {
                 ["motion-hidden-fp"] = fpBefore, ["motion-hidden-fp-after"] = fpMoved,

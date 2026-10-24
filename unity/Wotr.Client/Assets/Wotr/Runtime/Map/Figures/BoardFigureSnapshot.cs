@@ -44,9 +44,8 @@ namespace Wotr.Client
             Revision = view.Revision;
             Viewer = view.You;
             companions = new HashSet<string>(view.Fellowship.CompanionIdentities);
-            FellowshipRegion = !view.Fellowship.MordorStep.HasValue && isRegion(view.Fellowship.RegionId)
-                ? view.Fellowship.RegionId : "";
-            FellowshipPositionKnown = FellowshipRegion.Length > 0 && view.Fellowship.Progress == 0;
+            FellowshipRegion = Region(view.Fellowship, isRegion);
+            FellowshipPositionKnown = PositionKnown(view.Fellowship, isRegion);
             foreach (var unit in view.Units)
                 if (isRegion(unit.Location))
                     Add(new BoardFigurePosition("unit:" + unit.Id, unit.Location, unit.Side,
@@ -60,6 +59,14 @@ namespace Wotr.Client
                 Add(new BoardFigurePosition("fellowship", FellowshipRegion, Side.FreePeoples,
                     false, FigureAppearances.Fellowship));
         }
+
+        // The Fellowship's public region off the Mordor track ("" on the track).
+        public static string Region(FellowshipView fellowship, Func<string, bool> isRegion) =>
+            !fellowship.MordorStep.HasValue && isRegion(fellowship.RegionId) ? fellowship.RegionId : "";
+
+        // Its position there is known only while no hidden progress was made since it was last declared.
+        public static bool PositionKnown(FellowshipView fellowship, Func<string, bool> isRegion) =>
+            Region(fellowship, isRegion).Length > 0 && fellowship.Progress == 0;
 
         private void Add(BoardFigurePosition position) => figures.Add(position.Key, position);
 

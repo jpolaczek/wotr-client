@@ -43,9 +43,17 @@ namespace Wotr.Client
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
             // The exception is for the opponent's actions; after the player's own click the camera stays theirs.
-            if (steered || cue.OwnCommand || !Frames(cue))
+            if (cue.OwnCommand || !Frames(cue))
                 return null;
-            var anchors = Anchors(cue);
+            return Frame(Regions(cue), now);
+        }
+
+        // UI-309: frames these regions (an ability's source figure) unless the player took the camera over.
+        public IPresentationBeat Frame(IEnumerable<string> regions, double now)
+        {
+            if (steered)
+                return null;
+            var anchors = Anchors(regions);
             var safe = SafeArea();
             if (anchors.Count == 0 || safe.width <= 2 * Margin || safe.height <= 2 * Margin || Legible(anchors, safe))
                 return null;
@@ -74,7 +82,12 @@ namespace Wotr.Client
 
         private void Steer() => steered = true;
 
-        private List<Vector2> Anchors(PresentationCue cue) => cue.Regions.Distinct()
+        // UI-309: a separation from an unknown Fellowship position is framed at its destination only, so no route from the
+        // last known region is suggested.
+        private IEnumerable<string> Regions(PresentationCue cue) =>
+            FellowshipSeparation.HiddenOrigin(cue.Movement, board.View, Map.Data.Regions.ContainsKey) ? new[] { cue.Movement.To } : cue.Regions;
+
+        private List<Vector2> Anchors(IEnumerable<string> regions) => regions.Distinct()
             .Where(Map.Data.Shapes.ContainsKey)
             .Select(id => new Vector2(Map.Data.Shapes[id].Anchor[0], Map.Data.Shapes[id].Anchor[1]))
             .ToList();
