@@ -694,3 +694,8 @@ shows it without the fades. It is never the gold ChoiceGlow halo of a choosable 
 New figures — recruits, an upgrade's Elite, an entering character — land and keep glowing for 1.5 s, with the delta badge
 beside them. Settlements keep their pale-blue ring. Spec: [OPPONENT_ACTIONS_UX §5](OPPONENT_ACTIONS_UX.md#slownik) and
 §6.18.
+
+<a id="region-zrodlowy--ui-323"></a>
+## The selected force's own region — UI-323 (2026-10-24)
+
+While the player moves an army, a character or a group, the region it stands in has a steady gold edge beside the destinations' green and red glow, so the source is as clear as the targets ([MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#region-zrodlowy--ui-323)).

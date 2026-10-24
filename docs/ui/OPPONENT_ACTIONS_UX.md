@@ -96,6 +96,7 @@ An observed consequence must not be confused with an offered action. Existing me
 | Existing treatment | Meaning |
 | --- | --- |
 | Green / red region edge glow (`map-target-glow`) | a region a click may enter / attack |
+| Steady gold region edge (`map-source-glow`, UI-323) | the region the player's own draft moves from |
 | Gold rim on a warm plate pulsing every 750 ms (ChoiceGlow, `eligible-army` halo) | an object a click may choose |
 | Gold border with a lift (`selected-force`, `selected`) | chosen in the player's own draft |
 | 40 % ghost (`army-ghost`, planned recruits and flights) | the player's own plan |

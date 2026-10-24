@@ -3,7 +3,7 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum MapRegionEmphasis { None, Protection, Hover, Source, Selected, Target, Attack, Pressed }
+    public enum MapRegionEmphasis { None, Protection, Hover, Source, Selected, Target, Attack, Pressed, DraftSource }
 
     internal sealed class MapRegionVisual
     {
@@ -34,6 +34,8 @@ namespace Wotr.Client
             // UI-224: targets are filled more strongly; their edges also glow (MapTargetGlow).
             MapRegionEmphasis.Attack => new Color(.8f, .17f, .12f, .36f),
             MapRegionEmphasis.Target => new Color(.16f, .65f, .34f, .34f),
+            // UI-323: the region the player's own draft moves from, a clear gold beside its targets (MapSourceGlow).
+            MapRegionEmphasis.DraftSource => new Color(1f, .82f, .32f, .38f),
             MapRegionEmphasis.Selected => new Color(.9f, .56f, .12f, .26f),
             MapRegionEmphasis.Source => new Color(.96f, .7f, .24f, .20f),
             MapRegionEmphasis.Protection => new Color(.25f, .69f, .95f, .16f),
