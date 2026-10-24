@@ -408,3 +408,19 @@ be added and gives its points back once none can, and a badge on it counts them 
 point can be added and is marked once one is chosen. Heroic Death's amounts are 32 px buttons "−1", "−2", "−3" beside
 the opponent's hits; the chosen one is selected. Tests: `BattleObjectChoicesTests`, `Shadow01NetworkTests`,
 `Shadow01LayoutTests`, `Shadow02LayoutTests`, `CardPack02NetworkTests`.
+
+<a id="ui-311"></a>
+## The opponent's rounds in the window — UI-311 (2026-10-24)
+
+While the opponent's action plays, the window shows the battle's recorded public state read-only, in place of the
+decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311)).
+
+- **Opening.** A new battle opens its window after the attack's trace, as before (UI-149). The window keeps its place
+  (UI-225), and a window the player closed during this battle stays closed.
+- **Cards.** A committed card is a back. Both cards turn face up together, ringed with their initiative, for 3 s. A
+  click opens the card read-only and holds the presentation.
+- **Dice.** A roll or a reroll rings the dice it changed, with one dice sound.
+- **Losses.** Committed losses are marked with a delta plate (a downgrade as its replacement) before the next state
+  removes them. A character lost with its army is ringed on its portrait.
+- **Controls.** The marks are observed traces, never a choice glow: nothing in the presented state can be clicked
+  except a revealed card. The release gives the player's own controls back, with their usual click rules.

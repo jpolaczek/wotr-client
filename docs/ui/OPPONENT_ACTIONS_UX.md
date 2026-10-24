@@ -569,6 +569,58 @@ Code: `Runtime/UI/Playback/HuntPresenter.cs`, `FellowshipPresenter.cs` and `Fell
     - muted clips `ui310-clip-1366-*` and `ui310-clip-1920-*` at both scales.
   - `OpponentHuntPresentationNetworkTests` with two real clients on `fp-character-move-fellowship`.
 
+<a id="wdrozone-311"></a>
+### 6.15 Shipped in UI-311 (2026-10-24): the battle window
+
+Code: `Runtime/UI/Playback/BattlePresenter.cs`; `RegionalBattlePanel.Present`/`EndPresentation`;
+`BoardScreen.StageBattle`; the battle order in `PresentationCueExtraction`; and `Runtime/Map/ObservedDelta.cs`.
+
+- **The window.** After the attack's trace, the new battle's window opens at its normal place, as a new battle opens
+  it today (UI-149). This supersedes §6.10's opening at the release. A window the player closed during this battle stays
+  closed, and its beats then wait for nothing.
+- **The recorded state.** While a presentation plays, the window shows the battle's recorded public state read-only,
+  in place of the decision controls, as the battle report draws one: the stages, then both forces with their figures,
+  cards, dice and hits. The window's header and place stay. The release gives the controls back to the latest view.
+- **Order.** A decision step records its revision's final battle state; the automatic steps after it record the states
+  on the way (each side's roll, the rerolls, the losses). Its snapshot plays after theirs, so a round never steps back.
+- **Cards.**
+  - A committed card stays a back of its deck until the public reveal; no card identity comes from a commit.
+  - Both cards of a round turn face up together for 3 s, ringed with the observed treatment and showing their
+    initiative.
+  - A click opens the card read-only (the battle's own combat view) and holds the presentation until it is closed.
+  - A card cancelled later is ringed with its "Cancelled".
+- **Dice.** A roll or a reroll rings the dice it changed in their side's row, and they lift for 0.25 s (only the ring
+  under Reduced motion). It plays one dice sound and holds 1 s. The faces, hit marks and totals are the window's own.
+- **Casualties.** Only committed losses are shown, never an unsubmitted selection.
+  - A delta plate at the right of the side's figures shows each kind's art, crest and count; an Elite's downgrade
+    shows as its replacement (Elite → Regular). It holds 1 s before the next state removes them.
+  - A leader or character lost with its army is ringed on its portrait.
+  - A siege extension's figure change is shown the same way.
+- **Later rounds** stay in the same window. A retreat, an advance and a capture return to the map through their own
+  presenters (§6.10).
+- **Camera and controls.** No camera move for No card, Hold, Continue, an empty reroll or a decline. No round-level
+  Next or Continue control: only Skip.
+- **Hooks for UI-312:** `ObservedDelta` and `BattlePresenter`'s state diff.
+- **Checks.**
+  - EditMode `OpponentPresentationModelTests`: a decision's final state follows the states on the way, on both recorded
+    attack fixtures.
+  - PlayMode `OpponentBattlePresentationTests` on the shared `PresentedBoardStage`:
+    - the window opening after the attack and the controls returning at the release;
+    - a committed back, then both reveals together for 3 s;
+    - a read-only card click that holds the presentation;
+    - a roll and a reroll;
+    - a cancelled card;
+    - a removal with a downgrade;
+    - the Witch-king lost with his army;
+    - a later round in the same window;
+    - a retreat and an advance on the map;
+    - a siege extension;
+    - Skip;
+    - a muted clip `ui311-clip-*` at 1920 / 125 %.
+  - `OpponentBattlePresentationNetworkTests` with two real clients on `sh-army-attack`: the window opens in the
+    presentation, the Shadow's card is a back, and the shared rolls ring their dice before the next decision.
+  - `OpponentPresentationNetworkTests.Attack` now expects the window to open once the attack's trace ends.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -838,6 +890,6 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-308 Public cards (shipped) | §6.2 reveal and dock; §8 event card; storyboard B — delivered as §6.12; reusable reveal/dock/recall and `LayerRing` |
 | UI-309 Characters (shipped) | §8 characters — delivered as §6.13; reusable character moment, group identities, separation staging and `PresentationCamera.Frame` |
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
-| UI-311 Battle | §8 battle round; storyboard C4–C9 |
+| UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
 | UI-312 Resources and pennants | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) |
 | UI-313 Acceptance | §11 and the shared acceptance checklist |

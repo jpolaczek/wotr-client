@@ -392,3 +392,15 @@ host. A retreat or advance returns to the map as a recorded movement of exactly 
 moves nothing), and a capture changes the settlement's gem with a "+N VP" / "−N VP" badge only for a scoring
 settlement ([OPPONENT_ACTIONS_UX §6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)). Casualties and other figure changes inside
 a battle stay in the battle window. The player's own click (their retreat, their advance) moves no camera.
+
+<a id="ui-311"></a>
+## Battle rounds in the window — UI-311 (2026-10-24)
+
+The opponent's battle rounds play in the battle window from the recorded public snapshots
+([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311)).
+
+- **Order.** A decision's final state follows the states on the way, so a round never steps back.
+- **Rounds.** The reveal holds 3 s, each roll 1 s, and committed losses 1 s. Later rounds stay in the same window.
+- **The map.** A retreat, an advance and a capture return to the map. A siege extension's cost is shown as its figure
+  change.
+- **No extra controls.** No round-level control, no modal and no combat log over the map are added.
