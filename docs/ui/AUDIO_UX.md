@@ -535,3 +535,6 @@ Hunt's roll ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
   Mordor corruption first, then the step.
 - **No repeat.** The view released after the presentation leaves those cues out, so a fact sounds once. A pair the
   presentation already played is not played again as AUDIO-06's two-stage sequence.
+- **The opponent's action-dice roll stays the release's (UI-313).** UI-312's beat in the opponent's dice pool is
+  silent: the view released after it sounds the roll, so when the same step passes a decision to the viewer one tone
+  plays, the more important one (`SoundResultsNetworkTests`).

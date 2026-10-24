@@ -395,6 +395,8 @@ namespace Wotr.PlayTests
         public async Task NoCard(MountedMatchClient client)
         {
             await Settle();
+            // UI-311: the opponent's commit is presented first; the client's own Combat choice comes with the release.
+            await Until(() => !client.Playback.Holding);
             var view = client.Board.View;
             if (view.Decision?.Kind == DecisionKind.CombatCard && view.DecisionOwner == view.You)
             {

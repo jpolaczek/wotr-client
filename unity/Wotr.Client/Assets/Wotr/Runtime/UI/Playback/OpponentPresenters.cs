@@ -62,7 +62,7 @@ namespace Wotr.Client
             Playback.Register(hunt);
             fellowship = new FellowshipPresenter(board, staged, layer, fellowshipPanel, Sounds);
             Playback.Register(fellowship);
-            resources = new ResourcePresenter(board, staged, Playback, layer, Sounds);
+            resources = new ResourcePresenter(board, staged, Playback, layer);
             Playback.Register(resources);
             Playback.Paused = Reading;
             Playback.Released += Released;

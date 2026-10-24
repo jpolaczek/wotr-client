@@ -9,7 +9,9 @@ namespace Wotr.Client
     // HUD objects — never as a control, a popup or a sentence.
     // - A Ring's cost rings its socket in the console; the Ring's new holder shows at the release (its own pulse).
     // - The opponent's die changes of one step are one beat in its pool: each changed die is ringed, a face change shows
-    //   its old → new face under it, dice gone to the Hunt Box ring the Hunt plaque as its count rises; a roll sounds once.
+    //   its old → new face under it, dice gone to the Hunt Box ring the Hunt plaque as its count rises. The beat is
+    //   silent: the released view sounds the roll, so a decision passed with it keeps one tone, the more important one
+    //   (AUDIO-05).
     // - Consecutive draws or discards are one beat at the opponent's hand count: card backs of their decks and the signed
     //   count, never an identity.
     // Passes, declines and "No card" record nothing to show and play no scene; a forfeited die keeps its cost copy
@@ -25,17 +27,14 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly PresentationPlayback playback;
-        private readonly PresentationSoundSink sounds;
         private readonly PresentationMarks marks;
         private readonly HashSet<string> grouped = new HashSet<string>();
 
-        public ResourcePresenter(BoardScreen board, StagedBoard staged, PresentationPlayback playback, PresentationLayer layer,
-            PresentationSoundSink sounds)
+        public ResourcePresenter(BoardScreen board, StagedBoard staged, PresentationPlayback playback, PresentationLayer layer)
         {
             this.board = board;
             this.staged = staged;
             this.playback = playback;
-            this.sounds = sounds;
             marks = new PresentationMarks(layer, RingName, PlateName);
         }
 
@@ -82,8 +81,6 @@ namespace Wotr.Client
             var hunted = changes.Any(change => change.To == DieLocation.Hunt && change.From != DieLocation.Hunt);
             if (hunted)
                 board.StageHunt(staged.View);
-            if (changes.Any(change => !change.Before.HasValue && change.After.HasValue))
-                sounds.Play(SoundCue.DiceRoll, "presented/" + cue.Id);
             marks.Place(() =>
             {
                 foreach (var change in changes)

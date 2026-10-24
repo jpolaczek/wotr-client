@@ -40,9 +40,10 @@ namespace Wotr.PlayTests
                 await session.Until(() => fp.Board.View.DecisionOwner == Side.FreePeoples && fp.Board.View.Decision != null && !fp.Playback.Holding);
                 var freeDie = fp.Board.View.Dice.First(d => d.Owner == Side.FreePeoples && d.Location == DieLocation.Available).Id;
                 await session.Send(Side.FreePeoples, CommandKind.DiscardDie, new CommandPayload { DieId = freeDie });
-                await Seen(session, () => sh.Playback.Presenting, "The forfeit is presented.");
-                if (sh.Playback.Presenting)
-                    PointerGestureEvents.ClickAt(sh.Presenters.Skip.Button);
+                // The Skip medallion joins the layer on the next tick of the presentation.
+                await Seen(session, () => sh.Playback.Presenting && sh.Presenters.Skip.Button.panel != null,
+                    "The forfeit is presented with its Skip control.");
+                PointerGestureEvents.ClickAt(sh.Presenters.Skip.Button);
                 await session.Until(() => !sh.Playback.Holding);
                 Assert.Greater(Unread(sh), drawn, "Skip marks no pennant read either.");
             }

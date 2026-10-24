@@ -633,7 +633,7 @@ Code: `Runtime/UI/Playback/ResourcePresenter.cs` and `PresentationMarks.cs`, `St
   | --- | --- | --- |
   | A Ring's cost | ringed at its console socket; the new holder shows at the release with the socket's own pulse | 0.6 s |
   | The die a Ring changed | ringed in the opponent's pool, its old → new face under it | 1 s |
-  | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque ringed as its Eyes count rises; one dice sound | 1 s |
+  | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque ringed as its Eyes count rises; silent — the released view sounds the roll, so a decision passed with it keeps AUDIO-05's one tone | 1 s |
   | Draws or discards | one beat for a run of them at the opponent's hand count: card backs and the signed count, never an identity | 0.8 s |
   | A forfeited die | its cost copy (§6.1) | 0.35 s |
   | A pass, a decline, "No card", a technical completion | no scene: nothing is recorded to show | — |
