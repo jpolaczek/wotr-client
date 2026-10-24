@@ -13,8 +13,9 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
-> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-312–UI-313 ship, the rules below stay in force except where
-> UI-305–UI-311 already apply the exception (UI-311: a battle's recorded rounds play read-only in its window, which
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-313 ships, the rules below stay in force except where
+> UI-305–UI-312 already apply the exception (UI-312: the opponent's Rings, dice and draws show at their own HUD
+> objects, and quiet events play no scene: [§6.16](OPPONENT_ACTIONS_UX.md#wdrozone-312); UI-311: a battle's recorded rounds play read-only in its window, which
 > opens after the attack: [§6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311); UI-308: the opponent's public Event card opens read-only by itself, then
 > docks in the console trail: [§6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308); UI-309: a character that enters,
 > transforms, leaves the Fellowship or is removed shows its portrait and title for a moment, and a moving group is
@@ -447,3 +448,19 @@ The opponent's character moment and a moving group's identities are observed mar
 - they fade in over 200 ms and out over 400 ms, and appear without fades under Reduced motion.
 
 A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt pale-blue trace.
+
+<a id="ui-312"></a>
+## Pennants and the opponent's resources — UI-312 (2026-10-24)
+
+The opponent's presentation never acknowledges a notice ([OPPONENT_ACTIONS_UX §6.16](OPPONENT_ACTIONS_UX.md#wdrozone-312)).
+
+- **What marks read.** Only an explicit opening marks read: a click on a pennant, its compact action card, or a pinned
+  Log row whose details are complete. It marks exactly the displayed version: the action's steps up to the one shown.
+- **Versions.** A later step of the same action returns as a new unread update.
+- **What never marks read.** Playback, Skip, a missing history, focus loss and inspecting a card acknowledge nothing,
+  so a skipped presentation leaves the same unread notices as a full one.
+- **Visual priority of resources.** A Ring's cost shows at its console socket and its die's old → new face in the
+  opponent's pool. A Hunt allocation and the roll are one beat in the pool and the Hunt plaque. Draws and discards are
+  card backs with a signed count at the opponent's hand count, never an identity.
+- **Quiet events.** A pass, a decline, "No card" and a technical completion play no scene.
+- **Not choices.** Every mark is an observed trace, never a choice.

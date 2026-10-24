@@ -533,3 +533,16 @@ decision tray in their fixed places but disabled: Pass, Back, ✓, the plaques, 
 policy start nothing, and Enter does not confirm. The tray and console keep the presented view's state, and the
 decision of the newest view appears once, at the release. A command already sent keeps recovering its receipt. The gate
 is dormant until UI-305 registers a presenter, so the console behaves exactly as before.
+
+<a id="ui-312"></a>
+## The opponent's Rings and dice in a presentation — UI-312 (2026-10-24)
+
+While the opponent's action plays ([OPPONENT_ACTIONS_UX §6.16](OPPONENT_ACTIONS_UX.md#wdrozone-312)):
+
+- **A Ring's cost** is ringed at its socket in the resource column. The socket's own pulse shows the new holder at the
+  release, once.
+- **The opponent's dice.** A changed die is ringed in the top bar's pool with its old → new face, and an allocation's
+  Eyes ring the Hunt plaque in the console well.
+- **The console's status** keeps the presented view's state, and the newest decision appears once, at the release
+  (UI-304).
+- **Nothing to click.** The marks take no pointer, and no console control is added.

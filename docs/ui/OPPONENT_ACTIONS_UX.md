@@ -621,6 +621,46 @@ Code: `Runtime/UI/Playback/BattlePresenter.cs`; `RegionalBattlePanel.Present`/`E
     presentation, the Shadow's card is a back, and the shared rolls ring their dice before the next decision.
   - `OpponentPresentationNetworkTests.Attack` now expects the window to open once the attack's trace ends.
 
+<a id="wdrozone-312"></a>
+### 6.16 Shipped in UI-312 (2026-10-24): resources, quiet events and pennants
+
+Code: `Runtime/UI/Playback/ResourcePresenter.cs` and `PresentationMarks.cs`, `StagedBoard.Die`/`Hand`, and
+`BoardScreen.StageOpponentDice`/`StageOpponentSummary`.
+
+- **Visual priority.** Each kind of resource change has one place to show, and only these show:
+
+  | Recorded fact | Where it shows | Beat |
+  | --- | --- | --- |
+  | A Ring's cost | ringed at its console socket; the new holder shows at the release with the socket's own pulse | 0.6 s |
+  | The die a Ring changed | ringed in the opponent's pool, its old → new face under it | 1 s |
+  | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque ringed as its Eyes count rises; one dice sound | 1 s |
+  | Draws or discards | one beat for a run of them at the opponent's hand count: card backs and the signed count, never an identity | 0.8 s |
+  | A forfeited die | its cost copy (§6.1) | 0.35 s |
+  | A pass, a decline, "No card", a technical completion | no scene: nothing is recorded to show | — |
+
+- **Consequences.** An important consequence of a decline still plays once, through its own presenter.
+- **Repeats.** A repeated revision never charges a Ring or a die twice: the action's memory keeps its costs.
+- **Not interactive.** No resource mark takes the pointer or reads as a strategic choice. The map camera never moves
+  for these beats.
+- **Pennants.** The pennants, the compact click-open action card, Full record and read persistence are unchanged:
+  - only an explicit opening marks a notice read, and it marks exactly the version it displayed;
+  - a later step of the same action returns as a new unread update;
+  - playback, Skip, a missing history, focus loss and inspecting a card never acknowledge anything.
+- **Hand-off to UI-313:** the quiet-event and resource cases above. The notification persistence format is unchanged.
+- **Checks.**
+  - EditMode `OpponentPresentationModelTests`: ten empty declines make no cue, and a repeated Ring step charges once.
+  - EditMode `NotificationReadTests`, `ActionNoticeTests` and `GameSoundsTests`.
+  - PlayMode `OpponentResourcePresentationTests`:
+    - the Ring at its socket with its die's old → new face, the camera kept;
+    - an allocation with the roll as one beat;
+    - two draws as one beat of backs and "+2";
+    - a discard as "−1";
+    - a pass and quiet declines with no Skip target;
+    - a forfeit as its cost copy.
+  - `OpponentResourcePresentationNetworkTests` on `fp-event-draw`: the full playback and a Skip leave the Free Peoples'
+    pennants unread.
+  - `ActionNoticeNetworkTests`.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -891,5 +931,5 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-309 Characters (shipped) | §8 characters — delivered as §6.13; reusable character moment, group identities, separation staging and `PresentationCamera.Frame` |
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
-| UI-312 Resources and pennants | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) |
+| UI-312 Resources and pennants (shipped) | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) — delivered as §6.16; reusable `PresentationMarks` and the pool and hand staging |
 | UI-313 Acceptance | §11 and the shared acceptance checklist |
