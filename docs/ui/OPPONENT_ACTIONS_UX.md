@@ -1,7 +1,8 @@
 <a id="opponent-actions"></a>
 # Opponent action presentation — specification (UI-302)
 
-**Status: planned. Nothing in this document is shipped yet.** It is the authoritative design for the opponent-action
+**Status: UI-303–UI-312 shipped (§12); UI-313's aggregate acceptance is recorded in §6.17 and waits for the owner's
+live review.** It is the authoritative design for the opponent-action
 presentation program UI-303–UI-313; until each of those tasks ships, the current behaviour described in
 [SIGNALS_UX](SIGNALS_UX.md), [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) and [UX_SPEC](UX_SPEC.md) stays in force.
 Owner decisions of 2026-10-21 (the shared brief of the program); the program was renumbered from UI-280–UI-291 to
@@ -661,6 +662,102 @@ Code: `Runtime/UI/Playback/ResourcePresenter.cs` and `PresentationMarks.cs`, `St
     pennants unread.
   - `ActionNoticeNetworkTests`.
 
+<a id="akceptacja-313"></a>
+### 6.17 Aggregate acceptance in UI-313 (2026-10-24): evidence and open checks
+
+UI-313 adds no presentation of its own. It collects the component evidence, adds the cases the components left to the
+aggregate, and records what is still open. It changes one behaviour: the opponent's action-dice roll beat is silent
+(§6.16), because the released view already sounds the roll with AUDIO-05's single tone
+([AUDIO_UX](AUDIO_UX.md#ui-310)).
+
+New code: `OpponentPresentationAcceptanceNetworkTests`, `OpponentPresentationMatrixTests` and
+`OpponentPresentationPerformanceTests`. The component scene builders they reuse are internal to the test assembly.
+
+- **Coverage matrix.** "Network" means two real clients on the pinned server and seeder; the other suites play
+  recorded cues on a staged offline board.
+
+  | Scope item | Evidence | Result |
+  | --- | --- | --- |
+  | Two marches with one die | `OpponentArmyPresentationTests.TwoMarchesWithOneDie…`; network `OpponentPresentationNetworkTests.TheOpponentsMarchesPlayInOrder…` | pass |
+  | A multi-region event card | `OpponentCardPresentationTests` (Orcs Multiplying Again read, docked, both regions follow); network `OpponentCardPresentationNetworkTests` | pass |
+  | Recruitment, upgrade, politics | `OpponentRecruitmentPoliticsTests` (two distant sites, several nations, an upgrade and a removal, activation then advancement); network `OpponentRecruitmentPoliticsNetworkTests` | pass |
+  | Character entry and transformation | `OpponentCharacterPresentationTests` (the Witch-king's entry, Gandalf the White, Aragorn); network `OpponentCharacterPresentationNetworkTests` | pass |
+  | A complete battle with retreat and advance | `OpponentBattlePresentationTests` (reveal, roll and reroll, losses, a later round, retreat and advance, a siege extension); `OpponentArmyPresentationTests` (a retreat into a stronghold, a partial advance); network `OpponentBattlePresentationNetworkTests` | pass |
+  | Fellowship and Hunt | `OpponentHuntPresentationTests` (a miss, a hit with both tracks, the Ring response, a reveal, a casualty, a Guide, a table card, hiding and healing, Mordor); network `OpponentHuntPresentationNetworkTests` | pass |
+  | Ring use | network `OpponentPresentationAcceptanceNetworkTests.TheShadowsRingIsCharged…` on `sh-elven-ring`; `OpponentResourcePresentationTests.ARingIsCharged…` | pass |
+  | A real opponent response during our action | network `OpponentPresentationAcceptanceNetworkTests.TheShadowsCombatCardDuringOurAttack…` on `fp-army-attack`; `OpponentCharacterPresentationTests.TheShadowsReactionDuringTheFreePeoplesAction…`; `Shadow03NetworkTests.TableBalrog…` | pass |
+  | Handoffs: decision host, one sound, game end | `OpponentPresentationNetworkTests.AnAttackOpensItsDecisionsAtTheirBoundaries…`; `SoundResultsNetworkTests` and EditMode `GameSoundsTests`; `GameEndNetworkTests.AFreePeoplesMilitaryVictoryReachesBoth…` | pass |
+  | The layout matrix, both sides | `OpponentPresentationMatrixTests` (a long march, an event card, a battle and a Hunt at 1366 × 768 and 1920 × 1080, 100 % and 125 %); `OpponentPresentationLayoutTests.TheCostSkipTargetAndCameraHoldTheirPlacesAtFourLayouts…`; the components' four-layout cases | pass, one finding below |
+  | Long card text, crowded armies, wide travel, a moved or closed panel, Reduced motion | `OpponentCardPresentationTests.TheCardStaysReadableAt1366By768At125Percent…`; `OpponentPresentationLayoutTests.AMarchBesideACrowdedRegion…` and `…ReducedMotionJumpsTheCamera…`; the matrix's long march; `OpponentRecruitmentPoliticsTests.APanelThePlayerOpenedStays…` | pass |
+  | Late, duplicated or reordered history, missing snapshots, the missing-history fallback | EditMode `OpponentPresentationModelTests` (duplicated, reordered and split pages, a missing intermediate view, a battle without its opening snapshot); `OpponentPresentationQueueTests.AHistoryStillMissingAfterOneSecond…` | pass |
+  | An in-flight command, Skip, card inspection, manual pan, focus loss, reconnect | `OpponentPresentationQueueTests` (a private update, Skip, a disconnect or focus loss, a pause); `OpponentPresentationLayoutTests.AWheelZoomDuringTheTravel…` and `…EscClosesAReadCardFirst…`; network `OpponentPresentationNetworkTests` (a reconnect shows the latest state) | pass |
+  | Pennants stay unread | network `OpponentResourcePresentationNetworkTests` (full playback and Skip); EditMode `NotificationReadTests` | pass |
+  | Privacy | `OpponentCharacterPresentationTests.ACompanionLeavingAHiddenFellowshipArrivesWithoutARoute`; `OpponentBattlePresentationTests.TheCommittedCardStaysABack…`; `Shadow03NetworkTests.TableBalrog…`; the cue contract's EditMode tests (§9.1) | pass |
+  | Observer, replay and expansion smoke | the full PlayMode run below | the 23 known main failures, no regression |
+  | 1080p at 60 FPS | `OpponentPresentationPerformanceTests` (below) | batch-mode measurement only; open |
+  | Normal-speed animation | the components' muted clips (frame sequences) | frames reviewed; live viewing open |
+
+- **Budget.** Every frame of the matrix scenes, at every layout, counts the new controls outside the existing hosts
+  (the battle and Hunt windows, the card inspector, the panels, the console trail and the map's markers). It finds
+  at most one, Skip, clear of the console, and at most one caption. No Pause, Read, Next, speed or return control and
+  no event strip exist.
+- **Readability review.** These frames were reviewed at 1366 × 768 at 125 % and 1920 × 1080:
+  - the matrix frames (`.artifacts/screenshots/ui313-{march,card,battle,hunt}-<width>-<scale>.png`);
+  - the components' muted clips (`ui305-clip-far`, `ui306-clip-marches`, `ui307-clip`, `ui308-clip`,
+    `ui309-clip-normal`/`-reduced`, `ui310-clip`, `ui311-clip`);
+  - the resource frames (`ui312-*`).
+
+  In each scene the source or resource, the participants, the place and the outcome read from one viewing, with the
+  Log closed and sound muted:
+  - a march: the cost die, the source's ghost and the destination with its count;
+  - a card: its title and texts, then its docked chip and both regions;
+  - a battle: both cards, the dice and the losses in the window;
+  - a Hunt: the roll, the tile, then the two track stages and the roster;
+  - Reduced motion keeps the same marks.
+- **Finding.** At 1366 × 768 at 125 % the "Choose an action" chip and the Log button (top left) cover the start of
+  the battle window's header (the region name). This placement predates the program: the window is the battle
+  window's normal position. It is left to a layout task.
+- **Measurements.** `OpponentPresentationPerformanceTests` wrote these to `.artifacts/ui313-performance.json`.
+  - **Configuration:** MacBookPro18,3 (Apple M1 Pro, 16 GB), Unity 6000.6.0f1, 1920 × 1080 at 100 %, rendered to a
+    texture in batch mode without vsync. No other test run was active.
+  - **Results:**
+
+    | Scene | Frames | Mean | p95 | Max | Allocated per frame (mean / max) |
+    | --- | --- | --- | --- | --- | --- |
+    | Idle board | 120 | 20.5 ms | 32.8 ms | 34.8 ms | 6.1 KB / 24 KB |
+    | A long march with camera travel and figure flight | 132 | 19.4 ms | 30.2 ms | 32.8 ms | 21.5 KB / 464 KB |
+    | A battle round's reveal and roll | 248 | 20.2 ms | 32.2 ms | 34.1 ms | 7.4 KB / 408 KB |
+
+  - **Reading:** the presentation adds no frame time to the board's own. The allocation peaks are single staging
+    frames.
+  - **Limits:** batch-mode rendering to a texture runs about 20 ms even when idle, so this run cannot confirm the
+    60 FPS target; that needs a player build on a display. Board rebuilds were not counted separately. The presenters
+    update only the staged objects (`StagedBoard`, `BoardScreen.Stage*`).
+- **Commands.**
+  - EditMode: `bash scripts/unity.sh -runTests -testPlatform EditMode -testResults <abs.xml> -logFile <abs.log>`.
+  - PlayMode: `bash scripts/test-client.sh -testFilter "Wotr.PlayTests.<Class>[.<Method>]|…"` with
+    `WOTR_TEST_DB` set to an isolated database and with `WOTR_CLIENT_TEST_RESULTS`/`WOTR_CLIENT_TEST_LOG`.
+  - Every run is muted by the `SilentTestRun` fixture.
+  - The pinned rc.11 backend allows about 20 sign-ins a minute. The full run therefore goes in chunks of eight
+    classes with single reruns, and `MordorNetworkTests` runs one method at a time.
+- **Results.**
+  - EditMode: 1075/1075.
+  - Full silent PlayMode run: 670 tests; after single reruns 25 failed, the 23 known main failures and two new:
+    - `SoundResultsNetworkTests`: the roll beat's sound. Fixed as above.
+    - `Shadow03NetworkTests.TableBalrog…`: `MatchTestRoom.NoCard` read a view still held behind the presented
+      commit. It now waits for the release.
+  - Both are green after the fix. So are `Shadow03NetworkTests` 6/6, `OpponentResourcePresentationNetworkTests`
+    (Skip clicked once it is attached), `BattleNetworkTests`, `T22BoundaryNetworkTests` and
+    `OpponentResourcePresentationTests`.
+  - `OpponentPresentationMatrixTests` 4/4, `OpponentPresentationAcceptanceNetworkTests` 2/2 and
+    `OpponentPresentationPerformanceTests` 1/1.
+- **Open, for the owner:**
+  - viewing the presentation live at normal speed (the clips are frame sequences);
+  - the 60 FPS check on a display build;
+  - adding this matrix to the server's TESTING (the server repository cannot be committed from this branch);
+  - the follow-ups recorded with the components: the Voice of Saruman's unnamed source (§6.13) and the header
+    finding above.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -932,4 +1029,4 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
 | UI-312 Resources and pennants (shipped) | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) — delivered as §6.16; reusable `PresentationMarks` and the pool and hand staging |
-| UI-313 Acceptance | §11 and the shared acceptance checklist |
+| UI-313 Acceptance (evidence recorded; the owner's live review open) | §11 and the shared acceptance checklist — recorded as §6.17 with the coverage matrix, measurements and open checks |

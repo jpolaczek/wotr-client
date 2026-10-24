@@ -242,7 +242,8 @@ All eight combinations and required variants use the same language. Council show
 > transient Skip target. This limited exception and everything it supersedes are specified in
 > [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force. Shipped so far:
 > the cue model (UI-303), the playback coordinator and command gate (UI-304), and the die emphasis, camera and Skip
-> target (UI-305, [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305)).
+> target (UI-305, [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305)), then the family presenters UI-306–UI-312 (§6.10–§6.16);
+> UI-313's aggregate acceptance is in [§6.17](OPPONENT_ACTIONS_UX.md#akceptacja-313).
 
 The incoming decision shows the notification in the application and backlights the location. Only a click of the notifications moves the camera to the location and opens the panel, e.g. the battle region. No automatic view acquisition. The information can be read during waiting/offline; execution requires a current decision.
 
