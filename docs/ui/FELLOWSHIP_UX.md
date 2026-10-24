@@ -652,3 +652,16 @@ the heading, the tracks (progress or Mordor, and corruption), the members' portr
 and last the decision tray when the panel hosts it (`FellowshipPanel`). Finish phase and every other control of the
 panel therefore sit under the members. Test: `FellowshipTrackLayoutTests` (at 1366 and 1920 px and both scales the
 members follow the corruption track and the controls follow the members).
+
+<a id="ui-309"></a>
+## A Companion leaving the Fellowship in the opponent's presentation — UI-309 (2026-10-24)
+
+The Shadow's board presents the Free Peoples' separation before it applies their latest view
+([OPPONENT_ACTIONS_UX §6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)).
+
+- While the Fellowship's position is known (no hidden progress since it was last declared), the Companions fly from the
+  Fellowship's figure, which is traced.
+- With hidden progress, the Companions arrive at their destination in place, the camera frames only the destination,
+  and nothing traces the last known region. As on the board (UI-130), unknown progress is never a claimed origin.
+- Each Companion is named by its portrait and short name where it lands.
+- A hidden Fellowship move still shows no route.

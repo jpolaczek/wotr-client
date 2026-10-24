@@ -239,3 +239,20 @@ Characters inspector keeps its link to the reaction's owner (UI-71). See BATTLE_
 
 A character whose entry or ability can be paid with different dice no longer lists them in its row: the dice glow in
 the own pool and a click chooses one (`CostDice`). One die or identical dice are still taken for the player (UI-239).
+
+<a id="ui-309"></a>
+## The opponent's characters in a presentation — UI-309 (2026-10-24)
+
+The watching board names the opponent's characters while it presents their action
+([OPPONENT_ACTIONS_UX §6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)).
+
+- **Moment.** A character that enters, transforms, leaves the Fellowship or is removed shows its portrait (in its
+  side's medallion) and title for a moment above its force, before the figure lands or leaves.
+  - A new version replaces its figure, so there is one figure and never two (one row per figure, as above).
+  - A removal dims the portrait.
+- **Moving groups.** A group that moves is named where it lands: portraits with short names, and Nazgûl and an army's
+  units with their count.
+- **Reactions.** A reaction's source is ringed on its battle or Fellowship portrait, or marked at its figure on the map.
+
+None of these is a control. The opponent's public figures stay inspectable by a click on the map, and a presentation
+never opens the Characters panel.

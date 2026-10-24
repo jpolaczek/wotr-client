@@ -438,6 +438,75 @@ Code: `Runtime/UI/Playback/CardRevealPresenter.cs` and `LayerRing.cs`, plus `Car
   - `OpponentCardPresentationNetworkTests` with two real clients on `sh-muster-event` (Orcs Multiplying Again) and
     `sh-character-event` (Flocks of Crebain, kept on the table).
 
+<a id="wdrozone-309"></a>
+### 6.13 Shipped in UI-309 (2026-10-24): characters
+
+Code: `Runtime/UI/Playback/CharacterPresenter.cs`, `CharacterMarks.cs` and `FellowshipSeparation.cs`; the moment and the
+identities in `Runtime/Map/MapObservedTrace.cs` (`CharacterMark`); the separation in `ArmyMovementPresenter` and
+`StagedBoard.Separate`; and `PresentationCamera.Frame`.
+
+- **Moment.** A character that enters, transforms, leaves the Fellowship without a recorded movement or is removed
+  from play gets a short larger moment before its figure change lands.
+  - Its portrait stands in its side's medallion over its title ("The Witch-king", "Gandalf the White"), on a dark plate
+    above its force. The portrait is the painted one where it exists, otherwise the figure.
+  - The plate stays inside the safe map area. With no room above the force, it stands below it.
+  - Like every plate of the trace (the delta and VP badges, a group's identities), it stands above every map marker,
+    so a neighbouring stack never covers a name.
+  - The moment holds for 1 s. Then the figure change plays (§6.11), and the moment stays beside the landing figure
+    until the next cue.
+  - A removal dims the portrait. The figure then leaves the stack with its "−1".
+  - The moment ignores the pointer and adds no control. The character inspector stays reachable through the figure, as
+    today.
+- **One identity.** A transformation shows the new version once: Strider → Aragorn, or Gandalf the Grey from the
+  casualties → Gandalf the White.
+  - The figure keeps its id, so the stack never holds two figures.
+  - The cost and the delta are shown once.
+- **Moving groups.** A movement with characters or Nazgûl names its group beside the destination force as it lands.
+  - With an army, the army's units come first as one entry with their count ("×2"). Characters marching with an army
+    therefore read differently from a group travelling alone. The Nazgûl follow with their count, then each character
+    by its portrait and short name ("Gimli", "Witch-king").
+  - The difference holds under Reduced motion, where nothing flies.
+  - A plain army march keeps its UI-306 traces.
+- **Separation.** A recorded Travel of Companions that are not on the presented board but are in its Fellowship is
+  their separation (`FellowshipSeparation`). The board's own figure difference stages it.
+  - While the Fellowship's position is known, the Companions fly from its figure, which is traced.
+  - With hidden progress, they arrive at their destination and the camera frames only the destination. No route from
+    the last known region is suggested.
+- **Ability source.** A reaction records its character: an `Ability` cost with the character's definition id. A die
+  ability records only its ability id. That id names a character when the public catalog lists it for one identity
+  (`CharacterLibrary.AbilityHolder`), as for Gimli's, Boromir's and Legolas's political abilities.
+  - The source is ringed on its existing portrait, in the battle window or the Fellowship roster.
+  - Otherwise the camera frames its figure on the map (never for the player's own action), and the same moment stands
+    at its force. It stays there as the action's compact source while its effects play through their own presenters.
+  - Voice of Saruman's ability ids are not in the catalog. Its die stays the only source (§6.1) until the history
+    records the character (§9).
+- **Timing.** An effect on future dice (a Minion's or Gandalf's extra die) follows the server's own timing. No die is
+  invented.
+- **Classification fix.** The engine records a character new to the game (a Minion entering) from `fellowship`, its
+  default origin. The Shadow has no Fellowship, so a Shadow figure recorded from there is now an Entry (§9.1). A Free
+  Peoples character recorded from there still leaves the Fellowship (a Relocation).
+- **Controls.** No Enter, Ability, Continue or inspection control is added; only Skip shows while it plays.
+- **Hooks for UI-310/UI-311:**
+  - `CharacterPresenter` (the moment and the ability source) and `CharacterMarks`;
+  - `TraceSet.Portraits`, `TraceSet.Identities` and `TraceSet.Fellowship`;
+  - `FellowshipSeparation` and `PresentationCamera.Frame`.
+- **Checks.**
+  - EditMode `CharacterPresentationTests`, and `OpponentPresentationModelTests` for the entry classification.
+  - PlayMode `OpponentCharacterPresentationTests` on the shared `PresentedBoardStage`, which can now watch as the
+    Shadow:
+    - the Witch-king's entry, with the moment first and inside the safe area;
+    - Gandalf the White from the casualties and Aragorn in place, each shown once;
+    - Gimli and Legolas travelling together;
+    - the Witch-king marching with an army while two Nazgûl travel alone;
+    - a separation from a known Fellowship and from a hidden one;
+    - Boromir's removal;
+    - the Shadow's reaction during the Free Peoples' own action, with the camera kept;
+    - Skip;
+    - muted clips `ui309-clip-normal-*` and `ui309-clip-reduced-*` at 1920 / 125 %.
+  - `OpponentCharacterPresentationNetworkTests` with two real clients:
+    - `entry`: Gandalf the White, the Witch-king and Aragorn;
+    - `white-rider`: the ring on the battle portrait.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -541,6 +610,8 @@ not by notification sentences or today's unit counts.
 | Dice, rings, draws | die face before/after; ring ownership in `Resources`; draw count | Ring use is text only: take it from the Ring cost |
 | Pass, decline, siege shelter | text only | no scene needed; siege extension is a Figure cost |
 | Ordering | `Revision`, `Order`, `ActionId`, `ParentStepId` | revisions coalesce (the client sees only the latest view): stage from facts, never from snapshots |
+| Character entry | `Figures` with the character after; a character new to the game is recorded from `fellowship` | a Shadow figure from there is an Entry (UI-309) |
+| Ability source | a reaction's `Ability` cost names the character's definition id; a die ability's cost names only its `AbilityId` | the holder comes from the public catalog when only one identity lists it; Voice of Saruman needs the character recorded in the history (server follow-up) |
 
 Privacy: private steps are filtered by the server before paging; the presentation adds no inference (no route for a
 hidden Fellowship, no card identity from a commit or a draw, no opponent selection before it is committed).
@@ -581,7 +652,8 @@ Code: `Runtime/Presentation/Opponent`.
   beats only); `Battle` (each later snapshot whose public state changed — UI-311 diffs consecutive ones);
   `Losses` (`LossDetails`, a downgrade with its replacement); `Recruit`, `Upgrade` (a Regular leaving and an Elite of
   its nation arriving in the region — one replacement), `Removal`, `Entry`, `Transformation` (a new version of a
-  character replaces the figure), `Relocation` (a Companion leaving the Fellowship); `Fellowship`, `Hunt`,
+  character replaces the figure), `Relocation` (a Companion leaving the Fellowship; since UI-309 a Shadow figure
+  recorded from `fellowship` is an Entry); `Fellowship`, `Hunt`,
   `Politics`, `Control`, `Die` (the opponent's dice other than the paying die), `Resource`, `Outcome`.
 - **One fact, one cue.** Figure changes a movement or a loss already describes make no figure cue; a producer step
   repeating the primary step's facts, a repeated page and a later continuation of the same action reuse the action's
@@ -701,7 +773,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-306 Army movement (shipped) | §8 army march, attack, retreat; storyboards A and C1–C3 — delivered as §6.10; reusable `StagedBoard`, `MapObservedTrace`, movement/capture presenters |
 | UI-307 Recruitment and politics (shipped) | §8 recruitment and politics; the delta badge; storyboard B4–B5 — delivered as §6.11; reusable figure-change and politics presenters |
 | UI-308 Public cards (shipped) | §6.2 reveal and dock; §8 event card; storyboard B — delivered as §6.12; reusable reveal/dock/recall and `LayerRing` |
-| UI-309 Characters | §8 characters |
+| UI-309 Characters (shipped) | §8 characters — delivered as §6.13; reusable character moment, group identities, separation staging and `PresentationCamera.Frame` |
 | UI-310 Fellowship and Hunt | §8 Fellowship/Hunt; storyboard D |
 | UI-311 Battle | §8 battle round; storyboard C4–C9 |
 | UI-312 Resources and pennants | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) |

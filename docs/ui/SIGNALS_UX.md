@@ -13,9 +13,11 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
-> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-309–UI-313 ship, the rules below stay in force except where
-> UI-305–UI-308 already apply the exception (UI-308: the opponent's public Event card opens read-only by itself, then
-> docks in the console trail: [§6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308)) (the camera frames an opponent's map action, one Skip target shows while it
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-310–UI-313 ship, the rules below stay in force except where
+> UI-305–UI-309 already apply the exception (UI-308: the opponent's public Event card opens read-only by itself, then
+> docks in the console trail: [§6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308); UI-309: a character that enters,
+> transforms, leaves the Fellowship or is removed shows its portrait and title for a moment, and a moving group is
+> named where it lands: [§6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)) (the camera frames an opponent's map action, one Skip target shows while it
 > plays, the opponent's armies move, attack and capture, and their recruits, upgrades and political steps are staged on
 > the presented board: [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305), [§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306),
 > [§6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)).
@@ -429,3 +431,16 @@ The end screen of the game has a fixed “Save play” (`game-end-save-replay`) 
 - Manual step, axle jump, page change, first view and reconnect: state without animation and sound;
   ongoing flights and second stage of the track are interrupted.
 - No decision alert and no personal result (details: AUDIO_UX).
+
+<a id="ui-309"></a>
+## Observed characters — UI-309 (2026-10-24)
+
+The opponent's character moment and a moving group's identities are observed marks, like the UI-305 trace
+([OPPONENT_ACTIONS_UX §6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)):
+
+- a dark plate with the portrait in its side's medallion and a name, without a glow, pulse, lift or press;
+- never a legal target or a choice;
+- they ignore the pointer, so the figure under them keeps its own tooltip and click;
+- they fade in over 200 ms and out over 400 ms, and appear without fades under Reduced motion.
+
+A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt pale-blue trace.
