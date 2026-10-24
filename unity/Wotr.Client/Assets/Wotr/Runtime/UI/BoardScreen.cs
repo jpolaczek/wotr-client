@@ -563,6 +563,16 @@ namespace Wotr.Client
             presentedFellowship = fellowship;
         }
 
+        // UI-311: a recorded battle state in its window — a new battle's window opens as it does for a new battle (UI-149),
+        // and a window the player closed during this battle stays closed.
+        public void StageBattle(PlayerView staged)
+        {
+            Battles.Apply(staged);
+            Battles.Present(staged.Battle, staged, Cards);
+        }
+
+        public void EndBattlePresentation() => Battles.EndPresentation();
+
         // UI-310: the Fellowship's roster and the Hunt window as a presentation stages them; the released view replaces both.
         public void StageRoster(PlayerView staged) => Fellowship.Apply(staged, Presentation);
         public void StageHunt(PlayerView staged) => Hunt.Apply(staged);

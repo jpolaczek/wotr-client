@@ -45,7 +45,22 @@ namespace Wotr.Client
                     if (memory.Keys.Add(cue.Id) && shown.Contains(step))
                         released.Add(cue);
             }
-            return AfterTheirHunt(released);
+            return FinalBattleStatesLast(AfterTheirHunt(released));
+        }
+
+        // UI-311: a decision step records its revision's final battle state, the automatic steps after it the states on the
+        // way (the roll of each side, the rerolls, the losses). Its snapshot plays after theirs, so a round never steps back.
+        private static List<PresentationCue> FinalBattleStatesLast(List<PresentationCue> cues)
+        {
+            foreach (var final in cues.Where(cue => cue.Kind == PresentationCueKind.Battle && cue.Actor.HasValue).ToList())
+            {
+                var last = cues.FindLastIndex(cue => cue.Kind == PresentationCueKind.Battle && cue.BattleId == final.BattleId);
+                if (last <= cues.IndexOf(final))
+                    continue;
+                cues.Remove(final);
+                cues.Insert(last, final);
+            }
+            return cues;
         }
 
         // UI-310: a revision's Fellowship change shows once its Hunt has shown its result. The engine records the move's

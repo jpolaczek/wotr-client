@@ -5,10 +5,10 @@ namespace Wotr.Client
 {
     // UI-305/UI-306: the production presenters of the opponent's actions on one mounted board, in beat order — the cost
     // die, the camera, the revealed card, the character's moment or ability source (UI-309), then the families (army
-    // movement, attack, control, figure changes, politics, the Hunt and the Fellowship, UI-310) — with the Skip target,
-    // Esc (only when nothing else owns it) and the pause while the player reads a card opened during the presentation.
-    // The family presenters of UI-311–UI-312 register after these. One staged board and one map trace serve every
-    // presenter of a presentation.
+    // movement, attack, the battle window's rounds (UI-311), control, figure changes, politics, the Hunt and the
+    // Fellowship, UI-310) — with the Skip target, Esc (only when nothing else owns it) and the pause while the player
+    // reads a card opened during the presentation. UI-312's presenters register after these. One staged board and one
+    // map trace serve every presenter of a presentation.
     public sealed class OpponentPresenters : IDisposable
     {
         private readonly BoardScreen board;
@@ -23,6 +23,7 @@ namespace Wotr.Client
         private readonly FellowshipReading fellowshipPanel;
         private readonly HuntPresenter hunt;
         private readonly FellowshipPresenter fellowship;
+        private readonly BattlePresenter battles;
         public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
@@ -49,6 +50,8 @@ namespace Wotr.Client
             Playback.Register(characters);
             Playback.Register(new ArmyMovementPresenter(board, staged, Trace));
             Playback.Register(new AttackPresenter(board, Trace));
+            battles = new BattlePresenter(board, staged, Playback, layer, Sounds);
+            Playback.Register(battles);
             Playback.Register(new ControlPresenter(board, staged, Trace));
             Playback.Register(new FigureChangePresenter(board, staged, Trace));
             politics = new PoliticsPresenter(board, staged, layer);
@@ -117,6 +120,7 @@ namespace Wotr.Client
             cards.Released();
             characters.Released();
             hunt.Released();
+            battles.Released();
             fellowship.Released();
             fellowshipPanel.Released();
             staged.Reset();

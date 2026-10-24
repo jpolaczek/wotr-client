@@ -214,6 +214,26 @@ namespace Wotr.EditorTests
         private static HuntOutcomeView Outcome(string region, int progress, int? mordorStep = null) =>
             new HuntOutcomeView { RegionId = region, Progress = progress, MordorStep = mordorStep, Hidden = true };
 
+        // UI-311: a decision step records its revision's final battle state; its snapshot plays after the automatic steps'
+        // states on the way (rolls, rerolls, losses), so a round never steps back.
+        [TestCase("attack-free-peoples")]
+        [TestCase("attack-shadow")]
+        public void ADecisionsFinalBattleStateFollowsTheStatesOnTheWay(string fixture)
+        {
+            var cues = Replay(Fixture(fixture), out _);
+            var reordered = 0;
+            foreach (var revision in cues.GroupBy(cue => cue.Revision))
+            {
+                var states = revision.Where(cue => cue.Kind == PresentationCueKind.Battle).ToList();
+                var final = states.FindIndex(cue => cue.Actor.HasValue);
+                if (final < 0)
+                    continue;
+                Assert.AreEqual(states.Count - 1, final, "Revision " + revision.Key);
+                reordered += states.Count > 1 ? 1 : 0;
+            }
+            Assert.Greater(reordered, 0, "A revision records states on the way after its decision.");
+        }
+
         [Test]
         public void TheOpponentsDrawsAreCountsWithoutIdentities()
         {

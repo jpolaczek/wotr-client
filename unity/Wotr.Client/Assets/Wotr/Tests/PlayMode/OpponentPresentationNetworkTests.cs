@@ -143,7 +143,7 @@ namespace Wotr.PlayTests
                 // UI-305: the production camera frames the attack first; the stand-in's beat follows on the same cue.
                 await session.Until(() => presenter.Begun.Any(cue => cue.Kind == PresentationCueKind.Attack));
                 Assert.IsNull(fp.Board.View.Battle, "The battle is not on the board before its attack is shown.");
-                Assert.IsFalse(opened[0], "Its window opens only when the attack ends.");
+                Assert.IsTrue(opened[0], "UI-311: its window opens once the attack's trace ends, inside the presentation.");
                 fp.Playback.Skip();
                 Assert.IsNull(fp.Board.View.Battle, "The newest view follows on the next frame, so the skip click opens nothing.");
                 await session.Until(() => !fp.Playback.Holding);

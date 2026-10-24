@@ -39,6 +39,12 @@ namespace Wotr.Client
         private float cardPreviewWidth;
         private bool cardDrag;
         private bool combatChoice;
+        // UI-311: a recorded state of the battle the opponent's presentation shows read-only in place of the decision
+        // controls; the tray's own display returns with the release.
+        private readonly VisualElement presented = new VisualElement { name = "battle-presented" };
+        private StyleEnum<DisplayStyle> trayDisplay;
+        public VisualElement Presented => presented;
+        public bool Presenting => presented.parent == Root;
 
         public RegionalBattlePanel(VisualElement tray, VisualElement dock, MapCanvas map)
         {
@@ -70,6 +76,35 @@ namespace Wotr.Client
             });
             map.RegisterCallback<GeometryChangedEvent>(_ => Position());
             map.CameraChanged += Position;
+            presented.AddToClassList("tray");
+            presented.AddToClassList("battle-presented");
+        }
+
+        // UI-311 (OPPONENT_ACTIONS_UX §8 battle round): the recorded state, as the battle report draws one — the stages and
+        // both forces with their cards, dice and hits — under the window's own header; nothing in it is a choice. A click
+        // on a card still opens it read-only.
+        public void Present(BattleView battle, PlayerView view, CardInspector cards)
+        {
+            if (!active)
+                return;
+            heading.text = map.Data.Regions[region].Name + " · " + battle.Mode + " · Round " + battle.Round;
+            presented.Clear();
+            presented.Add(BattleStages.Create(battle));
+            new BattleContext(presented, battle, view, null, null, null, cards).Refresh();
+            if (Presenting)
+                return;
+            trayDisplay = tray.style.display;
+            tray.style.display = DisplayStyle.None;
+            Root.Add(presented);
+        }
+
+        public void EndPresentation()
+        {
+            if (!Presenting)
+                return;
+            presented.RemoveFromHierarchy();
+            presented.Clear();
+            tray.style.display = trayDisplay;
         }
 
         // UI-160: the private "skip cards this battle" setting belongs to the battle, in the window's header.

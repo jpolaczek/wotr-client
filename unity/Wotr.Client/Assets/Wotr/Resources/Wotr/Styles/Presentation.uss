@@ -253,6 +253,20 @@
     background-image: resource("Wotr/Art/UI/battle/portrait-medallion-shadow");
 }
 
+/* UI-311: the battle window's presented round. A die the recorded roll changed wears the observed pale-blue ring (never a
+   choice glow) and lifts for a moment; a revealed or cancelled card is ringed the same way. */
+.regional-battle .battle-presented .battle-die.presented-roll,
+.regional-battle .battle-presented .presented-card-mark {
+    border-width: 2px;
+    border-color: rgba(146, 212, 242, 0.85);
+    border-radius: 6px;
+}
+.motion-enabled .regional-battle .battle-presented .battle-die {
+    transition-property: scale;
+    transition-duration: 0.25s;
+}
+.regional-battle .battle-presented .battle-die.presented-roll-lift { scale: 1.12 1.12; }
+
 /* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). */
 .motion-enabled .presenting-politics .nation-token,
 .motion-enabled .presenting-politics .icon-glow {
