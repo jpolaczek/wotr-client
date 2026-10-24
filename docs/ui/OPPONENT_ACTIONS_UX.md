@@ -868,6 +868,44 @@ Code: `Runtime/UI/Playback/PresentationPace.cs` and the presenters that use it.
   - `MordorNetworkTests` 7/7, one at a time.
   - Frame: `ui315-politics-held` (the Sauron row and token lit at the new station).
 
+<a id="wdrozone-316"></a>
+### 6.20 Shipped in UI-316 (2026-10-24): the card comes from its place and returns to it
+
+The owner's live review (2026-10-24), points 3 and 5: "a played card should not just appear on the screen but slide out of
+the place it takes effect from (the cards in hand, the cards on the table and so on)"; "a card that stays on the table
+needs an animation that presents it and then puts it back in its place, as if it drifted toward the Effects tab".
+
+Code: `Runtime/UI/Playback/CardFlight.cs` and the reveal beat of `CardRevealPresenter`.
+
+- **Arrival.** The opponent's Event grows out of their hand count in the top bar into its reading place (§6.12), eased in
+  and out over 0.6 s. It starts just below the counter, at the counter's height (at most 0.35 of its size) and at 55 %
+  opacity.
+  - The card's stage lies under the top bar and the Fellowship's plaque, so its first frames emerge from behind them.
+  - Only the card's `translate`, `scale` and `opacity` change, so its placement, its width and the board's layout are
+    its own.
+  - The 3 s of reading start when it stands still.
+- **Departure.** After the reading the card shrinks into where it goes, eased over 0.6 s:
+  - an Event shrinks into the console trail (or the console's plaque while the trail is empty), where it docks as the
+    compact source, and that source glows for 0.8 s;
+  - a card that stays on the table drifts to the Effects tab, which then lights up with the table card's own cue.
+- **A pinned card.** A click pins the card at once at its place, even mid-flight (the presentation clock stops while it
+  is read). Once the player closes it, it docks without a flight.
+- **Reduced motion.** The card fades in and out at its place; the destination still lights up.
+- **Skip, a reconnect or a missing history** end the flight with the card's own close: nothing is left moving.
+- **Unchanged.** Combat cards keep the battle window's reveal (UI-311). No control, caption or window is added.
+- **Not covered.** A card coming from the table into a reveal: the presentation reveals only cards played from the
+  hand, and a table card's entry or removal is its Effects tab's or tile's glow (§6.12).
+- **Checks.** PlayMode `OpponentCardPresentationTests`:
+  - `TheCardGrowsOutOfTheOpponentsHandCountIntoItsPlace`: smaller and nearer the counter early, at 1366 × 768 at 125 %;
+  - `TheReadEventShrinksIntoTheConsoleTrailWhereItsSourceGlows`: smaller and nearer the trail, then the docked source
+    lit, at 1920 × 1080;
+  - `ACardThatStaysOnTheTableDriftsToTheEffectsTab`: nearer the tab, then the tab lit;
+  - `UnderReducedMotionTheCardFadesInPlace`: no translate or scale;
+  - the existing reveal, pin, Skip, table and readability cases, which now read the card once it stands still.
+
+  Also the presentation matrix and `OpponentCardPresentationNetworkTests`. Frames: `ui316-arriving`, `ui316-leaving`
+  and `ui316-to-effects`.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -1139,6 +1177,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
 | UI-312 Resources and pennants (shipped) | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) — delivered as §6.16; reusable `PresentationMarks` and the pool and hand staging |
+| UI-316 The card's origin and return (shipped) | the owner's live review, points 3 and 5 — delivered as §6.20; `CardFlight` |
 | UI-315 Mark, then change (shipped) | the owner's live review, points 2 and 4 — delivered as §6.19; `PresentationPace` |
 | UI-314 Glow instead of a frame (shipped) | the owner's live review, points 6 and 7 — delivered as §6.18; reusable `PresentationGlow`/`ObjectGlow` for UI-315 and UI-316 |
 | UI-313 Acceptance (evidence recorded; the owner's live review open) | §11 and the shared acceptance checklist — recorded as §6.17 with the coverage matrix, measurements and open checks |

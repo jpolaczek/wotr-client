@@ -266,3 +266,11 @@ exception of the opponent-action program; the player's own cards still open only
 the shown card pins it and holds the presentation until it is closed; it then docks as "✓ <card>" in the console trail
 for the rest of the presentation. Opening or closing it never plays, discards or marks anything read. A committed
 Combat card stays a back; combat reveals are shown in the battle window.
+
+<a id="karta-przeciwnika--ui-316"></a>
+## The opponent's card comes from its place and returns to it — UI-316 (2026-10-24)
+
+The opponent's played Event grows out of their hand count into its read-only place (0.6 s), is read for 3 s, then shrinks
+into the console trail where it docks — or, for a card that stays on the table, drifts to the Effects tab, which lights up
+([OPPONENT_ACTIONS_UX §6.20](OPPONENT_ACTIONS_UX.md#wdrozone-316)). Only its translate, scale and opacity move; under
+Reduced motion it fades in and out. A click pins it at its place at once.

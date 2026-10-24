@@ -14,7 +14,8 @@ and the note: "Let's add the game end and the victory screen to this plan."
 > the played public card and move the camera without a click, before the resulting decision opens, with one
 > transient Skip target. This limited exception and everything it supersedes are specified in
 > [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-313 ships, the rules below stay in force except where
-> UI-305–UI-312 already apply the exception (UI-315: every presented change is lit first, then changes visibly and
+> UI-305–UI-312 already apply the exception (UI-316: the opponent's card grows out of their hand count and returns to
+> the console trail or the Effects tab: [§6.20](OPPONENT_ACTIONS_UX.md#wdrozone-316); UI-315: every presented change is lit first, then changes visibly and
 > holds — a political step, the opponent's card counter, dice, the hidden state, a march: [§6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315);
 > UI-314: every presented figure and object glows around its own shape
 > instead of a frame, and new recruits glow 1.5 s after landing: [§6.18](OPPONENT_ACTIONS_UX.md#wdrozone-314); UI-313: the aggregate acceptance, its coverage matrix, measurements and

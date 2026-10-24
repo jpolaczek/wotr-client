@@ -26,7 +26,7 @@ namespace Wotr.PlayTests
             var latest = Play(stage, "grey-havens");
             var cards = stage.Board.Cards;
             yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.display.value == DisplayStyle.Flex);
-            yield return new WaitForSecondsRealtime(.3f);
+            yield return stage.Until(() => Standing(cards));
             Assert.IsFalse(cards.Pinned, "The reveal is the presentation's, not a pinned card.");
             Assert.AreEqual(DisplayStyle.None, cards.Root.Q(className: "card-toolbar").resolvedStyle.display, "Read-only: no Play bar.");
             Assert.IsTrue(cards.Root.ClassListContains(CardRevealPresenter.PresentedClass));
@@ -53,6 +53,89 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, cards.Root.style.display.value);
         }
 
+        // UI-316 (owner review): the played card grows out of the opponent's hand count into its reading place.
+        [UnityTest]
+        public IEnumerator TheCardGrowsOutOfTheOpponentsHandCountIntoItsPlace()
+        {
+            using var stage = new PresentedBoardStage(1366, 1.25f, false);
+            yield return stage.Ready();
+            var latest = Play(stage, "grey-havens");
+            var cards = stage.Board.Cards;
+            var hand = stage.Board.TopBar.Opponent.Root.Q("opponent-cards").worldBound.center;
+            yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.scale.keyword != StyleKeyword.Null);
+            yield return null;
+            var early = cards.Root.worldBound;
+            LayoutTests.Save(stage.Texture, "ui316-arriving.png");
+            yield return stage.Until(() => Standing(cards));
+            var place = cards.Root.worldBound;
+            Assert.Less(early.width, place.width, "It starts small.");
+            Assert.Less(Vector2.Distance(early.center, hand), Vector2.Distance(place.center, hand), "It comes out of the hand count.");
+            yield return stage.Released();
+            stage.AssertFinal(latest);
+        }
+
+        // UI-316: after its reading time the Event shrinks into the console trail, where its docked source then glows.
+        [UnityTest]
+        public IEnumerator TheReadEventShrinksIntoTheConsoleTrailWhereItsSourceGlows()
+        {
+            using var stage = new PresentedBoardStage(1920, 1f, false);
+            yield return stage.Ready();
+            var latest = Play(stage, "grey-havens");
+            var cards = stage.Board.Cards;
+            yield return stage.Until(() => cards.CardId == Orcs && Standing(cards));
+            var place = cards.Root.worldBound;
+            var trail = PresentationTargets.First(stage.Board.Console.Status.Trail, stage.Board.Console.Status.Plaque).worldBound;
+            yield return stage.Until(() => cards.Root.resolvedStyle.scale.value.x < .8f);
+            var late = cards.Root.worldBound;
+            Assert.Less(late.width, place.width, "It shrinks.");
+            Assert.Less(Vector2.Distance(late.center, trail.center), Vector2.Distance(place.center, trail.center), "into the console trail.");
+            LayoutTests.Save(stage.Texture, "ui316-leaving.png");
+            yield return stage.Until(() => stage.Board.Console.Status.Trail.Q<Button>("console-presented-source") is { } chip &&
+                PresentationGlow.IsLit(chip));
+            Assert.AreEqual(DisplayStyle.None, cards.Root.style.display.value, "The card docked.");
+            yield return stage.Released();
+            stage.AssertFinal(latest);
+        }
+
+        // UI-316: a card that stays on the table drifts to the Effects tab after its reading time, and the tab lights up.
+        [UnityTest]
+        public IEnumerator ACardThatStaysOnTheTableDriftsToTheEffectsTab()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            var entered = stage.Step(1);
+            entered.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.Event, Id = Crebain, Deck = "character" });
+            entered.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.TableEntered, Id = Crebain, Deck = "character" });
+            stage.Play(latest, null, entered);
+            var cards = stage.Board.Cards;
+            yield return stage.Until(() => cards.CardId == Crebain && Standing(cards));
+            var place = cards.Root.worldBound;
+            var tab = stage.Board.TableEffects.Tab.worldBound;
+            yield return stage.Until(() => cards.Root.resolvedStyle.scale.value.x < .8f);
+            Assert.Less(Vector2.Distance(cards.Root.worldBound.center, tab.center), Vector2.Distance(place.center, tab.center),
+                "It drifts toward the Effects tab.");
+            LayoutTests.Save(stage.Texture, "ui316-to-effects.png");
+            yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.TableEffects.Tab));
+            yield return stage.Released();
+        }
+
+        // UI-316: under Reduced motion the card only fades in and out at its place.
+        [UnityTest]
+        public IEnumerator UnderReducedMotionTheCardFadesInPlace()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, true);
+            yield return stage.Ready();
+            var latest = Play(stage, null);
+            var cards = stage.Board.Cards;
+            yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.opacity.keyword != StyleKeyword.Null &&
+                cards.Root.style.opacity.value > 0 && cards.Root.style.opacity.value < 1);
+            Assert.AreEqual(StyleKeyword.Null, cards.Root.style.translate.keyword, "No travel.");
+            Assert.AreEqual(StyleKeyword.Null, cards.Root.style.scale.keyword, "No growth.");
+            yield return stage.Released();
+            stage.AssertFinal(latest);
+        }
+
         [UnityTest]
         public IEnumerator AClickOnTheRevealedCardHoldsThePresentationUntilItIsClosed()
         {
@@ -60,8 +143,7 @@ namespace Wotr.PlayTests
             yield return stage.Ready();
             var latest = Play(stage, null);
             var cards = stage.Board.Cards;
-            yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.display.value == DisplayStyle.Flex);
-            yield return new WaitForSecondsRealtime(.3f);
+            yield return stage.Until(() => cards.CardId == Orcs && Standing(cards));
             PointerGestureEvents.ClickAt(cards.Root.Q("card-event-section"));
             Assert.IsTrue(cards.Pinned, "A click on the shown card pins it.");
             yield return new WaitForSecondsRealtime(4f);
@@ -163,6 +245,10 @@ namespace Wotr.PlayTests
         }
 
         // The Shadow's Event die pays Orcs Multiplying Again; its recruits land in Dol Guldur, then in Mount Gundabad.
+        // UI-316: the card stands at its place — no flight is set on it.
+        private static bool Standing(CardInspector cards) => cards.Root.style.display.value == DisplayStyle.Flex &&
+            cards.Root.style.opacity.keyword == StyleKeyword.Null && cards.Root.style.scale.keyword == StyleKeyword.Null;
+
         internal static PlayerView Play(PresentedBoardStage stage, string focus)
         {
             var reserve = stage.Reserve("sauron", UnitKind.Regular, 6);
