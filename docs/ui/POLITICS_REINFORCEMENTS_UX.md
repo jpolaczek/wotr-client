@@ -84,8 +84,8 @@ The panel has a width of this content (about 290 pt instead of 342); the place a
 - Panel header: icon and “ REINFORCEMENTS ’ (with the title of the source of the plan, e.g. “·
   Muster”), budget slots, ✓ Finish or ✓ Confirm and cross. Scheduled figure plan (from ×) are under
   the lines.
-- Opening (change of UI-168, AO03): Own die Muster or recruitment plan develops the tab and holds
-  it, just like the panel holding the decision. The panel closed by the player is closed for next
+- Opening (change of UI-168, AO03; for the Muster die superseded by UI-181 and UI-317 below): Own die Muster or
+  recruitment plan develops the tab and holds it, just like the panel holding the decision. The panel closed by the player is closed for next
   use. The settlement click on the recruitment will re-open it (UI-135). The opponent can see
   nothing. End of use will close the tab.
 
@@ -116,7 +116,8 @@ User applications: "change the reinforcements to reserve, improve the design of 
 - The tab and the header of the panel is “Reserve” (Plan card: “Reserve · source”). Names in the
   code (`ReinforcementsPanel`, `reinforcements-*`) remain.
 - die muster does not develop the tab. It shines with green light dice (`DieOptionGlow`, like
-  Politics and Characters) and `eligible` variant (`legal-target`). The player develops it by
+  Politics and Characters) and `eligible` variant (`legal-target`) — since UI-317 only while the server's Recruit is
+  enabled for the die or the player's own Recruit sequence is open. The player develops it by
   driving, clicking, clicking settlement (UI-135) or by selecting the console. When he selects the
   chip, the panel stays (`Held`) for the time of deployment of figures. It also stays with the next
   figure (open recruitment sequence).
@@ -179,3 +180,20 @@ short caption "At war". The panel is never opened while it is live for the playe
 had open stays open, one the presentation opened closes again, and one the player closes is not reopened by the same
 presentation. The track's stations, arrow and activation controls keep their rules above; nothing is added to the row.
 The Reserve panel does not open for an opponent's recruitment: recruits appear on the map with their delta badge.
+
+<a id="ui-317"></a>
+## A Muster die that cannot recruit opens no Reserve — UI-317 (2026-10-24)
+
+Owner report from the live review: clicking the Muster die opened the Reserve window although nothing could be recruited
+yet; it should open no window and light only the tabs where something can be done (there, Politics).
+
+- The server sends Recruit for every own Action decision and disables it when no reinforcement has a legal settlement
+  (for example while no nation is at war). `MusterActions.CanRecruit` is true only when Recruit is enabled for the chosen
+  die or the player's own Recruit sequence is open (its ✓ Finish).
+- While it is false the Reserve is a plain browsable tab: no gold "available" art (`legal-target`), no reopening from a
+  settlement click, no route from the console plaque, and the tray's hint is the political one. The Politics tab keeps its
+  die light and legal target. `MusterActions.Active` is unchanged, so the political step works as before.
+- With Recruit enabled nothing changes: the tab lights and the panel unrolls only on the player's gesture (UI-181).
+- Tests: EditMode `MusterActionTests.TheMusterDieCanRecruitOnlyWithAnEnabledRecruitOrAnOpenSequence`; PlayMode
+  `BoardInteractionTests.UI317AMusterDieThatCannotRecruitLightsOnlyPolitics` (no window, no Reserve light, Politics lit,
+  no console route, a settlement click brings no Reserve).

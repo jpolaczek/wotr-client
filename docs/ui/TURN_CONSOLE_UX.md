@@ -379,7 +379,7 @@ The choice that has the object is moved to the object (UI-164). The inventory fr
 | Decision or control | Destination | Task |
 | --- | --- | --- |
 | Army movement and attack, targets, „Leave out …” | Map and panel of the region; status hint | UI-160 (status) |
-| Muster and recruitment; Reinforcements button in tray | Meal Panel; Reopen from console status | UI-164 |
+| Muster and recruitment; Reinforcements button in tray | Meal Panel; Reopen from console status (UI-317: only while the Muster die can recruit) | UI-164 |
 | Politics, activation | Panel Politics | unchanged |
 | Characters: input, abilities | Panel Characters | unchanged |
 | Fellowship: movement, cover, declaration, Mordor, separation, route of disclosure | Panel Fellowship and map | unchanged |

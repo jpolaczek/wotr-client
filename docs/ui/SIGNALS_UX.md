@@ -231,7 +231,7 @@ Decisions inside battle, Hunt and the card effect do not give ribbons because th
 | Hunting Window | New Hunt (UI-162) begins | both | closed to the next Hunt |
 | Decision Window | your own decision has an object-free selection (UI-160) | owner | closed to next step with elections |
 | Panel Fellowship | own decision of the Fellowship phase | Free Peoples | held to decision |
-| Meals (from UI-179 to the strip under Politics, from UI-181 to the ‘Reserve’) | card or capabilities: the tab develops and is held; die Muster only backs the tab (UI-181) | functioning | closed for next use |
+| Meals (from UI-179 to the strip under Politics, from UI-181 to the ‘Reserve’) | card or capabilities: the tab develops and is held; die Muster only backs the tab (UI-181), and only while it can recruit (UI-317) | functioning | closed for next use |
 | Characters, Effects | They're hosting their own decision. | owner | Like today |
 | End Screen game | the party has a winner, also when opening the finished batch | both | returns from console |
 | card action opponent, Log, region panel, preview card | never, only click | — | — |
@@ -265,7 +265,8 @@ Test of the `AutoOpenPolicyTests` matrix (PlayMode, real server):
 - AO02, Hunt (TEST-07 `sh-ring-corrupted`, track step always draws a tile with injuries, so Hunt is
   waiting for a decision): window at both; closed by Shadow is closed; Corruption 12 opens the end
   screen at both;
-- AO03, Meals (`fp-muster-recruit`): die Muster opens the panel only to the player; it is closed for
+- AO03, Meals (`fp-muster-recruit`): die Muster opens the panel only to the player (since UI-181 it only backs the tab, since
+  UI-317 only while a Recruit is legal for it); it is closed for
   next use.
 
 The decision window, Characters and Effects have their opening tests (`FellowshipGuideNetworkTests`, `HuntNetworkTests`, `CharacterRosterActionNetworkTests`, `EffectsNetworkTests`); game end screen — `GameEndNetworkTests`.

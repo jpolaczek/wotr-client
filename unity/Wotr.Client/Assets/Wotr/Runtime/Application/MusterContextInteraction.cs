@@ -14,6 +14,7 @@ namespace Wotr.Client
         private PlayerView view;
         private TurnDraft draft;
         public bool Active => view != null && MusterActions.Active(view, draft, board.ActionDie);
+        public bool CanRecruit => view != null && MusterActions.CanRecruit(view, draft, board.ActionDie);
 
         public MusterContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {

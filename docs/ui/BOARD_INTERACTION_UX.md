@@ -525,7 +525,7 @@ The path inventory and justification of exceptions (the ruler's token, card with
 
 - The region panel has no reserve pallet (`RegionRecruitPalette` removed); it only reports the
   nation viewed settlement (`SettlementInspected`) and `ReinforcementsInteraction` stands for its
-  line and restores the closed panel.
+  line and restores the closed panel — since UI-317 only while the Muster die can recruit.
 - `MusterContextInteraction` supports only the settlement click, the two-click chip on one
   settlement and the drop of the token. When the selected figure cannot take the settlement click
   from its nation, the tray shows the server's reason (`ReinforcementRows.Refusal`).

@@ -13,6 +13,12 @@ namespace Wotr.Client
             ActionDieContext.DirectIntent(draft) &&
             draft.Payload.RulerTokenId.Length == 0 && draft.Payload.AbilityId.Length == 0;
 
+        // UI-317 (owner report): the Muster die backs the Reserve only while it can recruit — the server's Recruit is
+        // enabled for it — or the player's own Recruit sequence is open (its ✓ Finish). Otherwise only Politics can act.
+        public static bool CanRecruit(PlayerView view, TurnDraft draft, ActionDieContext context) =>
+            Active(view, draft, context) && (Option(view, context, CommandKind.Recruit) != null ||
+                view.Decision.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.Recruit);
+
         public static ActionOption Option(PlayerView view, ActionDieContext context, CommandKind kind) =>
             view.Options.FirstOrDefault(o => o.Kind == kind && context.Allows(o));
 

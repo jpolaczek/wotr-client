@@ -118,6 +118,33 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, test.Backend.Commands);
         }
 
+        // UI-317 (owner report): with no legal recruitment the Muster die opens no window and lights only what it can do —
+        // the Politics tab; the Reserve stays a plain tab that neither a settlement click nor the console reopens.
+        [UnityTest]
+        public IEnumerator UI317AMusterDieThatCannotRecruitLightsOnlyPolitics()
+        {
+            var fixture = new BoardFixture();
+            var recruit = fixture.View.Options.First(o => o.Kind == CommandKind.Recruit);
+            recruit.Enabled = false;
+            recruit.Reason = "No available reinforcement has a legal settlement.";
+            using (var test = new Harness(fixture))
+            {
+                yield return Settle();
+                var reserve = test.Board.Reinforcements;
+                Click(test.Board.OwnDice.Q<Button>("muster"));
+                yield return Settle();
+                Assert.AreEqual(DisplayStyle.None, reserve.Root.resolvedStyle.display, "The die opens no window.");
+                Assert.IsFalse(reserve.Tab.ClassListContains("legal-target"), "The Reserve tab is not offered.");
+                Assert.IsFalse(reserve.Tab.ClassListContains("die-option"), "Nor lit by the die.");
+                Assert.IsTrue(test.Board.Nations.Root.ClassListContains("legal-target"), "Politics is where the die can act.");
+                Assert.IsTrue(test.Board.Nations.Root.ClassListContains("die-option"));
+                StringAssert.DoesNotContain("Reinforcements", test.Board.Console.Status.Plaque.tooltip, "The console routes nothing to the Reserve.");
+                MapContourProbe.ClickRegion(test.Board.Map, "edoras");
+                yield return Settle();
+                Assert.AreEqual(DisplayStyle.None, reserve.Root.resolvedStyle.display, "A settlement click does not bring the Reserve.");
+            }
+        }
+
         // UI-130/UI-179/UI-181: Muster lights the Reserve tab and the player opens it; a closed nation keeps a plain,
         // inert row with the server's reason; a reserve token lights only its nation's settlements and a click on one
         // recruits; the console reopens the tab the player closed.
