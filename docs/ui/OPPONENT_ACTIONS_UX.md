@@ -917,6 +917,21 @@ Code: `Runtime/UI/Playback/CardFlight.cs` and the reveal beat of `CardRevealPres
   Also the presentation matrix and `OpponentCardPresentationNetworkTests`. Frames: `ui316-arriving`, `ui316-leaving`
   and `ui316-to-effects`.
 
+<a id="wdrozone-321"></a>
+### 6.21 Shipped in UI-321 (2026-10-24): smooth by default, at once under Skip animations
+
+The owner's animation rule ([UX_SPEC](UX_SPEC.md#plynne-przejscia--ui-321)) applied to the presentation.
+
+- **Reduced motion is now Skip animations.** Every presented change happens at once, with the same marks and results.
+  - The card stands at its place without a flight, a growth or a fade, and docks at once after its reading.
+    `CardFlight.Duration` is 0, so no time is spent on a flight.
+  - The glow, the political flare and slide, and the camera were already instant under it.
+- **By default** the windows a presentation opens (the Politics panel, the Fellowship panel, the Hunt window and its
+  tile, the battle window) fade in. So do the plates, the "At war" caption and the Skip medallion.
+- **Checks.**
+  - `AppearanceTests`: an opening panel fades in by default and is fully shown at once under Skip animations.
+  - `OpponentCardPresentationTests.UnderSkipAnimationsTheCardStandsAtOnce`: no fade, flight or growth for ten frames.
+
 <a id="cykl"></a>
 ## 7. Lifecycle and command gating
 
@@ -1188,6 +1203,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-310 Fellowship and Hunt (shipped) | §8 Fellowship/Hunt; storyboard D — delivered as §6.14; reusable `StepsBeat`, `IPresentationSounds`, `FellowshipReading` and Hunt/Fellowship staging |
 | UI-311 Battle (shipped) | §8 battle round; storyboard C4–C9 — delivered as §6.15; reusable read-only window state, `ObservedDelta` and the battle state diff |
 | UI-312 Resources and pennants (shipped) | §8 rings/dice/drawing and pass; §3 rule 4 (manual-read pennants) — delivered as §6.16; reusable `PresentationMarks` and the pool and hand staging |
+| UI-321 Smooth by default, at once under Skip animations (shipped) | the owner's animation rule — delivered as §6.21; `Appearance` |
 | UI-316 The card's origin and return (shipped) | the owner's live review, points 3 and 5 — delivered as §6.20; `CardFlight` |
 | UI-315 Mark, then change (shipped) | the owner's live review, points 2 and 4 — delivered as §6.19; `PresentationPace` |
 | UI-314 Glow instead of a frame (shipped) | the owner's live review, points 6 and 7 — delivered as §6.18; reusable `PresentationGlow`/`ObjectGlow` for UI-315 and UI-316 |

@@ -128,22 +128,12 @@ namespace Wotr.Client
             tableSource = !allowPlay && IsActiveSource(id);
             anchorPinnedSource = keep && !Pinned && avoid != null;
             Pinned |= keep;
-            Appear();
+            Appearance.Display(Root, true);
             Root.BringToFront();
             Refresh();
             OpenedFrom?.Invoke(origin);
         }
 
-        // UI-320: a card that opens fades in (Cards.uss, under .motion-enabled) instead of appearing in one frame; a
-        // presentation's flight sets its own opacity over it (UI-316).
-        private void Appear()
-        {
-            if (Root.style.display == DisplayStyle.Flex)
-                return;
-            Root.AddToClassList("card-appearing");
-            Root.style.display = DisplayStyle.Flex;
-            Root.schedule.Execute(() => Root.RemoveFromClassList("card-appearing"));
-        }
 
         // A short rule, an ornament and a short rule between the Event and the Combat halves.
         private VisualElement Divider()

@@ -84,7 +84,7 @@ namespace Wotr.Client
             if (!Active)
                 return;
             Opening?.Invoke();
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
             Tab.EnableInClassList("selected", true);
         }

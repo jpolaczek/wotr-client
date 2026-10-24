@@ -357,7 +357,7 @@ namespace Wotr.Client
 
         private void RefreshVisibility()
         {
-            Root.style.display = IsOpen ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(Root, IsOpen);
             // A local choice must keep its hit target under the pointer. Geometry
             // callbacks handle resizing; only visibility changes need a new anchor.
             if (wasVisible != IsOpen)

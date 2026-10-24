@@ -6,7 +6,8 @@ namespace Wotr.Client
     // UI-316 (owner review 2026-10-24: "a played card should not just appear on the screen but slide out of the place it
     // takes effect from"): a presented card's own motion. It grows out of the place it comes from into its reading place,
     // and later shrinks into the place it goes to. Only its translate, scale and opacity change — none touches the layout
-    // or the card's own placement — eased; under Reduced motion it only fades. Clear leaves the card as it stands.
+    // or the card's own placement — eased. UI-321: under Skip animations it takes no time and the card simply stands.
+    // Clear leaves the card as it stands.
     public sealed class CardFlight
     {
         public const double Seconds = .6;
@@ -25,8 +26,14 @@ namespace Wotr.Client
             this.reduced = reduced;
         }
 
-        // Before the card has its place: nothing of it shows yet.
-        public void Hide() => card.style.opacity = 0;
+        public double Duration => reduced ? 0 : Seconds;
+
+        // Before the card has its place: nothing of it shows yet (at once under Skip animations).
+        public void Hide()
+        {
+            if (!reduced)
+                card.style.opacity = 0;
+        }
 
         // From the place it comes from, in world points (or, without one, a fade in place), to where it stands now.
         public void From(Rect? origin) => Aim(origin);
@@ -80,6 +87,8 @@ namespace Wotr.Client
         // away: 0 at the card's place, 1 at the other end.
         private void Show(float away, float opacity)
         {
+            if (reduced)
+                return;
             if (!moving)
             {
                 card.style.opacity = 1 - away;

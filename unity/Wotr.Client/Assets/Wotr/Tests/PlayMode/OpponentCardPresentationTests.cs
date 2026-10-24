@@ -120,18 +120,23 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
-        // UI-316: under Reduced motion the card only fades in and out at its place.
+        // UI-321 (owner rule): under Skip animations the card stands at its place at once — no flight, no growth, no fade.
         [UnityTest]
-        public IEnumerator UnderReducedMotionTheCardFadesInPlace()
+        public IEnumerator UnderSkipAnimationsTheCardStandsAtOnce()
         {
             using var stage = new PresentedBoardStage(1366, 1f, true);
             yield return stage.Ready();
             var latest = Play(stage, null);
             var cards = stage.Board.Cards;
-            yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.opacity.keyword != StyleKeyword.Null &&
-                cards.Root.style.opacity.value > 0 && cards.Root.style.opacity.value < 1);
-            Assert.AreEqual(StyleKeyword.Null, cards.Root.style.translate.keyword, "No travel.");
-            Assert.AreEqual(StyleKeyword.Null, cards.Root.style.scale.keyword, "No growth.");
+            yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.display.value == DisplayStyle.Flex);
+            for (var frame = 0; frame < 10 && cards.Root.style.display.value == DisplayStyle.Flex; frame++)
+            {
+                Assert.AreEqual(StyleKeyword.Null, cards.Root.style.opacity.keyword, "No fade.");
+                Assert.AreEqual(StyleKeyword.Null, cards.Root.style.translate.keyword, "No travel.");
+                Assert.AreEqual(StyleKeyword.Null, cards.Root.style.scale.keyword, "No growth.");
+                Assert.AreEqual(1f, cards.Root.resolvedStyle.opacity, "Shown at once.");
+                yield return null;
+            }
             yield return stage.Released();
             stage.AssertFinal(latest);
         }

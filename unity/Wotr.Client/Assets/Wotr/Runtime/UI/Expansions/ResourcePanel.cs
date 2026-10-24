@@ -75,7 +75,7 @@ namespace Wotr.Client
         {
             if (!active)
                 return;
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
         }
 

@@ -214,7 +214,7 @@ namespace Wotr.Client
                     Opening?.Invoke();
                     Root.BringToFront();
                 }
-                Root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                Appearance.Display(Root, visible);
                 Tab.EnableInClassList("selected", visible);
             }
             Window?.Refresh();

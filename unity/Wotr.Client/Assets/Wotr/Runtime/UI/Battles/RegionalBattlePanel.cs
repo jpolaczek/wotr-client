@@ -146,7 +146,7 @@ namespace Wotr.Client
             // UI-149: a new battle opens its window for both players; a window closed during the battle stays closed.
             if (started)
                 Open();
-            Root.style.display = IsOpen ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(Root, IsOpen);
         }
 
         // UI-206: the place decides the illustration; without one the mode decides the strip (UI-115, UI-120), and an event

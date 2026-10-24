@@ -216,7 +216,7 @@ namespace Wotr.Client
 
         private void RefreshVisibility()
         {
-            Root.style.display = IsOpen ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(Root, IsOpen);
             map.FellowshipMarker.Inspect(IsOpen);
             Position();
             Window?.Refresh();

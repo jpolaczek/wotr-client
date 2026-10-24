@@ -36,7 +36,10 @@ namespace Wotr.Client
                 return;
             }
             if (Button.parent == null)
+            {
                 layer.Root.Add(Button);
+                Appearance.Arrive(Button);
+            }
             Place();
         }
 

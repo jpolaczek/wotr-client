@@ -1504,3 +1504,8 @@
 .edge-board .notification-bar { margin-right: 380px; }
 .compact-edge-board .notification-bar { margin-right: 350px; }
 .edge-board .notification-bar .action { height: 28px; min-height: 28px; }
+
+/* UI-321 (owner rule): a panel or window that comes into view fades in (Appearance); under Skip animations it appears at
+   once. Only the opacity changes, so its place and size are its own from the first frame. */
+.motion-enabled .appear-host { transition-property: opacity; transition-duration: 0.18s; transition-timing-function: ease-out; }
+.motion-enabled .appearing { opacity: 0; }

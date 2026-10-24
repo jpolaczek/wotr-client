@@ -253,9 +253,7 @@
 }
 #board-screen .card-inspector .card-header Button:hover,
 #board-screen .card-inspector .card-header Button:focus { background-color: rgba(246, 232, 196, 0.22); }
-/* UI-320, the animation rule: a card that opens fades in (a presentation's flight sets its own opacity over it). */
-#board-screen .card-inspector.card-appearing { opacity: 0; }
-.motion-enabled #board-screen .card-inspector { transition-property: opacity; transition-duration: 0.18s; }
+
 
 
 /* UI-111: cards that cannot be committed in this battle stay visible but dimmed, with their unmet condition. */

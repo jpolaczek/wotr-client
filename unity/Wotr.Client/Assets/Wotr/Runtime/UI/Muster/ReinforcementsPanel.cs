@@ -117,7 +117,7 @@ namespace Wotr.Client
                 dismissed = false;
             if (!IsOpen)
             {
-                Root.style.display = DisplayStyle.Flex;
+                Appearance.Display(Root, true);
                 Opening?.Invoke();
             }
             Root.BringToFront();

@@ -1306,3 +1306,28 @@ no decision reaches any more are removed, each after its reachability was traced
 `ExcessChoices` stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
 Tests: the layout fixtures of `CardPack02LayoutTests` and `Shadow02LayoutTests` now offer the battle's own figures as
 the server does; `CardFigureDraftTests`, `DecisionRoutesTests` and the army and card network tests are unchanged.
+
+<a id="plynne-przejscia--ui-321"></a>
+## Smooth transitions; jumps only under Skip animations — UI-321 (2026-10-24)
+
+The owner's rule for every animation: "we want smooth transitions, as few quick jumps as possible; the jumps are
+available as an option, skip animations".
+
+- **The setting.** The interface setting formerly "Reduced motion" reads **Skip animations**: "Every change happens at
+  once, without animation. Choices always appear immediately." The preference and its element (`reduced-motion`) are
+  unchanged. Without it every transition is smooth; with it every change happens at once.
+- **Opening.** A panel, window or part of a window that comes into view fades in over 0.18 s (`Appearance.Display`,
+  Wotr.uss `.appear-host`/`.appearing`). Only its opacity changes, so its place, size and picking are its own from the
+  first frame. It applies to:
+  - the left-rail panels (Politics, Reserve, Characters, Effects), the Fellowship panel, the Hunt window and its drawn
+    tile;
+  - the battle window, the decision window, the card view, the board menu, the confirmation dialog, the game-end
+    screen, the Log, the chat, the resource and Companion setup panels, and the Victory panel.
+
+  A panel's own slide (the left rail's drawer) stays.
+- **New marks.** The presentation's plates, its "At war" caption and the Skip medallion fade in as they join
+  (`Appearance.Arrive`).
+- **Unchanged.** A choice the player can make is never hidden behind an animation (it is shown and pickable from the
+  first frame).
+- **Follow-up (UI-322).** Closing fades, crossfades of changing numbers and die faces, and figures fading out of a stack.
+  Each changes when a hidden element stops counting as shown, so they are a separate task.

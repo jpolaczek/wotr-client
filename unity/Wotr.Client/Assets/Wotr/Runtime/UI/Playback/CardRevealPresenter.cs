@@ -239,9 +239,12 @@ namespace Wotr.Client
                     return Arriving(now);
                 if (leaving < 0)
                     return Stand(now);
-                flight.Leaving((now - leaving) / CardFlight.Seconds);
-                return now - leaving >= CardFlight.Seconds && Docked();
+                flight.Leaving(Progress(now, leaving));
+                return now - leaving >= flight.Duration && Docked();
             }
+
+            // How far a flight that started at `from` has gone: all the way when it takes no time (Skip animations).
+            private double Progress(double now, double from) => flight.Duration > 0 ? (now - from) / flight.Duration : 1;
 
             // Pinned by the player: the card stands at its place, whatever its flight.
             public void Settle()
@@ -272,8 +275,8 @@ namespace Wotr.Client
 
             private bool Arriving(double now)
             {
-                flight.Arriving((now - arriving) / CardFlight.Seconds);
-                if (now - arriving < CardFlight.Seconds)
+                flight.Arriving(Progress(now, arriving));
+                if (now - arriving < flight.Duration)
                     return false;
                 flight.Clear();
                 standing = now;

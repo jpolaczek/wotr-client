@@ -40,7 +40,7 @@ namespace Wotr.Client
 
         public void Apply(HuntView hunt)
         {
-            Root.style.display = hunt?.TileId.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(Root, hunt?.TileId.Length > 0);
             if (hunt == null || hunt.TileId.Length == 0)
                 return;
             face.text = hunt.TileId.StartsWith("lords.hunt.smeagol.", StringComparison.Ordinal) ? "Sméagol" :

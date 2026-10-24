@@ -46,7 +46,7 @@ namespace Wotr.Client
         // UI-281: the panel always opens on its newest message, with the line to write focused.
         public void Open()
         {
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             SetUnread(false);
             Chat.ShowLatest();
             Chat.Input.Focus();

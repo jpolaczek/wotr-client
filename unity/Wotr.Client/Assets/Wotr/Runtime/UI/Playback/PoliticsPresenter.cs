@@ -182,6 +182,7 @@ namespace Wotr.Client
                 caption = new Label("At war") { name = CaptionName, pickingMode = PickingMode.Ignore };
                 caption.AddToClassList(CaptionName);
                 owner.layer.Root.Add(caption);
+                Appearance.Arrive(caption);
                 PlaceCaption();
             }
 

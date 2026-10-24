@@ -704,3 +704,10 @@ Minas Tirith, Minas Morgul and Helm's Deep are drawn on the terrain as permanent
 fade with the terrain in the political view, and never appear or disappear with the zoom. Names, settlement gems and
 forces are drawn above them, and each drawing stands in its region clear of the region's name and the forces' row
 (`Resources/MapCanvas/landmarks.json`, `MapLandmarksTests`).
+
+<a id="plynne-otwieranie--ui-321"></a>
+## Panels fade in; Skip animations makes every change instant — UI-321 (2026-10-24)
+
+Panels, windows and dialogs that come into view fade in over 0.18 s, only in opacity, so they can be clicked and measured
+from the first frame. The setting "Skip animations" (formerly "Reduced motion") makes every change happen at once
+([UX_SPEC](UX_SPEC.md#plynne-przejscia--ui-321)).

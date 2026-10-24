@@ -64,7 +64,7 @@ namespace Wotr.Client
         private void Show()
         {
             Opening?.Invoke();
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
         }
     }

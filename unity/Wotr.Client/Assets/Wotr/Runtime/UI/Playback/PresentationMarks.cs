@@ -83,6 +83,7 @@ namespace Wotr.Client
                     break;
             }
             layer.Root.Add(plate);
+            Appearance.Arrive(plate);
             plates.Add(plate);
         }
 
