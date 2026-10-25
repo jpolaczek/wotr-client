@@ -32,11 +32,6 @@ namespace Wotr.Client
         private readonly Label eventHeading = new Label { name = "card-event-heading" };
         private readonly Label combatHeading = new Label { name = "card-combat-heading" };
         private readonly Label combatText = new Label { name = "card-combat-text" };
-        // UI-320: a physical card's parts — the deck line under the title, the divider between the halves and the round
-        // initiative badge beside the Combat heading.
-        private readonly Label deck = new Label { name = "card-deck" };
-        private readonly VisualElement divider = new VisualElement { name = "card-divider", pickingMode = PickingMode.Ignore };
-        private readonly Label initiative = new Label { name = "card-initiative" };
         private readonly VisualElement toolbar = BoardScreen.Row("card-toolbar");
         private readonly CardPlayButtons plays;
         private readonly CardViewportLayout viewportLayout;
@@ -49,10 +44,14 @@ namespace Wotr.Client
         private bool anchorPinnedSource;
         private Func<VisualElement> currentAvoid;
         private Vector2 defaultAnchor = new Vector2(342, 8);
-        // UI-308: a presentation's reveal stands at the top of this stage area, on its left or right side.
-        private (Rect Area, bool Left)? presentation;
+        // UI-308/UI-324: a presentation's reveal stands in the middle of this stage area.
+        private Rect? presentation;
         // UI-308: the status line of a card an opponent presentation shows ("Event played"), instead of a play hint.
         public string Note { get; set; } = "";
+        // UI-324 (owner 2026-10-25: "card windows should show in the middle of the screen"): the middle of the board a card
+        // window opens in (world points), and whether it does — the battle window shares its space with the card instead.
+        public Func<Rect?> CenterArea { get; set; }
+        public bool Centred { get; set; } = true;
 
         public CardInspector()
         {
@@ -70,8 +69,6 @@ namespace Wotr.Client
             close.tooltip = "Close card";
             header.Add(close);
             Root.Add(header);
-            deck.AddToClassList("card-deck");
-            Root.Add(deck);
             plays = new CardPlayButtons(face => PlayRequested?.Invoke(CardId, face), () => ReactionRequested?.Invoke(CardId));
             toolbar.Add(plays.Root);
             Root.Add(toolbar);
@@ -82,14 +79,9 @@ namespace Wotr.Client
             combatHeading.AddToClassList("card-effect-heading");
             eventSection.Add(eventHeading);
             eventSection.Add(text);
-            var combatTitle = BoardScreen.Row("card-combat-title");
-            initiative.AddToClassList("card-initiative");
-            combatTitle.Add(initiative);
-            combatTitle.Add(combatHeading);
-            combatSection.Add(combatTitle);
+            combatSection.Add(combatHeading);
             combatSection.Add(combatText);
             Root.Add(eventSection);
-            Root.Add(Divider());
             Root.Add(combatSection);
             eventSection.RegisterCallback<ClickEvent>(_ => RequestDiscard(eventSection));
             combatSection.RegisterCallback<ClickEvent>(_ => RequestDiscard(combatSection));
@@ -132,21 +124,6 @@ namespace Wotr.Client
             Root.BringToFront();
             Refresh();
             OpenedFrom?.Invoke(origin);
-        }
-
-
-        // A short rule, an ornament and a short rule between the Event and the Combat halves.
-        private VisualElement Divider()
-        {
-            divider.AddToClassList("card-divider");
-            foreach (var part in new[] { "card-divider-line", "card-divider-ornament", "card-divider-line" })
-            {
-                var piece = part == "card-divider-ornament" ? new Label("✦") : new VisualElement();
-                piece.pickingMode = PickingMode.Ignore;
-                piece.AddToClassList(part);
-                divider.Add(piece);
-            }
-            return divider;
         }
 
         public void Close()
@@ -241,17 +218,11 @@ namespace Wotr.Client
             if (!CardLibrary.Cards.TryGetValue(CardId, out var card))
                 return;
             title.text = card.Title;
-            deck.text = CardTextFormat.DeckLine(card);
-            var side = CardTextFormat.SideOf(card.Id);
-            Root.EnableInClassList("card-side-shadow", side == Side.Shadow);
-            Root.EnableInClassList("card-side-free", side == Side.FreePeoples);
             eventHeading.text = card.Deck == "special" ? "SPECIAL EVENT" : card.EventType.ToUpperInvariant() + " · EVENT";
-            initiative.text = string.Join("/", card.Initiative);
-            combatHeading.text = "COMBAT · " + card.CombatTitle;
+            combatHeading.text = "COMBAT · " + string.Join(" / ", card.Initiative) + " · " + card.CombatTitle;
             text.text = CardLibrary.EventText(card, view?.Configuration);
             combatText.text = card.Combat;
             combatSection.style.display = card.HasCombat ? DisplayStyle.Flex : DisplayStyle.None;
-            divider.style.display = combatSection.style.display;
             RefreshPlay(card);
             FitViewport();
             IconButton.SetIcon(pin, Pinned ? "pinned" : "pin");
@@ -260,10 +231,10 @@ namespace Wotr.Client
             PositionHover();
         }
 
-        // UI-308: the opponent's revealed card stands in the half of the map away from the action's first effect.
-        public void PlaceIn(Rect area, bool left)
+        // UI-308/UI-324: the opponent's revealed card stands in the middle of the presentation's safe area.
+        public void PlaceIn(Rect area)
         {
-            presentation = (area, left);
+            presentation = area;
             PositionHover();
         }
 
@@ -277,13 +248,35 @@ namespace Wotr.Client
 
         public bool Inspecting(VisualElement source) => currentAvoid?.Invoke() == source;
 
-        // The window's right/top anchor for a card at the top of the area on the chosen side.
-        private Vector2 Anchor((Rect Area, bool Left) at)
+        // UI-324: the card in the middle of its area — the presentation's, else the board's — once it has a size; before
+        // that at the area's top centre, so its first layout only finishes the centring.
+        private Rect? CentredPlacement()
         {
-            var width = Root.layout.width > 0 && !float.IsNaN(Root.layout.width) ? Root.layout.width : 336;
-            var left = at.Left ? at.Area.xMin : at.Area.xMax - width;
-            return new Vector2(Root.parent.contentRect.xMax - left - width, at.Area.yMin);
+            var viewport = Root.parent;
+            var area = presentation ?? Local(CenterArea?.Invoke());
+            if (!Centred || viewport == null || !area.HasValue)
+                return null;
+            var width = Measured(Root.layout.width) ? Root.layout.width : 336;
+            var height = Measured(Root.layout.height) ? Root.layout.height : 0;
+            var bounds = viewport.contentRect;
+            // Whole points, so the placement never feeds back into the card's rounded size.
+            var x = Mathf.Round(Mathf.Clamp(area.Value.center.x - width / 2, bounds.xMin, Mathf.Max(bounds.xMin, bounds.xMax - width)));
+            var y = Mathf.Round(Mathf.Max(area.Value.yMin, area.Value.center.y - height / 2));
+            return new Rect(x, y, width, height);
         }
+
+        private Rect? Local(Rect? world)
+        {
+            if (!world.HasValue)
+                return null;
+            var minimum = Root.parent.WorldToLocal(world.Value.min);
+            return new Rect(minimum, Root.parent.WorldToLocal(world.Value.max) - minimum);
+        }
+
+        private static bool Measured(float value) => value > 0 && !float.IsNaN(value);
+
+        // The window's right/top anchor for a placement in the card's stage.
+        private Vector2 AnchorOf(Rect placement) => new Vector2(Root.parent.contentRect.xMax - placement.xMax, placement.y);
 
         private void PositionHover()
         {
@@ -292,23 +285,34 @@ namespace Wotr.Client
             if (Pinned && (!anchorPinnedSource || Window.Restore()))
             {
                 anchorPinnedSource = false;
+                // UI-324: a pinned card opens in the middle too; a position the player dragged it to wins (FloatingWindow).
+                if (CentredPlacement() is { } middle)
+                    Window.SetDefaultAnchor(AnchorOf(middle));
                 return;
             }
             var obstacle = currentAvoid?.Invoke();
+            var centred = CentredPlacement();
             if (obstacle?.panel == null)
             {
-                Window.SetDefaultAnchor(presentation.HasValue ? Anchor(presentation.Value) : defaultAnchor);
+                Window.SetDefaultAnchor(centred.HasValue ? AnchorOf(centred.Value) : defaultAnchor);
                 return;
             }
-            if (Root.layout.width <= 0 || Root.layout.height <= 0 ||
-                float.IsNaN(Root.layout.width) || float.IsNaN(Root.layout.height))
+            if (!Measured(Root.layout.width) || !Measured(Root.layout.height))
                 return;
             var viewport = Root.parent;
-            var minimum = viewport.WorldToLocal(obstacle.worldBound.min);
-            var bounds = new Rect(minimum, viewport.WorldToLocal(obstacle.worldBound.max) - minimum);
-            var placement = PopoverPlacement.Near(bounds.center, Root.layout.size, viewport.contentRect, new[] { bounds });
-            Window.SetDefaultAnchor(new Vector2(viewport.contentRect.xMax - placement.xMax, placement.y));
+            var bounds = Local(obstacle.worldBound).Value;
+            // UI-324: in the middle, unless it would cover the card it was opened from; then beside it, as before.
+            var placement = centred.HasValue && !centred.Value.Overlaps(bounds) ? centred.Value
+                : PopoverPlacement.Near(bounds.center, Root.layout.size, viewport.contentRect, new[] { bounds });
+            Window.SetDefaultAnchor(AnchorOf(placement));
             anchorPinnedSource = false;
+        }
+
+        // UI-324: the board's middle moved (a left panel opened or closed); a card the player has not moved follows it.
+        public void MiddleMoved()
+        {
+            if (CardId.Length > 0)
+                PositionHover();
         }
 
         public void FitViewport()

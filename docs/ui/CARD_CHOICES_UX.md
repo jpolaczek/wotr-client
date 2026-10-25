@@ -275,26 +275,27 @@ into the console trail where it docks — or, for a card that stays on the table
 ([OPPONENT_ACTIONS_UX §6.20](OPPONENT_ACTIONS_UX.md#wdrozone-316)). Only its translate, scale and opacity move; under
 Reduced motion it fades in and out. A click pins it at its place at once.
 
-<a id="karta-fizyczna--ui-320"></a>
-## Every card view looks like a physical card — UI-320 (2026-10-24)
+<a id="okna-na-srodku--ui-324"></a>
+## Card windows open in the middle — UI-324 (2026-10-25)
 
-Owner request after UI-316: the card view should look more like a real physical card, as tidy as a regular panel. Owner
-decisions: every card view (the opponent's presented card, the player's hand card with its play bar, table and console
-cards) and the wide shape (the readable width of before).
+The owner reviewed UI-320 in a build: "the card animations look good, but the previous design was better — let's go back
+to it; the only other change cards need is that their windows show in the middle of the screen". The UI-320 look (the
+banner, deck line, divider and initiative badge) is reverted; the card is again the UI-106 parchment view.
 
-- **Card.** A dark framed edge (3 pt) with rounded corners and a soft shadow around the parchment face.
-- **Banner.** The title stands light on a banner in its side's enamel (Shadow deep red, Free Peoples deep blue, neither
-  brown). The pin and close are small round badges on the banner.
-- **Under the banner.** The deck and side ("Strategy · Shadow") in small italics, then the play bar or note, then the
-  Event half.
-- **The halves.** An ornamental divider (a rule, ✦, a rule) replaces the old line between the halves. The Combat heading
-  ("COMBAT · Onslaught") has the initiative in a round badge beside it.
-- **Unchanged.** Every name, control, the observed treatment of a presented card's used half and the playable half's
-  green bar.
-- **Opening.** A card that opens fades in over 0.18 s; a presented card keeps its flight (UI-316).
-- **Text.** Its size is unchanged, and every text still fits at 1366 × 768 at 125 % without scrolling.
-
-Code: `CardInspector` (the deck line, divider and initiative badge; `card-side-*` classes), `CardTextFormat.SideOf` and
-`DeckLine`, Cards.uss. Tests: `CardViewportLayoutTests` (dark ink on the parchment, a light title on a dark banner),
-CardInteraction, HandCardLayout, the card pack layouts, OpponentCardPresentation and the presentation matrix (which now
-measures the presented card once it stands still).
+- **Where.** Every card window opens centred in the board's middle: between the top bar and the console, between the side
+  columns (`BoardScreen.BoardMiddle`, `CardInspector.CenterArea`). That covers the player's hand, table and console cards,
+  pinned or not.
+  - The opponent's presented card stands in the middle of the presentation's safe area. UI-308's "away from the first
+    effect" gives way to the owner's decision.
+  - A card opened from a source it would cover keeps its place beside that source.
+  - Beside an open battle window the card keeps sharing its space (`BattleCardPlacement`).
+  - A position the player dragged a window to wins.
+  - A panel held open beside the left rail (a decision's Reserve, Politics, Effects, Characters) is not part of the
+    middle: the card stands right of it, and an open card moves clear when such a panel opens. A hover preview does not
+    count. Found by KingsCards02: the centred card covered the Reserve of Ever at Your Service.
+- **Pixels.** The centred position is snapped to the screen's pixel grid, so the window's controls keep their rounded
+  sizes and no layout loop can start.
+- **The way out.** The presented card no longer slides behind the bottom panel. At the end of its reading it cross-fades
+  (over the first 35 % of the 0.6 s) into a stand-in — a small parchment card with its title in the presentation layer
+  above the HUD — that lands on its console source or at the Effects tab. The source shows and lights only once the
+  stand-in is there.

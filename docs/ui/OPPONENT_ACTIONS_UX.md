@@ -896,7 +896,9 @@ Code: `Runtime/UI/Playback/CardFlight.cs` and the reveal beat of `CardRevealPres
   - Only the card's `translate`, `scale` and `opacity` change, so its placement, its width and the board's layout are
     its own.
   - The 3 s of reading start when it stands still.
-- **Departure.** After the reading the card shrinks into where it goes, eased over 0.6 s:
+- **Departure.** After the reading the card shrinks into where it goes, eased over 0.6 s (since UI-324 it cross-fades into
+  a stand-in above the HUD that lands on its place; the card stands in the middle of the safe area,
+  [CARD_CHOICES_UX](CARD_CHOICES_UX.md#okna-na-srodku--ui-324)):
   - an Event shrinks into the console trail (or the console's plaque while the trail is empty), where it docks as the
     compact source, and that source glows for 0.8 s;
   - a card that stays on the table drifts to the Effects tab, which then lights up with the table card's own cue.

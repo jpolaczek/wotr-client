@@ -194,6 +194,28 @@
     -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
 }
 
+/* UI-324: the presented card's stand-in on its way out, above the HUD: a parchment card with its title. */
+.presentation-card-stand-in {
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+.presentation-card-stand-in > Label {
+    font-size: 18px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    color: rgb(58, 42, 24);
+}
+
 /* UI-308: the opponent's revealed card marks the half that was used with the observed treatment (the inspector's own
    focused-effect heading looks the same as the other half on the parchment). */
 #board-screen .card-inspector.presented-card .card-effect.focused-effect {

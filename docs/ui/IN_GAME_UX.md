@@ -257,7 +257,19 @@ of the map away from the card's first effect, keeps the inspector's viewport rul
 closes into the console trail after 3 s; a click pins it and holds the presentation until it is closed. The inspector's
 remembered position, pinning and Esc behave as before.
 
-<a id="karta-fizyczna--ui-320"></a>
-## Card views look like physical cards — UI-320 (2026-10-24)
+<a id="okna-na-srodku--ui-324"></a>
+## Windows open in the middle — UI-324 (2026-10-25)
 
-Every card view is a physical card: a framed parchment face with rounded corners and a shadow, the title on a banner in its side's enamel with the deck and side under it, an ornamental divider between the halves and the initiative in a round badge ([CARD_CHOICES_UX](CARD_CHOICES_UX.md#karta-fizyczna--ui-320)).
+Owner: "every window that opens should open in the middle — the Hunt, the cards and so on".
+
+- The Hunt window, in every phase, and the battle window open centred in the board's middle (`FloatingWindow.Centre`,
+  `WindowLayout.Middle`): between the top bar and the console, between the side columns. Before, they stood beside the
+  Fellowship and beside the battle's region; a Combat choice still keeps its card's room on the right.
+- So does any window without a placement of its own: the information, resource, Companion setup and battle report windows,
+  the Log.
+- A position the player dragged a window to still wins. The positions are on the pixel grid, and a window already within
+  a pixel of its middle stays put: a middle on a half pixel cannot rock it between two pixels (a layout loop).
+- The middle leaves out a panel held open beside the left rail, so a decision's Reserve or Politics stays usable;
+  windows move clear when such a panel opens (`WindowLayout.MiddleMoved`). A hover preview does not count.
+- A window wider than the middle of a narrow board keeps the hand clear and may touch the left edge.
+- The region panel (it belongs beside its region) and the edge panels are unchanged.

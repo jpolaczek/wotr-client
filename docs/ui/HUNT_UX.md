@@ -400,3 +400,8 @@ When the opponent's presentation shows the Shadow allocating dice to the Hunt, o
 its number glow while the count rises (`HuntBoxView.EyeCount`), not the whole plaque (owner request). The Hunt's own
 start, when its window opens, still marks the Hunt Box
 ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
+
+<a id="srodek--ui-324"></a>
+## The window opens in the middle — UI-324 (2026-10-25)
+
+Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).

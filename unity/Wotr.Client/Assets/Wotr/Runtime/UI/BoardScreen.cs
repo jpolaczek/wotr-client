@@ -397,6 +397,10 @@ namespace Wotr.Client
             Characters.Attach(Tray, decisionDock);
             _ = new BoardCharacterIntegration(this, stage);
             Edges = new BoardEdgeLayout(this, stage);
+            // UI-324: a left panel held open narrows the middle; the windows placed there move clear of it.
+            foreach (var panel in Edges.LeftPanels)
+                panel.RegisterCallback<GeometryChangedEvent>(_ => Windows.MoveMiddle());
+            Windows.MiddleMoved += Cards.MiddleMoved;
             Victory.KeepShortcutClearOf(Characters.Tab);
             AttachDieGlows();
             Root.Add(Menu.Root);
@@ -433,6 +437,8 @@ namespace Wotr.Client
             ActionHistory = new ActionContextRouter(this);
             Log.CardWindow = new FloatingWindow(Log.Popup, Windows, () => Log.Pinned, Log.Pin, Log.PositionCard, rememberInitial: false);
             Cards.Window = new FloatingWindow(Cards.Root, Windows, () => Cards.Pinned, Cards.Pin, defaultAnchor: new Vector2(342, 8));
+            Cards.CenterArea = BoardMiddle;
+            Windows.Middle = BoardMiddle;
             Battles.Window = new FloatingWindow(Battles.Root, Windows, () => Battles.Pinned, Battles.Pin,
                 Battles.Position, rememberInitial: false);
             // UI-162: the Hunt window is placed beside the Fellowship like the battle window beside its region.
@@ -735,6 +741,30 @@ namespace Wotr.Client
             else
                 Ribbon.Show(text, side);
         }
+
+        // UI-324: the middle of the board a window opens in — between the top bar and the console, between the side
+        // columns and right of a panel held open beside the left rail (a decision's Reserve, say, stays usable) — or null
+        // before the board is laid out.
+        private Rect? BoardMiddle()
+        {
+            var board = Root.worldBound;
+            var top = TopBar.Root.worldBound.yMax;
+            var bottom = Console.Root.parent?.worldBound.yMin ?? board.yMax;
+            var left = OnScreen(Edges.Left) ? Edges.Left.worldBound.xMax : board.xMin;
+            foreach (var panel in Edges.LeftPanels)
+                if (Held(panel))
+                    left = Mathf.Max(left, panel.parent.LocalToWorld(panel.layout).xMax);
+            var right = OnScreen(Edges.Right) ? Edges.Right.worldBound.xMin : board.xMax;
+            return bottom > top && right > left ? Rect.MinMaxRect(left, top, right, bottom) : (Rect?)null;
+        }
+
+        private static bool OnScreen(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None &&
+            element.worldBound.width > 0 && element.worldBound.height > 0;
+
+        // A left panel open beside its tab, not a hover's preview that only lies over the board. Its laid-out place, so
+        // its unrolling slide does not drag the windows along.
+        private static bool Held(VisualElement panel) => panel.parent != null && OnScreen(panel) &&
+            !panel.ClassListContains(LeftRailPreview.PreviewClass);
 
         public bool ReducedMotion()
         {

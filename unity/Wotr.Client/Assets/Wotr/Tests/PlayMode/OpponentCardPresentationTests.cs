@@ -23,6 +23,7 @@ namespace Wotr.PlayTests
         {
             using var stage = new PresentedBoardStage(1366, 1f, false);
             yield return stage.Ready();
+            var middle = stage.Board.Map.LocalToWorld(stage.Presenters.Camera.SafeArea().center);
             var latest = Play(stage, "grey-havens");
             var cards = stage.Board.Cards;
             yield return stage.Until(() => cards.CardId == Orcs && cards.Root.style.display.value == DisplayStyle.Flex);
@@ -33,15 +34,17 @@ namespace Wotr.PlayTests
             Assert.IsTrue(cards.Root.Q("card-event-section").ClassListContains("focused-effect"), "The Event half is the used one.");
             var console = stage.Board.Console.Root.parent.worldBound;
             Assert.LessOrEqual(cards.Root.worldBound.yMax, console.yMin + 1, "The card stands clear of the console.");
-            var dolGuldur = stage.Board.Map.LocalToWorld(stage.Board.Map.Camera.ToScreen(stage.Anchor("dol-guldur")));
-            Assert.IsFalse(cards.Root.worldBound.Contains(dolGuldur), "The card does not cover its first effect.");
+            // UI-324 (owner): the card stands in the middle of the safe area (the old rule kept it away from its effect).
+            Assert.AreEqual(middle.x, cards.Root.worldBound.center.x, 2f, "Centred across the safe area.");
+            Assert.AreEqual(middle.y, cards.Root.worldBound.center.y, 2f, "Centred down the safe area.");
             LayoutTests.Save(stage.Texture, "ui308-reveal.png");
             yield return new WaitForSecondsRealtime(1.5f);
             Assert.AreEqual(Orcs, cards.CardId, "The reveal holds at least 3 s.");
             var chip = stage.Board.Console.Status.Trail.Q<Button>("console-presented-source");
             yield return stage.Until(() => (chip = stage.Board.Console.Status.Trail.Q<Button>("console-presented-source")) != null);
             Assert.AreEqual("✓ Orcs Multiplying Again", chip.text, "The card docks into the console trail.");
-            Assert.AreEqual(DisplayStyle.None, cards.Root.style.display.value);
+            // UI-324: its stand-in lands on the source, which shows once it is there.
+            yield return stage.Until(() => cards.Root.style.display.value == DisplayStyle.None && chip.resolvedStyle.opacity > .99f);
             yield return stage.Until(() => stage.Army("dol-guldur") == 3);
             Assert.AreEqual(1, stage.Board.Root.Query(CostEmphasis.MarkName).ToList().Count, "One source, one cost.");
             Assert.AreEqual(0, stage.Army("mount-gundabad"));
@@ -84,15 +87,20 @@ namespace Wotr.PlayTests
             var cards = stage.Board.Cards;
             yield return stage.Until(() => cards.CardId == Orcs && Standing(cards));
             var place = cards.Root.worldBound;
-            var trail = PresentationTargets.First(stage.Board.Console.Status.Trail, stage.Board.Console.Status.Plaque).worldBound;
-            yield return stage.Until(() => cards.Root.resolvedStyle.scale.value.x < .8f);
-            var late = cards.Root.worldBound;
+            // UI-324: a stand-in above the HUD lands on the docked source, which shows once it arrives.
+            yield return stage.Until(() => StandIn(stage) is { } card && card.resolvedStyle.scale.value.x < .8f &&
+                cards.Root.style.display.value == DisplayStyle.None);
+            var chip = stage.Board.Console.Status.Trail.Q<Button>("console-presented-source");
+            var late = StandIn(stage).worldBound;
             Assert.Less(late.width, place.width, "It shrinks.");
-            Assert.Less(Vector2.Distance(late.center, trail.center), Vector2.Distance(place.center, trail.center), "into the console trail.");
+            Assert.Less(Vector2.Distance(late.center, chip.worldBound.center), Vector2.Distance(place.center, chip.worldBound.center),
+                "onto its source in the console trail.");
+            Assert.AreEqual(0f, chip.resolvedStyle.opacity, "The source waits for it.");
+            Assert.AreEqual(DisplayStyle.None, cards.Root.style.display.value, "The card itself has handed over.");
             LayoutTests.Save(stage.Texture, "ui316-leaving.png");
-            yield return stage.Until(() => stage.Board.Console.Status.Trail.Q<Button>("console-presented-source") is { } chip &&
-                PresentationGlow.IsLit(chip));
-            Assert.AreEqual(DisplayStyle.None, cards.Root.style.display.value, "The card docked.");
+            yield return stage.Until(() => PresentationGlow.IsLit(chip));
+            Assert.IsNull(StandIn(stage), "The stand-in has landed.");
+            Assert.AreEqual(1f, chip.resolvedStyle.opacity, "The source shows.");
             yield return stage.Released();
             stage.AssertFinal(latest);
         }
@@ -112,8 +120,8 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => cards.CardId == Crebain && Standing(cards));
             var place = cards.Root.worldBound;
             var tab = stage.Board.TableEffects.Tab.worldBound;
-            yield return stage.Until(() => cards.Root.resolvedStyle.scale.value.x < .8f);
-            Assert.Less(Vector2.Distance(cards.Root.worldBound.center, tab.center), Vector2.Distance(place.center, tab.center),
+            yield return stage.Until(() => StandIn(stage) is { } card && card.resolvedStyle.scale.value.x < .8f);
+            Assert.Less(Vector2.Distance(StandIn(stage).worldBound.center, tab.center), Vector2.Distance(place.center, tab.center),
                 "It drifts toward the Effects tab.");
             LayoutTests.Save(stage.Texture, "ui316-to-effects.png");
             yield return stage.Until(() => PresentationGlow.IsLit(stage.Board.TableEffects.Tab));
@@ -251,6 +259,8 @@ namespace Wotr.PlayTests
 
         // The Shadow's Event die pays Orcs Multiplying Again; its recruits land in Dol Guldur, then in Mount Gundabad.
         // UI-316: the card stands at its place — no flight is set on it.
+        private static VisualElement StandIn(PresentedBoardStage stage) => stage.Board.Root.Q(CardRevealPresenter.StandInName);
+
         internal static bool Standing(CardInspector cards) => cards.Root.style.display.value == DisplayStyle.Flex &&
             cards.Root.style.opacity.keyword == StyleKeyword.Null && cards.Root.style.scale.keyword == StyleKeyword.Null;
 

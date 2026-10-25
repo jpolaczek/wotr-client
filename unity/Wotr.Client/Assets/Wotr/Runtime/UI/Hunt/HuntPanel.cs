@@ -376,6 +376,9 @@ namespace Wotr.Client
             if (Window?.Restore() == true || !IsOpen || Root.layout.width <= 0 || Root.layout.height <= 0 ||
                 float.IsNaN(Root.layout.width) || float.IsNaN(Root.layout.height))
                 return;
+            // UI-324 (owner): the Hunt window opens in the middle of the board (before, beside the Fellowship).
+            if (Window?.Centre() == true)
+                return;
             var anchor = map.Data.Shapes.TryGetValue(view.Fellowship?.RegionId ?? "", out var shape)
                 ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]))
                 : map.contentRect.center;

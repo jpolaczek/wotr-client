@@ -45,7 +45,7 @@ namespace Wotr.Client
             Skip = new SkipControl(board, layer, Playback, SkipNow);
             Playback.Register(cost);
             Playback.Register(camera);
-            cards = new CardRevealPresenter(board, Playback, camera);
+            cards = new CardRevealPresenter(board, Playback, camera, layer);
             Playback.Register(cards);
             characters = new CharacterPresenter(board, staged, Trace, camera);
             Playback.Register(characters);

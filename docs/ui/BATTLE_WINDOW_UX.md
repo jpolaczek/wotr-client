@@ -424,3 +424,8 @@ decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-
   removes them. A character lost with its army is ringed on its portrait.
 - **Controls.** The marks are observed traces, never a choice glow: nothing in the presented state can be clicked
   except a revealed card. The release gives the player's own controls back, with their usual click rules.
+
+<a id="srodek--ui-324"></a>
+## The window opens in the middle — UI-324 (2026-10-25)
+
+Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).

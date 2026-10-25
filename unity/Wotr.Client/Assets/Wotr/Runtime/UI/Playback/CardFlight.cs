@@ -49,11 +49,11 @@ namespace Wotr.Client
             Show(1 - eased, Mathf.Lerp(Faint, 1, eased));
         }
 
-        // t from 0 to 1: out of the card's place into the destination.
-        public void Leaving(double t)
+        // t from 0 to 1: out of the card's place into the destination; `presence` fades it in or out on top (a handover).
+        public void Leaving(double t, float presence = 1)
         {
             var eased = Eased(t);
-            Show(eased, Mathf.Lerp(1, Faint, eased));
+            Show(eased, Mathf.Lerp(1, Faint, eased) * presence);
         }
 
         private static float Eased(double t)

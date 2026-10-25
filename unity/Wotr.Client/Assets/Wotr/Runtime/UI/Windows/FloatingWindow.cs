@@ -60,6 +60,7 @@ namespace Wotr.Client
             {
                 if (e.target != root) return;
                 layout.Reset += Reset;
+                layout.MiddleMoved += Refresh;
                 Application.focusChanged += Focus;
                 Refresh();
             });
@@ -67,6 +68,7 @@ namespace Wotr.Client
             {
                 if (e.target != root) return;
                 layout.Reset -= Reset;
+                layout.MiddleMoved -= Refresh;
                 Application.focusChanged -= Focus;
                 End();
             });
@@ -147,19 +149,57 @@ namespace Wotr.Client
                 FitDefaultAnchor();
                 return;
             }
+            // UI-324: a window without its own placement opens in the middle of the board until the player moves it.
+            var ownPlacement = anchor != null || defaultAnchor.HasValue;
             if (!persistent())
             {
-                DefaultPosition();
+                if (ownPlacement || !Centre())
+                    DefaultPosition();
                 return;
             }
             if (!Restore() && Ready())
             {
+                if (!ownPlacement && Centre())
+                    return;
                 // Anchored panels may have just written a position in their geometry
                 // callback. Preserve that requested position, before the next layout.
                 var x = root.style.left.keyword == StyleKeyword.Undefined ? root.style.left.value.value : root.layout.x;
                 var y = root.style.top.keyword == StyleKeyword.Undefined ? root.style.top.value.value : root.layout.y;
                 Place(new Vector2(x, y), rememberInitial);
             }
+        }
+
+        // UI-324: places the window in the middle of the board (WindowLayout.Middle), less a band kept free on the right (the
+        // battle window's room for a card); not remembered as the player's position. False before it can.
+        public bool Centre(float keepRight = 0)
+        {
+            if (!Ready() || !(layout.Middle?.Invoke() is Rect world))
+                return false;
+            var minimum = viewport.WorldToLocal(world.min);
+            var area = new Rect(minimum, viewport.WorldToLocal(world.max) - minimum);
+            area.xMax -= keepRight;
+            var size = root.layout.size;
+            var middle = new Vector2(area.center.x - size.x / 2, Mathf.Max(area.yMin, area.center.y - size.y / 2));
+            if (!applied || !WithinPixel(root.layout.position, middle))
+                Place(OnPixels(middle), remember: false);
+            return true;
+        }
+
+        // A window already within a pixel of its middle stays: its size can round differently at each of two neighbouring
+        // pixel positions, and a middle on a half pixel would then move it between them for ever (a layout loop).
+        private bool WithinPixel(Vector2 current, Vector2 middle)
+        {
+            var pixel = 1 / (root.panel?.scaledPixelsPerPoint ?? 1);
+            return Mathf.Abs(current.x - middle.x) <= pixel && Mathf.Abs(current.y - middle.y) <= pixel;
+        }
+
+        // On the screen's pixel grid: a subpixel position would change the rounded sizes of the window's controls and so
+        // its centre (a layout loop), and at 125 % a whole point is not a whole pixel.
+        private Vector2 OnPixels(Vector2 local)
+        {
+            var pixels = root.panel?.scaledPixelsPerPoint ?? 1;
+            var world = viewport.LocalToWorld(local);
+            return viewport.WorldToLocal(new Vector2(Mathf.Round(world.x * pixels) / pixels, Mathf.Round(world.y * pixels) / pixels));
         }
 
         private bool Ready() => root.style.display.value != DisplayStyle.None && root.resolvedStyle.display != DisplayStyle.None &&

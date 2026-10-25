@@ -12,6 +12,34 @@ namespace Wotr.PlayTests
 {
     public sealed class CardViewportLayoutTests
     {
+        // UI-324: a panel held open beside the left rail (here Politics) is not part of the middle: a card open when the
+        // panel opens moves clear of it, and one opened then stands clear of it in the middle that is left.
+        [UnityTest]
+        public IEnumerator ACardWindowStandsClearOfAPanelHeldOpenBesideTheLeftRail()
+        {
+            using var client = new MountedMatchClient("http://localhost", "card-left-panel");
+            var view = new BoardFixture().View;
+            const string card = "base.fp.character.18";
+            view.Hand.Add(card);
+            client.Apply(view);
+            yield return new WaitForSecondsRealtime(.2f);
+            var board = client.Board;
+            board.Cards.Show(card, true);
+            yield return new WaitForSecondsRealtime(.2f);
+            board.Nations.Open();
+            yield return new WaitForSecondsRealtime(.5f);
+            var drawer = board.Nations.Drawer.worldBound;
+            Assert.Greater(drawer.width, 0, "The Politics panel is open.");
+            Assert.GreaterOrEqual(board.Cards.Root.worldBound.xMin, drawer.xMax - 1, "The open card moves clear of the panel.");
+            board.Cards.Close();
+            yield return null;
+            board.Cards.Show(card, true);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.GreaterOrEqual(board.Cards.Root.worldBound.xMin, drawer.xMax - 1, "A card opened now stands clear of it.");
+            Assert.AreEqual(board.Cards.CenterArea().Value.center.x, board.Cards.Root.worldBound.center.x, 2f,
+                "In the middle that is left.");
+        }
+
         [UnityTest]
         public IEnumerator ActionCardFitsBothEffectsAtFourLayoutsAndKeepsPinnedPositionAfterRefresh()
         {
@@ -29,9 +57,15 @@ namespace Wotr.PlayTests
                         client.Panel.targetTexture = target;
                         client.Panel.scale = scale;
                         client.Apply(view);
+                        // The previous layout moved the window with the arrow keys; that is the player's position, kept
+                        // until it is forgotten.
+                        client.Board.Cards.Window.Forget();
                         client.Board.Cards.Show(card, true);
                         yield return new WaitForSecondsRealtime(.2f);
                         AssertFits(client.Board);
+                        var middle = client.Board.Cards.CenterArea().Value.center;
+                        Assert.AreEqual(middle.x, client.Board.Cards.Root.worldBound.center.x, 2f,
+                            "UI-324: the card window opens in the middle of the board · " + width + " " + scale);
                         Assert.AreEqual(DisplayStyle.Flex, client.Board.Cards.Root.Q(className: "card-toolbar").resolvedStyle.display,
                             "The regression requires the action toolbar; discard-only previews are shorter.");
                         var header = client.Board.Cards.Root.Q(className: "card-header");
@@ -94,22 +128,16 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(root.Query<ScrollView>().ToList());
         }
 
-        // UI-106: the opened hand card is parchment with dark ink, like the hand and the recorded actions. UI-320: its title
-        // stands light on the card's dark banner.
+        // UI-106: the opened hand card is parchment with dark ink, like the hand and the recorded actions.
         private static void AssertParchment(VisualElement card)
         {
             Assert.AreEqual("parchment", card.resolvedStyle.backgroundImage.texture?.name);
-            var banner = card.Q(className: "card-header");
             foreach (var label in card.Query<Label>().ToList().Where(l => l.resolvedStyle.display != DisplayStyle.None &&
-                         l.text.Length > 0 && !(l.parent is Button) && !(l is Button) && !banner.Contains(l)))
+                         l.text.Length > 0 && !(l.parent is Button) && !(l is Button)))
             {
                 var color = label.resolvedStyle.color;
                 Assert.Less(color.r + color.g + color.b, 1.5f, "Dark ink on parchment: " + label.name);
             }
-            var shade = banner.resolvedStyle.backgroundColor;
-            var title = banner.Q<Label>(className: "title").resolvedStyle.color;
-            Assert.Less(shade.r + shade.g + shade.b, 1.2f, "A dark title banner.");
-            Assert.Greater(title.r + title.g + title.b, 2.4f, "A light title on it.");
         }
 
         private static void AssertRulesExposed(BoardScreen board)

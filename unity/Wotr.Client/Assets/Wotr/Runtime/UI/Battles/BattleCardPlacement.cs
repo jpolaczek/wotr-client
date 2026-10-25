@@ -24,6 +24,8 @@ namespace Wotr.Client
             var width = shown ? cards.Root.layout.width : 0;
             if (float.IsNaN(width))
                 return;
+            // UI-324: beside the battle window the card shares its space; elsewhere it opens in the middle.
+            cards.Centred = !shown;
             cards.SetDefaultAnchor(new Vector2(shown ? 8 : 342, 8));
             battle.CardPreview(width);
         }

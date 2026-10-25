@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -9,6 +10,8 @@ namespace Wotr.Client
     {
         public VisualElement Left { get; } = new VisualElement { name = "board-left-tabs", pickingMode = PickingMode.Ignore };
         public VisualElement Right { get; } = new VisualElement { name = "board-right-panels", pickingMode = PickingMode.Ignore };
+        // UI-324: the panels that open beside the left rail's tabs; one held open is not part of the board's middle.
+        public IReadOnlyList<VisualElement> LeftPanels { get; }
         // UI-98: the top right corner of the map, under the bar and over the hand: a small tab with the
         // Fellowship (UI-160: the Hunt Box moved to the turn console), and over it the full Fellowship and Hunt panels.
         public VisualElement Dropdowns { get; } = new VisualElement { name = "board-dropdowns", pickingMode = PickingMode.Ignore };
@@ -55,6 +58,7 @@ namespace Wotr.Client
             DockLeft(board.Reinforcements.Root, "reinforcements");
             DockLeft(board.TableEffects.Root, "effects");
             DockLeft(board.Characters.Root, "characters");
+            LeftPanels = new[] { board.Nations.Drawer, board.Reinforcements.Root, board.TableEffects.Root, board.Characters.Root };
             AlignWithTab(board.Nations.Root, board.Nations.Drawer);
             AlignWithTab(board.Reinforcements.Tab, board.Reinforcements.Root);
             AlignWithTab(board.TableEffects.Tab, board.TableEffects.Root);

@@ -292,11 +292,14 @@ namespace Wotr.Client
                 Root.style.top = 8;
                 return;
             }
+            placedScope = scope;
+            // UI-324 (owner): the battle window opens in the middle of the board, a Combat choice keeping its card's room.
+            if (Window?.Centre(combatChoice ? reservedWidth : 0) == true)
+                return;
             var anchor = map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
             var bounds = MapPanelPlacement.Near(map, Root, anchor, combatChoice ? reservedWidth : 0);
             Root.style.left = bounds.x;
             Root.style.top = bounds.y;
-            placedScope = scope;
         }
     }
 }

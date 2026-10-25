@@ -181,7 +181,7 @@ namespace Wotr.PlayTests
             Drop(board, point);
         }
 
-        private static Vector2 ExposedMap(MapCanvas map)
+        internal static Vector2 ExposedMap(MapCanvas map)
         {
             for (var row = 1; row < 10; row++)
                 for (var column = 1; column < 10; column++)
