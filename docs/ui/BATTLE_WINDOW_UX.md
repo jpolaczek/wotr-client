@@ -460,6 +460,8 @@ assignment panel is added, and the animation should fire only once".
   that same element, so the decision only adds its controls under the row the presentation left.
 - Its marker glides only when the current stage changes; a new parent, a redraw or a resize at the same stage puts it in
   place at once (a glide under way is only re-aimed).
+- UI-339: a new battle (another id) starts the row afresh — its marker stands at Cards at once instead of gliding back
+  from where the last battle ended ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
 
 <a id="trafienia--ui-337"></a>
 ## Casualties hit by hit — UI-337 (2026-10-25)

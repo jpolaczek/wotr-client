@@ -95,6 +95,49 @@ namespace Wotr.PlayTests
             Assert.AreSame(FellowshipArtwork.Sprite(view.Fellowship.Hidden ? "hidden" : "revealed"), ring.sprite);
         }
 
+        // UI-339 (owner 2026-10-25: "the next Hunt sometimes starts from a phase"): the window keeps one ribbon, but a new
+        // Hunt starts it afresh — after the last Hunt's Result its marker stands at Roll at once, never gliding back.
+        [UnityTest]
+        public IEnumerator TheNextHuntStartsAtRollWithoutGlidingBack()
+        {
+            using var client = new MountedMatchClient("http://localhost", "hunt-next");
+            var first = HuntLayoutTests.Screen(CommandKind.RerollHunt);
+            first.HuntReport = Report("first", first.Revision, false);
+            client.Apply(first);
+            client.SetOnline();
+            var hunt = client.Board.Hunt;
+            hunt.Open();
+            yield return new WaitForSecondsRealtime(.3f);
+            var done = HuntLayoutTests.Screen(CommandKind.RerollHunt);
+            done.Revision = first.Revision + 1;
+            done.Hunt = null;
+            done.HuntReport = Report("first", first.Revision, true);
+            done.Options.Clear();
+            done.Decision = null;
+            client.Apply(done);
+            yield return new WaitForSecondsRealtime((float)StageRibbon.GlideSeconds + .4f);
+            Assert.AreEqual("hunt-stage-result", Current(hunt.Root.Q("hunt-stages")).name, "The first Hunt shows its Result.");
+            var next = HuntLayoutTests.Screen(CommandKind.RerollHunt);
+            next.Revision = done.Revision + 1;
+            next.Hunt.SourceId = "fellowship-move-2";
+            next.Hunt.RerollSources.Clear();
+            next.HuntReport = Report("next", next.Revision, false);
+            next.Options.Clear();
+            next.Decision = null;
+            client.Apply(next);
+            yield return null;
+            yield return null;
+            var ribbon = hunt.Root.Q("hunt-stages");
+            var roll = Current(ribbon);
+            Assert.AreEqual("hunt-stage-roll", roll.name, "The new Hunt is at its roll.");
+            yield return new WaitForSecondsRealtime(.08f);
+            LayoutTests.Save(client.Viewport, "ui339-next-hunt.png");
+            Assert.AreEqual(roll.layout.x - 5, ribbon.Q("stage-glide").layout.x, 1, "Its marker stands at Roll, not on its way back.");
+        }
+
+        private static HuntReportView Report(string id, long started, bool completed) =>
+            new HuntReportView { Id = id, StartedRevision = started, Completed = completed };
+
         private static VisualElement Current(VisualElement ribbon) =>
             ribbon.Query(className: "battle-stage").ToList().Single(stage => stage.ClassListContains("current-stage"));
 

@@ -14,8 +14,9 @@ namespace Wotr.Client
             return ribbon;
         }
 
-        public static void Apply(StageRibbon ribbon, PlayerView view, HuntView hunt) =>
+        // `scope` is the Hunt the window shows (HuntWindowState.Key), kept while its result stays (UI-339).
+        public static void Apply(StageRibbon ribbon, PlayerView view, HuntView hunt, string scope) =>
             ribbon.Apply(HuntWindowState.Stages(hunt), HuntWindowState.Index(view, hunt), "hunt-stage-icon-",
-                hunt?.Mordor == true ? "Hunt in Mordor · No Hunt roll · BASE p. 43" : "Stages of the Hunt · BASE p. 38–40");
+                hunt?.Mordor == true ? "Hunt in Mordor · No Hunt roll · BASE p. 43" : "Stages of the Hunt · BASE p. 38–40", scope);
     }
 }

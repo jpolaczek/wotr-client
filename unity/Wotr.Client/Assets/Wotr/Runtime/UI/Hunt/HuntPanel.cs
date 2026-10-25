@@ -209,7 +209,7 @@ namespace Wotr.Client
             }
             if (ribbon.Root.parent != stages)
                 stages.Add(ribbon.Root);
-            HuntStages.Apply(ribbon, view, hunt);
+            HuntStages.Apply(ribbon, view, hunt, scope);
             if (phase && IsOpen)
                 Appearance.Arrive(main, PhaseFadeDelay);
         }

@@ -19,6 +19,7 @@ namespace Wotr.Client
         private readonly string prefix;
         private readonly List<VisualElement> stages = new List<VisualElement>();
         private string shape = "";
+        private string scope = "";
         private int current = -1;
         // UI-335: the stage the marker last set off for; only a new one glides.
         private int placed = -1;
@@ -40,9 +41,16 @@ namespace Wotr.Client
             Root.RegisterCallback<GeometryChangedEvent>(_ => Place());
         }
 
-        // `icons` prefixes each stage's icon class; `index` is the current stage, or −1 for none.
-        public void Apply(IReadOnlyList<(string Key, string Title)> list, int index, string icons, string tooltip)
+        // `icons` prefixes each stage's icon class; `index` is the current stage, or −1 for none. UI-339: `scope` names the
+        // Hunt or battle the row shows; a new one starts the row afresh, so its marker stands at the new stage at once
+        // instead of gliding back from where the last one ended.
+        public void Apply(IReadOnlyList<(string Key, string Title)> list, int index, string icons, string tooltip, string scope)
         {
+            if (scope != this.scope)
+            {
+                this.scope = scope;
+                Forget();
+            }
             var key = string.Join("|", list.Select(stage => stage.Key));
             if (key != shape)
             {
@@ -112,6 +120,14 @@ namespace Wotr.Client
             start = Time.realtimeSinceStartupAsDouble;
             glide ??= Marker.schedule.Execute(Step).Every(16);
             glide.Resume();
+        }
+
+        // The marker has no place yet: its next stage is a first place.
+        private void Forget()
+        {
+            glide?.Pause();
+            left = null;
+            placed = -1;
         }
 
         private void Jump(float to)

@@ -16,7 +16,8 @@ namespace Wotr.Client
 
         public static void Apply(StageRibbon ribbon, BattleView battle) =>
             ribbon.Apply(Stages, Index(battle.Stage), "battle-stage-icon-",
-                "Current stage: " + ActionCardText.Words(battle.Stage) + " · Card effects can open their own decisions between these steps.");
+                "Current stage: " + ActionCardText.Words(battle.Stage) + " · Card effects can open their own decisions between these steps.",
+                battle.Id);
 
         // A ribbon of its own, for a view drawn once.
         public static VisualElement Create(BattleView battle)

@@ -435,6 +435,10 @@ well; tokens that change their state should turn over to their other side smooth
   new one (eased, 0.35 s) while the labels and icons crossfade into the current stage; then the phase's content fades in
   (0.12 s after the marker sets off). The battle window's ribbon (the decision tray's and the presented round's) does the
   same.
+- UI-339 (owner 2026-10-25: "the next Hunt sometimes starts from a phase"): the row glides only within one Hunt (one
+  battle). A new Hunt — its window key — or a new battle — its id — starts the row afresh, so the marker stands at the
+  new Roll (Cards) at once; before, it glided back from the last Hunt's Result and the next Hunt looked as if it began at
+  a later phase.
 - The Ring's Hidden/Revealed art — on the plaque, in the Fellowship panel and on the journey track's marker — turns over
   when it changes (`TokenFlip`: it narrows to its edge in 0.15 s, shows its other side at the middle of the turn and widens
   in 0.15 s); a nation's token turns over to its active side the same way.
