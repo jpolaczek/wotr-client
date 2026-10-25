@@ -719,3 +719,20 @@ occlusion changed until the picture is fully clear; the new number shows and the
   number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
   trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
 
+<a id="odejscie--ui-338"></a>
+## An army that leaves fades out — UI-338 (2026-10-25)
+
+Owner: "a unit that disappears from the map should also fade out slowly and smoothly instead of vanishing all at once".
+
+- The counterpart of UI-334: a marker whose figures all leave the map without a flight (killed, removed, eliminated)
+  fades where it stood from clear to transparent and soft (0.7 s, eased at both ends, opacity and blur) and is then
+  removed (`MapArmyArtwork.Leave`, `MapCanvas.StartLeaving`, Armies.uss). It counts as gone at once: it is no longer one
+  of the map's markers (no lookup, no tooltip, no pointer; its element is renamed `leaving-…`), and it keeps its place on
+  the map while the view moves.
+- A shrinking army keeps its figures: they dim for a moment (0.25 s, then back over 0.5 s) as its number steps down
+  (`MapArmyArtwork.Shrink`).
+- Figures a flight carries away leave with the flight (decided one frame later, once the flights are known, as UI-334's
+  arrivals are): their marker is removed at once and the shrinking source does not dim.
+- The first view, a quiet view, Reduced motion and Skip animations remove the marker at once; Skip of a presentation ends
+  every fade (`MapCanvas.EndEmerging`). The map's slice of UI-322's "a figure leaving a stack fades out".
+

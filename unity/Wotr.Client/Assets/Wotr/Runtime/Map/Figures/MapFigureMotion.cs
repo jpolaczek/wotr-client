@@ -19,6 +19,8 @@ namespace Wotr.Client
         private readonly BoardFigureChanges changes = new BoardFigureChanges();
         private readonly List<Flight> flights = new List<Flight>();
         private readonly HashSet<(string, Side, bool)> arrivals = new HashSet<(string, Side, bool)>();
+        // UI-338: the forces figures fly away from; their marker needs no fade of its own.
+        private readonly HashSet<(string, Side, bool)> departures = new HashSet<(string, Side, bool)>();
         private readonly HashSet<string> revealedRegions = new HashSet<string>();
         private readonly IVisualElementScheduledItem timer;
         private double started;
@@ -127,6 +129,7 @@ namespace Wotr.Client
         public void Land() => Clear();
 
         public bool Arriving(string region, Side side, bool garrison) => arrivals.Contains((region, side, garrison));
+        public bool Departing(string region, Side side, bool garrison) => departures.Contains((region, side, garrison));
         public bool Reveals(string region) => revealedRegions.Contains(region);
 
         public void Reset()
@@ -145,6 +148,8 @@ namespace Wotr.Client
                     FellowshipArriving = true;
                 else
                     arrivals.Add((move.To.Region, move.To.Side, move.To.Garrison));
+                if (!move.IsArrival)
+                    departures.Add((move.From.Region, move.From.Side, move.From.Garrison));
                 var key = (move.From.Region, move.To.Region, move.To.Side, move.From.Garrison, move.To.Garrison);
                 if (!groups.TryGetValue(key, out var group))
                     groups.Add(key, group = new List<BoardFigureMove>());
@@ -187,6 +192,7 @@ namespace Wotr.Client
             {
                 Moves = Array.Empty<BoardFigureMove>();
                 arrivals.Clear();
+                departures.Clear();
                 FellowshipArriving = false;
                 timer.Pause();
                 map.Refresh();
@@ -220,6 +226,7 @@ namespace Wotr.Client
             Root.Clear();
             flights.Clear();
             arrivals.Clear();
+            departures.Clear();
             revealedRegions.Clear();
             FellowshipArriving = false;
             Moves = Array.Empty<BoardFigureMove>();

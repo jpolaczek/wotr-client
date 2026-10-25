@@ -23,6 +23,11 @@ namespace Wotr.Client
         public const string HiddenClass = "army-emerge-hidden";
         public const long FlareMilliseconds = 150;
         public const long EmergeMilliseconds = 500;
+        // UI-338: a marker whose figures all left fades out; a shrinking army dims its figures for a moment (Armies.uss).
+        public const string LeavingClass = "army-leaving";
+        public const string ShrinkingClass = "army-shrinking";
+        public const long LeaveMilliseconds = 700;
+        public const long ShrinkMilliseconds = 250;
         // Unused parts are hidden by class, so the level rules of Styles/Armies.uss can still hide the rest.
         public const string UnusedClass = "army-part-unused";
         public const int MaximumEmblems = 2;
@@ -45,6 +50,7 @@ namespace Wotr.Client
         private string emergingCount;
         private IVisualElementScheduledItem reveal;
         private IVisualElementScheduledItem settle;
+        private IVisualElementScheduledItem shrink;
 
         public MapArmyArtwork(Button button)
         {
@@ -132,11 +138,33 @@ namespace Wotr.Client
             settle.ExecuteLater(FlareMilliseconds + EmergeMilliseconds);
         }
 
+        // UI-338 (owner 2026-10-25: "a unit that disappears from the map should fade out slowly and smoothly instead of
+        // vanishing all at once"): the counterpart of Emerge — from clear to transparent and soft; `gone` removes it then.
+        public void Leave(Action gone)
+        {
+            EndEmerge();
+            button.RemoveFromClassList("eligible-army");
+            button.RemoveFromClassList("armed-force");
+            button.AddToClassList(LeavingClass);
+            button.schedule.Execute(gone).ExecuteLater(LeaveMilliseconds);
+        }
+
+        // A shrinking army keeps its figures; they dim for a moment as its number steps down.
+        public void Shrink()
+        {
+            shrink?.Pause();
+            button.AddToClassList(ShrinkingClass);
+            shrink = button.schedule.Execute(() => button.RemoveFromClassList(ShrinkingClass));
+            shrink.ExecuteLater(ShrinkMilliseconds);
+        }
+
         // Its final state: clear, its number, no flare (also when Skip ends it).
         public void EndEmerge()
         {
             reveal?.Pause();
             settle?.Pause();
+            shrink?.Pause();
+            button.RemoveFromClassList(ShrinkingClass);
             button.RemoveFromClassList(HiddenClass);
             button.RemoveFromClassList(FlaringClass);
             if (emergingCount == null)

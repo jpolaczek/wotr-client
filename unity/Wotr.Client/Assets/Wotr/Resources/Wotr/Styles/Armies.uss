@@ -40,6 +40,13 @@
 .motion-enabled .army .army-flare { transition-property: opacity; transition-duration: 0.3s; transition-timing-function: ease-out-sine; }
 .motion-enabled .army.army-flaring .army-flare { transition-duration: 0.15s; }
 .motion-enabled .army .army-artwork { transition-property: opacity, filter; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
+/* UI-338: the counterpart — a marker whose figures all left fades from clear to transparent and soft before it is removed;
+   a shrinking army's figures dim for a moment as its number steps down. At once under Skip animations. */
+.army.army-leaving .army-artwork { opacity: 0; filter: blur(5px); }
+/* Leaving is slower and eased at both ends, so the figures stay readable while they go. */
+.motion-enabled .army.army-leaving .army-artwork { transition-duration: 0.7s; transition-timing-function: ease-in-out-sine; }
+.army.army-shrinking .army-artwork { opacity: 0.45; }
+.motion-enabled .army.army-shrinking .army-artwork { transition-duration: 0.25s; }
 .army-artwork .army-part-unused { display: none; }
 .army-plinth { position: absolute; left: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
 .army-figures .army-plinth { height: 32px; }
