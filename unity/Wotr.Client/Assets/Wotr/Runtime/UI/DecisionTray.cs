@@ -61,13 +61,16 @@ namespace Wotr.Client
         public bool ContextualHunt { get; set; }
         public bool ContextualCharacter { get; set; }
         private readonly List<Action> refreshChoices = new List<Action>();
-        // UI-327: the battle's ribbon outlasts the tray's redraws, so its marker glides from stage to stage.
-        private readonly StageRibbon battleRibbon = BattleStages.Ribbon();
+        // UI-327: the battle's ribbon outlasts the tray's redraws, so its marker glides from stage to stage. UI-335: it is the
+        // battle window's own ribbon, the one its presented round shows, so a stage reached in the presentation is not glided
+        // to again when the decision takes the row.
+        private readonly StageRibbon battleRibbon;
 
         public DecisionTray(VisualElement root, BoardPresentation data = null, CardInspector cards = null,
-            CompanionSetupPanel setup = null)
+            CompanionSetupPanel setup = null, StageRibbon battleRibbon = null)
         {
             this.root = root;
+            this.battleRibbon = battleRibbon ?? BattleStages.Ribbon();
             this.cards = cards;
             this.setup = setup;
             this.data = data ?? BoardPresentation.Load();

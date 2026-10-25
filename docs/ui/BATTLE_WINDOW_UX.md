@@ -449,3 +449,15 @@ Owner: "once the battle is resolved and the next animations start, close its win
 - A window the player dragged to a place of their own stays through the rest of the presentation.
 - Outside a presentation the window already closes with its battle (the view without it).
 
+<a id="jedna-wstega--ui-335"></a>
+## One ribbon per battle window — UI-335 (2026-10-25)
+
+Owner, on the ribbon at Losses: "the animation of moving to Losses fires twice — after the previous phase ends and again
+when the window refreshes to show the damage assignment; it should be the same tab all the time, to which the damage
+assignment panel is added, and the animation should fire only once".
+
+- The battle window has one stage ribbon (`RegionalBattlePanel.Ribbon`); the presented round and the decision tray show
+  that same element, so the decision only adds its controls under the row the presentation left.
+- Its marker glides only when the current stage changes; a new parent, a redraw or a resize at the same stage puts it in
+  place at once (a glide under way is only re-aimed).
+

@@ -20,6 +20,8 @@ namespace Wotr.Client
         private readonly List<VisualElement> stages = new List<VisualElement>();
         private string shape = "";
         private int current = -1;
+        // UI-335: the stage the marker last set off for; only a new one glides.
+        private int placed = -1;
         private float? left;
         private float origin;
         private float target;
@@ -60,6 +62,7 @@ namespace Wotr.Client
                 stage.RemoveFromHierarchy();
             stages.Clear();
             left = null;
+            placed = -1;
             foreach (var (key, title) in list)
             {
                 var stage = new VisualElement { name = prefix + key, pickingMode = PickingMode.Ignore };
@@ -76,7 +79,9 @@ namespace Wotr.Client
             }
         }
 
-        // Behind the current stage's icon, once the row is laid out: a new stage glides there, a resize or a first place jumps.
+        // Behind the current stage's icon, once the row is laid out: a new stage glides there; a first place, a resize, a
+        // redraw or a new parent at the same stage (UI-335: the presented round handing the row to the decision) puts it
+        // there at once, or re-aims a glide under way.
         private void Place()
         {
             if (current < 0 || current >= stages.Count)
@@ -90,9 +95,14 @@ namespace Wotr.Client
             Marker.style.display = DisplayStyle.Flex;
             Marker.style.top = stage.y + MarkerTop;
             var to = stage.x + MarkerLeft;
-            if (glide?.isActive == true && Mathf.Abs(to - target) < .5f)
+            var same = placed == current;
+            placed = current;
+            if (same && glide?.isActive == true)
+            {
+                target = to;
                 return;
-            if (!left.HasValue || Reduced() || Mathf.Abs(to - left.Value) < .5f)
+            }
+            if (same || !left.HasValue || Reduced() || Mathf.Abs(to - left.Value) < .5f)
             {
                 Jump(to);
                 return;

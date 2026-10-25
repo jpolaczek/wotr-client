@@ -39,6 +39,25 @@ namespace Wotr.PlayTests
             Assert.AreNotEqual(DisplayStyle.None, stage.Board.Tray.style.display.value);
         }
 
+        // UI-335 (owner 2026-10-25): the presented round and the decision share the window's one ribbon — the decision only
+        // joins it — so a stage reached in the presentation is not glided to again at the release.
+        [UnityTest]
+        public IEnumerator ThePresentedRoundAndTheDecisionShareOneRibbon()
+        {
+            using var stage = Attack(out var fight);
+            yield return stage.Ready();
+            stage.Play(fight.Latest(), "grey-havens", fight.Steps.ToArray());
+            yield return stage.Until(() => stage.Board.Battles.IsOpen && stage.Board.Battles.Presenting);
+            var ribbon = stage.Board.Battles.Ribbon;
+            Assert.IsTrue(stage.Board.Battles.Presented.Contains(ribbon.Root), "The presented round shows the window's ribbon.");
+            yield return stage.Released();
+            yield return null;
+            Assert.AreSame(ribbon.Root, stage.Board.Tray.Q("battle-stages"), "The decision shows the same row.");
+            var marker = ribbon.Marker.layout.x;
+            yield return new WaitForSecondsRealtime((float)StageRibbon.GlideSeconds / 2);
+            Assert.AreEqual(marker, ribbon.Marker.layout.x, .5f, "No second glide at the release.");
+        }
+
         [UnityTest]
         public IEnumerator TheCommittedCardStaysABackUntilBothCardsTurnFaceUpTogether()
         {

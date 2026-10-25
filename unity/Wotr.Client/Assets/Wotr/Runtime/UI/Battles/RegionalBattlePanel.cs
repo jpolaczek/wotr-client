@@ -46,6 +46,8 @@ namespace Wotr.Client
         private readonly StageRibbon ribbon = BattleStages.Ribbon();
         private StyleEnum<DisplayStyle> trayDisplay;
         public VisualElement Presented => presented;
+        // UI-335: the window's one ribbon, which the decision tray shows too, so its marker moves once per stage.
+        public StageRibbon Ribbon => ribbon;
         public bool Presenting => presented.parent == Root;
 
         public RegionalBattlePanel(VisualElement tray, VisualElement dock, MapCanvas map)
