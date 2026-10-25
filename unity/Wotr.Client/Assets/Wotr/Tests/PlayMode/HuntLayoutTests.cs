@@ -116,6 +116,8 @@ namespace Wotr.PlayTests
                         client.Board.Fellowship.Open();
                         client.Board.Hunt.Open();
                         yield return Settle();
+                        // UI-327: within one Hunt a new size glides the window into its place.
+                        yield return new WaitForSecondsRealtime((float)FloatingWindow.GlideSeconds + .05f);
                         var board = client.Board;
                         LayoutTests.Save(target, $"ui34-hunt-{kind}-{width}-{scale:0.00}.png");
                         Assert.AreSame(board.Hunt.DecisionHost, board.Tray.parent);

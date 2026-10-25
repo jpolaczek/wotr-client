@@ -420,3 +420,23 @@ marked nicely in green".
 - At the reroll a rerollable miss keeps the legal ring around its die (`.legal-target`), so a choosable die still shows it
   can be clicked; the recorded Hunt in the Log (`HuntArchiveSummary`) uses the same dice and green hits.
 
+<a id="fazy--ui-327"></a>
+## The Hunt's phases change smoothly — UI-327 (2026-10-25)
+
+Owner: "the Hunt window's phases can appear in different places on the screen … we don't jump between the phases, we
+need a smooth animation: first the active element lights up and then a smooth transition; on this track the marker is to
+move smoothly; the change between the Ring's hidden and revealed art is to be smooth too, and at the Ring's track as
+well; tokens that change their state should turn over to their other side smoothly".
+
+- The window opens in the middle for each Hunt (UI-324) and then stays where it stands through its phases: a new size
+  re-centres it across and keeps its top (unless it would leave the middle), gliding there over 0.25 s
+  (`FloatingWindow.KeepInMiddle`); a drag stops the glide; the next Hunt opens in the middle again.
+- The stage ribbon is one lasting row (`StageRibbon`): at a new phase its gilt marker glides from the old stage to the
+  new one (eased, 0.35 s) while the labels and icons crossfade into the current stage; then the phase's content fades in
+  (0.12 s after the marker sets off). The battle window's ribbon (the decision tray's and the presented round's) does the
+  same.
+- The Ring's Hidden/Revealed art — on the plaque, in the Fellowship panel and on the journey track's marker — turns over
+  when it changes (`TokenFlip`: it narrows to its edge in 0.15 s, shows its other side at the middle of the turn and widens
+  in 0.15 s); a nation's token turns over to its active side the same way.
+- Under Skip animations the marker, the window and the tokens change at once. Nothing waits for an animation. A drawn
+  Hunt tile has no face-down state in the client, so it does not turn.

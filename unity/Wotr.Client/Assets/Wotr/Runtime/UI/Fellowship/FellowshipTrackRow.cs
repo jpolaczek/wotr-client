@@ -174,7 +174,7 @@ namespace Wotr.Client
                 if (moved)
                     Flash();
             }
-            marker.sprite = FellowshipArtwork.Sprite(state.Symbol);
+            FellowshipArtwork.Show(marker, state.Symbol);
             overflow.style.display = state.BeyondTrack ? DisplayStyle.Flex : DisplayStyle.None;
         }
 

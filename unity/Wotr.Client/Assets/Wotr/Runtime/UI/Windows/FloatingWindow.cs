@@ -20,6 +20,12 @@ namespace Wotr.Client
         private int pointer = -1;
         private bool applied;
         private bool moved;
+        // UI-327: an automatic correction glides (KeepInMiddle).
+        public const double GlideSeconds = .25;
+        private IVisualElementScheduledItem glide;
+        private Vector2 glideFrom;
+        private Vector2 glideTo;
+        private double glideStart;
 
         public FloatingWindow(VisualElement root, WindowLayout layout, Func<bool> persistent = null, Action pin = null,
             Action anchor = null, Vector2? defaultAnchor = null, bool rememberInitial = true)
@@ -175,14 +181,69 @@ namespace Wotr.Client
         {
             if (!Ready() || !(layout.Middle?.Invoke() is Rect world))
                 return false;
-            var minimum = viewport.WorldToLocal(world.min);
-            var area = new Rect(minimum, viewport.WorldToLocal(world.max) - minimum);
+            glide?.Pause();
+            var area = Local(world);
             area.xMax -= keepRight;
             var size = root.layout.size;
             var middle = new Vector2(area.center.x - size.x / 2, Mathf.Max(area.yMin, area.center.y - size.y / 2));
             if (!applied || !WithinPixel(root.layout.position, middle))
                 Place(OnPixels(middle), remember: false);
             return true;
+        }
+
+        // UI-327: a window that stays where it stands while its content changes — centred across the middle (its width may
+        // change), its top kept unless it would leave the middle — gliding to a corrected place (at once under Skip
+        // animations). False before it can.
+        public bool KeepInMiddle()
+        {
+            if (!Ready() || !(layout.Middle?.Invoke() is Rect world))
+                return false;
+            var area = Local(world);
+            var size = root.layout.size;
+            var top = Mathf.Clamp(root.layout.y, area.yMin, Mathf.Max(area.yMin, area.yMax - size.y));
+            var next = new Vector2(area.center.x - size.x / 2, top);
+            if (glide?.isActive == true && WithinPixel(glideTo, next) || WithinPixel(root.layout.position, next))
+                return true;
+            GlideTo(OnPixels(next));
+            return true;
+        }
+
+        private Rect Local(Rect world)
+        {
+            var minimum = viewport.WorldToLocal(world.min);
+            return new Rect(minimum, viewport.WorldToLocal(world.max) - minimum);
+        }
+
+        private void GlideTo(Vector2 next)
+        {
+            if (Reduced())
+            {
+                glide?.Pause();
+                Place(next, remember: false);
+                return;
+            }
+            glideFrom = root.layout.position;
+            glideTo = next;
+            glideStart = Time.realtimeSinceStartupAsDouble;
+            glide ??= root.schedule.Execute(GlideStep).Every(16);
+            glide.Resume();
+        }
+
+        private void GlideStep()
+        {
+            var t = Mathf.Clamp01((float)((Time.realtimeSinceStartupAsDouble - glideStart) / GlideSeconds));
+            var eased = 1 - Mathf.Pow(1 - t, 3);
+            Place(Vector2.Lerp(glideFrom, glideTo, eased), remember: false);
+            if (t >= 1)
+                glide.Pause();
+        }
+
+        private bool Reduced()
+        {
+            for (var element = root; element != null; element = element.parent)
+                if (element.ClassListContains("reduced-motion"))
+                    return true;
+            return false;
         }
 
         // A window already within a pixel of its middle stays: its size can round differently at each of two neighbouring
@@ -241,6 +302,7 @@ namespace Wotr.Client
         {
             if (e.button != 0 || !IsHandle(e.target as VisualElement))
                 return;
+            glide?.Pause();
             origin = viewport.WorldToLocal(e.position);
             position = root.layout.position;
             pointer = e.pointerId;

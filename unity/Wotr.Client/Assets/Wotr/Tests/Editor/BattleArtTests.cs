@@ -73,7 +73,8 @@ namespace Wotr.Client.Tests
             StringAssert.Contains("Rear guard", shelf.Q<Label>("battle-nonparticipants").text);
             Assert.IsNotNull(shelf.Q(className: "battle-garrison-icon"));
             var stages = BattleStages.Create(view.Battle);
-            Assert.AreEqual(5, stages.childCount);
+            Assert.AreEqual(5, stages.Query(className: "battle-stage").ToList().Count);
+            Assert.IsNotNull(stages.Q("stage-glide"), "UI-327: one marker glides between the stages.");
             Assert.IsTrue(stages.Q("battle-stage-reroll").ClassListContains("current-stage"));
             Assert.IsFalse(stages.Q("battle-stage-roll").ClassListContains("current-stage"));
             Assert.IsNotNull(stages.Q("battle-stage-reroll").Q(className: "battle-stage-icon-reroll"));

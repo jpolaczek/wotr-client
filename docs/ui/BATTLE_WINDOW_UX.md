@@ -429,3 +429,11 @@ decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-
 ## The window opens in the middle — UI-324 (2026-10-25)
 
 Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).
+
+<a id="wstega--ui-327"></a>
+## The stage marker glides — UI-327 (2026-10-25)
+
+The stage ribbon is one lasting row per window (`StageRibbon`, `BattleStages.Ribbon`): when the battle moves to another
+stage its gilt marker glides there (eased, 0.35 s) and the labels crossfade, also when the window redraws its content;
+at once under Skip animations ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
+

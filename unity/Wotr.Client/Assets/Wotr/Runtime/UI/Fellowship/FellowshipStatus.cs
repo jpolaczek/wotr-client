@@ -91,14 +91,14 @@ namespace Wotr.Client
             var damage = FellowshipTrackState.Corruption(fellowship);
             var hidden = fellowship.Hidden ? "Hidden" : "Revealed";
             Summary.style.display = DisplayStyle.Flex;
-            summaryCondition.sprite = FellowshipArtwork.Sprite(travel.Symbol);
+            FellowshipArtwork.Show(summaryCondition, travel.Symbol);
             summaryStateText = hidden;
             summaryState.text = hidden;
             summaryJourney.sprite = FellowshipArtwork.Sprite(fellowship.MordorStep.HasValue ? "mordor-gate" : "journey");
             summaryProgress.text = fellowship.MordorStep.HasValue ? travel.Value + "/5" : travel.Value.ToString();
             summaryCorruption.text = damage.Value.ToString();
             state.text = hidden;
-            condition.sprite = FellowshipArtwork.Sprite(travel.Symbol);
+            FellowshipArtwork.Show(condition, travel.Symbol);
             state.tooltip = fellowship.Hidden ? "The Fellowship is hidden." : "The Fellowship is revealed. Hide before moving again.";
             var regionName = data.Regions.TryGetValue(fellowship.RegionId, out var region) ? region.Name : fellowship.RegionId;
             location.text = fellowship.MordorStep.HasValue ? "Mordor" : regionName;

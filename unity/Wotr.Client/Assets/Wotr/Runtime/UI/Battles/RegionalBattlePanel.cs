@@ -42,6 +42,8 @@ namespace Wotr.Client
         // UI-311: a recorded state of the battle the opponent's presentation shows read-only in place of the decision
         // controls; the tray's own display returns with the release.
         private readonly VisualElement presented = new VisualElement { name = "battle-presented" };
+        // UI-327: the presented round's ribbon lasts, so its marker glides from stage to stage.
+        private readonly StageRibbon ribbon = BattleStages.Ribbon();
         private StyleEnum<DisplayStyle> trayDisplay;
         public VisualElement Presented => presented;
         public bool Presenting => presented.parent == Root;
@@ -89,7 +91,8 @@ namespace Wotr.Client
                 return;
             heading.text = map.Data.Regions[region].Name + " · " + battle.Mode + " · Round " + battle.Round;
             presented.Clear();
-            presented.Add(BattleStages.Create(battle));
+            presented.Add(ribbon.Root);
+            BattleStages.Apply(ribbon, battle);
             new BattleContext(presented, battle, view, null, null, null, cards).Refresh();
             if (Presenting)
                 return;

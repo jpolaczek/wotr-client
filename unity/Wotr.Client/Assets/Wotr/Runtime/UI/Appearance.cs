@@ -25,12 +25,13 @@ namespace Wotr.Client
             Arrive(element);
         }
 
-        // A new element (a plate, a caption, the Skip medallion) fades in as it joins the panel.
-        public static void Arrive(VisualElement element)
+        // A new element (a plate, a caption, the Skip medallion) fades in as it joins the panel; `delay` lets what changed
+        // first be seen (UI-327: a Hunt phase's content after the ribbon's marker sets off).
+        public static void Arrive(VisualElement element, long delay = 0)
         {
             element.AddToClassList(HostClass);
             element.AddToClassList(AppearingClass);
-            element.schedule.Execute(() => element.RemoveFromClassList(AppearingClass));
+            element.schedule.Execute(() => element.RemoveFromClassList(AppearingClass)).ExecuteLater(delay);
         }
     }
 }

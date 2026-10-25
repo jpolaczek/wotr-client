@@ -38,6 +38,10 @@ namespace Wotr.Client
         private readonly HuntReportStrip report;
         private readonly VisualElement main = new VisualElement { name = "hunt-main" };
         private readonly VisualElement stages = new VisualElement { name = "hunt-stage-row" };
+        // UI-327: one ribbon for the window, so its marker glides between the Hunt's phases.
+        private readonly StageRibbon ribbon = HuntStages.Ribbon();
+        private const long PhaseFadeDelay = 120;
+        private string placedFor = "";
         private readonly Label title;
         private readonly Label step = new Label { name = "hunt-step" };
         private readonly Label owner = new Label { name = "hunt-owner" };
@@ -195,10 +199,19 @@ namespace Wotr.Client
             var key = underway ? (hunt?.Mordor == true) + "/" + HuntWindowState.Index(view, hunt) : "";
             if (key == shownStages)
                 return;
+            // UI-327: a new phase of the same Hunt glides the ribbon's marker first, then its content fades in.
+            var phase = shownStages.Length > 0 && key.Length > 0;
             shownStages = key;
-            stages.Clear();
-            if (underway)
-                stages.Add(HuntStages.Create(view, hunt));
+            if (!underway)
+            {
+                ribbon.Root.RemoveFromHierarchy();
+                return;
+            }
+            if (ribbon.Root.parent != stages)
+                stages.Add(ribbon.Root);
+            HuntStages.Apply(ribbon, view, hunt);
+            if (phase && IsOpen)
+                Appearance.Arrive(main, PhaseFadeDelay);
         }
 
         public void Context(PlayerView latest, TurnDraft draft, ActionDieContext context, bool enabled)
@@ -361,7 +374,11 @@ namespace Wotr.Client
             // A local choice must keep its hit target under the pointer. Geometry
             // callbacks handle resizing; only visibility changes need a new anchor.
             if (wasVisible != IsOpen)
+            {
+                if (!IsOpen)
+                    placedFor = "";
                 Position();
+            }
             Window?.Refresh();
             if (wasVisible == IsOpen)
                 return;
@@ -376,9 +393,15 @@ namespace Wotr.Client
             if (Window?.Restore() == true || !IsOpen || Root.layout.width <= 0 || Root.layout.height <= 0 ||
                 float.IsNaN(Root.layout.width) || float.IsNaN(Root.layout.height))
                 return;
-            // UI-324 (owner): the Hunt window opens in the middle of the board (before, beside the Fellowship).
-            if (Window?.Centre() == true)
+            // UI-324 (owner): the Hunt window opens in the middle of the board (before, beside the Fellowship). UI-327: its
+            // later phases keep it where it stands — a new size re-centres it across and keeps its top, gliding.
+            if (placedFor == scope && Window?.KeepInMiddle() == true)
                 return;
+            if (Window?.Centre() == true)
+            {
+                placedFor = scope;
+                return;
+            }
             var anchor = map.Data.Shapes.TryGetValue(view.Fellowship?.RegionId ?? "", out var shape)
                 ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]))
                 : map.contentRect.center;

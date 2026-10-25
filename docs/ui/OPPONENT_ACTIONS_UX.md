@@ -1234,3 +1234,10 @@ flies it into his lit card count, which flashes and changes".
   rest of a larger count. The card backs and the signed count then join the count as before, and the beat holds.
 - Skip removes the backs and shows the latest state; under Skip animations the beat stays the motionless one of UI-315.
 
+<a id="zetony--ui-327"></a>
+## Tokens turn over — UI-327 (2026-10-25)
+
+In the Fellowship and politics beats of §8 the object a stage changes still glows first (UI-315); the Ring's
+Hidden/Revealed art and a nation's token then turn over to their other side (`TokenFlip`, 0.3 s) instead of swapping in
+one frame, the same for the player's own changes ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
+

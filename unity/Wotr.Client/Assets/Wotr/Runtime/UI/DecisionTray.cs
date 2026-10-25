@@ -61,6 +61,8 @@ namespace Wotr.Client
         public bool ContextualHunt { get; set; }
         public bool ContextualCharacter { get; set; }
         private readonly List<Action> refreshChoices = new List<Action>();
+        // UI-327: the battle's ribbon outlasts the tray's redraws, so its marker glides from stage to stage.
+        private readonly StageRibbon battleRibbon = BattleStages.Ribbon();
 
         public DecisionTray(VisualElement root, BoardPresentation data = null, CardInspector cards = null,
             CompanionSetupPanel setup = null)
@@ -331,7 +333,8 @@ namespace Wotr.Client
             var completedBattleExcess = view.Battle?.Stage == "Complete" && view.Decision?.Kind == DecisionKind.RemoveExcess;
             if (view.Battle != null && !completedBattleExcess)
             {
-                root.Add(BattleStages.Create(view.Battle));
+                root.Add(battleRibbon.Root);
+                BattleStages.Apply(battleRibbon, view.Battle);
                 var battle = new BattleContext(root, view.Battle, view, draft, action => DraftEdited?.Invoke(action), id => CardInspected?.Invoke(id), cards,
                     action => ChoiceCompleted?.Invoke(action));
                 refreshChoices.Add(battle.Refresh);
