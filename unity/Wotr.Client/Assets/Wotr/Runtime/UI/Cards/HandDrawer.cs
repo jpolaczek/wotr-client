@@ -66,7 +66,7 @@ namespace Wotr.Client
             side = view.You;
             var ownDiscard = view.Decision?.Kind == DecisionKind.DiscardCards && view.DecisionOwner == view.You;
             excess = ownDiscard ? Math.Max(0, view.Hand.Count - 6) : 0;
-            Tab.text = excess > 0 ? "Discard " + excess : "Cards " + view.Hand.Count;
+            ValuePulse.Set(Tab, excess > 0 ? "Discard " + excess : "Cards " + view.Hand.Count);
             if (excess > 0 && openedDiscard != view.Decision.Id)
             {
                 openedDiscard = view.Decision.Id;

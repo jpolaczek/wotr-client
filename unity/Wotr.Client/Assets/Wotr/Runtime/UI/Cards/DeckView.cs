@@ -38,7 +38,7 @@ namespace Wotr.Client
                 var available = CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
                 entry.Value.EnableInClassList("empty-deck", count == 0);
-                entry.Value.Q<Label>("deck-count").text = count.ToString();
+                ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
                 entry.Value.tooltip = FigureGrid.Name(entry.Key) + " · " + count + " cards" +
                     (count == 0 ? " · Empty" : available ? " · Draw" : " · Choose an Event die to draw");

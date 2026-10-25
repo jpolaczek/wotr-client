@@ -546,6 +546,7 @@ namespace Wotr.Client
             Map.Figures.SetConnected(false);
             quiet = true;
             Map.Quiet = true;
+            ValuePulse.Quiet = true;
             try
             {
                 Apply(view);
@@ -554,6 +555,7 @@ namespace Wotr.Client
             {
                 quiet = false;
                 Map.Quiet = false;
+                ValuePulse.Quiet = false;
                 Map.Figures.SetConnected(figuresLive);
             }
         }

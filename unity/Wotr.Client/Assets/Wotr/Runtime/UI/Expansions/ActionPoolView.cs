@@ -28,6 +28,8 @@ namespace Wotr.Client
         private readonly Action<string> tokenChosen;
         public Action<string> CouncilChosen { get; set; }
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
+        // UI-322: the last shown count of each side's spent, Hunt and out dice, so a rebuilt count that changed pulses.
+        private readonly Dictionary<(string, Side, DieLocation), int> shownCounts = new Dictionary<(string, Side, DieLocation), int>();
 
         public ActionPoolView(Action<string> dieChosen, Action<string> tokenChosen)
         {
@@ -138,6 +140,10 @@ namespace Wotr.Client
                 button.AddToClassList("pool-count-" + location.ToString().ToLowerInvariant());
                 button.Add(new VisualElement { name = "pool-count-icon", pickingMode = PickingMode.Ignore });
                 row.Add(button);
+                var key = (view.MatchId, side, location);
+                if (shownCounts.TryGetValue(key, out var shown) && shown != dice.Count)
+                    ValuePulse.Pulse(button);
+                shownCounts[key] = dice.Count;
             }
         }
 

@@ -78,7 +78,7 @@ namespace Wotr.Client
                 if (shown == tooltip)
                     return;
                 shown = tooltip;
-                value.text = count.ToString();
+                ValuePulse.Set(value, count.ToString());
                 Root.tooltip = tooltip;
             }
         }
