@@ -102,9 +102,12 @@ namespace Wotr.Client.Tests
             Assert.IsFalse(face.ClassListContains("battle-pips-hit"));
             Assert.IsNull(missButton.Q("battle-reroll-arrow"));
 
+            // UI-325 (owner review 2026-10-25): Hunt dice are the same ivory dice, picked by the same face class.
             var hunt = new HuntDieFace();
             hunt.Apply(4);
-            Assert.IsFalse(hunt.Illustrated, "Hunt dice keep their painted pips.");
+            Assert.IsTrue(hunt.Illustrated, "Hunt dice are illustrated dice, not painted pips.");
+            Assert.IsTrue(hunt.ClassListContains(HuntDieFace.FaceClass));
+            Assert.IsTrue(hunt.ClassListContains(DiePips.FaceClassPrefix + "4"));
         }
 
         [Test]

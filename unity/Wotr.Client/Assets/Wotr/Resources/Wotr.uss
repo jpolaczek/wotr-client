@@ -493,7 +493,7 @@
 .hunt-roll-die #hunt-pips { width: 30px; height: 30px; flex-shrink: 0; }
 .hunt-roll-die #hunt-hit { width: 12px; margin: 0; padding: 0; -unity-text-align: middle-center; }
 .hunt-roll-die #hunt-first-result { font-size: 11px; margin: 0; padding: 0; -unity-text-align: middle-center; }
-.hunt-roll-die.hunt-hit { border-color: rgb(146, 205, 177); }
+
 .hunt-panel #hunt-roll-bonus { margin: 0; font-size: 13px; }
 .hunt-panel #hunt-reroll-budget { margin: 2px 0 0 0; font-size: 12px; }
 .hunt-panel #hunt-movement-bonus, .hunt-panel #hunt-effect-bonus, .hunt-panel #hunt-reroll-sources, .hunt-panel #hunt-reroll-bonus { font-size: 12px; margin: 2px 12px 0 0; padding: 0; white-space: normal; }

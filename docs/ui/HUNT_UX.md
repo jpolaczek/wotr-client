@@ -405,3 +405,18 @@ start, when its window opens, still marks the Hunt Box
 ## The window opens in the middle — UI-324 (2026-10-25)
 
 Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).
+
+<a id="kosci--ui-325"></a>
+## Hunt dice are dice — UI-325 (2026-10-25)
+
+Owner, on a build's roll: "fix the graphics so the dice are visible and not only their pips; the dice that hit are to be
+marked nicely in green".
+
+- A Hunt die is the ivory d6 of the battle window (`Art/UI/battle/die-N`, UI-117) at 30 pt, on no box of its own
+  (`HuntDieFace`, `.hunt-die-face`); a die chosen for the reroll takes the kit's gilt variant, a pressed one its pressed
+  variant, and hover brightens the art.
+- A hit glows green around the die's own shape (a light core, a green glow, a wide green halo) with a bold green check; a
+  miss keeps the plain die and a muted cross. Green stays the Hunt's hit colour: the observed glow is blue, a choice gold.
+- At the reroll a rerollable miss keeps the legal ring around its die (`.legal-target`), so a choosable die still shows it
+  can be clicked; the recorded Hunt in the Log (`HuntArchiveSummary`) uses the same dice and green hits.
+

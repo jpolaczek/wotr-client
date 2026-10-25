@@ -58,6 +58,35 @@ namespace Wotr.PlayTests
             Assert.AreEqual(pan, board.Map.Camera.Pan);
         }
 
+        // UI-325 (owner review 2026-10-25): a Hunt die is the ivory d6 of the battle window, not pips on the dark window, on
+        // no box of its own; a hit is marked green, a miss is not.
+        [UnityTest]
+        public IEnumerator HuntDiceAreIvoryDiceAndHitsAreMarkedGreen()
+        {
+            using var client = new MountedMatchClient("http://localhost", "hunt-dice-art");
+            var view = Screen(CommandKind.RerollHunt);
+            client.Apply(view);
+            client.SetOnline();
+            client.Board.Hunt.Open();
+            yield return Settle();
+            foreach (var die in view.Hunt.Dice)
+            {
+                var button = client.Board.Hunt.Root.Q<Button>("hunt-die-" + die.Id);
+                var face = button.Q(className: HuntDieFace.FaceClass);
+                Assert.AreEqual("die-" + die.Result, face.resolvedStyle.backgroundImage.texture?.name, "The die's own art · " + die.Id);
+                Assert.IsNull(button.resolvedStyle.backgroundImage.texture, "No box behind the die · " + die.Id);
+                Assert.AreEqual(die.Success, button.ClassListContains("hunt-hit"), die.Id);
+                var check = button.Q<Label>("hunt-hit").resolvedStyle.color;
+                if (die.Success)
+                {
+                    Assert.AreEqual(0f, button.resolvedStyle.borderLeftWidth, "A hit is a die, not a framed button · " + die.Id);
+                    Assert.Greater(check.g, check.r + .2f, "A hit's check is green · " + die.Id);
+                }
+                else
+                    Assert.Less(Mathf.Abs(check.g - check.r), .1f, "A miss's cross is muted · " + die.Id);
+            }
+        }
+
         private static void Move(VisualElement target)
         {
             using var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseMove, mousePosition = target.worldBound.center });
