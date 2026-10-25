@@ -1220,3 +1220,17 @@ lit hand count and dissolve (`CardDissolve`, half size); the backs and the signe
 Skip clears them; Skip animations draws none. The player's own discard dissolves where its cards stood
 ([CARD_CHOICES_UX](CARD_CHOICES_UX.md#odrzucenie--ui-326)).
 
+<a id="dobranie--ui-329"></a>
+## The opponent's draw flies from its deck — UI-329 (2026-10-25)
+
+Owner: "when the opponent draws a card we need an animation that pulls a face-down card out of the deck on the right and
+flies it into his lit card count, which flashes and changes".
+
+- The draw beat of §8 (one beat for consecutive draws, UI-312) lights the opponent's hand count first (UI-315). Then,
+  0.18 s apart, each drawn card's back (at most four) slides up out of its deck's plaque on the right (Character or
+  Strategy, never the card) and flies, eased and shrinking to the count's size, into the lit count (`DrawFlight`:
+  0.2 s out of the deck, 0.6 s of flight), above the HUD and never taking the pointer.
+- As a back lands, the count swells briefly (`presentation-count-flash`) and its number steps; the last landing takes the
+  rest of a larger count. The card backs and the signed count then join the count as before, and the beat holds.
+- Skip removes the backs and shows the latest state; under Skip animations the beat stays the motionless one of UI-315.
+

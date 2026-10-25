@@ -101,6 +101,52 @@ namespace Wotr.PlayTests
             Assert.AreEqual("5", Hand(stage));
         }
 
+        // UI-329 (owner 2026-10-25): a drawn card's back slides out of its deck on the right and flies into the lit hand
+        // count, which flashes and steps as it lands; two draws fly from their own decks.
+        [UnityTest]
+        public IEnumerator ADrawnCardFliesFromItsDeckIntoTheLitHandCount()
+        {
+            using var stage = Watching();
+            yield return stage.Ready();
+            var latest = stage.Latest();
+            latest.Players.Single(p => p.Side == Side.Shadow).HandCount = 5;
+            var draws = new[] { "strategy", "character" }.Select((deck, index) =>
+            {
+                var step = stage.Step(index + 1);
+                step.Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.Draw, Deck = deck, Count = 1 });
+                return step;
+            }).ToArray();
+            var hand = Hand(stage);
+            var chip = stage.Board.TopBar.Opponent.Root.Q("opponent-cards");
+            var strategy = stage.Board.Decks.Root.Q<Button>("deck-strategy").worldBound;
+            var character = stage.Board.Decks.Root.Q<Button>("deck-character").worldBound;
+            stage.Play(latest, null, draws);
+            yield return stage.Until(() => Backs(stage).Count > 0);
+            Assert.IsTrue(PresentationGlow.IsLit(HandChip(stage)), "The count is lit before the card leaves its deck.");
+            Assert.AreEqual(hand, Hand(stage), "Its number waits for the card.");
+            var first = Backs(stage)[0].worldBound;
+            Assert.Less(Vector2.Distance(first.center, strategy.center), strategy.height, "The first comes out of the Strategy deck.");
+            yield return stage.Until(() => Backs(stage).Count == 2);
+            var second = Backs(stage)[1].worldBound;
+            Assert.Less(Vector2.Distance(second.center, character.center), character.height + 20, "The second out of the Character deck.");
+            var target = HandChip(stage).worldBound.center;
+            yield return stage.Until(() => Backs(stage).Count > 0 &&
+                Vector2.Distance(Backs(stage)[0].worldBound.center, target) < Vector2.Distance(first.center, target) / 2);
+            LayoutTests.Save(stage.Texture, "ui329-draw-flight.png");
+            Assert.AreEqual(hand, Hand(stage), "Still in flight.");
+            Assert.AreEqual(PickingMode.Ignore, Backs(stage)[0].pickingMode, "Nothing to click.");
+            yield return stage.Until(() => Hand(stage) != hand);
+            Assert.IsTrue(HandChip(stage).ClassListContains(DrawFlight.FlashClass), "The count flashes as the card lands.");
+            yield return stage.Until(() => Backs(stage).Count == 0);
+            yield return stage.Released();
+            Assert.AreEqual("5", Hand(stage));
+        }
+
+        private static System.Collections.Generic.List<VisualElement> Backs(PresentedBoardStage stage) =>
+            stage.Board.Root.Query(className: DrawFlight.BackClass).ToList();
+
+        private static VisualElement HandChip(PresentedBoardStage stage) => stage.Board.TopBar.Opponent.Root.Q("opponent-cards");
+
         [UnityTest]
         public IEnumerator DrawsAreOneBeatOfCardBacksAndTheHandCount()
         {

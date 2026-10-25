@@ -131,10 +131,40 @@ namespace Wotr.Client
             }
             var count = cards.Sum(card => card.Count) * (cue.Card.Use == ActionCardUse.Draw ? 1 : -1);
             var owner = cue.Card.Owner;
+            if (count > 0 && !board.ReducedMotion())
+                return Drawn(owner, cards, count, now);
             return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)>
             {
                 (() => marks.Place(() => marks.Light(HandCount())), PresentationPace.MarkSeconds),
                 (() => ChangeHand(owner, cards, count), PresentationPace.HoldSeconds)
+            });
+        }
+
+        // UI-329: each drawn card's back flies out of its deck's plaque into the lit count, which steps as it lands (the
+        // last landing takes the rest of a count larger than the backs shown); the backs and the signed count follow.
+        private IPresentationBeat Drawn(Side owner, IReadOnlyList<ActionCardFact> cards, int count, double now)
+        {
+            var origins = cards.SelectMany(card => Enumerable.Repeat(Deck(card.Deck), Math.Max(1, card.Count)))
+                .Take(MostBacks).ToList();
+            return new DrawFlight(now, board.Dissolve.Root, HandCount, origins,
+                () => marks.Place(() => marks.Light(HandCount())),
+                index => Step(owner, index == origins.Count - 1 ? count - index : 1),
+                () => marks.Add(() => marks.Plate(HandCount(), Backs(cards, count), PlateSide.Before)),
+                marks.End);
+        }
+
+        private VisualElement Deck(string deck) => board.Decks.Root.Q<Button>("deck-" + deck);
+
+        // One landing: the count steps while it stays lit.
+        private void Step(Side owner, int cards)
+        {
+            staged.Hand(owner, cards);
+            board.StageOpponentSummary(staged.View);
+            marks.Add(() =>
+            {
+                var chip = HandCount();
+                if (!PresentationGlow.IsLit(chip))
+                    marks.Light(chip);
             });
         }
 

@@ -301,6 +301,21 @@
 }
 .regional-battle .battle-presented .battle-die.presented-roll-lift { scale: 1.12 1.12; }
 
+/* UI-329: the opponent's draw — a back slides out of its deck and flies into the lit hand count (DrawFlight moves it);
+   the count swells briefly as each back lands. */
+.presentation-draw-back {
+    position: absolute;
+    border-radius: 3px;
+    background-image: resource("Wotr/Art/UI/cards/back");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.motion-enabled #opponent-cards {
+    transition-property: scale;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
+}
+.motion-enabled #opponent-cards.presentation-count-flash { scale: 1.25 1.25; }
+
 /* UI-312: the opponent's draws or discards beside its hand count: small card backs and the signed count. */
 .presentation-card-backs {
     flex-direction: row;
