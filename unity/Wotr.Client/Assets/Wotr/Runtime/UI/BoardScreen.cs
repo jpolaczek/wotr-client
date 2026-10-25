@@ -71,6 +71,8 @@ namespace Wotr.Client
         private readonly Label loading = new Label("Loading match…") { name = "match-loading" };
         public CardInspector Cards { get; } = new CardInspector();
         public HandDrawer HandDrawer { get; }
+        // UI-326: two card backs dissolving where discarded cards leave.
+        public CardDissolve Dissolve { get; }
         public DeckView Decks { get; } = new DeckView();
         public CardCostPicker CardCosts { get; } = new CardCostPicker();
         private readonly HandView handView;
@@ -403,6 +405,8 @@ namespace Wotr.Client
             Windows.MiddleMoved += Cards.MiddleMoved;
             Victory.KeepShortcutClearOf(Characters.Tab);
             AttachDieGlows();
+            Dissolve = new CardDissolve(ReducedMotion);
+            Root.Add(Dissolve.Root);
             Root.Add(Menu.Root);
             Root.Add(GameDeleted.Root);
             Escape.Attach();
@@ -618,6 +622,7 @@ namespace Wotr.Client
             Characters.Apply(view);
             Sovereigns.Apply(view);
             handView.Apply(view);
+            Dissolve.Settle(view, quiet);
             HandDrawer.Apply(view);
             tableEffects.Apply(view);
             mapEffects.Apply(view);
@@ -740,6 +745,14 @@ namespace Wotr.Client
                 Console.Status.Flash();
             else
                 Ribbon.Show(text, side);
+        }
+
+        // UI-326: a hand card the player is discarding dissolves where it stands (its unrolled face, else its slot) once
+        // the view without it arrives.
+        public void MarkDiscard(string id)
+        {
+            var card = Hand.Q<Button>(id);
+            Dissolve.Mark(id, card?.Q("hand-card-face") ?? card, View?.Revision ?? -1);
         }
 
         // UI-324: the middle of the board a window opens in — between the top bar and the console, between the side

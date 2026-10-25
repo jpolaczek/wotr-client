@@ -1211,3 +1211,12 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 | UI-315 Mark, then change (shipped) | the owner's live review, points 2 and 4 — delivered as §6.19; `PresentationPace` |
 | UI-314 Glow instead of a frame (shipped) | the owner's live review, points 6 and 7 — delivered as §6.18; reusable `PresentationGlow`/`ObjectGlow` for UI-315 and UI-316 |
 | UI-313 Acceptance (evidence recorded; the owner's live review open) | §11 and the shared acceptance checklist — recorded as §6.17 with the coverage matrix, measurements and open checks |
+
+<a id="odrzucenie--ui-326"></a>
+## The opponent's discard dissolves — UI-326 (2026-10-25)
+
+In the draw and discard beat of §8 (UI-312, UI-315), a discard's count drops while two small card backs rise out of the
+lit hand count and dissolve (`CardDissolve`, half size); the backs and the signed count still join the count as before.
+Skip clears them; Skip animations draws none. The player's own discard dissolves where its cards stood
+([CARD_CHOICES_UX](CARD_CHOICES_UX.md#odrzucenie--ui-326)).
+

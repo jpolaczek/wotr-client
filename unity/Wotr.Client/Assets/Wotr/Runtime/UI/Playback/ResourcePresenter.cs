@@ -23,6 +23,8 @@ namespace Wotr.Client
     public sealed class ResourcePresenter : ICuePresenter
     {
         public const int MostBacks = 4;
+        // The discard's backs at the small hand count of the top bar.
+        public const float OpponentScale = .5f;
 
         public const string PlateName = "presentation-resource-plate";
         private readonly BoardScreen board;
@@ -141,6 +143,9 @@ namespace Wotr.Client
         // The count changes while the counter is lit; the card backs and the signed count join it.
         private void ChangeHand(Side owner, IReadOnlyList<ActionCardFact> cards, int count)
         {
+            // UI-326: a discard's two backs dissolve out of the count as it drops.
+            if (count < 0)
+                board.Dissolve.Play(HandCount().worldBound, OpponentScale);
             staged.Hand(owner, count);
             board.StageOpponentSummary(staged.View);
             marks.Add(() =>

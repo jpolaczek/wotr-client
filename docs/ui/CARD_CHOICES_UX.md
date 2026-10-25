@@ -299,3 +299,19 @@ banner, deck line, divider and initiative badge) is reverted; the card is again 
   (over the first 35 % of the 0.6 s) into a stand-in — a small parchment card with its title in the presentation layer
   above the HUD — that lands on its console source or at the Effects tab. The source shows and lights only once the
   stand-in is there.
+
+<a id="odrzucenie--ui-326"></a>
+## A discard dissolves — UI-326 (2026-10-25)
+
+Owner: "a small extra animation of disappearing cards at the moment a player discards them: just two cards turned with
+their backs to the player that dissolve in the air".
+
+- When the player discards from the hand (an excess hand, a removal cost, an effect's choice that discards), two card
+  backs, slightly fanned, rise a little from where the cards stood and dissolve over 0.6 s — they fade, soften and swell a
+  little (`CardDissolve`, Cards.uss). One pair per discard, whatever the number of cards; it never takes the pointer and
+  never delays the command.
+- The cards are marked when they are chosen and dissolve when the view without them arrives; a card the server kept is
+  forgotten at the next revision, and a quiet view (reconnect, first view) plays nothing. Under Skip animations nothing is
+  drawn; Skip of a presentation clears it.
+- The opponent's presented discard dissolves a smaller pair out of its hand count in the top bar as the count drops
+  ([OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md)).
