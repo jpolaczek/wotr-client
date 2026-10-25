@@ -115,6 +115,7 @@ namespace Wotr.Client
             board.QuietTracks();
             board.Dissolve.Clear();
             board.HuntDrops.Clear();
+            board.Map.EndEmerging();
             Playback.Skip();
         }
 

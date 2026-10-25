@@ -1281,3 +1281,9 @@ Owner: "we need the same animations that show who does what for replay playback 
 In the battle beats of §8 a decided battle's window closes as the next scene begins, unless the player moved it
 ([BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md#zamkniecie--ui-333)).
 
+<a id="wylanianie--ui-334"></a>
+## Recruits flare and emerge — UI-334 (2026-10-25)
+
+A presented recruit or entry that makes an army appear or grow flares, emerges and then shows its new number, as the
+player's own does ([ARMY_MAP_UX](ARMY_MAP_UX.md#pojawienie--ui-334)); Skip ends it at the final state.
+

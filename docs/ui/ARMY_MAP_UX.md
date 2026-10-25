@@ -699,3 +699,20 @@ beside them. Settlements keep their pale-blue ring. Spec: [OPPONENT_ACTIONS_UX �
 ## The selected force's own region — UI-323 (2026-10-24)
 
 While the player moves an army, a character or a group, the region it stands in has a steady gold edge beside the destinations' green and red glow, so the source is as clear as the targets ([MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#region-zrodlowy--ui-323)).
+
+<a id="pojawienie--ui-334"></a>
+## An army that appears flares and emerges — UI-334 (2026-10-25)
+
+Owner: "when units and the like appear in regions, first a flare and then a gradual appearing animation, as if the
+occlusion changed until the picture is fully clear; the new number shows and the flare disappears".
+
+- A new army marker in a region, or an army that grows, first flares (a warm soft glow behind it, 0.15 s), then a new
+  army's figures emerge from transparent and soft to clear (0.5 s, opacity and blur); a growing army keeps its figures. Only
+  when the army is clear does its number step to the new total, and the flare fades (`MapArmyArtwork.Emerge`,
+  `MapCanvas.SyncMarkers`, Armies.uss).
+- It applies to the player's own changes and presented ones (a recruit, an entry); an army that flies in keeps its flight
+  and arrival instead (decided one frame later, once the flights are known).
+- The first view with armies, a quiet view (reconnect, change of side, a replay's manual move) and Skip animations show
+  the state at once; Skip of a presentation ends every emergence at its final state.
+- Not yet covered: character marks standing apart from armies (`CharacterMark`).
+

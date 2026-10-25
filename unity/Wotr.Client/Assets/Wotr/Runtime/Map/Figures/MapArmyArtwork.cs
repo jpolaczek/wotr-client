@@ -18,6 +18,11 @@ namespace Wotr.Client
         public const string TokenClass = "army-token";
         public const string FieldClass = "field-force";
         public const string MovedClass = "moved";
+        // UI-334: an army that appears or grows flares, emerges and then shows its number (Armies.uss).
+        public const string FlaringClass = "army-flaring";
+        public const string HiddenClass = "army-emerge-hidden";
+        public const long FlareMilliseconds = 150;
+        public const long EmergeMilliseconds = 500;
         // Unused parts are hidden by class, so the level rules of Styles/Armies.uss can still hide the rest.
         public const string UnusedClass = "army-part-unused";
         public const int MaximumEmblems = 2;
@@ -34,7 +39,12 @@ namespace Wotr.Client
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
         private readonly Button button;
+        private readonly VisualElement flare = Ignored("army-flare");
         private int shown;
+        // UI-334: the number the army shows once it has emerged; null while nothing emerges.
+        private string emergingCount;
+        private IVisualElementScheduledItem reveal;
+        private IVisualElementScheduledItem settle;
 
         public MapArmyArtwork(Button button)
         {
@@ -42,6 +52,7 @@ namespace Wotr.Client
             button.AddToClassList("illustrated-army");
             // UI-301: the ChoiceGlow halo of an army a click may choose, behind the artwork (Armies.uss).
             button.Add(Ignored("army-choice-glow"));
+            button.Add(flare);
             Root.Add(Ignored("army-plinth"));
             // Every shadow goes first, so no shadow falls on the figure beside it.
             for (var i = 0; i < shadows.Length; i++)
@@ -95,8 +106,43 @@ namespace Wotr.Client
             for (var i = 0; i < emblems.Length; i++)
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
-            count.text = army.Total.ToString();
+            if (emergingCount != null)
+                emergingCount = army.Total.ToString();
+            else
+                count.text = army.Total.ToString();
             button.EnableInClassList(FieldClass, !army.Garrison);
+        }
+
+        public bool Emerging => emergingCount != null;
+
+        // UI-334 (owner 2026-10-25: "first a flare, then a gradual appearing, as if the occlusion changed until the picture
+        // is fully clear; the new number shows and the flare disappears"): a new army (`before` null) flares, then emerges
+        // from transparent and soft to clear; a growing one keeps its figures and its old number. Once clear, the number
+        // steps and the flare fades.
+        public void Emerge(int? before)
+        {
+            EndEmerge();
+            emergingCount = count.text;
+            count.text = before?.ToString() ?? count.text;
+            button.AddToClassList(FlaringClass);
+            button.EnableInClassList(HiddenClass, before == null);
+            reveal = button.schedule.Execute(() => button.RemoveFromClassList(HiddenClass));
+            reveal.ExecuteLater(FlareMilliseconds);
+            settle = button.schedule.Execute(EndEmerge);
+            settle.ExecuteLater(FlareMilliseconds + EmergeMilliseconds);
+        }
+
+        // Its final state: clear, its number, no flare (also when Skip ends it).
+        public void EndEmerge()
+        {
+            reveal?.Pause();
+            settle?.Pause();
+            button.RemoveFromClassList(HiddenClass);
+            button.RemoveFromClassList(FlaringClass);
+            if (emergingCount == null)
+                return;
+            count.text = emergingCount;
+            emergingCount = null;
         }
 
         public void Layout(bool figures)

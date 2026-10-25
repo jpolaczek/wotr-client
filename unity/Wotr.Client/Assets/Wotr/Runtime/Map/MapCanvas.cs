@@ -58,6 +58,11 @@ namespace Wotr.Client
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
         private readonly Dictionary<(string, Side, bool), Marker> markers = new Dictionary<(string, Side, bool), Marker>();
         private readonly List<(string, Side, bool)> obsolete = new List<(string, Side, bool)>();
+        // UI-334: armies that appeared or grew in the last sync; they flare and emerge on the next frame unless a flight
+        // brings them (it has its own arrival). The first sync with armies only sets the state; a quiet update too.
+        private readonly List<(Marker Marker, int? Before)> emerging = new List<(Marker, int?)>();
+        private bool armiesShown;
+        public bool Quiet { get; set; }
         private readonly List<Rect> used = new List<Rect>();
         private readonly List<Rect> covered = new List<Rect>();
         // UI-126: the forces of a region in row order (garrison first, then field forces by side).
@@ -527,7 +532,9 @@ namespace Wotr.Client
             {
                 var key = (army.RegionId, army.Side, army.Garrison);
                 obsolete.Remove(key);
-                if (!markers.TryGetValue(key, out var marker))
+                var fresh = !markers.TryGetValue(key, out var marker);
+                var before = fresh ? (int?)null : marker.Army.Total;
+                if (fresh)
                 {
                     marker = CreateMarker(army);
                     markers.Add(key, marker);
@@ -535,6 +542,8 @@ namespace Wotr.Client
                 }
                 marker.Army = army;
                 marker.Artwork.Apply(army);
+                if (armiesShown && !Quiet && (fresh || army.Total > before))
+                    Emerge(marker, before);
                 marker.Button.EnableInClassList(MapArmyArtwork.MovedClass, marched.Contains(key));
                 marker.Button.tooltip = ArmyMarkerText.Describe(army, Data.Regions[army.RegionId].Name);
             }
@@ -543,9 +552,44 @@ namespace Wotr.Client
                 markers[key].Button.RemoveFromHierarchy();
                 markers.Remove(key);
             }
+            armiesShown |= Data.Armies.Count > 0;
             regionMarkers.Clear();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
                 regionMarkers.Add(group.Key, group.OrderBy(m => m.Army.Garrison ? 0 : 1).ThenBy(m => m.Army.Side).ToList());
+        }
+
+        private void Emerge(Marker marker, int? before)
+        {
+            if (Reduced())
+                return;
+            emerging.Add((marker, before));
+            if (emerging.Count == 1)
+                schedule.Execute(StartEmerging);
+        }
+
+        private void StartEmerging()
+        {
+            foreach (var (marker, before) in emerging)
+                if (markers.ContainsValue(marker) &&
+                    Figures?.Arriving(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) != true)
+                    marker.Artwork.Emerge(before);
+            emerging.Clear();
+        }
+
+        // Skip shows the latest state: every army stands clear with its number.
+        public void EndEmerging()
+        {
+            emerging.Clear();
+            foreach (var marker in markers.Values)
+                marker.Artwork.EndEmerge();
+        }
+
+        private bool Reduced()
+        {
+            for (VisualElement element = this; element != null; element = element.parent)
+                if (element.ClassListContains("reduced-motion"))
+                    return true;
+            return false;
         }
 
         private Marker CreateMarker(ArmyMarker army)

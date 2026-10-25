@@ -22,6 +22,24 @@
 .army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
 
 .army-artwork { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+/* UI-334: an army that appears or grows — a warm flare behind it first, then the figures emerge from transparent and soft
+   to clear (MapArmyArtwork.Emerge); the flare fades as the number steps. Nothing moves under Skip animations. */
+.army-flare {
+    position: absolute;
+    left: 8%;
+    top: 18%;
+    right: 8%;
+    bottom: 4%;
+    border-radius: 50%;
+    background-color: rgba(255, 236, 186, 0.9);
+    filter: blur(12px);
+    opacity: 0;
+}
+.army.army-flaring .army-flare { opacity: 1; }
+.army.army-emerge-hidden .army-artwork { opacity: 0; filter: blur(5px); }
+.motion-enabled .army .army-flare { transition-property: opacity; transition-duration: 0.3s; transition-timing-function: ease-out-sine; }
+.motion-enabled .army.army-flaring .army-flare { transition-duration: 0.15s; }
+.motion-enabled .army .army-artwork { transition-property: opacity, filter; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
 .army-artwork .army-part-unused { display: none; }
 .army-plinth { position: absolute; left: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
 .army-figures .army-plinth { height: 32px; }
