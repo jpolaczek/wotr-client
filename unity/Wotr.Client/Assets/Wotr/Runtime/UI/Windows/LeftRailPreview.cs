@@ -289,7 +289,8 @@ namespace Wotr.Client
                 entry.Close();
         }
 
-        private static bool Visible(VisualElement panel) => panel.style.display.value != DisplayStyle.None && panel.resolvedStyle.display != DisplayStyle.None;
+        // UI-322: a panel fading out is already closed, so its tab unrolls it again.
+        private static bool Visible(VisualElement panel) => !Appearance.Closed(panel) && panel.resolvedStyle.display != DisplayStyle.None;
 
         private static bool ReducedMotion(VisualElement element)
         {

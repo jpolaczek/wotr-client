@@ -12,7 +12,7 @@ namespace Wotr.Client
         public const string LockedClass = "exit-locked";
         public VisualElement Root { get; } = new VisualElement { name = "exit-lock", focusable = true };
         public Label Step { get; } = new Label { name = "exit-lock-step", pickingMode = PickingMode.Ignore, enableRichText = false };
-        public bool IsShown => Root.style.display.value == DisplayStyle.Flex;
+        public bool IsShown => !Appearance.Closed(Root);
         private Focusable previous;
 
         public ExitLock()

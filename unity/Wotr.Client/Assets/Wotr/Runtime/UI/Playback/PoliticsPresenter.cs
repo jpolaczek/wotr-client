@@ -28,7 +28,7 @@ namespace Wotr.Client
         }
 
         private PoliticalPanel Panel => board.Nations;
-        private bool Visible => Panel.Drawer.style.display == DisplayStyle.Flex;
+        private bool Visible => !Appearance.Closed(Panel.Drawer);
 
         // The player's own decision drives the panel: its tab or a station offers a legal target.
         private bool Live => Panel.Root.ClassListContains("legal-target") || Panel.Drawer.Q(className: "legal-target") != null;

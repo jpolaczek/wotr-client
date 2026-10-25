@@ -155,7 +155,7 @@ namespace Wotr.PlayTests
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui307-politics-2-war.png");
             yield return stage.Released();
-            Assert.AreEqual(DisplayStyle.None, panel.Drawer.style.display.value, "The panel the presentation opened closes again.");
+            Assert.IsTrue(Appearance.Closed(panel.Drawer), "The panel the presentation opened closes again.");
             Assert.IsNull(stage.Board.Root.Q(PoliticsPresenter.CaptionName), "The caption ends with its beat.");
             Assert.IsTrue(panel.Drawer.Q("nation-track-sauron").ClassListContains("nation-at-war"), "The released row is at war.");
         }
@@ -242,7 +242,7 @@ namespace Wotr.PlayTests
             yield return stage.Released();
             stage.AssertFinal(latest);
             Assert.AreEqual(1, stage.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar);
-            Assert.AreEqual(DisplayStyle.None, stage.Board.Nations.Drawer.style.display.value);
+            Assert.IsTrue(Appearance.Closed(stage.Board.Nations.Drawer));
             yield return stage.NothingFlies();
         }
 

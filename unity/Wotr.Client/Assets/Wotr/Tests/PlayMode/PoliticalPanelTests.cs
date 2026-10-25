@@ -169,12 +169,11 @@ namespace Wotr.PlayTests
             BoardMenuLayoutTests.Key(token, true);
             yield return Settle();
             Assert.AreEqual(DisplayStyle.None, description.resolvedStyle.display);
-            Assert.AreEqual(DisplayStyle.None, board.Nations.Drawer.resolvedStyle.display,
-                "A passive description must not take the first Esc from Politics.");
+            Assert.IsTrue(Appearance.Closed(board.Nations.Drawer), "A passive description must not take the first Esc from Politics.");
             Assert.AreSame(board.Nations.Root, board.Root.panel.focusController.focusedElement);
             BoardMenuLayoutTests.Key(board.Nations.Root, true);
             yield return Settle();
-            Assert.AreEqual(DisplayStyle.None, board.Nations.Drawer.resolvedStyle.display);
+            Assert.IsTrue(Appearance.Closed(board.Nations.Drawer));
             Assert.IsFalse(board.Menu.IsOpen, "A held Esc cannot reach the next owner after closing Politics.");
             Assert.AreEqual(DisplayStyle.None, description.resolvedStyle.display,
                 "Returning focus during Esc cannot reopen the passive description.");
