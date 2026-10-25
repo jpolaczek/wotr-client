@@ -91,7 +91,7 @@ namespace Wotr.Client
         private void LightBefore(IEnumerable<ActionDieChange> changes, bool hunted)
         {
             foreach (var change in changes)
-                marks.Light(board.OpponentDice.Q<Button>(change.Id));
+                marks.Light(board.DicePool(change.Owner).Q<Button>(change.Id));
             if (hunted)
                 marks.Light(board.Hunt.Box.EyeCount);
         }
@@ -100,7 +100,8 @@ namespace Wotr.Client
         {
             foreach (var change in changes)
                 staged.Die(change);
-            board.StageOpponentDice(staged.View);
+            foreach (var side in changes.Select(change => change.Owner).Distinct())
+                board.StageDice(side, staged.View);
             if (hunted)
                 board.StageHunt(staged.View);
             marks.Place(() =>
@@ -114,7 +115,7 @@ namespace Wotr.Client
 
         private void MarkDie(ActionDieChange change)
         {
-            var die = board.OpponentDice.Q<Button>(change.Id);
+            var die = board.DicePool(change.Owner).Q<Button>(change.Id);
             marks.Light(die);
             if (change.Before.HasValue && change.After.HasValue && change.Before != change.After)
                 marks.Plate(die, Faces(change.Before.Value, change.After.Value), PlateSide.Under);
@@ -135,7 +136,7 @@ namespace Wotr.Client
                 return Drawn(owner, cards, count, now);
             return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)>
             {
-                (() => marks.Place(() => marks.Light(HandCount())), PresentationPace.MarkSeconds),
+                (() => marks.Place(() => marks.Light(HandCount(owner))), PresentationPace.MarkSeconds),
                 (() => ChangeHand(owner, cards, count), PresentationPace.HoldSeconds)
             });
         }
@@ -146,10 +147,10 @@ namespace Wotr.Client
         {
             var origins = cards.SelectMany(card => Enumerable.Repeat(Deck(card.Deck), Math.Max(1, card.Count)))
                 .Take(MostBacks).ToList();
-            return new DrawFlight(now, board.Dissolve.Root, HandCount, origins,
-                () => marks.Place(() => marks.Light(HandCount())),
+            return new DrawFlight(now, board.Dissolve.Root, () => HandCount(owner), origins,
+                () => marks.Place(() => marks.Light(HandCount(owner))),
                 index => Step(owner, index == origins.Count - 1 ? count - index : 1),
-                () => marks.Add(() => marks.Plate(HandCount(), Backs(cards, count), PlateSide.Before)),
+                () => marks.Add(() => marks.Plate(HandCount(owner), Backs(cards, count), PlateSide.Before)),
                 marks.End);
         }
 
@@ -159,28 +160,29 @@ namespace Wotr.Client
         private void Step(Side owner, int cards)
         {
             staged.Hand(owner, cards);
-            board.StageOpponentSummary(staged.View);
+            board.StageHand(owner, staged.View);
             marks.Add(() =>
             {
-                var chip = HandCount();
+                var chip = HandCount(owner);
                 if (!PresentationGlow.IsLit(chip))
                     marks.Light(chip);
             });
         }
 
-        private VisualElement HandCount() => board.TopBar.Opponent.Root.Q("opponent-cards");
+        // The opponent's card count in the top bar; for an observer the shown side's own hand (UI-330).
+        private VisualElement HandCount(Side owner) => board.HandOf(owner);
 
         // The count changes while the counter is lit; the card backs and the signed count join it.
         private void ChangeHand(Side owner, IReadOnlyList<ActionCardFact> cards, int count)
         {
             // UI-326: a discard's two backs dissolve out of the count as it drops.
             if (count < 0)
-                board.Dissolve.Play(HandCount().worldBound, OpponentScale);
+                board.Dissolve.Play(HandCount(owner).worldBound, board.Shown(owner) ? 1 : OpponentScale);
             staged.Hand(owner, count);
-            board.StageOpponentSummary(staged.View);
+            board.StageHand(owner, staged.View);
             marks.Add(() =>
             {
-                var chip = HandCount();
+                var chip = HandCount(owner);
                 if (!PresentationGlow.IsLit(chip))
                     marks.Light(chip);
                 marks.Plate(chip, Backs(cards, count), PlateSide.Before);

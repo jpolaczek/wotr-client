@@ -18,13 +18,16 @@ namespace Wotr.Client
         private readonly Dictionary<string, ActionMemory> memories = new Dictionary<string, ActionMemory>();
         private readonly Dictionary<string, ActionPresentation> actions = new Dictionary<string, ActionPresentation>();
         public Side You { get; }
+        // UI-330: an observer's model — every side's steps are presented, none is the viewer's own.
+        public bool Everyone { get; }
         public long ViewRevision { get; private set; } = -1;
         public IReadOnlyDictionary<string, ActionPresentation> Actions => actions;
         public int Held => held.Count;
 
-        public OpponentPresentationModel(Side you, BoardPresentation data)
+        public OpponentPresentationModel(Side you, BoardPresentation data, bool everyone = false)
         {
             You = you;
+            Everyone = everyone;
             this.data = data;
         }
 
@@ -72,14 +75,15 @@ namespace Wotr.Client
         private List<PresentationCue> Build(List<ActionLogStep> steps)
         {
             var cues = new List<PresentationCue>();
-            var own = steps.Where(step => step.Actor == You).Select(step => step.Revision).ToHashSet();
+            var own = steps.Where(step => !Everyone && step.Actor == You).Select(step => step.Revision).ToHashSet();
             var groups = steps.GroupBy(step => (step.Revision, step.ActionId))
                 .OrderBy(group => group.Key.Revision).ThenBy(group => group.Min(step => step.Order));
             foreach (var group in groups)
             {
                 var all = group.ToList();
-                var shown = PresentationSelection.Select(all, Initiator(group.Key.ActionId, all), You).ToHashSet();
-                var released = PresentationCueExtraction.Cues(all, shown, Memory(group.Key.ActionId), You, data).ToList();
+                var shown = (Everyone ? PresentationSelection.Every(all)
+                    : PresentationSelection.Select(all, Initiator(group.Key.ActionId, all), You)).ToHashSet();
+                var released = PresentationCueExtraction.Cues(all, shown, Memory(group.Key.ActionId), Everyone ? null : You, data).ToList();
                 if (released.Count == 0)
                     continue;
                 var presentation = Presentation(group.Key.ActionId);

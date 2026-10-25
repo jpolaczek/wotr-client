@@ -577,6 +577,28 @@ namespace Wotr.Client
         // released view redraws both.
         public void StageOpponentDice(PlayerView staged) => actionPool.Apply(OpponentDice, staged, Opponent(staged), false);
         public void StageOpponentSummary(PlayerView staged) => TopBar.Opponent.Apply(staged, Opponent(staged));
+
+        // UI-330: an observer's presentation shows both sides' actions — the side the board is shown from has its dice at the
+        // bottom and its cards in the hand, the other side its dice and its card count in the top bar. A player's
+        // presentation only ever names the opponent.
+        public bool Shown(Side? side) => View != null && side == View.You;
+        public VisualElement DicePool(Side? side) => Shown(side) ? OwnDice : OpponentDice;
+        public VisualElement HandOf(Side? side) => Shown(side) ? Hand : TopBar.Opponent.Root.Q("opponent-cards");
+
+        public void StageDice(Side side, PlayerView staged)
+        {
+            if (side == staged.You)
+                actionPool.Apply(OwnDice, staged, side, true);
+            else
+                StageOpponentDice(staged);
+        }
+
+        // The side's card count: the opponent's in the top bar; the shown side's cards arrive in its hand with the view.
+        public void StageHand(Side side, PlayerView staged)
+        {
+            if (side != staged.You)
+                StageOpponentSummary(staged);
+        }
         private static Side Opponent(PlayerView view) => view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
 
         // UI-311: a recorded battle state in its window — a new battle's window opens as it does for a new battle (UI-149),

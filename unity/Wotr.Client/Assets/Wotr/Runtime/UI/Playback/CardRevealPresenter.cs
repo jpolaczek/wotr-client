@@ -88,7 +88,7 @@ namespace Wotr.Client
             Cards.Root.AddToClassList(PresentedClass);
             if (area.HasValue)
                 Cards.PlaceIn(area.Value);
-            reveal = new RevealBeat(this, revealed, cue.ActionId, flight, StaysOnTable(cue), now);
+            reveal = new RevealBeat(this, revealed, cue.ActionId, cue.Card.Owner, flight, StaysOnTable(cue), now);
             return reveal;
         }
 
@@ -97,13 +97,16 @@ namespace Wotr.Client
             next.Kind == PresentationCueKind.Card && next.Card?.Use == ActionCardUse.TableEntered && next.Card.Id == cue.Card.Id);
 
         // Where the opponent's Event comes from: their hand count. The card's stage lies under the top bar, so it starts
-        // just below the counter and is seen leaving it from the first frame.
-        private Rect? Origin()
+        // just below the counter and is seen leaving it from the first frame. UI-330: an observer sees the shown side's own
+        // Event come out of its hand.
+        private Rect? Origin(Side side)
         {
-            var hand = board.TopBar.Opponent.Root.Q("opponent-cards");
+            var hand = board.HandOf(side);
             if (!PresentationTargets.Shown(hand))
                 return null;
             var bounds = hand.worldBound;
+            if (board.Shown(side))
+                return bounds;
             var bar = board.TopBar.Root.worldBound;
             return new Rect(bounds.x, Mathf.Max(bounds.yMax, bar.yMax), bounds.width, bounds.height);
         }
@@ -225,6 +228,7 @@ namespace Wotr.Client
             private readonly CardRevealPresenter owner;
             private readonly string id;
             private readonly string action;
+            private readonly Side side;
             private readonly CardFlight flight;
             private readonly bool table;
             private readonly double created;
@@ -240,11 +244,12 @@ namespace Wotr.Client
             private bool aimed;
             private bool handedOver;
 
-            public RevealBeat(CardRevealPresenter owner, string id, string action, CardFlight flight, bool table, double now)
+            public RevealBeat(CardRevealPresenter owner, string id, string action, Side side, CardFlight flight, bool table, double now)
             {
                 this.owner = owner;
                 this.id = id;
                 this.action = action;
+                this.side = side;
                 this.flight = flight;
                 this.table = table;
                 created = now;
@@ -300,7 +305,7 @@ namespace Wotr.Client
                 if (now <= created || !CardFlight.Laid(owner.Cards.Root) || !still)
                     return false;
                 arriving = now;
-                flight.From(owner.Origin());
+                flight.From(owner.Origin(side));
                 flight.Arriving(0);
                 return false;
             }

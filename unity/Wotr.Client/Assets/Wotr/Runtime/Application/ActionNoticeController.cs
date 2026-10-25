@@ -14,6 +14,9 @@ namespace Wotr.Client
         private readonly string match;
         private readonly BoardScreen board;
         private readonly NotificationReadStore reads;
+        // UI-330: an observer's feed reads its own routes and keeps no pennants or read marks.
+        private readonly MatchReadRoutes routes;
+        private readonly bool observer;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private string cursor = "";
         private long revision = -1;
@@ -40,11 +43,24 @@ namespace Wotr.Client
             ReadStatus();
         }
 
+        // UI-330: an observer's feed — the watched side's history over the observer's routes, every side's steps
+        // presentable; an observer has no pennants or read marks.
+        public ActionNoticeController(GameApi api, MatchReadRoutes routes, BoardScreen board)
+        {
+            this.api = api;
+            this.routes = routes;
+            this.board = board;
+            match = routes.Match;
+            observer = true;
+            reads = new NotificationReadStore();
+            Model = new ActionNoticeModel(reads, board.Presentation);
+        }
+
         public void Update(PlayerView view)
         {
             if (disposed || view.MatchId != match || view.Revision == revision) return;
             Model.You = view.You;
-            Presentation ??= new OpponentPresentationModel(view.You, board.Presentation);
+            Presentation ??= new OpponentPresentationModel(view.You, board.Presentation, observer);
             revision = view.Revision;
             Publish(Presentation.Advance(revision));
             Refresh();
@@ -88,7 +104,7 @@ namespace Wotr.Client
             }
             catch (Exception)
             {
-                if (!disposed) board.Notifications.SetStatus("Opponent updates unavailable · Retry");
+                if (!disposed && !observer) board.Notifications.SetStatus("Opponent updates unavailable · Retry");
             }
             finally
             {
@@ -106,13 +122,14 @@ namespace Wotr.Client
             if (newest == null) return false;
             Notice(newest);
             var next = "";
-            do
+            while (!observer)
             {
                 var page = await Page("Opponent", next.Length > 0 ? "&before=" + Uri.EscapeDataString(next) : "");
                 if (page == null) return false;
                 Notice(page);
                 next = page.NextCursor;
-            } while (next.Length > 0);
+                if (next.Length == 0) break;
+            }
             Presentation?.Baseline(new[] { newest }, revision);
             cursor = newest.LatestCursor;
             return true;
@@ -142,14 +159,15 @@ namespace Wotr.Client
         // Null when the controller was disposed or the answer belongs to another match.
         private async Task<ActionLogPage> Page(string filter, string position)
         {
-            var path = "api/matches/" + Uri.EscapeDataString(match) + "/actions?filter=" + filter + "&limit=50" + position;
+            var path = routes != null ? routes.Path("/actions", "filter=" + filter + "&limit=50" + position)
+                : "api/matches/" + Uri.EscapeDataString(match) + "/actions?filter=" + filter + "&limit=50" + position;
             var page = await api.Get<ActionLogPage>(path, lifetime.Token);
             return disposed || page.MatchId != match ? null : page;
         }
 
         private void Notice(ActionLogPage page)
         {
-            if (Model.Merge(page)) board.Notifications.Apply(Model.Groups);
+            if (!observer && Model.Merge(page)) board.Notifications.Apply(Model.Groups);
         }
 
         private void Publish(IReadOnlyList<PresentationCue> cues)
@@ -165,7 +183,7 @@ namespace Wotr.Client
         }
         private void ReadStatus()
         {
-            if (!disposed) board.Notifications.SetStatus(reads.Error);
+            if (!disposed && !observer) board.Notifications.SetStatus(reads.Error);
         }
 
         public void Dispose()

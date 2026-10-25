@@ -1241,3 +1241,20 @@ In the Fellowship and politics beats of §8 the object a stage changes still glo
 Hidden/Revealed art and a nation's token then turn over to their other side (`TokenFlip`, 0.3 s) instead of swapping in
 one frame, the same for the player's own changes ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
 
+<a id="obserwatorzy--ui-330"></a>
+## Observers see who does what — UI-330 (2026-10-25)
+
+Owner: "players who watch a game also want to know who plays what, so they should see the animations for both sides,
+even though they watch one — only for that one do they have the hidden information".
+
+- An observer's board runs the same presentation as a player's (the cue feed, the playback coordinator, the presenters),
+  fed by the watched side's history over the observer's routes (`ActionNoticeController` with `MatchReadRoutes`). Its
+  model presents every side's steps (`OpponentPresentationModel.Everyone`, `PresentationSelection.Every`); none counts as
+  the viewer's own command, and the extraction skips no side's cards or dice.
+- Hidden information is the watched side's: the cues come from its history, so its own draws and commits show as backs
+  like the other side's (their identities are in its hand), and the other side's facts only as that side's opponent sees
+  them. An observer has no pennants or read marks.
+- The HUD objects follow the acting side (`BoardScreen.DicePool`, `HandOf`, `StageDice`, `StageHand`): the watched side
+  pays from its pool at the bottom and its cards come from and go to its hand; the other side's from the top bar.
+- The first view, a reconnect and a change of side start the presentation over (a quiet view, then only later moves);
+  what the previous side was presenting stops at the change. Skip and Skip animations work as for a player.

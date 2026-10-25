@@ -54,18 +54,21 @@ namespace Wotr.Client
             leaving.schedule.Execute(leaving.RemoveFromHierarchy).StartingIn(FadeOutMilliseconds);
         }
 
+        // Both pools: an observer sees either side pay (UI-330).
         private void Remember()
         {
-            foreach (var die in board.OpponentDice.Query<Button>(className: "die").ToList())
-                if (die.worldBound.width > 0)
-                    anchors[die.name] = die.worldBound;
+            foreach (var pool in new[] { board.OpponentDice, board.OwnDice })
+                foreach (var die in pool.Query<Button>(className: "die").ToList())
+                    if (die.worldBound.width > 0)
+                        anchors[die.name] = die.worldBound;
         }
 
         private VisualElement Mark(ActionCost cost)
         {
-            var die = board.OpponentDice.Q<Button>(cost.Id);
+            var pool = board.DicePool(cost.Owner);
+            var die = pool.Q<Button>(cost.Id);
             var live = die != null && die.worldBound.width > 0;
-            var bounds = layer.Local(live ? die.worldBound : anchors.TryGetValue(cost.Id, out var last) ? last : Slot());
+            var bounds = layer.Local(live ? die.worldBound : anchors.TryGetValue(cost.Id, out var last) ? last : Slot(pool));
             var element = new VisualElement { name = MarkName, pickingMode = PickingMode.Ignore };
             element.AddToClassList(MarkName);
             element.style.left = bounds.x - Ring;
@@ -81,13 +84,13 @@ namespace Wotr.Client
         }
 
         // A die no longer in the pool, never seen in it: after the pool's last die.
-        private Rect Slot()
+        private static Rect Slot(VisualElement pool)
         {
-            var last = board.OpponentDice.Query<Button>(className: "die").ToList().LastOrDefault(die => die.worldBound.width > 0);
+            var last = pool.Query<Button>(className: "die").ToList().LastOrDefault(die => die.worldBound.width > 0);
             if (last != null)
                 return new Rect(last.worldBound.xMax + 3, last.worldBound.y, last.worldBound.width, last.worldBound.height);
-            var pool = board.OpponentDice.worldBound;
-            return new Rect(pool.xMax, pool.center.y - 14.5f, 29, 29);
+            var bounds = pool.worldBound;
+            return new Rect(bounds.xMax, bounds.center.y - 14.5f, 29, 29);
         }
 
         private static VisualElement Copy(ActionCost cost)

@@ -59,3 +59,12 @@ and updates.
 - `UI/Observing/ViewingBar` and `BoardScreen.Observe(side)` control perspective.
 - `ActionLogController.Reset` clears the previous perspective's pages, action and
   reports; `MatchConnection.Rebase` resets revision tracking.
+
+<a id="prezentacja--ui-330"></a>
+## Both sides' actions are presented — UI-330 (2026-10-25)
+
+While watching, every side's moves are presented as a player sees the opponent's (the card, the cost die, the figures, the
+battle and Hunt beats, the resources), from the side being watched; only that side's hidden facts are known, as before.
+A change of side, the first view and a reconnect show the state quietly and present only what happens next
+([OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#obserwatorzy--ui-330)).
+

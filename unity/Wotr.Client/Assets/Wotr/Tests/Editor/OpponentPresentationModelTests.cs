@@ -98,6 +98,25 @@ namespace Wotr.EditorTests
             Assert.IsFalse(free.Single(cue => cue.Kind == PresentationCueKind.Advance).OwnCommand, "For the Free Peoples it is the opponent's advance.");
         }
 
+        // UI-330: an observer's model presents both sides' steps from the watched side's history — the watched side's own
+        // moves too, still without an identity a commit hides, and none of them counts as the viewer's own command.
+        [Test]
+        public void AnObserversModelPresentsBothSidesFromTheWatchedSidesHistory()
+        {
+            var player = Replay(Fixture("attack-free-peoples"), out _);
+            var observer = Replay(Fixture("attack-free-peoples"), out var model, everyone: true);
+            Assert.IsTrue(model.Everyone);
+            Assert.Greater(observer.Count, player.Count, "The watched side's own steps are presented too.");
+            Assert.IsTrue(observer.Any(cue => cue.Actor == Side.FreePeoples), "The Free Peoples' own actions.");
+            Assert.IsTrue(observer.Any(cue => cue.Actor == Side.Shadow), "And the Shadow's.");
+            Assert.IsTrue(observer.All(cue => !cue.OwnCommand), "No step is the observer's own.");
+            var commits = observer.Where(cue => cue.Kind == PresentationCueKind.Card && cue.Card.Use == ActionCardUse.CombatCommit).ToList();
+            Assert.IsTrue(commits.Any(cue => cue.Card.Owner == Side.FreePeoples), "The watched side's commit is presented…");
+            Assert.IsTrue(commits.All(cue => cue.Card.Id.Length == 0), "…as a back, like the other side's.");
+            Assert.IsFalse(player.Any(cue => cue.Kind == PresentationCueKind.Card && cue.Card.Use == ActionCardUse.CombatCommit &&
+                cue.Card.Owner == Side.FreePeoples), "A player never sees their own commit played back.");
+        }
+
         [Test]
         public void ABattleWithoutItsOpeningSnapshotIsABeatNotALateAttack()
         {
@@ -419,9 +438,9 @@ namespace Wotr.EditorTests
             return model.Groups.Select(group => group.Latest.StepId + "/" + group.Count + "/" + group.Result.Tooltip).ToList();
         }
 
-        private static List<PresentationCue> Replay(Recording fixture, out OpponentPresentationModel model)
+        private static List<PresentationCue> Replay(Recording fixture, out OpponentPresentationModel model, bool everyone = false)
         {
-            model = Baseline(fixture);
+            model = Baseline(fixture, everyone);
             var cues = new List<PresentationCue>();
             foreach (var update in fixture.Updates)
             {
@@ -431,9 +450,9 @@ namespace Wotr.EditorTests
             return cues;
         }
 
-        private static OpponentPresentationModel Baseline(Recording fixture)
+        private static OpponentPresentationModel Baseline(Recording fixture, bool everyone = false)
         {
-            var model = new OpponentPresentationModel(fixture.Viewer, Data);
+            var model = new OpponentPresentationModel(fixture.Viewer, Data, everyone);
             model.Baseline(new[] { fixture.Baseline }, fixture.BaselineRevision);
             return model;
         }

@@ -56,6 +56,7 @@ namespace Wotr.PlayTests
                 CollectionAssert.AreEqual((await View(host, match.Id, token)).Hand, board.View.Hand);
                 Assert.IsNull(board.View.Decision, "An observer's board holds no decision of its own.");
                 Assert.IsEmpty(board.View.Options);
+                await AssertPresenting(client, token);
 
                 board.Map.Select("minas-tirith");
                 await Until(() => board.Hover.Panel.Root.resolvedStyle.display == DisplayStyle.Flex, token);
@@ -65,6 +66,7 @@ namespace Wotr.PlayTests
                 await Until(() => board.View.You == Side.Shadow, token);
                 CollectionAssert.AreEqual((await View(guest, match.Id, token)).Hand, board.View.Hand);
                 Assert.AreEqual(camera, board.Map.Camera.Pan + "/" + board.Map.Camera.Zoom, "A change of side keeps the camera.");
+                await AssertPresenting(client, token);
 
                 var before = board.View.Revision;
                 await ContinueFellowship(host, match.Id, token);
@@ -88,6 +90,13 @@ namespace Wotr.PlayTests
             }
             if (Directory.Exists(storage))
                 Directory.Delete(storage, true);
+        }
+
+        // UI-330: the watched side's presentation has loaded its history, shows every side's actions and plays live.
+        private static async Task AssertPresenting(MountedFlowClient client, CancellationToken token)
+        {
+            await Until(() => client.Flow.Observer.PresentationLoaded && client.Flow.Observer.Playback?.Live == true, token);
+            Assert.IsTrue(client.Flow.Observer.PresentsEverySide, "An observer is shown both sides' actions.");
         }
 
         private static async Task<GameApi> Account(GameApi api, string prefix, CancellationToken token)

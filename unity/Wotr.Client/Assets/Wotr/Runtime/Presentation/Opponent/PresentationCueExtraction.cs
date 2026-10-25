@@ -20,8 +20,10 @@ namespace Wotr.Client
     // even when an automatic step repeats it (the attacker's own attack is no attack scene for the attacker).
     internal static class PresentationCueExtraction
     {
+        // `you` is the side whose own cards and dice make no cue (the player's), or null for an observer (UI-330), who sees
+        // both sides' — the watched side's draws still as backs, their identities in its hand.
         public static IEnumerable<PresentationCue> Cues(IReadOnlyList<ActionLogStep> group, ISet<ActionLogStep> shown,
-            ActionMemory memory, Side you, BoardPresentation data)
+            ActionMemory memory, Side? you, BoardPresentation data)
         {
             var steps = group.OrderBy(step => step.Order).ToList();
             var figures = FigureCuesByStep(steps, shown, data);
@@ -96,7 +98,7 @@ namespace Wotr.Client
         // A face-up card only from a public Event or CombatReveal (or its table entry and removal); a commit and the
         // opponent's draws and discards show a back or a count, with the identity removed. The player's own cards never
         // make a cue.
-        private static IEnumerable<PresentationCue> Cards(ActionLogStep step, Side you)
+        private static IEnumerable<PresentationCue> Cards(ActionLogStep step, Side? you)
         {
             for (var index = 0; index < step.Facts.Cards.Count; index++)
             {
@@ -256,7 +258,7 @@ namespace Wotr.Client
         });
 
         // The opponent's dice that changed face or place, except the die that paid for the action (its cost cue shows it).
-        private static IEnumerable<PresentationCue> Dice(ActionLogStep step, ActionMemory memory, Side you) => step.Facts.Dice
+        private static IEnumerable<PresentationCue> Dice(ActionLogStep step, ActionMemory memory, Side? you) => step.Facts.Dice
             .Where(die => die.Owner != you && !memory.CostDice.Contains(die.Id) && (die.Before != die.After || die.From != die.To))
             .Select(die => new PresentationCue(step, PresentationCueKind.Die, die.Id + "/" + die.From + ">" + die.To + "/" + die.After,
                 new CuePayload { Die = die }));

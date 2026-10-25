@@ -16,6 +16,9 @@ namespace Wotr.Client
             return group.Where(step => !step.Legacy && (Opponent(step, you) || !step.Actor.HasValue && (opponentActed || Shared(step))));
         }
 
+        // UI-330: an observer's presentation shows every side's recorded steps; only legacy steps without facts never qualify.
+        public static IEnumerable<ActionLogStep> Every(IReadOnlyList<ActionLogStep> group) => group.Where(step => !step.Legacy);
+
         private static bool Opponent(ActionLogStep step, Side you) => step.Actor.HasValue && step.Actor != you;
 
         private static bool Shared(ActionLogStep step) => step.Context.BattleId.Length > 0 || step.Context.HuntChainId.Length > 0;
