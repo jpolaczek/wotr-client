@@ -1258,3 +1258,19 @@ even though they watch one — only for that one do they have the hidden informa
   pays from its pool at the bottom and its cards come from and go to its hand; the other side's from the top bar.
 - The first view, a reconnect and a change of side start the presentation over (a quiet view, then only later moves);
   what the previous side was presenting stops at the change. Skip and Skip animations work as for a player.
+
+<a id="powtorka--ui-328"></a>
+## Replay Play shows who does what — UI-328 (2026-10-25)
+
+Owner: "we need the same animations that show who does what for replay playback too, when the user clicks Play".
+
+- Play presents each step as a live game does, for every side and from the side shown, with only that side's hidden facts,
+  as an observer sees it (UI-330): `ReplayPresentation` builds the cues from the shown side's recorded history in the
+  archive (the steps recorded since the previous step) and plays them with the player's presenters before the step's
+  view is applied.
+- The first view, a manual step, a turn or timeline move and a change of side are points of reference: shown at once and
+  silently; the presentation starts over there (remembering the last 200 revisions, so an action under way keeps its
+  source).
+- Play waits for each step's presentation, the last step's too (`ReplaySession.MaxPresentation` 20 s at most), then the
+  speed's pause; Pause, a lost focus or a manual move skips the beat that plays. A board on no panel (EditMode) applies its
+  steps at once.

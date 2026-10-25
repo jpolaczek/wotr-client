@@ -1202,7 +1202,8 @@ DIST-18 (owner 2026-10-25): from the click on `Restart and update` or `Decline a
     control is razed.
 - Playout skips the time of the mind: the break of the 2 / 1 / 0,25 is at the end of the
   presentation step (default Normal). The player checks the flight figures and the second stage of
-  the track which 0,05 s, at the most 3 s (REPLAY-06), so the mute and reduced motion do not block
+  the track which 0,05 s, at the most 20 s (REPLAY-06; since UI-328 also the step's presented actions, every side's from
+  the side shown), so the mute and reduced motion do not block
   anything. It stands at the last step and the loss of focus of the window pauses. The end screen
   opens once on board, also when it goes back through the final.
 - REPLAY-06: a playback step and new live facts have flights figures, two-stage tracks and sounds.

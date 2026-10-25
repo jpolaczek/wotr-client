@@ -8,6 +8,7 @@ namespace Wotr.Client
     // UI-304: the playback coordinator of one mounted match. Every received view goes to the history feed first (its
     // cues and the read mark of its revision) and then to the coordinator, which applies it through `present` when its
     // presentation allows. The coordinator ticks with the board's scheduler and rebases when the window loses focus.
+    // UI-328: a replay has no live feed (`notices` null); it gives the coordinator its cues and history itself.
     public sealed class PlaybackBinding : IDisposable
     {
         private const long TickMilliseconds = 16;
@@ -22,8 +23,11 @@ namespace Wotr.Client
         {
             this.notices = notices;
             Playback = new PresentationPlayback(present, hold, () => Time.realtimeSinceStartupAsDouble);
-            notices.CuesReady += Playback.Enqueue;
-            notices.HistoryRead += Playback.HistoryRead;
+            if (notices != null)
+            {
+                notices.CuesReady += Playback.Enqueue;
+                notices.HistoryRead += Playback.HistoryRead;
+            }
             Application.focusChanged += Playback.SetFocus;
             ticks = board.Root.schedule.Execute(Tick).Every(TickMilliseconds);
         }
@@ -38,7 +42,7 @@ namespace Wotr.Client
         {
             if (disposed)
                 return;
-            notices.Update(view);
+            notices?.Update(view);
             Playback.Receive(view);
         }
 
@@ -49,8 +53,11 @@ namespace Wotr.Client
             disposed = true;
             ticks.Pause();
             Application.focusChanged -= Playback.SetFocus;
-            notices.CuesReady -= Playback.Enqueue;
-            notices.HistoryRead -= Playback.HistoryRead;
+            if (notices != null)
+            {
+                notices.CuesReady -= Playback.Enqueue;
+                notices.HistoryRead -= Playback.HistoryRead;
+            }
             Playback.Dispose();
         }
     }

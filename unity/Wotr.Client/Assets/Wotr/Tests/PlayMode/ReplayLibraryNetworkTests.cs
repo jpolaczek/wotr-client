@@ -52,7 +52,12 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(bar.Overlaps(client.Board.Viewing.Bar.worldBound), "The replay bar sits under the viewing bar.");
                 Assert.AreEqual(0, client.Flow.Replay.Position);
                 Assert.AreEqual("Replay", client.Board.Connection.text);
-                await ClickReady(client.Root, "replay-next", token);
+                // UI-328: Play presents the last step's actions (the Shadow's die, the capture) as a live game does, then the
+                // board shows the end.
+                await ClickReady(client.Root, "replay-play", token);
+                await Until(() => client.Flow.Replay.PresentingCue, token);
+                Assert.IsFalse(client.Board.GameEnd.IsOpen, "The step's view waits for its presentation.");
+                LayoutTests.Save(client.Panel.targetTexture, "ui328-replay-play.png");
                 await Until(() => client.Board.GameEnd.IsOpen, token);
                 Assert.AreEqual("SHADOW WINS", client.Board.GameEnd.State.Title);
                 Assert.IsFalse(client.Root.Q<Button>("game-end-save-replay").enabledSelf);
