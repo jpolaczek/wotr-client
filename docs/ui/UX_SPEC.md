@@ -1174,6 +1174,8 @@ Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-se
 
 `Restart and update` and `Decline and quit` follow the same path as `Quit game` (`ClientFlow.SaveForExit`): the write error stays in the bar or window and the reclick re-writes. The second release copy shows “War of the Ring is already running” with `Quit`. The editor and development builds do not run the updater or block one copy.
 
+DIST-18 (owner 2026-10-25): from the click on `Restart and update` or `Decline and quit` until the game quits, the exit lock (`ExitLock`, `InterfaceController.LockForExit`) greys the whole screen — the game loses its colour under a grey veil over every screen, Settings and the update window — and names the step (`Saving your game…`, `Installing the update…`, `Restarting…` or `Closing…`). Nothing beneath takes a pick, the wheel or a key (Esc and shortcuts included; the lock takes the focus and the interface root stops the rest before any element sees it), and edge pan stops with the disabled content. The lock has no control of its own and fades in quickly (at once under Skip animations). A failed save or install lifts it, gives the focus back where it was and shows the error with the re-click, as before.
+
 <a id="obserwatorzy--obs-03obs-05-2026-10-16"></a>
 ## Observers — OBS-03-OBS-05 (2026-10-16)
 

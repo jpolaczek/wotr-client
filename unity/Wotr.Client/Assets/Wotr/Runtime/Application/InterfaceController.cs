@@ -18,6 +18,8 @@ namespace Wotr.Client
         private readonly DisplayController display;
         private readonly IVisualElementScheduledItem displayRefresh;
         private bool held;
+        // DIST-18: from an exit's click (Restart and update, Decline and quit) until the application quits.
+        public ExitLock ExitLock { get; } = new ExitLock();
         // UI-180: the screen's edges hold the cursor in a full screen with focus.
         public CursorBarrier Barrier { get; }
         // AUDIO-02: the application's one sound owner; games come and go, it stays.
@@ -39,6 +41,8 @@ namespace Wotr.Client
             root.AddToClassList("client-interface");
             root.Add(Content);
             root.Add(Settings.Root);
+            root.Add(ExitLock.Root);
+            BlockWhileExiting();
             tooltips = new RuntimeTooltip(root);
             presses = new PressFeedback(root);
             gestures = new GestureSounds(presses, Sounds, root);
@@ -63,16 +67,64 @@ namespace Wotr.Client
             Content.SetEnabled(false);
         }
 
-        private void Closed() => Content.SetEnabled(!held);
+        private void Closed() => RefreshContent();
 
-        // DIST-07: a layer over every screen and Settings (the update notice and the required-update overlay).
-        public void AddLayer(VisualElement layer) => root.Add(layer);
+        // DIST-07: a layer over every screen and Settings (the update notice and the required-update overlay). The exit
+        // lock stays the topmost layer.
+        public void AddLayer(VisualElement layer)
+        {
+            root.Add(layer);
+            ExitLock.Root.BringToFront();
+        }
 
         // DIST-07: while a required update blocks the game, its screen keeps showing but takes no input.
         public void Hold(bool hold)
         {
             held = hold;
-            Content.SetEnabled(!hold && !Settings.IsOpen);
+            RefreshContent();
+        }
+
+        // DIST-18: the screen greys and nothing beneath takes the pointer, the wheel or a key while the game saves, stages
+        // the update and quits; `step` names what is happening. Edge pan stops with the disabled content.
+        public void LockForExit(string step)
+        {
+            tooltips.Dismiss();
+            ExitLock.Show(step);
+            root.AddToClassList(ExitLock.LockedClass);
+            Settings.Root.SetEnabled(false);
+            RefreshContent();
+        }
+
+        // A failed exit gives the screen back; its error and Retry show in the update window.
+        public void UnlockExit()
+        {
+            ExitLock.Hide();
+            root.RemoveFromClassList(ExitLock.LockedClass);
+            Settings.Root.SetEnabled(true);
+            RefreshContent();
+            ExitLock.ReturnFocus();
+        }
+
+        private void RefreshContent() => Content.SetEnabled(!held && !Settings.IsOpen && !ExitLock.IsShown);
+
+        // Before any element beneath sees it: a captured drag, a key, a shortcut or Esc included.
+        private void BlockWhileExiting()
+        {
+            root.RegisterCallback<PointerDownEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<PointerUpEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<PointerMoveEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<WheelEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<KeyDownEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<KeyUpEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<NavigationMoveEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<NavigationSubmitEvent>(Block, TrickleDown.TrickleDown);
+            root.RegisterCallback<NavigationCancelEvent>(Block, TrickleDown.TrickleDown);
+        }
+
+        private void Block(EventBase e)
+        {
+            if (ExitLock.IsShown)
+                e.StopImmediatePropagation();
         }
 
         public void Dispose()
