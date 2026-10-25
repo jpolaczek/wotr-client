@@ -11,7 +11,8 @@ namespace Wotr.Client
             if (element == null || element.worldBound.width <= 0 || element.worldBound.height <= 0)
                 return false;
             for (var node = element; node != null; node = node.parent)
-                if (node.resolvedStyle.display == DisplayStyle.None || node.resolvedStyle.visibility == Visibility.Hidden)
+                if (node.resolvedStyle.display == DisplayStyle.None || node.resolvedStyle.visibility == Visibility.Hidden ||
+                    node.ClassListContains(Appearance.ClosingClass))
                     return false;
             return true;
         }

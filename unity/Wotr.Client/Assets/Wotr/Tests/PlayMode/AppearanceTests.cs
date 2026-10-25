@@ -36,6 +36,36 @@ namespace Wotr.PlayTests
             yield return null;
             yield return null;
             Assert.AreEqual(1f, drawer.resolvedStyle.opacity, "No fade.");
+            stage.Board.Nations.Close();
+            Assert.AreEqual(DisplayStyle.None, drawer.style.display.value, "UI-322: it also closes at once.");
+        }
+
+        // UI-322: closing mirrors opening — the panel fades out where it stands and leaves the layout after it, but it is
+        // closed at once for every query and its controls take no click meanwhile.
+        [UnityTest]
+        public IEnumerator AClosingPanelFadesOutButIsClosedAtOnce()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            yield return stage.Ready();
+            var drawer = stage.Board.Nations.Drawer;
+            var clicked = false;
+            var probe = new Button(() => clicked = true) { name = "closing-probe" };
+            probe.style.width = 40;
+            probe.style.height = 20;
+            drawer.Add(probe);
+            stage.Board.Nations.Open();
+            yield return new WaitForSecondsRealtime(.4f);
+            stage.Board.Nations.Close();
+            Assert.IsTrue(Appearance.Closed(drawer), "Closed at once.");
+            Assert.AreEqual(DisplayStyle.Flex, drawer.style.display.value, "It still stands while it fades.");
+            PointerGestureEvents.ClickAt(probe);
+            Assert.IsFalse(clicked, "A closing panel's control takes no click.");
+            yield return new WaitForSecondsRealtime(.07f);
+            Assert.Less(drawer.resolvedStyle.opacity, .95f, "It fades out…");
+            LayoutTests.Save(stage.Texture, "ui322-closing.png");
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(DisplayStyle.None, drawer.style.display.value, "…and then leaves.");
+            Assert.IsTrue(Appearance.Closed(drawer));
         }
     }
 }

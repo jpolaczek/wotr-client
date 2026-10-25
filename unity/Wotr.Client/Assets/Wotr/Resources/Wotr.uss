@@ -1509,6 +1509,8 @@
    once. Only the opacity changes, so its place and size are its own from the first frame. */
 .motion-enabled .appear-host { transition-property: opacity; transition-duration: 0.18s; transition-timing-function: ease-out; }
 .motion-enabled .appearing { opacity: 0; }
+/* UI-322: a closing panel fades out where it stands (Appearance.Close) and leaves the layout after 0.15 s. */
+.motion-enabled .appear-host.closing { opacity: 0; transition-duration: 0.14s; transition-timing-function: ease-in; }
 /* UI-322: a changed number swells and lights for a moment (ValuePulse); its value has already changed. Nothing moves
    under Skip animations. */
 .motion-enabled .value-pulse-host { transition-property: scale, color; transition-duration: 0.16s; transition-timing-function: ease-out-sine; }
