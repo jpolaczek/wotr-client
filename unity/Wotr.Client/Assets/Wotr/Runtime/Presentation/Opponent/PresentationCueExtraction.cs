@@ -52,11 +52,13 @@ namespace Wotr.Client
 
         // UI-311: a decision step records its revision's final battle state, the automatic steps after it the states on the
         // way (the roll of each side, the rerolls, the losses). Its snapshot plays after theirs, so a round never steps back.
+        // UI-337: after the revision's casualties of that battle too — the next round never shows before the losses.
         private static List<PresentationCue> FinalBattleStatesLast(List<PresentationCue> cues)
         {
             foreach (var final in cues.Where(cue => cue.Kind == PresentationCueKind.Battle && cue.Actor.HasValue).ToList())
             {
-                var last = cues.FindLastIndex(cue => cue.Kind == PresentationCueKind.Battle && cue.BattleId == final.BattleId);
+                var last = cues.FindLastIndex(cue => cue.Kind is PresentationCueKind.Battle or PresentationCueKind.Losses &&
+                    cue.BattleId == final.BattleId);
                 if (last <= cues.IndexOf(final))
                     continue;
                 cues.Remove(final);
@@ -277,6 +279,7 @@ namespace Wotr.Client
     // The public state of a battle snapshot a presentation can show: round, stage, cards, dice, hits and figures. History
     // snapshots are public (a committed card has no identity before the reveal, for its owner too), so both players give
     // the same snapshot the same key.
+    // UI-337: a removed figure stays among the participants, so a force's figures are part of its state.
     internal static class BattleFingerprint
     {
         public static string Of(BattleView battle) =>
@@ -285,7 +288,9 @@ namespace Wotr.Client
 
         private static string Force(BattleForceView force) =>
             force.CardCommitted + ":" + force.CardId + ":" + force.CardCancelled + ":" + force.Hits + ":" + force.SpentHits + ":" +
-            string.Join(",", force.ParticipantIds.OrderBy(id => id, System.StringComparer.Ordinal)) + ":" + string.Join(",", force.Dice.Select(Die));
+            string.Join(",", force.ParticipantIds.OrderBy(id => id, System.StringComparer.Ordinal)) + ":" +
+            string.Join(",", force.Units.Select(unit => unit.Id).Concat(force.Characters.Select(character => character.Id))
+                .OrderBy(id => id, System.StringComparer.Ordinal)) + ":" + string.Join(",", force.Dice.Select(Die));
 
         private static string Die(BattleDieView die) => die.Id + "=" + die.Result + ">" + die.Reroll + (die.Hit || die.RerollHit ? "h" : "");
     }

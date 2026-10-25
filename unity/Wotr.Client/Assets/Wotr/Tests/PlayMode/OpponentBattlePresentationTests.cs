@@ -173,17 +173,34 @@ namespace Wotr.PlayTests
             PresentedBoardStage.Place(final, new[] { regular, elite }, "reserve");
             PresentedBoardStage.Place(final, new[] { replacement }, "minas-morgul");
             stage.Play(final, null, round.Steps.ToArray());
-            yield return stage.Until(() => stage.Board.Root.Q(BattlePresenter.PlateName) != null);
-            var plate = stage.Board.Root.Q(BattlePresenter.PlateName);
-            CollectionAssert.AreEquivalent(new[] { "−1", "" }, plate.Query<Label>("observed-delta-count").ToList().Select(l => l.text),
-                "A removal counts; a downgrade is its replacement.");
-            Assert.AreEqual(1, plate.Query<Label>().ToList().Count(l => l.text == "→"), "Elite → Regular.");
-            Assert.AreEqual("×1", Figure(stage, "attacker", "sauron-Elite"), "The losses still stand while marked.");
-            LayoutTests.Save(stage.Texture, "ui311-losses.png");
+            // UI-337: one hit per committed loss, in the recorded order — first the Regular…
+            yield return stage.Until(() => Struck(stage, "sauron-Regular"));
+            var burst = stage.Board.Root.Q(BattleHits.BurstName);
+            Assert.IsNotNull(burst, "A hit bursts over the struck stack.");
+            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-attacker").Q("battle-figure-sauron-Regular").worldBound
+                .Contains(burst.worldBound.center), "The hit lands on the stack.");
+            Assert.AreEqual("×3", Figure(stage, "attacker", "sauron-Regular"), "The figure stands while it is hit.");
+            Assert.IsFalse(Struck(stage, "sauron-Elite"), "One loss at a time.");
+            Assert.IsFalse(stage.Board.Battles.Presented.Q("battle-figure-sauron-Regular").ClassListContains(BattleHits.LeavingClass),
+                "Two Regulars stay.");
+            LayoutTests.Save(stage.Texture, "ui337-hit-regular.png");
+            yield return stage.Until(() => Figure(stage, "attacker", "sauron-Regular") == "×2");
+            Assert.AreEqual("×1", Figure(stage, "attacker", "sauron-Elite"), "The Elite is not hit yet.");
+            // …then the Elite, the last of its stack, which fades and becomes a Regular.
+            yield return stage.Until(() => Struck(stage, "sauron-Elite"));
+            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-figure-sauron-Elite").ClassListContains(BattleHits.LeavingClass));
+            yield return null;
+            yield return null;
+            LayoutTests.Save(stage.Texture, "ui337-hit-elite.png");
             yield return stage.Until(() => Figure(stage, "attacker", "sauron-Elite") == null);
             Assert.AreEqual("×3", Figure(stage, "attacker", "sauron-Regular"), "One Regular left, one replaced the Elite.");
+            Assert.IsNull(stage.Board.Root.Q(BattleHits.BurstName), "The hit is over.");
+            LayoutTests.Save(stage.Texture, "ui337-downgraded.png");
             yield return stage.Released();
         }
+
+        private static bool Struck(PresentedBoardStage stage, string kind) =>
+            stage.Board.Battles.Presented.Q("battle-attacker")?.Q("battle-figure-" + kind)?.ClassListContains(BattleHits.HitClass) == true;
 
         [UnityTest]
         public IEnumerator TheWitchKingLostWithHisArmyIsRingedOnHisPortrait()

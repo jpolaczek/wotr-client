@@ -243,15 +243,58 @@ namespace Wotr.EditorTests
             var reordered = 0;
             foreach (var revision in cues.GroupBy(cue => cue.Revision))
             {
-                var states = revision.Where(cue => cue.Kind == PresentationCueKind.Battle).ToList();
-                var final = states.FindIndex(cue => cue.Actor.HasValue);
+                var states = revision.Where(cue => cue.Kind is PresentationCueKind.Battle or PresentationCueKind.Losses && cue.BattleId.Length > 0).ToList();
+                var final = states.FindIndex(cue => cue.Kind == PresentationCueKind.Battle && cue.Actor.HasValue);
                 if (final < 0)
                     continue;
-                Assert.AreEqual(states.Count - 1, final, "Revision " + revision.Key);
+                Assert.AreEqual(states.Count - 1, final, "Revision " + revision.Key + ": after its states and casualties.");
                 reordered += states.Count > 1 ? 1 : 0;
             }
             Assert.Greater(reordered, 0, "A revision records states on the way after its decision.");
         }
+
+        // UI-337 (a battle against the demo CPU): the CPU's casualties after our own. The engine keeps a removed figure among
+        // the participants, so the state after the CPU's losses differs from the one before only by its figures; it is
+        // still a state of its own, and the CPU's final state (the next round) follows the losses instead of coming first.
+        [Test]
+        public void TheOpponentsCasualtiesPlayBeforeTheNextRoundsState()
+        {
+            var model = new OpponentPresentationModel(Side.FreePeoples, Data);
+            model.Baseline(new[] { Page() }, 4);
+            var ours = Step("ours", 5, 1, Side.FreePeoples, "ActionDecision");
+            ours.Facts.Battle = Snapshot("AfterLosses", "sauron.r1", "sauron.r2");
+            var oursLost = Step("ours-lost", 5, 2, null, "BattleLosses");
+            oursLost.Facts.Battle = Snapshot("AfterLosses", "sauron.r1", "sauron.r2");
+            oursLost.Facts.LossDetails.Add(new ActionLossFact { Figure = new ActionParticipant
+                { Id = "gondor.r1", Side = Side.FreePeoples, NationId = "gondor", UnitKind = UnitKind.Regular }, Operation = BattleLossKind.Remove });
+            var cpu = Step("cpu", 6, 1, Side.Shadow, "ActionDecision");
+            cpu.Facts.Battle = Snapshot("Continue", "sauron.r2");
+            var cpuLost = Step("cpu-lost", 6, 2, null, "BattleLosses");
+            cpuLost.Facts.Battle = Snapshot("AfterLosses", "sauron.r2");
+            cpuLost.Facts.LossDetails.Add(new ActionLossFact { Figure = Unit("sauron.r1", UnitKind.Regular), Operation = BattleLossKind.Remove });
+            foreach (var step in new[] { ours, oursLost, cpu, cpuLost })
+            {
+                step.ActionId = "battle-action";
+                step.Context.BattleId = "battle";
+            }
+            model.Merge(new[] { Page(ours, oursLost, cpu, cpuLost) });
+            var cues = model.Advance(6).Where(cue => cue.Revision == 6).ToList();
+            CollectionAssert.AreEqual(new[] { PresentationCueKind.Losses, PresentationCueKind.Battle, PresentationCueKind.Battle },
+                cues.Select(cue => cue.Kind), "The losses, the state after them, then the CPU's final state.");
+            Assert.AreEqual("AfterLosses", cues[1].Battle.Stage, "Fewer figures with the same participants is a new state.");
+            Assert.AreEqual("Continue", cues[2].Battle.Stage);
+        }
+
+        private static BattleView Snapshot(string stage, params string[] shadowUnits) => new BattleView
+        {
+            Id = "battle", Round = 1, Stage = stage,
+            Attacker = new BattleForceView { Side = Side.FreePeoples, RegionId = "osgiliath", ParticipantIds = { "gondor.r1" } },
+            Defender = new BattleForceView
+            {
+                Side = Side.Shadow, RegionId = "minas-morgul", ParticipantIds = { "sauron.r1", "sauron.r2" },
+                Units = shadowUnits.Select(id => new UnitView { Id = id, Nation = "sauron", Kind = UnitKind.Regular, Side = Side.Shadow }).ToList()
+            }
+        };
 
         // UI-312: an empty decline records nothing to show — ten of them make no scene — and a repeated revision never
         // charges a Ring twice.

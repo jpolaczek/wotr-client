@@ -598,8 +598,10 @@ Code: `Runtime/UI/Playback/BattlePresenter.cs`; `RegionalBattlePanel.Present`/`E
 - **Dice.** A roll or a reroll rings the dice it changed in their side's row, and they lift for 0.25 s (only the ring
   under Reduced motion). It plays one dice sound and holds 1 s. The faces, hit marks and totals are the window's own.
 - **Casualties.** Only committed losses are shown, never an unsubmitted selection.
-  - A delta plate at the right of the side's figures shows each kind's art, crest and count; an Elite's downgrade
-    shows as its replacement (Elite → Regular). It holds 1 s before the next state removes them.
+  - UI-337: each loss is its own hit, in the decision's order — a small red ring bursts over the figure's stack while it
+    flashes (0.35 s), a stack losing its last figure fades out, then the count steps and an Elite downgraded becomes a
+    Regular whose stack lights (0.45 s). The round's next state follows the last hit
+    ([BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md#trafienia--ui-337)).
   - A leader or character lost with its army is ringed on its portrait.
   - A siege extension's figure change is shown the same way.
 - **Later rounds** stay in the same window. A retreat, an advance and a capture return to the map through their own
@@ -1014,7 +1016,7 @@ existing history, never an invented intermediate board.
 | **Event card** | the card reveal (§6.2) with its cost | after ≥ 3 s it docks; its committed effects play in causal order through their own family presenters | the last committed effect; a real choice ends the beat (§7) | CardInspector, console trail chip, family hosts | card shown, effects as final state | "Cancelled" / "No effect" only when recorded |
 | **Characters** | the portrait (or ability picture) as source | travel flies the figure; entry places it; a transformation replaces the figure (never two figures); an ability's public effect plays through its family; a removal fades the figure to casualties | final placement; the roster/portrait changes | figures, Characters panel, Fellowship roster | final state with trace | the character's name if ambiguous |
 | **Fellowship / Hunt** | cost; trace on the progress track | the progress marker moves only after the Hunt resolves; the Hunt window shows public dice, rerolls and the revealed tile; corruption and progress move as separate beats; a casualty changes its portrait; declaration/reveal relocates the public figure | final tracks; a local response opens after its causal beat | Fellowship panel, Hunt window, Mordor track | final tracks with trace; hidden travel never shows a route | none |
-| **Battle round** | the battle window | committed cards stay backs; both reveal together with initiative; the combat half is emphasized; rolls and rerolls animate in their side's row; hits, then committed casualties grouped (an elite downgrade as its replacement) | later rounds in the same window; retreat, siege and capture return to the map | battle window | the window shows the latest state | none |
+| **Battle round** | the battle window | committed cards stay backs; both reveal together with initiative; the combat half is emphasized; rolls and rerolls animate in their side's row; hits, then each committed casualty as its own hit (an elite downgrade becomes a Regular; UI-337) | later rounds in the same window; retreat, siege and capture return to the map | battle window | the window shows the latest state | none |
 | **Rings / dice / drawing** | trace on the resource | a Ring changes holder; a die shows before → after face; the opponent's draw shows a card back and the hand count | final counts | top bar resources, opponent dice, hand count | final state | none |
 | **Pass / discard / decline** | — | no scene; the pool or status updates where useful | — | dice pool, console status | — | none |
 
@@ -1152,7 +1154,7 @@ play a Combat card.
 | C5 | after both commits | both cards turn face up together; initiative seal; combat halves emphasized | — | battle window (click opens the read-only card) | cards known | 3 s | Skip: latest state |
 | C6 | — | Shadow's dice roll in its row; hits marked; FP's roll in its row | — | battle dice strip | hits known | 1 s dwell | static faces |
 | C7 | — | — | — | — | **FP's real choice**: FP chooses its own casualties on the existing host | FP commits | — |
-| C8 | after commit | the committed casualties leave their columns (an elite downgrade as its replacement) | — | battle window, army markers | composition updated | 1 s | static |
+| C8 | after commit | each committed casualty is hit, then leaves its column (an elite downgrade becomes a Regular; UI-337) | — | battle window, army markers | composition updated | 0.8 s per loss | flash and fade, no movement |
 | C9 | — | — | — | — | the next round stays in the window; a retreat or advance returns to the map (§8 retreat) | — | — |
 
 Controls: Skip only (while C1–C3, C5–C6, C8 play). Captions: none.

@@ -420,8 +420,8 @@ decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-
 - **Cards.** A committed card is a back. Both cards turn face up together, ringed with their initiative, for 3 s. A
   click opens the card read-only and holds the presentation.
 - **Dice.** A roll or a reroll rings the dice it changed, with one dice sound.
-- **Losses.** Committed losses are marked with a delta plate (a downgrade as its replacement) before the next state
-  removes them. A character lost with its army is ringed on its portrait.
+- **Losses.** Committed losses play one hit at a time, in their recorded order, before the round's next state (UI-337,
+  below). A character lost with its army is ringed on its portrait.
 - **Controls.** The marks are observed traces, never a choice glow: nothing in the presented state can be clicked
   except a revealed card. The release gives the player's own controls back, with their usual click rules.
 
@@ -461,3 +461,21 @@ assignment panel is added, and the animation should fire only once".
 - Its marker glides only when the current stage changes; a new parent, a redraw or a resize at the same stage puts it in
   place at once (a glide under way is only re-aimed).
 
+<a id="trafienia--ui-337"></a>
+## Casualties hit by hit — UI-337 (2026-10-25)
+
+Owner, from a battle against the CPU: "I had two hits, but from the combat roll it went straight to the next round; it did
+not show the opponent assigning the damage. It should show small animated hits that either turn a unit from Elite to
+Regular or kill a Regular, each server-committed decision shown separately."
+
+- Cause: the engine keeps a removed figure among a force's participants, so the client's battle fingerprint saw the state
+  after the opponent's losses as the state before them and dropped it; the opponent's final state (the next round) then
+  played first. The fingerprint now includes the force's figures, and a decision's final state always follows the
+  revision's casualties of its battle (`PresentationCueExtraction.FinalBattleStatesLast`).
+- Each committed loss is its own beat (`BattlePresenter.Losses`, `BattleHits`): a small red ring bursts over the figure's
+  stack in its column while the stack flashes red and swells (0.35 s); a stack losing its last figure fades out meanwhile.
+  Then the state steps (0.45 s): the count drops, and an Elite downgraded becomes a Regular whose stack lights. The
+  window stays at its Losses stage throughout; the round's next state comes after the last hit.
+- Only committed facts play (`Facts.LossDetails`, in the order of the decision); a decision of several losses plays them
+  one after another. The player's own committed casualties play the same way (a shared battle resolution, UI-303).
+- Reduced motion keeps the flash, the ring and the fade without movement; Skip animations shows the latest state at once.
