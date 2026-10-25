@@ -718,6 +718,9 @@ occlusion changed until the picture is fully clear; the new number shows and the
   in a region is that region's marker and emerges like an army; a character joining an army makes it flare and step its
   number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
   trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
+- The blurred flare joins the marker only while it shows and leaves 0.3 s after the emergence ends (UI-322): a permanent
+  blurred element on every marker made Unity's renderer fail when the Fellowship track's layout changed
+  (`FellowshipTrackLayoutTests`).
 
 <a id="odejscie--ui-338"></a>
 ## An army that leaves fades out — UI-338 (2026-10-25)

@@ -45,6 +45,50 @@ namespace Wotr.Client
             element.schedule.Execute(() => element.RemoveFromClassList(AppearingClass)).ExecuteLater(delay);
         }
 
+        // A part that changed in place (a die's face): the new one fades in over the old one, which fades out and goes.
+        // The caller crossfades only under .motion-enabled (Moving). Both are new elements, so each fade starts once it
+        // has been laid out: before it has a style there is nothing to animate from.
+        public static void Crossfade(VisualElement old, VisualElement next)
+        {
+            Depart(old);
+            next.AddToClassList(HostClass);
+            next.AddToClassList(AppearingClass);
+            next.RegisterCallback<GeometryChangedEvent>(FadeIn);
+        }
+
+        // A new copy of what just left (a figure stack, a die's old face) fades out where it stood and goes; it takes no
+        // pointer. The caller departs only under .motion-enabled (Moving).
+        public static void Depart(VisualElement ghost)
+        {
+            ghost.pickingMode = PickingMode.Ignore;
+            ghost.AddToClassList(HostClass);
+            ghost.RegisterCallback<GeometryChangedEvent>(FadeOut);
+        }
+
+        // Transitions run: Skip animations is off for this element's screen.
+        public static bool Moving(VisualElement element)
+        {
+            for (var node = element; node != null; node = node.parent)
+                if (node.ClassListContains("motion-enabled"))
+                    return true;
+            return false;
+        }
+
+        private static void FadeIn(GeometryChangedEvent evt)
+        {
+            var element = (VisualElement)evt.currentTarget;
+            element.UnregisterCallback<GeometryChangedEvent>(FadeIn);
+            element.RemoveFromClassList(AppearingClass);
+        }
+
+        private static void FadeOut(GeometryChangedEvent evt)
+        {
+            var element = (VisualElement)evt.currentTarget;
+            element.UnregisterCallback<GeometryChangedEvent>(FadeOut);
+            element.AddToClassList(ClosingClass);
+            element.schedule.Execute(element.RemoveFromHierarchy).ExecuteLater(CloseMilliseconds + 50);
+        }
+
         private static void Close(VisualElement element)
         {
             if (Closed(element))
@@ -82,14 +126,6 @@ namespace Wotr.Client
                 return true;
             foreach (var child in element.Children())
                 if (child.resolvedStyle.display != DisplayStyle.None && Filtered(child))
-                    return true;
-            return false;
-        }
-
-        private static bool Moving(VisualElement element)
-        {
-            for (var node = element; node != null; node = node.parent)
-                if (node.ClassListContains("motion-enabled"))
                     return true;
             return false;
         }

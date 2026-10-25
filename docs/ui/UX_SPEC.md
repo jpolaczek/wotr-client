@@ -1332,8 +1332,39 @@ available as an option, skip animations".
   (`Appearance.Arrive`).
 - **Unchanged.** A choice the player can make is never hidden behind an animation (it is shown and pickable from the
   first frame).
-- **Follow-up (UI-322).** Closing fades, crossfades of changing numbers and die faces, and figures fading out of a stack.
-  Each changes when a hidden element stops counting as shown, so they are a separate task.
+- **Follow-up (UI-322).** Closing fades, changing numbers and die faces, and figures fading out of a stack
+  ([below](#plynne-zamykanie--ui-322)).
+
+<a id="plynne-zamykanie--ui-322"></a>
+## Smooth closings, changing numbers and leaving figures — UI-322 (2026-10-25)
+
+The rest of the owner's rule from UI-321. Without Skip animations none of these elements disappears or changes in one
+frame; with it, and in a quiet view (reconnect, change of side, a replay's manual step), every change happens at once.
+
+- **Closing.** A panel, window or part of a window that closes fades out where it stands over 0.15 s and only then
+  leaves the layout (`Appearance.Display`, Wotr.uss `.appear-host.closing`). It counts as closed at once
+  (`Appearance.Closed`, which the left rail's tabs, the Politics presentation and the exit lock read instead of its
+  display), its controls take no press, release or click while it fades, and opening it again during the fade keeps it.
+  An element holding a filtered one (a presentation glow, a hit's drop shadow) leaves at once, because Unity's renderer
+  fails on a fading element with filtered children. It applies to every element UI-321 fades in.
+- **Numbers.** A changed count swells and lights for 0.32 s while its new value already stands (`ValuePulse`, Wotr.uss
+  `.value-pulse`): the opponent's counters, the deck counts, the Hunt Box's Eyes and free dice, the reserves, the
+  Fellowship's progress and corruption, the hand and Effects tabs, the pool's spent, Hunt and out dice, and a battle
+  stack's count. A first value never pulses.
+- **Die faces.** A die whose face changes where it stands (rolled, turned by a Ring or a card, unrolled again) crossfades:
+  the new face fades in over the old one, which fades out and goes, in the own dice tray and the opponent's dice
+  (`ActionPoolView`, `Appearance.Crossfade`). A die that joins the pool shows its face at once.
+- **Leaving figures.** On the map a marker whose figures all leave fades out (UI-338). In the live battle window a figure
+  stack that leaves fades out where it stood (a renamed `leaving-…` copy, so no query finds it) and its neighbours close up
+  after it; a stack whose count changed pulses (`BattleStackMemory`, `BattleContext`). The presented opponent round keeps
+  UI-337's hits. A view drawn twice in a frame compares with what was on screen before that frame (`ShownBefore`).
+- **The army flare.** UI-334's blurred flare joins an army marker only while it shows and leaves once it has faded: a
+  permanent blurred element on every marker made Unity's renderer fail when the Fellowship track's layout changed.
+
+Tests: `AppearanceTests` (a closing panel fades out but is closed at once and takes no click; Skip closes at once),
+`ValuePulseTests`, `DieFaceCrossfadeTests`, `BattleStackFadeTests`, `ArmyEmergeTests`, `ArmyLeaveTests`,
+`FellowshipTrackLayoutTests`; the "is closed" assertions of `PoliticalPanelTests` and `OpponentRecruitmentPoliticsTests`
+read `Appearance.Closed`.
 
 <a id="nazwy--ui-331"></a>
 ## Names, never codes — UI-331 (2026-10-25)

@@ -30,6 +30,10 @@ namespace Wotr.Client
         private readonly Dictionary<VisualElement, string> snapshots = new Dictionary<VisualElement, string>();
         // UI-322: the last shown count of each side's spent, Hunt and out dice, so a rebuilt count that changed pulses.
         private readonly Dictionary<(string, Side, DieLocation), int> shownCounts = new Dictionary<(string, Side, DieLocation), int>();
+        // UI-322: the faces each pool showed (by match and die), so a die whose face changed in place crossfades to its new
+        // face; a die that joins the pool shows its face at once.
+        private readonly ShownBefore<VisualElement, IReadOnlyDictionary<string, DieFace?>> shownFaces =
+            new ShownBefore<VisualElement, IReadOnlyDictionary<string, DieFace?>>(new Dictionary<string, DieFace?>());
 
         public ActionPoolView(Action<string> dieChosen, Action<string> tokenChosen)
         {
@@ -53,8 +57,15 @@ namespace Wotr.Client
             // Opponent counters live in the top bar's OpponentSummary.
             root.Add(own ? Header(side) : OwnerLabel(side));
             var available = BoardScreen.Row("available-dice");
+            var faces = new Dictionary<string, DieFace?>();
+            var shown = shownFaces.Exchange(root, faces);
+            var before = Appearance.Moving(root) && !ValuePulse.Quiet ? shown : null;
             foreach (var die in visibleDice)
-                available.Add(Die(die, own));
+            {
+                var key = view.MatchId + "/" + die.Id;
+                available.Add(Die(die, own, key, before));
+                faces[key] = die.Face;
+            }
             if (!own)
             {
                 root.Add(available);
@@ -93,11 +104,11 @@ namespace Wotr.Client
                 string.Join("|", view.CouncilTokens.Select(t => t.Id + ":" + t.Spent + ":" + t.UsedTokenThisTurn))
                 : "");
 
-        private Button Die(DieView die, bool own)
+        private Button Die(DieView die, bool own, string key, IReadOnlyDictionary<string, DieFace?> before)
         {
             var special = ExpansionLabels.Special(die);
             var button = BoardScreen.Die("", () => dieChosen(die.Id));
-            button.Add(new DieFaceIcon(die.Face));
+            ShowFace(button, die.Face, key, before);
             button.name = die.Id;
             button.tooltip = DieDescriptions.Tooltip(die);
             button.AddToClassList(die.Owner == Side.FreePeoples ? "die-free" : "die-shadow");
@@ -119,6 +130,18 @@ namespace Wotr.Client
             // An opponent's retained Ruler die can be the target of Dismay.
             button.SetEnabled(die.Location != DieLocation.Resolving);
             return button;
+        }
+
+        // A rolled die, a turned one (a Ring, a card) or a die that became unrolled again changes its face where it stands.
+        private static void ShowFace(VisualElement button, DieFace? face, string key, IReadOnlyDictionary<string, DieFace?> before)
+        {
+            var icon = new DieFaceIcon(face);
+            button.Add(icon);
+            if (before == null || !before.TryGetValue(key, out var old) || old == face)
+                return;
+            var previous = new DieFaceIcon(old);
+            button.Insert(button.IndexOf(icon), previous);
+            Appearance.Crossfade(previous, icon);
         }
 
         private void Locations(VisualElement root, PlayerView view, Side side)
