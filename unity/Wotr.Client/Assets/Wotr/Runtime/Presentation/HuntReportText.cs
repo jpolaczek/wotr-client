@@ -32,10 +32,12 @@ namespace Wotr.Client
             };
         }
 
+        // UI-331: a source the client cannot name still reads as a word (a tile, a card), never its identifier.
         public static string Source(string id, BoardPresentation data) => id == "fellowship-move" ? "Fellowship movement" :
-            data.Regions.TryGetValue(id, out var region) ? "Extra Hunt · " + region.Name : CardLibrary.Title(id);
+            data.Regions.TryGetValue(id, out var region) ? "Extra Hunt · " + region.Name : ReadableText.Name(id, data);
 
-        private static string Region(string id, BoardPresentation data) => data.Regions.TryGetValue(id, out var region) ? region.Name : id;
+        private static string Region(string id, BoardPresentation data) => data.Regions.TryGetValue(id, out var region) ? region.Name
+            : FigureGrid.Name(id);
         private static string Roll(HuntView hunt) => hunt == null ? "No recorded roll" :
             hunt.Dice.Count + " dice · " + hunt.Dice.Count(d => d.Success) + " hits";
         private static string Tile(HuntView hunt) => hunt == null ? "No recorded tile" :

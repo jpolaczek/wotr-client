@@ -12,6 +12,9 @@ namespace Wotr.Client
         public static string Title(HuntTileFaceView face) => face.Pool == Smeagol ? "Sméagol" :
             face.Value == "eye" ? "Eye" : face.Value == "die" ? "Die" : face.Value.Replace("-", "−");
 
+        // UI-331: the tile in a sentence — its kind and face ("Shadow special tile 1").
+        public static string Name(HuntTileFaceView face) => face.Pool == Smeagol ? "the Sméagol tile" : Kind(face) + " " + Title(face);
+
         public static string Tooltip(HuntTileFaceView face)
         {
             var lines = new List<string> { Title(face) + " · " + Meaning(face) };

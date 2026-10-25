@@ -1333,3 +1333,22 @@ available as an option, skip animations".
   first frame).
 - **Follow-up (UI-322).** Closing fades, crossfades of changing numbers and die faces, and figures fading out of a stack.
   Each changes when a hidden element stops counting as shown, so they are a separate task.
+
+<a id="nazwy--ui-331"></a>
+## Names, never codes — UI-331 (2026-10-25)
+
+Owner rule for the whole application: "we should not show this kind of code in the logs or notifications, only
+human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special-sh.1.1.1 is in play.`).
+
+- No identifier is ever shown to a player. A recorded or server text is read through `ReadableText` wherever it is shown
+  (the Log's rows and their tooltips, the opened action card, the battle report's details, the result lines of the
+  pennants and their tooltips): a card reads as its title, a character or sovereign as its name, a Hunt tile as its kind
+  and face ("Shadow special tile 1"), a unit as its nation and kind ("Gondor Regular"), a region or nation as its
+  printed name, `FreePeoples` as "Free Peoples". The screenshot's entry now reads "Give it to Uss!: Shadow special
+  tile 1 is in play."
+- An identifier the client cannot name reads as what it is ("a card", "a Hunt tile", "a character"), never as its
+  code; `CardLibrary.Title` and the Hunt report's source and region fall back the same way.
+- Guards: an EditMode test reads every recorded text of the wire fixtures and fails on any code; a network test scans the
+  rendered Log and its opened card.
+- Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.
+

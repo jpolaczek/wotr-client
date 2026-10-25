@@ -194,7 +194,8 @@ namespace Wotr.Client
             }
             // An action whose steps record no effect still says what it was.
             var last = view.Steps.LastOrDefault();
-            summary.text = position == 0 && last != null && playedKey.Length == 0 ? ActionCardText.WithoutSide(last.Text, view.Action.Initiator ?? last.Actor) : "";
+            summary.text = position == 0 && last != null && playedKey.Length == 0
+                ? ActionCardText.WithoutSide(ReadableText.Of(last.Text, data), view.Action.Initiator ?? last.Actor) : "";
             if (summary.text.Length > 0 && summary.parent != body.contentContainer)
                 body.Add(summary);
             else if (summary.text.Length == 0)
@@ -202,7 +203,7 @@ namespace Wotr.Client
         }
 
         private string[] Lines(ActionLogStep step) => step.Legacy
-            ? new[] { step.Text }
+            ? new[] { ReadableText.Of(step.Text, data) }
             : ActionFactText.Effects(step, data).Distinct().ToArray();
 
         private static VisualElement Step(ActionLogStep step, IEnumerable<string> lines)
