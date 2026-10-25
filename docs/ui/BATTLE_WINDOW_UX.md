@@ -437,3 +437,15 @@ The stage ribbon is one lasting row per window (`StageRibbon`, `BattleStages.Rib
 stage its gilt marker glides there (eased, 0.35 s) and the labels crossfade, also when the window redraws its content;
 at once under Skip animations ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
 
+<a id="zamkniecie--ui-333"></a>
+## A decided battle's window steps aside — UI-333 (2026-10-25)
+
+Owner: "once the battle is resolved and the next animations start, close its window, unless the user moved it".
+
+- In a presentation, the first cue that is not part of what the window shows (its opening, rounds, cards, casualties and a
+  siege's figure changes) closes the battle window when the battle is over in the latest view and nothing more of it is
+  queued but its state after the decision (Advance, Finish, Complete) — so a retreat, an advance or the next action plays on
+  an open map (`BattleWindowRetirement`, registered before every other presenter).
+- A window the player dragged to a place of their own stays through the rest of the presentation.
+- Outside a presentation the window already closes with its battle (the view without it).
+

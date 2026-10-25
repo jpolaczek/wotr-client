@@ -1274,3 +1274,10 @@ Owner: "we need the same animations that show who does what for replay playback 
 - Play waits for each step's presentation, the last step's too (`ReplaySession.MaxPresentation` 20 s at most), then the
   speed's pause; Pause, a lost focus or a manual move skips the beat that plays. A board on no panel (EditMode) applies its
   steps at once.
+
+<a id="bitwa-zamknieta--ui-333"></a>
+## The battle window closes after its battle — UI-333 (2026-10-25)
+
+In the battle beats of §8 a decided battle's window closes as the next scene begins, unless the player moved it
+([BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md#zamkniecie--ui-333)).
+

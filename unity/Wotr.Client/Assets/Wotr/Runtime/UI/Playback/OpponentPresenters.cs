@@ -43,6 +43,8 @@ namespace Wotr.Client
             staged = new StagedBoard(board);
             Trace = new MapObservedTrace(board.Map);
             Skip = new SkipControl(board, layer, Playback, SkipNow);
+            // UI-333: before any scene, a finished battle's window steps aside for the next one.
+            Playback.Register(new BattleWindowRetirement(board, Playback));
             Playback.Register(cost);
             Playback.Register(camera);
             cards = new CardRevealPresenter(board, Playback, camera, layer);

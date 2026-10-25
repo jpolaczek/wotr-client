@@ -237,9 +237,34 @@ namespace Wotr.PlayTests
             PresentedBoardStage.Place(final, attackers, "osgiliath");
             stage.Play(final, null, round.Steps.ToArray());
             yield return stage.Until(() => stage.Flying("minas-tirith"));
+            // UI-333: the battle is decided and the next scene (the retreat on the map) begins: its window steps aside.
+            Assert.IsFalse(stage.Board.Battles.IsOpen, "The finished battle's window closes as the next scene starts.");
+            LayoutTests.Save(stage.Texture, "ui333-window-closed.png");
             yield return stage.Until(() => stage.Flying("osgiliath"));
+            Assert.IsFalse(stage.Board.Battles.IsOpen, "It stays closed for the advance.");
             yield return stage.Released();
             Assert.AreEqual(attackers.Count, stage.Army("osgiliath"));
+        }
+
+        // UI-333: a battle window the player dragged to a place of their own stays through the next scenes.
+        [UnityTest]
+        public IEnumerator AMovedBattleWindowStaysWhenTheNextSceneStarts()
+        {
+            using var stage = Attack(out var fight);
+            yield return Open(stage, fight);
+            stage.Board.Windows.Remember(stage.Board.Battles.Root.name, new Vector2(40, 60));
+            var round = fight.Next();
+            var attackers = round.Units("sauron", null);
+            round.Record(battle => battle.Stage = "Complete").Movements.Add(new ActionMovement
+            {
+                Kind = ActionMovementKind.Advance, From = "minas-morgul", To = "osgiliath", Participants = attackers.Select(stage.Unit).ToList()
+            });
+            var final = round.Latest();
+            PresentedBoardStage.Place(final, attackers, "osgiliath");
+            stage.Play(final, null, round.Steps.ToArray());
+            yield return stage.Until(() => stage.Flying("osgiliath"));
+            Assert.IsTrue(stage.Board.Battles.IsOpen, "Moved by the player, it stays.");
+            yield return stage.Released();
         }
 
         [UnityTest]
