@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Wotr.Contracts;
 
@@ -12,6 +13,7 @@ namespace Wotr.Client
         private PlayerView view;
         private TurnDraft draft;
         public bool Active => draft != null && TravelActions.IsStep(draft);
+        private static readonly IReadOnlyDictionary<string, ArmyMarker> NoJourney = new Dictionary<string, ArmyMarker>();
 
         public TravelContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -24,6 +26,9 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
+            // UI-294: a card's journey shows its planned companions faintly at their destinations.
+            board.Map.PlannedJourneys.Apply(CompanionJourneyDraft.Active(view, draft) ? CompanionJourneyDraft.Planned(view, draft) : NoJourney,
+                false);
             var option = TravelActions.Option(view, draft, board.ActionDie);
             if (option == null)
                 return;
@@ -53,6 +58,18 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-294: in a card's journey a click on a region with exactly one lit companion chooses it; with several the
+        // region's panel lists them.
+        public bool Source(string region)
+        {
+            if (view == null || busy() || !CompanionJourneyDraft.Active(view, draft))
+                return false;
+            var option = TravelActions.Option(view, draft, board.ActionDie);
+            var here = option?.Travel.Where(t => t.Origin == region && TravelActions.CanSelect(view, draft, board.ActionDie, t.Id))
+                .Select(t => t.Id).ToList();
+            return here?.Count == 1 && Figure(here[0]);
+        }
+
         // UI-105: a click on a reachable destination moves the selected group there at once. An event journey of
         // several groups sent as one command keeps its shared confirmation, so the click only sets that group's
         // destination.
@@ -64,7 +81,11 @@ namespace Wotr.Client
             if (!TravelDraft.RouteTo(next, view, board.Presentation, region))
                 return false;
             var option = DraftOptions.For(view, next);
-            edit(() => draft.Adopt(next), option != null && !SharedJourney(next, option));
+            var shared = option != null && SharedJourney(next, option);
+            // UI-294: a journey releases the companion it routed, so the next click picks another.
+            if (shared && CompanionJourneyDraft.Active(view, next))
+                TravelDraft.NewGroup(next);
+            edit(() => draft.Adopt(next), option != null && !shared);
             return true;
         }
 

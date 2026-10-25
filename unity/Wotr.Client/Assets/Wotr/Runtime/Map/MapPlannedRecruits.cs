@@ -29,10 +29,14 @@ namespace Wotr.Client
 
         public IEnumerable<string> Regions => ghosts.Keys;
 
-        public void Apply(IReadOnlyList<PlannedReinforcement> placements, Side side, bool interactive)
+        public void Apply(IReadOnlyList<PlannedReinforcement> placements, Side side, bool interactive) =>
+            Apply(placements.GroupBy(p => p.RegionId).ToDictionary(g => g.Key,
+                g => ArmyMarker.From(g.Key, side, false, g.Select(p => (p.Nation, p.Kind)))), interactive);
+
+        // UI-294: ghosts of other figures, such as the companions a card's journey moves: one marker per region.
+        public void Apply(IReadOnlyDictionary<string, ArmyMarker> markers, bool interactive)
         {
-            var regions = placements.Where(p => map.Data.Shapes.ContainsKey(p.RegionId)).GroupBy(p => p.RegionId)
-                .ToDictionary(g => g.Key, g => g.ToList());
+            var regions = markers.Where(p => map.Data.Shapes.ContainsKey(p.Key)).ToDictionary(p => p.Key, p => p.Value);
             stale.Clear();
             stale.AddRange(ghosts.Keys.Where(region => !regions.ContainsKey(region)));
             foreach (var region in stale)
@@ -47,7 +51,7 @@ namespace Wotr.Client
                     ghost = new Ghost(map, pair.Key, prefix, removable ? () => Removed?.Invoke(pair.Key) : null);
                     ghosts.Add(pair.Key, ghost);
                 }
-                ghost.Apply(ArmyMarker.From(pair.Key, side, false, pair.Value.Select(p => (p.Nation, p.Kind))), interactive);
+                ghost.Apply(pair.Value, interactive);
             }
             Layout();
         }

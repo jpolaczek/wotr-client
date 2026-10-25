@@ -105,7 +105,10 @@ namespace Wotr.PlayTests
             var initial = board.Battles.Root.layout.position;
             var header = board.Battles.Root.Q(className: FloatingWindow.HandleClass);
             header.Focus();
-            using (var key = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.LeftArrow })) header.SendEvent(key);
+            // UI-324: the window opens in the middle; wider than the middle of a narrow board it touches the left edge, so
+            // the arrow moves it toward the side with room.
+            var arrow = initial.x >= 16 ? KeyCode.LeftArrow : KeyCode.RightArrow;
+            using (var key = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = arrow })) header.SendEvent(key);
             await room.Settle();
             Assert.AreNotEqual(initial, board.Battles.Root.layout.position);
             const string first = "base.fp.strategy.01";

@@ -52,7 +52,7 @@ Mirror output to `src/`: `unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/<k
   token).
 - `actions/` (UI-138): icons action 20 point (close, back, continue, confirm, pin and pinned,
   refresh, help why, show on the map, last battle, more and less, mark and unmark all, Meals, pass,
-  reject die) in gold with the ink border; `IconButton` puts them on the `frames/button-square`, and
+  reject die; from UI-305 skip the opponent's presentation) in gold with the ink border; `IconButton` puts them on the `frames/button-square`, and
   tooltip says what it does. A horizontal line draw filled with rectangle: the line without height
   gets neither a `gilt` gradient nor a `lift` filter (PNG blanks).
 - `hunt/` (UI-141): Hunt tiles — 28 tiles by pool (standard in beige cardboard, special FP in blue

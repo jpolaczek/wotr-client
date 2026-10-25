@@ -103,6 +103,13 @@ namespace Wotr.Client
             return emblem;
         }
 
+        private void ShowSide(bool active)
+        {
+            Token.EnableInClassList("active-nation", active);
+            Token.EnableInClassList("passive-nation", !active);
+            glow.EnableInClassList("active-nation-glow", active);
+        }
+
         public void Apply(NationView nation, Side side, Side you)
         {
             Nation = nation;
@@ -110,9 +117,12 @@ namespace Wotr.Client
             Root.EnableInClassList("opponent-nation", !Own);
             Root.EnableInClassList("shadow-nation", side == Side.Shadow);
             Root.EnableInClassList("nation-at-war", nation.StepsToWar == 0);
-            Token.EnableInClassList("active-nation", nation.Active);
-            Token.EnableInClassList("passive-nation", !nation.Active);
-            glow.EnableInClassList("active-nation-glow", nation.Active);
+            // UI-327: an activation turns the token over to its active side; the first side is simply shown.
+            var shown = Token.ClassListContains("active-nation") || Token.ClassListContains("passive-nation");
+            if (shown && Token.ClassListContains("active-nation") != nation.Active)
+                TokenFlip.Turn(Token, () => ShowSide(nation.Active));
+            else
+                ShowSide(nation.Active);
             PositionToken();
             label.tooltip = PoliticalActions.Describe(nation);
         }

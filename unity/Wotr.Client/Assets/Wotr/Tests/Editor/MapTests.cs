@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using Wotr.Client;
+using Wotr.Contracts;
 
 namespace Wotr.EditorTests
 {
@@ -76,6 +77,35 @@ namespace Wotr.EditorTests
             map.DraftOverlay.AttackTargets.Clear();
             map.Redraw();
             Assert.IsFalse(map.Renderer.TargetsGlowing);
+        }
+
+        // UI-323 (owner request): the region the selected force stands in has the steady gold source edge; an attack's
+        // source is marked, its target is not; without a draft nothing is.
+        [Test]
+        public void TheSelectedForcesOwnRegionHasTheSourceEdge()
+        {
+            var fixture = new Wotr.Fixtures.BoardFixture();
+            var map = new MapCanvas(BoardPresentation.Load());
+            var draft = new TurnDraft();
+            map.DraftOverlay.Apply(fixture.View, draft);
+            map.Redraw();
+            Assert.IsEmpty(map.Renderer.SourceGlowRegions, "No draft, no source.");
+            draft.Choose(CommandKind.MoveArmies, "army");
+            draft.Change(p => p.Moves.Add(new ArmyMoveChoice { From = "osgiliath", To = "" }));
+            map.DraftOverlay.Apply(fixture.View, draft);
+            map.Redraw();
+            CollectionAssert.AreEquivalent(new[] { "osgiliath" }, map.Renderer.SourceGlowRegions, "The march's source.");
+            draft.Clear();
+            fixture.View.Options.Add(new ActionOption { Kind = CommandKind.AttackArmy });
+            draft.Choose(CommandKind.AttackArmy, "army");
+            draft.Change(p => p.Moves.Add(new ArmyMoveChoice { From = "minas-tirith", To = "osgiliath" }));
+            map.DraftOverlay.Apply(fixture.View, draft);
+            map.Redraw();
+            CollectionAssert.AreEquivalent(new[] { "minas-tirith" }, map.Renderer.SourceGlowRegions, "The attack's source, not its target.");
+            draft.Clear();
+            map.DraftOverlay.Apply(fixture.View, draft);
+            map.Redraw();
+            Assert.IsEmpty(map.Renderer.SourceGlowRegions);
         }
 
         [Test]

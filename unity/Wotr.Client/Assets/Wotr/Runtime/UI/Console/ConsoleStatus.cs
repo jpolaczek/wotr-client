@@ -16,6 +16,12 @@ namespace Wotr.Client
         public Label Headline { get; } = new Label { name = "console-headline", pickingMode = PickingMode.Ignore };
         public Label Hint { get; } = new Label { name = "console-hint" };
         public VisualElement Options { get; } = new VisualElement { name = "console-options" };
+        // UI-297: the current effect's committed steps ("✓ Book of Mazarbul"), recalled here only; a click shows the card
+        // and the next click closes it.
+        public VisualElement Trail { get; } = new VisualElement { name = "console-trail" };
+        private readonly VisualElement line = new VisualElement { name = "console-line" };
+        private string trailKey = "";
+        private Button presented;
         public event Action Clicked;
         public event Action<ConsoleOption> OptionChosen;
         public bool YourTurn => Plaque.ClassListContains("your-turn");
@@ -42,11 +48,16 @@ namespace Wotr.Client
             Headline.AddToClassList("console-headline");
             Plaque.Add(Headline);
             Root.Add(Plaque);
+            line.AddToClassList("console-line");
+            Root.Add(line);
+            Trail.AddToClassList("console-trail");
+            Trail.style.display = DisplayStyle.None;
+            line.Add(Trail);
             Hint.AddToClassList("console-hint");
-            Root.Add(Hint);
+            line.Add(Hint);
             Options.AddToClassList("console-options");
             Options.style.display = DisplayStyle.None;
-            Root.Add(Options);
+            line.Add(Options);
         }
 
         public void Apply(TurnConsoleState state, string opens)
@@ -77,6 +88,47 @@ namespace Wotr.Client
         }
 
         public const long FlashMilliseconds = 700;
+
+        // The chips are rebuilt only when the trail changes.
+        public void SetTrail(PlayerView view, BoardPresentation data, Action<string> inspect)
+        {
+            var key = view == null ? "" : view.MatchId + "/" + string.Join("|", view.EffectTrail.Select(t => t.SourceId + ":" + t.ChoiceId + ":" + t.TargetId));
+            if (key == trailKey)
+                return;
+            trailKey = key;
+            Trail.Clear();
+            if (view != null)
+                EffectTrailChoices.Render(Trail, view, data, inspect);
+            if (presented != null)
+                Trail.Add(presented);
+            Trail.style.display = Trail.childCount == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+        }
+
+        // UI-308: the opponent's card a presentation docked here ("✓ Orcs Multiplying Again"): the compact source of the
+        // rest of the presentation, opening and closing the same read-only card, removed when the presentation ends.
+        public Button PresentSource(string label, Action inspect)
+        {
+            EndSource();
+            presented = BoardScreen.Button("✓ " + label, inspect);
+            presented.name = "console-presented-source";
+            presented.AddToClassList("committed-choice");
+            presented.AddToClassList("presented-source");
+            presented.tooltip = "Played card · Inspect";
+            Trail.Add(presented);
+            Trail.style.display = DisplayStyle.Flex;
+            return presented;
+        }
+
+        public bool HasSource => presented != null;
+
+        public void EndSource()
+        {
+            if (presented == null)
+                return;
+            presented.RemoveFromHierarchy();
+            presented = null;
+            Trail.style.display = Trail.childCount == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+        }
 
         // The buttons are rebuilt only when the set of options changes; their state follows every refresh.
         public void SetOptions(IReadOnlyList<ConsoleOption> options, bool enabled)

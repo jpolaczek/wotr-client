@@ -59,6 +59,6 @@ namespace Wotr.PlayTests
             Assert.AreEqual(zoom, board.Map.Camera.Zoom);
         }
 
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

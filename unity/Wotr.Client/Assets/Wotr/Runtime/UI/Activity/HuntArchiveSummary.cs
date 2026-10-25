@@ -45,6 +45,7 @@ namespace Wotr.Client
             foreach (var die in Displayed.Roll.Dice)
             {
                 var item = BoardScreen.Row("hunt-archive-die");
+                item.EnableInClassList("hunt-hit", die.Success);
                 var face = new HuntDieFace();
                 face.Apply(die.Result);
                 item.Add(face);

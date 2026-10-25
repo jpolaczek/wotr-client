@@ -1,0 +1,389 @@
+/* UI-305 (OPPONENT_ACTIONS_UX §5–§6): marks of the opponent's presentation over the board and its one Skip target.
+   Every mark ignores the pointer; it fades in over 200 ms and out over 400 ms, and appears without fades under
+   Reduced motion. Imported after Interaction.uss, so the Skip medallion's pressed rule wins over the icon frame's. */
+.presentation-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* The observed trace: a 2 pt pale-blue ring, no plate, no pulse, no lift (never a legal target or a choice). */
+.observed-trace {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-width: 2px;
+    border-color: rgba(146, 212, 242, 0.85);
+}
+
+.presentation-cost {
+    position: absolute;
+    opacity: 0;
+}
+.presentation-cost.shown { opacity: 1; }
+.motion-enabled .presentation-cost { transition-property: opacity; transition-duration: 0.4s; }
+.motion-enabled .presentation-cost.shown { transition-duration: 0.2s; }
+
+/* A spent die's copy at its last place, drawn like the opponent's pool medallions (TopBar.uss). */
+.presentation-die {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    right: 3px;
+    bottom: 3px;
+    border-radius: 14.5px;
+    background-image: resource("Wotr/Art/UI/dice/medallion");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.presentation-die.die-free { background-image: resource("Wotr/Art/UI/dice/medallion-free"); }
+.presentation-die.die-shadow { background-image: resource("Wotr/Art/UI/dice/medallion-shadow"); }
+.presentation-die .die-face { position: absolute; left: 4px; top: 4px; right: 4px; bottom: 4px; }
+
+/* The face the die was used as (Will of the West): an arrow and the used face under the die. */
+.presentation-used-face {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 2px;
+    flex-direction: row;
+    align-items: center;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.presentation-used-face > .unity-label {
+    margin: 0 2px 0 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(231, 228, 215);
+}
+.presentation-used-face > .die-face {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+}
+
+/* The Skip target: a 36 pt round medallion with the skip glyph. */
+#board-screen .unity-button.action.icon-button.presentation-skip,
+.unity-button.action.icon-button.presentation-skip {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    margin: 0;
+    border-width: 2px;
+    border-radius: 18px;
+    border-color: rgb(201, 169, 100);
+    background-image: none;
+    background-color: rgb(38, 34, 30);
+}
+#board-screen .unity-button.action.icon-button.presentation-skip:hover,
+#board-screen .unity-button.action.icon-button.presentation-skip:focus {
+    border-color: rgb(245, 212, 133);
+    background-color: rgb(52, 46, 40);
+}
+#board-screen .unity-button.action.icon-button.presentation-skip.pressed {
+    background-image: none;
+    background-color: rgb(24, 22, 20);
+    border-color: rgb(170, 140, 82);
+}
+.presentation-skip > .icon-glyph {
+    width: 22px;
+    height: 22px;
+}
+
+/* UI-306: observed traces on the map (MapObservedTrace): a set fades in and out together. */
+.map-observed-trace {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+.observed-set {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+}
+.observed-set.shown { opacity: 1; }
+.motion-enabled .observed-set { transition-property: opacity; transition-duration: 0.4s; }
+.motion-enabled .observed-set.shown { transition-duration: 0.2s; }
+.observed-ring {
+    position: absolute;
+    border-width: 2px;
+    border-color: rgba(146, 212, 242, 0.85);
+}
+/* UI-314 (owner review): the observed light (PresentationGlow) — a soft pale-blue glow around the marked object's own
+   shape — a white core, a light-blue glow and a wide saturated halo that reads on the parchment; never a frame, never
+   the gold ChoiceGlow. It fades in over 200 ms and out over 400 ms under .motion-enabled. */
+.presentation-glow {
+    filter: drop-shadow(0px 0px 2px rgb(255, 255, 255)) drop-shadow(0px 0px 6px rgb(150, 215, 255))
+        drop-shadow(0px 0px 14px rgba(84, 176, 245, 0.95));
+}
+.motion-enabled .presentation-glow-host {
+    transition-property: filter;
+    transition-duration: 0.4s;
+}
+.motion-enabled .presentation-glow-host.presentation-glow { transition-duration: 0.2s; }
+/* The delta badge: a small dark plate with a signed count in the enamel of the side it counts for. */
+.observed-badge {
+    position: absolute;
+    margin: 0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+    font-size: 13px;
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.observed-badge-free { color: rgb(146, 196, 236); }
+.observed-badge-shadow { color: rgb(236, 128, 112); }
+
+/* UI-307: the delta badge beside a force — unit art, the nation's crest and a signed count per entry. */
+.observed-delta {
+    position: absolute;
+    flex-direction: column;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.observed-delta-entry {
+    flex-direction: row;
+    align-items: center;
+}
+.observed-delta-figure {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.observed-delta-entry > .nation-emblem {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+.observed-delta-entry > .unity-label {
+    margin: 0 0 0 2px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
+/* UI-307: an optional short caption ("At war"): a dark plate, never a sentence. */
+.presentation-caption {
+    position: absolute;
+    margin: 0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+    color: rgb(231, 228, 215);
+    font-size: 13px;
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
+/* UI-324: the presented card's stand-in on its way out, above the HUD: a parchment card with its title. */
+.presentation-card-stand-in {
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+.presentation-card-stand-in > Label {
+    font-size: 18px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    color: rgb(58, 42, 24);
+}
+
+/* UI-308: the opponent's revealed card marks the half that was used with the observed treatment (the inspector's own
+   focused-effect heading looks the same as the other half on the parchment). */
+#board-screen .card-inspector.presented-card .card-effect.focused-effect {
+    border-left-width: 3px;
+    border-left-color: rgba(98, 172, 214, 1);
+    background-color: rgba(146, 212, 242, 0.18);
+}
+
+/* UI-309: a character's larger moment above its force: its portrait in the side's medallion over its title. */
+.observed-portraits {
+    position: absolute;
+    flex-direction: row;
+    padding: 6px 6px 4px 6px;
+    border-radius: 6px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.observed-portrait {
+    align-items: center;
+    margin: 0 2px;
+}
+.observed-portrait-picture {
+    width: 72px;
+    height: 72px;
+    padding: 9px;
+    flex-shrink: 0;
+}
+.observed-portrait > .unity-label {
+    margin: 2px 0 0 0;
+    padding: 0;
+    font-size: 14px;
+    white-space: nowrap;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.observed-portrait-removed > .unity-label { color: rgb(158, 151, 140); }
+
+/* UI-309: who moves, beside the destination's force: small portraits with short names, identical figures with a count. */
+.observed-identities {
+    position: absolute;
+    flex-direction: column;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.observed-identity {
+    flex-direction: row;
+    align-items: center;
+}
+.observed-identity-picture {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+}
+.observed-identity-picture.observed-medallion-free,
+.observed-identity-picture.observed-medallion-shadow { padding: 3px; }
+.observed-identity > .unity-label {
+    margin: 0 0 0 4px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.observed-medallion-free {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/battle/portrait-medallion-free");
+}
+.observed-medallion-shadow {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/battle/portrait-medallion-shadow");
+}
+
+/* UI-311: the battle window's presented round. A die the recorded roll changed wears the observed pale-blue ring (never a
+   choice glow) and lifts for a moment; a revealed or cancelled card is ringed the same way. */
+.regional-battle .battle-presented .battle-die.presented-roll,
+.regional-battle .battle-presented .presented-card-mark {
+    border-width: 2px;
+    border-color: rgba(146, 212, 242, 0.85);
+    border-radius: 6px;
+}
+.motion-enabled .regional-battle .battle-presented .battle-die {
+    transition-property: scale;
+    transition-duration: 0.25s;
+}
+.regional-battle .battle-presented .battle-die.presented-roll-lift { scale: 1.12 1.12; }
+
+/* UI-337: a committed casualty's hit — the struck stack flashes red and swells, a red ring bursts over it (BattleHits), and
+   a stack losing its last figure fades out meanwhile. Reduced motion keeps the flash and the fade without movement. */
+.regional-battle .battle-presented .battle-figure.presented-hit > .icon-glow {
+    opacity: 1;
+    -unity-background-image-tint-color: rgb(236, 72, 48);
+}
+.regional-battle .battle-presented .battle-figure.presented-hit > .battle-figure-count { color: rgb(255, 150, 130); }
+.regional-battle .battle-presented .battle-figure.presented-leaving { opacity: 0.15; }
+.motion-enabled .regional-battle .battle-presented .battle-figure {
+    transition-property: scale, opacity;
+    transition-duration: 0.12s, 0.3s;
+    transition-timing-function: ease-out-back, ease-in-sine;
+}
+.motion-enabled .regional-battle .battle-presented .battle-figure.presented-hit { scale: 1.14 1.14; }
+.presentation-battle-hit {
+    border-width: 3px;
+    border-color: rgba(236, 72, 48, 0.95);
+    border-radius: 50%;
+    background-color: rgba(236, 72, 48, 0.25);
+    opacity: 0.9;
+}
+.motion-enabled .presentation-battle-hit {
+    scale: 0.5 0.5;
+    opacity: 1;
+    transition-property: scale, opacity;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out-sine;
+}
+.motion-enabled .presentation-battle-hit.presentation-battle-hit-burst { scale: 1.3 1.3; opacity: 0; }
+
+/* UI-329: the opponent's draw — a back slides out of its deck and flies into the lit hand count (DrawFlight moves it);
+   the count swells briefly as each back lands. */
+.presentation-draw-back {
+    position: absolute;
+    border-radius: 3px;
+    background-image: resource("Wotr/Art/UI/cards/back");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.motion-enabled #opponent-cards {
+    transition-property: scale;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out-back;
+}
+.motion-enabled #opponent-cards.presentation-count-flash { scale: 1.25 1.25; }
+
+/* UI-312: the opponent's draws or discards beside its hand count: small card backs and the signed count. */
+.presentation-card-backs {
+    flex-direction: row;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.presentation-card-back {
+    width: 14px;
+    height: 20px;
+    margin-right: 2px;
+    -unity-background-scale-mode: stretch-to-fill;
+    background-image: resource("Wotr/Art/UI/cards/back");
+}
+.presentation-card-backs > .unity-label {
+    margin: 0 0 0 2px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(231, 228, 215);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+
+/* UI-307: during a political beat the nation's token travels its recorded steps (a jump under Reduced motion). UI-319: it
+   flares first — a swell with its glow — and settles back to its size as it slides; an activation crossfades its crest. */
+.motion-enabled .presenting-politics .nation-token {
+    transition-property: left, scale;
+    transition-duration: 0.7s, 0.35s;
+    transition-timing-function: ease-in-out, ease-out-sine;
+}
+.motion-enabled .presenting-politics .icon-glow {
+    transition-property: left;
+    transition-duration: 0.7s;
+    transition-timing-function: ease-in-out;
+}
+.motion-enabled .presenting-politics .nation-token.presentation-flare { scale: 1.2 1.2; }
+.motion-enabled .presenting-politics .nation-token > .nation-emblem {
+    transition-property: -unity-background-image-tint-color, opacity;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-in-out;
+}

@@ -159,7 +159,7 @@ namespace Wotr.Client
         {
             if (State == null)
                 return;
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
             Root.schedule.Execute(() => { if (IsOpen) viewBoard.Focus(); });
         }

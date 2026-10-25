@@ -513,3 +513,28 @@ Measurement of the band (both variants): approx. 15% energy in 150–300 Hz and 
 - Joint move Fellowship and change Corruption: two stages and both sounds in the same order as the
   player (Journal shoes → metal, Mordor metal → step). Jumping inside cancels the second stage.
 - Quiet, Effects/Alerts and Reduced motion act as a player and do not stop playing.
+
+<a id="dzwiek-po-odtwarzaniu--ui-304"></a>
+## Sound after a presentation — UI-304 (2026-10-23)
+
+`GameSounds` takes a view only when the playback releases it
+([OPPONENT_ACTIONS_UX §7.1](OPPONENT_ACTIONS_UX.md#koordynator)), together with the board and the turn interaction:
+the decision sound and the turn ribbon of a view held behind an opponent presentation come once, after it, and a
+coalesced revision makes no sound of its own. Per-beat sounds belong to the family presenters (§6.8). Without a
+registered presenter views are released at once, so today's sounds are unchanged.
+
+<a id="ui-310"></a>
+## Beat sounds of a presentation — UI-310 (2026-10-24)
+
+A presentation's beat sounds its own fact when it shows it: a Fellowship track stage (march or corruption) and the
+Hunt's roll ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
+
+- **Policy.** The sound goes through `GameSounds.Play` and the usual policy: muted means silent, a background window
+  hears nothing, and a first view or a catch-up plays nothing.
+- **Order.** The track stages follow the same order as AUDIO-06: on the journey march first, then corruption; in
+  Mordor corruption first, then the step.
+- **No repeat.** The view released after the presentation leaves those cues out, so a fact sounds once. A pair the
+  presentation already played is not played again as AUDIO-06's two-stage sequence.
+- **The opponent's action-dice roll stays the release's (UI-313).** UI-312's beat in the opponent's dice pool is
+  silent: the view released after it sounds the roll, so when the same step passes a decision to the viewer one tone
+  plays, the more important one (`SoundResultsNetworkTests`).

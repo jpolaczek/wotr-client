@@ -16,6 +16,18 @@ namespace Wotr.Client
         private static Dictionary<string, Rect> cells;
         private static Texture2D atlas;
 
+        // UI-327: a symbol whose side changes (Hidden ↔ Revealed) turns over to it; the first one is simply shown.
+        public static void Show(Image image, string key)
+        {
+            var next = Sprite(key);
+            if (image.sprite == null || image.sprite == next)
+            {
+                image.sprite = next;
+                return;
+            }
+            TokenFlip.Turn(image, () => image.sprite = next);
+        }
+
         public static Sprite Sprite(string key)
         {
             if (sprites.TryGetValue(key, out var sprite))

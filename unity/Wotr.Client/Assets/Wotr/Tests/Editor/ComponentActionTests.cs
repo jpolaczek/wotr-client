@@ -51,6 +51,65 @@ namespace Wotr.EditorTests
             }
         }
 
+        // UI-286: a character's ability is a small picture of what it does; it glows only while a click can use it.
+        [Test]
+        public void SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen()
+        {
+            var view = View();
+            view.Characters.Add(new CharacterView { Id = "base.character.saruman", Location = "orthanc", Side = Side.Shadow });
+            var option = new ActionOption { Kind = CommandKind.UseCharacterAbility, EligibleDice = { "muster" } };
+            foreach (var ability in new[] { "voice-recruit", "voice-upgrade" })
+                option.CharacterActions.Add(new CharacterActionOption
+                {
+                    CharacterId = "base.character.saruman", AbilityId = ability, Title = "Voice", Detail = ability, Dice = { "muster" },
+                    Targets = { "orthanc" }, TargetCount = 1
+                });
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            var buttons = new ComponentActionView();
+            buttons.Apply(ComponentActions.For(view, draft), true);
+            var recruit = buttons.Root.Q<Button>("component-character-base.character.saruman-voice-recruit");
+            var upgrade = buttons.Root.Q<Button>("component-character-base.character.saruman-voice-upgrade");
+            foreach (var button in new[] { recruit, upgrade })
+            {
+                Assert.IsTrue(button.ClassListContains("ability-icon"), button.name);
+                Assert.AreEqual("", button.text, "A picture, not a text button.");
+                Assert.IsFalse(button.enabledSelf, "Without its die the ability cannot be used.");
+                Assert.IsFalse(button.ClassListContains(ChoiceGlow.ClassName), "It glows only while a click can use it.");
+                StringAssert.StartsWith("Saruman · ", button.tooltip);
+                StringAssert.EndsWith("Select an eligible die to use it", button.tooltip);
+            }
+            Assert.AreEqual(Picture(AbilityPictures.Muster), recruit.Q("icon-glyph").style.backgroundImage.value.texture);
+            Assert.AreEqual(Picture(AbilityPictures.Upgrade), upgrade.Q("icon-glyph").style.backgroundImage.value.texture);
+
+            draft.Change(p => p.DieId = "muster");
+            buttons.Apply(ComponentActions.For(view, draft), true);
+            Assert.AreSame(recruit, buttons.Root.Q<Button>(recruit.name), "The same control stays in its place.");
+            foreach (var button in new[] { recruit, upgrade })
+            {
+                Assert.IsTrue(button.enabledSelf, button.name);
+                Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), button.name);
+                StringAssert.EndsWith("Click to use", button.tooltip);
+            }
+            buttons.Apply(ComponentActions.For(view, draft), false);
+            Assert.IsFalse(recruit.ClassListContains(ChoiceGlow.ClassName), "A busy board invites no click.");
+        }
+
+        [Test]
+        public void AbilityPicturesShowWhatTheAbilityDoes()
+        {
+            Assert.AreEqual(AbilityPictures.Politics, AbilityPictures.For(CommandKind.UseCharacterAbility, "politics-dwarves-at-erebor"));
+            Assert.AreEqual(AbilityPictures.Move, AbilityPictures.For(CommandKind.MoveArmies, "muster-as-army-once-per-turn"));
+            Assert.AreEqual(AbilityPictures.Attack, AbilityPictures.For(CommandKind.AttackArmy, "muster-as-army-once-per-turn"));
+            Assert.AreEqual(AbilityPictures.Entry, AbilityPictures.For(CommandKind.EnterCharacter, ""));
+            Assert.AreEqual(AbilityPictures.Ability, AbilityPictures.For(CommandKind.UseCharacterAbility, "activate-balrog"));
+            foreach (var picture in new[] { AbilityPictures.Muster, AbilityPictures.Upgrade, AbilityPictures.Politics,
+                         AbilityPictures.Move, AbilityPictures.Attack, AbilityPictures.Entry, AbilityPictures.Ability })
+                Assert.IsNotNull(Picture(picture), picture);
+        }
+
+        private static UnityEngine.Texture2D Picture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
+
         [Test]
         public void SpecialTravelBindsItsSymbolAndKeepsUnrelatedFiguresUnavailable()
         {

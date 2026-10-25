@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -78,10 +79,16 @@ namespace Wotr.PlayTests
             using var room = await Connect("ui43-stale", ScenarioKind.BaseAcceptance, openPanels: false);
             var fp = room.Fp.Board;
             var sh = room.Sh.Board;
-            var camera = Camera(sh);
+            // UI-305 (OPPONENT_ACTIONS_UX §4, §6.5): the Shadow's camera may frame the opponent's attack before its window
+            // opens. A beat after the camera's records where the presentation left it; opening the window moves nothing.
+            string presented = null;
+            room.Sh.Playback.Register(new ScriptedCuePresenter(new Dictionary<PresentationCueKind, double> { [PresentationCueKind.Attack] = 0 },
+                _ => presented = Camera(sh)));
             await room.Attack(room.Fp, "minas-tirith", "lossarnach");
             await room.Until(() => fp.Battles.IsOpen && sh.Battles.IsOpen);
-            Assert.AreEqual(camera, Camera(sh), "Opening the battle window never moves the camera.");
+            Assert.IsNotNull(presented, "The attack was presented to the Shadow.");
+            Assert.AreEqual(presented, Camera(sh), "Opening the battle window never moves the camera.");
+            var framed = Camera(sh);
             sh.Battles.Close();
             await room.Settle();
             await PastCombatCards(room);
@@ -90,6 +97,7 @@ namespace Wotr.PlayTests
             Assert.IsTrue(fp.Battles.IsOpen);
             Assert.IsFalse(sh.Log.IsOpen);
             Assert.AreEqual(DisplayStyle.None, sh.Log.Popup.resolvedStyle.display, "The opponent's action card never opens by itself.");
+            Assert.AreEqual(framed, Camera(sh), "The battle's beats play in its window and never move the camera.");
         }
 
         // AO02, Hunt row: a step on the Mordor Track always draws a damaging tile (TEST-07 sh-ring-corrupted), so the
@@ -158,31 +166,26 @@ namespace Wotr.PlayTests
             }
         }
 
-        // Both sides answer No card, through the server when they hold a card (a side without one answers by itself,
-        // UI-151), until the battle moves on to its next decision.
+        // Both sides answer No card through the server, also a side without a legal card (UI-279: nothing is sent by
+        // itself), until the battle moves on to its next decision.
         private static async Task PastCombatCards(MatchTestRoom room)
         {
             var sh = room.Sh.Board;
-            await room.Until(() =>
-            {
-                var view = sh.View;
-                return view.Decision?.Kind != DecisionKind.CombatCard || CardHolder(room, view) != null;
-            });
+            await room.Until(() => sh.View.Decision?.Kind != DecisionKind.CombatCard || Chooser(room, sh.View) != null);
             while (sh.View.Decision?.Kind == DecisionKind.CombatCard)
             {
-                var holder = CardHolder(room, sh.View);
                 var revision = sh.View.Revision;
-                if (holder != null)
-                    await Send(room, holder, CommandKind.CommitCombatCard, new CommandPayload());
+                await room.Until(() => Chooser(room, sh.View) != null);
+                await Send(room, Chooser(room, sh.View), CommandKind.CommitCombatCard, new CommandPayload());
                 await room.Until(() => sh.View.Revision > revision);
             }
         }
 
-        private static MountedMatchClient CardHolder(MatchTestRoom room, PlayerView view)
+        // The side choosing its Combat card, once its client shows the same revision.
+        private static MountedMatchClient Chooser(MatchTestRoom room, PlayerView view)
         {
             var client = view.DecisionOwner == Side.FreePeoples ? room.Fp : room.Sh;
-            var option = client.Board.View.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
-            return client.Board.View.Revision == view.Revision && option?.EligibleIds.Count > 0 ? client : null;
+            return client.Board.View.Revision == view.Revision ? client : null;
         }
 
         // The windows the table never opens for an observer: battle, Hunt, the decision window, the Fellowship panel,

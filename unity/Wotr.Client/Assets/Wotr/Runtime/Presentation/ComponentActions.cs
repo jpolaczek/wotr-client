@@ -50,6 +50,7 @@ namespace Wotr.Client
                         Owner = CharacterLibrary.ShortName(character.CharacterId),
                         OwnerId = character.CharacterId,
                         Symbol = CharacterSymbol(option.Kind, character.AbilityId),
+                        Picture = AbilityPictures.For(option.Kind, character.AbilityId),
                         Detail = character.Title + " · " + character.Detail,
                         Character = character, Enabled = character.Dice.Contains(die)
                     };
@@ -60,6 +61,7 @@ namespace Wotr.Client
                     Owner = CharacterLibrary.ShortName(cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron"),
                     OwnerId = cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron",
                     Symbol = option.Kind == CommandKind.AttackArmy ? "⚔" : "→",
+                    Picture = AbilityPictures.For(option.Kind, cost.AbilityId),
                     Detail = FigureGrid.Name(cost.AbilityId) + " · " + TravelLabel(option.Kind),
                     AbilityId = cost.AbilityId, Movement = cost, Enabled = true
                 };

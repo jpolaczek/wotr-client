@@ -67,7 +67,21 @@ Mordor's track is drawn on the map as a stone trail in ink from Morannon and Min
 <a id="no-card-bez-kliknięcia--ui-151"></a>
 ## "No card" without clicking — UI-151
 
-Without legal card the client sends the fight himself “No card”, once per decision; in the stage cards button is in footer, greyed while waiting. Details: [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md).
+Superseded by [UI-279](#every-choice-waits-for-a-click--ui-279-2026-10-19): without a legal card the player clicks No card, which glows alone and says why. In the cards stage the button keeps its place in the footer, greyed while waiting. Details: [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md).
+
+## Every choice waits for a click — UI-279 (2026-10-19)
+
+Owner decision 2026-10-19: the client never sends a decision without a click, even when only one option is legal. This
+rule replaces UI-151's automatic No card. Automatic single choices cost later work, and opening a saved game must not
+submit anything (UI-12). The single option glows, and its tooltip says what the click does:
+
+- a Combat choice without a legal card: No card glows and says "No legal Combat card · Click to fight this round
+  without one" (UI-151).
+
+A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
+payment method. The player's own "Skip cards this battle" policy (UI-11) stays, because the player chose it. Tests:
+`BoardInteractionTests.UI279NoLegalCombatCardWaitsForTheNoCardClick…`; `MatchTestRoom.NoCard` clicks No card for every
+own Combat choice.
 
 <a id="panel-posiłków-bez-kart--ui-150"></a>
 ## Meal Panel without cards — UI-150
@@ -133,7 +147,7 @@ The pool icon in the panel header Hunt opens a compact list of tiles in the Hunt
 
 Muster  → reserve chip in the Meals panel → Legal settlement (from UI-135 The only recruitment window; the pallet in the preview region and the tray pallet are gone). Hover terrain only distinguishes it. Click settlement or drag to settlement recruit; from UI-142 click a token that has one legal settlement, recruits there right away. Other budget at dice, termination earlier by ✓ Each location is saved; next settlement The lone commander, the reserves and the limits have a real preview of the effects, unimagined bans UI.
 
-from UI-130  ([ARMY_MAP_UX](ARMY_MAP_UX.md)) the Muster selection opens the Meals Panel at the left slat: the line of each own nation, budget slots and ✓ during the sequence. From UI-134, the line is one line with a graphical policy track (active or passive), the reserves and the move icons on the track and the activation of Narya when the server allows them; The status and reason for the lock are in the tooltip. The chip click moves the view to the legal settlement; from UI-150 card, which die can play, are only in hand. The settlement highlight button on this figure, click on settlement to recruit without Confirm; At one legal settlement click the token immediately (UI-142, formerly two-click), and drag is a shortcut. The settlement click on the map means the line of its nation and restores the closed panel; click settlement, which the selected figure cannot occupy, shows the reason for the server in the tray. from UI-135 Muster paid for with the master's token or skill is a plan in the same panel (slots, figure with × one ✓), and the warning about a lone leader is in the tooltip of the token. The closed panel returns with the “Reinforcements” button in the tray. from UI-131 the same panel supports recruitment with cards  („ EventRecruitment ”, „ ReserveFigures), Kings and Balrog's rulers: the header calls the source, slots count the planned figure,  figure with × return to the reserve in the panel and from the map (spirits in the regions of the plan), and one ✓ approve the whole together with the tray. The selected die distinguishes card from playable (UI-124) and from UI-136 also the Green Light tabs Characters and Politics, the Fellowship and decks when server options allow it to be used.
+from UI-130  ([ARMY_MAP_UX](ARMY_MAP_UX.md)) the Muster selection opens the Meals Panel at the left slat (since UI-181 the Muster die only lights the Reserve tab, since UI-317 only while it can recruit): the line of each own nation, budget slots and ✓ during the sequence. From UI-134, the line is one line with a graphical policy track (active or passive), the reserves and the move icons on the track and the activation of Narya when the server allows them; The status and reason for the lock are in the tooltip. The chip click moves the view to the legal settlement; from UI-150 card, which die can play, are only in hand. The settlement highlight button on this figure, click on settlement to recruit without Confirm; At one legal settlement click the token immediately (UI-142, formerly two-click), and drag is a shortcut. The settlement click on the map means the line of its nation and restores the closed panel; click settlement, which the selected figure cannot occupy, shows the reason for the server in the tray. from UI-135 Muster paid for with the master's token or skill is a plan in the same panel (slots, figure with × one ✓), and the warning about a lone leader is in the tooltip of the token. The closed panel returns with the “Reinforcements” button in the tray. from UI-131 the same panel supports recruitment with cards  („ EventRecruitment ”, „ ReserveFigures), Kings and Balrog's rulers: the header calls the source, slots count the planned figure,  figure with × return to the reserve in the panel and from the map (spirits in the regions of the plan), and one ✓ approve the whole together with the tray. The selected die distinguishes card from playable (UI-124) and from UI-136 also the Green Light tabs Characters and Politics, the Fellowship and decks when server options allow it to be used.
 
 Policy: click or Enter/Space On the left, the Politics page opens all tracks on a common Peace → War scale. Hover/fokus shows only the text of the bookmark. Own nations are first; checkbox Show opponent (from UI-197 The signature “Opponent”) shows the opponent by default. The chip stands in the actual position. From UI-197 (user notification from 2026-10-16 The coat of arms of the nation in the side medallion, over a soft golden glow. The coat of arms of the active nation is fuller and shines more, and the passive coat of arms is dim; the legend in the column header shows both appearances. The column of names no longer has a coat of arms, so the panel has 256 pt 290 . The state is supplemented by a outline and tooltip. The panel remains after the cursor leaves; ×/Esc closes it with the choice and cost. No scroll and separate track to open at each nation.
 
@@ -222,6 +236,14 @@ All eight combinations and required variants use the same language. Council show
 
 <a id="u11--powiadomienia-i-powrót"></a>
 ## U11 — notifications and return
+
+> **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
+> the played public card and move the camera without a click, before the resulting decision opens, with one
+> transient Skip target. This limited exception and everything it supersedes are specified in
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force. Shipped so far:
+> the cue model (UI-303), the playback coordinator and command gate (UI-304), and the die emphasis, camera and Skip
+> target (UI-305, [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305)), then the family presenters UI-306–UI-312 (§6.10–§6.16);
+> UI-313's aggregate acceptance is in [§6.17](OPPONENT_ACTIONS_UX.md#akceptacja-313).
 
 The incoming decision shows the notification in the application and backlights the location. Only a click of the notifications moves the camera to the location and opens the panel, e.g. the battle region. No automatic view acquisition. The information can be read during waiting/offline; execution requires a current decision.
 
@@ -1152,6 +1174,8 @@ Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-se
 
 `Restart and update` and `Decline and quit` follow the same path as `Quit game` (`ClientFlow.SaveForExit`): the write error stays in the bar or window and the reclick re-writes. The second release copy shows “War of the Ring is already running” with `Quit`. The editor and development builds do not run the updater or block one copy.
 
+DIST-18 (owner 2026-10-25): from the click on `Restart and update` or `Decline and quit` until the game quits, the exit lock (`ExitLock`, `InterfaceController.LockForExit`) greys the whole screen — the game loses its colour under a grey veil over every screen, Settings and the update window — and names the step (`Saving your game…`, `Installing the update…`, `Restarting…` or `Closing…`). Nothing beneath takes a pick, the wheel or a key (Esc and shortcuts included; the lock takes the focus and the interface root stops the rest before any element sees it), and edge pan stops with the disabled content. The lock has no control of its own and fades in quickly (at once under Skip animations). A failed save or install lifts it, gives the focus back where it was and shows the error with the re-click, as before.
+
 <a id="obserwatorzy--obs-03obs-05-2026-10-16"></a>
 ## Observers — OBS-03-OBS-05 (2026-10-16)
 
@@ -1178,7 +1202,8 @@ Decisions D13 (U1–U8) with 2026-10-14; behaviour and states describes `wotr-se
     control is razed.
 - Playout skips the time of the mind: the break of the 2 / 1 / 0,25 is at the end of the
   presentation step (default Normal). The player checks the flight figures and the second stage of
-  the track which 0,05 s, at the most 3 s (REPLAY-06), so the mute and reduced motion do not block
+  the track which 0,05 s, at the most 20 s (REPLAY-06; since UI-328 also the step's presented actions, every side's from
+  the side shown), so the mute and reduced motion do not block
   anything. It stands at the last step and the loss of focus of the window pauses. The end screen
   opens once on board, also when it goes back through the final.
 - REPLAY-06: a playback step and new live facts have flights figures, two-stage tracks and sounds.
@@ -1241,3 +1266,90 @@ After choosing a die the available left tabs' icons jumped off their medallions:
 inner edge, which moves with the border (1 px at rest, 3 px when available, UI-223), while the medallion art keeps its
 centre (47, 22). Each state now places the 24 px icon on that centre (`LeftRail.uss`). Test:
 `BoardInteractionTests.LeftRailIconsStayOnTheirMedallionsWhenATabIsAvailable` (within 0.75 px in both states).
+
+## Cards among the effects are cards — UI-288 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 7): a card among the Effects
+tab's sources (a card kept on the table or a card whose effect lasts) is a small parchment card as in the hand, with
+the symbol printed on its corner and its title in dark ink (`EffectEntry.CardTile`, `LeftRail.uss`); a source a click
+can use now takes the hand's playable parchment. An ability or another effect keeps its plain tile. The Hunt's
+responses show pictures as well (HUNT_UX, UI-288). Test:
+`HuntAndEffectPicturesTests.TableCardsAmongTheEffectsAreParchmentCardsAndAbilitiesStayPlain`.
+
+## Character abilities are small pictures — UI-286 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 4): a character's ability in the
+region panel, the Characters inspector and the decision dock is no longer a text button ("★ Saruman" twice for the
+Voice) but a small picture on the square gilt frame of what it does (`AbilityPictures`): a muster flag for Voice ·
+recruit, the upgrade star for Voice · upgrade, the Politics track for Gimli's, Boromir's and Legolas's political
+abilities, the boot or the crossed swords for the Mouth of Sauron's move or attack, the board pin for an entry, and the
+ability scroll otherwise. The picture glows and pulses with the shared ChoiceGlow only while a click can use it (its
+die is chosen and the board is free); otherwise it stays in its place greyed out. Its tooltip names the owner and the
+ability and says "Click to use" or "Select an eligible die to use it". The controls keep their names
+(`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
+text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
+`ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
+
+## Unreachable tray fallbacks removed — UI-289 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, finding 8): text-button fallbacks that
+no decision reaches any more are removed, each after its reachability was traced in the client and the server
+(base game, Lords, Kings and Fate content, the demo CPU):
+
+- `CardChoices.Event` (the card title, "Use as" and nation rows): every Event is played from its hand card with the
+  tray's `DirectCard`, so the tray returns before it; the use is the board's `CardCostPicker`, the nation the
+  highlighted nation.
+- The `ArmyFigure(s)` and `CompanionDestination` rows: those presentations come only from event steps outside any
+  battle or Hunt, so `CardFigureDraft` always hands them to the region panel and the map (UI-215).
+- `EffectFigurePicker` (figure tabs by nation): battle figure choices are the battle's own figures, chosen in the
+  Battle window (UI-245); no other step offers six or more figures in the tray.
+- `AttackChoices`, `ArmyChoices`, `EventArmyChoices` and `EventArmyPlans`: an army move or attack is always made on
+  the map and in the region panel (`DirectArmy`, `CardArmyEvent`); ruler tokens no longer pay for armies.
+
+`ExcessChoices` stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
+Tests: the layout fixtures of `CardPack02LayoutTests` and `Shadow02LayoutTests` now offer the battle's own figures as
+the server does; `CardFigureDraftTests`, `DecisionRoutesTests` and the army and card network tests are unchanged.
+
+<a id="plynne-przejscia--ui-321"></a>
+## Smooth transitions; jumps only under Skip animations — UI-321 (2026-10-24)
+
+The owner's rule for every animation: "we want smooth transitions, as few quick jumps as possible; the jumps are
+available as an option, skip animations".
+
+- **The setting.** The interface setting formerly "Reduced motion" reads **Skip animations**: "Every change happens at
+  once, without animation. Choices always appear immediately." The preference and its element (`reduced-motion`) are
+  unchanged. Without it every transition is smooth; with it every change happens at once.
+- **Opening.** A panel, window or part of a window that comes into view fades in over 0.18 s (`Appearance.Display`,
+  Wotr.uss `.appear-host`/`.appearing`). Only its opacity changes, so its place, size and picking are its own from the
+  first frame. It applies to:
+  - the left-rail panels (Politics, Reserve, Characters, Effects), the Fellowship panel, the Hunt window and its drawn
+    tile;
+  - the battle window, the decision window, the card view, the board menu, the confirmation dialog, the game-end
+    screen, the Log, the chat, the resource and Companion setup panels, and the Victory panel.
+
+  A panel's own slide (the left rail's drawer) stays.
+- **New marks.** The presentation's plates, its "At war" caption and the Skip medallion fade in as they join
+  (`Appearance.Arrive`).
+- **Unchanged.** A choice the player can make is never hidden behind an animation (it is shown and pickable from the
+  first frame).
+- **Follow-up (UI-322).** Closing fades, crossfades of changing numbers and die faces, and figures fading out of a stack.
+  Each changes when a hidden element stops counting as shown, so they are a separate task.
+
+<a id="nazwy--ui-331"></a>
+## Names, never codes — UI-331 (2026-10-25)
+
+Owner rule for the whole application: "we should not show this kind of code in the logs or notifications, only
+human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special-sh.1.1.1 is in play.`).
+
+- No identifier is ever shown to a player. A recorded or server text is read through `ReadableText` wherever it is shown
+  (the Log's rows and their tooltips, the opened action card, the battle report's details, the result lines of the
+  pennants and their tooltips): a card reads as its title, a character or sovereign as its name, a Hunt tile as its kind
+  and face ("Shadow special tile 1"), a unit as its nation and kind ("Gondor Regular"), a region or nation as its
+  printed name, `FreePeoples` as "Free Peoples". The screenshot's entry now reads "Give it to Uss!: Shadow special
+  tile 1 is in play."
+- An identifier the client cannot name reads as what it is ("a card", "a Hunt tile", "a character"), never as its
+  code; `CardLibrary.Title` and the Hunt report's source and region fall back the same way.
+- Guards: an EditMode test reads every recorded text of the wire fixtures and fails on any code; a network test scans the
+  rendered Log and its opened card.
+- Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.
+

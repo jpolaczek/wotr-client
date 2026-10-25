@@ -18,7 +18,6 @@ namespace Wotr.Client
         private readonly GameApi api;
         private readonly BoardScreen board;
         private string notice = "";
-        private string skippedCombatChoice = "";
         private string pendingProblem = "";
         private readonly MatchConnection connection;
         private readonly DecisionTray tray;
@@ -54,12 +53,15 @@ namespace Wotr.Client
         private long requiredRevision = -1;
         private CancellationTokenSource previewLifetime;
         private bool sending;
+        // UI-304: an opponent presentation plays or waits for its history; no new command leaves until it ends.
+        private bool held;
         private bool online;
         private bool previewLegal;
         private int generation;
         private int connectionEpoch;
         private string recoveryShown = "";
-        private bool SelectionBusy => sending || sender.Pending != null || policy.Busy || view?.Revision < requiredRevision;
+        private bool CommandBusy => sending || sender.Pending != null || policy.Busy || held;
+        private bool SelectionBusy => CommandBusy || view?.Revision < requiredRevision;
 
         public TurnInteraction(GameApi api, MatchConnection connection, BoardScreen board, LocalMatchPersistence persistence = null)
         {
@@ -71,7 +73,7 @@ namespace Wotr.Client
             sender = new CommandSender(api, persistence?.Actions);
             policy = new BattlePolicyInteraction(api, connection, board.BattlePolicy, persistence?.Policy);
             policy.Changed += PolicyChanged;
-            tray = new DecisionTray(board.Tray, board.Presentation, board.Cards, board.CompanionSetup);
+            tray = new DecisionTray(board.Tray, board.Presentation, board.Cards, board.CompanionSetup, board.Battles.Ribbon);
             tray.ActionChosen += Choose;
             tray.RulerTokenChosen += ChooseRulerToken;
             tray.DirectChosen += DirectBattleChoice;
@@ -93,7 +95,7 @@ namespace Wotr.Client
                 () => SelectionBusy);
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
-            reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.Active,
+            reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.CanRecruit,
                 id => muster.RecruitAtOnly(id), Confirm, FinishSequence);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
@@ -127,8 +129,8 @@ namespace Wotr.Client
             board.Map.ArmySelected += ChooseArmy;
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
-            console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, ChooseComponent, ChooseRing,
-                () => reinforcements.Planning);
+            console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
+                ChooseComponent, ChooseRing, () => reinforcements.Planning);
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
             board.Characters.EntryRequested += RequestEntry;
@@ -202,8 +204,9 @@ namespace Wotr.Client
             }
             if (view?.Decision != null && TravelDraft.TargetRoute(draft.Kind))
             {
-                // UI-105: a reachable destination moves the selected group at once; any other region opens its panel.
-                if (!travel.Reach(region))
+                // UI-105: a reachable destination moves the selected group at once; UI-294: in a card's journey a region
+                // with one lit companion chooses it; any other region opens its panel.
+                if (!travel.Reach(region) && !travel.Source(region))
                     board.Hover.Toggle(region);
                 return;
             }
@@ -348,7 +351,7 @@ namespace Wotr.Client
 
         private bool Drop(DraftToken source, DraftToken target)
         {
-            if (sending || sender.Pending != null || policy.Busy || view == null)
+            if (CommandBusy || view == null)
                 return false;
             if (draft.Kind == CommandKind.DiscardCards)
                 return false;
@@ -444,7 +447,6 @@ namespace Wotr.Client
             // QUAL-09: recorded only once rendered, so a failed render can be repeated with the same view.
             version.Commit(latest);
             RecoverPending();
-            SkipEmptyCombatChoice();
         }
 
         // UI-167: the ribbon (or the console's flash) when this view passes the action to the player.
@@ -453,20 +455,6 @@ namespace Wotr.Client
             var text = signal.Observe(view);
             if (text.Length > 0)
                 board.SignalTurn(text, view.You);
-        }
-
-        // UI-151: a Combat choice without a legal card can only be No card, so it is sent without a click, once per
-        // decision, through the No card button's own path.
-        private void SkipEmptyCombatChoice()
-        {
-            if (!online || view?.Decision?.Kind != DecisionKind.CombatCard || view.DecisionOwner != view.You ||
-                skippedCombatChoice == view.Decision.Id)
-                return;
-            var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.CommitCombatCard);
-            if (option == null || option.EligibleIds.Count > 0 || !CanChoose(CommandKind.CommitCombatCard))
-                return;
-            skippedCombatChoice = view.Decision.Id;
-            DirectBattleChoice(CommandKind.CommitCombatCard);
         }
 
         private void EnsureMandatoryDraft()
@@ -525,6 +513,17 @@ namespace Wotr.Client
                 DraftGesture.Choose(draft, view, mandatory.Value);
         }
 
+        // UI-304: the playback gate. While held, the tray, console, rings, battle policy, keyboard, map, figure, die and card
+        // callbacks start no new command; a command already sent keeps recovering its receipt.
+        public void Hold(bool value)
+        {
+            if (held == value)
+                return;
+            held = value;
+            if (view != null)
+                Render();
+        }
+
         public void SetConnection(string status)
         {
             var connected = status == "Connected";
@@ -536,7 +535,6 @@ namespace Wotr.Client
             if (view != null)
                 Render();
             RecoverPending();
-            SkipEmptyCombatChoice();
         }
 
         private void RecoverPending()
@@ -558,7 +556,7 @@ namespace Wotr.Client
 
         private void PersistDraft() => persistence?.SaveDraft(session.Save());
 
-        private bool CanChoose(CommandKind kind) => !sending && sender.Pending == null && !policy.Busy &&
+        private bool CanChoose(CommandKind kind) => !CommandBusy &&
             view != null && view.Revision >= requiredRevision && DraftOptions.All(view, draft).Any(o => o.Kind == kind && o.Enabled);
 
         // UI-214: an option of a card or a reaction chosen in the console (or a table card at its ×) completes the
@@ -567,11 +565,6 @@ namespace Wotr.Client
         {
             if (SelectionBusy || view?.Decision == null)
                 return;
-            if (choice.Kind == ConsoleOptionKind.Decline)
-            {
-                Choose(CommandKind.DeclineReaction);
-                return;
-            }
             if (choice.Kind == ConsoleOptionKind.Action && choice.Command.HasValue)
             {
                 Choose(choice.Command.Value);
@@ -758,7 +751,7 @@ namespace Wotr.Client
                 tray.Notice("Refreshing the saved result…");
                 return;
             }
-            if (sending || sender.Pending != null || policy.Busy)
+            if (CommandBusy)
                 return;
             if (!draft.Kind.HasValue && board.ActionDie.Choices.Count > 0)
             {
@@ -776,7 +769,7 @@ namespace Wotr.Client
                     ? "Choose a highlighted nation." : "Choose a deck.");
                 return;
             }
-            if (muster.Active && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
+            if (muster.CanRecruit && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
                 tray.Preview(false, notice.Length > 0 ? notice : draft.Kind == CommandKind.AdvancePolitics
                     ? "Choose the highlighted space on this nation’s track."
                     : draft.ReserveId.Length > 0 ? "Choose a highlighted settlement."
@@ -826,7 +819,8 @@ namespace Wotr.Client
             board.Root.EnableInClassList("fellowship-context", FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft));
             tray.DirectArmy = directArmy;
             tray.DirectCard = draft.Kind is CommandKind.PlayEvent or CommandKind.DrawCard;
-            tray.DirectMuster = muster.Active && draft.Kind is null or CommandKind.Recruit;
+            // UI-317: a Muster die that cannot recruit routes nothing to Reinforcements; Politics takes the tray.
+            tray.DirectMuster = muster.CanRecruit && draft.Kind is null or CommandKind.Recruit;
             tray.DirectPolitics = politics.Active && draft.Kind is null or CommandKind.AdvancePolitics or CommandKind.UseCouncilToken;
             tray.DirectTravel = travel.Active;
             tray.ContextualFellowship = FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft);
@@ -873,10 +867,10 @@ namespace Wotr.Client
             board.Root.EnableInClassList("character-planning", CharacterDraft.UsesCharacters(draft.Kind));
             board.Root.EnableInClassList("character-action-context", CharacterRosterActions.OwnsDecision(view, draft));
             board.RefreshHand(draft);
-            policy.Render(view, online, sending || sender.Pending != null);
-            tray.Render(view, draft, sending || policy.Busy, sender.Pending != null && !sending, pendingProblem);
-            console.Refresh(view, draft, online, sending || policy.Busy, sender.Pending != null);
-            rings.Refresh(view, draft, online && !sending && !policy.Busy && sender.Pending == null);
+            policy.Render(view, online, sending || sender.Pending != null || held);
+            tray.Render(view, draft, sending || policy.Busy || held, sender.Pending != null && !sending, pendingProblem);
+            console.Refresh(view, draft, online, sending || policy.Busy || held, sender.Pending != null);
+            rings.Refresh(view, draft, online && !CommandBusy);
             RevealRecovery();
             board.Map.DraftOverlay.Apply(view, draft, context.ArmyActive || muster.Active ? board.ActionDie : null);
         }
@@ -962,7 +956,7 @@ namespace Wotr.Client
         private async Task Submit(bool immediate = false)
         {
             if (sending || policy.Busy || !online || view == null || view.Revision < requiredRevision ||
-                sender.Pending == null && (view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
+                sender.Pending == null && (held || view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
                 return;
             sending = true;
             CommandSending?.Invoke();

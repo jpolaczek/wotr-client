@@ -20,6 +20,7 @@ namespace Wotr.Client
     {
         public BoardFigureSnapshot Current { get; private set; }
         public bool Connected { get; private set; }
+        private bool quiet;
         private static readonly IReadOnlyList<BoardFigureMove> none = Array.Empty<BoardFigureMove>();
 
         public void SetConnected(bool connected)
@@ -31,6 +32,13 @@ namespace Wotr.Client
 
         public void Reset() => Current = null;
 
+        // UI-306: a presentation already showed these positions (a staged view of the presented revision), so the next
+        // projection moves only what the presentation did not show.
+        public void Rebase(PlayerView staged, Func<string, bool> isRegion) => Current = new BoardFigureSnapshot(staged, isRegion);
+
+        // UI-306: after Skip the next projection is the latest state, shown without moves.
+        public void Quiet() => quiet = true;
+
         public IReadOnlyList<BoardFigureMove> Apply(PlayerView view, Func<string, bool> isRegion)
         {
             var next = new BoardFigureSnapshot(view, isRegion);
@@ -39,6 +47,11 @@ namespace Wotr.Client
             if (sameGame && next.Revision < previous.Revision)
                 return none;
             Current = next;
+            if (quiet)
+            {
+                quiet = false;
+                return none;
+            }
             if (!Connected)
                 return none;
             return Difference(previous, next);
@@ -49,6 +62,12 @@ namespace Wotr.Client
             if (previous == null || previous.MatchId != next.MatchId || previous.Viewer != next.Viewer ||
                 next.Revision != previous.Revision + 1)
                 return none;
+            return Moves(previous, next);
+        }
+
+        // UI-309: the moves between two positions of one board, also within one revision (a presentation's staged steps).
+        public static IReadOnlyList<BoardFigureMove> Moves(BoardFigureSnapshot previous, BoardFigureSnapshot next)
+        {
             var moves = new List<BoardFigureMove>();
             foreach (var position in next.Figures.Values)
             {

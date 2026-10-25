@@ -16,6 +16,8 @@ namespace Wotr.Client
         public Func<bool> CancelGesture { get; set; }
         public Func<bool> CancelChoice { get; set; }
         public Func<bool> ClearSelection { get; set; }
+        // UI-305: Esc skips an opponent presentation only when nothing else owns it.
+        public Func<bool> SkipPresentation { get; set; }
         public IEnumerable<VisualElement> Roots => windows.Select(window => window.Root);
 
         public BoardEscape(BoardScreen board)
@@ -139,6 +141,8 @@ namespace Wotr.Client
                 window.Fallback?.Focus();
                 return;
             }
+            if (SkipPresentation?.Invoke() == true)
+                return;
             if (CancelChoice?.Invoke() != true)
                 board.Menu.Open();
         }

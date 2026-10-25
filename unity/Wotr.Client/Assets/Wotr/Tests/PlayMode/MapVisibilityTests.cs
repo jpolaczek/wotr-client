@@ -96,6 +96,14 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     var figure = board.Hover.Panel.Root.Query<Button>(className: "eligible-figure").ToList()
                         .First(b => ((DraftToken)b.userData).Id == fixture.View.Units.First(u => u.Location == "minas-tirith" && u.Kind == UnitKind.Regular).Id);
+                    // UI-301: a figure a click may choose wears ChoiceGlow, the gold rim of the usable tabs and portraits; the
+                    // rim fades in over the 750 ms transition, and the pulse after it changes only its alpha.
+                    yield return new WaitForSeconds(1f);
+                    var rim = (Color32)figure.resolvedStyle.borderTopColor;
+                    var detail = string.Join(" ", figure.GetClasses()) + " · rim " + rim + " " + figure.resolvedStyle.borderTopWidth;
+                    Assert.That(figure.resolvedStyle.borderTopWidth, Is.EqualTo(3f).Within(.5f), detail);
+                    Assert.AreEqual(255, rim.r, detail);
+                    Assert.AreEqual(214, rim.g, detail);
                     // UI-201: the figure stands in its own soft glow, inside its tile, which takes no pointer.
                     var glow = figure.Q("figure-glow");
                     Assert.IsNotNull(glow, "A panel figure stands in a glow · " + label);

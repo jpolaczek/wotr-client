@@ -50,6 +50,47 @@
 .hunt-stage-icon-result { background-image: resource("Wotr/Art/UI/hunt/stage-result"); }
 .hunt-stage-icon-step { background-image: resource("Wotr/Art/UI/hunt/stage-step"); }
 
+/* UI-325 (owner review): a Hunt die is the ivory d6 of the battle window (Battle.uss, UI-117) on no box of its own, so the
+   die itself shows, not only its pips. A hit glows green around the die's own shape with a green check; a miss keeps the
+   plain die and a muted cross. A die chosen for the reroll or pressed takes the kit's gilt and pressed variants. */
+.hunt-die-face { -unity-background-scale-mode: scale-to-fit; }
+.hunt-die-face.die-pips-1 { background-image: resource("Wotr/Art/UI/battle/die-1"); }
+.hunt-die-face.die-pips-2 { background-image: resource("Wotr/Art/UI/battle/die-2"); }
+.hunt-die-face.die-pips-3 { background-image: resource("Wotr/Art/UI/battle/die-3"); }
+.hunt-die-face.die-pips-4 { background-image: resource("Wotr/Art/UI/battle/die-4"); }
+.hunt-die-face.die-pips-5 { background-image: resource("Wotr/Art/UI/battle/die-5"); }
+.hunt-die-face.die-pips-6 { background-image: resource("Wotr/Art/UI/battle/die-6"); }
+.hunt-roll-die.selected .hunt-die-face.die-pips-1 { background-image: resource("Wotr/Art/UI/battle/die-1-die-selected"); }
+.hunt-roll-die.selected .hunt-die-face.die-pips-2 { background-image: resource("Wotr/Art/UI/battle/die-2-die-selected"); }
+.hunt-roll-die.selected .hunt-die-face.die-pips-3 { background-image: resource("Wotr/Art/UI/battle/die-3-die-selected"); }
+.hunt-roll-die.selected .hunt-die-face.die-pips-4 { background-image: resource("Wotr/Art/UI/battle/die-4-die-selected"); }
+.hunt-roll-die.selected .hunt-die-face.die-pips-5 { background-image: resource("Wotr/Art/UI/battle/die-5-die-selected"); }
+.hunt-roll-die.selected .hunt-die-face.die-pips-6 { background-image: resource("Wotr/Art/UI/battle/die-6-die-selected"); }
+.hunt-roll-die.pressed .hunt-die-face.die-pips-1 { background-image: resource("Wotr/Art/UI/battle/die-1-die-pressed"); }
+.hunt-roll-die.pressed .hunt-die-face.die-pips-2 { background-image: resource("Wotr/Art/UI/battle/die-2-die-pressed"); }
+.hunt-roll-die.pressed .hunt-die-face.die-pips-3 { background-image: resource("Wotr/Art/UI/battle/die-3-die-pressed"); }
+.hunt-roll-die.pressed .hunt-die-face.die-pips-4 { background-image: resource("Wotr/Art/UI/battle/die-4-die-pressed"); }
+.hunt-roll-die.pressed .hunt-die-face.die-pips-5 { background-image: resource("Wotr/Art/UI/battle/die-5-die-pressed"); }
+.hunt-roll-die.pressed .hunt-die-face.die-pips-6 { background-image: resource("Wotr/Art/UI/battle/die-6-die-pressed"); }
+#board-screen .hunt-panel .hunt-roll-die {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    border-width: 0;
+}
+#board-screen .hunt-panel .hunt-roll-die:hover .hunt-die-face,
+#board-screen .hunt-panel .hunt-roll-die:focus .hunt-die-face { -unity-background-image-tint-color: rgb(255, 248, 226); }
+#board-screen .hunt-panel .hunt-roll-die.pressed { translate: 0 1px; }
+/* A die the player may choose for the reroll keeps the legal ring around its die (Wotr.uss .legal-target). */
+#board-screen .hunt-panel .hunt-roll-die.legal-target { border-width: 2px; border-radius: 6px; }
+.hunt-roll-die.hunt-hit .hunt-die-face,
+.hunt-archive-die.hunt-hit .hunt-die-face {
+    filter: drop-shadow(0px 0px 2px rgb(214, 255, 204)) drop-shadow(0px 0px 6px rgb(98, 214, 112))
+        drop-shadow(0px 0px 11px rgba(46, 168, 72, 0.95));
+}
+.hunt-roll-die #hunt-hit { color: rgb(158, 150, 138); }
+.hunt-roll-die.hunt-hit #hunt-hit { color: rgb(132, 226, 126); -unity-font-style: bold; }
+.hunt-archive-die.hunt-hit > .unity-label { color: rgb(132, 226, 126); }
+
 /* At rest the window is the Hunt Box (UI-109); a Hunt's result stays until the window is closed. */
 .hunt-window.hunt-idle #hunt-main,
 .hunt-window.hunt-idle .hunt-heading { display: none; }
@@ -64,10 +105,10 @@
 #board-screen.short-viewport .hunt-window .hunt-report-strip { margin: 1px 0; }
 #board-screen.short-viewport .hunt-window .hunt-tile-card { height: 44px; min-height: 44px; }
 #board-screen.short-viewport .hunt-window .hunt-response-object { height: 56px; min-height: 56px; }
-/* UI-184: in the 56-point response the symbol, the name and two lines of consequence fit without squeezing the name. */
-#board-screen.short-viewport .hunt-window .hunt-response-icon { width: 20px; height: 20px; }
-#board-screen.short-viewport .hunt-window .hunt-response-object #hunt-response-symbol { font-size: 14px; }
+/* UI-184: in the 56-point response the picture (UI-288), the name and two lines of consequence fit without squeezing the name. */
+#board-screen.short-viewport .hunt-window .hunt-response-icon { width: 22px; height: 22px; }
+#board-screen.short-viewport .hunt-window .hunt-response-card { width: 17px; height: 22px; }
+#board-screen.short-viewport .hunt-window .hunt-response-card > .action-symbol { width: 12px; height: 12px; }
 #board-screen.short-viewport .hunt-window .hunt-response-heading { flex-shrink: 0; }
 #board-screen.short-viewport .hunt-window .hunt-response-object #hunt-response-consequence { font-size: 11px; }
-#board-screen.short-viewport .hunt-window .hunt-random-stack #hunt-response-symbol { width: 15px; height: 20px; font-size: 13px; }
 #board-screen.short-viewport .hunt-window .hunt-roll-die { height: 46px; min-height: 46px; }

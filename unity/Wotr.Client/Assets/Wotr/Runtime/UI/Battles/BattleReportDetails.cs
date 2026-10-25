@@ -33,7 +33,7 @@ namespace Wotr.Client
             {
                 Add(root, ActionCardText.Words(step.Command?.ToString() ?? step.Kind), "battle-report-step");
                 var facts = ActionFactText.Lines(step, data).Distinct().ToArray();
-                if (facts.Length == 0) Add(root, step.Text);
+                if (facts.Length == 0) Add(root, ReadableText.Of(step.Text, data));
                 foreach (var line in facts) Add(root, line);
             }
         }

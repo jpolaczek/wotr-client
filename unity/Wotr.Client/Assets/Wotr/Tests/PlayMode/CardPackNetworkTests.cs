@@ -104,7 +104,8 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.IsTrue(board.Hunt.IsOpen, "The console's Hunt plaque opens the window.");
 
-            var reaction = board.Tray.Q<Button>("effect-choice-" + id);
+            // UI-285: a table card's response is a card object in the Hunt window's response row.
+            var reaction = MatchTestRoom.HuntCard(room.Fp, id) ?? board.Tray.Q<Button>("effect-choice-" + id);
             await ComponentGestures.Hover(reaction);
             Assert.IsEmpty(board.Cards.CardId, "Hovering a final reaction must not open a card.");
             var sourceId = board.View.Options.SelectMany(option => option.EffectChoices)
@@ -124,7 +125,7 @@ namespace Wotr.PlayTests
 
             board.TableEffects.Close();
             await room.Settle();
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("effect-choice-" + id));
+            PointerGestureEvents.ClickAt(MatchTestRoom.HuntCard(room.Fp, id) ?? board.Tray.Q<Button>("effect-choice-" + id));
             await room.At(revision + 1);
         }
     }

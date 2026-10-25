@@ -143,7 +143,7 @@ namespace Wotr.Client
         public void Open()
         {
             IsOpen = true;
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
             Window?.Refresh();
             List.Apply(Model);

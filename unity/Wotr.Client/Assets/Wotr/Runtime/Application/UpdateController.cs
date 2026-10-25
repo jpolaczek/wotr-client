@@ -111,7 +111,10 @@ namespace Wotr.Client
                 return;
             exiting = true;
             exitError = "";
+            // DIST-18: from the click until the application quits nothing else takes input; a failed exit lifts the lock.
+            ui.LockForExit(UpdateTexts.Saving);
             Render(coordinator.Snapshot);
+            var quitting = false;
             try
             {
                 var error = await save(retrySave);
@@ -122,9 +125,15 @@ namespace Wotr.Client
                     return;
                 }
                 retrySave = false;
-                if (install && !await coordinator.Install())
-                    return;
+                if (install)
+                {
+                    ui.LockForExit(UpdateTexts.Installing);
+                    if (!await coordinator.Install())
+                        return;
+                }
+                ui.LockForExit(install ? UpdateTexts.Restarting : UpdateTexts.Closing);
                 await close();
+                quitting = true;
                 quit();
             }
             catch (Exception error)
@@ -135,6 +144,8 @@ namespace Wotr.Client
             finally
             {
                 exiting = false;
+                if (!disposed && !quitting)
+                    ui.UnlockExit();
                 if (!disposed)
                     Render(coordinator.Snapshot);
             }

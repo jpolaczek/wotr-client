@@ -238,3 +238,38 @@ UI-259 (2026-10-18, owner's report): the chat field shows what is typed — parc
 (rgb 245,239,222 on rgb 46,41,34), a gold caret, selection and focus rim, and a quiet placeholder. Before, the text
 had a contrast of about 1.1:1 against the field. Test: `BoardInteractionTests.ChatInputShowsTypedTextWithReadableContrast`
 (at least 7:1).
+
+UI-281 (2026-10-19, owner's report): with the chat open, Enter in its line sends the message. Before, the board's
+confirm key (`DraftInput`) took Enter first, on its way down from the board's root, so the message stayed unsent and a
+ready choice could be confirmed instead; the chat is now one of the inputs that key ignores
+(`GameChatPanel.ContainsInput`), and Esc still rolls the panel up (`BoardEscape`). The panel always opens on its newest
+message, also when messages came while it was rolled up or the player had scrolled up before closing it: the list
+scrolls to its end on the tick after it is laid out (`RoomChatPanel.ShowLatest`). Tests:
+`DraftInputTests.EnterInTheOpenChatSendsTheMessageAndConfirmsNothing` (a ready Hunt allocation stays unconfirmed by
+the chat's Enter and is confirmed by Enter outside it), `BoardInteractionTests.ChatOpensOnItsNewestMessage`.
+
+<a id="karta-przeciwnika--ui-308"></a>
+## The opponent's card during a presentation — UI-308 (2026-10-24)
+
+The card inspector may open without a click for one case only: the opponent's public Event during its presentation
+([OPPONENT_ACTIONS_UX §6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308)). It is transient and read-only, stands in the half
+of the map away from the card's first effect, keeps the inspector's viewport rules (no shrunk text, no scrolling), and
+closes into the console trail after 3 s; a click pins it and holds the presentation until it is closed. The inspector's
+remembered position, pinning and Esc behave as before.
+
+<a id="okna-na-srodku--ui-324"></a>
+## Windows open in the middle — UI-324 (2026-10-25)
+
+Owner: "every window that opens should open in the middle — the Hunt, the cards and so on".
+
+- The Hunt window, in every phase, and the battle window open centred in the board's middle (`FloatingWindow.Centre`,
+  `WindowLayout.Middle`): between the top bar and the console, between the side columns. Before, they stood beside the
+  Fellowship and beside the battle's region; a Combat choice still keeps its card's room on the right.
+- So does any window without a placement of its own: the information, resource, Companion setup and battle report windows,
+  the Log.
+- A position the player dragged a window to still wins. The positions are on the pixel grid, and a window already within
+  a pixel of its middle stays put: a middle on a half pixel cannot rock it between two pixels (a layout loop).
+- The middle leaves out a panel held open beside the left rail, so a decision's Reserve or Politics stays usable;
+  windows move clear when such a panel opens (`WindowLayout.MiddleMoved`). A hover preview does not count.
+- A window wider than the middle of a narrow board keeps the hand clear and may touch the left edge.
+- The region panel (it belongs beside its region) and the edge panels are unchanged.

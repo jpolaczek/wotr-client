@@ -324,7 +324,7 @@ namespace Wotr.Client
                     Opening?.Invoke();
                     Root.BringToFront();
                 }
-                Root.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
+                Appearance.Display(Root, shown);
                 Tab.EnableInClassList("selected", shown);
                 if (!shown)
                     unroll.Hide();

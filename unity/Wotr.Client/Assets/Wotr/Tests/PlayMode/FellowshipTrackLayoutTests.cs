@@ -91,6 +91,8 @@ namespace Wotr.PlayTests
                             AssertInside(board.Fellowship.Root, board.Root);
                             if (board.View.You == Side.Shadow)
                                 Assert.AreEqual(DisplayStyle.None, board.Fellowship.Root.Q("fellowship-controls").resolvedStyle.display);
+                            else
+                                AssertMembersFollowTheTracks(board.Fellowship.Root);
                             LayoutTests.Save(texture, $"ui79-tracks-{board.View.You}-{width}-{scale:0.00}.png");
                             var before = board.Map.Camera.Pan;
                             var track = board.Fellowship.Root.Q("journey-track");
@@ -219,6 +221,18 @@ namespace Wotr.PlayTests
             var size = label.MeasureTextSize(label.text, label.contentRect.width, VisualElement.MeasureMode.Exactly,
                 0, VisualElement.MeasureMode.Undefined);
             Assert.LessOrEqual(size.y, label.contentRect.height + 1, "Clipped: " + label.text);
+        }
+
+        // UI-299: the members sit right under the two tracks; Finish phase and every other control come after them.
+        private static void AssertMembersFollowTheTracks(VisualElement panel)
+        {
+            var tracks = panel.Q("corruption-track").worldBound;
+            var members = panel.Q(className: "fellowship-members");
+            var controls = panel.Q("fellowship-controls");
+            Assert.AreEqual(DisplayStyle.Flex, members.resolvedStyle.display);
+            Assert.AreEqual(panel.IndexOf(members) + 1, panel.IndexOf(controls), "The controls follow the members.");
+            Assert.LessOrEqual(tracks.yMax, members.worldBound.yMin + .5f, "The members follow the tracks.");
+            Assert.LessOrEqual(members.worldBound.yMax, controls.worldBound.yMin + .5f, "Finish phase is under the members.");
         }
 
         private static void AssertInside(VisualElement child, VisualElement parent)

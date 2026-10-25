@@ -93,7 +93,7 @@ namespace Wotr.Client
                 payload.Face = null;
         }
 
-        private static bool Same(TurnDraft left, TurnDraft right) =>
+        internal static bool Same(TurnDraft left, TurnDraft right) =>
             left.Kind == right.Kind && left.MoveFocus == right.MoveFocus && left.ReserveId == right.ReserveId &&
             left.CompanionFocus == right.CompanionFocus && left.HuntChoice == right.HuntChoice && left.ArmedSource == right.ArmedSource &&
             SamePayload(left.Payload, right.Payload);

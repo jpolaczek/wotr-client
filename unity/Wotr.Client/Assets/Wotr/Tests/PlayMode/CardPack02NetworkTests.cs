@@ -33,7 +33,8 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 LayoutTests.Save(room.Fp.Viewport, "ui47-staff-reaction.png");
                 var revision = room.Fp.Board.View.Revision;
-                PointerGestureEvents.ClickAt(room.Fp.Board.Tray.Q<Button>("effect-choice-card.wizards-staff"));
+                // UI-285: the Staff is a card object in the Hunt window's response row.
+                PointerGestureEvents.ClickAt(MatchTestRoom.HuntCard(room.Fp, "card.wizards-staff"));
                 await room.At(revision + 1);
                 Assert.AreEqual(1, room.Sh.Board.View.Fellowship.MordorStep);
                 Assert.IsNull(room.Sh.Board.View.Hunt);

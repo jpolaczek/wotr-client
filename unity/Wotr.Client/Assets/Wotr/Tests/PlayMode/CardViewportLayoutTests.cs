@@ -12,6 +12,34 @@ namespace Wotr.PlayTests
 {
     public sealed class CardViewportLayoutTests
     {
+        // UI-324: a panel held open beside the left rail (here Politics) is not part of the middle: a card open when the
+        // panel opens moves clear of it, and one opened then stands clear of it in the middle that is left.
+        [UnityTest]
+        public IEnumerator ACardWindowStandsClearOfAPanelHeldOpenBesideTheLeftRail()
+        {
+            using var client = new MountedMatchClient("http://localhost", "card-left-panel");
+            var view = new BoardFixture().View;
+            const string card = "base.fp.character.18";
+            view.Hand.Add(card);
+            client.Apply(view);
+            yield return new WaitForSecondsRealtime(.2f);
+            var board = client.Board;
+            board.Cards.Show(card, true);
+            yield return new WaitForSecondsRealtime(.2f);
+            board.Nations.Open();
+            yield return new WaitForSecondsRealtime(.5f);
+            var drawer = board.Nations.Drawer.worldBound;
+            Assert.Greater(drawer.width, 0, "The Politics panel is open.");
+            Assert.GreaterOrEqual(board.Cards.Root.worldBound.xMin, drawer.xMax - 1, "The open card moves clear of the panel.");
+            board.Cards.Close();
+            yield return null;
+            board.Cards.Show(card, true);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.GreaterOrEqual(board.Cards.Root.worldBound.xMin, drawer.xMax - 1, "A card opened now stands clear of it.");
+            Assert.AreEqual(board.Cards.CenterArea().Value.center.x, board.Cards.Root.worldBound.center.x, 2f,
+                "In the middle that is left.");
+        }
+
         [UnityTest]
         public IEnumerator ActionCardFitsBothEffectsAtFourLayoutsAndKeepsPinnedPositionAfterRefresh()
         {
@@ -29,9 +57,15 @@ namespace Wotr.PlayTests
                         client.Panel.targetTexture = target;
                         client.Panel.scale = scale;
                         client.Apply(view);
+                        // The previous layout moved the window with the arrow keys; that is the player's position, kept
+                        // until it is forgotten.
+                        client.Board.Cards.Window.Forget();
                         client.Board.Cards.Show(card, true);
                         yield return new WaitForSecondsRealtime(.2f);
                         AssertFits(client.Board);
+                        var middle = client.Board.Cards.CenterArea().Value.center;
+                        Assert.AreEqual(middle.x, client.Board.Cards.Root.worldBound.center.x, 2f,
+                            "UI-324: the card window opens in the middle of the board · " + width + " " + scale);
                         Assert.AreEqual(DisplayStyle.Flex, client.Board.Cards.Root.Q(className: "card-toolbar").resolvedStyle.display,
                             "The regression requires the action toolbar; discard-only previews are shorter.");
                         var header = client.Board.Cards.Root.Q(className: "card-header");

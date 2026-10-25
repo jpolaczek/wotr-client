@@ -29,6 +29,26 @@ namespace Wotr.EditorTests
             Assert.AreEqual("pelargir", draft.Payload.Placements.Single().RegionId);
         }
 
+        // UI-317: the Muster die backs the Reserve only while the server's Recruit is enabled for it or an own Recruit
+        // sequence is open; it stays active for Politics either way.
+        [Test]
+        public void TheMusterDieCanRecruitOnlyWithAnEnabledRecruitOrAnOpenSequence()
+        {
+            var fixture = new BoardFixture();
+            var view = fixture.View;
+            var context = new ActionDieContext();
+            context.Sync(view, "muster");
+            var draft = new TurnDraft();
+            Assert.IsTrue(MusterActions.CanRecruit(view, draft, context), "An enabled Recruit backs the Reserve.");
+            var recruit = view.Options.Single(o => o.Kind == CommandKind.Recruit);
+            recruit.Enabled = false;
+            Assert.IsFalse(MusterActions.CanRecruit(view, draft, context), "A disabled Recruit backs nothing.");
+            Assert.IsTrue(MusterActions.Active(view, draft, context), "The die still acts for Politics.");
+            view.Decision.Kind = DecisionKind.ActionSequence;
+            view.ActionSequence = new ActionSequenceView { Kind = CommandKind.Recruit, Owner = view.You, DieId = "muster", Face = DieFace.Muster, Remaining = 1 };
+            Assert.IsTrue(MusterActions.CanRecruit(view, draft, context), "An open Recruit sequence keeps its Reserve.");
+        }
+
         [Test]
         public void PaidSequenceOnlyAllowsRemainingServerChoicesAndCannotChangeToPolitics()
         {

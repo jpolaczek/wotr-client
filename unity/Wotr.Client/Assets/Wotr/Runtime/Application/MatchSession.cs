@@ -15,12 +15,16 @@ namespace Wotr.Client
         private readonly BattleReportController reports;
         private readonly ActionNoticeController notices;
         private readonly GameSounds sounds;
+        private readonly PlaybackBinding playback;
+        private readonly OpponentPresenters presenters;
         // REPLAY-04: Save replay on the end screen; none without a library.
         private readonly ReplaySaver saver;
         private bool disposed;
         public BoardExit Exit { get; }
         public bool Expired { get; private set; }
         public Task LocalWrites => turns.LocalWrites;
+        // UI-304: presenters of opponent actions register here (UI-305–UI-312).
+        public PresentationPlayback Playback => playback.Playback;
 
         public MatchSession(GameApi api, string matchId, BoardScreen board, LocalMatchPersistence persistence, SoundModule sounds = null,
             ReplayLibrary replays = null)
@@ -35,15 +39,19 @@ namespace Wotr.Client
             reports = new BattleReportController(api, matchId, board.BattleReport, persistence?.Notifications);
             notices = new ActionNoticeController(api, matchId, board, persistence?.Notifications);
             chat = RoomChatController.ForGame(api, board.GameChat, matchId);
-            connection.Updated += Update;
+            playback = new PlaybackBinding(board, notices, Present, turns.Hold);
+            presenters = new OpponentPresenters(board, playback);
+            connection.Updated += playback.Receive;
             connection.StatusChanged += ConnectionChanged;
             this.sounds = sounds == null ? null : new GameSounds(sounds, board, turns);
+            presenters.Sounds.Target = this.sounds;
             if (replays != null)
                 saver = new ReplaySaver(api, "api/matches/" + Uri.EscapeDataString(matchId) + "/replay", replays, board.GameEnd);
             connection.Start();
         }
 
-        private void Update(PlayerView view)
+        // UI-304: a view the playback released; the history feed already took it when it arrived.
+        private void Present(PlayerView view)
         {
             if (disposed)
                 return;
@@ -51,7 +59,6 @@ namespace Wotr.Client
             turns.Update(view);
             sounds?.Update(view);
             history.Update(view);
-            notices.Update(view);
             board.Root.schedule.Execute(() =>
             {
                 if (!disposed && board.Root.panel != null)
@@ -69,6 +76,7 @@ namespace Wotr.Client
             turns.SetConnection(state);
             history.SetConnection(state);
             notices.SetConnection(state);
+            playback.Playback.SetConnection(state);
         }
 
         public void Reconnect() => connection.Reconnect();
@@ -80,7 +88,9 @@ namespace Wotr.Client
             if (disposed)
                 return;
             disposed = true;
-            connection.Updated -= Update;
+            connection.Updated -= playback.Receive;
+            presenters.Dispose();
+            playback.Dispose();
             connection.StatusChanged -= ConnectionChanged;
             sounds?.Dispose();
             saver?.Dispose();

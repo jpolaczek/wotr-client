@@ -118,6 +118,33 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, test.Backend.Commands);
         }
 
+        // UI-317 (owner report): with no legal recruitment the Muster die opens no window and lights only what it can do —
+        // the Politics tab; the Reserve stays a plain tab that neither a settlement click nor the console reopens.
+        [UnityTest]
+        public IEnumerator UI317AMusterDieThatCannotRecruitLightsOnlyPolitics()
+        {
+            var fixture = new BoardFixture();
+            var recruit = fixture.View.Options.First(o => o.Kind == CommandKind.Recruit);
+            recruit.Enabled = false;
+            recruit.Reason = "No available reinforcement has a legal settlement.";
+            using (var test = new Harness(fixture))
+            {
+                yield return Settle();
+                var reserve = test.Board.Reinforcements;
+                Click(test.Board.OwnDice.Q<Button>("muster"));
+                yield return Settle();
+                Assert.AreEqual(DisplayStyle.None, reserve.Root.resolvedStyle.display, "The die opens no window.");
+                Assert.IsFalse(reserve.Tab.ClassListContains("legal-target"), "The Reserve tab is not offered.");
+                Assert.IsFalse(reserve.Tab.ClassListContains("die-option"), "Nor lit by the die.");
+                Assert.IsTrue(test.Board.Nations.Root.ClassListContains("legal-target"), "Politics is where the die can act.");
+                Assert.IsTrue(test.Board.Nations.Root.ClassListContains("die-option"));
+                StringAssert.DoesNotContain("Reinforcements", test.Board.Console.Status.Plaque.tooltip, "The console routes nothing to the Reserve.");
+                MapContourProbe.ClickRegion(test.Board.Map, "edoras");
+                yield return Settle();
+                Assert.AreEqual(DisplayStyle.None, reserve.Root.resolvedStyle.display, "A settlement click does not bring the Reserve.");
+            }
+        }
+
         // UI-130/UI-179/UI-181: Muster lights the Reserve tab and the player opens it; a closed nation keeps a plain,
         // inert row with the server's reason; a reserve token lights only its nation's settlements and a click on one
         // recruits; the console reopens the tab the player closed.
@@ -281,10 +308,11 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-151: a Combat choice without a legal card goes as No card without a click, once per decision; while the
-        // opponent chooses, No card stays in the footer, greyed out.
+        // UI-279 (replacing UI-151's answer without a click): a Combat choice without a legal card waits for the click on
+        // No card, which glows alone and says why; the click sends it once. While the opponent chooses, No card stays in
+        // the footer, greyed out.
         [UnityTest]
-        public IEnumerator UI151NoLegalCombatCardSendsNoCardOnceAndKeepsTheButton()
+        public IEnumerator UI279NoLegalCombatCardWaitsForTheNoCardClickAndKeepsTheButton()
         {
             var view = BattleScreenFixture.Create(CommandKind.CommitCombatCard);
             view.Battle.Stage = "DefenderCard";
@@ -292,7 +320,13 @@ namespace Wotr.PlayTests
             using (var test = new Harness(view))
             {
                 yield return new WaitForSeconds(.3f);
-                Assert.AreEqual(1, test.Backend.Commands, "Without a legal card, No card goes without a click.");
+                Assert.AreEqual(0, test.Backend.Commands, "Nothing is sent without a click, even the only choice.");
+                var only = test.Board.Tray.Q<Button>("battle-no-card");
+                Assert.IsTrue(only.ClassListContains(ChoiceGlow.ClassName), "The only choice glows.");
+                StringAssert.StartsWith("No legal Combat card · Click", only.tooltip);
+                Click(only);
+                yield return new WaitForSeconds(.3f);
+                Assert.AreEqual(1, test.Backend.Commands);
                 Assert.AreEqual(CommandKind.CommitCombatCard, test.Backend.Last.Kind);
                 Assert.IsTrue(string.IsNullOrEmpty(test.Backend.Last.Payload.CardId));
                 test.Push();
@@ -670,6 +704,38 @@ namespace Wotr.PlayTests
             var contrast = Contrast(text.resolvedStyle.color, field.resolvedStyle.backgroundColor);
             Assert.GreaterOrEqual(contrast, 7f, "Typed chat text reads against its field.");
             Assert.Greater(text.resolvedStyle.color.grayscale, field.resolvedStyle.backgroundColor.grayscale, "Light text on a dark field.");
+        }
+
+        // UI-281: the board's chat opens on its newest message, also when the messages came while it was rolled up and
+        // after the player scrolled up before closing it.
+        [UnityTest]
+        public IEnumerator ChatOpensOnItsNewestMessage()
+        {
+            using var test = new Harness();
+            yield return Settle();
+            var chat = test.Board.GameChat;
+            chat.Available(true);
+            var view = new RoomChatView { Latest = 40 };
+            for (var sequence = 1; sequence <= 40; sequence++)
+                view.Messages.Add(new RoomChatMessage
+                {
+                    Sequence = sequence, Author = "frodo", Role = RoomRole.Player, Side = Side.FreePeoples, Text = "Message " + sequence
+                });
+            chat.Chat.Show(view);
+            yield return Settle();
+            var log = chat.Root.Q<ScrollView>("room-chat-log");
+
+            chat.Open();
+            yield return Settle();
+            Assert.Greater(log.verticalScroller.highValue, 0f, "The messages overflow the list.");
+            Assert.AreEqual(log.verticalScroller.highValue, log.verticalScroller.value, 1f, "Opened on the newest message.");
+            log.scrollOffset = Vector2.zero;
+            yield return Settle();
+            chat.Close();
+            yield return Settle();
+            chat.Open();
+            yield return Settle();
+            Assert.AreEqual(log.verticalScroller.highValue, log.verticalScroller.value, 1f, "Reopened on the newest message.");
         }
 
         private static float Contrast(Color a, Color b)

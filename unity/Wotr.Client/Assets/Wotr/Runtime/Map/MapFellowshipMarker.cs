@@ -14,7 +14,8 @@ namespace Wotr.Client
         // UI-228: above the region's forces first; where that would stand in the neighbouring region (Gorgoroth under
         // Barad-dûr), below them, then right and left of them.
         private static readonly Vector2[] RegionPlaces = { new Vector2(0, -64), new Vector2(0, 64), new Vector2(70, -8), new Vector2(-70, -8) };
-        private static readonly Vector2 TrackDetail = new Vector2(36, 40), TrackToken = new Vector2(28, 32);
+        // UI-283 (owner's request): on the Mordor track the figure is twice its first size, as large as on a region.
+        private static readonly Vector2 TrackDetail = new Vector2(72, 80), TrackToken = new Vector2(56, 64);
         private const float StatusWidth = 58;
         private const float TileWidth = 30;
         private readonly MapCanvas map;
@@ -28,15 +29,23 @@ namespace Wotr.Client
         public VisualElement Status => status;
         public VisualElement Tile => tile.Root;
         public event System.Action Clicked;
-        // UI-155: on the track a revealed Fellowship hides with one click on its figure when the server allows it.
+        // UI-155, UI-280: a revealed Fellowship hides with one click on its figure when the server allows it.
         public event System.Action HideRequested;
         public const string HideClass = "fellowship-hide-target";
+        public const string HideHint = "Click to hide the Fellowship.";
         public bool HideOffered { get; private set; }
         // UI-236: in the Fellowship phase a click on the figure declares its position; the panel has no button for it.
         public event System.Action DeclareRequested;
         public const string DeclareClass = "fellowship-declare-target";
         public const string DeclareHint = "Click to declare the Fellowship's position · Choose the route on the map.";
         public bool DeclareOffered { get; private set; }
+        // UI-282: off the Mordor track a hidden Fellowship moves with one click on its figure when the chosen die can
+        // move it, as with the track symbol in its panel.
+        public event System.Action MoveRequested;
+        public const string MoveClass = "fellowship-move-target";
+        public const string MoveHint = "Click to move the Fellowship: progress +1, then the Hunt; its last known position stays.";
+        public bool MoveOffered { get; private set; }
+        private readonly ChoicePulse pulse;
         private string regionId = "";
         private MordorTrackState mordor = MordorTrackState.Outside;
         private bool tileShown;
@@ -51,15 +60,7 @@ namespace Wotr.Client
         public MapFellowshipMarker(MapCanvas map)
         {
             this.map = map;
-            marker.clicked += () =>
-            {
-                if (HideOffered && mordor.Active)
-                    HideRequested?.Invoke();
-                else if (DeclareOffered && !mordor.Active)
-                    DeclareRequested?.Invoke();
-                else
-                    Clicked?.Invoke();
-            };
+            marker.clicked += Activate;
             marker.userData = new DraftToken(DraftObject.Fellowship);
             marker.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             marker.RegisterCallback<PointerEnterEvent>(_ => { hovered = true; map.Refresh(); });
@@ -81,6 +82,20 @@ namespace Wotr.Client
             map.Add(tile.Root);
             motion = marker.schedule.Execute(Walk).Every(16);
             motion.Pause();
+            pulse = new ChoicePulse(marker);
+        }
+
+        // The figure's click: the hide, the move or the declaration it offers, otherwise its inspection.
+        public void Activate()
+        {
+            if (HideOffered)
+                HideRequested?.Invoke();
+            else if (MoveOffered && !mordor.Active)
+                MoveRequested?.Invoke();
+            else if (DeclareOffered && !mordor.Active)
+                DeclareRequested?.Invoke();
+            else
+                Clicked?.Invoke();
         }
 
         public bool OnTrack => mordor.Active;
@@ -102,12 +117,15 @@ namespace Wotr.Client
             Layout();
         }
 
+        // UI-280: wherever the revealed Fellowship stands, on a region or on the Mordor track, its figure glows while the
+        // chosen die can hide it and a click hides it; the Ring in the Fellowship panel stays the same control (UI-232).
         public void OfferHide(bool offered)
         {
+            if (HideOffered == offered)
+                return;
             HideOffered = offered;
-            marker.EnableInClassList(HideClass, offered && mordor.Active);
-            if (mordor.Active)
-                marker.tooltip = mordor.FigureTooltip + (offered ? "\nClick to hide the Fellowship." : "");
+            marker.EnableInClassList(HideClass, offered);
+            Glow();
         }
 
         public void OfferDeclare(bool offered)
@@ -116,6 +134,26 @@ namespace Wotr.Client
                 return;
             DeclareOffered = offered;
             marker.EnableInClassList(DeclareClass, offered && !mordor.Active);
+            Glow();
+        }
+
+        // UI-282: the hidden Fellowship's figure is the Character die's move on the map.
+        public void OfferMove(bool offered)
+        {
+            if (MoveOffered == offered)
+                return;
+            MoveOffered = offered;
+            marker.EnableInClassList(MoveClass, offered && !mordor.Active);
+            Glow();
+        }
+
+        // UI-282: a figure that offers any of its clicks wears the shared gold ChoiceGlow and pulses, like the other
+        // objects the player is asked to click.
+        private void Glow()
+        {
+            var offers = HideOffered || MoveOffered && !mordor.Active || DeclareOffered && !mordor.Active;
+            ChoiceGlow.Apply(marker, offers);
+            pulse.Run(offers);
             map.Refresh();
         }
 
@@ -141,14 +179,15 @@ namespace Wotr.Client
             marker.style.opacity = map.Figures?.FellowshipArriving == true ? .25f : 1;
             var visible = map.Data.Shapes.TryGetValue(regionId, out var shape);
             var anchor = visible ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1])) : Vector2.zero;
-            // A figure that offers the declaration is the control for it, so it shows at every zoom.
-            visible &= map.NearView(anchor) &&
-                (DeclareOffered || hovered || inspected || map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
+            // A figure that offers the declaration, the move or the hide is the control for it, so it shows at every zoom.
+            visible &= map.NearView(anchor) && (DeclareOffered || HideOffered || MoveOffered || hovered || inspected ||
+                map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
             Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
-            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" + (DeclareOffered ? "\n" + DeclareHint : "");
+            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" + (DeclareOffered ? "\n" + DeclareHint : "") +
+                (MoveOffered ? "\n" + MoveHint : "") + (HideOffered ? "\n" + HideHint : "");
         }
 
         // The first place whose figure stands with its feet inside the region at the current zoom; a region too small
@@ -183,12 +222,13 @@ namespace Wotr.Client
                 return;
             var rect = map.LocalMarkerRect(anchor + new Vector2(0, 4 - size.y / 2), size);
             Place(rect, reserve);
-            marker.tooltip = mordor.FigureTooltip + (HideOffered ? "\nClick to hide the Fellowship." : "");
+            marker.tooltip = mordor.FigureTooltip + (HideOffered ? "\n" + HideHint : "");
             var measured = status.resolvedStyle.width;
             var statusWidth = float.IsNaN(measured) || measured <= 0 ? StatusWidth : measured;
             var tileWidth = withTile ? TileWidth : 0;
             var left = anchor.x - (tileWidth + statusWidth) / 2;
-            var top = anchor.y + (detail ? 24 : 14);
+            // Under the step's stone, which UI-283 made twice as tall.
+            var top = anchor.y + (detail ? 48 : 28);
             // On the Crack of Doom the row would cover its caption and step 4, so it stands left of the crater.
             if (shownStep >= MordorTrackGeometry.LastStep)
             {

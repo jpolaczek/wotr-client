@@ -121,9 +121,11 @@ namespace Wotr.PlayTests
 
         private static async Task Respond(MatchTestRoom room, string reaction)
         {
-            var button = room.Fp.Board.Tray.Q<Button>("effect-choice-" + reaction);
-            await room.Until(() => button?.enabledInHierarchy == true);
+            // UI-285: a table card's response is a card object in the Hunt window's response row.
+            Button Find() => MatchTestRoom.HuntCard(room.Fp, reaction) ?? room.Fp.Board.Tray.Q<Button>("effect-choice-" + reaction);
+            await room.Until(() => Find()?.enabledInHierarchy == true);
             await room.Settle();
+            var button = Find();
             var picked = button.panel.Pick(button.worldBound.center);
             Assert.IsTrue(picked == button || button.Contains(picked), "The reaction must be reachable by a real click.");
             PointerGestureEvents.ClickAt(button);

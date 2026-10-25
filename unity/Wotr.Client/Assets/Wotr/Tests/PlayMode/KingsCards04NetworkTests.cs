@@ -44,7 +44,7 @@ namespace Wotr.PlayTests
                 var garrison = room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:garrison");
                 Assert.IsTrue(field.text.Contains("Field"));
                 Assert.IsTrue(garrison.text.Contains("Garrison"));
-                Assert.IsFalse(room.Sh.Board.Tray.Query<Button>(className: "committed-choice").ToList().Any(b => b.text.Contains("kings.")));
+                Assert.IsFalse(room.Sh.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().Any(b => b.text.Contains("kings.")));
                 await Layout(room, room.Sh, "army");
                 var revision = room.Sh.Board.View.Revision;
                 CardNetworkTests.Click(garrison);

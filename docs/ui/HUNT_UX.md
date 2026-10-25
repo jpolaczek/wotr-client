@@ -345,3 +345,120 @@ buttons with the Guide line, and drawn tiles or rolled dice looked like buttons 
 While The Breaking of the Fellowship's tile asks for Companions, the Hunt panel shows its roster row (the one the
 forced Guide uses) with the candidates glowing; clicking a portrait selects or releases it, and the panel's
 confirmation sends the set. The decision tray no longer lists the Companions by name. See FELLOWSHIP_UX, UI-249.
+
+<a id="ui-285"></a>
+## Table cards answer in the response row — UI-285 (2026-10-19)
+
+The owner's decision after the object controls audit (OBJECT_CONTROLS_AUDIT, "Axe and Bow"): a table card that answers
+in the Hunt — Axe and Bow, Mithril Coat and Sting, Horn of Gondor, Wizard's Staff, Flocks of Crebain — no longer falls
+to the generic choice list as a text rectangle whose button also pinned the full card with a disabled Play button.
+
+- `HuntCardResponses.Offered` lists the Reaction's legal `RespondEffect` choices whose source is a card on a player's
+  table (or a lasting effect's card); `HuntResponsesView` shows each as a card object in its own row under the Ring,
+  Guide and random-companion objects: a small card face, the card's name and the consequence. Legal objects glow with
+  the shared ChoiceGlow and pulse.
+- One click uses the card (UI-142): `HuntContextInteraction.CardResponse` sets the draft's reaction and sends it;
+  the console's Pass declines (UI-291). The tooltip names the cost ("Click to discard Axe and Bow · Reduce damage …").
+- `CardChoices` leaves these choices out of the tray and no Hunt reaction pins the card inspector; the card can still be
+  read in the Effects panel. A reaction whose source is not a table card (Nenya, a character's ability) stays in the tray.
+- Tests: `HuntLayoutTests` (RespondEffect), `CardPackNetworkTests.MithrilAndAxeRestoreBeforeShelobRollAndReachBothClients`,
+  `CardPack02NetworkTests.StaffPreventsAnUnseenTileAndAdvancesMordor`, `HuntRecoveryNetworkTests`,
+  `MordorNetworkTests.MithrilReplacesStopBeforeAdvancingAndSpendsItsCardOnce`, `Shadow01NetworkTests`,
+  `Shadow03NetworkTests`; `MatchTestRoom.ObjectChoice` finds the card object in the Hunt window.
+
+<a id="ui-288"></a>
+## Pictures on the responses — UI-288 (2026-10-19)
+
+The owner's decision after the object controls audit (finding 7): the response objects show pictures instead of the
+glyphs ○ ★ ?. The Ring shows the Ring with its drop of Corruption (`hunt/choice-corruption`), the Guide the current
+Guide's own figure in a gilt medallion (the version the Fellowship panel shows; it follows a change of Guide), the
+random casualty the Companions' stack (`hunt/choice-random`), and a table card's response (UI-285) a small parchment
+card with the symbol printed on the card's corner (`CardLibrary.Face`). The pictures are 28 points, 22 in a short
+window. Tests: `HuntAndEffectPicturesTests`, `HuntLayoutTests` (all four layouts).
+
+<a id="ui-310"></a>
+## The Hunt in the opponent's presentation — UI-310 (2026-10-24)
+
+The shared Hunt plays in its existing window, entry by entry from the recorded snapshots, before the decision it
+leads to opens ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
+
+- **Opening.** The Hunt's start opens the window, as a new Hunt does today, with a trace on the Hunt Box plaque. A
+  window the player closed during this Hunt stays closed.
+- **Entries.**
+  - A roll shows its dice and successes for 1 s, with one dice sound.
+  - The drawn tile turns face up for 1 s, then the damage shows.
+  - A response is marked on its object: the Fellowship's Ring, a portrait, or a table card at the Effects tab.
+  - A casualty leaves the Fellowship's roster through its portrait. A new Guide takes the badge.
+- **No choices.** The window hosts no choice during the presentation. A real response, Guide or damage decision opens
+  on its usual host at the release. No Continue or result window is added.
+- **Afterwards.** The Fellowship's tracks, a reveal's relocation and the progress move after the Hunt's entries.
+
+<a id="ui-318"></a>
+## The Shadow's allocation lights the Eye count — UI-318 (2026-10-24)
+
+When the opponent's presentation shows the Shadow allocating dice to the Hunt, only the Hunt plaque's Eye medallion and
+its number glow while the count rises (`HuntBoxView.EyeCount`), not the whole plaque (owner request). The Hunt's own
+start, when its window opens, still marks the Hunt Box
+([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
+
+<a id="srodek--ui-324"></a>
+## The window opens in the middle — UI-324 (2026-10-25)
+
+Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).
+
+<a id="kosci--ui-325"></a>
+## Hunt dice are dice — UI-325 (2026-10-25)
+
+Owner, on a build's roll: "fix the graphics so the dice are visible and not only their pips; the dice that hit are to be
+marked nicely in green".
+
+- A Hunt die is the ivory d6 of the battle window (`Art/UI/battle/die-N`, UI-117) at 30 pt, on no box of its own
+  (`HuntDieFace`, `.hunt-die-face`); a die chosen for the reroll takes the kit's gilt variant, a pressed one its pressed
+  variant, and hover brightens the art.
+- A hit glows green around the die's own shape (a light core, a green glow, a wide green halo) with a bold green check; a
+  miss keeps the plain die and a muted cross. Green stays the Hunt's hit colour: the observed glow is blue, a choice gold.
+- At the reroll a rerollable miss keeps the legal ring around its die (`.legal-target`), so a choosable die still shows it
+  can be clicked; the recorded Hunt in the Log (`HuntArchiveSummary`) uses the same dice and green hits.
+
+<a id="fazy--ui-327"></a>
+## The Hunt's phases change smoothly — UI-327 (2026-10-25)
+
+Owner: "the Hunt window's phases can appear in different places on the screen … we don't jump between the phases, we
+need a smooth animation: first the active element lights up and then a smooth transition; on this track the marker is to
+move smoothly; the change between the Ring's hidden and revealed art is to be smooth too, and at the Ring's track as
+well; tokens that change their state should turn over to their other side smoothly".
+
+- The window opens in the middle for each Hunt (UI-324) and then stays where it stands through its phases: a new size
+  re-centres it across and keeps its top (unless it would leave the middle), gliding there over 0.25 s
+  (`FloatingWindow.KeepInMiddle`); a drag stops the glide; the next Hunt opens in the middle again.
+- The stage ribbon is one lasting row (`StageRibbon`): at a new phase its gilt marker glides from the old stage to the
+  new one (eased, 0.35 s) while the labels and icons crossfade into the current stage; then the phase's content fades in
+  (0.12 s after the marker sets off). The battle window's ribbon (the decision tray's and the presented round's) does the
+  same.
+- UI-339 (owner 2026-10-25: "the next Hunt sometimes starts from a phase"): the row glides only within one Hunt (one
+  battle). A new Hunt — its window key — or a new battle — its id — starts the row afresh, so the marker stands at the
+  new Roll (Cards) at once; before, it glided back from the last Hunt's Result and the next Hunt looked as if it began at
+  a later phase.
+- The Ring's Hidden/Revealed art — on the plaque, in the Fellowship panel and on the journey track's marker — turns over
+  when it changes (`TokenFlip`: it narrows to its edge in 0.15 s, shows its other side at the middle of the turn and widens
+  in 0.15 s); a nation's token turns over to its active side the same way.
+- Under Skip animations the marker, the window and the tokens change at once. Nothing waits for an animation. A drawn
+  Hunt tile has no face-down state in the client, so it does not turn.
+
+<a id="kafel-w-grze--ui-332"></a>
+## A tile put into play drops into the Hunt plaque — UI-332 (2026-10-25)
+
+Owner: "in this and analogous cases let the tile be presented — its artwork, without broader explanations — and let it
+drop into the Hunt tab with an animation; in the Hunt tab, where all tiles in the game are shown, the tiles that start to
+play once the Fellowship is on the track must be shown separately". The client cannot name the card behind a prepared tile
+(the projection carries its face only), so the tile alone is shown.
+
+- When the Hunt pool gains tiles in a new view — a special tile put into play (Give it to Uss! and the like), the prepared
+  tiles joining the pool at the Mordor entry, a tile returned to the pool — each gained tile's face (at most three, side by
+  side) shows large in the middle of the board (0.25 s in, 0.55 s held), then drops, eased and shrinking, into the
+  console's Hunt plaque (0.6 s), which lights as it lands (`HuntTileDrop`). No text, no pointer, no wait; nothing under Skip
+  animations or on a quiet view (first view, reconnect, change of side, a replay's manual move); Skip clears it.
+- The Hunt window lists the pool ("In the pool · N") and, apart from it under a gilt rule, the tiles waiting for the
+  Fellowship to enter Mordor under their own heading ("Join on the Mordor track · N"); before, UI-184, they stood on a short
+  "Mordor" line inside the pool's block.
+

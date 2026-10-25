@@ -107,7 +107,7 @@ namespace Wotr.Client
             if (IsOpen)
                 return;
             returnFocus = Root.panel?.focusController.focusedElement as VisualElement;
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
             resume.Focus();
         }

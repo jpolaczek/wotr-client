@@ -8,6 +8,12 @@ namespace Wotr.Client
     // DIST-07: the words of the updater, shared by the notice, the required-update overlay and Settings.
     public static class UpdateTexts
     {
+        // DIST-18: the steps the exit lock names.
+        public const string Saving = "Saving your game…";
+        public const string Installing = "Installing the update…";
+        public const string Restarting = "Restarting…";
+        public const string Closing = "Closing…";
+
         public static string Platform(string platform) =>
             platform == ClientPlatforms.Windows ? "Windows" : platform == ClientPlatforms.MacOS ? "macOS"
             : platform == ClientPlatforms.Linux ? "Linux" : platform;

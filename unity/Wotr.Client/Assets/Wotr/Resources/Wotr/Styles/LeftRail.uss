@@ -279,6 +279,25 @@
 #board-screen .edge-left-panel .sovereign-strip .action.corrupted-sovereign { border-bottom-width: 3px; border-color: rgb(206, 118, 130); }
 #board-screen .edge-left-panel .sovereign-strip .action.inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
 #board-screen .edge-left-panel .effect-entry > Label { color: rgb(230, 200, 122); }
+/* UI-288: a card among the effects is a small parchment card, as in the hand: the symbol of its corner and its title
+   in dark ink. A source a click can use now takes the hand's playable parchment. */
+#board-screen .effects-panel .effect-source.effect-card-tile,
+#board-screen .effects-panel .effect-source.effect-card-tile:hover {
+    margin: 0 2px 0 0;
+    padding: 1px 5px 1px 21px;
+    color: rgb(59, 36, 18);
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    -unity-text-align: middle-left;
+    background-image: resource("Wotr/Art/UI/cards/parchment");
+    -unity-slice-top: 28;
+    -unity-slice-right: 28;
+    -unity-slice-bottom: 28;
+    -unity-slice-left: 28;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .effects-panel .effect-source.effect-card-tile:hover { -unity-background-image-tint-color: rgb(255, 244, 214); }
+#board-screen .effects-panel .effect-source.effect-card-tile.legal-target { background-image: resource("Wotr/Art/UI/cards/parchment-playable"); }
+#board-screen .effects-panel .effect-card-tile > .action-symbol { left: 5px; top: 50%; width: 13px; height: 13px; margin-top: -6px; }
 
 /* UI-94: a selected card source shows its complete text on the parchment of an unrolled hand card
    (graphicalassets/ui/src/cards), under the source's scopes. The title stays in the details heading. */
@@ -329,7 +348,8 @@
     transition-duration: 140ms;
     transition-timing-function: ease-out-cubic;
 }
-#board-screen .edge-left-panel.edge-panel-entering { opacity: 0; translate: -18px 0; scale: 0.96 1; }
+/* Under Skip animations the panel has no entering state: it stands at once (UI-321). */
+.motion-enabled #board-screen .edge-left-panel.edge-panel-entering { opacity: 0; translate: -18px 0; scale: 0.96 1; }
 
 /* UI-221: a hovered table source unrolls its text under its tile on the parchment of the card text above,
    over the other sources and like a hand card; it takes no pointer. */

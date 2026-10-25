@@ -1,11 +1,11 @@
 {
   "version": "mordor-track-1",
-  "source": "UI-153: drawn over MapCanvas/terrain.jpg in map units; step 5 sits on the crater of Orodruin",
+  "source": "UI-153: drawn over MapCanvas/terrain.jpg in map units; step 5 sits on the crater of Orodruin. UI-283: steps 1-4 on a ring twice as wide round the volcano's east side, over the ash plain",
   "entrances": [
     { "region": "morannon", "path": [[1256, 852], [1271, 869], [1286, 887]] },
     { "region": "minas-morgul", "path": [[1250, 924], [1268, 905], [1286, 887]] }
   ],
-  "steps": [[1286, 887], [1306, 904], [1330, 912], [1355, 906], [1372, 884], [1349, 851]],
-  "path": [[1286, 887], [1295, 897], [1306, 904], [1318, 910], [1330, 912], [1343, 911], [1355, 906], [1366, 897],
-    [1372, 884], [1366, 866], [1349, 851]]
+  "steps": [[1286, 887], [1330, 915], [1382, 925], [1428, 900], [1395, 868], [1349, 851]],
+  "path": [[1286, 887], [1306, 906], [1330, 915], [1354, 926], [1382, 925], [1410, 916], [1428, 900], [1418, 884],
+    [1395, 868], [1373, 855], [1349, 851]]
 }

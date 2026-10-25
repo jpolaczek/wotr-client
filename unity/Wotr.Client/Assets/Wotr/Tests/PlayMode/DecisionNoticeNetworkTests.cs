@@ -25,7 +25,6 @@ namespace Wotr.PlayTests
             board.Map.Focus("minas-tirith");
             board.Map.Camera.Zoom = .8f;
             board.Map.Refresh();
-            var shadowPan = shadow.Map.Camera.Pan;
             ArmyGestures.Die(room.Fp, ArmyGestures.ArmyDie(room.Fp));
             await ArmyGestures.All(room.Fp, "minas-tirith");
             board.Hover.Close();
@@ -35,6 +34,10 @@ namespace Wotr.PlayTests
             var zoom = board.Map.Camera.Zoom;
             MapContourProbe.Click(board.Map, MapContourProbe.Terrain(board.Map, "lossarnach"));
             await room.At(1);
+            // UI-305 (OPPONENT_ACTIONS_UX §4, §6.5): the Shadow's camera may frame the opponent's attack while it is
+            // presented; nothing moves it after that.
+            await room.Until(() => !room.Sh.Playback.Holding);
+            var shadowPan = shadow.Map.Camera.Pan;
             Assert.AreEqual(DecisionKind.CombatCard, board.View.Decision.Kind);
             Assert.AreEqual(pan, board.Map.Camera.Pan);
             Assert.AreEqual(zoom, board.Map.Camera.Zoom);

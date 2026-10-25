@@ -921,6 +921,10 @@
       "role": "Action icon (UI-138): Next page or step."
     },
     {
+      "source": "actions/skip.svg",
+      "role": "Action icon (UI-305): Skip the opponent's presentation to the latest state."
+    },
+    {
       "source": "actions/political.svg",
       "role": "Action icon (UI-218): Political view of the map."
     },

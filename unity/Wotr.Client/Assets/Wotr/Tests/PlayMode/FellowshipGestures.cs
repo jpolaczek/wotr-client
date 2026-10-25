@@ -18,27 +18,23 @@ namespace Wotr.PlayTests
 
         public static void Action(MountedMatchClient client, string name)
         {
-            // UI-232: the Ring icon hides the Fellowship — the panel's own while it is open (it covers the plaque), else
-            // the plaque's.
+            // UI-293: the Fellowship's marker on its track in the panel hides it.
             if (name == "fellowship-status")
             {
-                var fellowship = client.Board.Fellowship;
-                var ring = new[] { fellowship.PanelRing, fellowship.Ring }.FirstOrDefault(Reachable) ??
-                    (fellowship.IsOpen ? fellowship.PanelRing : fellowship.Ring);
-                Assert.IsTrue(ring.ClassListContains(ChoiceGlow.ClassName), "The Ring glows while hiding is legal.");
-                PointerGestureEvents.ClickAt(ring);
+                var marker = client.Board.Fellowship.HideMarker;
+                Assert.IsTrue(marker.ClassListContains(ChoiceGlow.ClassName), "The marker glows while hiding is legal.");
+                PointerGestureEvents.ClickAt(marker);
                 return;
             }
             client.Board.Fellowship.Open();
             CardNetworkTests.Click(client.Board.Fellowship.Root.Q<Button>(name));
         }
 
-        // UI-232: hiding is the Ring icon. Hovering the plaque unrolls the panel over it (UI-98), so the panel's own Ring
-        // is the one a player clicks; the panel is opened first when it is rolled up.
+        // UI-293: hiding is the marker on the panel's track; the panel is opened first when it is rolled up.
         public static async Task Hide(MountedMatchClient client)
         {
             var fellowship = client.Board.Fellowship;
-            if (!Reachable(fellowship.PanelRing))
+            if (!Reachable(fellowship.HideMarker))
             {
                 fellowship.Open();
                 await Task.Delay(120);

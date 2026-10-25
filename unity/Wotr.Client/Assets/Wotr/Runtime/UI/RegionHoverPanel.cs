@@ -28,6 +28,8 @@ namespace Wotr.Client
         private readonly List<(VisualElement Force, VisualElement Header, Side Side, bool Garrison)> forceSections =
             new List<(VisualElement, VisualElement, Side, bool)>();
         private readonly Dictionary<string, Button> figures = new Dictionary<string, Button>();
+        // UI-301: the figures a click may choose pulse in ChoiceGlow's rhythm.
+        private readonly ChoicePulse pulse;
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
         // UI-187: a character's ability lines, after the line that names it and its state.
         private readonly Dictionary<string, string> abilities = new Dictionary<string, string>();
@@ -76,6 +78,7 @@ namespace Wotr.Client
         public RegionHoverPanel()
         {
             Root.AddToClassList("region-hover");
+            pulse = new ChoicePulse(Root);
             Root.style.display = DisplayStyle.None;
             Root.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             Root.RegisterCallback<PointerUpEvent>(e => e.StopPropagation());
@@ -221,10 +224,12 @@ namespace Wotr.Client
         {
             foreach (var (toggle, ids) in forceToggles)
                 RefreshToggle(toggle, ids);
+            var glowing = false;
             foreach (var entry in figures)
             {
                 var eligible = Eligible(entry.Key);
                 var selected = Selected(entry.Key);
+                glowing |= eligible && !selected;
                 var moved = Moved(entry.Key);
                 entry.Value.EnableInClassList("eligible-figure", eligible);
                 entry.Value.EnableInClassList("selected", selected);
@@ -233,6 +238,7 @@ namespace Wotr.Client
                     ? " · Click to select" : moved ? " · Already marched in this action" : "") +
                     (abilities.TryGetValue(entry.Key, out var lines) ? lines : "");
             }
+            pulse.Run(glowing);
         }
 
         // Shown only for a force with a figure that can move; it selects them all, or leaves all behind once they are.

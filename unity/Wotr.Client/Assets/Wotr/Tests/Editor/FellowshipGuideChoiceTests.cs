@@ -54,6 +54,14 @@ namespace Wotr.EditorTests
             controls.Refresh(view, new TurnDraft(), new ActionDieContext(), true, false);
             Assert.IsNull(controls.Root.Q<Button>("fellowship-change-guide"));
             Assert.AreEqual(DisplayStyle.Flex, controls.Root.Q<Button>("fellowship-continue").style.display.value, "Finish phase keeps the Guide.");
+            // UI-287: outside the Fellowship phase the button keeps its place, greyed out with its reason.
+            view.Decision.Kind = DecisionKind.Action;
+            view.Options.Clear();
+            controls.Refresh(view, new TurnDraft(), new ActionDieContext(), true, false);
+            var finish = controls.Root.Q<Button>("fellowship-continue");
+            Assert.AreEqual(DisplayStyle.Flex, finish.style.display.value, "Disabled, not hidden.");
+            Assert.IsFalse(finish.enabledSelf);
+            Assert.AreEqual(FellowshipControls.Unavailable, finish.tooltip);
         }
 
         // UI-249: The Breaking of the Fellowship chooses its Companions on the Hunt panel's roster; the group's limit holds,

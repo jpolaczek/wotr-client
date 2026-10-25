@@ -35,9 +35,8 @@ namespace Wotr.Client
                 Groups(header);
             if (draft.Kind == CommandKind.SeparateCompanions)
                 root.Add(new Label("Separated companions cannot rejoin") { name = "fellowship-separation-hint" });
-            var rosterHasChoices = option.EligibleIds.All(id => view.OwnCompanions.Any(c => c.Id == id));
-            if ((!contextual || !rosterHasChoices) && draft.Kind is CommandKind.SelectGuide or CommandKind.SeparateCompanions || TravelDraft.IsGrouped(draft.Kind))
-                Portraits(root);
+            if (draft.Kind is CommandKind.SelectGuide or CommandKind.SeparateCompanions || TravelDraft.IsGrouped(draft.Kind))
+                Portraits(root, PortraitIds());
             if (FellowshipDraft.UsesRoute(draft.Kind) && option.Travel.Count > 0)
                 Route(root);
         }
@@ -56,15 +55,24 @@ namespace Wotr.Client
                 () => ExpansionDraft.TravelMode(draft, option, true)));
         }
 
-        private void Portraits(VisualElement root)
+        // UI-298: in the Fellowship panel its roster already offers the Fellowship's own companions; the tray repeats none of
+        // them and shows only the rest (a Guide outside the roster, such as Gollum).
+        private List<string> PortraitIds() => contextual && !TravelDraft.IsGrouped(draft.Kind)
+            ? option.EligibleIds.Where(id => view.OwnCompanions.All(c => c.Id != id)).ToList()
+            : option.EligibleIds.ToList();
+
+        private void Portraits(VisualElement root, List<string> ids)
         {
+            if (ids.Count == 0)
+                return;
             var row = BoardScreen.Row("companion-portraits");
-            row.EnableInClassList("dense-travel", option.EligibleIds.Count > 7);
+            row.EnableInClassList("dense-travel", ids.Count > 7);
             root.Add(row);
-            foreach (var id in option.EligibleIds)
+            var pulse = new ChoicePulse(row);
+            foreach (var id in ids)
             {
                 var guide = draft.Kind == CommandKind.SelectGuide;
-                var button = Choice(CharacterLibrary.ShortName(view, id), "companion-" + id,
+                var button = Choice("", "companion-" + id,
                     () => guide ? draft.Payload.GuideId == id : (TravelDraft.IsGrouped(draft.Kind) ? TravelDraft.Group(draft)?.Ids : draft.Payload.Ids)?.Contains(id) == true,
                     () =>
                     {
@@ -74,11 +82,7 @@ namespace Wotr.Client
                             TravelDraft.ToggleCompanion(draft, view, option, id);
                     });
                 button.AddToClassList("companion-portrait");
-                if (view.Units.Any(u => u.Id == id && u.Kind == UnitKind.Nazgul))
-                {
-                    button.text = "N";
-                    button.AddToClassList("nazgul-portrait");
-                }
+                Illustrate(button, id);
                 if (id == view.Fellowship.Guide)
                 {
                     var badge = new Label("★") { pickingMode = PickingMode.Ignore };
@@ -93,12 +97,35 @@ namespace Wotr.Client
                 var origin = travel?.Origin ?? character?.Location;
                 if (origin != null && data.Regions.TryGetValue(origin, out var region))
                     button.tooltip += " · " + region.Name;
-                // UI-250: a member of another planned group stays shown; its click selects that group.
-                refresh.Add(() => button.SetEnabled(guide || TravelDraft.Selectable(draft, view, option, id)));
+                // UI-250: a member of another planned group stays shown; its click selects that group. UI-284: a portrait
+                // that can still be clicked glows; a chosen one shows its selection instead.
+                refresh.Add(() =>
+                {
+                    var selectable = guide || TravelDraft.Selectable(draft, view, option, id);
+                    button.SetEnabled(selectable);
+                    ChoiceGlow.Apply(button, selectable && !button.ClassListContains("selected"));
+                });
                 if (TravelDraft.IsGrouped(draft.Kind))
                     refresh.Add(() => button.EnableInClassList("planned-group", TravelDraft.PlannedGroup(draft, id) >= 0));
                 row.Add(button);
             }
+            refresh.Add(() => pulse.Run(row.Query(className: ChoiceGlow.ClassName).ToList().Count > 0));
+        }
+
+        // UI-284: the figure's painted portrait with its short name under it, as on the Fellowship panel, instead of the
+        // name alone; a Nazgûl shows its figure.
+        private void Illustrate(Button button, string id)
+        {
+            var unit = view.Units.FirstOrDefault(u => u.Id == id);
+            var character = view.OwnCompanions.Concat(view.Characters).FirstOrDefault(c => c.Id == id);
+            if (unit != null)
+                FigureArtwork.Apply(button, unit);
+            else if (character != null)
+                FigureArtwork.Apply(button, character);
+            else
+                FigureArtwork.Apply(button, FigureAppearances.Character(id, view.You), view.You);
+            button.AddToClassList("illustrated-companion");
+            button.Add(new Label(CharacterLibrary.ShortName(view, id)) { name = "portrait-name", pickingMode = PickingMode.Ignore });
         }
 
         // UI-250: the plan's progress, read only: the groups are chosen by clicking their members.
@@ -163,6 +190,8 @@ namespace Wotr.Client
                 }
                 var cancel = Choice("Cancel", "route-cancel", () => false, () => FellowshipDraft.CancelRoute(draft, view));
                 cancel.tooltip = "Clear this local selection · A required decision remains pending";
+                // UI-298: a forced separation starts with its companions chosen; Cancel waits until there is something to clear.
+                refresh.Add(() => cancel.SetEnabled(FellowshipDraft.CancelChanges(draft, view)));
                 actions.Add(cancel);
                 root.Add(actions);
             }

@@ -12,6 +12,8 @@ namespace Wotr.Client
         public string Symbol { get; set; } = "";
         // UI-138: an action icon (Art/UI/actions) for an action without an owner, shown instead of the symbol.
         public string Icon { get; set; } = "";
+        // UI-286: a character ability's picture (AbilityPictures), shown on a small icon button instead of its text.
+        public string Picture { get; set; } = "";
         public string Detail { get; set; } = "";
         public CommandKind Kind { get; set; }
         public string DieId { get; set; } = "";

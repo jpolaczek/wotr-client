@@ -1,0 +1,2272 @@
+{
+  "scenario": "reaction",
+  "viewer": "FreePeoples",
+  "baselineRevision": 0,
+  "baseline": {
+    "matchId": "fixture-reaction",
+    "steps": [
+      {
+        "id": "1724fa85d617574895a3d9f8a195bbd860ca0d6d3992d7e5ea16eb8b7047cfa9",
+        "actionId": "1724fa85d617574895a3d9f8a195bbd860ca0d6d3992d7e5ea16eb8b7047cfa9",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 1,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: RecoverDraw.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "RecoverDraw",
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "e8c24f1761b38ea15bcc078a5762e575a6ed697f367b964336b61d76cab91549",
+        "actionId": "e8c24f1761b38ea15bcc078a5762e575a6ed697f367b964336b61d76cab91549",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 2,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew Athelas.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.character.09",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.fp.character.09",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "base.fp.character.09",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "3f136ff2b9f9ef1bbf950400f8bedf561b102d06589cc8ad9d8241280d424ba4",
+        "actionId": "3f136ff2b9f9ef1bbf950400f8bedf561b102d06589cc8ad9d8241280d424ba4",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 3,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "a5001b5b26e466775db71250ea89c4ab7ece6fd866ad0d1304b9a484d7312be7",
+        "actionId": "a5001b5b26e466775db71250ea89c4ab7ece6fd866ad0d1304b9a484d7312be7",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 4,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew Riders of Th\u00E9oden.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.strategy.16",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.fp.strategy.16",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "base.fp.strategy.16",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "e042b20ee00ce905767a5bdd891055df296d3f497e2a89f9414ce64c6e898d44",
+        "actionId": "e042b20ee00ce905767a5bdd891055df296d3f497e2a89f9414ce64c6e898d44",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 5,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "300b513ab56bcce05fd4c30887dce641ad2182c8b1fe65667f65d8ccdf7e7d09",
+        "actionId": "300b513ab56bcce05fd4c30887dce641ad2182c8b1fe65667f65d8ccdf7e7d09",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 6,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "fa7b9ec66867c1fcb2b000b8229a5949624f02f9fbaa6c45df4d13cd6de4fbee",
+        "actionId": "fa7b9ec66867c1fcb2b000b8229a5949624f02f9fbaa6c45df4d13cd6de4fbee",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 7,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "ad4f7e7947e43102ff729329245c4b1510cdef7ead8e58a902a4316529d585cf",
+        "actionId": "ad4f7e7947e43102ff729329245c4b1510cdef7ead8e58a902a4316529d585cf",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 8,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: Fellowship.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "Fellowship",
+          "rolls": []
+        },
+        "status": "Completed"
+      }
+    ],
+    "actions": [
+      {
+        "id": "1724fa85d617574895a3d9f8a195bbd860ca0d6d3992d7e5ea16eb8b7047cfa9",
+        "version": "1724fa85d617574895a3d9f8a195bbd860ca0d6d3992d7e5ea16eb8b7047cfa9",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "e8c24f1761b38ea15bcc078a5762e575a6ed697f367b964336b61d76cab91549",
+        "version": "e8c24f1761b38ea15bcc078a5762e575a6ed697f367b964336b61d76cab91549",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.character.09",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "3f136ff2b9f9ef1bbf950400f8bedf561b102d06589cc8ad9d8241280d424ba4",
+        "version": "3f136ff2b9f9ef1bbf950400f8bedf561b102d06589cc8ad9d8241280d424ba4",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "a5001b5b26e466775db71250ea89c4ab7ece6fd866ad0d1304b9a484d7312be7",
+        "version": "a5001b5b26e466775db71250ea89c4ab7ece6fd866ad0d1304b9a484d7312be7",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.strategy.16",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "e042b20ee00ce905767a5bdd891055df296d3f497e2a89f9414ce64c6e898d44",
+        "version": "e042b20ee00ce905767a5bdd891055df296d3f497e2a89f9414ce64c6e898d44",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "300b513ab56bcce05fd4c30887dce641ad2182c8b1fe65667f65d8ccdf7e7d09",
+        "version": "300b513ab56bcce05fd4c30887dce641ad2182c8b1fe65667f65d8ccdf7e7d09",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "fa7b9ec66867c1fcb2b000b8229a5949624f02f9fbaa6c45df4d13cd6de4fbee",
+        "version": "fa7b9ec66867c1fcb2b000b8229a5949624f02f9fbaa6c45df4d13cd6de4fbee",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "ad4f7e7947e43102ff729329245c4b1510cdef7ead8e58a902a4316529d585cf",
+        "version": "ad4f7e7947e43102ff729329245c4b1510cdef7ead8e58a902a4316529d585cf",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      }
+    ],
+    "nextCursor": "",
+    "latestCursor": "ad4f7e7947e43102ff729329245c4b1510cdef7ead8e58a902a4316529d585cf"
+  },
+  "updates": [
+    {
+      "viewRevision": 1,
+      "page": {
+        "matchId": "fixture-reaction",
+        "steps": [
+          {
+            "id": "7d047623694b208a6593ed5ca14c6f5dd4ad2b8a1db0779970bbe7138005f815",
+            "actionId": "5757e67d1229690661403ba138bb191aa4732d2f0b21b61e37f3d963bf1ed84d",
+            "parentStepId": "",
+            "revision": 1,
+            "order": 1,
+            "turn": 1,
+            "actor": "Shadow",
+            "command": "PlayEvent",
+            "automatic": false,
+            "legacy": false,
+            "kind": "EventPlayed",
+            "text": "Shadow played Flocks of Crebain.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.16",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.2",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Event",
+                "use": "Event",
+                "abilityId": "",
+                "count": 1
+              },
+              {
+                "kind": "Card",
+                "id": "base.sh.character.16",
+                "owner": "Shadow",
+                "source": "",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.16",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "Shadow.standard.2",
+                  "owner": "Shadow",
+                  "source": "standard",
+                  "before": "Event",
+                  "after": "Event",
+                  "from": "Available",
+                  "to": "Spent",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [
+                {
+                  "owner": "Shadow",
+                  "use": "Event",
+                  "id": "base.sh.character.16",
+                  "deck": "character",
+                  "count": 1
+                },
+                {
+                  "owner": "Shadow",
+                  "use": "TableEntered",
+                  "id": "base.sh.character.16",
+                  "deck": "",
+                  "count": 1
+                }
+              ],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "Completed"
+          }
+        ],
+        "actions": [
+          {
+            "id": "5757e67d1229690661403ba138bb191aa4732d2f0b21b61e37f3d963bf1ed84d",
+            "version": "7d047623694b208a6593ed5ca14c6f5dd4ad2b8a1db0779970bbe7138005f815",
+            "initiator": "Shadow",
+            "command": "PlayEvent",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.16",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.2",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Event",
+                "use": "Event",
+                "abilityId": "",
+                "count": 1
+              },
+              {
+                "kind": "Card",
+                "id": "base.sh.character.16",
+                "owner": "Shadow",
+                "source": "",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 1
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "7d047623694b208a6593ed5ca14c6f5dd4ad2b8a1db0779970bbe7138005f815"
+      }
+    },
+    {
+      "viewRevision": 2,
+      "page": {
+        "matchId": "fixture-reaction",
+        "steps": [
+          {
+            "id": "545803d80353752c4377041aed7946353b63bbcf3369cd35a2dce528564e72bd",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "",
+            "revision": 2,
+            "order": 1,
+            "turn": 1,
+            "actor": "FreePeoples",
+            "command": "MoveFellowship",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ActionDecision",
+            "text": "Attempted to move the Fellowship.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.3",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Character",
+                "use": "Character",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "FreePeoples.standard.3",
+                  "owner": "FreePeoples",
+                  "source": "standard",
+                  "before": "Character",
+                  "after": "Character",
+                  "from": "Available",
+                  "to": "Resolving",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipBefore": {
+                "regionId": "rivendell",
+                "progress": 2,
+                "corruption": 0,
+                "hidden": true,
+                "guideId": "base.character.gandalf-grey"
+              },
+              "fellowshipAfter": {
+                "regionId": "rivendell",
+                "progress": 3,
+                "corruption": 0,
+                "hidden": true,
+                "guideId": "base.character.gandalf-grey"
+              },
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "437434071f83fe89220ad58ef225d086de3aad58c457e089ff74def04ba18faa",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "545803d80353752c4377041aed7946353b63bbcf3369cd35a2dce528564e72bd",
+            "revision": 2,
+            "order": 2,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: Started.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 2,
+                  "huntId": 1,
+                  "kind": "Started",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "BeforeDraw",
+                    "bonus": 0,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 0,
+                    "dice": [],
+                    "rerollSources": [],
+                    "tileId": "",
+                    "damage": 0,
+                    "healing": 0,
+                    "damagePending": true,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 10
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 2,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "39d200f6983fb356d9f3a7ec825e903df4430832292568ed98110889246b2644",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "437434071f83fe89220ad58ef225d086de3aad58c457e089ff74def04ba18faa",
+            "revision": 2,
+            "order": 3,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "FellowshipMoved",
+            "text": "Fellowship progress: 3.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "7c75a18ec1ae75462a90484e612681c9fd1ca87d2b0a9d3c6e1f409d7a6add8e",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "39d200f6983fb356d9f3a7ec825e903df4430832292568ed98110889246b2644",
+            "revision": 2,
+            "order": 4,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: Progressed.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 2,
+                  "huntId": 1,
+                  "kind": "Progressed",
+                  "sourceId": "",
+                  "characterId": "",
+                  "destination": "",
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          }
+        ],
+        "actions": [
+          {
+            "id": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "version": "4118ee754660a6ed90fc28f897f67d06d918ab584328f5ac51bdb6816bb81b2e",
+            "initiator": "FreePeoples",
+            "command": "MoveFellowship",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.3",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Character",
+                "use": "Character",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 20
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "7c75a18ec1ae75462a90484e612681c9fd1ca87d2b0a9d3c6e1f409d7a6add8e"
+      }
+    },
+    {
+      "viewRevision": 3,
+      "page": {
+        "matchId": "fixture-reaction",
+        "steps": [
+          {
+            "id": "860fc27224182f42c6457f5e5f7e4dac5735753886d554af57bc19ab8b16ce57",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "7c75a18ec1ae75462a90484e612681c9fd1ca87d2b0a9d3c6e1f409d7a6add8e",
+            "revision": 3,
+            "order": 1,
+            "turn": 1,
+            "actor": "Shadow",
+            "command": "RespondEffect",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ActionDecision",
+            "text": "Resolved a reaction.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [
+              {
+                "kind": "Card",
+                "id": "base.sh.character.16",
+                "owner": "Shadow",
+                "source": "base.sh.character.16",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [
+                {
+                  "owner": "Shadow",
+                  "use": "TableRemoved",
+                  "id": "base.sh.character.16",
+                  "deck": "",
+                  "count": 1
+                }
+              ],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "a21fbcf41363033f54e2a9c683bb0d421cd282813c2c42e839b6e8d578fd1650",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "860fc27224182f42c6457f5e5f7e4dac5735753886d554af57bc19ab8b16ce57",
+            "revision": 3,
+            "order": 2,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: Reaction.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "base.sh.character.16",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.16",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 3,
+                  "huntId": 1,
+                  "kind": "Reaction",
+                  "sourceId": "base.sh.character.16",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "Roll",
+                    "bonus": 0,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 0,
+                    "dice": [],
+                    "rerollSources": [],
+                    "tileId": "",
+                    "damage": 0,
+                    "healing": 0,
+                    "damagePending": false,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 10
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "a1d13c492c9dc787b0131bef60c567f9bb1ecf547b86604fd85b9dbc6aca8dee",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "a21fbcf41363033f54e2a9c683bb0d421cd282813c2c42e839b6e8d578fd1650",
+            "revision": 3,
+            "order": 3,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "EffectExpired",
+            "text": "base.sh.character.16: effect ended.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.16",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.16",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [
+                {
+                  "owner": "Shadow",
+                  "use": "TableRemoved",
+                  "id": "base.sh.character.16",
+                  "deck": "character",
+                  "count": 1
+                }
+              ],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "f43e75b7fc81099a0f77fb327ed512fb008872e7b57ae915145c882ac33ea714",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "a1d13c492c9dc787b0131bef60c567f9bb1ecf547b86604fd85b9dbc6aca8dee",
+            "revision": 3,
+            "order": 4,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntBonus",
+            "text": "Flocks of Crebain: \u002B1 to this Hunt roll and its re-rolls.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "base.sh.character.16",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "base.sh.character.16",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "3e4907814bac65f51d426ae256bd377eb3a80512c99b4aebfb891296c20ccbcc",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "f43e75b7fc81099a0f77fb327ed512fb008872e7b57ae915145c882ac33ea714",
+            "revision": 3,
+            "order": 5,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntRolled",
+            "text": "Hunt: 5, 6, 4, 3, 1; bonus 3, successes 4.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "29f1c8f534f43083abe335688f613ae8954973b5a1dc6485c48031c9d8e4149a",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "3e4907814bac65f51d426ae256bd377eb3a80512c99b4aebfb891296c20ccbcc",
+            "revision": 3,
+            "order": 6,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: Rolled.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 3,
+                  "huntId": 1,
+                  "kind": "Rolled",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "BeforeDraw",
+                    "bonus": 3,
+                    "movementBonus": 2,
+                    "effectBonus": 1,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 4,
+                    "dice": [
+                      {
+                        "id": "hunt-die-0",
+                        "first": 5,
+                        "result": 5,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-1",
+                        "first": 6,
+                        "result": 6,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-2",
+                        "first": 4,
+                        "result": 4,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-3",
+                        "first": 3,
+                        "result": 3,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-4",
+                        "first": 1,
+                        "result": 1,
+                        "rerolled": false,
+                        "success": false
+                      }
+                    ],
+                    "rerollSources": [],
+                    "tileId": "",
+                    "damage": 0,
+                    "healing": 0,
+                    "damagePending": true,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 10
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "4ecc96cba42bd5b0d5bfbe74ac4b678be8708d97f08098f825d69c6b8bd7dbc4",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "29f1c8f534f43083abe335688f613ae8954973b5a1dc6485c48031c9d8e4149a",
+            "revision": 3,
+            "order": 7,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntTileDrawn",
+            "text": "base.hunt.standard.3.0.1: Hunt tile drawn.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "fb5ce3781000e169eaaf6ab2a1abc34a4a84a58a8e8829c3a03927259c014c37",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "4ecc96cba42bd5b0d5bfbe74ac4b678be8708d97f08098f825d69c6b8bd7dbc4",
+            "revision": 3,
+            "order": 8,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: TileDrawn.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 3,
+                  "huntId": 1,
+                  "kind": "TileDrawn",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "Replacement",
+                    "bonus": 3,
+                    "movementBonus": 2,
+                    "effectBonus": 1,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 4,
+                    "dice": [
+                      {
+                        "id": "hunt-die-0",
+                        "first": 5,
+                        "result": 5,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-1",
+                        "first": 6,
+                        "result": 6,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-2",
+                        "first": 4,
+                        "result": 4,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-3",
+                        "first": 3,
+                        "result": 3,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-4",
+                        "first": 1,
+                        "result": 1,
+                        "rerolled": false,
+                        "success": false
+                      }
+                    ],
+                    "rerollSources": [],
+                    "tileId": "base.hunt.standard.3.0.1",
+                    "damage": 0,
+                    "healing": 0,
+                    "damagePending": true,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 9,
+                    "face": {
+                      "pool": "standard",
+                      "value": "3",
+                      "reveal": false,
+                      "stop": false,
+                      "source": "base",
+                      "count": 1
+                    }
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "0f5dd49ce367138ee5884840b4fb3e9f2c527363a66a1832bcd1dfa08aa3e763",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "fb5ce3781000e169eaaf6ab2a1abc34a4a84a58a8e8829c3a03927259c014c37",
+            "revision": 3,
+            "order": 9,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntDamageDetermined",
+            "text": "base.hunt.standard.3.0.1: damage 3, healing 0.",
+            "context": {
+              "kind": "Cards",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "InProgress"
+          },
+          {
+            "id": "bddca8599a6cd960a4db434552037090b4496f3114748777d6ad7b30537308c4",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "0f5dd49ce367138ee5884840b4fb3e9f2c527363a66a1832bcd1dfa08aa3e763",
+            "revision": 3,
+            "order": 10,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: DamageDetermined.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 3,
+                  "huntId": 1,
+                  "kind": "DamageDetermined",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "Table",
+                    "bonus": 3,
+                    "movementBonus": 2,
+                    "effectBonus": 1,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 4,
+                    "dice": [
+                      {
+                        "id": "hunt-die-0",
+                        "first": 5,
+                        "result": 5,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-1",
+                        "first": 6,
+                        "result": 6,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-2",
+                        "first": 4,
+                        "result": 4,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-3",
+                        "first": 3,
+                        "result": 3,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-4",
+                        "first": 1,
+                        "result": 1,
+                        "rerolled": false,
+                        "success": false
+                      }
+                    ],
+                    "rerollSources": [],
+                    "tileId": "base.hunt.standard.3.0.1",
+                    "damage": 3,
+                    "healing": 0,
+                    "damagePending": false,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 9,
+                    "face": {
+                      "pool": "standard",
+                      "value": "3",
+                      "reveal": false,
+                      "stop": false,
+                      "source": "base",
+                      "count": 1
+                    }
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          }
+        ],
+        "actions": [
+          {
+            "id": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "version": "4118ee754660a6ed90fc28f897f67d06d918ab584328f5ac51bdb6816bb81b2e",
+            "initiator": "FreePeoples",
+            "command": "MoveFellowship",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.3",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Character",
+                "use": "Character",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 20
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "bddca8599a6cd960a4db434552037090b4496f3114748777d6ad7b30537308c4"
+      }
+    },
+    {
+      "viewRevision": 4,
+      "page": {
+        "matchId": "fixture-reaction",
+        "steps": [
+          {
+            "id": "a62edd0cb67e853cff5b8a38d18b9131a457510f8fa7982ad98abfe081f17999",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "bddca8599a6cd960a4db434552037090b4496f3114748777d6ad7b30537308c4",
+            "revision": 4,
+            "order": 1,
+            "turn": 1,
+            "actor": "FreePeoples",
+            "command": "ResolveHuntDamage",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ActionDecision",
+            "text": "Resolved Hunt damage.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "FreePeoples.standard.3",
+                  "owner": "FreePeoples",
+                  "source": "standard",
+                  "before": "Character",
+                  "after": "Character",
+                  "from": "Resolving",
+                  "to": "Hunt",
+                  "huntOrigin": "fellowship-move"
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipBefore": {
+                "regionId": "rivendell",
+                "progress": 3,
+                "corruption": 0,
+                "hidden": true,
+                "guideId": "base.character.gandalf-grey"
+              },
+              "fellowshipAfter": {
+                "regionId": "rivendell",
+                "progress": 3,
+                "corruption": 3,
+                "hidden": true,
+                "guideId": "base.character.gandalf-grey"
+              },
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "Completed"
+          },
+          {
+            "id": "1c946685b94e0427a5e2da7d5b5395a4b9c05e4b790aaa2f23c9bd8fec6836a1",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "a62edd0cb67e853cff5b8a38d18b9131a457510f8fa7982ad98abfe081f17999",
+            "revision": 4,
+            "order": 2,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: Response.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 4,
+                  "huntId": 1,
+                  "kind": "Response",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "response": "Ring",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "Damage",
+                    "bonus": 3,
+                    "movementBonus": 2,
+                    "effectBonus": 1,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 4,
+                    "dice": [
+                      {
+                        "id": "hunt-die-0",
+                        "first": 5,
+                        "result": 5,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-1",
+                        "first": 6,
+                        "result": 6,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-2",
+                        "first": 4,
+                        "result": 4,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-3",
+                        "first": 3,
+                        "result": 3,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-4",
+                        "first": 1,
+                        "result": 1,
+                        "rerolled": false,
+                        "success": false
+                      }
+                    ],
+                    "rerollSources": [],
+                    "tileId": "base.hunt.standard.3.0.1",
+                    "damage": 3,
+                    "healing": 0,
+                    "damagePending": false,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 9,
+                    "face": {
+                      "pool": "standard",
+                      "value": "3",
+                      "reveal": false,
+                      "stop": false,
+                      "source": "base",
+                      "count": 1
+                    }
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 0,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "Completed"
+          },
+          {
+            "id": "1922fb19a9d6567af0ede98bb2e63c495771f8b4f17e66da28969eda70bf223d",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "1c946685b94e0427a5e2da7d5b5395a4b9c05e4b790aaa2f23c9bd8fec6836a1",
+            "revision": 4,
+            "order": 3,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntCorruption",
+            "text": "Hunt damage 3, healing 0; Corruption 3.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "rolls": []
+            },
+            "status": "Completed"
+          },
+          {
+            "id": "e6a86f9b6ed2fd9ada94ee0f8e548d5c9be26348b8d9ecc29727e12bfcbcbc41",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "1922fb19a9d6567af0ede98bb2e63c495771f8b4f17e66da28969eda70bf223d",
+            "revision": 4,
+            "order": 4,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: Corruption.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 4,
+                  "huntId": 1,
+                  "kind": "Corruption",
+                  "sourceId": "",
+                  "characterId": "",
+                  "destination": "",
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 3,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "Completed"
+          },
+          {
+            "id": "7314f18c4748733ec7a1ca9f3a0edd1117d79f7cfe98539e10a5a730666cc077",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "e6a86f9b6ed2fd9ada94ee0f8e548d5c9be26348b8d9ecc29727e12bfcbcbc41",
+            "revision": 4,
+            "order": 5,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntFact",
+            "text": "Hunt: HuntCompleted.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "fellowship-move",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "fellowship-move",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 4,
+                  "huntId": 1,
+                  "kind": "HuntCompleted",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "Done",
+                    "bonus": 3,
+                    "movementBonus": 2,
+                    "effectBonus": 1,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 4,
+                    "dice": [
+                      {
+                        "id": "hunt-die-0",
+                        "first": 5,
+                        "result": 5,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-1",
+                        "first": 6,
+                        "result": 6,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-2",
+                        "first": 4,
+                        "result": 4,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-3",
+                        "first": 3,
+                        "result": 3,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-4",
+                        "first": 1,
+                        "result": 1,
+                        "rerolled": false,
+                        "success": false
+                      }
+                    ],
+                    "rerollSources": [],
+                    "tileId": "base.hunt.standard.3.0.1",
+                    "damage": 3,
+                    "healing": 0,
+                    "damagePending": false,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 9,
+                    "face": {
+                      "pool": "standard",
+                      "value": "3",
+                      "reveal": false,
+                      "stop": false,
+                      "source": "base",
+                      "count": 1
+                    }
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 3,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": false
+              },
+              "rolls": []
+            },
+            "status": "Completed"
+          },
+          {
+            "id": "4118ee754660a6ed90fc28f897f67d06d918ab584328f5ac51bdb6816bb81b2e",
+            "actionId": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "parentStepId": "7314f18c4748733ec7a1ca9f3a0edd1117d79f7cfe98539e10a5a730666cc077",
+            "revision": 4,
+            "order": 6,
+            "turn": 1,
+            "automatic": true,
+            "legacy": false,
+            "kind": "HuntChainCompleted",
+            "text": "The Hunt chain is complete.",
+            "context": {
+              "kind": "Hunt",
+              "regions": [],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [],
+            "movements": [],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [],
+              "nations": [],
+              "control": [],
+              "dice": [],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "hunt": {
+                "chainId": "fixture-reaction/hunt/1",
+                "entry": {
+                  "revision": 4,
+                  "huntId": 1,
+                  "kind": "HuntCompleted",
+                  "sourceId": "fellowship-move",
+                  "characterId": "",
+                  "destination": "",
+                  "hunt": {
+                    "sourceId": "fellowship-move",
+                    "stage": "Done",
+                    "bonus": 3,
+                    "movementBonus": 2,
+                    "effectBonus": 1,
+                    "rerollBonus": 0,
+                    "mordor": false,
+                    "eyeDamage": 4,
+                    "dice": [
+                      {
+                        "id": "hunt-die-0",
+                        "first": 5,
+                        "result": 5,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-1",
+                        "first": 6,
+                        "result": 6,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-2",
+                        "first": 4,
+                        "result": 4,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-3",
+                        "first": 3,
+                        "result": 3,
+                        "rerolled": false,
+                        "success": true
+                      },
+                      {
+                        "id": "hunt-die-4",
+                        "first": 1,
+                        "result": 1,
+                        "rerolled": false,
+                        "success": false
+                      }
+                    ],
+                    "rerollSources": [],
+                    "tileId": "base.hunt.standard.3.0.1",
+                    "damage": 3,
+                    "healing": 0,
+                    "damagePending": false,
+                    "corruptionOnly": false,
+                    "separatesCompanions": false,
+                    "reveal": false,
+                    "stop": false,
+                    "casualtyTaken": false,
+                    "guideReturns": false,
+                    "poolCount": 9,
+                    "face": {
+                      "pool": "standard",
+                      "value": "3",
+                      "reveal": false,
+                      "stop": false,
+                      "source": "base",
+                      "count": 1
+                    }
+                  },
+                  "outcome": {
+                    "regionId": "rivendell",
+                    "progress": 3,
+                    "corruption": 3,
+                    "hidden": true,
+                    "guideId": "base.character.gandalf-grey"
+                  }
+                },
+                "completed": true
+              },
+              "rolls": []
+            },
+            "status": "Completed"
+          }
+        ],
+        "actions": [
+          {
+            "id": "bbd2005e688751f960eaf57b7e18e1264114cb190c0518d064606cdea03731fb",
+            "version": "4118ee754660a6ed90fc28f897f67d06d918ab584328f5ac51bdb6816bb81b2e",
+            "initiator": "FreePeoples",
+            "command": "MoveFellowship",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Hunt",
+              "regions": [
+                "rivendell"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": "fixture-reaction/hunt/1"
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "FreePeoples.standard.3",
+                "owner": "FreePeoples",
+                "source": "standard",
+                "face": "Character",
+                "use": "Character",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 20
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "4118ee754660a6ed90fc28f897f67d06d918ab584328f5ac51bdb6816bb81b2e"
+      }
+    }
+  ]
+}

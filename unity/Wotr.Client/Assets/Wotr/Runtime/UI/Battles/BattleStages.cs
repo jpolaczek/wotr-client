@@ -3,7 +3,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // UI-115: the informational stage ribbon; the current stage carries a gilt marker behind its icon.
+    // UI-115: the informational stage ribbon; the current stage carries a gilt marker behind its icon. UI-327: a window
+    // keeps one ribbon (StageRibbon) so the marker glides from stage to stage.
     public static class BattleStages
     {
         private static readonly (string Key, string Title)[] Stages =
@@ -11,28 +12,19 @@ namespace Wotr.Client
             ("cards", "Cards"), ("roll", "Combat roll"), ("reroll", "Leader re-roll"), ("losses", "Losses"), ("next", "Next round / end")
         };
 
+        public static StageRibbon Ribbon() => new StageRibbon("battle-stages", "battle-stage-");
+
+        public static void Apply(StageRibbon ribbon, BattleView battle) =>
+            ribbon.Apply(Stages, Index(battle.Stage), "battle-stage-icon-",
+                "Current stage: " + ActionCardText.Words(battle.Stage) + " · Card effects can open their own decisions between these steps.",
+                battle.Id);
+
+        // A ribbon of its own, for a view drawn once.
         public static VisualElement Create(BattleView battle)
         {
-            var row = BoardScreen.Row("battle-stages");
-            row.name = "battle-stages";
-            var current = Index(battle.Stage);
-            for (var i = 0; i < Stages.Length; i++)
-            {
-                var stage = new VisualElement { name = "battle-stage-" + Stages[i].Key, pickingMode = PickingMode.Ignore };
-                stage.AddToClassList("battle-stage");
-                stage.EnableInClassList("current-stage", i == current);
-                var marker = new VisualElement { name = "battle-stage-marker", pickingMode = PickingMode.Ignore };
-                marker.AddToClassList("battle-stage-marker");
-                stage.Add(marker);
-                var icon = new VisualElement { name = "battle-stage-icon", pickingMode = PickingMode.Ignore };
-                icon.AddToClassList("battle-stage-icon");
-                icon.AddToClassList("battle-stage-icon-" + Stages[i].Key);
-                stage.Add(icon);
-                stage.Add(new Label(Stages[i].Title) { pickingMode = PickingMode.Ignore, enableRichText = false });
-                row.Add(stage);
-            }
-            row.tooltip = "Current stage: " + ActionCardText.Words(battle.Stage) + " · Card effects can open their own decisions between these steps.";
-            return row;
+            var ribbon = Ribbon();
+            Apply(ribbon, battle);
+            return ribbon.Root;
         }
 
         public static int Index(string stage) => stage switch

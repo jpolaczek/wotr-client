@@ -15,7 +15,8 @@ namespace Wotr.Client
         public bool MoveOffered { get; private set; }
         // UI-220: a revealed Fellowship hides from its status plaque, not from a button in this row.
         public bool HideOffered { get; private set; }
-        public const string HideDescription = "Click the Ring to hide the Fellowship at its current position · No progress; this die does not enter the Hunt.";
+        // UI-293: the Fellowship's marker on its track hides it.
+        public const string HideDescription = "Click the Fellowship's marker on its track to hide it at its current position · No progress; this die does not enter the Hunt.";
         public string MoveDescription { get; private set; } = "";
         public string HideTooltip { get; private set; } = HideDescription;
         private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
@@ -62,12 +63,15 @@ namespace Wotr.Client
                 Offers |= legal && enabled;
                 item.Value.SetEnabled(enabled && legal);
                 item.Value.EnableInClassList("legal-target", legal);
-                item.Value.style.display = own && !route && legal ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = Description(view, item.Key);
+                // UI-287: Finish phase keeps its place outside the Fellowship phase, greyed out with its reason.
+                item.Value.style.display = own && !route ? DisplayStyle.Flex : DisplayStyle.None;
+                item.Value.tooltip = legal ? Description(view, item.Key) : Unavailable;
             }
             hint.text = FellowshipActions.ActionHint(view, draft, context);
             hint.style.display = own && !route && inActions && !docked ? DisplayStyle.Flex : DisplayStyle.None;
         }
+
+        public const string Unavailable = "Finish phase · Only in your Fellowship phase, to keep the current Guide.";
 
         private static string Description(PlayerView view, CommandKind kind) => kind switch
         {

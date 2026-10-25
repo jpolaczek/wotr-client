@@ -39,6 +39,8 @@ namespace Wotr.Client
             return decision.Kind switch
             {
                 DecisionKind.Action or DecisionKind.ActionSequence => DecisionHost.Map,
+                // UI-294: a journey of companions outside the Fellowship is made on the map.
+                DecisionKind.CompanionSeparation when CompanionJourneyDraft.OnMap(view) => DecisionHost.Map,
                 DecisionKind.FellowshipPhase or DecisionKind.Guide or DecisionKind.FellowshipRoute or
                     DecisionKind.CompanionSeparation => DecisionHost.Fellowship,
                 DecisionKind.AllocateHunt or DecisionKind.HuntDamage or DecisionKind.HuntReroll => DecisionHost.Hunt,
