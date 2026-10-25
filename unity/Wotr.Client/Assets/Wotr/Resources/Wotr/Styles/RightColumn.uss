@@ -159,7 +159,8 @@
     transition-duration: 140ms;
     transition-timing-function: ease-out-cubic;
 }
-#board-screen .edge-corner-panels.edge-panel-entering { opacity: 0; translate: 0 -10px; scale: 1 0.96; }
+/* Under Skip animations the panels have no entering state: they stand at once (UI-321). */
+.motion-enabled #board-screen .edge-corner-panels.edge-panel-entering { opacity: 0; translate: 0 -10px; scale: 1 0.96; }
 
 /* The corner tab: a small gilt panel with the Fellowship plaque and the Hunt plaque side by side.
    Hovering it unrolls the full panels; plaques have no frame of their own inside it. */

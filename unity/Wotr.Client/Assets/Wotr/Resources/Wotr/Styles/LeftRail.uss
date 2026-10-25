@@ -348,7 +348,8 @@
     transition-duration: 140ms;
     transition-timing-function: ease-out-cubic;
 }
-#board-screen .edge-left-panel.edge-panel-entering { opacity: 0; translate: -18px 0; scale: 0.96 1; }
+/* Under Skip animations the panel has no entering state: it stands at once (UI-321). */
+.motion-enabled #board-screen .edge-left-panel.edge-panel-entering { opacity: 0; translate: -18px 0; scale: 0.96 1; }
 
 /* UI-221: a hovered table source unrolls its text under its tile on the parchment of the card text above,
    over the other sources and like a hand card; it takes no pointer. */
