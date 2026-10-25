@@ -73,6 +73,8 @@ namespace Wotr.Client
         public HandDrawer HandDrawer { get; }
         // UI-326: two card backs dissolving where discarded cards leave.
         public CardDissolve Dissolve { get; }
+        // UI-332: a tile the Hunt pool gains shows its face and drops into the Hunt plaque.
+        public HuntTileDrop HuntDrops { get; }
         public DeckView Decks { get; } = new DeckView();
         public CardCostPicker CardCosts { get; } = new CardCostPicker();
         private readonly HandView handView;
@@ -407,6 +409,8 @@ namespace Wotr.Client
             AttachDieGlows();
             Dissolve = new CardDissolve(ReducedMotion);
             Root.Add(Dissolve.Root);
+            HuntDrops = new HuntTileDrop(BoardMiddle, () => Hunt.Tab, ReducedMotion);
+            Root.Add(HuntDrops.Root);
             Root.Add(Menu.Root);
             Root.Add(GameDeleted.Root);
             Escape.Attach();
@@ -645,6 +649,7 @@ namespace Wotr.Client
             Sovereigns.Apply(view);
             handView.Apply(view);
             Dissolve.Settle(view, quiet);
+            HuntDrops.Settle(view.HuntPool, quiet);
             HandDrawer.Apply(view);
             tableEffects.Apply(view);
             mapEffects.Apply(view);

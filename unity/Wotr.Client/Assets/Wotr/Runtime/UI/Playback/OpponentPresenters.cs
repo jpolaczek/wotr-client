@@ -112,6 +112,7 @@ namespace Wotr.Client
             board.Map.Figures.Quiet();
             board.QuietTracks();
             board.Dissolve.Clear();
+            board.HuntDrops.Clear();
             Playback.Skip();
         }
 

@@ -4,6 +4,15 @@
 .hunt-face { flex-shrink: 0; align-items: center; justify-content: center; -unity-background-scale-mode: scale-to-fit; }
 .hunt-face-small { width: 28px; height: 28px; }
 .hunt-face-large { width: 46px; height: 46px; }
+/* UI-332: a tile put into play, shown large in the middle of the board before it drops into the Hunt plaque. */
+.hunt-face-show { width: 92px; height: 92px; }
+.hunt-tile-drops { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.hunt-tile-drop {
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.6));
+}
 .hunt-face-pool-standard { background-image: resource("Wotr/Art/UI/hunt/tile-standard"); }
 .hunt-face-pool-special-fp { background-image: resource("Wotr/Art/UI/hunt/tile-special-fp"); }
 .hunt-face-pool-special-sh { background-image: resource("Wotr/Art/UI/hunt/tile-special-sh"); }
@@ -12,12 +21,14 @@
 .hunt-face-number { margin: 0; padding: 0; -unity-text-align: middle-center; -unity-font-style: bold; color: rgb(52, 34, 18); }
 .hunt-face-small .hunt-face-number { font-size: 14px; }
 .hunt-face-large .hunt-face-number { font-size: 22px; }
+.hunt-face-show .hunt-face-number { font-size: 44px; }
 .hunt-face-pool-special-fp .hunt-face-number,
 .hunt-face-pool-special-sh .hunt-face-number { color: rgb(250, 238, 206); text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85); }
 
 .hunt-face-symbol { -unity-background-scale-mode: scale-to-fit; }
 .hunt-face-small .hunt-face-symbol { width: 18px; height: 18px; }
 .hunt-face-large .hunt-face-symbol { width: 30px; height: 30px; }
+.hunt-face-show .hunt-face-symbol { width: 60px; height: 60px; }
 .hunt-face-symbol-eye .hunt-face-symbol { background-image: resource("Wotr/Art/UI/hunt/eye"); }
 .hunt-face-symbol-die .hunt-face-symbol { background-image: resource("Wotr/Art/UI/hunt/die"); }
 .hunt-face-symbol-smeagol .hunt-face-symbol { background-image: resource("Wotr/Art/UI/hunt/smeagol"); }
@@ -25,6 +36,7 @@
 .hunt-face-mark { position: absolute; -unity-background-scale-mode: scale-to-fit; }
 .hunt-face-small .hunt-face-mark { width: 10px; height: 10px; }
 .hunt-face-large .hunt-face-mark { width: 15px; height: 15px; }
+.hunt-face-show .hunt-face-mark { width: 28px; height: 28px; }
 .hunt-face-reveal { right: 1px; bottom: 1px; background-image: resource("Wotr/Art/UI/hunt/reveal"); }
 .hunt-face-stop { right: 1px; top: 1px; background-image: resource("Wotr/Art/UI/hunt/stop"); }
 .hunt-face-kings { left: 1px; top: 1px; background-image: resource("Wotr/Art/UI/hunt/kings"); }
@@ -66,7 +78,15 @@
 }
 .hunt-pool-body { flex-direction: column; flex-shrink: 0; }
 .hunt-pool-tiles { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; }
-.hunt-pool-prepared-line { flex-direction: row; align-items: center; flex-shrink: 0; margin: 3px 0 0 0; }
+/* UI-332: the tiles waiting for Mordor, apart from the pool under a gilt rule and their own heading. */
+.hunt-pool-waiting {
+    flex-direction: column;
+    flex-shrink: 0;
+    margin: 6px 0 0 0;
+    padding: 5px 0 0 0;
+    border-top-width: 1px;
+    border-top-color: rgba(201, 169, 100, 0.55);
+}
 .hunt-pool-tile { flex-direction: row; align-items: center; flex-shrink: 0; width: 64px; margin: 2px 4px 2px 0; }
 .hunt-pool .hunt-face-small { width: 34px; height: 34px; }
 .hunt-pool .hunt-face-small .hunt-face-number { font-size: 17px; }
@@ -82,9 +102,10 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
 #board-screen .hunt-panel .hunt-pool-prepared-heading {
-    margin: 0 8px 0 0;
+    flex-shrink: 0;
+    margin: 0 0 4px 0;
     padding: 0;
-    font-size: 12px;
+    font-size: 13px;
     color: rgb(231, 209, 160);
 }
 /* A short viewport keeps the same grid with smaller cells. */

@@ -440,3 +440,21 @@ well; tokens that change their state should turn over to their other side smooth
   in 0.15 s); a nation's token turns over to its active side the same way.
 - Under Skip animations the marker, the window and the tokens change at once. Nothing waits for an animation. A drawn
   Hunt tile has no face-down state in the client, so it does not turn.
+
+<a id="kafel-w-grze--ui-332"></a>
+## A tile put into play drops into the Hunt plaque — UI-332 (2026-10-25)
+
+Owner: "in this and analogous cases let the tile be presented — its artwork, without broader explanations — and let it
+drop into the Hunt tab with an animation; in the Hunt tab, where all tiles in the game are shown, the tiles that start to
+play once the Fellowship is on the track must be shown separately". The client cannot name the card behind a prepared tile
+(the projection carries its face only), so the tile alone is shown.
+
+- When the Hunt pool gains tiles in a new view — a special tile put into play (Give it to Uss! and the like), the prepared
+  tiles joining the pool at the Mordor entry, a tile returned to the pool — each gained tile's face (at most three, side by
+  side) shows large in the middle of the board (0.25 s in, 0.55 s held), then drops, eased and shrinking, into the
+  console's Hunt plaque (0.6 s), which lights as it lands (`HuntTileDrop`). No text, no pointer, no wait; nothing under Skip
+  animations or on a quiet view (first view, reconnect, change of side, a replay's manual move); Skip clears it.
+- The Hunt window lists the pool ("In the pool · N") and, apart from it under a gilt rule, the tiles waiting for the
+  Fellowship to enter Mordor under their own heading ("Join on the Mordor track · N"); before, UI-184, they stood on a short
+  "Mordor" line inside the pool's block.
+
