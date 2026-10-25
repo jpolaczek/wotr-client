@@ -714,5 +714,8 @@ occlusion changed until the picture is fully clear; the new number shows and the
   and arrival instead (decided one frame later, once the flights are known).
 - The first view with armies, a quiet view (reconnect, change of side, a replay's manual move) and Skip animations show
   the state at once; Skip of a presentation ends every emergence at its final state.
-- Not yet covered: character marks standing apart from armies (`CharacterMark`).
+- Characters are part of their region's marker (`ArmyMarker.Characters`, counted in its total): a character standing alone
+  in a region is that region's marker and emerges like an army; a character joining an army makes it flare and step its
+  number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
+  trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
 

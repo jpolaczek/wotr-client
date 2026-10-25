@@ -65,6 +65,43 @@ namespace Wotr.PlayTests
             Assert.AreEqual((int.Parse(before) + 1).ToString(), marker.Q<Label>("army-count").text, "The new one at the end.");
         }
 
+        // UI-336: a character is part of its region's marker — alone it is a marker of its own that emerges, joining an army
+        // it makes the army flare and step its number.
+        [UnityTest]
+        public IEnumerator ACharacterAloneOrJoiningAnArmyFlaresAndEmerges()
+        {
+            using var client = new MountedMatchClient("http://localhost", "character-emerge");
+            var view = new BoardFixture().View;
+            view.Characters.RemoveAll(c => c.Id == "emerge-gandalf");
+            client.Apply(view);
+            yield return new WaitForSecondsRealtime(.3f);
+            var alone = Arrive(view, "lossarnach");
+            client.Apply(alone);
+            yield return null;
+            yield return null;
+            var marker = client.Board.Map.Q<Button>("army-lossarnach-FreePeoples");
+            Assert.IsNotNull(marker, "A character alone stands as its region's marker.");
+            Assert.IsTrue(marker.ClassListContains(MapArmyArtwork.FlaringClass), "It flares.");
+            Assert.IsTrue(marker.ClassListContains(MapArmyArtwork.HiddenClass), "It emerges from nothing.");
+            LayoutTests.Save(client.Viewport, "ui336-character-emerging.png");
+            yield return new WaitForSecondsRealtime((MapArmyArtwork.FlareMilliseconds + MapArmyArtwork.EmergeMilliseconds) / 1000f + .1f);
+            Assert.IsFalse(marker.ClassListContains(MapArmyArtwork.FlaringClass));
+            Assert.AreEqual("1", marker.Q<Label>("army-count").text, "Then its number.");
+
+            var army = client.Board.Map.Query<Button>(className: "army").ToList()
+                .First(button => button.name.EndsWith("-FreePeoples") && button != marker);
+            var region = army.name.Substring("army-".Length, army.name.Length - "army-".Length - "-FreePeoples".Length);
+            var before = army.Q<Label>("army-count").text;
+            var joined = Arrive(alone, region);
+            client.Apply(joined);
+            yield return null;
+            yield return null;
+            Assert.IsTrue(army.ClassListContains(MapArmyArtwork.FlaringClass), "The army it joins flares.");
+            Assert.AreEqual(before, army.Q<Label>("army-count").text, "Its old number while it flares.");
+            yield return new WaitForSecondsRealtime((MapArmyArtwork.FlareMilliseconds + MapArmyArtwork.EmergeMilliseconds) / 1000f + .1f);
+            Assert.AreEqual((int.Parse(before) + 1).ToString(), army.Q<Label>("army-count").text, "Then the new one.");
+        }
+
         [UnityTest]
         public IEnumerator AQuietViewAndSkipAnimationsShowTheArmyAtOnce()
         {
@@ -86,6 +123,19 @@ namespace Wotr.PlayTests
             yield return null;
             Assert.IsFalse(stage.Board.Map.Q<Button>("army-lossarnach-FreePeoples").ClassListContains(MapArmyArtwork.FlaringClass),
                 "Skip animations shows it at once.");
+        }
+
+        // Gandalf the Grey standing in the region, the next revision (a new character, so no flight brings him).
+        private static PlayerView Arrive(PlayerView view, string region)
+        {
+            var next = Newtonsoft.Json.JsonConvert.DeserializeObject<PlayerView>(Newtonsoft.Json.JsonConvert.SerializeObject(view));
+            next.Revision = view.Revision + 1;
+            next.Characters.RemoveAll(c => c.Id == "emerge-gandalf");
+            next.Characters.Add(new CharacterView
+            {
+                Id = "emerge-gandalf", DefinitionId = "base.character.gandalf-grey", Side = Side.FreePeoples, Location = region, Level = 3
+            });
+            return next;
         }
 
         // Gondor Regulars from the reserve, the next revision.
