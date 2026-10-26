@@ -92,11 +92,22 @@ namespace Wotr.Client
             {
                 var next = draft.Fork();
                 CardDraft.Choose(next, option, id);
-                edit(() => draft.Adopt(next), CardDraft.Ready(next, option));
+                var ready = CardDraft.Ready(next, option);
+                if (ready)
+                    foreach (var card in next.Payload.Ids)
+                        MarkDiscard(card);
+                edit(() => draft.Adopt(next), ready);
             }
             else if (draft.Kind == CommandKind.ChooseEffect && (view.Hand.Contains(id) || InspectedHand.Contains(view, id)))
+            {
+                if (HandView.DiscardChoice(view))
+                    MarkDiscard(id);
                 edit(() => CardDraft.Choose(draft, option, id), false);
+            }
         }
+
+        // UI-326: a card leaving the hand as a discard dissolves where it stood once the view without it arrives.
+        private void MarkDiscard(string id) => board.MarkDiscard(id);
 
         public bool Play(DraftToken token)
         {
@@ -130,6 +141,7 @@ namespace Wotr.Client
                 problem("Server update required.\nAsk the host to update the server to discard cards one at a time.");
                 return true;
             }
+            MarkDiscard(id);
             edit(() => draft.Change(payload =>
             {
                 payload.Ids.Clear();

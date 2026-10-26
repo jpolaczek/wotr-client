@@ -110,7 +110,7 @@ namespace Wotr.PlayTests
 
         private static async Task Layout(MatchTestRoom room, string name)
         {
-            var source = room.Fp.Board.Tray.Query<Button>(className: "committed-choice").ToList().FirstOrDefault();
+            var source = room.Fp.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().FirstOrDefault();
             if (source != null)
                 CardNetworkTests.Click(source);
             foreach (var width in new[] { 1366, 1920 })

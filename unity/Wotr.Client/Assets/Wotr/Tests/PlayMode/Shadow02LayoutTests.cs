@@ -48,16 +48,11 @@ namespace Wotr.PlayTests
                             }
                             if (mode == "black")
                             {
-                                foreach (var tab in client.Board.Tray.Query<Button>().ToList().Where(b => b.name.StartsWith("effect-tab-")))
-                                {
-                                    CardNetworkTests.Click(tab);
-                                    for (var frame = 0; frame < 3; frame++)
-                                        yield return null;
-                                    FellowshipLayoutTests.Check(client.Board);
-                                    var decline = client.Board.Tray.Q<Button>("effect-choice-black-breath.decline");
-                                    var size = decline.MeasureTextSize(decline.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
-                                    Assert.LessOrEqual(size.x, decline.contentRect.width + 1, "Decline text must not overlap a nation tab.");
-                                }
+                                // UI-245/UI-289: the figures are chosen on the Battle window; the tray keeps Keep all.
+                                FellowshipLayoutTests.Check(client.Board);
+                                var decline = client.Board.Tray.Q<Button>("effect-choice-black-breath.decline");
+                                var size = decline.MeasureTextSize(decline.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                                Assert.LessOrEqual(size.x, decline.contentRect.width + 1, "Keep all fits its button.");
                             }
                             if (mode is "dread" or "terrible")
                                 foreach (var id in view.Options[0].EligibleIds.Take(mode == "dread" ? 10 : 1))
@@ -128,7 +123,8 @@ namespace Wotr.PlayTests
                 view.Battle.Defender.CardId = view.Decision.SourceId;
                 foreach (var character in view.Characters)
                     option.EffectChoices.Add(new EffectChoiceView { Id = character.Id, SelectionGroup = "Companion" });
-                foreach (var unit in view.Units.Where(u => u.Kind == UnitKind.Leader))
+                // As the server offers them: the leaders of the battle's forces.
+                foreach (var unit in view.Battle.Attacker.Units.Concat(view.Battle.Defender.Units).Where(u => u.Kind == UnitKind.Leader))
                     option.EffectChoices.Add(new EffectChoiceView { Id = unit.Id });
                 option.EffectChoices.Add(new EffectChoiceView { Id = "black-breath.decline", Title = "Keep all", Exclusive = true });
             }

@@ -44,6 +44,14 @@ namespace Wotr.Client
         private bool anchorPinnedSource;
         private Func<VisualElement> currentAvoid;
         private Vector2 defaultAnchor = new Vector2(342, 8);
+        // UI-308/UI-324: a presentation's reveal stands in the middle of this stage area.
+        private Rect? presentation;
+        // UI-308: the status line of a card an opponent presentation shows ("Event played"), instead of a play hint.
+        public string Note { get; set; } = "";
+        // UI-324 (owner 2026-10-25: "card windows should show in the middle of the screen"): the middle of the board a card
+        // window opens in (world points), and whether it does — the battle window shares its space with the card instead.
+        public Func<Rect?> CenterArea { get; set; }
+        public bool Centred { get; set; } = true;
 
         public CardInspector()
         {
@@ -112,7 +120,7 @@ namespace Wotr.Client
             tableSource = !allowPlay && IsActiveSource(id);
             anchorPinnedSource = keep && !Pinned && avoid != null;
             Pinned |= keep;
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             Root.BringToFront();
             Refresh();
             OpenedFrom?.Invoke(origin);
@@ -121,6 +129,8 @@ namespace Wotr.Client
         public void Close()
         {
             Pinned = false;
+            presentation = null;
+            Note = "";
             CardId = "";
             currentAvoid = null;
             tableSource = false;
@@ -221,6 +231,13 @@ namespace Wotr.Client
             PositionHover();
         }
 
+        // UI-308/UI-324: the opponent's revealed card stands in the middle of the presentation's safe area.
+        public void PlaceIn(Rect area)
+        {
+            presentation = area;
+            PositionHover();
+        }
+
         public void SetDefaultAnchor(Vector2 anchor)
         {
             if (defaultAnchor == anchor)
@@ -231,6 +248,36 @@ namespace Wotr.Client
 
         public bool Inspecting(VisualElement source) => currentAvoid?.Invoke() == source;
 
+        // UI-324: the card in the middle of its area — the presentation's, else the board's — once it has a size; before
+        // that at the area's top centre, so its first layout only finishes the centring.
+        private Rect? CentredPlacement()
+        {
+            var viewport = Root.parent;
+            var area = presentation ?? Local(CenterArea?.Invoke());
+            if (!Centred || viewport == null || !area.HasValue)
+                return null;
+            var width = Measured(Root.layout.width) ? Root.layout.width : 336;
+            var height = Measured(Root.layout.height) ? Root.layout.height : 0;
+            var bounds = viewport.contentRect;
+            // Whole points, so the placement never feeds back into the card's rounded size.
+            var x = Mathf.Round(Mathf.Clamp(area.Value.center.x - width / 2, bounds.xMin, Mathf.Max(bounds.xMin, bounds.xMax - width)));
+            var y = Mathf.Round(Mathf.Max(area.Value.yMin, area.Value.center.y - height / 2));
+            return new Rect(x, y, width, height);
+        }
+
+        private Rect? Local(Rect? world)
+        {
+            if (!world.HasValue)
+                return null;
+            var minimum = Root.parent.WorldToLocal(world.Value.min);
+            return new Rect(minimum, Root.parent.WorldToLocal(world.Value.max) - minimum);
+        }
+
+        private static bool Measured(float value) => value > 0 && !float.IsNaN(value);
+
+        // The window's right/top anchor for a placement in the card's stage.
+        private Vector2 AnchorOf(Rect placement) => new Vector2(Root.parent.contentRect.xMax - placement.xMax, placement.y);
+
         private void PositionHover()
         {
             if (Window == null || Root.parent == null)
@@ -238,23 +285,34 @@ namespace Wotr.Client
             if (Pinned && (!anchorPinnedSource || Window.Restore()))
             {
                 anchorPinnedSource = false;
+                // UI-324: a pinned card opens in the middle too; a position the player dragged it to wins (FloatingWindow).
+                if (CentredPlacement() is { } middle)
+                    Window.SetDefaultAnchor(AnchorOf(middle));
                 return;
             }
             var obstacle = currentAvoid?.Invoke();
+            var centred = CentredPlacement();
             if (obstacle?.panel == null)
             {
-                Window.SetDefaultAnchor(defaultAnchor);
+                Window.SetDefaultAnchor(centred.HasValue ? AnchorOf(centred.Value) : defaultAnchor);
                 return;
             }
-            if (Root.layout.width <= 0 || Root.layout.height <= 0 ||
-                float.IsNaN(Root.layout.width) || float.IsNaN(Root.layout.height))
+            if (!Measured(Root.layout.width) || !Measured(Root.layout.height))
                 return;
             var viewport = Root.parent;
-            var minimum = viewport.WorldToLocal(obstacle.worldBound.min);
-            var bounds = new Rect(minimum, viewport.WorldToLocal(obstacle.worldBound.max) - minimum);
-            var placement = PopoverPlacement.Near(bounds.center, Root.layout.size, viewport.contentRect, new[] { bounds });
-            Window.SetDefaultAnchor(new Vector2(viewport.contentRect.xMax - placement.xMax, placement.y));
+            var bounds = Local(obstacle.worldBound).Value;
+            // UI-324: in the middle, unless it would cover the card it was opened from; then beside it, as before.
+            var placement = centred.HasValue && !centred.Value.Overlaps(bounds) ? centred.Value
+                : PopoverPlacement.Near(bounds.center, Root.layout.size, viewport.contentRect, new[] { bounds });
+            Window.SetDefaultAnchor(AnchorOf(placement));
             anchorPinnedSource = false;
+        }
+
+        // UI-324: the board's middle moved (a left panel opened or closed); a card the player has not moved follows it.
+        public void MiddleMoved()
+        {
+            if (CardId.Length > 0)
+                PositionHover();
         }
 
         public void FitViewport()
@@ -303,6 +361,8 @@ namespace Wotr.Client
             if (!allowPlay && combatWindow) window.text = "Choose Combat cards in the battle window";
             if (tableSource && !allowPlay)
                 window.text = IsActiveSource(CardId) ? "In play" : "Effect ended";
+            if (Note.Length > 0 && !allowPlay)
+                window.text = Note;
             ShowReaction();
         }
 

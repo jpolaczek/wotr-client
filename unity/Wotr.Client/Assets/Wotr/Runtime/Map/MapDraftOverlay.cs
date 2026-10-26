@@ -10,6 +10,8 @@ namespace Wotr.Client
         public HashSet<string> Targets { get; } = new HashSet<string>();
         public HashSet<string> AttackTargets { get; } = new HashSet<string>();
         public HashSet<string> PlannedRegions { get; } = new HashSet<string>();
+        // UI-323: the regions the current draft moves from (MapSourceGlow).
+        public HashSet<string> SourceRegions { get; } = new HashSet<string>();
         private string endpoint = "";
 
         public MapDraftOverlay(MapCanvas map) => this.map = map;
@@ -81,8 +83,28 @@ namespace Wotr.Client
                 Targets.UnionWith(DraftOptions.For(view, draft).CharacterActions
                     .Where(c => c.CharacterId == draft.Payload.CharacterId).SelectMany(c => c.Targets));
             UpdatePlannedRegions(view, draft);
+            UpdateSourceRegions(view, draft);
             map.ShowDraftSources(view, draft);
             map.Refresh();
+        }
+
+        // UI-323 (owner request): where the selected force stands — an army's march or attack, a group's journey origin, an
+        // armed Nazgûl, a Companion leaving the Fellowship, a character using an ability.
+        private void UpdateSourceRegions(PlayerView view, TurnDraft draft)
+        {
+            SourceRegions.Clear();
+            if (draft.Kind is CommandKind.MoveArmies or CommandKind.AttackArmy)
+                SourceRegions.UnionWith(draft.Payload.Moves.Select(move => move.From));
+            SourceRegions.UnionWith(draft.Payload.CompanionMoves.Where(move => move.Route.Count > 0).Select(move => move.Route[0]));
+            if (NazgulFlightDraft.Active(view, draft))
+                SourceRegions.Add(NazgulFlightDraft.ArmedRegion(view, draft));
+            else if (FellowshipDraft.UsesRoute(draft.Kind) && DraftOptions.For(view, draft) is { } option &&
+                     TravelDraft.Travel(draft, option) is { } travel)
+                SourceRegions.Add(travel.Origin);
+            if (draft.Kind == CommandKind.UseCharacterAbility &&
+                view.Characters.FirstOrDefault(c => c.Id == draft.Payload.CharacterId) is { } character)
+                SourceRegions.Add(character.Location);
+            SourceRegions.RemoveWhere(region => region == null || !map.Data.Regions.ContainsKey(region));
         }
 
         private void UpdatePlannedRegions(PlayerView view, TurnDraft draft)

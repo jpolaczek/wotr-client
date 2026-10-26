@@ -22,6 +22,33 @@
 .army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
 
 .army-artwork { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+/* UI-334: an army that appears or grows — a warm flare behind it first, then the figures emerge from transparent to clear
+   (MapArmyArtwork.Emerge); the flare fades as the number steps. Nothing moves under Skip animations. UI-322: no filter on
+   the map's armies — a blurred element there made Unity's renderer fail when the panel's scale or target changed — so the
+   flare is the soft glow texture and the figures fade in opacity only. */
+.army-flare {
+    position: absolute;
+    left: -4%;
+    top: 6%;
+    right: -4%;
+    bottom: -8%;
+    background-image: resource("Wotr/Art/UI/ornaments/move-glow");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 236, 186);
+    opacity: 0;
+}
+.army.army-flaring .army-flare { opacity: 1; }
+.army.army-emerge-hidden .army-artwork { opacity: 0; }
+.motion-enabled .army .army-flare { transition-property: opacity; transition-duration: 0.3s; transition-timing-function: ease-out-sine; }
+.motion-enabled .army.army-flaring .army-flare { transition-duration: 0.15s; }
+.motion-enabled .army .army-artwork { transition-property: opacity; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
+/* UI-338: the counterpart — a marker whose figures all left fades from clear to transparent before it is removed; a
+   shrinking army's figures dim for a moment as its number steps down. At once under Skip animations. */
+.army.army-leaving .army-artwork { opacity: 0; }
+/* Leaving is slower and eased at both ends, so the figures stay readable while they go. */
+.motion-enabled .army.army-leaving .army-artwork { transition-duration: 0.7s; transition-timing-function: ease-in-out-sine; }
+.army.army-shrinking .army-artwork { opacity: 0.45; }
+.motion-enabled .army.army-shrinking .army-artwork { transition-duration: 0.25s; }
 .army-artwork .army-part-unused { display: none; }
 .army-plinth { position: absolute; left: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
 .army-figures .army-plinth { height: 32px; }
@@ -68,7 +95,8 @@
 .army-token .army-moved { right: 0; top: 0; width: 17px; height: 17px; }
 .army.moved .army-moved { display: flex; }
 
-/* Base and token pictures. Every rule has the same weight; later states win: moved, eligible, owner, selected, pressed. */
+/* Base and token pictures. Every rule has the same weight; later states win: moved, owner, selected, pressed. UI-301: an
+   eligible army keeps its picture and wears ChoiceGlow (below). */
 .army.army-figures.field-force.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free"); }
 .army.army-figures.field-force.sh.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow"); }
 .army.army-figures.garrison.fp.illustrated-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free"); }
@@ -85,14 +113,38 @@
 .army.army-token.field-force.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-moved"); }
 .army.army-token.garrison.fp.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-moved"); }
 .army.army-token.garrison.sh.moved .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-moved"); }
-.army.army-figures.field-force.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-eligible"); }
-.army.army-figures.field-force.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-eligible"); }
-.army.army-figures.garrison.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-eligible"); }
-.army.army-figures.garrison.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-shadow-eligible"); }
-.army.army-token.field-force.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-free-eligible"); }
-.army.army-token.field-force.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-field-shadow-eligible"); }
-.army.army-token.garrison.fp.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-free-eligible"); }
-.army.army-token.garrison.sh.eligible-army .army-plinth { background-image: resource("Wotr/Art/UI/armies/token-garrison-shadow-eligible"); }
+/* UI-301 (owner's decision): an army a click may choose wears the shared ChoiceGlow, as the usable tabs and the
+   Fellowship's portraits do: a halo behind the marker with a thick gold rim on a warm plate (army-choice-glow), which
+   pulses and swells a little in the 750 ms rhythm under .motion-enabled (MapCanvas runs the pulse) and stays bright
+   and still under Reduced motion; the plinth and figures keep their pictures and size. A chosen, armed or acting army
+   shows its selection instead. */
+.army-choice-glow {
+    position: absolute;
+    left: -5px;
+    right: -5px;
+    top: -5px;
+    bottom: -5px;
+    display: none;
+    border-width: 3px;
+    border-radius: 14px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.army-token > .army-choice-glow { border-radius: 27px; }
+.army.eligible-army > .army-choice-glow { display: flex; }
+.army.eligible-army.selected-force > .army-choice-glow,
+.army.eligible-army.armed-force > .army-choice-glow,
+.army.eligible-army.ability-owner > .army-choice-glow { display: none; }
+.motion-enabled .army > .army-choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
 .army.army-figures.field-force.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-selected"); }
 .army.army-figures.field-force.sh.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-selected"); }
 .army.army-figures.garrison.fp.ability-owner .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-garrison-free-selected"); }

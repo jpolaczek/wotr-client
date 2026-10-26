@@ -5,9 +5,14 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-162: what the Hunt window shows and when it opens by itself, from the projection only. A new Hunt opens the
-    // window for both players; the stage ribbon follows HuntView.Stage, and a Hunt in Mordor has no roll (BASE p. 43).
+    // window for both players, and a Hunt in Mordor has no roll (BASE p. 43). UI-340: the stage ribbon follows what the
+    // window shows rather than the server's stage name alone — the server records a Hunt's start before its stage is set
+    // (`BeforeDraw`), keeps `BeforeDraw` after the roll and opens the table cards' window (`Table`) after the damage.
     public static class HuntWindowState
     {
+        // The source of a Hunt that a Fellowship move starts (wotr-server HuntRuntime.BeginMove).
+        public const string MoveSource = "fellowship-move";
+
         private static readonly (string Key, string Title)[] Roll =
         {
             ("roll", "Roll"), ("reroll", "Re-roll"), ("tile", "Tile"), ("damage", "Damage"), ("result", "Result")
@@ -18,14 +23,15 @@ namespace Wotr.Client
             ("tile", "Tile"), ("damage", "Damage"), ("step", "Step")
         };
 
-        // One key per Hunt: the report that records it (id and starting revision), or its source without a report.
+        // One key per Hunt: the report that records it and the Hunt's number in it (UI-343: a report records a chain of
+        // Hunts, and each one is a new Hunt for the window), or its source without a report.
         public static string Key(PlayerView view)
         {
             if (view?.Hunt == null)
                 return "";
             var report = view.HuntReport;
-            return view.MatchId + "/" + (report != null && !report.Completed
-                ? report.Id + "/" + report.StartedRevision
+            return view.MatchId + "/" + (report != null
+                ? report.Id + "/" + (report.Entries.LastOrDefault(entry => entry.Kind == HuntReportKind.Started)?.HuntId ?? 0)
                 : view.Hunt.SourceId);
         }
 
@@ -42,15 +48,25 @@ namespace Wotr.Client
                 return MordorIndex(hunt.Stage);
             if (view.Decision?.Kind == DecisionKind.HuntReroll)
                 return 1;
+            if (hunt.Stage is "Reveal" or "Done")
+                return 4;
+            if (hunt.TileId.Length > 0)
+                return hunt.DamagePending ? 2 : 3;
             return hunt.Stage switch
             {
-                "BeforeRoll" or "Roll" => hunt.Dice.Count > 0 && hunt.RerollSources.Count > 0 ? 1 : 0,
-                "BeforeDraw" or "Draw" or "Table" => 2,
-                "DetermineDamage" or "Damage" or "Guide" or "Corruption" or "Replacement" or "ShadowReplacement" => 3,
-                "Reveal" or "Done" => 4,
-                _ => hunt.TileId.Length > 0 ? 3 : hunt.Dice.Count > 0 ? 0 : -1
+                "Draw" => 2,
+                "BeforeRoll" or "Roll" or "BeforeDraw" when hunt.Dice.Count > 0 => Rerolled(hunt) ? 1 : 0,
+                "BeforeRoll" or "Roll" => 0,
+                // Only started: a Fellowship move rolls next; a card's Hunt may roll or draw, so no stage yet.
+                "BeforeDraw" => hunt.SourceId == MoveSource ? 0 : -1,
+                "DetermineDamage" or "Damage" or "Guide" or "Corruption" or "Replacement" or "ShadowReplacement" or "Table" => 3,
+                _ => hunt.Dice.Count > 0 ? 0 : -1
             };
         }
+
+        // Re-roll once a die was rerolled, or while the roll stands with a reroll offered.
+        private static bool Rerolled(HuntView hunt) =>
+            hunt.Dice.Any(die => die.Rerolled) || hunt.Stage == "Roll" && hunt.RerollSources.Count > 0;
 
         private static int MordorIndex(string stage) => stage switch
         {

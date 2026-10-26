@@ -12,7 +12,8 @@ namespace Wotr.Client
         private readonly InterfacePreferences preferences;
         private readonly Button normal;
         private readonly Button large;
-        private readonly Toggle motion = new Toggle("Reduced motion") { name = "reduced-motion" };
+        // UI-321 (owner rule): smooth transitions by default; this setting makes every change happen at once.
+        private readonly Toggle motion = new Toggle("Skip animations") { name = "reduced-motion" };
         private readonly Button close;
         private VisualElement returnFocus;
         private readonly VisualElement panel = new VisualElement();
@@ -69,7 +70,7 @@ namespace Wotr.Client
             interfaceColumn.Add(scales);
             motion.RegisterValueChangedCallback(e => preferences.SetReducedMotion(e.newValue));
             interfaceColumn.Add(motion);
-            interfaceColumn.Add(new Label("Skip visual transitions. Choices always appear immediately.") { name = "motion-description" });
+            interfaceColumn.Add(new Label("Every change happens at once, without animation. Choices always appear immediately.") { name = "motion-description" });
             var reset = BoardScreen.Button("Reset window positions", () => resetWindows?.Invoke());
             reset.name = "reset-window-layout";
             interfaceColumn.Add(reset);

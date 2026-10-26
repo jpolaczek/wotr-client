@@ -33,7 +33,12 @@ namespace Wotr.Client
         private MapTargetGlow targetGlow;
         private readonly List<string> enterable = new List<string>();
         private readonly List<string> attackable = new List<string>();
+        // UI-323: the steady gold edge of the regions the player's own draft moves from, and its reused buffer.
+        private MapSourceGlow sourceGlow;
+        private readonly List<string> sourceable = new List<string>();
         public bool TargetsGlowing => targetGlow?.Glowing == true;
+        // UI-323: the regions with the steady gold source edge.
+        public IReadOnlyCollection<string> SourceGlowRegions => sourceGlow?.Regions ?? (IReadOnlyCollection<string>)new string[0];
         public int TargetGlowRepaints => targetGlow?.Layer.Repaints ?? 0;
         private bool politicalActive;
         // UI-218: the illustration under the nations' colours is subdued, so the borders between them read clearly.
@@ -81,6 +86,8 @@ namespace Wotr.Client
             }
             targetGlow = new MapTargetGlow(geometry, size);
             Add(targetGlow.Layer);
+            sourceGlow = new MapSourceGlow(geometry, size);
+            Add(sourceGlow.Layer);
             AddPassages(data, bands, byId, size);
             passages = new MapVectorLayer("map-passages", size.x, size.y,
                 context => DrawPassages(context.painter2D, data));
@@ -139,6 +146,7 @@ namespace Wotr.Client
             Root.style.scale = new Scale(Vector3.one * camera.Zoom);
             enterable.Clear();
             attackable.Clear();
+            sourceable.Clear();
             foreach (var entry in regions)
             {
                 var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed);
@@ -147,8 +155,11 @@ namespace Wotr.Client
                     attackable.Add(entry.Key);
                 else if (draft?.Targets.Contains(entry.Key) == true)
                     enterable.Add(entry.Key);
+                if (draft?.SourceRegions.Contains(entry.Key) == true)
+                    sourceable.Add(entry.Key);
             }
             targetGlow.Update(enterable, attackable);
+            sourceGlow.Update(sourceable);
             LastUpdateMilliseconds = (Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency;
         }
 
@@ -166,6 +177,8 @@ namespace Wotr.Client
                 return MapRegionEmphasis.Selected;
             if (draft?.Targets.Contains(id) == true)
                 return MapRegionEmphasis.Target;
+            if (draft?.SourceRegions.Contains(id) == true)
+                return MapRegionEmphasis.DraftSource;
             if (id == selected)
                 return MapRegionEmphasis.Selected;
             if (sources.Contains(id) || owners.Contains(id))
@@ -195,17 +208,18 @@ namespace Wotr.Client
                 mordorTrack.style.opacity = active ? 1 : InactiveTrackOpacity;
         }
 
-        // UI-154/UI-157: the Mordor track's path and its two entrances: a paper underlay, then deep red ink.
+        // UI-154/UI-157: the Mordor track's path and its two entrances: a paper underlay, then deep red ink. UI-283: the
+        // path is drawn twice as wide, under stones twice as large.
         private static void DrawMordorTrack(Painter2D painter, BoardPresentation data)
         {
             var core = data.Borders.Palette.BarrierCoreWidth;
             var track = data.MordorTrack;
             var path = track.PathPoints.ToList();
             var entrances = track.Entrances.Select(entrance => entrance.Points.ToList()).ToList();
-            Polyline(painter, path, TrackUnderlay, core * 2.6f);
+            Polyline(painter, path, TrackUnderlay, core * 5.2f);
             foreach (var entrance in entrances)
                 Polyline(painter, entrance, TrackUnderlay, core * 2f);
-            Polyline(painter, path, TrackInk, core * 1.3f);
+            Polyline(painter, path, TrackInk, core * 2.6f);
             foreach (var entrance in entrances)
                 Polyline(painter, entrance, TrackInk, core * .9f);
         }

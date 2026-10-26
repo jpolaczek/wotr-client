@@ -91,6 +91,23 @@ namespace Wotr.EditorTests
             Decision = new DecisionView { Id = "d", Kind = kind, Presentation = presentation }
         };
 
+        // UI-294: a card's journey of companions outside the Fellowship is made on the map; Gwaihir's separation of the
+        // Fellowship's companions stays with the panel.
+        [TestCase(false, DecisionHost.Map)]
+        [TestCase(true, DecisionHost.Fellowship)]
+        public void ACompanionJourneyGoesToTheMapUnlessItSeparatesTheFellowship(bool separation, DecisionHost host)
+        {
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "d", Kind = DecisionKind.CompanionSeparation, Presentation = "PortraitRoute" }
+            };
+            if (separation)
+                view.Options.Add(new ActionOption { Kind = CommandKind.SeparateCompanions, Enabled = true });
+            view.Options.Add(new ActionOption { Kind = CommandKind.MoveCompanions, Enabled = true });
+            Assert.AreEqual(host, DecisionRoutes.Of(view));
+        }
+
         [Test]
         public void BattleChoicesStayInTheBattleAndTheOpponentsDecisionHasNoHost()
         {

@@ -63,6 +63,7 @@ namespace Wotr.PlayTests
                 Assert.IsEmpty(board.View.Options);
                 if (configuration.Fate)
                     FateAcceptanceNetworkTests.ShowsFate(board);
+                await AssertPresenting(client, token);
 
                 board.Map.Select("minas-tirith");
                 await Until(() => board.Hover.Panel.Root.resolvedStyle.display == DisplayStyle.Flex, token);
@@ -74,6 +75,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(camera, board.Map.Camera.Pan + "/" + board.Map.Camera.Zoom, "A change of side keeps the camera.");
                 if (configuration.Fate)
                     FateAcceptanceNetworkTests.ShowsFate(board);
+                await AssertPresenting(client, token);
 
                 var before = board.View.Revision;
                 await ContinueFellowship(host, match.Id, token);
@@ -97,6 +99,13 @@ namespace Wotr.PlayTests
             }
             if (Directory.Exists(storage))
                 Directory.Delete(storage, true);
+        }
+
+        // UI-330: the watched side's presentation has loaded its history, shows every side's actions and plays live.
+        private static async Task AssertPresenting(MountedFlowClient client, CancellationToken token)
+        {
+            await Until(() => client.Flow.Observer.PresentationLoaded && client.Flow.Observer.Playback?.Live == true, token);
+            Assert.IsTrue(client.Flow.Observer.PresentsEverySide, "An observer is shown both sides' actions.");
         }
 
         private static async Task<GameApi> Account(GameApi api, string prefix, CancellationToken token)

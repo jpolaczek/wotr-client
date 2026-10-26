@@ -15,6 +15,7 @@ namespace Wotr.Client
         private readonly Action back;
         private readonly Action confirm;
         private readonly Action finish;
+        private readonly Action decline;
         private readonly Action<ComponentAction> component;
         private readonly Action<string> ring;
         private readonly Func<bool> reinforcing;
@@ -29,13 +30,14 @@ namespace Wotr.Client
         // reinforcing: a card or ability recruitment plan is under way; the Reinforcements panel holds its choices
         // and its own ✓, so the decision window stays closed and the status opens that panel.
         public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action confirm, Action finish,
-            Action<ComponentAction> component, Action<string> ring, Func<bool> reinforcing)
+            Action decline, Action<ComponentAction> component, Action<string> ring, Func<bool> reinforcing)
         {
             this.board = board;
             this.tray = tray;
             this.back = back;
             this.confirm = confirm;
             this.finish = finish;
+            this.decline = decline;
             this.component = component;
             this.ring = ring;
             this.reinforcing = reinforcing;
@@ -63,9 +65,13 @@ namespace Wotr.Client
             board.DecisionWindow.Apply(choices, Heading(), view.MatchId + "/" + view.Decision?.Id + "/" + draft.Kind + (uncertain ? "/check" : ""));
             var state = TurnConsoleState.For(view, draft, board.ActionDie, RegionName);
             fallback = state.Guidance;
-            board.Console.Status.Apply(state, Opens(choices));
-            board.Console.Status.SetYourTurn(idle && TurnSignal.Waiting(view, draft));
-            board.Console.Status.SetMustAct(idle && TurnSignal.MustAct(view));
+            // UI-292: the plaque glows and presses only when its click opens something.
+            var clickable = Clickable(choices);
+            board.Console.Status.Apply(state, clickable ? Opens(choices) : "");
+            board.Console.Status.SetTrail(view, board.Presentation, ToggleCard);
+            ReadOnlyControl.Apply(board.Console.Status.Plaque, clickable);
+            board.Console.Status.SetYourTurn(idle && clickable && TurnSignal.Waiting(view, draft));
+            board.Console.Status.SetMustAct(idle && clickable && TurnSignal.MustAct(view));
             // UI-171: the tray reports its hint before this refresh; a hint-less step shows the new guidance, not the last.
             ShowHint();
             var rings = ExpansionActions.RingKind(view, draft);
@@ -84,10 +90,14 @@ namespace Wotr.Client
             var components = ComponentActions.For(view, draft).ToList();
             var pass = components.FirstOrDefault(c => c.Kind == CommandKind.Pass);
             var discard = components.FirstOrDefault(c => c.Kind == CommandKind.DiscardDie);
-            ConsoleActions.Set(actions.Pass, idle && pass?.Enabled == true, Tooltip("Pass", CommandKind.Pass, pass));
+            // UI-291: in the player's own reaction window Pass declines it and names what it skips.
+            var skip = ReactionSkip.Option(view) != null;
+            var passable = idle && (skip || pass?.Enabled == true);
+            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view) : Tooltip("Pass", CommandKind.Pass, pass));
+            actions.Invite(actions.Pass, passable);
             ConsoleActions.Set(actions.Discard, idle && discard?.Enabled == true,
                 Tooltip("Discard the selected die without effect", CommandKind.DiscardDie, discard));
-            ConsoleActions.Set(actions.Back, idle && onBoard && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
+            ConsoleActions.Set(actions.Back, idle && (onBoard || FellowshipBack()) && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
                 "Back · Undo the last unsent step");
             var finishing = Finishing();
             var card = CardChoice(onBoard);
@@ -96,6 +106,8 @@ namespace Wotr.Client
                 : finishing ? "Finish · End this action; saved steps stay"
                 : card ? ConfirmChoiceTooltip()
                 : "Finish · Available during an action of several steps");
+            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it.
+            actions.Invite(actions.Confirm, uncertain && tray.RecoversInConsole);
             RefreshAllocation();
         }
 
@@ -180,10 +192,20 @@ namespace Wotr.Client
 
         private bool OnBoard() => board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen;
 
+        // UI-298: the Fellowship panel shows no arrow for a move, hide or entry left after a failed send; the console's
+        // Back drops it.
+        private bool FellowshipBack() => FellowshipActions.UsesPanel(view, draft) && FellowshipActions.SentOnClick(draft.Kind);
+
         private bool Allocating() => HuntActions.Allocation(view) is { } option && draft.Kind == CommandKind.AllocateHunt &&
             draft.Ready(option);
 
-        private void Pass() => Choose(CommandKind.Pass);
+        private void Pass()
+        {
+            if (view != null && idle && ReactionSkip.Option(view) != null)
+                decline();
+            else
+                Choose(CommandKind.Pass);
+        }
 
         private void Discard() => Choose(CommandKind.DiscardDie);
 
@@ -223,6 +245,26 @@ namespace Wotr.Client
                     return Host.Effects;
             }
             return own ? Host.Notice : Host.None;
+        }
+
+        // UI-297: a committed step's card opens with one click on its chip and closes with the next.
+        private void ToggleCard(string id)
+        {
+            if (board.Cards.CardId == id && board.Cards.Root.style.display == DisplayStyle.Flex)
+            {
+                board.Cards.Close();
+                return;
+            }
+            if (view?.Battle != null)
+                board.Cards.ShowCombat(id);
+            else
+                board.Cards.Show(id, true);
+        }
+
+        private bool Clickable(bool choices)
+        {
+            var host = Target(choices);
+            return host != Host.None && (host != Host.Notice || board.Notice.Opens);
         }
 
         // UI-254: the plaque also closes the window it opens, so a decision's window can be put away and brought back.

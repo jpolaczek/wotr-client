@@ -17,16 +17,10 @@ namespace Wotr.Client
         public event Action MoveRequested;
         // UI-155: a click on the Mordor track row (not its move symbol) centres the map on the track.
         public event Action TrackFocusRequested;
-        // UI-232: a click on the Ring icon (plaque or panel) while hiding is legal.
+        // UI-293 (owner's decision, after UI-232): a click on the Fellowship's marker on its track while hiding is legal.
+        // The Ring on the plaque and in the panel's header is a picture of the condition only.
         public event Action HideRequested;
-        // A click on the panel's Ring while it does not hide: the row's own locate.
-        public event Action LocateRequested;
-        public Button Ring => plaqueRing.Root;
-        public Button PanelRing => panelRing.Root;
-        private readonly FellowshipRingControl plaqueRing;
-        private readonly FellowshipRingControl panelRing;
-        private readonly ChoicePulse pulse;
-        private readonly ChoicePulse panelPulse;
+        public VisualElement HideMarker => inMordor ? mordor.Marker : journey.Marker;
         private readonly Label state = new Label { name = "fellowship-condition", pickingMode = PickingMode.Ignore };
         private readonly Label location = new Label { name = "fellowship-location", pickingMode = PickingMode.Ignore };
         private readonly Label guide = new Label { name = "fellowship-guide" };
@@ -41,7 +35,7 @@ namespace Wotr.Client
         private readonly Label summaryCorruption = new Label { name = "fellowship-status-corruption", pickingMode = PickingMode.Ignore };
         private readonly FellowshipTrackRow journey = new FellowshipTrackRow("journey-track", "journey", 12, "journey-step-", "journey-label");
         private readonly FellowshipTrackRow mordor = new FellowshipTrackRow("mordor-track", "mordor-gate", 5, "mordor-step-", "mordor-label");
-        private readonly FellowshipTrackRow corruption = new FellowshipTrackRow("corruption-track", "corruption", 12, "corruption-step-", "corruption-label");
+        private readonly FellowshipTrackRow corruption = new FellowshipTrackRow("corruption-track", "corruption", 12, "corruption-step-", "corruption-label", movable: false);
         private bool inMordor;
 
         public const string HideClass = "fellowship-hide-target";
@@ -56,10 +50,10 @@ namespace Wotr.Client
             Summary.AddToClassList(EdgePlaque.ClassName);
             Summary.style.display = DisplayStyle.None;
             summaryCondition = FellowshipArtwork.Image("hidden");
+            summaryCondition.name = "fellowship-ring";
             summaryCondition.AddToClassList(EdgePlaque.EmblemClass);
-            plaqueRing = new FellowshipRingControl("fellowship-ring", summaryCondition, () => HideRequested?.Invoke(), open);
-            Summary.Add(plaqueRing.Root);
-            pulse = new ChoicePulse(Summary);
+            summaryCondition.pickingMode = PickingMode.Ignore;
+            Summary.Add(summaryCondition);
             Summary.Add(EdgePlaque.Text(summaryLocation, summaryState));
             summaryJourney = FellowshipArtwork.Image("journey");
             var values = EdgePlaque.Column("fellowship-status-values");
@@ -67,19 +61,21 @@ namespace Wotr.Client
             values.Add(EdgePlaque.Value(FellowshipArtwork.Image("corruption"), summaryCorruption));
             Summary.Add(values);
             condition = FellowshipArtwork.Image("hidden");
-            panelRing = new FellowshipRingControl("fellowship-panel-ring", condition, () => HideRequested?.Invoke(),
-                () => LocateRequested?.Invoke());
-            StateRow.Add(panelRing.Root);
-            panelPulse = new ChoicePulse(StateRow);
+            condition.name = "fellowship-panel-ring";
+            condition.AddToClassList("fellowship-state-symbol");
+            condition.pickingMode = PickingMode.Ignore;
+            StateRow.Add(condition);
             StateRow.Add(state);
             StateRow.Add(location);
             Root.Add(journey.Root);
             Root.Add(mordor.Root);
             journey.Activated += () => MoveRequested?.Invoke();
             mordor.Activated += () => MoveRequested?.Invoke();
+            journey.MarkerActivated += () => HideRequested?.Invoke();
+            mordor.MarkerActivated += () => HideRequested?.Invoke();
             mordor.Root.RegisterCallback<ClickEvent>(e =>
             {
-                if (!(e.target is VisualElement target && (target == mordor.Move || mordor.Move.Contains(target))))
+                if (!(e.target is VisualElement target && mordor.Controls(target)))
                     TrackFocusRequested?.Invoke();
             });
             Root.Add(corruption.Root);
@@ -95,17 +91,15 @@ namespace Wotr.Client
             var damage = FellowshipTrackState.Corruption(fellowship);
             var hidden = fellowship.Hidden ? "Hidden" : "Revealed";
             Summary.style.display = DisplayStyle.Flex;
-            summaryCondition.sprite = FellowshipArtwork.Sprite(travel.Symbol);
+            FellowshipArtwork.Show(summaryCondition, travel.Symbol);
             summaryStateText = hidden;
             summaryState.text = hidden;
             summaryJourney.sprite = FellowshipArtwork.Sprite(fellowship.MordorStep.HasValue ? "mordor-gate" : "journey");
-            summaryProgress.text = fellowship.MordorStep.HasValue ? travel.Value + "/5" : travel.Value.ToString();
-            summaryCorruption.text = damage.Value.ToString();
+            ValuePulse.Set(summaryProgress, fellowship.MordorStep.HasValue ? travel.Value + "/5" : travel.Value.ToString());
+            ValuePulse.Set(summaryCorruption, damage.Value.ToString());
             state.text = hidden;
-            condition.sprite = FellowshipArtwork.Sprite(travel.Symbol);
+            FellowshipArtwork.Show(condition, travel.Symbol);
             state.tooltip = fellowship.Hidden ? "The Fellowship is hidden." : "The Fellowship is revealed. Hide before moving again.";
-            plaqueRing.Describe(state.tooltip);
-            panelRing.Describe(state.tooltip);
             var regionName = data.Regions.TryGetValue(fellowship.RegionId, out var region) ? region.Name : fellowship.RegionId;
             location.text = fellowship.MordorStep.HasValue ? "Mordor" : regionName;
             summaryLocation.text = location.text;
@@ -140,14 +134,12 @@ namespace Wotr.Client
                 : "This server view does not report whether the Fellowship attempted to move or hide this turn.";
         }
 
-        // UI-232 (after UI-220): while hiding is legal with the chosen die, the Ring icon is the control; the plaque
-        // keeps opening the panel and needs no separate Hide caption.
+        // UI-293: while hiding is legal with the chosen die, the marker on the visible track is the control; the plaque
+        // keeps opening the panel.
         public void OfferHide(bool offered, string tooltip)
         {
-            plaqueRing.Offer(offered, tooltip);
-            panelRing.Offer(offered, tooltip);
-            pulse.Run(offered);
-            panelPulse.Run(offered);
+            journey.OfferMarker(offered && !inMordor, tooltip);
+            mordor.OfferMarker(offered && inMordor, tooltip);
         }
 
         public void OfferMove(bool offered, string tooltip)

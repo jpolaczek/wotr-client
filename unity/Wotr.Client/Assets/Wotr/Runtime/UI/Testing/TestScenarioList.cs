@@ -8,7 +8,8 @@ namespace Wotr.Client
 {
     // TEST-03: the server's test scenarios in their catalog groups. One click starts a scenario. TEST-09: the scenarios
     // stand in three tabs — dice and game, Free Peoples cards, Shadow cards (TestScenarioTabs); the tabs keep their
-    // place and a tab without scenarios is disabled.
+    // place and a tab without scenarios is disabled. UI-295: a search field finds scenarios by name in every tab; a tab's
+    // click clears it.
     public sealed class TestScenarioList
     {
         public VisualElement Root { get; } = new VisualElement { name = "test-scenarios" };
@@ -16,6 +17,9 @@ namespace Wotr.Client
         public event Action Back;
         private readonly ScrollView scroll = new ScrollView { name = "test-scenario-scroll" };
         private readonly VisualElement tabs = new VisualElement { name = "test-scenario-tabs" };
+        public TextField Search { get; } = new TextField { name = "test-scenario-search" };
+        private readonly Button clear;
+        private string query = "";
         private TestScenarioCatalogView catalog = new TestScenarioCatalogView();
         public string Tab { get; private set; } = TestScenarioTabs.General;
 
@@ -33,6 +37,19 @@ namespace Wotr.Client
                 "test-scenario-hint"));
             tabs.AddToClassList("test-scenario-tabs");
             Root.Add(tabs);
+            var search = BoardScreen.Row("test-scenario-search-row");
+            Search.AddToClassList("test-scenario-search");
+            Search.textEdition.placeholder = "Search scenarios by name";
+            Search.RegisterValueChangedCallback(e => Find(e.newValue));
+            search.Add(Search);
+            clear = IconButton.Create("close", "Clear the search", () =>
+            {
+                Search.SetValueWithoutNotify("");
+                Find("");
+            });
+            clear.name = "clear-test-scenario-search";
+            search.Add(clear);
+            Root.Add(search);
             scroll.AddToClassList("saved-games-scroll");
             scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             Root.Add(scroll);
@@ -51,6 +68,17 @@ namespace Wotr.Client
         public void Select(string tab)
         {
             Tab = tab;
+            Search.SetValueWithoutNotify("");
+            query = "";
+            RenderTabs();
+            RenderScenarios();
+            scroll.scrollOffset = Vector2.zero;
+        }
+
+        // UI-295: the scenarios whose name holds every word of the query, from all tabs.
+        public void Find(string value)
+        {
+            query = value ?? "";
             RenderTabs();
             RenderScenarios();
             scroll.scrollOffset = Vector2.zero;
@@ -65,7 +93,7 @@ namespace Wotr.Client
                 var button = BoardScreen.Button(tab, () => Select(tab));
                 button.name = TestScenarioTabs.Name(tab);
                 button.AddToClassList("test-scenario-tab");
-                button.EnableInClassList("selected", tab == Tab);
+                button.EnableInClassList("selected", tab == Tab && !TestScenarioSearch.Active(query));
                 button.EnableInClassList("test-scenario-tab-module", TestScenarioTabs.IsModule(tab));
                 button.SetEnabled(present.Contains(tab));
                 button.tooltip = present.Contains(tab) ? "" : TestScenarioTabs.IsModule(tab)
@@ -77,9 +105,16 @@ namespace Wotr.Client
         private void RenderScenarios()
         {
             scroll.Clear();
-            foreach (var group in catalog.Scenarios.Where(scenario => TestScenarioTabs.Of(scenario) == Tab).GroupBy(scenario => scenario.Group))
+            var searching = TestScenarioSearch.Active(query);
+            clear.SetEnabled(searching);
+            var shown = catalog.Scenarios.Where(scenario => searching
+                ? TestScenarioSearch.Matches(scenario, query)
+                : TestScenarioTabs.Of(scenario) == Tab).ToList();
+            if (searching && shown.Count == 0)
+                scroll.Add(Text("No scenario's name matches “" + query.Trim() + "”.", "test-scenario-none"));
+            foreach (var group in shown.GroupBy(scenario => scenario.Group))
             {
-                scroll.Add(Text(TestScenarioTabs.GroupTitle(Tab, group.Key), "test-scenario-group"));
+                scroll.Add(Text(searching ? group.Key : TestScenarioTabs.GroupTitle(Tab, group.Key), "test-scenario-group"));
                 foreach (var scenario in group)
                     scroll.Add(Row(scenario));
             }

@@ -139,7 +139,7 @@ namespace Wotr.Client
         private void RefreshVisibility()
         {
             var open = IsOpen && view != null;
-            Root.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(Root, open);
             if (visible != open)
             {
                 visible = open;

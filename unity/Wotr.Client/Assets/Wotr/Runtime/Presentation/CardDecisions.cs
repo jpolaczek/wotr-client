@@ -7,9 +7,11 @@ namespace Wotr.Client
     // choices are on objects or in the turn console, and the console's ✓ confirms them.
     public static class CardDecisions
     {
+        // UI-294: a card's journey of companions outside the Fellowship is one too (CompanionJourneyDraft).
         public static bool Owns(PlayerView view, TurnDraft draft) =>
             view?.Decision != null && view.DecisionOwner == view.You && draft.Kind.HasValue &&
-            view.Battle == null && view.Hunt == null && view.EventLoss == null && Card(view.Decision.Kind);
+            view.Battle == null && view.Hunt == null && view.EventLoss == null &&
+            (Card(view.Decision.Kind) || CompanionJourneyDraft.Active(view, draft));
 
         private static bool Card(DecisionKind kind) => kind is DecisionKind.EffectChoice or DecisionKind.CharacterEvent or
             DecisionKind.ArmyEvent or DecisionKind.RemoveExcess;
@@ -51,7 +53,8 @@ namespace Wotr.Client
 
         private static string Moved(PlayerView view, TurnDraft draft) =>
             view.Decision?.Kind == DecisionKind.CharacterEvent && draft.Kind == CommandKind.MoveShadowCharacters
-                ? NazgulFlightDraft.OnlyNazgul(view, draft) ? "Nazgûl moved" : "figures moved" : "characters moved";
+                ? NazgulFlightDraft.OnlyNazgul(view, draft) ? "Nazgûl moved" : "figures moved"
+                : CompanionJourneyDraft.Active(view, draft) ? "companions moved" : "characters moved";
 
         private static string Count(int count, string what) => count == 0 ? "" : what.Substring(0, 1).ToUpperInvariant() + what.Substring(1) + " " + count;
 

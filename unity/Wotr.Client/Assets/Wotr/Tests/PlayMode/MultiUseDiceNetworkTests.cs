@@ -92,6 +92,20 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(DecisionKind.Reaction, board.View.Decision.Kind,
                         "Using Will as Event retains Gandalf's optional draw window.");
                     Assert.AreEqual(DieLocation.Resolving, board.View.Dice.Single(d => d.Id == die).Location);
+                    // UI-291: no Decline button anywhere; the glowing Pass skips Gandalf's draw and says so.
+                    await room.Settle();
+                    Assert.IsEmpty(board.Root.Query<Button>().ToList().Where(b => b.text.Contains("Decline")).Select(b => b.name).ToList());
+                    var pass = board.Console.Actions.Pass;
+                    Assert.IsTrue(pass.enabledInHierarchy);
+                    Assert.IsTrue(pass.ClassListContains(ChoiceGlow.ClassName));
+                    StringAssert.Contains("Skip Gandalf the Grey", pass.tooltip);
+                    LayoutTests.Save(client.Viewport, "ui291-gandalf-draw-pass.png");
+                    Assert.AreEqual("Click the Guide's glowing portrait in the Fellowship panel to use Draw matching card · or Pass to skip it.",
+                        board.Console.Status.Hint.text, "The console's hint says where the draw is and that Pass skips it.");
+                    Assert.IsTrue(board.Edges.Corner.ClassListContains(BoardEdgeLayout.UsableClass), "UI-290: the Fellowship tab lights up.");
+                    var rim = board.Edges.Corner.Q("edge-corner-usable");
+                    Assert.AreEqual(DisplayStyle.Flex, rim.resolvedStyle.display);
+                    Assert.AreEqual(board.Edges.Corner.worldBound, rim.worldBound, "The rim covers the whole tab.");
                     await room.Direct(client, "action-DeclineReaction");
                 }
             }

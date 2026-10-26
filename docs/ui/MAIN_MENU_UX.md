@@ -553,8 +553,9 @@ players online beside it, and challenges between them; the game rows are compact
   last 20 s, this player marked "(you)". LOBBY-02 (2026-10-18, the owner's request): no fold button in the chat line; a
   16 px grey strip at the panel's right edge (`lobby-online-strip`) carries a tab at its bottom (`lobby-online-tab`,
   "Online" written upwards) that unfolds the column and folds it back. The tab never moves. Unfolded, the column (160 px,
-  dark and opaque) lies over the chat's right side and its input instead of narrowing them; it starts folded, so the
-  input is free.
+  dark and opaque) lies over the chat's right side and its input instead of narrowing them. LOBBY-06 (2026-10-26, the
+  owner: "the chat in the main menu is to be unfolded by default"): it starts unfolded (before, folded, so the input was
+  free); the tab still folds it.
 - **Challenge.** A right-click on another player's name — in the column or on a message — opens a small tab
   (`lobby-context`) with the name and **Send challenge**; Esc or a press elsewhere closes it. The status line confirms
   the challenge or says why the server refused it (offline, already challenged, too many pending, yourself).
@@ -574,3 +575,12 @@ when an update is available, downloading, ready or required, with a small note (
 under the button on the sign-in card, inside the button on the right in the menu's column. Nothing moves; the download
 and What's new are in Settings. Details: UX_SPEC (updates). Tests: `FirstMenuUpdateTests` (EditMode),
 `MainMenuLayoutTests` (the note in four layouts on both screens).
+
+## Test scenarios are found by name — UI-295 (2026-10-20)
+
+The owner's request: the Test scenarios menu has a search field under its tabs ("Search scenarios by name"). Typing
+keeps only the scenarios whose title or id holds every word of the query, from all three tabs, ignoring case and
+accents ("smeagol" finds "Sméagol", "nazgul strike" finds "The Nazgûl Strike!"); results stand under their full group
+names, no tab is marked as the list meanwhile, and a query that matches nothing says so. The × beside the field clears
+it, and so does a click on a tab, which shows that tab again (`TestScenarioSearch`, `TestScenarioList.Find`). Tests:
+`TestScenarioClientTests.TheSearchFindsScenariosByNameAcrossTabs`, `TestScenarioNetworkTests` (typing in the real menu).

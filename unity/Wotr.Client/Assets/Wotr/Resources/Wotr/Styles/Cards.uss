@@ -201,3 +201,26 @@
 
 /* UI-272: a Shadow card Wind from the West inspects stands in the Free Peoples' drawer with a Shadow-red edge. */
 #board-screen .hand .hand-card.inspected-card { border-width: 2px; border-color: rgb(150, 46, 34); border-radius: 4px; }
+/* UI-326: a discard — two card backs, slightly fanned, rise from where the cards leave and dissolve in the air: they fade,
+   soften and swell a little over 0.6 s (CardDissolve), never taking the pointer; nothing is drawn under Skip animations. */
+.card-dissolve {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+.card-dissolve-back {
+    position: absolute;
+    border-radius: 3px;
+    background-image: resource("Wotr/Art/UI/cards/back");
+    -unity-background-scale-mode: stretch-to-fill;
+    transition-property: opacity, translate, scale, filter;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-out-sine;
+}
+.card-dissolve-back.dissolving {
+    opacity: 0;
+    scale: 1.12 1.12;
+    filter: blur(6px);
+}

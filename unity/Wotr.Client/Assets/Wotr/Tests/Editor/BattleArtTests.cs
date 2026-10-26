@@ -73,7 +73,8 @@ namespace Wotr.Client.Tests
             StringAssert.Contains("Rear guard", shelf.Q<Label>("battle-nonparticipants").text);
             Assert.IsNotNull(shelf.Q(className: "battle-garrison-icon"));
             var stages = BattleStages.Create(view.Battle);
-            Assert.AreEqual(5, stages.childCount);
+            Assert.AreEqual(5, stages.Query(className: "battle-stage").ToList().Count);
+            Assert.IsNotNull(stages.Q("stage-glide"), "UI-327: one marker glides between the stages.");
             Assert.IsTrue(stages.Q("battle-stage-reroll").ClassListContains("current-stage"));
             Assert.IsFalse(stages.Q("battle-stage-roll").ClassListContains("current-stage"));
             Assert.IsNotNull(stages.Q("battle-stage-reroll").Q(className: "battle-stage-icon-reroll"));
@@ -102,9 +103,12 @@ namespace Wotr.Client.Tests
             Assert.IsFalse(face.ClassListContains("battle-pips-hit"));
             Assert.IsNull(missButton.Q("battle-reroll-arrow"));
 
+            // UI-325 (owner review 2026-10-25): Hunt dice are the same ivory dice, picked by the same face class.
             var hunt = new HuntDieFace();
             hunt.Apply(4);
-            Assert.IsFalse(hunt.Illustrated, "Hunt dice keep their painted pips.");
+            Assert.IsTrue(hunt.Illustrated, "Hunt dice are illustrated dice, not painted pips.");
+            Assert.IsTrue(hunt.ClassListContains(HuntDieFace.FaceClass));
+            Assert.IsTrue(hunt.ClassListContains(DiePips.FaceClassPrefix + "4"));
         }
 
         [Test]

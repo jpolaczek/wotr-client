@@ -30,6 +30,8 @@ namespace Wotr.Client
             });
             title.AddToClassList("effect-source");
             title.name = "effect-source-" + source.SourceId;
+            if (CardLibrary.Cards.ContainsKey(source.SourceId))
+                CardTile(source.SourceId);
             Root.name = "effect-entry-" + source.Key;
             Root.Add(owner);
             Root.Add(title);
@@ -46,6 +48,15 @@ namespace Wotr.Client
             Root.RegisterCallback<PointerLeaveEvent>(_ => hover(this, false));
             title.RegisterCallback<FocusInEvent>(_ => hover(this, true));
             title.RegisterCallback<FocusOutEvent>(_ => hover(this, false));
+        }
+
+        // UI-288: a card is a small parchment card, as in the hand, with the symbol printed on its corner.
+        private void CardTile(string card)
+        {
+            title.AddToClassList("effect-card-tile");
+            var symbol = new ActionSymbol(CardLibrary.Face(card));
+            symbol.AddToClassList(ActionSymbol.InkClass);
+            title.Add(symbol);
         }
 
         public void Apply(EffectSource source)

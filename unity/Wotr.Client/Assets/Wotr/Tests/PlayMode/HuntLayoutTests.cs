@@ -58,6 +58,35 @@ namespace Wotr.PlayTests
             Assert.AreEqual(pan, board.Map.Camera.Pan);
         }
 
+        // UI-325 (owner review 2026-10-25): a Hunt die is the ivory d6 of the battle window, not pips on the dark window, on
+        // no box of its own; a hit is marked green, a miss is not.
+        [UnityTest]
+        public IEnumerator HuntDiceAreIvoryDiceAndHitsAreMarkedGreen()
+        {
+            using var client = new MountedMatchClient("http://localhost", "hunt-dice-art");
+            var view = Screen(CommandKind.RerollHunt);
+            client.Apply(view);
+            client.SetOnline();
+            client.Board.Hunt.Open();
+            yield return Settle();
+            foreach (var die in view.Hunt.Dice)
+            {
+                var button = client.Board.Hunt.Root.Q<Button>("hunt-die-" + die.Id);
+                var face = button.Q(className: HuntDieFace.FaceClass);
+                Assert.AreEqual("die-" + die.Result, face.resolvedStyle.backgroundImage.texture?.name, "The die's own art · " + die.Id);
+                Assert.IsNull(button.resolvedStyle.backgroundImage.texture, "No box behind the die · " + die.Id);
+                Assert.AreEqual(die.Success, button.ClassListContains("hunt-hit"), die.Id);
+                var check = button.Q<Label>("hunt-hit").resolvedStyle.color;
+                if (die.Success)
+                {
+                    Assert.AreEqual(0f, button.resolvedStyle.borderLeftWidth, "A hit is a die, not a framed button · " + die.Id);
+                    Assert.Greater(check.g, check.r + .2f, "A hit's check is green · " + die.Id);
+                }
+                else
+                    Assert.Less(Mathf.Abs(check.g - check.r), .1f, "A miss's cross is muted · " + die.Id);
+            }
+        }
+
         private static void Move(VisualElement target)
         {
             using var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseMove, mousePosition = target.worldBound.center });
@@ -87,6 +116,8 @@ namespace Wotr.PlayTests
                         client.Board.Fellowship.Open();
                         client.Board.Hunt.Open();
                         yield return Settle();
+                        // UI-327: within one Hunt a new size glides the window into its place.
+                        yield return new WaitForSecondsRealtime((float)FloatingWindow.GlideSeconds + .05f);
                         var board = client.Board;
                         LayoutTests.Save(target, $"ui34-hunt-{kind}-{width}-{scale:0.00}.png");
                         Assert.AreSame(board.Hunt.DecisionHost, board.Tray.parent);
@@ -136,9 +167,26 @@ namespace Wotr.PlayTests
                         }
                         if (kind == CommandKind.RespondEffect)
                         {
-                            Assert.AreEqual("Skip", board.Tray.Q<Button>("action-DeclineReaction").text);
-                            Assert.IsTrue(board.Tray.Q<Button>("effect-choice-card.mithril-replace").ClassListContains("legal-target"));
-                            Assert.AreEqual(DisplayStyle.None, board.Hunt.Responses.Root.style.display.value);
+                            // UI-291: the console's Pass declines the window, glows and names what it skips.
+                            Assert.IsNull(board.Tray.Q<Button>("action-DeclineReaction"));
+                            var pass = board.Console.Actions.Pass;
+                            Assert.IsTrue(pass.enabledSelf);
+                            Assert.IsTrue(pass.ClassListContains(ChoiceGlow.ClassName));
+                            StringAssert.Contains("Mithril Coat and Sting · Replace tile", pass.tooltip);
+                            // UI-285: Mithril is a glowing card object in the response row, not a tray choice.
+                            var mithril = board.Hunt.Root.Q<Button>("effect-choice-card.mithril-replace");
+                            Assert.IsTrue(mithril.ClassListContains("legal-target"));
+                            Assert.IsTrue(mithril.ClassListContains(ChoiceGlow.ClassName));
+                            Assert.IsNull(board.Tray.Q<Button>("effect-choice-card.mithril-replace"));
+                            Assert.AreEqual(DisplayStyle.Flex, board.Hunt.Responses.Root.style.display.value);
+                            // The object fills its row, so its pulse must not swell it past the window's frame.
+                            for (var sample = 0; sample < 8; sample++)
+                            {
+                                var frame = board.Hunt.Root.worldBound;
+                                Assert.GreaterOrEqual(mithril.worldBound.xMin, frame.xMin, "The pulsing card stays inside the Hunt window");
+                                Assert.LessOrEqual(mithril.worldBound.xMax, frame.xMax, "The pulsing card stays inside the Hunt window");
+                                yield return new WaitForSecondsRealtime(.25f);
+                            }
                         }
                         // UI-141: the pool list opens from the header icon and fits beside every decision. UI-184: under
                         // way it drops over the window's content, so the window neither moves nor grows.
@@ -440,6 +488,7 @@ namespace Wotr.PlayTests
                 else if (kind == CommandKind.RespondEffect)
                 {
                     view.Decision.Window = "hunt.replace";
+                    view.Players.Add(new PlayerSummary { Side = Side.FreePeoples, TableCards = { "base.fp.character.05" } });
                     option.EffectChoices.Add(new EffectChoiceView { Id = "card.mithril-replace", SourceId = "base.fp.character.05",
                         Title = "Replace tile", Detail = "Draw a replacement before determining damage. The new tile is unknown.", Cost = "DiscardTableCard" });
                     view.Characters.Add(new CharacterView { Id = "lords.character.galadriel", DefinitionId = "lords.character.galadriel" });

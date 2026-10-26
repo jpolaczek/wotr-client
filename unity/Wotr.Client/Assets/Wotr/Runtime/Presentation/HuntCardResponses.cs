@@ -4,7 +4,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // One response object in the Hunt window's response row: what it is called, what it does and how it is sent.
+    // One response object in the Hunt window's response row: what it is called, what it does, its tooltip and how it is
+    // sent.
     public sealed class HuntCardResponse
     {
         public string Id = "";
@@ -16,10 +17,13 @@ namespace Wotr.Client
         public bool Reaction;
     }
 
-    // UI-272: the Lords Shadow table cards that answer in the Hunt stand as response objects in the Hunt window's
-    // response row, beside the damage and Guide responses. We Shall Get It! (replace the drawn tile) and The Gates are
-    // Closed (an extra tile after a reveal) are reactions whose use discards the card; Skip declines. We Won't Go Back's
-    // cost offers the table card and No Corruption as objects, and the Character cards it accepts glow in the hand.
+    // UI-285 (owner's decision after the object controls audit): the table cards that answer in the Hunt — Axe and Bow,
+    // Mithril Coat and Sting, Horn of Gondor, Wizard's Staff, Crebain… — stand as card objects in the Hunt window's
+    // response row, beside the Ring, Guide and random-companion responses; one click uses the card (discarding it when
+    // that is its cost), and the console's Pass declines (UI-291). They no longer fall to the generic choice list.
+    // UI-272: the Lords Shadow table cards answer the same way — We Shall Get It! (replace the drawn tile) and The Gates
+    // are Closed (an extra tile after a reveal) — and We Won't Go Back's cost offers the table card and No Corruption as
+    // objects, while the Character cards it accepts glow in the hand.
     public static class HuntCardResponses
     {
         public const string WeWontGoBack = "lords.sh.character.25";
@@ -45,14 +49,21 @@ namespace Wotr.Client
             var option = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect);
             if (option == null)
                 return None;
-            return option.EffectChoices.Where(c => option.EligibleIds.Contains(c.Id) && c.Id.StartsWith("lords.") && OnTable(view, c.SourceId))
-                .Select(c => new HuntCardResponse
-                {
-                    Id = c.Id, CardId = c.SourceId, Name = CardLibrary.Title(c.SourceId), Reaction = true,
-                    Consequence = c.Title.Length > 0 ? c.Title : "Use this card",
-                    Tooltip = "Click to discard " + CardLibrary.Title(c.SourceId) + " · " + (c.Title.Length > 0 ? c.Title : "Use this card") +
-                        (c.Detail.Length > 0 ? "\n" + c.Detail : "") + "\nOr Skip to continue without it."
-                }).ToList();
+            return option.EffectChoices.Where(c => option.EligibleIds.Contains(c.Id) && OnTable(view, c.SourceId))
+                .Select(Response).ToList();
+        }
+
+        private static HuntCardResponse Response(EffectChoiceView choice)
+        {
+            var title = CardLibrary.Title(choice.SourceId);
+            var consequence = choice.Title.Length > 0 ? choice.Title : "Use this card";
+            var cost = choice.Cost == "DiscardTableCard" ? "Click to discard " + title : "Click to use " + title;
+            return new HuntCardResponse
+            {
+                Id = choice.Id, CardId = choice.SourceId, Name = title, Consequence = consequence, Reaction = true,
+                Tooltip = cost + " · " + consequence + (choice.Detail.Length > 0 ? "\n" + choice.Detail : "") +
+                    "\nOr Pass to skip it."
+            };
         }
 
         private static bool OnTable(PlayerView view, string card) => card.Length > 0 &&

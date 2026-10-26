@@ -27,6 +27,23 @@ The two complementary panels have a common upper edge and lie side by side withi
 <a id="figury-i-animacja"></a>
 ## figure and animation
 
+> **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
+> the played public card and move the camera without a click, before the resulting decision opens, with one
+> transient Skip target. This limited exception and everything it supersedes are specified in
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-303–UI-313 ship, the rules below stay in force.
+> UI-304 (2026-10-23) added the playback coordinator that will hold a new view while its opponent action plays and
+> close every command path meanwhile ([§7.1](OPPONENT_ACTIONS_UX.md#koordynator)); it is dormant until UI-305 registers
+> a presenter, so today's figure motion and auto-opened windows are unchanged. **UI-305 (2026-10-23) applies the exception
+> to the camera:** an opponent's map action (march, attack, retreat, advance, figure change, control) is framed in the
+> safe map area unless it is already in view, the player's wheel or drag pan takes over, the camera stays at the final
+> effect, and one Skip target (bottom-right of the map, above the console) shows while it plays
+> ([§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305)). **UI-306** moves the opponent's armies on the presented board from the
+> recorded facts — only the participants fly, the rear guard stays, attackers stay at their origin, a capture changes
+> the gem with its points — and the release replays no presented move
+> ([§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)); the figure-motion rule below ("only between consecutive projections")
+> still governs the player's own moves and anything no presenter showed. The player's own actions and every other rule
+> below are unchanged.
+
 Simple rasters have a clear background, a recognizable type figure, a separate page designation and a replaceable resource directory. The stack on the map uses several silhouettes and a discrete number; in the composition we choose specific ID. base game garrison differs from the field army. We do not change the geometry of the hit-test depending on the details of the illustration.
 
 The traffic after the server confirmation takes about 0,65–1,05 p. figure or a compact group clearly moves from a known source to a target. Animation is only a presentation of subsequent public projections: without RNG , sending commands or queue blocking next choice. We do not add the supposed intermediate fields. Hidden progress Fellowship the first view, the reconnet and the revision gap show the current score without replay. Reduced motion skips the move and leaves a short accent. After animation, the actual target stack remains visible also at the distance, until the next projection or reset connection. This result indication does not open the preview, does not change the selection and does not show the secret route. UI-95 another projection that leaves flying figure for their purpose (e.g. next step turn right after the declaration Fellowship ), does not interrupt the flight; this new move figure replaces it and her disappearance ends. Corruption on track Fellowship moves smoothly to the new field (approx. 260 ms), and the first position and the change of scale set it immediately.
@@ -508,7 +525,7 @@ The path inventory and justification of exceptions (the ruler's token, card with
 
 - The region panel has no reserve pallet (`RegionRecruitPalette` removed); it only reports the
   nation viewed settlement (`SettlementInspected`) and `ReinforcementsInteraction` stands for its
-  line and restores the closed panel.
+  line and restores the closed panel — since UI-317 only while the Muster die can recruit.
 - `MusterContextInteraction` supports only the settlement click, the two-click chip on one
   settlement and the drop of the token. When the selected figure cannot take the settlement click
   from its nation, the tray shows the server's reason (`ReinforcementRows.Refusal`).
@@ -687,3 +704,18 @@ Minas Tirith, Minas Morgul and Helm's Deep are drawn on the terrain as permanent
 fade with the terrain in the political view, and never appear or disappear with the zoom. Names, settlement gems and
 forces are drawn above them, and each drawing stands in its region clear of the region's name and the forces' row
 (`Resources/MapCanvas/landmarks.json`, `MapLandmarksTests`).
+
+<a id="plynne-otwieranie--ui-321"></a>
+## Panels fade in; Skip animations makes every change instant — UI-321 (2026-10-24)
+
+Panels, windows and dialogs that come into view fade in over 0.18 s, only in opacity, so they can be clicked and measured
+from the first frame. The setting "Skip animations" (formerly "Reduced motion") makes every change happen at once
+([UX_SPEC](UX_SPEC.md#plynne-przejscia--ui-321)).
+
+<a id="plynne-zamykanie--ui-322"></a>
+## Panels fade out; numbers, die faces and battle stacks change smoothly — UI-322 (2026-10-25)
+
+A panel or window that closes fades out where it stands over 0.15 s, but it is closed at once: a click on its tab opens
+it again and none of its controls takes a click meanwhile. A changed count pulses, a die's changed face crossfades, and in
+the battle window a stack that leaves fades out where it stood. Skip animations and a quiet view change everything at
+once ([UX_SPEC](UX_SPEC.md#plynne-zamykanie--ui-322)).

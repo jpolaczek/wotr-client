@@ -54,22 +54,35 @@ namespace Wotr.Client
         private static string OwnGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
         {
             DecisionKind.Action when die.DieId.Length == 0 => "Choose an action die, then what it acts on: the map, a card or a panel.",
-            DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels.",
+            DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),
             DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
             DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
             DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
-                "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Decline.",
+                "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Pass to skip it.",
+            DecisionKind.Reaction when ReactionSkip.Option(view) != null => ReactionSkip.Guidance(view),
             _ => "Click the status to open this decision."
         };
+
+        // UI-282: a die that can move or hide the Fellowship off the Mordor track names its glowing figure on the map.
+        private static string FellowshipDieGuidance(PlayerView view, ActionDieContext die)
+        {
+            if (view.Fellowship == null || view.Fellowship.MordorStep.HasValue)
+                return "";
+            if (view.Fellowship.Hidden && FellowshipActions.Option(view, die, CommandKind.MoveFellowship) != null)
+                return " The glowing Fellowship figure moves the Fellowship.";
+            if (!view.Fellowship.Hidden && FellowshipActions.Option(view, die, CommandKind.HideFellowship) != null)
+                return " The glowing Fellowship figure hides the Fellowship.";
+            return "";
+        }
 
         // UI-236: the map's figure declares and the Mordor track's gate enters, so the guidance names them.
         private static string FellowshipGuidance(PlayerView view)
         {
             var steps = new List<string>();
             if (Offered(view, CommandKind.DeclareFellowship))
-                steps.Add("Declare: click the Fellowship figure");
+                steps.Add("Declare: click the glowing Fellowship figure on the map");
             if (Offered(view, CommandKind.EnterMordor))
                 steps.Add("Enter Mordor: click the glowing gate");
             if (Offered(view, CommandKind.SelectGuide))

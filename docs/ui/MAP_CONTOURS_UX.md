@@ -353,3 +353,26 @@ and enemy regions it can attack get the same effect in red. Their fills are stro
 thin line along each target's edge. The layer repaints only when the target sets change; its pulse toggles a class
 every 750 ms whose opacity transition (to 0.35) runs only under `.motion-enabled`, so Reduced motion keeps a still
 glow and panning or zooming never repaints it. Selected and pressed regions keep their own fill on top.
+
+<a id="region-zrodlowy--ui-323"></a>
+## The selected force's own region — UI-323 (2026-10-24)
+
+Owner request: "the places a unit or a hero can go are nicely marked, but we must also clearly mark the region where that
+unit or character stands — it is not always obvious".
+
+- **What is marked.** While the player's own draft moves something, the region it moves from is filled in a clear gold
+  (`MapRegionEmphasis.DraftSource`, alpha 0.38: brighter than the faint gold of every eligible army region, distinct from
+  the orange of a clicked or planned region) and has a steady gold edge (a 14 pt halo wider than the region's own border
+  band and a bright 3.2 pt line, the selected force's gold `MapSourceGlow.Gold`). The edge is drawn in its own retained
+  layer just above the target glow and under the bands and barriers. A source that is also a target keeps the target's
+  fill and its gold edge.
+- **When.** An army's march or attack (`Moves[].From`), a group's journey origin (`CompanionMoves[].Route[0]` or the
+  travel origin), the armed Nazgûl, a Companion leaving the Fellowship (its origin), a character using an ability (its
+  location). The sets are `MapDraftOverlay.SourceRegions`.
+- **No pulse.** It never pulses, so it never reads as "choosable" (the pulsing gold ChoiceGlow). It is distinct from the
+  green and red targets and the pale-blue history outline. A source that is also a target (the Fellowship's stay) shows
+  both.
+- **Repaints.** The layer repaints only when its regions change. Without a draft nothing is marked; fills, markers and the
+  region panel are unchanged.
+- **Tests.** EditMode `MapTests.TheSelectedForcesOwnRegionHasTheSourceEdge`: the march's source, the attack's source and
+  not its target, nothing without a draft.

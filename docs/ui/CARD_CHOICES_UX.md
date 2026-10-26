@@ -65,7 +65,7 @@ floating decision window (UI-160).
 | Companions with a destination | Dead Men of Dunharrow | Companion buttons and Confirm in the window; destination on the map | Companions highlighted on the map and in the region panel; destination on the map; ✓ in the console | UI-215 |
 | Excess figures after a card | Stack limit after card recruitment (`RemoveExcess`) | Figure list and Confirm in the window | Region panel with the excess figures highlighted; ✓ in the console | UI-215 |
 | Card army events (`ArmyEvent`) | Help Unlooked For, Paths of the Woses, Through a Day and a Night, Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Corsairs of Umbar, The Ringwraiths Are Abroad and The Black Captain Commands (manoeuvre), Grond, The Fighting Uruk-hai | Plan list, routes and Confirm in the window | Armies highlighted on the map; army moves and attacks with the map and region panel as with an Army die (UI-105); "Skip manoeuvre" and progress in the console; ✓ in the console | UI-216 |
-| Fellowship, Hunt, battle and Politics hosts | Gwaihir, We Prove the Swifter, Book of Mazarbul, Fear! Fire! Foes!, I Will Go Alone, There and Back Again; Breaking of the Fellowship, Worn with Sorrow and Toil, Hunt tile cards and table-card reactions; event losses and combat cards; Wisdom of Elrond, Stormcrow (nation) | Their panels and windows | Unchanged | — |
+| Fellowship, Hunt, battle and Politics hosts | Gwaihir, We Prove the Swifter, Book of Mazarbul, Fear! Fire! Foes!, I Will Go Alone, There and Back Again; Breaking of the Fellowship, Worn with Sorrow and Toil, Hunt tile cards and table-card reactions; event losses and combat cards; Wisdom of Elrond, Stormcrow (nation) | Their panels and windows | Unchanged (UI-294, 2026-10-20: a journey of companions outside the Fellowship moved to the map with the console's ✓, FELLOWSHIP_UX) | — |
 
 ## Interaction details
 
@@ -121,13 +121,13 @@ floating decision window (UI-160).
   armed marker (`armed-force`, the selected plinth), lights the movable figures in the region panel and draws
   the flown Nazgûl as ghosts (`MapCanvas.PlannedFlights`, without ×). A map click releases the armed region,
   flies to a lit destination or arms a lit source (and opens its panel); any other region opens its panel.
-  `DecisionTray` builds no flight choices and hints in the console. In a card decision, the committed steps of
-  the effect trail (`committed-choice`) do not open the window either; outside card decisions they still do,
-  because the battle window's host depends on it (ShadowStrategy02 Corsairs).
+  `DecisionTray` builds no flight choices and hints in the console. Since UI-297 the committed steps of the effect
+  trail (`committed-choice`) are recalled only in the console and never open a window
+  ([TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-297)).
 - **UI-213.** `EventRecruitDraft.Drop` keeps an armed token armed with its group's next free figure while the
   card's limits leave it a region (`Next`), and releases it otherwise. With a token armed, a click on another
   token switches it instead of filling the last region; region first works as before when nothing is armed.
-  Choosable Reserve tokens carry `eligible-token` (tinted slot, full glow); the tab keeps `legal-target`. ↶
+  Choosable Reserve tokens carry `eligible-token` (ChoiceGlow since UI-301, full glow); the tab keeps `legal-target`. ↶
   restores the last placement's armed token. Details: [POLITICS_REINFORCEMENTS_UX](POLITICS_REINFORCEMENTS_UX.md).
 - **UI-214.** `CardConsoleOptions` (presentation) lists the console's buttons (`ConsoleOption`): the choices of
   CaptainOrder, LureCompanion (named after its Companion), FellowshipAction (There is Another Way) and NazgulStrike,
@@ -311,3 +311,62 @@ declaration, Wind's table and hand, Safe Paths, Three Rings), `LordsShadowNetwor
 Back), `LordsFinalCardsNetworkTests` (We Shall Get It!), `ExpansionWindowNetworkTests` and
 `ResourcePanelNetworkTests` (Lore before and after Dismay), each with `GenericWindowWatch`; seeder scenarios `ui272-*`
 (wotr-server `LordsCardScenarioTests`).
+<a id="karta-przeciwnika--ui-308"></a>
+## The opponent's played card — UI-308 (2026-10-24)
+
+When the opponent plays a public Event, the card opens by itself in the existing read-only inspector for at least 3 s
+([OPPONENT_ACTIONS_UX §6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308)): no Play bar, the status line "Event played", the
+Event half marked with the observed pale-blue treatment, at the card's normal readable width. This is the limited
+exception of the opponent-action program; the player's own cards still open only by a click or Enter/Space. A click on
+the shown card pins it and holds the presentation until it is closed; it then docks as "✓ <card>" in the console trail
+for the rest of the presentation. Opening or closing it never plays, discards or marks anything read. A committed
+Combat card stays a back; combat reveals are shown in the battle window.
+
+<a id="karta-przeciwnika--ui-316"></a>
+## The opponent's card comes from its place and returns to it — UI-316 (2026-10-24)
+
+The opponent's played Event grows out of their hand count into its read-only place (0.6 s), is read for 3 s, then shrinks
+into the console trail where it docks — or, for a card that stays on the table, drifts to the Effects tab, which lights up
+([OPPONENT_ACTIONS_UX §6.20](OPPONENT_ACTIONS_UX.md#wdrozone-316)). Only its translate, scale and opacity move; under
+Reduced motion it fades in and out. A click pins it at its place at once.
+
+<a id="okna-na-srodku--ui-324"></a>
+## Card windows open in the middle — UI-324 (2026-10-25)
+
+The owner reviewed UI-320 in a build: "the card animations look good, but the previous design was better — let's go back
+to it; the only other change cards need is that their windows show in the middle of the screen". The UI-320 look (the
+banner, deck line, divider and initiative badge) is reverted; the card is again the UI-106 parchment view.
+
+- **Where.** Every card window opens centred in the board's middle: between the top bar and the console, between the side
+  columns (`BoardScreen.BoardMiddle`, `CardInspector.CenterArea`). That covers the player's hand, table and console cards,
+  pinned or not.
+  - The opponent's presented card stands in the middle of the presentation's safe area. UI-308's "away from the first
+    effect" gives way to the owner's decision.
+  - A card opened from a source it would cover keeps its place beside that source.
+  - Beside an open battle window the card keeps sharing its space (`BattleCardPlacement`).
+  - A position the player dragged a window to wins.
+  - A panel held open beside the left rail (a decision's Reserve, Politics, Effects, Characters) is not part of the
+    middle: the card stands right of it, and an open card moves clear when such a panel opens. A hover preview does not
+    count. Found by KingsCards02: the centred card covered the Reserve of Ever at Your Service.
+- **Pixels.** The centred position is snapped to the screen's pixel grid, so the window's controls keep their rounded
+  sizes and no layout loop can start.
+- **The way out.** The presented card no longer slides behind the bottom panel. At the end of its reading it cross-fades
+  (over the first 35 % of the 0.6 s) into a stand-in — a small parchment card with its title in the presentation layer
+  above the HUD — that lands on its console source or at the Effects tab. The source shows and lights only once the
+  stand-in is there.
+
+<a id="odrzucenie--ui-326"></a>
+## A discard dissolves — UI-326 (2026-10-25)
+
+Owner: "a small extra animation of disappearing cards at the moment a player discards them: just two cards turned with
+their backs to the player that dissolve in the air".
+
+- When the player discards from the hand (an excess hand, a removal cost, an effect's choice that discards), two card
+  backs, slightly fanned, rise a little from where the cards stood and dissolve over 0.6 s — they fade, soften and swell a
+  little (`CardDissolve`, Cards.uss). One pair per discard, whatever the number of cards; it never takes the pointer and
+  never delays the command.
+- The cards are marked when they are chosen and dissolve when the view without them arrives; a card the server kept is
+  forgotten at the next revision, and a quiet view (reconnect, first view) plays nothing. Under Skip animations nothing is
+  drawn; Skip of a presentation clears it.
+- The opponent's presented discard dissolves a smaller pair out of its hand count in the top bar as the count drops
+  ([OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md)).

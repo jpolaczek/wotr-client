@@ -99,3 +99,16 @@ The entire revised class was then completed: `bash scripts/test-client.sh -testF
 Scope of integration received UI-10 : all the basic families use the real ones projection/options/podgl The sidings/commands, cost and randomness determine the server, and the new S20–S21 confirm recovery, race and delays. `git diff --check` They didn't show any problems. `tasks.py validate` , directory and coverage cards They're passing.
 
 The next task is T22: full acceptance with UI product. Audit indicated to complete specific clicked variants (attribution Hunt, Ring/politics/pas, Active Skills, Random Victim, Defense Stronghold in the field, Military Finals) and four presentation shortcomings: loading before the first projection, constant policy access, detailed composition army/inspection during planning and safe history. These deficiencies are not considered to have been performed by transport tests. Manual acceptance user and Windows–macOS test remain postponed to the right tasks.
+
+<a id="odtwarzanie--ui-304-2026-10-23"></a>
+## Playback between receipt and application — UI-304 (2026-10-23)
+
+`MatchConnection` keeps deduplicating, coalescing and committing views as before; its observer is now
+`PlaybackBinding.Receive`, which gives each view to the history feed and then to `PresentationPlayback`
+([OPPONENT_ACTIONS_UX §7.1](OPPONENT_ACTIONS_UX.md#koordynator)). A view applied at once (no presenter, a session not
+live, a private-only update while idle) is applied synchronously, so a drawing failure still reaches the QUAL-09 retry
+of `MatchConnection.Apply`. A view the playback held is applied later from the board's scheduler; a failure there is
+reported and applied again on the next tick, up to three times. `TurnInteraction.Submit` still waits for
+`connection.Refresh()`, and `requiredRevision` keeps the own result blocked until the released view reaches the
+interaction. A reconnect, a lost focus and disposal end any presentation and show the latest view without catch-up;
+receipts, the command journal and pending recovery are unchanged.

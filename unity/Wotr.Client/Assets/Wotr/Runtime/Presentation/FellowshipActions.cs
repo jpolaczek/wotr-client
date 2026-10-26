@@ -5,9 +5,12 @@ namespace Wotr.Client
 {
     public static class FellowshipActions
     {
+        // UI-294: a card's journey of companions outside the Fellowship is made on the map, not in the panel. UI-296: the
+        // Guide's own response (Gandalf the Grey's draw) is its portrait, so the panel opens and holds it in view.
         public static bool UsesPanel(PlayerView view, TurnDraft draft) => view.Battle == null && view.EventLoss == null && !HuntActions.UsesPanel(view, draft) &&
+            !CompanionJourneyDraft.Active(view, draft) &&
             (view.Decision?.Kind is DecisionKind.FellowshipPhase or DecisionKind.Guide or
-                DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation ||
+                DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation || GuideResponse(view) ||
                 // UI-269/UI-270: the private companion versions, the starting Guide and the homelands are chosen on its
                 // portraits.
                 CompanionSetupPresentation.Versions(view) || CompanionSetupPresentation.Homelands(view) ||
@@ -31,10 +34,19 @@ namespace Wotr.Client
                 return false;
             var token = draft.Payload.RulerTokenId;
             var ability = option.RulerTravel?.AbilityId == draft.Payload.AbilityId ? draft.Payload.AbilityId : "";
-            draft.Choose(kind, option.EligibleDice.Count > 0 ? context.DieId : "");
-            draft.Change(p => { p.RulerTokenId = token; p.AbilityId = ability; });
+            // UI-298: choosing the action is one undo step, so the first Back drops it.
+            draft.Gesture(() =>
+            {
+                draft.Choose(kind, option.EligibleDice.Count > 0 ? context.DieId : "");
+                draft.Change(p => { p.RulerTokenId = token; p.AbilityId = ability; });
+            });
             return true;
         }
+
+        // UI-298: the move, the hide and the entry into Mordor are sent with their click; their draft outlives only a
+        // failed send, and the console's Back, not an arrow in the panel, drops it.
+        public static bool SentOnClick(CommandKind? kind) =>
+            kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.EnterMordor;
 
         public static CommandKind? PortraitKind(PlayerView view, ActionDieContext context, string id, TurnDraft draft = null)
         {
@@ -74,6 +86,10 @@ namespace Wotr.Client
         }
 
         // Whether this reaction is used on the Guide's portrait, so the console does not repeat it.
+        // UI-296: the player's reaction window offers the Guide's own skill on its portrait.
+        public static bool GuideResponse(PlayerView view) => view.Decision?.Kind == DecisionKind.Reaction && view.Fellowship != null &&
+            RosterReaction(view, view.Fellowship.Guide) != null;
+
         public static bool ReactionOnRoster(PlayerView view, string reactionId) =>
             view?.Fellowship != null && RosterReaction(view, view.Fellowship.Guide)?.Id == reactionId;
 
@@ -97,6 +113,8 @@ namespace Wotr.Client
 
         public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
 
+        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or its glowing marker on the Fellowship track · No progress or extra Hunt die.";
+
         public static string ActionHint(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
             if (view.Decision == null || view.DecisionOwner != view.You)
@@ -108,12 +126,15 @@ namespace Wotr.Client
                 return "No Fellowship action in this decision";
             if (Option(view, context, kind, draft) == null)
                 return (view.Fellowship.Hidden ? "" : "Hide first · ") + "Select a Character die";
-            // UI-220: the glowing status plaque is the hide.
+            // UI-280, UI-293: the glowing Fellowship figure on the map and its glowing marker on the track are the hide.
             if (!view.Fellowship.Hidden)
-                return "Click the glowing Fellowship plaque to hide here; no progress or extra Hunt die.";
-            // UI-110: the glowing track symbol is the move.
+                return HideHint;
+            // UI-110, UI-282: the glowing track symbol, and off the Mordor track the glowing figure on the map, is the move.
             return view.Fellowship.MordorStep.HasValue ? "Click the glowing Mordor track symbol · Resolve a Hunt tile before any advance."
-                : "Click the glowing track symbol · Progress +1 and resolve the Hunt; the map position stays unchanged.";
+                : MoveHint;
         }
+
+        public const string MoveHint = "Move: click the glowing Fellowship figure on the map or the glowing track symbol · " +
+            "Progress +1 and resolve the Hunt; the map position stays unchanged.";
     }
 }

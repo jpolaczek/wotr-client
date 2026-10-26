@@ -43,14 +43,25 @@ namespace Wotr.Client
                 Close();
         }
 
+        // UI-281: the panel always opens on its newest message, with the line to write focused.
         public void Open()
         {
-            Root.style.display = DisplayStyle.Flex;
+            Appearance.Display(Root, true);
             SetUnread(false);
+            Chat.ShowLatest();
             Chat.Input.Focus();
         }
 
         public void Close() => Root.style.display = DisplayStyle.None;
+
+        // UI-281: Enter and Escape typed in the chat belong to the chat, not to the board's confirm and back keys.
+        public static bool ContainsInput(VisualElement element)
+        {
+            for (var current = element; current != null; current = current.parent)
+                if (current.name == "game-chat")
+                    return true;
+            return false;
+        }
 
         private void Toggle()
         {

@@ -270,7 +270,6 @@ namespace Wotr.PlayTests
             var board = room.Fp.Board;
             board.Map.Focus("minas-tirith");
             room.Sh.Board.Map.Focus("old-forest");
-            var shadowPan = room.Sh.Board.Map.Camera.Pan;
             ArmyGestures.Die(room.Fp, ArmyGestures.ArmyDie(room.Fp));
             await ArmyGestures.All(room.Fp, "minas-tirith");
             board.Hover.Close();
@@ -278,8 +277,13 @@ namespace Wotr.PlayTests
             var pan = board.Map.Camera.Pan;
             MapContourProbe.Click(board.Map, MapContourProbe.Terrain(board.Map, "lossarnach"));
             await room.At(1);
-            Assert.AreEqual(pan, board.Map.Camera.Pan);
-            Assert.AreEqual(shadowPan, room.Sh.Board.Map.Camera.Pan);
+            Assert.AreEqual(pan, board.Map.Camera.Pan, "The attacker's own click moves no camera.");
+            // UI-305 (OPPONENT_ACTIONS_UX §4, §6.5): the Shadow, looking at the Old Forest, is shown the attack.
+            await room.Until(() => !room.Sh.Playback.Holding);
+            var lossarnach = room.Sh.Board.Map.Data.Shapes["lossarnach"].Anchor;
+            Assert.IsTrue(room.Sh.Board.Map.contentRect.Contains(room.Sh.Board.Map.Camera.ToScreen(new Vector2(lossarnach[0], lossarnach[1]))),
+                "The opponent's attack was brought into view.");
+            var shadowPan = room.Sh.Board.Map.Camera.Pan;
             Assert.IsTrue(board.Battles.IsOpen, "UI-149: the battle opens its window without moving the camera.");
             PointerGestureEvents.ClickAt(board.Notice.Button);
             await room.Settle();

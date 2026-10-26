@@ -76,6 +76,14 @@ namespace Wotr.Client
                 : words.Length == 1 ? words[0].Substring(0, System.Math.Min(2, words[0].Length)) : "C";
         }
         public static string Identity(string id) => Characters.TryGetValue(id, out var item) ? item.Identity : id;
+
+        // UI-309: a die ability's history records only its ability id; the one identity whose public abilities list it,
+        // or null when none or several do (the client never guesses the source).
+        public static string AbilityHolder(string abilityId)
+        {
+            var identities = Characters.Values.Where(c => c.Abilities.Contains(abilityId)).Select(c => c.Identity).Distinct().Take(2).ToList();
+            return identities.Count == 1 ? identities[0] : null;
+        }
         public static string Version(PlayerView view, string id)
         {
             var definition = view.Characters.Concat(view.OwnCompanions).FirstOrDefault(c => c.Id == id)?.DefinitionId;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using Wotr.Client;
@@ -148,13 +149,17 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(camera, room.Sh.Board.Map.Camera.Pan, "Continuing and reconnecting must preserve the defender's camera.");
                 await ArmyGestures.Target(room, room.Sh, "pelargir");
                 // The target helper navigates first, then checks click-to-receipt stability.
-                camera = room.Sh.Board.Map.Camera.Pan;
                 Assert.AreEqual(DecisionKind.BattleAdvance, room.Fp.Board.View.Decision.Kind);
                 await room.SelectAllAdvancing(room.Fp);
                 Assert.IsNull(room.Fp.Board.View.Battle);
                 Assert.AreEqual(Side.FreePeoples, room.Fp.Board.View.Control["lossarnach"]);
                 Assert.AreEqual(3, room.Sh.Board.View.Units.Count(u => u.Side == Side.Shadow && u.Location == "pelargir"));
-                Assert.AreEqual(camera, room.Sh.Board.Map.Camera.Pan);
+                // UI-305 (OPPONENT_ACTIONS_UX §4, §6.5): the opponent's advance and capture are brought into the defender's
+                // view (the battle window covered them), where the camera stays.
+                await room.Until(() => !room.Sh.Playback.Holding);
+                var map = room.Sh.Board.Map;
+                var lossarnach = map.Data.Shapes["lossarnach"].Anchor;
+                Assert.IsTrue(map.contentRect.Contains(map.Camera.ToScreen(new Vector2(lossarnach[0], lossarnach[1]))));
             }
         }
     }

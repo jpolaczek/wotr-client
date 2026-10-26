@@ -8,7 +8,6 @@ namespace Wotr.Client
     {
         Effect,
         Reaction,
-        Decline,
         OpenEffects,
         Action,
         // UI-233: after View board, the console reopens the end of the game (result, log, Save replay).
@@ -194,17 +193,7 @@ namespace Wotr.Client
                     Tooltip = "Click the lit table card's × in the Effects panel",
                     Kind = ConsoleOptionKind.OpenEffects
                 });
-            var decline = view.Options.FirstOrDefault(o => o.Kind == CommandKind.DeclineReaction);
-            if (decline != null)
-                options.Add(new ConsoleOption
-                {
-                    Id = "decline",
-                    Name = "action-DeclineReaction",
-                    Label = "Decline",
-                    Tooltip = decline.Enabled ? "Continue without using a reaction in this window" : decline.Reason,
-                    Kind = ConsoleOptionKind.Decline,
-                    Enabled = decline.Enabled
-                });
+            // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place.
             return options;
         }
 

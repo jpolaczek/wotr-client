@@ -335,7 +335,8 @@ namespace Wotr.PlayTests
             client.Board.Information.Rules();
             yield return Settle();
             var map = client.Board.Map;
-            var point = map.worldBound.center;
+            // UI-324: the rules window opens in the middle of the board, over the map's centre; the pan starts beside it.
+            var point = MapContourProbe.ExposedMap(map);
             var picked = map.panel.Pick(point);
             Assert.IsTrue(picked == map || map.Contains(picked), "The actual map pan origin must be exposed.");
             using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 1, mousePosition = point }))

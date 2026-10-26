@@ -209,7 +209,10 @@ namespace Wotr.Client
         private static readonly string[] HandDiscardChoices = { "SmeagolCorruption", InspectedHand.Presentation };
 
         private bool Discarding() => draft.Kind is CommandKind.DiscardCards or CommandKind.DiscardProtection ||
-            draft.Kind == CommandKind.ChooseEffect && HandDiscardChoices.Contains(view.Decision?.Presentation);
+            draft.Kind == CommandKind.ChooseEffect && DiscardChoice(view);
+
+        // An effect's choice of a hand card that discards it (UI-326 dissolves it).
+        public static bool DiscardChoice(PlayerView view) => HandDiscardChoices.Contains(view?.Decision?.Presentation);
 
         private bool HandChoice(string id) => draft.Kind == CommandKind.ChooseEffect && Discarding() &&
             (view.Hand.Contains(id) || InspectedHand.Contains(view, id)) &&

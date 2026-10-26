@@ -214,7 +214,7 @@ namespace Wotr.Client
                     Opening?.Invoke();
                     Root.BringToFront();
                 }
-                Root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                Appearance.Display(Root, visible);
                 Tab.EnableInClassList("selected", visible);
             }
             Window?.Refresh();
@@ -235,7 +235,7 @@ namespace Wotr.Client
                 .Select(r => new Rect(viewport.WorldToLocal(r.position), r.size)).ToList();
             // The roster's layout rect, not its world bound: while it unrolls, the entering scale would make it
             // look narrower and the inspector would later overlap its edge.
-            if (Root.resolvedStyle.display != DisplayStyle.None && Root.layout.width > 0)
+            if (!Appearance.Closed(Root) && Root.resolvedStyle.display != DisplayStyle.None && Root.layout.width > 0)
                 fixedControls.Add(Root.parent.ChangeCoordinatesTo(viewport, Root.layout));
             var rectangle = SovereignPlacement.Near(point, size, viewport.contentRect, obstacles, fixedControls);
             if (Mathf.Abs(Inspector.Root.style.left.value.value - rectangle.x) > .25f)

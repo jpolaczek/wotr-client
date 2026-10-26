@@ -165,6 +165,19 @@
 .battle-stage-icon-next { background-image: resource("Wotr/Art/UI/battle/stage-next"); }
 .battle-stage-marker { position: absolute; left: -5px; top: -1px; width: 24px; height: 24px; display: none; -unity-background-scale-mode: scale-to-fit; background-image: resource("Wotr/Art/UI/battle/stage-marker"); }
 .battle-stage.current-stage .battle-stage-marker { display: flex; }
+/* UI-327: one gilt marker glides between the stages of a lasting ribbon (StageRibbon), behind the icons; the labels and
+   icons crossfade into and out of the current stage. */
+.stage-glide {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/battle/stage-marker");
+}
+.motion-enabled .stage-ribbon .battle-stage .unity-label { transition-property: color; transition-duration: 0.35s; }
+.motion-enabled .stage-ribbon .battle-stage-icon { transition-property: opacity; transition-duration: 0.35s; }
 .battle-stage.current-stage .battle-stage-icon { opacity: 1; }
 .regional-battle .tray .battle-stages .unity-label { padding: 0; margin: 0; font-size: 10px; color: rgb(175, 180, 170); }
 .regional-battle .tray .battle-stages .current-stage .unity-label { color: rgb(249, 223, 157); -unity-font-style: bold; }

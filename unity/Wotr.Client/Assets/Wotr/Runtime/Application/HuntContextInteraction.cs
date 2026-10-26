@@ -109,7 +109,8 @@ namespace Wotr.Client
             }, true);
         }
 
-        // UI-272: a Lords table card's response in the row: a reaction, or We Won't Go Back's cost; its click sends it.
+        // UI-285: a table card's response object in the row: its click uses the card, sent at once (UI-142); UI-272:
+        // a Lords card's reaction or We Won't Go Back's cost the same way.
         private void CardResponse(string id)
         {
             var response = busy() || draft == null ? null : HuntCardResponses.Find(view, id);

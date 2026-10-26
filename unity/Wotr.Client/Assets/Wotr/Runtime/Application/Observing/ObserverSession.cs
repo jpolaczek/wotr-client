@@ -9,6 +9,11 @@ namespace Wotr.Client
     // update socket and reconnect, and the room's presence is renewed every 15 s. There is no command sender, draft,
     // automatic decision or read marker, so watching cannot change the game. A change of side keeps the camera and
     // the open tabs; the history and the view of the other side replace those of the previous one.
+    // UI-330 (owner 2026-10-25: "players who watch a game also want to know who plays what; they should see the animations
+    // for both sides, even though they watch one — only for that one do they have the hidden information"): the board
+    // presents every side's actions with the player's presenters, from the watched side's history; each new point of
+    // reference (the first view, a reconnect, a change of side) starts the presentation over, so it is shown quietly and
+    // nothing from before it is played back.
     public sealed class ObserverSession : IDisposable
     {
         public static readonly TimeSpan PresenceInterval = TimeSpan.FromSeconds(15);
@@ -26,6 +31,11 @@ namespace Wotr.Client
         // view, a reconnect and a change of side are silent.
         private readonly GameSounds sounds;
         private bool quietNext = true;
+        private readonly MatchReadRoutes routes;
+        private ActionNoticeController notices;
+        private PlaybackBinding playback;
+        private OpponentPresenters presenters;
+        private string status = "";
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private bool disposed;
         public Side Perspective { get; private set; } = Side.FreePeoples;
@@ -33,6 +43,10 @@ namespace Wotr.Client
         public string Room => room;
         // How many views the board drew; tests read it to see a change of side arrive.
         public int Applied { get; private set; }
+        // UI-330: whether the presentation's history has loaded, that it presents every side, and its playback.
+        public bool PresentationLoaded => notices?.Loaded == true;
+        public bool PresentsEverySide => notices?.Presentation?.Everyone == true;
+        public PresentationPlayback Playback => playback?.Playback;
 
         public ObserverSession(GameApi api, RoomView room, BoardScreen board, TimeSpan? presence = null, ReplayLibrary replays = null,
             SoundModule soundModule = null)
@@ -40,7 +54,7 @@ namespace Wotr.Client
             this.api = api;
             this.room = room.Id;
             this.board = board;
-            var routes = MatchReadRoutes.Observer(room.MatchId, () => Perspective);
+            routes = MatchReadRoutes.Observer(room.MatchId, () => Perspective);
             connection = new MatchConnection(api, room.MatchId, routes);
             history = new ActionLogController(api, routes, board.Log);
             reports = new BattleReportController(api, routes, board.BattleReport);
@@ -59,7 +73,23 @@ namespace Wotr.Client
             _ = KeepPresence(presence ?? PresenceInterval, lifetime.Token);
         }
 
+        // A view the connection accepted: through the presentation, which shows a new point of reference at once.
         private void Update(PlayerView view)
+        {
+            if (disposed)
+                return;
+            var fresh = quietNext;
+            if (fresh)
+                Restart();
+            playback.Receive(view);
+            if (!fresh || status != "Connected")
+                return;
+            notices.SetConnection(status);
+            playback.Playback.SetConnection(status);
+        }
+
+        // The presentation released the view (or showed it at once).
+        private void Present(PlayerView view)
         {
             if (disposed)
                 return;
@@ -80,6 +110,27 @@ namespace Wotr.Client
             Applied++;
         }
 
+        // A new presentation from here on: its history's baseline is the newest page, it is not live until its first view
+        // is shown, and it holds nothing (an observer sends no command).
+        private void Restart()
+        {
+            Stop();
+            notices = new ActionNoticeController(api, routes, board);
+            playback = new PlaybackBinding(board, notices, Present, _ => { });
+            presenters = new OpponentPresenters(board, playback);
+            presenters.Sounds.Target = sounds;
+        }
+
+        private void Stop()
+        {
+            presenters?.Dispose();
+            playback?.Dispose();
+            notices?.Dispose();
+            presenters = null;
+            playback = null;
+            notices = null;
+        }
+
         // OB06: the other side's hand, history and reports at the same revision; an answer for the previous side is
         // dropped by the connection's generation.
         private void Switch(Side side)
@@ -87,6 +138,8 @@ namespace Wotr.Client
             if (disposed || side == Perspective)
                 return;
             Perspective = side;
+            // What the previous side was presenting ends now; the next view starts over from the new side.
+            Stop();
             board.Observe(side);
             quietNext = true;
             history.Reset();
@@ -100,6 +153,9 @@ namespace Wotr.Client
             if (disposed)
                 return;
             Expired = state == "SessionExpired";
+            status = state;
+            notices?.SetConnection(state);
+            playback?.Playback.SetConnection(state);
             sounds?.SetConnection(state);
             if (state != "Connected")
                 quietNext = true;
@@ -155,6 +211,7 @@ namespace Wotr.Client
             board.Viewing.PerspectiveChosen -= Switch;
             connection.Updated -= Update;
             connection.StatusChanged -= ConnectionChanged;
+            Stop();
             interaction.Dispose();
             saver?.Dispose();
             sounds?.Dispose();

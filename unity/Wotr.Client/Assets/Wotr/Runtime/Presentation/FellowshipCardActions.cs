@@ -42,7 +42,7 @@ namespace Wotr.Client
             if (Choice(view, CommandKind.MoveFellowship).Length > 0)
                 steps.Add("Move: click the glowing track");
             if (Choice(view, CommandKind.HideFellowship).Length > 0)
-                steps.Add("Hide: click the glowing Ring");
+                steps.Add("Hide: click the Fellowship's glowing marker on its track");
             return steps.Count == 0 ? "" : string.Join(" · ", steps) + " · or Stay to finish after healing.";
         }
 

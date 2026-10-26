@@ -131,11 +131,31 @@ namespace Wotr.PlayTests
             NoFocusOutlineTests.NoOutline(board.Root.panel.visualTree, "on a focused card (UI-191)");
             Assert.AreEqual(0, fpBoundary.Commands, "Reading and focusing never send a command.");
             var above = new Vector2(card.worldBound.center.x, card.worldBound.yMin - 12);
+            var stood = face.worldBound;
             ClickPoint(board, above);
+            // UI-326: two card backs dissolve where the discarded card stood, as soon as the view without it arrives (the
+            // opponent's board still presents the discard, so both revisions are awaited later).
+            await room.Until(() => board.View.Revision == revision + 1);
+            Assert.AreEqual(2, board.Dissolve.Shown, "Two backs dissolve.");
+            var back = board.Dissolve.Root.Q(className: CardDissolve.BackClass);
+            Assert.Less(Vector2.Distance(back.worldBound.center, stood.center), stood.height, "Where the card stood.");
+            await Task.Delay(120);
+            Assert.IsTrue(back.ClassListContains(CardDissolve.DissolvingClass), "It is dissolving.");
+            LayoutTests.Save(fp.Viewport, "ui326-discard.png");
+            // The opponent sees the backs dissolve out of the Free Peoples' hand count as it drops.
+            var opponent = room.Sh.Board;
+            await room.Until(() => opponent.Dissolve.Shown > 0);
+            var count = opponent.TopBar.Opponent.Root.Q("opponent-cards").worldBound;
+            var drop = opponent.Dissolve.Root.Q(className: CardDissolve.BackClass).worldBound;
+            Assert.Less(Vector2.Distance(drop.center, count.center), 40, "At the opponent's hand count.");
+            LayoutTests.Save(room.Sh.Viewport, "ui326-opponent-discard.png");
             await room.At(revision + 1);
             Assert.AreEqual(1, fpBoundary.Commands, "One click discards the card.");
             CollectionAssert.AreEqual(new[] { id }, fpBoundary.LastCommand.Payload.Ids);
             Assert.AreEqual(7, board.View.Hand.Count);
+            await Task.Delay((int)CardDissolve.Milliseconds + 300);
+            Assert.AreEqual(0, board.Dissolve.Shown, "Gone after the animation.");
+            Assert.AreEqual(0, opponent.Dissolve.Shown);
         }
 
         // Waits for an animated state instead of a fixed delay; heavy layouts can render slower than the 140 ms transition.

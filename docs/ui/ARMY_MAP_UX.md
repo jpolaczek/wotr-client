@@ -82,7 +82,7 @@ The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 
 | Status | Class | Appearance |
 | --- | --- | --- |
 | Hover | `:hover` | base game Lightening |
-| Legal Source | `eligible-army` | green glow under base game |
+| Legal Source | `eligible-army` | ChoiceGlow halo behind the marker (UI-301): gold rim on a warm plate, pulsing |
 | Chosen Army | `selected-force` | Gold border and lift 2 |
 | Capacity owner | `ability-owner` | gold border without lifting |
 | Pressing | `pressed` | principle UI-114 |
@@ -346,6 +346,8 @@ Army traffic path inventory (2026-10-13):
 | King's ruler's token paying for the action army | `RulerTokenId` in the sketch, `ArmyChoices` | tray, whole plan and one approval | `ActionStepRules.Matches` takes another step without a token and with paid dice; the plan of the two armies must hit one command |
 | card with route march (`ArmyEvent.RouteMovement`, e.g. Shadow marches) | `EventArmyChoices` | tray, whole plan and one approval | Several armies with a step limit are planned together (`SeparateRoutes`, `MaximumSteps`) |
 | card with rescue (`ArmyEventOrder.ReliefAttack`) | `AttackChoices` | tray | The entrance and attack form one plan |
+
+UI-289 (2026-10-19): the three tray paths above are gone. The server no longer lets a ruler token pay for armies (`KingsRulerTokens`), and every army event, route marches and relief attacks included, moves on the map and in the region panel (`CardArmyEvent`, UI-216), so `ArmyChoices`, `EventArmyChoices`, `EventArmyPlans` and `AttackChoices` were removed.
 
 The step-step movement that would still go through the tray is gone, so nothing moved. In the tray paths, the tag click continues to mark the entire army (`BoardDraft.SelectRegion`) as on the map. The transfer of the ruler's token to the map requires a change of server (step sequence without dice) and does not belong to UI-128.
 
@@ -634,3 +636,107 @@ The user's application from 2026-10-16: figure and the units in the panels are t
   under figure. The frame and filling appear only for the state: selected (gold), legal target
   (green), loss selected in battle (gold).
 - The character medallions in the battle window remain because it is designed to frame the portrait.
+
+<a id="ui-301"></a>
+## Choosable units glow like the tabs and portraits — UI-301 (2026-10-22)
+
+The owner's decision: the highlight of units a click may choose was visible but its own green; it now reads like the
+usable tabs and the Fellowship's portraits — the shared ChoiceGlow, a thick gold rim (`rgb(255, 214, 112)`, 3 px) on a
+warm plate, pulsing in the 750 ms rhythm under Motion and bright and still under Reduced motion.
+
+- **Armies on the map** (`eligible-army`): a halo behind the marker (`army-choice-glow`, 5 px larger than it, rounded
+  to the token or the base), so the plinth and figures keep their pictures and size; the halo also swells a little
+  with the pulse, which `MapCanvas` runs while any army is choosable. The `-eligible` plinth pictures are no longer
+  used. A chosen, armed or acting army shows its selection instead of the halo.
+- **Figures and portraits in the region panel** (`eligible-figure`): the gold rim and plate instead of the thin green
+  border, pulsed by `RegionHoverPanel`; a selected figure shows its selection.
+- **Reserve tokens** (`eligible-token`): the gold rim and plate over the slot (`reserve-choice-glow`), pulsed by
+  `ReinforcementRowView`, instead of the green tint.
+
+Tests: `MapArmyArtworkTests` (every state's plinth picture, and the halo only on a choosable army, larger than the
+marker), `MapVisibilityTests` (the panel figure's gold rim), `ShadowStrategy04NetworkTests` (the token's rim).
+
+<a id="ruch-przeciwnika--ui-306"></a>
+## The opponent's armies on the presented board — UI-306 (2026-10-23)
+
+An opponent's march, travel, retreat, advance, attack and capture now play on the map before the newest view is
+applied ([OPPONENT_ACTIONS_UX §6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)). The markers keep the rules above: one
+marker per region, side and field/garrison, figures or tokens by zoom, the moved and ghost states only for the player's
+own draft. During an opponent presentation:
+
+- the markers follow a staged copy of the presented view where only the recorded movers have moved, so the source shows
+  its rear guard and the destination its true count (dimmed until the flight lands);
+- only the recorded participants fly, with the same flight figures, sizes and timing as today's figure motion;
+- attackers stay at their origin; a retreat into a stronghold lands on its garrison row and a sortie leaves it;
+- the acting stack glows in the observed pale-blue light around its own figures (UI-314; before it a ring), never the
+  legal-target, choice, selected or ghost treatments;
+- the release applies the latest view without replaying the presented flights.
+
+The player's own moves are unchanged: they move by clicks and fly when the server's projection arrives.
+
+<a id="rekrutacja-przeciwnika--ui-307"></a>
+## The opponent's recruits, upgrades and removals — UI-307 (2026-10-23)
+
+An opponent's recruitment, upgrade, removal, character entry or transformation is staged on the presented board region
+by region ([OPPONENT_ACTIONS_UX §6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)): the force's marker settles to its true
+count, new figures land with the arrival accent, and a delta badge beside the marker shows the figure art, the nation's
+crest and a signed count — an upgrade as the Regular replaced by the Elite, never an extra figure. The badge and the
+trace ignore the pointer; the marker keeps its own inspection.
+
+<a id="blask-ui-314"></a>
+## Presented figures glow instead of a frame — UI-314 (2026-10-24)
+
+Owner review of the live presentation: armies and characters are not marked by a rectangle around them, they glow. A
+presented force, the march's source and destination, a character's force and the Fellowship's figure light around their
+own shapes — the plinth, the figures, the emblems and the count — in the observed pale-blue light (`PresentationGlow`, a
+zero-offset `drop-shadow` filter on the marker's artwork), fading in over 200 ms and out over 400 ms; Reduced motion
+shows it without the fades. It is never the gold ChoiceGlow halo of a choosable army, takes no pointer and moves nothing.
+New figures — recruits, an upgrade's Elite, an entering character — land and keep glowing for 1.5 s, with the delta badge
+beside them. Settlements keep their pale-blue ring. Spec: [OPPONENT_ACTIONS_UX §5](OPPONENT_ACTIONS_UX.md#slownik) and
+§6.18.
+
+<a id="region-zrodlowy--ui-323"></a>
+## The selected force's own region — UI-323 (2026-10-24)
+
+While the player moves an army, a character or a group, the region it stands in has a steady gold edge beside the destinations' green and red glow, so the source is as clear as the targets ([MAP_CONTOURS_UX](MAP_CONTOURS_UX.md#region-zrodlowy--ui-323)).
+
+<a id="pojawienie--ui-334"></a>
+## An army that appears flares and emerges — UI-334 (2026-10-25)
+
+Owner: "when units and the like appear in regions, first a flare and then a gradual appearing animation, as if the
+occlusion changed until the picture is fully clear; the new number shows and the flare disappears".
+
+- A new army marker in a region, or an army that grows, first flares (a warm soft glow behind it, 0.15 s), then a new
+  army's figures emerge from transparent to clear (0.5 s, opacity); a growing army keeps its figures. Only
+  when the army is clear does its number step to the new total, and the flare fades (`MapArmyArtwork.Emerge`,
+  `MapCanvas.SyncMarkers`, Armies.uss).
+- It applies to the player's own changes and presented ones (a recruit, an entry); an army that flies in keeps its flight
+  and arrival instead (decided one frame later, once the flights are known).
+- The first view with armies, a quiet view (reconnect, change of side, a replay's manual move) and Skip animations show
+  the state at once; Skip of a presentation ends every emergence at its final state.
+- Characters are part of their region's marker (`ArmyMarker.Characters`, counted in its total): a character standing alone
+  in a region is that region's marker and emerges like an army; a character joining an army makes it flare and step its
+  number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
+  trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
+- UI-322: the map's armies use no filter. The first version blurred the flare and the emerging figures, and a blurred
+  element on a marker made Unity's renderer fail when the panel's scale, size or target changed (`FellowshipTrackLayoutTests`,
+  `Shadow02LayoutTests`); the flare is now the soft glow texture (`move-glow`), the figures fade in opacity only, and the
+  flare joins the marker only while it shows (it leaves 0.3 s after the emergence ends).
+
+<a id="odejscie--ui-338"></a>
+## An army that leaves fades out — UI-338 (2026-10-25)
+
+Owner: "a unit that disappears from the map should also fade out slowly and smoothly instead of vanishing all at once".
+
+- The counterpart of UI-334: a marker whose figures all leave the map without a flight (killed, removed, eliminated)
+  fades where it stood from clear to transparent (0.7 s, eased at both ends, opacity) and is then
+  removed (`MapArmyArtwork.Leave`, `MapCanvas.StartLeaving`, Armies.uss). It counts as gone at once: it is no longer one
+  of the map's markers (no lookup, no tooltip, no pointer; its element is renamed `leaving-…`), and it keeps its place on
+  the map while the view moves.
+- A shrinking army keeps its figures: they dim for a moment (0.25 s, then back over 0.5 s) as its number steps down
+  (`MapArmyArtwork.Shrink`).
+- Figures a flight carries away leave with the flight (decided one frame later, once the flights are known, as UI-334's
+  arrivals are): their marker is removed at once and the shrinking source does not dim.
+- The first view, a quiet view, Reduced motion and Skip animations remove the marker at once; Skip of a presentation ends
+  every fade (`MapCanvas.EndEmerging`). The map's slice of UI-322's "a figure leaving a stack fades out".
+

@@ -94,6 +94,26 @@ namespace Wotr.EditorTests
             Assert.AreEqual(1, played.Count, "Recovering a lost answer does not replay its success.");
         }
 
+        // UI-310: a presentation's beat sounded the march when it showed it; the released view does not sound it again,
+        // and a later march sounds as before.
+        [Test]
+        public void ATrackTheShownPresentationSoundedIsNotRepeatedByTheReleasedView()
+        {
+            game.Update(View(1));
+            game.Play(new SoundRequest(SoundCue.FellowshipAdvanced, "presented/march"));
+            CollectionAssert.AreEqual(new[] { SoundCue.FellowshipAdvanced }, played, "The beat sounds its fact at once.");
+            Quiet();
+            var released = View(2);
+            released.Fellowship.Progress = 1;
+            game.Update(released);
+            Assert.AreEqual(1, played.Count, "The release does not sound the march again.");
+            Quiet();
+            var later = View(3);
+            later.Fellowship.Progress = 2;
+            game.Update(later);
+            CollectionAssert.AreEqual(new[] { SoundCue.FellowshipAdvanced, SoundCue.FellowshipAdvanced }, played);
+        }
+
         [Test]
         public void ACatchUpAfterAReconnectIsSilent()
         {

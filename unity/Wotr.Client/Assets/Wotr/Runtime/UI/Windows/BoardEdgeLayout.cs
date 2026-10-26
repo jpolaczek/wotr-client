@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -9,6 +10,8 @@ namespace Wotr.Client
     {
         public VisualElement Left { get; } = new VisualElement { name = "board-left-tabs", pickingMode = PickingMode.Ignore };
         public VisualElement Right { get; } = new VisualElement { name = "board-right-panels", pickingMode = PickingMode.Ignore };
+        // UI-324: the panels that open beside the left rail's tabs; one held open is not part of the board's middle.
+        public IReadOnlyList<VisualElement> LeftPanels { get; }
         // UI-98: the top right corner of the map, under the bar and over the hand: a small tab with the
         // Fellowship (UI-160: the Hunt Box moved to the turn console), and over it the full Fellowship and Hunt panels.
         public VisualElement Dropdowns { get; } = new VisualElement { name = "board-dropdowns", pickingMode = PickingMode.Ignore };
@@ -37,6 +40,8 @@ namespace Wotr.Client
             Right.AddToClassList("map-edge-control");
             Dropdowns.AddToClassList("board-dropdowns");
             Dropdowns.AddToClassList("map-edge-control");
+            // UI-290: a usable corner tab pulses in the same rhythm (RightColumn.uss).
+            Dropdowns.schedule.Execute(() => Dropdowns.ToggleInClassList(TabPulseClass)).Every(MapTargetGlow.PulseMilliseconds);
             Left.style.display = Right.style.display = Dropdowns.style.display = DisplayStyle.None;
             stage.Add(Left);
             board.Root.Add(Right);
@@ -52,6 +57,7 @@ namespace Wotr.Client
             DockLeft(board.Reinforcements.Root, "reinforcements");
             DockLeft(board.TableEffects.Root, "effects");
             DockLeft(board.Characters.Root, "characters");
+            LeftPanels = new[] { board.Nations.Drawer, board.Reinforcements.Root, board.TableEffects.Root, board.Characters.Root };
             AlignWithTab(board.Nations.Root, board.Nations.Drawer);
             AlignWithTab(board.Reinforcements.Tab, board.Reinforcements.Root);
             AlignWithTab(board.TableEffects.Tab, board.TableEffects.Root);
@@ -77,16 +83,13 @@ namespace Wotr.Client
             BuildCorner();
             DockDropdown(board.Fellowship.Root, "fellowship");
             board.Fellowship.VisibilityChanged += RefreshCorner;
+            board.Fellowship.UsableChanged += () => Corner.EnableInClassList(UsableClass, board.Fellowship.Usable);
             // UI-98: hovering the corner tab unrolls the Fellowship like a left tab; a decision it hosts holds it.
             // UI-162: the Hunt is a window of its own, opened from the console.
             Preview.Add(CornerKey, Corner, CornerPanels, OpenCorner, CloseCorner,
                 RightGroup, () => board.Fellowship.Held, CloseCorner);
-            // UI-220: while hiding is legal, the plaque's click hides the Fellowship instead of unrolling the panel.
-            board.Fellowship.Status.clickable = new Clickable(() =>
-            {
-                if (!board.Fellowship.RequestHide())
-                    Preview.Show(CornerKey);
-            });
+            // UI-293: the plaque's click unrolls the panel; hiding is the marker on the panel's track.
+            board.Fellowship.Status.clickable = new Clickable(() => Preview.Show(CornerKey));
             // UI-91: no "Cards N" header or help link; the hand itself is the permanent bottom of the column.
             var cards = new VisualElement { name = "edge-cards" };
             cards.AddToClassList("edge-cards");
@@ -122,6 +125,8 @@ namespace Wotr.Client
         }
 
         public const string TabPulseClass = "edge-tabs-pulse";
+        // UI-290: the corner tab while something in the Fellowship panel can be used now.
+        public const string UsableClass = "fellowship-usable";
 
         private void AddTab(Button tab, string title, string icon)
         {
@@ -138,6 +143,10 @@ namespace Wotr.Client
         {
             Corner.AddToClassList("edge-corner-tab");
             Corner.Add(board.Fellowship.Status);
+            // UI-290: the rim lies over the whole tab, so lighting it moves nothing.
+            var rim = new VisualElement { name = "edge-corner-usable", pickingMode = PickingMode.Ignore };
+            rim.AddToClassList("edge-corner-usable");
+            Corner.Add(rim);
             CornerPanels.AddToClassList("edge-corner-panels");
             CornerPanels.style.display = DisplayStyle.None;
             Dropdowns.Add(Corner);

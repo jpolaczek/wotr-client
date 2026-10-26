@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
 
@@ -18,6 +19,9 @@ namespace Wotr.Client
         private readonly HashSet<UnitKind> shown = new HashSet<UnitKind>();
         private readonly Action<string> chosen;
         private readonly string key;
+        private readonly string nation;
+        // UI-301: the tokens a click may choose pulse in ChoiceGlow's rhythm.
+        private readonly ChoicePulse pulse;
 
         public ReinforcementRowView(string key, string nation, Action<string> chosen)
         {
@@ -25,6 +29,7 @@ namespace Wotr.Client
             this.chosen = chosen;
             Root.name = "reinforcement-" + key;
             Root.AddToClassList("reinforcement-row");
+            pulse = new ChoicePulse(figures);
             Root.Add(Badge(nation));
             name.AddToClassList("reinforcement-name");
             Root.Add(name);
@@ -60,7 +65,10 @@ namespace Wotr.Client
             // A kind the current source does not offer (a Muster token during a card plan) is hidden, not left stale.
             foreach (var pair in tokens)
                 pair.Value.Button.style.display = shown.Contains(pair.Key) ? DisplayStyle.Flex : DisplayStyle.None;
+            pulse.Run(tokens.Any(pair => shown.Contains(pair.Key) && pair.Value.Button.ClassListContains(EligibleClass)));
         }
+
+        private const string EligibleClass = "eligible-token";
 
         // The card's limits of a plan and the server's reason why the nation cannot recruit; no political status.
         private static string Tooltip(ReinforcementRow row)
@@ -99,6 +107,10 @@ namespace Wotr.Client
                 Button.AddToClassList("reserve-token");
                 image.AddToClassList("reserve-token-figure");
                 count.AddToClassList("reserve-token-count");
+                // UI-301: the ChoiceGlow rim and plate of a token a click may choose, under the figure (Reinforcements.uss).
+                var halo = new VisualElement { name = "reserve-choice-glow", pickingMode = PickingMode.Ignore };
+                halo.AddToClassList("reserve-choice-glow");
+                Button.Add(halo);
                 // UI-197: the figure stands in a soft gilt glow.
                 Button.Add(IconGlow.Create("reserve-token-glow"));
                 Button.Add(image);
@@ -109,7 +121,7 @@ namespace Wotr.Client
             {
                 Button.name = state.TokenPrefix + key + "-" + figure.Kind;
                 image.sprite = FigureArtwork.Sprite(FigureAppearances.Unit(nation, figure.Kind, state.Side));
-                count.text = figure.Reserve.ToString();
+                ValuePulse.Set(count, figure.Reserve.ToString());
                 Button.userData = figure.ReserveId == null ? null : new DraftToken(DraftObject.Reserve, figure.ReserveId);
                 Button.SetEnabled(state.Interactive && figure.ReserveId != null);
                 // Outside a recruitment the reserves are there to read, not greyed as refused.
@@ -117,7 +129,7 @@ namespace Wotr.Client
                 var selected = figure.ReserveId != null && figure.ReserveId == state.Selected;
                 Button.EnableInClassList("selected", selected);
                 // UI-213: a token the player may choose now is lit, as figures are in the region panel.
-                Button.EnableInClassList("eligible-token", state.Open && state.Interactive && figure.ReserveId != null && !selected);
+                Button.EnableInClassList(EligibleClass, state.Open && state.Interactive && figure.ReserveId != null && !selected);
                 Button.tooltip = figure.Kind + " · " + figure.Reserve + " in reserve" + (!state.Open ? "" : " · " + (figure.ReserveId == null
                     ? figure.Reason.Length > 0 ? figure.Reason : "Not available now"
                     : figure.Hint.Length > 0 ? figure.Hint : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");

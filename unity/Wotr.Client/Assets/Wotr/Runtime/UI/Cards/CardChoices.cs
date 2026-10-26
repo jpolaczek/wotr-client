@@ -13,13 +13,11 @@ namespace Wotr.Client
         private readonly PlayerView view;
         private readonly TurnDraft draft;
         private readonly Action<Action> edit;
-        private readonly Action<string> inspect;
-        private readonly VisualElement footer;
         private readonly CardInspector inspector;
         private readonly Func<VisualElement> reinforcements;
 
-        public CardChoices(VisualElement root, VisualElement footer, PlayerView view, TurnDraft draft, Action<Action> edit,
-            BoardPresentation data, Action<string> inspect, CardInspector inspector = null, Func<VisualElement> reinforcements = null)
+        public CardChoices(VisualElement root, PlayerView view, TurnDraft draft, Action<Action> edit, BoardPresentation data,
+            CardInspector inspector = null, Func<VisualElement> reinforcements = null)
         {
             this.data = data;
             this.reinforcements = reinforcements;
@@ -27,12 +25,12 @@ namespace Wotr.Client
             this.view = view;
             this.draft = draft;
             this.edit = edit;
-            this.inspect = inspect;
-            this.footer = footer;
             var option = DraftOptions.For(view, draft);
+            // UI-289: an Event is played from its hand card; its nation and its use are chosen on the board (the tray's
+            // DirectCard), so the tray lists neither.
             if (draft.Kind == CommandKind.PlayEvent)
-                Event(root, option);
-            else if (draft.Kind == CommandKind.DiscardProtection)
+                return;
+            if (draft.Kind == CommandKind.DiscardProtection)
                 Protection(root, option);
             else if (draft.Kind == CommandKind.DiscardCards)
             {
@@ -59,37 +57,6 @@ namespace Wotr.Client
             cost.tooltip = "Choose one Army Event card and one Character Event card, then an action die. Cards are discarded face down.";
         }
 
-        private void Event(VisualElement root, ActionOption option)
-        {
-            var card = CardDraft.Event(draft, option);
-            if (card == null)
-            {
-                root.Add(new Label("Choose an available card from your hand."));
-                return;
-            }
-            var title = BoardScreen.Button(CardLibrary.Title(card.CardId), () => inspect(card.CardId));
-            title.AddToClassList("draft-card");
-            root.Add(title);
-            var costs = card.Costs.Where(c => c.DieId == draft.Payload.DieId).ToList();
-            if (costs.Count > 1)
-            {
-                var row = BoardScreen.Row();
-                row.Add(new Label("Use as"));
-                root.Add(row);
-                foreach (var cost in costs)
-                    row.Add(Choice(CardDrawDraft.Label(cost), "card-cost-" + cost.Face,
-                        () => draft.Payload.Face == cost.Face && draft.Payload.AbilityId == cost.AbilityId,
-                        () => draft.Change(p => { p.Face = cost.Face; p.CardCost = cost.Face; p.AbilityId = cost.AbilityId; })));
-            }
-            if (card.NationTargets.Count == 0)
-                return;
-            var nations = BoardScreen.Row();
-            root.Add(nations);
-            foreach (var id in card.NationTargets)
-                nations.Add(Choice(FigureGrid.Name(id), "card-nation-" + id,
-                    () => draft.Payload.NationId == id, () => draft.Change(p => p.NationId = id)));
-        }
-
         private void Effect(VisualElement root, ActionOption option)
         {
             if (view.Decision?.Presentation == "Deck")
@@ -110,16 +77,10 @@ namespace Wotr.Client
                 refresh.Add(CorruptionInspectionChoices.Render(root, view, option, draft, edit));
                 return;
             }
-            if (view.Decision?.Presentation is "ArmyFigure" or "ArmyFigures")
-            {
-                ArmyFigures(root, option);
+            // UI-215/UI-289: a card's figures and the King's companions are chosen in the region panel and on the map
+            // (CardFigureDraft), never in the tray.
+            if (view.Decision?.Presentation is "ArmyFigure" or "ArmyFigures" or "CompanionDestination")
                 return;
-            }
-            if (view.Decision?.Presentation == "CompanionDestination")
-            {
-                CompanionDestination(root, option);
-                return;
-            }
             if (view.Decision?.Presentation == "RegionOrShelter")
             {
                 var shelter = option.EffectChoices.FirstOrDefault(c => c.Id == "scouts.shelter");
@@ -136,15 +97,13 @@ namespace Wotr.Client
                 BoardChoice(root, option);
                 return;
             }
-            var figures = new EffectFigurePicker(root, view, option, draft, edit);
-            refresh.Add(figures.Refresh);
             var currentGroup = "";
             VisualElement row = null;
             foreach (var id in option.EligibleIds)
             {
                 // UI-245: a battle die or figure is chosen on itself in the Battle window; UI-249: a Companion of The
                 // Breaking of the Fellowship on its portrait in the Hunt panel; UI-247: a battle reaction on its portrait.
-                if (figures.Rendered.Contains(id) || BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
+                if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
                 // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row; UI-272: so
@@ -168,43 +127,10 @@ namespace Wotr.Client
                     row.name = "effect-group-" + currentGroup;
                     if (currentGroup.Length > 0)
                         row.Add(new Label(currentGroup));
-                    var inlineHits = figures.Rendered.Count > 0 && currentGroup == "Hits";
-                    if (inlineHits)
-                        row.AddToClassList("effect-hit-controls");
-                    (inlineHits ? footer : root).Add(row);
+                    root.Add(row);
                 }
                 row.Add(EffectButton(option, choice));
             }
-        }
-
-        private void ArmyFigures(VisualElement root, ActionOption option)
-        {
-            var regions = option.EffectChoices.GroupBy(EffectChoiceDraft.FigureRegion).ToList();
-            string Region() => draft.Payload.RegionId.Length > 0 ? draft.Payload.RegionId : regions.Count == 1 ? regions[0].Key : "";
-            var heading = new Label { name = "army-figure-region" };
-            root.Add(heading);
-            refresh.Add(() => heading.text = Region().Length == 0 ? "Choose a highlighted region on the map."
-                : RegionName(Region()) + (view.Decision.Presentation == "ArmyFigure" ? " · Choose one figure"
-                    : " · " + draft.Payload.Ids.Count + " / " + option.Maximum + " selected"));
-            foreach (var group in regions)
-            {
-                var row = BoardScreen.Row();
-                refresh.Add(() => row.style.display = group.Key == Region() ? DisplayStyle.Flex : DisplayStyle.None);
-                foreach (var choice in group)
-                    row.Add(EffectButton(option, choice));
-                root.Add(row);
-            }
-        }
-
-        private void CompanionDestination(VisualElement root, ActionOption option)
-        {
-            var king = view.Characters.First(c => c.DefinitionId is "base.character.strider" or "base.character.aragorn");
-            var row = BoardScreen.Row();
-            row.Add(new Label(CharacterLibrary.Name(king.DefinitionId) + " travels"));
-            foreach (var choice in option.EffectChoices.Where(c => c.SelectionGroup == "companions"))
-                row.Add(EffectButton(option, choice));
-            root.Add(row);
-            BoardChoice(root, option);
         }
 
         private void RegionAlternatives(VisualElement root, ActionOption option)
@@ -227,8 +153,7 @@ namespace Wotr.Client
             root.Add(summary);
             refresh.Add(() =>
             {
-                var selected = option.EffectChoices.FirstOrDefault(c => draft.Payload.Ids.Contains(c.Id) &&
-                    (view.Decision.Presentation != "CompanionDestination" || c.SelectionGroup == "destination"));
+                var selected = option.EffectChoices.FirstOrDefault(c => draft.Payload.Ids.Contains(c.Id));
                 summary.text = view.Decision.Presentation == "ActionDie"
                     ? option.Maximum > 1 ? "Choose up to " + option.Maximum + " dice · " + draft.Payload.Ids.Count + " → Hunt"
                         : selected == null ? "Choose a Character die from your pool · C → W" : "Selected die · C → W"
@@ -264,8 +189,8 @@ namespace Wotr.Client
             if (leadership)
                 label = (view.Characters.Any(c => c.Id == choice.SourceId) ? "WK" : "N") + " ◆";
             var compactCharacter = view.Decision?.Presentation == "FellowshipCompanions" ||
-                ((choice.SelectionGroup is "Companion" or "Sacrifice" or "companions") || view.Decision?.Presentation is "LeaderOrCompanion" or "Companion") && view.Characters.Any(c => c.Id == id);
-            var compactUnit = choice.SelectionGroup is "Sacrifice" or "recruits" || view.Decision?.Presentation is "ArmyFigure" or "ArmyFigures" or "ReserveFigures" or "LeaderOrCompanion"
+                ((choice.SelectionGroup is "Companion" or "Sacrifice") || view.Decision?.Presentation is "LeaderOrCompanion" or "Companion") && view.Characters.Any(c => c.Id == id);
+            var compactUnit = choice.SelectionGroup is "Sacrifice" or "recruits" || view.Decision?.Presentation is "ReserveFigures" or "LeaderOrCompanion"
                 ? view.Units.FirstOrDefault(u => u.Id == id) : null;
             if (compactCharacter)
                 label = CharacterLibrary.ShortName(view, id);
@@ -310,7 +235,9 @@ namespace Wotr.Client
         private void InspectSource(Button button, EffectChoiceView choice)
         {
             button.tooltip = choice.Detail.Length > 0 ? choice.Detail : choice.Cost == "DiscardTableCard" ? "Discard this table card to respond" : "Use this response";
-            if (!CardLibrary.Cards.ContainsKey(choice.SourceId))
+            // UI-285: a Hunt response sends with its click, so it pins no card that would read as a confirmation still
+            // waiting; its tooltip says what it does and the Effects panel shows the card.
+            if (!CardLibrary.Cards.ContainsKey(choice.SourceId) || view.Hunt != null && draft.Kind == CommandKind.RespondEffect)
                 return;
             inspector?.Observe(button, choice.SourceId,
                 avoid: view.Hunt != null && draft.Kind == CommandKind.RespondEffect ? () => HuntReactionView.Panel(button) : null);
@@ -341,9 +268,6 @@ namespace Wotr.Client
             var die = view.Battle?.Attacker.Dice.Concat(view.Battle.Defender.Dice).FirstOrDefault(d => d.Id == id);
             return die != null ? die.Result + (die.ConvertedHit ? " → Hit" : "") : CardLibrary.Title(id);
         }
-
-        public static void Trail(VisualElement root, PlayerView view, BoardPresentation data, Action<string> inspect, CardInspector inspector = null) =>
-            EffectTrailChoices.Render(root, view, data, inspect);
 
         public void Refresh()
         {

@@ -362,3 +362,45 @@ UI-63 reiterated the shared history and the actual awakening of the sovereign in
 ## Loss menu — check UI-72
 
 The new network trial uses the actual Losses FP decision, with the active battle in the overriding settlement frame. The selected unit remains in exactly the same SavedTurnDraft after Menu/Settings/Help and Esc, without command, issue of the cost or change of projection of any page. Both views and four layouts retain one tray host. The pre-attack status is not allowed as a replacement profile input of battle. Results and other regressions: UI-72.
+
+<a id="wskazówki-bitwy--ui-303"></a>
+## Battle and Hunt presentation cues — UI-303 (2026-10-23)
+
+The activity fetch reads new steps from the **All** feed, so the automatic battle and Hunt steps (`Actor=null`) reach
+the client alongside the opponent's decisions. The pennants, their BattleId grouping and the read markers above are unchanged.
+`OpponentPresentationModel` turns the same pages into presentation cues
+([OPPONENT_ACTIONS_UX §9.1](OPPONENT_ACTIONS_UX.md#kontrakt-wskazowek)):
+
+- The battle's opening snapshot is the **attack** (attacker region, then defender region) for the defender only; the
+  attacker's own attack is remembered, never played back to the attacker, and a battle first seen later (opened in
+  legacy history) has no late attack scene.
+- Each later snapshot whose public state changed is one **battle** cue (rolls, rerolls, hits, cards). A shared step makes
+  the same cue ids for both players, whoever's click completed it.
+- Casualties are **loss** cues from `LossDetails`, a downgrade with its replacement, never also a removal.
+- An opponent's committed Combat card is a back until the reveal; both reveals are public card cues, once each.
+- Hunt steps of one chain (`HuntChainId`) become Hunt cues once, even when the chain's end is recorded twice.
+
+Checks: EditMode `OpponentPresentationModelTests` on the recorded attack and Hunt (both viewers); PlayMode
+`LiveActivityNetworkTests` compares both clients' cues and their final boards.
+
+<a id="atak-i-zdobycie--ui-306"></a>
+## Attack, retreat, advance and capture on the map — UI-306 (2026-10-23)
+
+An opponent's attack is shown before its battle window opens: the attackers are traced where they stand and the
+defended force and region are traced too, without moving anything; the window opens at the release, at its normal
+host. A retreat or advance returns to the map as a recorded movement of exactly its participants (an empty advance
+moves nothing), and a capture changes the settlement's gem with a "+N VP" / "−N VP" badge only for a scoring
+settlement ([OPPONENT_ACTIONS_UX §6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306)). Casualties and other figure changes inside
+a battle stay in the battle window. The player's own click (their retreat, their advance) moves no camera.
+
+<a id="ui-311"></a>
+## Battle rounds in the window — UI-311 (2026-10-24)
+
+The opponent's battle rounds play in the battle window from the recorded public snapshots
+([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311)).
+
+- **Order.** A decision's final state follows the states on the way, so a round never steps back.
+- **Rounds.** The reveal holds 3 s, each roll 1 s, and committed losses 1 s. Later rounds stay in the same window.
+- **The map.** A retreat, an advance and a capture return to the map. A siege extension's cost is shown as its figure
+  change.
+- **No extra controls.** No round-level control, no modal and no combat log over the map are added.

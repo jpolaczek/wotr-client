@@ -228,7 +228,7 @@ namespace Wotr.Client
                     Opening?.Invoke();
                     Drawer.BringToFront();
                 }
-                Drawer.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                Appearance.Display(Drawer, visible);
                 Root.EnableInClassList("selected", visible);
             }
             Window?.Refresh();

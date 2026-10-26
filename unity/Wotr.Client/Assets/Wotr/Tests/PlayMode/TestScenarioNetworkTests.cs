@@ -32,6 +32,15 @@ namespace Wotr.PlayTests
             Assert.IsNotNull(client.Root.Q<Button>("test-scenario-sh-elven-ring"), "The menu lists the server catalog.");
             await Task.Delay(120, token);
             LayoutTests.Save(client.Panel.targetTexture, "test03-scenario-list.png");
+            // UI-295: typing a name keeps only the matching scenarios; the × brings the tab back.
+            client.Root.Q<TextField>("test-scenario-search").value = "elven ring";
+            await Task.Delay(120, token);
+            Assert.IsNotNull(client.Root.Q<Button>("test-scenario-sh-elven-ring"));
+            Assert.IsNull(client.Root.Q<Button>("test-scenario-fp-pass"), "Only matching names stay.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui295-scenario-search.png");
+            await ClickReady(client.Root, "clear-test-scenario-search", token);
+            await Task.Delay(120, token);
+            Assert.AreEqual("", client.Root.Q<TextField>("test-scenario-search").value);
             await ClickReady(client.Root, "test-scenario-fp-pass", token);
             await Live(client, Side.FreePeoples, token);
             var first = client.Board.View;

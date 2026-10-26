@@ -50,7 +50,7 @@ namespace Wotr.Client
             initiator ??= steps.FirstOrDefault(step => step.Actor.HasValue)?.Actor;
             var lines = Results(steps, data).Distinct().ToList();
             if (lines.Count == 0 && steps.Count > 0)
-                lines.Add(Recorded(steps.Last(), initiator));
+                lines.Add(Recorded(steps.Last(), initiator, data));
             var card = PlayedCard(steps);
             return new ActionResult(Header(command, steps, card, data), Fit(lines), card, Die(steps));
         }
@@ -269,8 +269,10 @@ namespace Wotr.Client
             return cost?.Use ?? cost?.Face;
         }
 
-        // The action's own record when no fact describes a result, without the side the card already shows.
-        private static string Recorded(ActionLogStep step, Side? actor) => ActionCardText.WithoutSide(step.Text, actor ?? step.Actor);
+        // The action's own record when no fact describes a result, with names (UI-331), without the side the card already
+        // shows.
+        private static string Recorded(ActionLogStep step, Side? actor, BoardPresentation data) =>
+            ActionCardText.WithoutSide(ReadableText.Of(step.Text, data), actor ?? step.Actor);
 
         private static string Header(CommandKind? command, List<ActionLogStep> steps, string card, BoardPresentation data)
         {

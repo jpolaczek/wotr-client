@@ -16,7 +16,7 @@ namespace Wotr.Tests
             var draft = new TurnDraft();
             draft.Choose(CommandKind.RespondEffect);
             var root = new VisualElement();
-            var choices = new CardChoices(root, new VisualElement(), view, draft, change => change(), BoardPresentation.Load(), _ => { });
+            var choices = new CardChoices(root, view, draft, change => change(), BoardPresentation.Load());
             var button = root.Q<Button>("effect-choice-" + choice.Id);
             var detail = button.Q<Label>("hunt-reaction-detail");
             Assert.AreEqual(CardLibrary.Title(choice.SourceId), button.Q<Label>("hunt-reaction-source").text);

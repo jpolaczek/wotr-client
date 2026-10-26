@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+  <!-- UI-305: Skip the opponent's presentation to the latest state. -->
+  <g filter="url(#lift)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.5 9 L13 16 L6.5 23 M14 9 L20.5 16 L14 23 M25 8.5 V23.5" style="stroke: var(--ink)" stroke-width="5.4"/>
+    <path d="M6.5 9 L13 16 L6.5 23 M14 9 L20.5 16 L14 23 M25 8.5 V23.5" stroke="url(#gilt)" stroke-width="3.2"/>
+  </g>
+</svg>

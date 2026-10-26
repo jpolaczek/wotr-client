@@ -60,7 +60,7 @@ namespace Wotr.PlayTests
             // A choice may still be on its way to the server; measure the tray its reply rebuilds.
             await room.Until(() => client.Board.Tray.enabledSelf);
             await room.Settle();
-            var source = client.Board.Tray.Query<Button>(className: "committed-choice").ToList().FirstOrDefault();
+            var source = client.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().FirstOrDefault();
             if (source != null)
                 CardNetworkTests.Click(source);
             foreach (var width in new[] { 1366, 1920 })

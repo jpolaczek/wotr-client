@@ -1,3 +1,26 @@
+/* DIST-18: the exit lock — from Restart and update or Decline and quit until the game quits, a grey veil over every
+   screen, Settings and the update window, with the step it is at; the screen beneath loses its colour. */
+.exit-lock {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(70, 70, 70, 0.62);
+}
+.exit-lock-step {
+    padding: 10px 22px;
+    border-radius: 6px;
+    background-color: rgba(26, 24, 23, 0.92);
+    color: rgb(231, 228, 215);
+    font-size: 18px;
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+}
+.exit-locked > #client-content { filter: grayscale(1); }
+.motion-enabled > #client-content { transition-property: filter; transition-duration: 0.18s; }
+
 /* The required-update window keeps the quit window's look; three actions in fixed places. */
 .update-window {
     width: 560px;

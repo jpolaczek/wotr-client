@@ -46,6 +46,8 @@ namespace Wotr.PlayTests
                 Assert.Greater(log.Model.StepCount, 120);
                 Assert.Less(log.List.RenderedCount, 12);
                 Assert.AreEqual(0, displayed);
+                // UI-331: what the Log shows reads with names, never codes.
+                AssertNoCodes(log.Root);
                 var first = log.Model.Rows[0].Group;
                 var entry = log.Root.Q<Button>("log-open-" + first.Action.Id);
                 Point(entry);
@@ -64,6 +66,7 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 Assert.IsTrue(log.Pinned);
                 Assert.AreEqual(first.Action.Version, log.Card.Displayed.Action.Version);
+                AssertNoCodes(log.Popup);
                 Assert.AreEqual(revision, board.View.Revision);
                 Assert.AreEqual(selection, board.Map.Selected, "Reading a recorded action preserves the active map selection.");
                 if (board.ActionHistory.Context.Regions.Count == 0)
@@ -92,6 +95,21 @@ namespace Wotr.PlayTests
                 Assert.That(log.List.Root.scrollOffset.y, Is.EqualTo(offset).Within(1));
                 log.Close();
             }
+        }
+
+        private static readonly System.Text.RegularExpressions.Regex Code =
+            new System.Text.RegularExpressions.Regex(@"\b(?:base|lords|kings|fate|council)\.[A-Za-z0-9]|\bFreePeoples\b");
+
+        // Every shown label, its tooltip and every button's tooltip under the root.
+        internal static void AssertNoCodes(VisualElement root)
+        {
+            var shown = root.Query<Label>().ToList().Where(label => label.resolvedStyle.display != DisplayStyle.None)
+                .SelectMany(label => new[] { label.text, label.tooltip })
+                .Concat(root.Query<Button>().ToList().Select(button => button.tooltip))
+                .Where(text => !string.IsNullOrEmpty(text)).ToList();
+            Assert.IsNotEmpty(shown, "The scan reads something.");
+            var leaks = shown.Where(text => Code.IsMatch(text)).ToList();
+            Assert.IsEmpty(leaks, string.Join("\n", leaks.Take(10)));
         }
 
         private static async Task Increment()

@@ -43,18 +43,35 @@ namespace Wotr.Client
         public MapSovereignMarkers SovereignMarkers { get; }
         // UI-212: a card's planned Nazgûl flights at their destinations.
         public MapPlannedRecruits PlannedFlights { get; }
+        // UI-294: the companions a card's journey moves, drawn faintly at their destinations.
+        public MapPlannedRecruits PlannedJourneys { get; }
         public bool Panning => panning;
         public MapFellowshipMarker FellowshipMarker { get; }
         public MapMordorTrack MordorTrack { get; }
         // The HUD panels over the map; region names hide under them (UI-199: forces do not avoid them).
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
+        // UI-305: the player moved the camera (wheel zoom or a right/middle-drag pan), never a programmatic move.
+        public event Action Steered;
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
         public const string SovereignTargetClass = "sovereign-target";
         private Func<string, string> sovereignHint = _ => null;
+        // UI-301: the armies a click may choose pulse together in ChoiceGlow's rhythm.
+        private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
         private readonly Dictionary<(string, Side, bool), Marker> markers = new Dictionary<(string, Side, bool), Marker>();
         private readonly List<(string, Side, bool)> obsolete = new List<(string, Side, bool)>();
+        // UI-334: armies that appeared or grew in the last sync; they flare and emerge on the next frame unless a flight
+        // brings them (it has its own arrival). The first sync with armies only sets the state; a quiet update too.
+        private readonly List<(Marker Marker, int? Before)> emerging = new List<(Marker, int?)>();
+        // UI-338: markers whose figures all left (they count as gone at once: no lookup, no pointer) and armies that
+        // shrank; on the next frame a flight that carries their figures away spares them the fade.
+        private readonly List<Marker> departing = new List<Marker>();
+        private readonly List<Marker> shrinking = new List<Marker>();
+        private readonly List<LeavingMarker> leaving = new List<LeavingMarker>();
+        private bool changesScheduled;
+        private bool armiesShown;
+        public bool Quiet { get; set; }
         private readonly List<Rect> used = new List<Rect>();
         private readonly List<Rect> covered = new List<Rect>();
         // UI-126: the forces of a region in row order (garrison first, then field forces by side).
@@ -88,6 +105,7 @@ namespace Wotr.Client
             name = "map";
             focusable = true;
             AddToClassList("map");
+            armyPulse = new ChoicePulse(this);
             Renderer.Prepare(data);
             Renderer.SetPoliticalView(ViewPreference.Political);
             Add(Renderer.Root);
@@ -118,6 +136,7 @@ namespace Wotr.Client
             {
                 Camera.ZoomAt(e.localMousePosition, Mathf.Exp(-e.delta.y * .06f));
                 Refresh();
+                Steered?.Invoke();
                 e.StopPropagation();
             });
             RegisterCallback<PointerDownEvent>(PointerDown);
@@ -150,6 +169,7 @@ namespace Wotr.Client
             PlannedFlights = new MapPlannedRecruits(this, "planned-flight", removable: false);
             SovereignMarkers = new MapSovereignMarkers(this);
             SovereignMarkers.Apply(Data);
+            PlannedJourneys = new MapPlannedRecruits(this, "planned-journey", removable: false);
         }
 
         private void PointerDown(PointerDownEvent e)
@@ -220,6 +240,7 @@ namespace Wotr.Client
             Camera.Pan += now - previous;
             previous = now;
             Refresh();
+            Steered?.Invoke();
         }
 
         public bool CancelPan()
@@ -424,6 +445,7 @@ namespace Wotr.Client
                 marker.Button.EnableInClassList("eligible-army", eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison)));
                 ApplySovereignHint(marker);
             }
+            armyPulse.Run(eligibleSources.Count > 0);
             Redraw();
         }
 
@@ -460,6 +482,7 @@ namespace Wotr.Client
             PlannedRecruits?.Layout();
             PlannedFlights?.Layout();
             SovereignMarkers?.Layout();
+            PlannedJourneys?.Layout();
             HistoryOverlay?.Layout();
             Figures?.Layout();
             covered.AddRange(used);
@@ -525,7 +548,9 @@ namespace Wotr.Client
             {
                 var key = (army.RegionId, army.Side, army.Garrison);
                 obsolete.Remove(key);
-                if (!markers.TryGetValue(key, out var marker))
+                var fresh = !markers.TryGetValue(key, out var marker);
+                var before = fresh ? (int?)null : marker.Army.Total;
+                if (fresh)
                 {
                     marker = CreateMarker(army);
                     markers.Add(key, marker);
@@ -533,14 +558,23 @@ namespace Wotr.Client
                 }
                 marker.Army = army;
                 marker.Artwork.Apply(army);
+                if (armiesShown && !Quiet && (fresh || army.Total > before))
+                    Emerge(marker, before);
+                else if (Animated() && army.Total < before)
+                    Later(shrinking, marker);
                 marker.Button.EnableInClassList(MapArmyArtwork.MovedClass, marched.Contains(key));
                 ApplySovereignHint(marker);
             }
             foreach (var key in obsolete)
             {
-                markers[key].Button.RemoveFromHierarchy();
+                var gone = markers[key];
                 markers.Remove(key);
+                if (Animated())
+                    Depart(gone);
+                else
+                    gone.Button.RemoveFromHierarchy();
             }
+            armiesShown |= Data.Armies.Count > 0;
             regionMarkers.Clear();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
                 regionMarkers.Add(group.Key, group.OrderBy(m => m.Army.Garrison ? 0 : 1).ThenBy(m => m.Army.Side).ToList());
@@ -583,6 +617,119 @@ namespace Wotr.Client
             return LocalMarkerRect(RowCentre(0, anchor, size, Data.Regions[region].Settlement != null), size);
         }
 
+        private bool Animated() => armiesShown && !Quiet && !Reduced();
+
+        private void Emerge(Marker marker, int? before)
+        {
+            if (Reduced())
+                return;
+            emerging.Add((marker, before));
+            ScheduleChanges();
+        }
+
+        private void Depart(Marker marker)
+        {
+            marker.Button.name = "leaving-" + marker.Button.name;
+            marker.Button.pickingMode = PickingMode.Ignore;
+            marker.Button.tooltip = "";
+            Later(departing, marker);
+        }
+
+        private void Later(List<Marker> list, Marker marker)
+        {
+            list.Add(marker);
+            ScheduleChanges();
+        }
+
+        private void ScheduleChanges()
+        {
+            if (changesScheduled)
+                return;
+            changesScheduled = true;
+            schedule.Execute(StartChanges);
+        }
+
+        // The frame after a sync: the view's flights are known, so a flight's own figures neither emerge nor fade.
+        private void StartChanges()
+        {
+            changesScheduled = false;
+            foreach (var (marker, before) in emerging)
+                if (markers.ContainsValue(marker) && !Arriving(marker))
+                    marker.Artwork.Emerge(before);
+            emerging.Clear();
+            foreach (var marker in shrinking)
+                if (markers.ContainsValue(marker) && !Departing(marker))
+                    marker.Artwork.Shrink();
+            shrinking.Clear();
+            foreach (var marker in departing)
+                StartLeaving(marker);
+            departing.Clear();
+        }
+
+        private bool Arriving(Marker marker) => Figures?.Arriving(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
+
+        private bool Departing(Marker marker) => Figures?.Departing(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
+
+        private void StartLeaving(Marker marker)
+        {
+            if (marker.Button.parent == null)
+                return;
+            if (Departing(marker))
+            {
+                marker.Button.RemoveFromHierarchy();
+                return;
+            }
+            var gone = new LeavingMarker(marker, AnchorOf(marker.Army.RegionId));
+            leaving.Add(gone);
+            marker.Artwork.Leave(() => Gone(gone));
+        }
+
+        private void Gone(LeavingMarker gone)
+        {
+            gone.Marker.Button.RemoveFromHierarchy();
+            leaving.Remove(gone);
+        }
+
+        // A fading marker stays where it stood on the map while the view moves.
+        private void LayoutLeaving()
+        {
+            foreach (var gone in leaving)
+            {
+                var position = AnchorOf(gone.Marker.Army.RegionId) + gone.Offset;
+                gone.Marker.Button.style.left = position.x;
+                gone.Marker.Button.style.top = position.y;
+            }
+        }
+
+        private Vector2 AnchorOf(string region)
+        {
+            var anchor = Data.Shapes[region].Anchor;
+            return Camera.ToScreen(new Vector2(anchor[0], anchor[1]));
+        }
+
+        // Skip shows the latest state: every army stands clear with its number, and every departed one is gone.
+        public void EndEmerging()
+        {
+            emerging.Clear();
+            shrinking.Clear();
+            foreach (var marker in markers.Values)
+                marker.Artwork.EndEmerge();
+            foreach (var marker in departing)
+                marker.Button.RemoveFromHierarchy();
+            departing.Clear();
+            foreach (var gone in leaving)
+                gone.Marker.Button.RemoveFromHierarchy();
+            leaving.Clear();
+        }
+
+        private bool Reduced()
+        {
+            for (VisualElement element = this; element != null; element = element.parent)
+                if (element.ClassListContains("reduced-motion"))
+                    return true;
+            return false;
+        }
+
         private Marker CreateMarker(ArmyMarker army)
         {
             var regionId = army.RegionId;
@@ -609,6 +756,15 @@ namespace Wotr.Client
                 covered.AddRange(Occlusions().Where(r => r.Overlaps(contentRect)));
         }
 
+        // UI-306: where one force's marker stands (map-local), for an observed trace; null while it is not shown.
+        public Rect? MarkerBounds(string region, Side side, bool garrison) =>
+            markers.TryGetValue((region, side, garrison), out var marker) && marker.Visible ? marker.Bounds : (Rect?)null;
+
+        // UI-314: the artwork of one force's marker (its plinth, figures, emblems and count), for the observed glow; null
+        // while it is not shown.
+        public VisualElement MarkerArtwork(string region, Side side, bool garrison) =>
+            markers.TryGetValue((region, side, garrison), out var marker) && marker.Visible ? marker.Artwork?.Root ?? marker.Button : null;
+
         public IEnumerable<Rect> MarkerBounds(string region)
         {
             foreach (var marker in markers.Values)
@@ -628,6 +784,7 @@ namespace Wotr.Client
                 return;
             foreach (var entry in regionMarkers)
                 LayoutRegion(entry.Key, entry.Value);
+            LayoutLeaving();
         }
 
         private void LayoutRegion(string region, List<Marker> row)
@@ -796,6 +953,19 @@ namespace Wotr.Client
             public bool Selected;
             public bool Visible;
             public Rect Bounds;
+        }
+
+        // UI-338: a departed marker's place relative to its region's point when it began to fade.
+        private sealed class LeavingMarker
+        {
+            public readonly Marker Marker;
+            public readonly Vector2 Offset;
+
+            public LeavingMarker(Marker marker, Vector2 anchor)
+            {
+                Marker = marker;
+                Offset = marker.Bounds.position - anchor;
+            }
         }
     }
 }

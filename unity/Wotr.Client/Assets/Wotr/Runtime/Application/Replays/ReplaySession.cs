@@ -13,6 +13,9 @@ namespace Wotr.Client
     // losing the window's focus pauses. Later reads replace earlier ones; the board never shows a step out of order.
     // REPLAY-06: Play shows each step with its flights, tracks and sounds; the first view, a manual move and a change
     // of side only set the point of reference, silently, and stop whatever was still moving or sounding.
+    // UI-328: Play also presents each step's actions as a live game does — every side's, from the side shown, with only that
+    // side's hidden facts (ReplayPresentation) — and waits for the presentation before the speed's pause; Pause skips the
+    // beat that plays.
     public sealed class ReplaySession : IDisposable
     {
         public static readonly IReadOnlyDictionary<ReplaySpeed, double> Pauses = new Dictionary<ReplaySpeed, double>
@@ -21,9 +24,9 @@ namespace Wotr.Client
         };
 
         // Play waits for a step's presentation in short looks, never longer than MaxPresentation (so a stuck animation,
-        // muted sound or reduced motion never holds it up).
+        // muted sound or reduced motion never holds it up); UI-328: long enough for a step's presented beats.
         public const double PresentationPoll = 0.05;
-        public const double MaxPresentation = 3;
+        public const double MaxPresentation = 20;
         private readonly ReplayArchive archive;
         private readonly BoardScreen board;
         private readonly ReplaySource source;
@@ -32,6 +35,7 @@ namespace Wotr.Client
         private readonly ObserverInteraction interaction;
         private readonly ObserverConsole console;
         private readonly GameSounds sounds;
+        private readonly ReplayPresentation presentation;
         private readonly Func<TimeSpan, CancellationToken, Task> delay;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private CancellationTokenSource playing;
@@ -44,6 +48,8 @@ namespace Wotr.Client
         public int Count => source.Count;
         public ReplaySource Source => source;
         public Task Shown { get; private set; } = Task.CompletedTask;
+        // UI-328: a presented beat of the step Play shows is playing (tests watch it).
+        public bool PresentingCue => presentation.Playback?.Current != null;
 
         public ReplaySession(ReplayArchive archive, BoardScreen board, Func<TimeSpan, CancellationToken, Task> delay = null,
             SoundModule soundModule = null)
@@ -57,6 +63,7 @@ namespace Wotr.Client
             interaction = new ObserverInteraction(board);
             console = new ObserverConsole(board);
             sounds = soundModule == null ? null : new GameSounds(soundModule, board, NoCommands.Instance, false);
+            presentation = new ReplayPresentation(archive, board, view => Apply(view, false));
             board.Observe(Perspective);
             board.GameEnd.SetReplay(ReplaySaveState.Unavailable, "You are watching a saved replay.");
             board.SetConnection("Replay");
@@ -113,6 +120,7 @@ namespace Wotr.Client
         {
             if (playing == null)
                 return;
+            presentation.Skip();
             playing.Cancel();
             playing.Dispose();
             playing = null;
@@ -132,9 +140,10 @@ namespace Wotr.Client
                 {
                     Shown = Show(Position + 1, false);
                     await Shown;
+                    // UI-328: the last step too is presented to its end before Play stops.
+                    await Presented(token);
                     if (Position >= Count - 1)
                         break;
-                    await Presented(token);
                     await delay(TimeSpan.FromSeconds(Pauses[Speed]), token);
                 }
             }
@@ -146,7 +155,7 @@ namespace Wotr.Client
         private async Task Presented(CancellationToken token)
         {
             var looks = (int)Math.Round(MaxPresentation / PresentationPoll);
-            for (var look = 0; board.Presenting && look < looks; look++)
+            for (var look = 0; (board.Presenting || presentation.Holding) && look < looks; look++)
                 await delay(TimeSpan.FromSeconds(PresentationPoll), token);
         }
 
@@ -178,11 +187,27 @@ namespace Wotr.Client
             if (disposed || ticket != generation)
                 return;
             var view = Perspective == Side.FreePeoples ? frame.FreePeoples : frame.Shadow;
-            var decision = view.Decision;
-            view.Decision = null;
             history.Show(Perspective, view.Revision);
             view.History = history.Recent(50);
             reports.Cut(view.Revision);
+            Position = step;
+            if (quiet)
+            {
+                presentation.Restart(Perspective, view.Revision, sounds);
+                Apply(view, true);
+            }
+            else
+                presentation.Present(view);
+            Refresh();
+        }
+
+        // The board shows the step: at once for a point of reference, after its presentation when Play shows it.
+        private void Apply(PlayerView view, bool quiet)
+        {
+            if (disposed)
+                return;
+            var decision = view.Decision;
+            view.Decision = null;
             if (quiet)
             {
                 board.ApplyQuietly(view);
@@ -192,8 +217,6 @@ namespace Wotr.Client
                 board.Apply(view);
             sounds?.Update(view);
             console.Apply(view, decision);
-            Position = step;
-            Refresh();
         }
 
         private void Refresh()
@@ -216,6 +239,7 @@ namespace Wotr.Client
             lifetime.Cancel();
             lifetime.Dispose();
             board.Viewing.PerspectiveChosen -= Turn;
+            presentation.Dispose();
             interaction.Dispose();
             sounds?.Dispose();
             archive.Dispose();

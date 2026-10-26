@@ -550,3 +550,202 @@ Tests: `CouncilHomelandPanelTests`, `CouncilObjectsTests`, `CompanionSetupPanelT
 restarts), `ExpansionDecisionNetworkTests`, `CompanionSetupPanelNetworkTests`, `BoardCompletionLayoutTests`,
 `BoardCompletionContextNetworkTests`, `BoardProfileDriverTests`, `ExpansionTokenNetworkTests`,
 `CharacterRosterActionNetworkTests`, `FateGimliNetworkTests`.
+<a id="ui-280"></a>
+## The Fellowship's figure hides it on the map — UI-280 (2026-10-19)
+
+The owner's report: "it is not clear where to hide the Fellowship". After UI-232 the only hide control off the Mordor
+track was the Ring icon on the corner plaque and in the panel, and the panel's hint still sent the player to "the
+glowing Fellowship plaque". Now, wherever the revealed Fellowship stands, on its region as on the Mordor track
+(UI-155), its figure on the map is the hide's object: once the chosen die can hide it (the server's `EligibleDice`, the
+same condition as the Ring), the figure glows like the other legal targets on the map (`fellowship-hide-target`, the
+style of the declaring figure, UI-236), shows at every zoom, reads "Click to hide the Fellowship." and one click hides
+it with that die (UI-142). The Ring stays the same control in the panel; there is still no separate Hide button. The
+panel's hint reads "Hide: click the glowing Fellowship figure on the map or the glowing Ring · No progress or extra
+Hunt die." (`FellowshipActions.HideHint`). Without such a die neither glows. Tests:
+`FellowshipFigureHideTests` (the figure's click hides on a region and on the track only while offered),
+`FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce` (the chosen die lights the figure, its hint and
+the Ring; the Ring's click hides), `MordorNetworkTests` (the track hide).
+
+<a id="ui-282"></a>
+## The Fellowship's figure is the Character die's move and glows like every choice — UI-282 (2026-10-19)
+
+The owner's report: "the Fellowship should be marked more clearly as an option of the Character die with which we move
+it forward on the map; now it is not clear where the Declare position option is (it is on the figure)". Off the Mordor
+track the hidden Fellowship's figure on the map is now the move's object too: once the chosen die can move it (the
+server's `EligibleDice`, the same condition as the panel's track symbol, UI-110), the figure glows, shows at every
+zoom, reads "Click to move the Fellowship: progress +1, then the Hunt; its last known position stays." and one click
+moves it with that die (UI-142); on the Mordor track the next step stays the move. Every offer of the figure — the
+move, the declaration (UI-236) and the hide (UI-280) — wears the shared ChoiceGlow (a thick gold rim on a warm plate
+pulsing in the 750 ms rhythm, still under Reduced motion) instead of the old thin green border. The console names the
+figure: with such a die "Choose what this die acts on: … The glowing Fellowship figure moves the Fellowship." (or
+"hides the Fellowship"), and in the Fellowship phase "Declare: click the glowing Fellowship figure on the map"; the
+panel's hint reads "Move: click the glowing Fellowship figure on the map or the glowing track symbol · …"
+(`FellowshipActions.MoveHint`). Tests: `FellowshipFigureHideTests.TheHiddenFigureMovesOffTheTrackAndEveryOfferGlows`,
+`TurnConsoleStateTests.ACharacterDieThatMovesTheFellowshipNamesItsFigure`,
+`FellowshipPanelNetworkTests.MoveKeepsTheMapRegionAndRecoversTheExactWillDieReceipt` (the chosen die lights the
+figure and its hints), `FellowshipGestures.Declare`.
+
+<a id="ui-283"></a>
+## The Mordor track twice as large — UI-283 (2026-10-19)
+
+The owner's request: "we should also enlarge the Mordor track visually; the figure on it seems miniature; both the
+track and the figure should be about twice as large". On the map the track's stones, the Crack of Doom and the two
+gates are twice their former size (slab 68 × 50 px zoomed in and 44 × 34 px on the whole map, the Crack 92 × 76 and
+60 × 50, the gates 46 × 46 and 34 × 34; step numbers 22 px), the ink path is twice as wide, and the Fellowship's figure
+on the track is 72 × 80 / 56 × 64 px — the size it has on a region — with its Corruption row moved under the larger
+stone. So that the larger stones keep apart, steps 1–4 lie on a ring twice as wide round Orodruin's east side, over
+the ash plain (`MapCanvas/mordor-track.json`): step 0 and both gates stay where they were and the Crack of Doom stays
+on the crater; steps are 46–53 map units apart instead of about 26. The track's validation keeps up: steps at least
+40 map units apart and from every region's anchor (the gates, at their regions' edges, keep 20). Tests:
+`MordorTrackGeometryTests`, `MordorLayoutTests` (four layouts, the figure on its step, the walk between steps),
+`MordorNetworkTests`, `FellowshipLayoutTests`.
+
+<a id="ui-284"></a>
+## A journey's companions are portraits — UI-284 (2026-10-19)
+
+The owner's decision after the object controls audit: a card's companion journey (Book of Mazarbul, Fear! Fire!
+Foes!, Gwaihir the Windlord, We Prove the Swifter, and a Shadow's journey alike) shows the figures to move as their
+painted portraits with their short names under them, as on the Fellowship panel, instead of name buttons; a Nazgûl shows
+its figure. A portrait that can still be chosen glows with the shared ChoiceGlow, pulsing its rim and plate only (the
+row fills its width, so it does not swell); a chosen one shows its selection. Destinations stay region clicks on the
+map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250). Tests:
+`CompanionJourneyPortraitTests.TheJourneysCompanionsArePortraitsThatGlowUntilChosen`,
+`Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
+`Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`.
+
+<a id="ui-287"></a>
+## Finish phase greyed out, not hidden — UI-287 (2026-10-19)
+
+The owner's decision after the object controls audit: the Fellowship panel's "Finish phase" keeps its place outside
+the Fellowship phase, greyed out, and its tooltip says why ("Finish phase · Only in your Fellowship phase, to keep the
+current Guide."), as the fixed-places rule asks; it still leaves the row while a route is drawn. Test:
+`FellowshipGuideChoiceTests.TheFellowshipPhaseChoosesTheGuideFromItsPortraitWithoutAMode`.
+
+<a id="ui-290"></a>
+## The whole Fellowship tab lights up when something in it can be used — UI-290 (2026-10-20)
+
+The owner's decision: while anything in the Fellowship panel can be used now — a Guide's or character's skill such as
+Gandalf the Grey's draw, the Guide's choice, a move, hiding, Finish phase, a separation — the whole corner tab that
+carries the plaque lights up like a usable left tab (UI-223): a bright gold rim laid over the tab, a warmer plate and a
+gold caption and values, pulsing in the shared 750 ms rhythm (`BoardEdgeLayout.UsableClass`, `RightColumn.uss`); Reduced motion
+keeps it bright and still. The rim lies over the tab, so nothing in it moves. The opponent's Fellowship decision lights
+nothing on this side (`FellowshipPanel.Usable` now checks the decision's owner). The plaque's thin green rim is gone.
+Test: `FellowshipPanelNetworkTests` (both cases).
+
+<a id="ui-293"></a>
+## The Fellowship's marker on its track hides it — UI-293 (2026-10-20)
+
+The owner changed the Ring's concept (after UI-232): the control is the icon on the track — the Fellowship's marker on
+the progress track, or on the Mordor track in Mordor. While hiding is legal with the chosen die it glows and pulses
+(ChoiceGlow), presses in, says "Click the Fellowship's marker on its track to hide it…", and a click hides
+(`FellowshipTrackRow.OfferMarker`); otherwise it is a picture that takes no pointer. The Ring on the plaque and in the
+panel's header is purely informational now: a picture of the condition whose click reaches its host (the plaque
+opens the panel, the header row locates the Fellowship); the plaque's click no longer hides. The figure on the map still
+hides (UI-280), and the hints name the figure and the marker. `FellowshipRingControl` was removed. Tests:
+`FellowshipTrackMarkerTests`, `FellowshipPanelNetworkTests.HideKeepsProgressAndSpendsTheExactDieOnce`,
+`FellowshipCardActionsTests`.
+
+<a id="ui-294"></a>
+## A journey of companions outside the Fellowship is made on the map — UI-294 (2026-10-20)
+
+The owner's decision, superseding UI-250's group controls and UI-284's portraits for these journeys: a card's journey of
+companions outside the Fellowship (Book of Mazarbul, Fear! Fire! Foes!, Kings' Aid, and Gwaihir the Windlord or We Prove
+the Swifter when they move a companion outside it) is made on the map only (`CompanionJourneyDraft`):
+
+- a click on a region with one lit companion chooses it (several: the region's panel lists them, as before);
+- a click on a highlighted destination routes it; its figure stands faintly there (`MapCanvas.PlannedJourneys`), the
+  companion is released for the next pick, and a click on its own region keeps it there; ↶ undoes the last step;
+- the console's ✓ finishes once everything the player wanted has moved; finishing with nothing moved is allowed where
+  the card allows it, and companions not moved stay;
+- the decision window and the Fellowship panel list nothing: no card title, companions, "No group", "Stay all", "Stay
+  here" or "Choose a group". The console's hint guides ("Click a lit companion, then its destination · ✓ finishes…").
+
+Gwaihir's and Swifter's separation of the Fellowship's own companions keeps the Fellowship panel. Tests:
+`CompanionJourneyMapTests`, `DecisionRoutesTests`, `Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
+`Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`, `CardPack03NetworkTests`.
+
+<a id="ui-296"></a>
+## The panel opens on the Guide's own response — UI-296 (2026-10-22)
+
+The owner's report: playing Book of Mazarbul with the Event die while Gandalf the Grey guided, the draw "was not
+there". The server offered it (`event.completed`), but its control — Gandalf's glowing portrait (UI-247) — sat in the
+rolled-up Fellowship panel, so only the console's hint mentioned it. Now a reaction window that offers the Guide's own
+skill is hosted by the Fellowship panel (`FellowshipActions.GuideResponse`): the panel opens and stays open on it, the
+Guide's portrait glows in view and one click uses the skill; the console's Pass skips it (UI-291) and the plaque reopens
+the panel. Test: `GuideDrawNetworkTests.BookWithTheEventDieOpensTheFellowshipPanelOnGandalfsDraw` (the test scenario
+from the menu, the Event die, the portrait's click draws the card).
+
+<a id="ui-298"></a>
+## No control in the panel that does nothing or repeats another — UI-298 (2026-10-22)
+
+The owner's decision, after the inventory of the panel's buttons (UI-297):
+
+- **No ⟵ for a move, hide or entry.** The Fellowship's move, hide and entry into Mordor are sent with their click
+  (`FellowshipActions.SentOnClick`); their draft outlives only a failed send. The panel shows no arrow for it, and the
+  console's Back (enabled while the panel holds such a draft) drops it. Choosing a Fellowship action is one undo step
+  (`TurnDraft.Gesture`), so the first Back — or Esc — really drops it; before, the first press restored the same draft.
+- **No Check result in the panel.** An interrupted response in the Fellowship panel shows "Confirming the last action"
+  and its message, which ends with "Click the glowing ✓ in the console to check its result."; the console's ✓ glows
+  (`DecisionTray.RecoversInConsole`). Other hosts keep their Check result.
+- **The corruption track's symbol is a picture.** The corruption track never moves the Fellowship, so its symbol is no
+  longer a disabled button (`FellowshipTrackRow`, `movable: false`, `corruption-track-symbol`).
+- **No portrait twice.** In the panel the tray shows only the eligible companions the roster lacks (Gollum as a Guide);
+  the Fellowship's own companions are chosen on the roster (`FellowshipChoices.PortraitIds`). Outside the panel the
+  tray keeps every portrait.
+- **Cancel waits for something to clear.** A route's Cancel is disabled while it would change nothing
+  (`FellowshipDraft.CancelChanges`): a forced separation starts with its companions chosen, and a mandatory reveal
+  without a drawn route has nothing to clear.
+
+Undo step and Cancel of a drawn route, Stay, the ruler's travel modes, the more-than-three reaction buttons, Locate and
+× stay. Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
+`BoardCompletionHostTests`, and the Fellowship recovery flows (`FellowshipPanelNetworkTests`, `FellowshipGuideNetworkTests`,
+`MordorNetworkTests`, `FellowshipRoutesNetworkTests`) through `PendingRecovery`.
+
+<a id="ui-299"></a>
+## The members sit right under the tracks — UI-299 (2026-10-22)
+
+The owner's decision: nothing separates the Fellowship's members from its two tracks. The panel reads, top to bottom,
+the heading, the tracks (progress or Mordor, and corruption), the members' portraits, then Finish phase and its hint,
+and last the decision tray when the panel hosts it (`FellowshipPanel`). Finish phase and every other control of the
+panel therefore sit under the members. Test: `FellowshipTrackLayoutTests` (at 1366 and 1920 px and both scales the
+members follow the corruption track and the controls follow the members).
+
+<a id="ui-309"></a>
+## A Companion leaving the Fellowship in the opponent's presentation — UI-309 (2026-10-24)
+
+The Shadow's board presents the Free Peoples' separation before it applies their latest view
+([OPPONENT_ACTIONS_UX §6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)).
+
+- While the Fellowship's position is known (no hidden progress since it was last declared), the Companions fly from the
+  Fellowship's figure, which is traced.
+- With hidden progress, the Companions arrive at their destination in place, the camera frames only the destination,
+  and nothing traces the last known region. As on the board (UI-130), unknown progress is never a claimed origin.
+- Each Companion is named by its portrait and short name where it lands.
+- A hidden Fellowship move still shows no route.
+
+<a id="ui-310"></a>
+## The Fellowship in the opponent's presentation — UI-310 (2026-10-24)
+
+The watching board shows the Fellowship's recorded changes on their own objects, after the Hunt they caused
+([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
+
+- **The panel.** It opens read-only for the beat, never taken from the player's own decision, never reopened after the
+  player closed it, and closed at the release only when the presentation opened it.
+- **The tracks** move as separate stages in TrackSequence's order: on the journey progress first, then corruption; in
+  Mordor corruption first, then the step. Each stage traces its row (or the plaque's value) and sounds once.
+- **The figure.**
+  - A declaration, a reveal or a revealed move flies the figure between public regions, and the camera frames the new
+    one.
+  - Hiding or revealing in place marks the plaque's Ring.
+  - Entering Mordor puts the figure on the Mordor track and traces the panel's Mordor row. The camera stays.
+- **The roster.** A casualty is marked on its portrait and then leaves the roster. A new Guide takes the badge.
+- **Once.** The released view does not stage the tracks again (AUDIO-06's two stages run only when no presentation
+  showed them). Skip shows the latest tracks at once.
+- **Privacy.** A hidden move shows no route, region or trace on the map.
+
+<a id="ui-315"></a>
+## Mark, then change — UI-315 (2026-10-24)
+
+In the opponent's presentation the panel opened read-only settles for 0.4 s. The plaque's state (Hidden, Revealed) lights
+up before it turns, and each track stage lights its row before the token moves, sounding its cue as it moves; each change
+then holds lit for 0.8 s ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).

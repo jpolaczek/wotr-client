@@ -40,7 +40,7 @@ namespace Wotr.Client
                 var available = spear || CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
                 entry.Value.EnableInClassList("empty-deck", count == 0);
-                entry.Value.Q<Label>("deck-count").text = count.ToString();
+                ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
                 var state = FigureGrid.Name(entry.Key) + " · " + count + " cards";
                 entry.Value.tooltip = spear ? ChiefReactionObjects.SpearOffer + "\n" + state :

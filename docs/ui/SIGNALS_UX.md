@@ -10,6 +10,30 @@ User application from 2026-10-14:
 
 and the note: "Let's add the game end and the victory screen to this plan."
 
+> **Planned, not shipped (UI-302, 2026-10-23):** the live presentation of an important opponent action will show
+> the played public card and move the camera without a click, before the resulting decision opens, with one
+> transient Skip target. This limited exception and everything it supersedes are specified in
+> [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md); until UI-313 ships, the rules below stay in force except where
+> UI-305–UI-312 already apply the exception (UI-316: the opponent's card grows out of their hand count and returns to
+> the console trail or the Effects tab: [§6.20](OPPONENT_ACTIONS_UX.md#wdrozone-316); UI-315: every presented change is lit first, then changes visibly and
+> holds — a political step, the opponent's card counter, dice, the hidden state, a march: [§6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315);
+> UI-314: every presented figure and object glows around its own shape
+> instead of a frame, and new recruits glow 1.5 s after landing: [§6.18](OPPONENT_ACTIONS_UX.md#wdrozone-314); UI-313: the aggregate acceptance, its coverage matrix, measurements and
+> open checks: [§6.17](OPPONENT_ACTIONS_UX.md#akceptacja-313); UI-312: the opponent's Rings, dice and draws show at their own HUD
+> objects, and quiet events play no scene: [§6.16](OPPONENT_ACTIONS_UX.md#wdrozone-312); UI-311: a battle's recorded rounds play read-only in its window, which
+> opens after the attack: [§6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311); UI-308: the opponent's public Event card opens read-only by itself, then
+> docks in the console trail: [§6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308); UI-309: a character that enters,
+> transforms, leaves the Fellowship or is removed shows its portrait and title for a moment, and a moving group is
+> named where it lands: [§6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309); UI-310: the shared Hunt plays entry by entry in its
+> window and the Fellowship's tracks, figure and roster change after it, with the Fellowship panel opened read-only:
+> [§6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)) (the camera frames an opponent's map action, one Skip target shows while it
+> plays, the opponent's armies move, attack and capture, and their recruits, upgrades and political steps are staged on
+> the presented board: [§6.9](OPPONENT_ACTIONS_UX.md#wdrozone-305), [§6.10](OPPONENT_ACTIONS_UX.md#wdrozone-306),
+> [§6.11](OPPONENT_ACTIONS_UX.md#wdrozone-307)).
+> UI-303 (2026-10-23) shipped only the data layer, with no visible change: see
+> [Opponent presentation cues](#wskazówki-prezentacji-ui-303). UI-304 (2026-10-23) shipped the playback coordinator,
+> dormant until a presenter registers: see [OPPONENT_ACTIONS_UX §7.1](OPPONENT_ACTIONS_UX.md#koordynator).
+
 The decisions of the user from this conversation:
 
 1. **action opponent: just a stack of flags**, without a toast being made. card opened from the flag
@@ -127,6 +151,26 @@ With the results above 3, the third line is “+N more”. action without any re
 
 User application: closing cross card   action The opponent was small and blurred (24 pt, mark around 17 pt) Header card has now 34 pt, a pin and a cross 30×30 pt with a sign 22 Holy Cross stands last, in the upper right corner card, and closes it with one click. `ActionNoticeCompactTests` checks its size, location and operation.
 
+<a id="wskazówki-prezentacji-ui-303"></a>
+### Opponent presentation cues — UI-303 (2026-10-23)
+
+No visible change: pennants, the compact card, read markers and the Log behave as above. UI-303 is the data layer the
+playback (UI-304) will consume; its contract is [OPPONENT_ACTIONS_UX §9.1](OPPONENT_ACTIONS_UX.md#kontrakt-wskazowek).
+
+- `ActionNoticeController` now reads new steps from the **All** history feed (`filter=All`), so the automatic
+  consequences (`Actor=null`) of an opponent action, and the shared Battle/Hunt steps, reach the client. The first load
+  adds the newest All page (the presentation's baseline and the cursor) to the opponent's history, which it still reads
+  with the Opponent filter. `ActionNoticeModel` still makes pennants only from the opponent's steps: the pennants, their
+  grouping and what an explicit display marks read are unchanged (EditMode
+  `TheAllFeedGivesThePennantsTheOpponentFeedGave`, PlayMode `ActionNotice*`).
+- The same pages build `OpponentPresentationModel` (`Runtime/Presentation/Opponent`): ordered, deduplicated, immutable
+  `PresentationCue`s per recorded fact, released only when the board shows their revision (`CuesReady`). The first load
+  is remembered and never played.
+- Privacy is unchanged: a committed Combat card is a back, the opponent's draws are counts, and the player's own steps
+  never become cues.
+- Tests: EditMode `OpponentPresentationModelTests` (18 cases) on fixtures recorded from the real engine; PlayMode
+  `LiveActivityNetworkTests` compares both clients' cues with each other and with their final boards.
+
 <a id="b-sygnał-twoja-tura--ui-167"></a>
 ## B. Signal ‘Your turn’ — UI-167
 
@@ -190,7 +234,7 @@ Decisions inside battle, Hunt and the card effect do not give ribbons because th
 | Hunting Window | New Hunt (UI-162) begins | both | closed to the next Hunt |
 | Decision Window | your own decision has an object-free selection (UI-160) | owner | closed to next step with elections |
 | Panel Fellowship | own decision of the Fellowship phase | Free Peoples | held to decision |
-| Meals (from UI-179 to the strip under Politics, from UI-181 to the ‘Reserve’) | card or capabilities: the tab develops and is held; die Muster only backs the tab (UI-181) | functioning | closed for next use |
+| Meals (from UI-179 to the strip under Politics, from UI-181 to the ‘Reserve’) | card or capabilities: the tab develops and is held; die Muster only backs the tab (UI-181), and only while it can recruit (UI-317) | functioning | closed for next use |
 | Characters, Effects | They're hosting their own decision. | owner | Like today |
 | End Screen game | the party has a winner, also when opening the finished batch | both | returns from console |
 | card action opponent, Log, region panel, preview card | never, only click | — | — |
@@ -224,7 +268,8 @@ Test of the `AutoOpenPolicyTests` matrix (PlayMode, real server):
 - AO02, Hunt (TEST-07 `sh-ring-corrupted`, track step always draws a tile with injuries, so Hunt is
   waiting for a decision): window at both; closed by Shadow is closed; Corruption 12 opens the end
   screen at both;
-- AO03, Meals (`fp-muster-recruit`): die Muster opens the panel only to the player; it is closed for
+- AO03, Meals (`fp-muster-recruit`): die Muster opens the panel only to the player (since UI-181 it only backs the tab, since
+  UI-317 only while a Recruit is legal for it); it is closed for
   next use.
 
 The decision window, Characters and Effects have their opening tests (`FellowshipGuideNetworkTests`, `HuntNetworkTests`, `CharacterRosterActionNetworkTests`, `EffectsNetworkTests`); game end screen — `GameEndNetworkTests`.
@@ -396,3 +441,32 @@ The end screen of the game has a fixed “Save play” (`game-end-save-replay`) 
 - Manual step, axle jump, page change, first view and reconnect: state without animation and sound;
   ongoing flights and second stage of the track are interrupted.
 - No decision alert and no personal result (details: AUDIO_UX).
+
+<a id="ui-309"></a>
+## Observed characters — UI-309 (2026-10-24)
+
+The opponent's character moment and a moving group's identities are observed marks, like the UI-305 trace
+([OPPONENT_ACTIONS_UX §6.13](OPPONENT_ACTIONS_UX.md#wdrozone-309)):
+
+- a dark plate with the portrait in its side's medallion and a name, without a glow, pulse, lift or press;
+- never a legal target or a choice;
+- they ignore the pointer, so the figure under them keeps its own tooltip and click;
+- they fade in over 200 ms and out over 400 ms, and appear without fades under Reduced motion.
+
+A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt pale-blue trace.
+
+<a id="ui-312"></a>
+## Pennants and the opponent's resources — UI-312 (2026-10-24)
+
+The opponent's presentation never acknowledges a notice ([OPPONENT_ACTIONS_UX §6.16](OPPONENT_ACTIONS_UX.md#wdrozone-312)).
+
+- **What marks read.** Only an explicit opening marks read: a click on a pennant, its compact action card, or a pinned
+  Log row whose details are complete. It marks exactly the displayed version: the action's steps up to the one shown.
+- **Versions.** A later step of the same action returns as a new unread update.
+- **What never marks read.** Playback, Skip, a missing history, focus loss and inspecting a card acknowledge nothing,
+  so a skipped presentation leaves the same unread notices as a full one.
+- **Visual priority of resources.** A Ring's cost shows at its console socket and its die's old → new face in the
+  opponent's pool. A Hunt allocation and the roll are one beat in the pool and the Hunt plaque. Draws and discards are
+  card backs with a signed count at the opponent's hand count, never an identity.
+- **Quiet events.** A pass, a decline, "No card" and a technical completion play no scene.
+- **Not choices.** Every mark is an observed trace, never a choice.

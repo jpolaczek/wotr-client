@@ -51,18 +51,24 @@ namespace Wotr.PlayTests
             var fpBefore = fp.Board.View;
             var first = ArmyCommand(fp, "minas-tirith", "osgiliath");
             Assert.IsTrue((await Post(fp, first, token)).Accepted);
-            await Until(() => fp.Board.View.Revision == 1 && sh.Board.View.Revision == 1, token);
+            await Until(() => fp.Board.View.Revision == 1, token);
             AssertJourney(fp, "minas-tirith", "osgiliath", Side.FreePeoples);
-            AssertJourney(sh, "minas-tirith", "osgiliath", Side.FreePeoples);
             var fpAfter = fp.Board.View;
             var before = fp.Board.Map.Figures.Root.Children().First().transform.position;
             await Task.Delay(240, token);
             var during = fp.Board.Map.Figures.Root.Children().First().transform.position;
             Assert.Greater(Vector2.Distance(before, during), 2);
             LayoutTests.Save(fp.Viewport, "ui76-network-army-fp-middle.png");
+            // UI-305/UI-306: the observer presents the opponent's march — its die, the camera if needed, then the recorded
+            // movers fly on the presented board — before the view is released.
+            await Until(() => sh.Board.Map.Figures.ActiveCount > 0, token);
+            AssertJourney(sh, "minas-tirith", "osgiliath", Side.FreePeoples);
+            await Task.Delay(240, token);
             LayoutTests.Save(sh.Viewport, "ui76-network-army-sh-observer-middle.png");
+            await Until(() => sh.Board.View.Revision == 1, token);
             await Task.Delay(1100, token);
             Assert.AreEqual(0, fp.Board.Map.Figures.ActiveCount);
+            Assert.AreEqual(0, sh.Board.Map.Figures.ActiveCount);
             foreach (var client in new[] { fp, sh })
             {
                 Assert.IsFalse(client.Board.Map.MarkerVisibility.Detail);
@@ -76,9 +82,11 @@ namespace Wotr.PlayTests
             var shBefore = sh.Board.View;
             var second = ArmyCommand(sh, "orthanc", "gap-of-rohan");
             Assert.IsTrue((await Post(sh, second, token)).Accepted);
-            await Until(() => fp.Board.View.Revision == 2 && sh.Board.View.Revision == 2, token);
-            AssertJourney(fp, "orthanc", "gap-of-rohan", Side.Shadow);
+            await Until(() => sh.Board.View.Revision == 2, token);
             AssertJourney(sh, "orthanc", "gap-of-rohan", Side.Shadow);
+            await Until(() => fp.Board.Map.Figures.ActiveCount > 0, token);
+            AssertJourney(fp, "orthanc", "gap-of-rohan", Side.Shadow);
+            await Until(() => fp.Board.View.Revision == 2, token);
             Export("armies", new Dictionary<string, PlayerView>
             {
                 ["motion-army-fp"] = fpBefore, ["motion-army-fp-after"] = fpAfter,
@@ -104,9 +112,10 @@ namespace Wotr.PlayTests
                 CompanionMoves = { new CompanionMoveChoice { Ids = { figure.Id }, Route = { "hollin", "fords-of-bruinen" } } }
             });
             Assert.IsTrue((await Post(room.Fp, command, room.Token)).Accepted);
-            await room.Until(() => room.Fp.Board.View.Revision == 1 && room.Sh.Board.View.Revision == 1);
+            // UI-306: the Free Peoples' own move flies at its view; the Shadow's presentation flies it before releasing.
             foreach (var client in new[] { room.Fp, room.Sh })
             {
+                await room.Until(() => client.Board.Map.Figures.Moves.Any(m => m.To.Key == "character:" + figure.Id));
                 var move = client.Board.Map.Figures.Moves.Single(m => m.To.Key == "character:" + figure.Id);
                 Assert.AreEqual("hollin", move.From.Region);
                 Assert.AreEqual("fords-of-bruinen", move.To.Region);
@@ -151,15 +160,18 @@ namespace Wotr.PlayTests
                 Route = { "rivendell", "fords-of-bruinen" }
             });
             Assert.IsTrue((await Post(room.Fp, separate, room.Token)).Accepted);
-            await room.Until(() => room.Fp.Board.View.Revision == 3 && room.Sh.Board.View.Revision == 3);
+            // UI-309: each board shows the separation as an arrival — the Free Peoples' at once, the Shadow's while its
+            // presentation plays it — never as a route from the Fellowship's last known region.
             foreach (var client in new[] { room.Fp, room.Sh })
             {
+                await room.Until(() => client.Board.Map.Figures.Moves.Any(m => m.To.Key == "character:base.character.gimli"));
                 var arrival = client.Board.Map.Figures.Moves.Single(m => m.To.Key == "character:base.character.gimli");
                 Assert.IsTrue(arrival.IsArrival, "Unknown fellowship progress cannot become a claimed map origin.");
                 Assert.AreEqual("fords-of-bruinen", arrival.From.Region);
                 Assert.AreEqual("fords-of-bruinen", arrival.To.Region);
                 Assert.IsTrue(client.Board.Map.Figures.Root.Children().Single().ClassListContains("figure-arrival"));
             }
+            await room.At(3);
             Export("fellowship", new Dictionary<string, PlayerView>
             {
                 ["motion-hidden-fp"] = fpBefore, ["motion-hidden-fp-after"] = fpMoved,
@@ -240,8 +252,10 @@ namespace Wotr.PlayTests
             var moves = client.Board.Map.Figures.Moves;
             Assert.IsNotEmpty(moves);
             Assert.IsTrue(moves.All(m => m.From.Region == source && m.To.Region == target && m.To.Side == side));
-            Assert.IsTrue(moves.All(m => client.Board.View.Units.Any(u => "unit:" + u.Id == m.To.Key && u.Location == target) ||
-                client.Board.View.Characters.Any(c => "character:" + c.Id == m.To.Key && c.Location == target)));
+            // An observer's flight plays before its view is released: the latest view holds the destination.
+            var view = client.Playback.Latest ?? client.Board.View;
+            Assert.IsTrue(moves.All(m => view.Units.Any(u => "unit:" + u.Id == m.To.Key && u.Location == target) ||
+                view.Characters.Any(c => "character:" + c.Id == m.To.Key && c.Location == target)));
         }
 
         private static GameCommand ArmyCommand(MountedMatchClient client, string source, string target)

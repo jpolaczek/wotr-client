@@ -19,6 +19,9 @@ namespace Wotr.Client
         private readonly Label freeEntry = new Label { name = "hunt-box-free" };
         private string shown;
 
+        // UI-318: the plaque's Eye medallion and its number, the one part a Shadow allocation changes.
+        public VisualElement EyeCount => eyes.parent;
+
         public HuntBoxView()
         {
             Counts.AddToClassList("hunt-box-counts");
@@ -43,8 +46,8 @@ namespace Wotr.Client
             if (shown == key)
                 return;
             shown = key;
-            eyes.text = eyeCount.ToString();
-            freeDice.text = freeTotal.ToString();
+            ValuePulse.Set(eyes, eyeCount.ToString());
+            ValuePulse.Set(freeDice, freeTotal.ToString());
             // UI-160: both counters keep their place in the console, zero included.
             eyeEntry.text = "Eyes · " + eyeCount;
             eyeEntry.tooltip = "Shadow dice in the Hunt Box";

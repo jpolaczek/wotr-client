@@ -98,7 +98,7 @@ namespace Wotr.PlayTests
             LayoutTests.Save(actor.Viewport, "ui89-family-open-" + board.View.You + ".png");
             board.TableEffects.Close();
             await room.Settle();
-            Assert.AreEqual(DisplayStyle.None, board.Cards.Root.style.display.value, "The preview closes with its owner.");
+            Assert.IsTrue(Appearance.Closed(board.Cards.Root), "The preview closes with its owner.");
             Assert.IsFalse(board.Family.Watching);
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine.UIElements;
 
 namespace Wotr.Client
@@ -16,10 +17,12 @@ namespace Wotr.Client
         public event Action ConfirmClicked;
         public event Action PassClicked;
         public event Action DiscardClicked;
+        private readonly ChoicePulse pulse;
 
         public ConsoleActions()
         {
             Root.AddToClassList("console-actions");
+            pulse = new ChoicePulse(Root);
             Back = Add("back", "console-back", "Back · Undo the last unsent step", () => BackClicked?.Invoke());
             Confirm = Add("confirm", "console-confirm", "Finish · End this action", () => ConfirmClicked?.Invoke());
             Pass = Add("pass", "console-pass", "Pass", () => PassClicked?.Invoke());
@@ -30,6 +33,13 @@ namespace Wotr.Client
         {
             button.SetEnabled(enabled);
             button.tooltip = tooltip;
+        }
+
+        // UI-291: an action a click can use now glows and pulses (Pass, also as a reaction's decline).
+        public void Invite(Button button, bool on)
+        {
+            ChoiceGlow.Apply(button, on);
+            pulse.Run(Root.Children().Any(child => child.ClassListContains(ChoiceGlow.ClassName)));
         }
 
         private Button Add(string icon, string name, string tooltip, Action action)

@@ -49,7 +49,7 @@ namespace Wotr.EditorTests
         public void HuntCardResponsesStandInTheResponseRow()
         {
             var view = Decision(Side.Shadow, DecisionKind.Reaction, "", CommandKind.RespondEffect,
-                new EffectChoiceView { Id = "lords.we-shall-get-it", SourceId = "lords.sh.special.05", Title = "Replace the tile" });
+                new EffectChoiceView { Id = "lords.we-shall-get-it", SourceId = "lords.sh.special.05", Title = "Replace the tile", Cost = "DiscardTableCard" });
             view.Hunt = new HuntView();
             view.Players.Add(new PlayerSummary { Side = Side.Shadow, TableCards = { "lords.sh.special.05" } });
             var reaction = HuntCardResponses.Offered(view).Single();

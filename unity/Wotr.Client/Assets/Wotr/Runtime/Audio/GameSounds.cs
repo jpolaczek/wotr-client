@@ -11,7 +11,9 @@ namespace Wotr.Client
     //   important cue sounds, the plain acceptance only when nothing more particular happened. A rejected command
     //   sounds its failure once. The first view, a catch-up after a reconnect and a recovered receipt only set the
     //   point of reference; nothing old is played.
-    public sealed class GameSounds : IDisposable
+    //   UI-310: a presentation's beat sounds its own fact at once (IPresentationSounds); the view it released leaves that
+    //   cue out.
+    public sealed class GameSounds : IDisposable, IPresentationSounds
     {
         private readonly SoundModule sounds;
         private readonly Func<string> cardLook;
@@ -22,6 +24,7 @@ namespace Wotr.Client
         private long lastResolved = -1;
         private bool lastResolvedSounded;
         private int played;
+        private readonly HashSet<SoundCue> presented = new HashSet<SoundCue>();
         // REPLAY-06: an observer or a replay hears the facts but no alert of its own decision and no personal result.
         private readonly bool personal;
 
@@ -49,17 +52,29 @@ namespace Wotr.Client
 
         private void Count(SoundCue cue) => played++;
 
+        // UI-310: a presentation's beat shows this fact now; the view released after it does not sound it again.
+        public void Play(SoundRequest request)
+        {
+            if (seen == null || catchingUp)
+                return;
+            presented.Add(request.Cue);
+            sounds.Request(request);
+        }
+
         // A new projection of this game, after the board applied it.
         public void Update(PlayerView view)
         {
             var before = seen;
             seen = view;
+            var shown = new HashSet<SoundCue>(presented);
+            presented.Clear();
             if (before == null || catchingUp || view.Revision <= before.Revision)
             {
                 catchingUp = false;
                 return;
             }
             var requests = SoundFacts.Between(before, view);
+            requests.RemoveAll(r => shown.Contains(r.Cue));
             if (!personal)
                 requests.RemoveAll(r => r.Cue is SoundCue.DecisionRequired or SoundCue.Victory or SoundCue.Defeat);
             if (accepted.HasValue && view.Revision >= accepted.Value.Revision)
@@ -69,7 +84,8 @@ namespace Wotr.Client
             }
             // AUDIO-06: a newer state ends what was left of an earlier pair; a new pair is this resolution's sound.
             sounds.Policy.CancelSequence();
-            if (TrackSequence.Both(before.Fellowship, view.Fellowship))
+            if (TrackSequence.Both(before.Fellowship, view.Fellowship) &&
+                !shown.Contains(SoundCue.FellowshipAdvanced) && !shown.Contains(SoundCue.CorruptionChanged))
             {
                 Pair(view, requests);
                 return;

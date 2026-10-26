@@ -164,7 +164,8 @@ namespace Wotr.Client
                     ? (next.TurnHeading && group.Action.Turn.HasValue ? "Turn " + group.Action.Turn + " · " : "") + ActionCardText.Heading(group.Action)
                     : ActionCardText.Actor(next.Step.Actor) + " · " + (next.Step.Command.HasValue
                         ? ActionCardText.Words(next.Step.Command.Value.ToString()) : ActionCardText.Words(next.Step.Kind));
-                content.text = next.Step == null ? ActionCardText.Compact(group, data) : next.Step.Text;
+                // UI-331: a recorded text reads with names, never identifiers.
+                content.text = ReadableText.Of(next.Step == null ? ActionCardText.Compact(group, data) : next.Step.Text, data);
                 cost.text = string.Join(" · ", (next.Step == null ? group.Action.Costs : ActionCardText.ExtraCosts(group.Action, next.Step))
                     .Select(ActionCardText.Cost));
                 cost.style.display = cost.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;

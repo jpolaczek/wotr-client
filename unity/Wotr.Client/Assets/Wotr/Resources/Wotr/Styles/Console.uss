@@ -89,6 +89,27 @@
     color: rgb(214, 208, 184);
 }
 
+/* UI-297: the hint line also carries the current effect's committed steps at its start ("✓ Book of Mazarbul"); a click
+   shows the card and the next one closes it. The line keeps the hint's height, so the console does not grow. */
+.console-line { flex-direction: row; flex-shrink: 0; align-items: flex-start; }
+.console-line > .console-hint,
+.console-line > .console-options { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.console-trail { flex-direction: row; flex-shrink: 1; max-width: 45%; height: 38px; margin: 6px 0 0 6px; align-items: center; overflow: hidden; }
+.console-trail > .effect-trail { flex-direction: row; flex-wrap: nowrap; flex-shrink: 1; min-width: 0; overflow: hidden; }
+#board-screen .console-trail .committed-choice {
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 220px;
+    height: 28px;
+    min-height: 28px;
+    margin: 0 4px 0 0;
+    padding: 0 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* UI-214: a card's object-less options take the hint's place and size: up to three buttons in one row. */
 .console-options { height: 38px; min-height: 38px; max-height: 38px; margin: 6px 4px 0 6px; flex-direction: row; align-items: center; }
 #board-screen .console-options .console-option {

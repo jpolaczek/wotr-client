@@ -17,6 +17,7 @@ namespace Wotr.Client
         private Vector2 velocity;
         private double previousTime;
         private bool focused = true;
+        private bool suspended;
         private int pressedButtons;
 
         public MapEdgePan(MapCanvas map)
@@ -118,8 +119,22 @@ namespace Wotr.Client
             timer.Resume();
         }
 
+        // UI-305: an automatic camera travel suspends passive edge pan, so the two never fight.
+        public bool Suspended
+        {
+            get => suspended;
+            set
+            {
+                suspended = value;
+                if (value)
+                    Stop();
+            }
+        }
+
         private bool CanPan()
         {
+            if (suspended)
+                return false;
             var panel = map.panel;
             var viewport = map.worldBound;
             if (!focused || pressedButtons != 0 || map.Panning || !map.enabledInHierarchy || panel == null ||

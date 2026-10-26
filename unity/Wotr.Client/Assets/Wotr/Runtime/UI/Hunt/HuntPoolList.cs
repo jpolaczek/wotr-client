@@ -15,9 +15,11 @@ namespace Wotr.Client
         private readonly Label heading = new Label { name = "hunt-pool-heading", enableRichText = false };
         private readonly VisualElement body = new VisualElement { name = "hunt-pool-body" };
         private readonly VisualElement tiles = BoardScreen.Row("hunt-pool-tiles");
-        // UI-184: the special tiles waiting for Mordor stand on a line of their own, after their short mark.
-        private readonly VisualElement preparedLine = BoardScreen.Row("hunt-pool-prepared-line");
-        private readonly Label preparedHeading = new Label("Mordor") { name = "hunt-pool-prepared-heading" };
+        // UI-332 (owner 2026-10-25: "the tiles that start to play once the Fellowship is on the track must be shown
+        // separately"): the special tiles waiting for Mordor stand apart from the pool, in a section of their own under
+        // their own heading (before, UI-184, on a short "Mordor" line inside the pool's block).
+        private readonly VisualElement waiting = new VisualElement { name = "hunt-pool-waiting" };
+        private readonly Label preparedHeading = new Label { name = "hunt-pool-prepared-heading", enableRichText = false };
         private readonly VisualElement prepared = BoardScreen.Row("hunt-pool-tiles");
         private string shown = "";
 
@@ -32,10 +34,11 @@ namespace Wotr.Client
             Root.Add(heading);
             body.AddToClassList("hunt-pool-body");
             body.Add(tiles);
-            preparedLine.Add(preparedHeading);
-            preparedLine.Add(prepared);
-            body.Add(preparedLine);
             Root.Add(body);
+            waiting.AddToClassList("hunt-pool-waiting");
+            waiting.Add(preparedHeading);
+            waiting.Add(prepared);
+            Root.Add(waiting);
         }
 
         public void Apply(HuntPoolView pool)
@@ -51,9 +54,11 @@ namespace Wotr.Client
                 : "Tiles in the Hunt pool · Drawn tiles leave it; the drawing order is never shown";
             Fill(tiles, pool.Tiles, "hunt-pool-tile-");
             Fill(prepared, pool.Prepared, "hunt-pool-prepared-");
-            var waiting = pool.Prepared.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            preparedHeading.style.display = waiting;
-            prepared.style.display = waiting;
+            preparedHeading.text = "Join on the Mordor track · " + pool.Prepared.Sum(face => face.Count);
+            var display = pool.Prepared.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            waiting.style.display = display;
+            preparedHeading.style.display = display;
+            prepared.style.display = display;
         }
 
         private static void Fill(VisualElement row, IEnumerable<HuntTileFaceView> faces, string prefix)

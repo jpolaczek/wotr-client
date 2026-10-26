@@ -54,6 +54,7 @@ namespace Wotr.EditorTests
             ("actions/help", 20, 20, true), ("actions/chat", 20, 20, true), ("actions/locate", 20, 20, true), ("actions/next", 20, 20, true),
             ("actions/pin", 20, 20, true), ("actions/pinned", 20, 20, true), ("actions/political", 20, 20, true), ("actions/refresh", 20, 20, true),
             ("actions/reinforcements", 20, 20, true), ("actions/select-all", 20, 20, true), ("actions/why", 20, 20, true),
+            ("actions/skip", 20, 20, true),
             ("frames/panel", 256, 256, true), ("frames/panel-header", 120, 32, true),
             ("frames/button-square", 28, 28, true), ("frames/button-square-hover", 28, 28, true),
             ("frames/entry", 96, 40, true), ("frames/entry-hover", 96, 40, true),

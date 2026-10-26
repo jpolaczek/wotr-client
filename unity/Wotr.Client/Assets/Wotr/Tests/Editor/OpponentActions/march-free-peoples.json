@@ -1,0 +1,927 @@
+{
+  "scenario": "march",
+  "viewer": "FreePeoples",
+  "baselineRevision": 0,
+  "baseline": {
+    "matchId": "fixture-march",
+    "steps": [
+      {
+        "id": "456e8916b46c292b18a5e9d7e4e36da42a2f6c4473246d03e6bc5a05e4758ddf",
+        "actionId": "456e8916b46c292b18a5e9d7e4e36da42a2f6c4473246d03e6bc5a05e4758ddf",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 1,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: RecoverDraw.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "RecoverDraw",
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "f02b116c6b5506a9f0040a8c7a88bb0af2507fea7ec12a8953291d99466fb351",
+        "actionId": "f02b116c6b5506a9f0040a8c7a88bb0af2507fea7ec12a8953291d99466fb351",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 2,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew Horn of Gondor.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.character.07",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.fp.character.07",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "base.fp.character.07",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "8f5ea5856136d06150a25cef2ce4d24d5c618d873ea6277bf1200487b49ab830",
+        "actionId": "8f5ea5856136d06150a25cef2ce4d24d5c618d873ea6277bf1200487b49ab830",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 3,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "814681340dbc42e7155209062339507518a0296e07ae80fe0edfc8d7a7458ef2",
+        "actionId": "814681340dbc42e7155209062339507518a0296e07ae80fe0edfc8d7a7458ef2",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 4,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardDrawn",
+        "text": "Drew Fear! Fire! Foes!.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.strategy.07",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "base.fp.strategy.07",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "base.fp.strategy.07",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "d888d593b48db43e898f80856a8682f72c912f6b5890aba379b6bb0f52a3388f",
+        "actionId": "d888d593b48db43e898f80856a8682f72c912f6b5890aba379b6bb0f52a3388f",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 5,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "FreePeoples drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "FreePeoples",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "79c666fd7f336c592ba40d5c74cebc777ed3394d4eae47a77c537dee23626f7f",
+        "actionId": "79c666fd7f336c592ba40d5c74cebc777ed3394d4eae47a77c537dee23626f7f",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 6,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a character card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "character",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "4f9f3e1c8893acb9e50cf20963785e6a7aef85e1dfcb7d1ef6be38ea47bf1b97",
+        "actionId": "4f9f3e1c8893acb9e50cf20963785e6a7aef85e1dfcb7d1ef6be38ea47bf1b97",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 7,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "CardsDrawn",
+        "text": "Shadow drew a strategy card.",
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [
+            {
+              "owner": "Shadow",
+              "use": "Draw",
+              "id": "",
+              "deck": "strategy",
+              "count": 1
+            }
+          ],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "rolls": []
+        },
+        "status": "Completed"
+      },
+      {
+        "id": "fd1c1907605c63222d340d350b3ed83dca0e999cd2ab51d1a8dc362a82ded7fe",
+        "actionId": "fd1c1907605c63222d340d350b3ed83dca0e999cd2ab51d1a8dc362a82ded7fe",
+        "parentStepId": "",
+        "revision": 0,
+        "order": 8,
+        "turn": 1,
+        "automatic": true,
+        "legacy": false,
+        "kind": "PhaseChanged",
+        "text": "Turn 1: Fellowship.",
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "movements": [],
+        "facts": {
+          "sourceId": "",
+          "targets": [],
+          "figures": [],
+          "nations": [],
+          "control": [],
+          "dice": [],
+          "cards": [],
+          "resources": [],
+          "losses": [],
+          "lossDetails": [],
+          "sovereigns": [],
+          "fellowshipRoute": [],
+          "phase": "Fellowship",
+          "rolls": []
+        },
+        "status": "Completed"
+      }
+    ],
+    "actions": [
+      {
+        "id": "456e8916b46c292b18a5e9d7e4e36da42a2f6c4473246d03e6bc5a05e4758ddf",
+        "version": "456e8916b46c292b18a5e9d7e4e36da42a2f6c4473246d03e6bc5a05e4758ddf",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "f02b116c6b5506a9f0040a8c7a88bb0af2507fea7ec12a8953291d99466fb351",
+        "version": "f02b116c6b5506a9f0040a8c7a88bb0af2507fea7ec12a8953291d99466fb351",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.character.07",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "8f5ea5856136d06150a25cef2ce4d24d5c618d873ea6277bf1200487b49ab830",
+        "version": "8f5ea5856136d06150a25cef2ce4d24d5c618d873ea6277bf1200487b49ab830",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "814681340dbc42e7155209062339507518a0296e07ae80fe0edfc8d7a7458ef2",
+        "version": "814681340dbc42e7155209062339507518a0296e07ae80fe0edfc8d7a7458ef2",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "base.fp.strategy.07",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "d888d593b48db43e898f80856a8682f72c912f6b5890aba379b6bb0f52a3388f",
+        "version": "d888d593b48db43e898f80856a8682f72c912f6b5890aba379b6bb0f52a3388f",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "79c666fd7f336c592ba40d5c74cebc777ed3394d4eae47a77c537dee23626f7f",
+        "version": "79c666fd7f336c592ba40d5c74cebc777ed3394d4eae47a77c537dee23626f7f",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "4f9f3e1c8893acb9e50cf20963785e6a7aef85e1dfcb7d1ef6be38ea47bf1b97",
+        "version": "4f9f3e1c8893acb9e50cf20963785e6a7aef85e1dfcb7d1ef6be38ea47bf1b97",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "Cards",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      },
+      {
+        "id": "fd1c1907605c63222d340d350b3ed83dca0e999cd2ab51d1a8dc362a82ded7fe",
+        "version": "fd1c1907605c63222d340d350b3ed83dca0e999cd2ab51d1a8dc362a82ded7fe",
+        "turn": 1,
+        "partialHistory": false,
+        "legacy": false,
+        "context": {
+          "kind": "General",
+          "regions": [],
+          "definitionId": "",
+          "nationId": "",
+          "battleId": "",
+          "huntChainId": ""
+        },
+        "costs": [],
+        "status": "Completed",
+        "stepCount": 1
+      }
+    ],
+    "nextCursor": "",
+    "latestCursor": "fd1c1907605c63222d340d350b3ed83dca0e999cd2ab51d1a8dc362a82ded7fe"
+  },
+  "updates": [
+    {
+      "viewRevision": 1,
+      "page": {
+        "matchId": "fixture-march",
+        "steps": [
+          {
+            "id": "b18a7c6d33b27d9e99f51acca3e254f16575289a5b7efd9de48d98738e7996e5",
+            "actionId": "b01c57e4eb1977b12722070b186d05edbe23fcd9451058af180d8e4f9b55d614",
+            "parentStepId": "",
+            "revision": 1,
+            "order": 1,
+            "turn": 1,
+            "actor": "Shadow",
+            "command": "MoveArmies",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ArmyMoved",
+            "text": "Shadow moved an army from dol-guldur to eastern-brown-lands.",
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "dol-guldur",
+                "eastern-brown-lands"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.1",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Army",
+                "use": "Army",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "movements": [
+              {
+                "kind": "March",
+                "from": "dol-guldur",
+                "to": "eastern-brown-lands",
+                "route": [
+                  "dol-guldur",
+                  "eastern-brown-lands"
+                ],
+                "participants": [
+                  {
+                    "id": "base.sauron.regular.05",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  {
+                    "id": "base.sauron.regular.06",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  {
+                    "id": "base.sauron.regular.07",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  {
+                    "id": "base.sauron.elite.02",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Elite",
+                    "definitionId": "",
+                    "garrison": false
+                  }
+                ]
+              }
+            ],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [
+                {
+                  "before": {
+                    "id": "base.sauron.regular.05",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.sauron.regular.05",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "dol-guldur",
+                  "to": "eastern-brown-lands"
+                },
+                {
+                  "before": {
+                    "id": "base.sauron.regular.06",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.sauron.regular.06",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "dol-guldur",
+                  "to": "eastern-brown-lands"
+                },
+                {
+                  "before": {
+                    "id": "base.sauron.regular.07",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.sauron.regular.07",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "dol-guldur",
+                  "to": "eastern-brown-lands"
+                },
+                {
+                  "before": {
+                    "id": "base.sauron.elite.02",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Elite",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.sauron.elite.02",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Elite",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "dol-guldur",
+                  "to": "eastern-brown-lands"
+                }
+              ],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "Shadow.standard.1",
+                  "owner": "Shadow",
+                  "source": "standard",
+                  "before": "Army",
+                  "after": "Army",
+                  "from": "Available",
+                  "to": "Resolving",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "budget": {
+                "completed": 1,
+                "remaining": 1
+              },
+              "rolls": []
+            },
+            "status": "InProgress"
+          }
+        ],
+        "actions": [
+          {
+            "id": "b01c57e4eb1977b12722070b186d05edbe23fcd9451058af180d8e4f9b55d614",
+            "version": "9d7c5a46c67b53f22df41e46c152fe7f4648fa8489ab9aa01e6340ce809ec124",
+            "initiator": "Shadow",
+            "command": "MoveArmies",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "dol-guldur",
+                "eastern-brown-lands"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.1",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Army",
+                "use": "Army",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 2
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "b18a7c6d33b27d9e99f51acca3e254f16575289a5b7efd9de48d98738e7996e5"
+      }
+    },
+    {
+      "viewRevision": 2,
+      "page": {
+        "matchId": "fixture-march",
+        "steps": [
+          {
+            "id": "9d7c5a46c67b53f22df41e46c152fe7f4648fa8489ab9aa01e6340ce809ec124",
+            "actionId": "b01c57e4eb1977b12722070b186d05edbe23fcd9451058af180d8e4f9b55d614",
+            "parentStepId": "b18a7c6d33b27d9e99f51acca3e254f16575289a5b7efd9de48d98738e7996e5",
+            "revision": 2,
+            "order": 1,
+            "turn": 1,
+            "actor": "Shadow",
+            "command": "MoveArmies",
+            "automatic": false,
+            "legacy": false,
+            "kind": "ArmyMoved",
+            "text": "Shadow moved an army from moria to hollin.",
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "moria",
+                "hollin"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [],
+            "movements": [
+              {
+                "kind": "March",
+                "from": "moria",
+                "to": "hollin",
+                "route": [
+                  "moria",
+                  "hollin"
+                ],
+                "participants": [
+                  {
+                    "id": "base.sauron.regular.23",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  {
+                    "id": "base.sauron.regular.24",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  }
+                ]
+              }
+            ],
+            "facts": {
+              "sourceId": "",
+              "targets": [],
+              "figures": [
+                {
+                  "before": {
+                    "id": "base.sauron.regular.23",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.sauron.regular.23",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "moria",
+                  "to": "hollin"
+                },
+                {
+                  "before": {
+                    "id": "base.sauron.regular.24",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "after": {
+                    "id": "base.sauron.regular.24",
+                    "side": "Shadow",
+                    "nationId": "sauron",
+                    "unitKind": "Regular",
+                    "definitionId": "",
+                    "garrison": false
+                  },
+                  "from": "moria",
+                  "to": "hollin"
+                }
+              ],
+              "nations": [],
+              "control": [],
+              "dice": [
+                {
+                  "id": "Shadow.standard.1",
+                  "owner": "Shadow",
+                  "source": "standard",
+                  "before": "Army",
+                  "after": "Army",
+                  "from": "Resolving",
+                  "to": "Spent",
+                  "huntOrigin": ""
+                }
+              ],
+              "cards": [],
+              "resources": [],
+              "losses": [],
+              "lossDetails": [],
+              "sovereigns": [],
+              "fellowshipRoute": [],
+              "budget": {
+                "completed": 2,
+                "remaining": 0
+              },
+              "rolls": []
+            },
+            "status": "Completed"
+          }
+        ],
+        "actions": [
+          {
+            "id": "b01c57e4eb1977b12722070b186d05edbe23fcd9451058af180d8e4f9b55d614",
+            "version": "9d7c5a46c67b53f22df41e46c152fe7f4648fa8489ab9aa01e6340ce809ec124",
+            "initiator": "Shadow",
+            "command": "MoveArmies",
+            "turn": 1,
+            "partialHistory": false,
+            "legacy": false,
+            "context": {
+              "kind": "Army",
+              "regions": [
+                "dol-guldur",
+                "eastern-brown-lands"
+              ],
+              "definitionId": "",
+              "nationId": "",
+              "battleId": "",
+              "huntChainId": ""
+            },
+            "costs": [
+              {
+                "kind": "Die",
+                "id": "Shadow.standard.1",
+                "owner": "Shadow",
+                "source": "standard",
+                "face": "Army",
+                "use": "Army",
+                "abilityId": "",
+                "count": 1
+              }
+            ],
+            "status": "Completed",
+            "stepCount": 2
+          }
+        ],
+        "nextCursor": "",
+        "latestCursor": "9d7c5a46c67b53f22df41e46c152fe7f4648fa8489ab9aa01e6340ce809ec124"
+      }
+    }
+  ]
+}

@@ -93,7 +93,10 @@ namespace Wotr.EditorTests
             await Until(() => session.Position == 2 && !session.Playing);
             var polls = waits.Count(w => Math.Abs(w.TotalSeconds - ReplaySession.PresentationPoll) < 0.001);
             Assert.Greater(polls, 0, "Play waited for the step's presentation.");
-            Assert.LessOrEqual(polls * ReplaySession.PresentationPoll, ReplaySession.MaxPresentation + 0.001, "never longer than its limit");
+            // UI-328: each step Play shows is presented to its end, the last one too — never longer than the limit per step.
+            const int shownSteps = 2;
+            Assert.LessOrEqual(polls * ReplaySession.PresentationPoll, shownSteps * ReplaySession.MaxPresentation + 0.001,
+                "never longer than its limit");
             CollectionAssert.DoesNotContain(played, SoundCue.Victory);
             CollectionAssert.DoesNotContain(played, SoundCue.Defeat);
 

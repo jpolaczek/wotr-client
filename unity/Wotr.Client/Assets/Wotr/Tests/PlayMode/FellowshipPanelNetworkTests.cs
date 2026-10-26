@@ -23,10 +23,8 @@ namespace Wotr.PlayTests
             var board = room.Fp.Board;
             var before = board.View;
             var pan = board.Map.Camera.Pan;
-            // UI-232: hiding is the Ring icon's click (on the plaque, or in the panel once it unrolls over the plaque);
-            // moving is the track symbol in the panel.
-            Button Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress")
-                : board.Fellowship.IsOpen ? board.Fellowship.PanelRing : board.Fellowship.Ring;
+            // UI-293: hiding is the click on the Fellowship's marker on the panel's track; moving is the track symbol.
+            VisualElement Control() => move ? board.Fellowship.Root.Q<Button>("fellowship-progress") : board.Fellowship.HideMarker;
             Assert.IsFalse(board.Fellowship.IsOpen, "UI-98: no decision holds the panel; it unrolls from its plaque.");
             await room.Settle();
             StringAssert.Contains("Select a Character die", board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
@@ -35,18 +33,37 @@ namespace Wotr.PlayTests
             else
                 Assert.IsFalse(Control().ClassListContains(FellowshipStatus.HideClass), "No die chosen, no hide offer.");
             Assert.AreEqual(0, room.Boundary.Commands);
+            Assert.IsFalse(board.Edges.Corner.ClassListContains(BoardEdgeLayout.UsableClass), "UI-290: nothing in the panel is usable yet.");
             var die = before.Dice.Single(d => d.Owner == Side.FreePeoples && d.Face == DieFace.WillOfTheWest).Id;
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("fellowship-cost"));
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die));
             await room.Settle();
             Assert.IsTrue(board.Fellowship.Status.ClassListContains("legal-target"), "The plaque offers the Fellowship action.");
+            Assert.IsTrue(board.Edges.Corner.ClassListContains(BoardEdgeLayout.UsableClass), "UI-290: the whole corner tab lights up.");
+            Assert.AreEqual(DisplayStyle.Flex, board.Edges.Corner.Q("edge-corner-usable").resolvedStyle.display);
             if (!move)
             {
-                Assert.IsTrue(board.Fellowship.Ring.ClassListContains(FellowshipStatus.HideClass), "The Ring icon hides.");
-                Assert.IsTrue(board.Fellowship.Ring.ClassListContains(ChoiceGlow.ClassName));
-                StringAssert.StartsWith("Click the Ring to hide", board.Fellowship.Ring.tooltip);
+                var marker = board.Fellowship.HideMarker;
+                Assert.IsTrue(marker.ClassListContains(FellowshipStatus.HideClass), "The track's marker hides.");
+                Assert.IsTrue(marker.ClassListContains(ChoiceGlow.ClassName));
+                StringAssert.StartsWith("Click the Fellowship's marker on its track to hide", marker.tooltip);
+                Assert.IsNotInstanceOf<Button>(board.Fellowship.Status.Q("fellowship-ring"), "The plaque's Ring is a picture.");
                 Assert.IsFalse(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
                 Assert.AreEqual("Revealed", board.Fellowship.Status.Q<Label>("fellowship-status-condition").text);
+                // UI-280: the Fellowship's figure on its region glows for the same hide, and the hint names both.
+                Assert.IsTrue(board.Map.FellowshipMarker.Root.ClassListContains(MapFellowshipMarker.HideClass));
+                StringAssert.Contains(MapFellowshipMarker.HideHint, board.Map.FellowshipMarker.Root.tooltip);
+                Assert.AreEqual(FellowshipActions.HideHint, board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
+            }
+            else
+            {
+                // UI-282: the chosen die lights the hidden Fellowship's figure on the map as its move, and the hints say so.
+                var figure = board.Map.FellowshipMarker;
+                Assert.IsTrue(figure.MoveOffered);
+                Assert.IsTrue(figure.Root.ClassListContains(MapFellowshipMarker.MoveClass));
+                Assert.IsTrue(figure.Root.ClassListContains(ChoiceGlow.ClassName));
+                StringAssert.Contains(MapFellowshipMarker.MoveHint, figure.Root.tooltip);
+                Assert.AreEqual(FellowshipActions.MoveHint, board.Fellowship.Root.Q<Label>("fellowship-action-hint").text);
             }
             // Hovering the corner tab unrolls the full form over it, as a player reaches the panel.
             CardGestures.Move(board.Fellowship.Status);
@@ -97,6 +114,6 @@ namespace Wotr.PlayTests
             Assert.AreEqual(pan, board.Map.Camera.Pan);
         }
 
-        private static Button Recovery(BoardScreen board) => board.Tray.Query<Button>().ToList().FirstOrDefault(b => b.text == "Check result");
+        private static Button Recovery(BoardScreen board) => PendingRecovery.Control(board);
     }
 }

@@ -14,11 +14,17 @@ namespace Wotr.Client
         private readonly List<Action> refresh = new List<Action>();
         // UI-247: sends a complete choice at once (a character's reaction on its portrait).
         private readonly Action<Action> complete;
+        // UI-322: the live window's last stacks; null where nothing is compared (a report, a presented state).
+        private readonly BattleStackMemory stacks;
+        private readonly bool moving;
 
         public BattleContext(VisualElement root, BattleView battle, PlayerView view, TurnDraft draft,
-            Action<Action> edit, Action<string> inspect, CardInspector cards = null, Action<Action> complete = null)
+            Action<Action> edit, Action<string> inspect, CardInspector cards = null, Action<Action> complete = null,
+            BattleStackMemory stacks = null)
         {
             this.complete = complete;
+            this.stacks = stacks;
+            moving = Appearance.Moving(root) && !ValuePulse.Quiet;
             var row = BoardScreen.Row("battle-forces");
             row.name = "battle-forces";
             root.Add(row);
@@ -44,7 +50,7 @@ namespace Wotr.Client
             column.Add(heading);
             if (force.Characters.Count > 0)
                 Characters(column, force, view, draft, edit);
-            column.Add(Composition(force, view, draft, edit));
+            column.Add(Composition(force, battle, view, draft, edit));
             column.Add(Statistics(force, modifiers));
             var outside = draft == null ? "" : BattleForceText.Nonparticipants(force, battle, view);
             if (outside.Length > 0)
@@ -77,19 +83,17 @@ namespace Wotr.Client
                 "battle-characters", string.Join("\n", force.Characters.Select(c => CharacterLibrary.Name(c.DefinitionId))));
         }
 
-        private VisualElement Composition(BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
+        private VisualElement Composition(BattleForceView force, BattleView battle, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             var row = BoardScreen.Row("battle-composition");
             row.name = "battle-composition";
+            var shown = new List<BattleStack>();
             foreach (var nation in force.Units.GroupBy(u => u.Nation))
             {
                 var group = new VisualElement { name = "battle-nation-" + nation.Key };
                 group.AddToClassList("battle-nation-group");
                 group.tooltip = FigureGrid.Name(nation.Key) + "\n" + string.Join("\n", nation.GroupBy(u => u.Kind).Select(g => g.Key + " × " + g.Count()));
-                var emblem = new VisualElement { name = "battle-nation-emblem", pickingMode = PickingMode.Ignore };
-                emblem.AddToClassList("battle-nation-emblem");
-                emblem.AddToClassList("nation-emblem-" + nation.Key);
-                group.Add(emblem);
+                group.Add(Emblem(nation.Key));
                 foreach (var kind in nation.GroupBy(u => u.Kind))
                 {
                     var figure = Figure(kind.First(), kind.Count());
@@ -98,11 +102,60 @@ namespace Wotr.Client
                     ChoiceTarget(figure, view, draft, edit, () => BattleObjectChoices.NextInStack(view, draft, stack),
                         () => stack.Any(u => draft.Payload.Ids.Contains(u.Id)), () => points?.Invoke());
                     points = Points(figure, view, draft, edit, stack.Select(u => u.Id).ToList());
+                    shown.Add(new BattleStack(stack[0], stack.Count, row.childCount, group.childCount));
                     group.Add(figure);
                 }
                 row.Add(group);
             }
+            if (stacks != null)
+                Changes(row, stacks.Exchange(battle.Id, force.Side, shown), shown);
             return row;
+        }
+
+        // UI-322: a stack whose count changed since the window last showed it pulses; one that left fades out where it
+        // stood (a renamed copy, so no query finds it) and its neighbours close up after it. Under Skip animations and in
+        // a quiet view the window simply shows the new stacks.
+        private void Changes(VisualElement row, IReadOnlyList<BattleStack> before, IReadOnlyList<BattleStack> now)
+        {
+            if (!moving)
+                return;
+            foreach (var old in before)
+            {
+                var current = now.FirstOrDefault(stack => stack.Same(old));
+                if (current == null)
+                    Ghost(row, old);
+                else if (current.Count != old.Count)
+                    ValuePulse.Pulse(row.Q("battle-figure-" + old.Unit.Nation + "-" + old.Unit.Kind).Q("battle-figure-count"));
+            }
+        }
+
+        private static void Ghost(VisualElement row, BattleStack stack)
+        {
+            var ghost = Figure(stack.Unit, stack.Count);
+            ghost.name = "leaving-" + ghost.name;
+            var group = row.Q("battle-nation-" + stack.Unit.Nation);
+            if (group != null)
+            {
+                group.Insert(Math.Min(stack.Place, group.childCount), ghost);
+                Appearance.Depart(ghost);
+                return;
+            }
+            group = new VisualElement { name = "leaving-battle-nation-" + stack.Unit.Nation, pickingMode = PickingMode.Ignore };
+            group.AddToClassList("battle-nation-group");
+            var emblem = Emblem(stack.Unit.Nation);
+            emblem.name = "leaving-" + emblem.name;
+            group.Add(emblem);
+            group.Add(ghost);
+            row.Insert(Math.Min(stack.Group, row.childCount), group);
+            Appearance.Depart(group);
+        }
+
+        private static VisualElement Emblem(string nation)
+        {
+            var emblem = new VisualElement { name = "battle-nation-emblem", pickingMode = PickingMode.Ignore };
+            emblem.AddToClassList("battle-nation-emblem");
+            emblem.AddToClassList("nation-emblem-" + nation);
+            return emblem;
         }
 
         // UI-245: a portrait or figure stack the current combat card may choose glows and chooses on a click; a stack's

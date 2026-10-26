@@ -408,3 +408,76 @@ be added and gives its points back once none can, and a badge on it counts them 
 point can be added and is marked once one is chosen. Heroic Death's amounts are 32 px buttons "−1", "−2", "−3" beside
 the opponent's hits; the chosen one is selected. Tests: `BattleObjectChoicesTests`, `Shadow01NetworkTests`,
 `Shadow01LayoutTests`, `Shadow02LayoutTests`, `CardPack02NetworkTests`.
+
+<a id="ui-311"></a>
+## The opponent's rounds in the window — UI-311 (2026-10-24)
+
+While the opponent's action plays, the window shows the battle's recorded public state read-only, in place of the
+decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-311)).
+
+- **Opening.** A new battle opens its window after the attack's trace, as before (UI-149). The window keeps its place
+  (UI-225), and a window the player closed during this battle stays closed.
+- **Cards.** A committed card is a back. Both cards turn face up together, ringed with their initiative, for 3 s. A
+  click opens the card read-only and holds the presentation.
+- **Dice.** A roll or a reroll rings the dice it changed, with one dice sound.
+- **Losses.** Committed losses play one hit at a time, in their recorded order, before the round's next state (UI-337,
+  below). A character lost with its army is ringed on its portrait.
+- **Controls.** The marks are observed traces, never a choice glow: nothing in the presented state can be clicked
+  except a revealed card. The release gives the player's own controls back, with their usual click rules.
+
+<a id="srodek--ui-324"></a>
+## The window opens in the middle — UI-324 (2026-10-25)
+
+Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).
+
+<a id="wstega--ui-327"></a>
+## The stage marker glides — UI-327 (2026-10-25)
+
+The stage ribbon is one lasting row per window (`StageRibbon`, `BattleStages.Ribbon`): when the battle moves to another
+stage its gilt marker glides there (eased, 0.35 s) and the labels crossfade, also when the window redraws its content;
+at once under Skip animations ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
+
+<a id="zamkniecie--ui-333"></a>
+## A decided battle's window steps aside — UI-333 (2026-10-25)
+
+Owner: "once the battle is resolved and the next animations start, close its window, unless the user moved it".
+
+- In a presentation, the first cue that is not part of what the window shows (its opening, rounds, cards, casualties and a
+  siege's figure changes) closes the battle window when the battle is over in the latest view and nothing more of it is
+  queued but its state after the decision (Advance, Finish, Complete) — so a retreat, an advance or the next action plays on
+  an open map (`BattleWindowRetirement`, registered before every other presenter).
+- A window the player dragged to a place of their own stays through the rest of the presentation.
+- Outside a presentation the window already closes with its battle (the view without it).
+
+<a id="jedna-wstega--ui-335"></a>
+## One ribbon per battle window — UI-335 (2026-10-25)
+
+Owner, on the ribbon at Losses: "the animation of moving to Losses fires twice — after the previous phase ends and again
+when the window refreshes to show the damage assignment; it should be the same tab all the time, to which the damage
+assignment panel is added, and the animation should fire only once".
+
+- The battle window has one stage ribbon (`RegionalBattlePanel.Ribbon`); the presented round and the decision tray show
+  that same element, so the decision only adds its controls under the row the presentation left.
+- Its marker glides only when the current stage changes; a new parent, a redraw or a resize at the same stage puts it in
+  place at once (a glide under way is only re-aimed).
+- UI-339: a new battle (another id) starts the row afresh — its marker stands at Cards at once instead of gliding back
+  from where the last battle ended ([HUNT_UX](HUNT_UX.md#fazy--ui-327)).
+
+<a id="trafienia--ui-337"></a>
+## Casualties hit by hit — UI-337 (2026-10-25)
+
+Owner, from a battle against the CPU: "I had two hits, but from the combat roll it went straight to the next round; it did
+not show the opponent assigning the damage. It should show small animated hits that either turn a unit from Elite to
+Regular or kill a Regular, each server-committed decision shown separately."
+
+- Cause: the engine keeps a removed figure among a force's participants, so the client's battle fingerprint saw the state
+  after the opponent's losses as the state before them and dropped it; the opponent's final state (the next round) then
+  played first. The fingerprint now includes the force's figures, and a decision's final state always follows the
+  revision's casualties of its battle (`PresentationCueExtraction.FinalBattleStatesLast`).
+- Each committed loss is its own beat (`BattlePresenter.Losses`, `BattleHits`): a small red ring bursts over the figure's
+  stack in its column while the stack flashes red and swells (0.35 s); a stack losing its last figure fades out meanwhile.
+  Then the state steps (0.45 s): the count drops, and an Elite downgraded becomes a Regular whose stack lights. The
+  window stays at its Losses stage throughout; the round's next state comes after the last hit.
+- Only committed facts play (`Facts.LossDetails`, in the order of the decision); a decision of several losses plays them
+  one after another. The player's own committed casualties play the same way (a shared battle resolution, UI-303).
+- Reduced motion keeps the flash, the ring and the fade without movement; Skip animations shows the latest state at once.

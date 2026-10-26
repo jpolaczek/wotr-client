@@ -41,6 +41,7 @@ namespace Wotr.PlayTests
                 // The HUD around the map decides which target stays in view; reach it like a player first.
                 MapContourProbe.ReachRegion(board.Map, to);
                 await room.Settle();
+                LayoutTests.Save(client.Viewport, "ui323-march-" + side + ".png");
                 var die = board.ActionDie.DieId;
                 Assert.Contains(to, board.Map.DraftOverlay.Targets.ToArray());
                 Assert.IsEmpty(board.Map.Query<Button>(className: "map-target").ToList());
@@ -87,6 +88,7 @@ namespace Wotr.PlayTests
                 var to = side == Side.FreePeoples ? "lossarnach" : "minas-tirith";
                 await Select(room, client, from, 1.25f);
                 Assert.Contains(to, client.Board.Map.DraftOverlay.AttackTargets.ToArray());
+                LayoutTests.Save(client.Viewport, "ui323-attack-" + side + ".png");
                 MapContourProbe.Click(client.Board.Map, MapContourProbe.Terrain(client.Board.Map, to));
                 await room.At(1);
                 Assert.AreEqual(1, room.Boundary.Commands);
@@ -185,6 +187,8 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual(DisplayStyle.None, client.Board.Hover.Panel.Root.resolvedStyle.display);
             Assert.IsTrue(Army(client.Board, from).ClassListContains("selected-force"));
+            CollectionAssert.AreEquivalent(new[] { from }, client.Board.Map.Renderer.SourceGlowRegions,
+                "UI-323: the selected army's own region has the steady gold source edge.");
         }
 
         private static Button Army(BoardScreen board, string from) =>

@@ -718,6 +718,7 @@ Risk R09 review: the exception of the viewer's view went to the transport loop a
 | UP10 | `Repair installation` | Confirmation, download the current version, `Restart and repair`; the withdrawn version proposes an update. |
 | UP11 | Bad signature, alien host, bad SHA-256, no space, redirect | Message refusal, running version unchanged. |
 | UP12 | Second copy game | „War of the Ring is already running”; the first copy shall proceed. |
+| UP13 | Click on `Restart and update` or `Decline and quit` (DIST-18) | The screen greys at once with the step it is at; no click, wheel or key reaches the game or Settings until it quits; a failed save or install lifts the lock, returns the focus and shows the error. |
 
 Automatic cover: EditMode `UpdateCoordinatorTests` ( UP01 – UP06 , UP09 – UP11 without UI ), `PackageDownloaderTests` , `ManifestVerifierTests` , `UpdatePolicyTests` , `UpdateStateTests` . UI (strip, window, Settings) and UP07/UP08/UP12 test N → N+ 1 on an installed game ( DIST-11 ).
 

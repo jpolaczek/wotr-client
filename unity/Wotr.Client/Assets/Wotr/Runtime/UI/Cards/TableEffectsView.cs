@@ -168,7 +168,7 @@ namespace Wotr.Client
                 if (!sourcePinned)
                     selected = null;
             }
-            Tab.text = "Effects · " + sources.Count;
+            ValuePulse.Set(Tab, "Effects · " + sources.Count);
             empty.style.display = sources.Count == 0 ? DisplayStyle.Flex : DisplayStyle.None;
             details.Show(selected, ended, view.Configuration);
             RefreshChoices();
@@ -344,7 +344,7 @@ namespace Wotr.Client
                     Opening?.Invoke();
                     Root.BringToFront();
                 }
-                Root.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
+                Appearance.Display(Root, shown);
                 Tab.EnableInClassList("selected", shown);
                 if (!shown)
                     unroll.Hide();

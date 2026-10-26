@@ -85,7 +85,7 @@ namespace Wotr.PlayTests
             await Play(fp, "base.fp.strategy.15", DieFace.Event, token);
             await BothAt(fp, sh, 1, token);
             Assert.AreEqual(DecisionKind.EffectChoice, fp.Board.View.Decision.Kind);
-            Assert.AreEqual(1, fp.Board.Tray.Query<Button>(className: "committed-choice").ToList().Count);
+            Assert.AreEqual(1, fp.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().Count);
             Assert.IsNull(sh.Board.View.Decision);
             Assert.IsEmpty(sh.Board.View.EffectTrail);
             var connections = fp.Connected;

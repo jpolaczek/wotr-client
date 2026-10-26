@@ -29,9 +29,11 @@ namespace Wotr.PlayTests
                 await Loaded(room);
                 var fp = room.Fp.Board;
                 var sh = room.Sh.Board;
-                var pan = sh.Map.Camera.Pan;
                 await room.Attack(room.Fp, "minas-tirith", "lossarnach");
-                await room.Until(() => room.Sh.Activity.Model.StepCount > 0);
+                // UI-305 (OPPONENT_ACTIONS_UX §4, §6.5): the Shadow's camera may frame the opponent's attack while it is
+                // presented; from then on neither the notice, its hover nor the battle window moves it.
+                await room.Until(() => room.Sh.Activity.Model.StepCount > 0 && !room.Sh.Playback.Holding);
+                var pan = sh.Map.Camera.Pan;
                 Assert.IsTrue(fp.Battles.IsOpen, "UI-149: the new battle opens its window for both players.");
                 Assert.IsTrue(sh.Battles.IsOpen);
                 Assert.AreEqual(pan, sh.Map.Camera.Pan);

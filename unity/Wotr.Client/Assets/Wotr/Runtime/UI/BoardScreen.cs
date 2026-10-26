@@ -9,6 +9,9 @@ namespace Wotr.Client
     public sealed class BoardScreen
     {
         private IVisualElementScheduledItem trackStage;
+        // UI-310: the Fellowship as the last presentation left the tracks, and whether a Skip asked for no second stage.
+        private FellowshipView presentedFellowship;
+        private bool quietTracks;
         public VisualElement Root { get; } = new VisualElement { name = "board-screen" };
         public MapCanvas Map
         {
@@ -70,6 +73,10 @@ namespace Wotr.Client
         private readonly Label loading = new Label("Loading match…") { name = "match-loading" };
         public CardInspector Cards { get; } = new CardInspector();
         public HandDrawer HandDrawer { get; }
+        // UI-326: two card backs dissolving where discarded cards leave.
+        public CardDissolve Dissolve { get; }
+        // UI-332: a tile the Hunt pool gains shows its face and drops into the Hunt plaque.
+        public HuntTileDrop HuntDrops { get; }
         public DeckView Decks { get; } = new DeckView();
         public CardCostPicker CardCosts { get; } = new CardCostPicker();
         private readonly HandView handView;
@@ -341,7 +348,8 @@ namespace Wotr.Client
             var overlays = new[] { Map.Legend.Toggle, Map.Legend.PoliticalToggle, Map.Legend.Popup, GameChat.Icon, GameChat.Root, Nations.Root, Nations.Drawer, Sovereigns.Inspector, ResourceDecision.Root, ResourceDecision.Tab, Reinforcements.Root,
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
                 HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root };
-            bool Occupied(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None &&
+            // UI-322: a panel fading out is closed, so it occupies nothing.
+            bool Occupied(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
                 element.resolvedStyle.visibility == Visibility.Visible && element.worldBound.width > 0 && element.worldBound.height > 0 &&
                 (element.childCount > 0 || element is TextElement);
             Sovereigns.Occlusions = () => overlays.Where(element => element != Sovereigns.Inspector && Occupied(element))
@@ -383,15 +391,27 @@ namespace Wotr.Client
             Root.Add(LorePicker.Root);
             Root.Add(GameEnd.Root);
             var mapOcclusions = overlays.Concat(new[] { top, Notifications.Root, bottom }).ToArray();
-            Map.Occlusions = () => mapOcclusions.Where(element => element.resolvedStyle.display != DisplayStyle.None && element.worldBound.width > 0)
+            Map.Occlusions = () => mapOcclusions.Where(element => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
+                    element.worldBound.width > 0)
                 .Select(element => new Rect(Map.WorldToLocal(element.worldBound.position), element.worldBound.size));
             AttachWindows();
             Characters = new CharacterRosterPanel(Root, Presentation, id => Map.Focus(id));
             Characters.Attach(Tray, decisionDock);
             _ = new BoardCharacterIntegration(this, stage);
             Edges = new BoardEdgeLayout(this, stage);
+            // UI-324: a left panel held open narrows the middle; the windows placed there move clear of it.
+            foreach (var panel in Edges.LeftPanels)
+            {
+                panel.RegisterCallback<GeometryChangedEvent>(_ => Windows.MoveMiddle());
+                panel.RegisterCallback<Appearance.ClosingEvent>(_ => Windows.MoveMiddle());
+            }
+            Windows.MiddleMoved += Cards.MiddleMoved;
             Victory.KeepShortcutClearOf(Characters.Tab);
             AttachDieGlows();
+            Dissolve = new CardDissolve(ReducedMotion);
+            Root.Add(Dissolve.Root);
+            HuntDrops = new HuntTileDrop(BoardMiddle, () => Hunt.Tab, ReducedMotion);
+            Root.Add(HuntDrops.Root);
             Root.Add(Menu.Root);
             Root.Add(GameDeleted.Root);
             Escape.Attach();
@@ -425,6 +445,8 @@ namespace Wotr.Client
             ActionHistory = new ActionContextRouter(this);
             Log.CardWindow = new FloatingWindow(Log.Popup, Windows, () => Log.Pinned, Log.Pin, Log.PositionCard, rememberInitial: false);
             Cards.Window = new FloatingWindow(Cards.Root, Windows, () => Cards.Pinned, Cards.Pin, defaultAnchor: new Vector2(342, 8));
+            Cards.CenterArea = BoardMiddle;
+            Windows.Middle = BoardMiddle;
             Battles.Window = new FloatingWindow(Battles.Root, Windows, () => Battles.Pinned, Battles.Pin,
                 Battles.Position, rememberInitial: false);
             // UI-162: the Hunt window is placed beside the Fellowship like the battle window beside its region.
@@ -523,6 +545,8 @@ namespace Wotr.Client
         {
             Map.Figures.SetConnected(false);
             quiet = true;
+            Map.Quiet = true;
+            ValuePulse.Quiet = true;
             try
             {
                 Apply(view);
@@ -530,6 +554,8 @@ namespace Wotr.Client
             finally
             {
                 quiet = false;
+                Map.Quiet = false;
+                ValuePulse.Quiet = false;
                 Map.Figures.SetConnected(figuresLive);
             }
         }
@@ -537,12 +563,76 @@ namespace Wotr.Client
         // Whether a step's presentation (flights, the second stage of the tracks) is still going on.
         public bool Presenting => Map.Figures.ActiveCount > 0 || TracksStaged;
 
+        // UI-306: a presentation's staged view of the presented revision (recorded movers relocated, a region's control
+        // changed) drives only the map's markers and settlements; the board's view, decision and windows stay as they are.
+        public void Stage(PlayerView staged)
+        {
+            Presentation.Apply(staged);
+            Map.UpdateData(Presentation);
+        }
+
+        // UI-310: a presentation's stage of the Fellowship — its figure and the Mordor track on the map, the plaque's and
+        // the panel's tracks. The next applied view is compared with what it showed, so nothing animates twice.
+        public void StageFellowship(FellowshipView fellowship)
+        {
+            Map.FellowshipMarker.Apply(fellowship, View.Hunt);
+            Map.MordorTrack.Apply(MordorTrackState.For(fellowship));
+            Fellowship.ShowTracks(fellowship);
+            presentedFellowship = fellowship;
+        }
+
+        // UI-312: the opponent's dice pool and its top bar summary (the hand count) as a presentation stages them; the
+        // released view redraws both.
+        public void StageOpponentDice(PlayerView staged) => actionPool.Apply(OpponentDice, staged, Opponent(staged), false);
+        public void StageOpponentSummary(PlayerView staged) => TopBar.Opponent.Apply(staged, Opponent(staged));
+
+        // UI-330: an observer's presentation shows both sides' actions — the side the board is shown from has its dice at the
+        // bottom and its cards in the hand, the other side its dice and its card count in the top bar. A player's
+        // presentation only ever names the opponent.
+        public bool Shown(Side? side) => View != null && side == View.You;
+        public VisualElement DicePool(Side? side) => Shown(side) ? OwnDice : OpponentDice;
+        public VisualElement HandOf(Side? side) => Shown(side) ? Hand : TopBar.Opponent.Root.Q("opponent-cards");
+
+        public void StageDice(Side side, PlayerView staged)
+        {
+            if (side == staged.You)
+                actionPool.Apply(OwnDice, staged, side, true);
+            else
+                StageOpponentDice(staged);
+        }
+
+        // The side's card count: the opponent's in the top bar; the shown side's cards arrive in its hand with the view.
+        public void StageHand(Side side, PlayerView staged)
+        {
+            if (side != staged.You)
+                StageOpponentSummary(staged);
+        }
+        private static Side Opponent(PlayerView view) => view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
+
+        // UI-311: a recorded battle state in its window — a new battle's window opens as it does for a new battle (UI-149),
+        // and a window the player closed during this battle stays closed.
+        public void StageBattle(PlayerView staged)
+        {
+            Battles.Apply(staged);
+            Battles.Present(staged.Battle, staged, Cards);
+        }
+
+        public void EndBattlePresentation() => Battles.EndPresentation();
+
+        // UI-310: the Fellowship's roster and the Hunt window as a presentation stages them; the released view replaces both.
+        public void StageRoster(PlayerView staged) => Fellowship.Apply(staged, Presentation);
+        public void StageHunt(PlayerView staged) => Hunt.Apply(staged);
+
+        // UI-310: after Skip the latest tracks show at once, never in two stages.
+        public void QuietTracks() => quietTracks = true;
+
         public void Apply(PlayerView view)
         {
             if (view == null)
                 return;
             IsFixture = false;
-            var previous = View?.MatchId == view.MatchId ? View.Fellowship : null;
+            var previous = presentedFellowship ?? (View?.MatchId == view.MatchId ? View.Fellowship : null);
+            presentedFellowship = null;
             View = view;
             loading.style.display = DisplayStyle.None;
             Tracks.style.display = DisplayStyle.None;
@@ -563,6 +653,8 @@ namespace Wotr.Client
             Characters.Apply(view);
             Sovereigns.Apply(view);
             handView.Apply(view);
+            Dissolve.Settle(view, quiet);
+            HuntDrops.Settle(view.HuntPool, quiet);
             HandDrawer.Apply(view);
             tableEffects.Apply(view);
             mapEffects.Apply(view);
@@ -590,7 +682,9 @@ namespace Wotr.Client
         {
             trackStage?.Pause();
             trackStage = null;
-            if (quiet || previous == null || !TrackSequence.Both(previous, view.Fellowship))
+            var skipped = quietTracks;
+            quietTracks = false;
+            if (quiet || skipped || previous == null || !TrackSequence.Both(previous, view.Fellowship))
                 return view.Fellowship;
             trackStage = Root.schedule.Execute(() =>
             {
@@ -685,7 +779,39 @@ namespace Wotr.Client
                 Ribbon.Show(text, side);
         }
 
-        private bool ReducedMotion()
+        // UI-326: a hand card the player is discarding dissolves where it stands (its unrolled face, else its slot) once
+        // the view without it arrives.
+        public void MarkDiscard(string id)
+        {
+            var card = Hand.Q<Button>(id);
+            Dissolve.Mark(id, card?.Q("hand-card-face") ?? card, View?.Revision ?? -1);
+        }
+
+        // UI-324: the middle of the board a window opens in — between the top bar and the console, between the side
+        // columns and right of a panel held open beside the left rail (a decision's Reserve, say, stays usable) — or null
+        // before the board is laid out.
+        private Rect? BoardMiddle()
+        {
+            var board = Root.worldBound;
+            var top = TopBar.Root.worldBound.yMax;
+            var bottom = Console.Root.parent?.worldBound.yMin ?? board.yMax;
+            var left = OnScreen(Edges.Left) ? Edges.Left.worldBound.xMax : board.xMin;
+            foreach (var panel in Edges.LeftPanels)
+                if (Held(panel))
+                    left = Mathf.Max(left, panel.parent.LocalToWorld(panel.layout).xMax);
+            var right = OnScreen(Edges.Right) ? Edges.Right.worldBound.xMin : board.xMax;
+            return bottom > top && right > left ? Rect.MinMaxRect(left, top, right, bottom) : (Rect?)null;
+        }
+
+        private static bool OnScreen(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None &&
+            element.worldBound.width > 0 && element.worldBound.height > 0;
+
+        // A left panel open beside its tab, not a hover's preview that only lies over the board. Its laid-out place, so
+        // its unrolling slide does not drag the windows along. A panel fading out is no longer held (UI-322).
+        private static bool Held(VisualElement panel) => panel.parent != null && !Appearance.Closed(panel) && OnScreen(panel) &&
+            !panel.ClassListContains(LeftRailPreview.PreviewClass);
+
+        public bool ReducedMotion()
         {
             for (var element = Root; element != null; element = element.parent)
                 if (element.ClassListContains("reduced-motion"))
