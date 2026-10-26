@@ -366,6 +366,25 @@ to the generic choice list as a text rectangle whose button also pinned the full
   `MordorNetworkTests.MithrilReplacesStopBeforeAdvancingAndSpendsItsCardOnce`, `Shadow01NetworkTests`,
   `Shadow03NetworkTests`; `MatchTestRoom.ObjectChoice` finds the card object in the Hunt window.
 
+<a id="ui-360"></a>
+## The Guides answer in the response row — UI-360 (2026-10-26)
+
+The owner's decision D9 (EXP-15): every Guide response in the Hunt is a response object in the Hunt window's response
+row, not a text rectangle in the tray (OBJECT_CONTROLS_AUDIT finding 1). Base game: Merry's and Pippin's "Separate ·
+Reduce damage" and Gollum's "Reveal · Reduce damage" (the `hunt.guide` window).
+
+- `HuntGuideResponses.Offered` lists the player's own `hunt.guide` Reaction's legal `RespondEffect` choices during a
+  Hunt; `HuntResponsesView` shows each in its own row between the damage objects and the table cards: the Guide's
+  portrait (its own version when the Companion is the player's, otherwise its public one), its name and what the
+  response does. Legal objects glow with the shared ChoiceGlow and pulse without scaling.
+- One click uses it (UI-142): `HuntContextInteraction.GuideResponse` sets the draft's reaction and sends it; the
+  console's Pass declines (UI-291). The tooltip says "Click to use Merry's response · Separate · Reduce damage", the
+  server's detail, and "Or Pass to skip it."; the console's hint says "Click Merry's glowing response in the Hunt window
+  to use … · or Pass to skip it."
+- `CardChoices` leaves these choices out of the tray. The opponent, an observer and a replay never see a usable row.
+- Tests: EditMode `HuntGuideResponsesTests`; PlayMode `HuntAftermathNetworkTests` (Merry from the row, layout frames),
+  `CharacterNetworkTests.Hobbits` (Merry, Pippin and Gollum through `ReactionGestures.GuideResponse`).
+
 <a id="ui-288"></a>
 ## Pictures on the responses — UI-288 (2026-10-19)
 

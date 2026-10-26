@@ -106,8 +106,9 @@ namespace Wotr.Client
                 if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
-                // UI-285: a table card's Hunt response is a card object in the Hunt window's response row.
-                if (HuntCardResponses.InRow(view, id))
+                // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
+                // a Guide's response.
+                if (HuntGuideResponses.InRow(view, id) || HuntCardResponses.InRow(view, id))
                     continue;
                 var choice = option.EffectChoices.FirstOrDefault(c => c.Id == id) ?? new EffectChoiceView { Id = id };
                 if (row == null || choice.SelectionGroup != currentGroup)
