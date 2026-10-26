@@ -23,7 +23,8 @@ namespace Wotr.Client
                 return Attack;
             if (kind is CommandKind.MoveArmies or CommandKind.MoveShadowCharacters or CommandKind.MoveCompanions)
                 return Move;
-            if (ability.StartsWith("politics-"))
+            // UI-349: a messenger (Messenger of the Dwarves, the Council's messengers) activates and advances a nation.
+            if (ability.StartsWith("politics-") || ability.StartsWith("messenger-"))
                 return Politics;
             if (ability.EndsWith("-recruit"))
                 return Muster;

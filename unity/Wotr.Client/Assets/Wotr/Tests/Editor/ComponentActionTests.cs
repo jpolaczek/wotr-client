@@ -99,6 +99,8 @@ namespace Wotr.EditorTests
         public void AbilityPicturesShowWhatTheAbilityDoes()
         {
             Assert.AreEqual(AbilityPictures.Politics, AbilityPictures.For(CommandKind.UseCharacterAbility, "politics-dwarves-at-erebor"));
+            Assert.AreEqual(AbilityPictures.Politics, AbilityPictures.For(CommandKind.UseCharacterAbility, "messenger-dwarves"),
+                "UI-349: Messenger of the Dwarves activates and advances the Dwarves.");
             Assert.AreEqual(AbilityPictures.Move, AbilityPictures.For(CommandKind.MoveArmies, "muster-as-army-once-per-turn"));
             Assert.AreEqual(AbilityPictures.Attack, AbilityPictures.For(CommandKind.AttackArmy, "muster-as-army-once-per-turn"));
             Assert.AreEqual(AbilityPictures.Entry, AbilityPictures.For(CommandKind.EnterCharacter, ""));

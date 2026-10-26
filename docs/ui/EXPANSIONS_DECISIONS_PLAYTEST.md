@@ -109,8 +109,8 @@ difference in the rules (`Kings/KingsDismay.cs`).
 - [ ] **D8 — Forced single steps stay automatic.** Try: `fate-card-book-of-mazarbul`, `fate-card-orcs-multiplying-again`,
   `fate-card-monsters-roused`. Expect: where only one region or plan is legal the server applies it without a click,
   and the console's effect trail and the log name the result. A step with two or more legal choices still waits.
-- [ ] **D9 — Every Guide response in the Hunt's response row.** Try: no scenario yet (a Hunt with Merry, Pippin or
-  Gollum as Guide, and with Gimli in a Fate game). Expect: every Guide's response is a portrait in the Hunt window's
+- [ ] **D9 — Every Guide response in the Hunt's response row.** Try: `fate-gimli-guide` (Gimli, Dwarven Lord, as Guide;
+  UI-349) and a Hunt with Merry, Pippin or Gollum as Guide (base part released in 0.9.0-rc.14, UI-360). Expect: every Guide's response is a portrait in the Hunt window's
   response row (portrait, name, what it does); none is a text rectangle in the tray. The base Guides' part is a base-game
   change and lands on `main` too.
 
@@ -124,7 +124,8 @@ difference in the rules (`Kings/KingsDismay.cs`).
   portrait in the battle window's force column glows; its click extends the siege without downgrading an Elite.
 - [ ] **D13 — Council tokens.** Try: `lords-council-token`. Expect: a medallion's click starts its printed use at once,
   with no panel step; when a Kings Chieftain can enter with it, his Characters row lights instead; no "No token" buttons.
-- [ ] **D14 — Homelands' keep.** Try: no catalog scenario yet (Fate's homelands placement). Expect: a second click on
+- [ ] **D14 — Homelands' keep.** Try: `fate-gimli-homeland` (the Council's homelands with Gimli,
+  Dwarven Lord, chosen; UI-349). Expect: a second click on
   the companion already placed keeps him with the Fellowship, and the console's hint says so explicitly (for example
   "Click Merry again to keep him with the Fellowship") whenever that click is available. No button.
 
