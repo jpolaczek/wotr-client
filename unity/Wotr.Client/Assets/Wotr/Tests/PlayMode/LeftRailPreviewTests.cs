@@ -135,7 +135,7 @@ namespace Wotr.PlayTests
             if (element == null || element.panel == null || element.worldBound.width <= 0 || element.worldBound.height <= 0)
                 return false;
             for (var current = element; current != null; current = current.parent)
-                if (current.resolvedStyle.display == DisplayStyle.None)
+                if (Appearance.Closed(current) || current.resolvedStyle.display == DisplayStyle.None)
                     return false;
             return true;
         }

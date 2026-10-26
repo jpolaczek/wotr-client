@@ -353,7 +353,8 @@ namespace Wotr.Client
                 Fellowship.Root, Fellowship.Status, Hunt.Root, Hunt.Tab, Tracks, Information.Root, tableEffects.Tab, tableEffects.Root, BattleReport.Root, Battles.Root, Cards.Root,
                 HandDrawer.Tab, Hand, Log.Root, Log.Popup, Notifications.Overflow, Victory.Tab, Victory.Root, Victory.Banner, DecisionWindow.Root,
                 CompanionSetup.Tab, CompanionSetup.Root };
-            bool Occupied(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None &&
+            // UI-322: a panel fading out is closed, so it occupies nothing.
+            bool Occupied(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
                 element.resolvedStyle.visibility == Visibility.Visible && element.worldBound.width > 0 && element.worldBound.height > 0 &&
                 (element.childCount > 0 || element is TextElement);
             Sovereigns.Occlusions = () => overlays.Where(element => element != Sovereigns.Inspector && Occupied(element))
@@ -394,7 +395,8 @@ namespace Wotr.Client
             Root.Add(RingPicker.Root);
             Root.Add(GameEnd.Root);
             var mapOcclusions = overlays.Concat(new[] { top, Notifications.Root, bottom }).ToArray();
-            Map.Occlusions = () => mapOcclusions.Where(element => element.resolvedStyle.display != DisplayStyle.None && element.worldBound.width > 0)
+            Map.Occlusions = () => mapOcclusions.Where(element => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
+                    element.worldBound.width > 0)
                 .Select(element => new Rect(Map.WorldToLocal(element.worldBound.position), element.worldBound.size));
             AttachWindows();
             Characters = new CharacterRosterPanel(Root, Presentation, id => Map.Focus(id));

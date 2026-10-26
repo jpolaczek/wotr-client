@@ -707,7 +707,7 @@ Owner: "when units and the like appear in regions, first a flare and then a grad
 occlusion changed until the picture is fully clear; the new number shows and the flare disappears".
 
 - A new army marker in a region, or an army that grows, first flares (a warm soft glow behind it, 0.15 s), then a new
-  army's figures emerge from transparent and soft to clear (0.5 s, opacity and blur); a growing army keeps its figures. Only
+  army's figures emerge from transparent to clear (0.5 s, opacity); a growing army keeps its figures. Only
   when the army is clear does its number step to the new total, and the flare fades (`MapArmyArtwork.Emerge`,
   `MapCanvas.SyncMarkers`, Armies.uss).
 - It applies to the player's own changes and presented ones (a recruit, an entry); an army that flies in keeps its flight
@@ -718,9 +718,10 @@ occlusion changed until the picture is fully clear; the new number shows and the
   in a region is that region's marker and emerges like an army; a character joining an army makes it flare and step its
   number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
   trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
-- The blurred flare joins the marker only while it shows and leaves 0.3 s after the emergence ends (UI-322): a permanent
-  blurred element on every marker made Unity's renderer fail when the Fellowship track's layout changed
-  (`FellowshipTrackLayoutTests`).
+- UI-322: the map's armies use no filter. The first version blurred the flare and the emerging figures, and a blurred
+  element on a marker made Unity's renderer fail when the panel's scale, size or target changed (`FellowshipTrackLayoutTests`,
+  `Shadow02LayoutTests`); the flare is now the soft glow texture (`move-glow`), the figures fade in opacity only, and the
+  flare joins the marker only while it shows (it leaves 0.3 s after the emergence ends).
 
 <a id="odejscie--ui-338"></a>
 ## An army that leaves fades out — UI-338 (2026-10-25)
@@ -728,7 +729,7 @@ occlusion changed until the picture is fully clear; the new number shows and the
 Owner: "a unit that disappears from the map should also fade out slowly and smoothly instead of vanishing all at once".
 
 - The counterpart of UI-334: a marker whose figures all leave the map without a flight (killed, removed, eliminated)
-  fades where it stood from clear to transparent and soft (0.7 s, eased at both ends, opacity and blur) and is then
+  fades where it stood from clear to transparent (0.7 s, eased at both ends, opacity) and is then
   removed (`MapArmyArtwork.Leave`, `MapCanvas.StartLeaving`, Armies.uss). It counts as gone at once: it is no longer one
   of the map's markers (no lookup, no tooltip, no pointer; its element is renamed `leaving-…`), and it keeps its place on
   the map while the view moves.

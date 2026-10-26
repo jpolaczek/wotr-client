@@ -30,14 +30,17 @@ namespace Wotr.Client
                 return;
             // Keys go to the focused element: the lock takes the focus, so none reaches the game.
             previous = Root.focusController?.focusedElement;
+            Root.pickingMode = PickingMode.Position;
             Appearance.Display(Root, true);
             Root.BringToFront();
             Root.Focus();
         }
 
+        // The screen takes input again at once; the grey layer fades out over it (UI-322).
         public void Hide()
         {
             Root.Blur();
+            Root.pickingMode = PickingMode.Ignore;
             Appearance.Display(Root, false);
         }
 

@@ -1343,8 +1343,10 @@ frame; with it, and in a quiet view (reconnect, change of side, a replay's manua
 
 - **Closing.** A panel, window or part of a window that closes fades out where it stands over 0.15 s and only then
   leaves the layout (`Appearance.Display`, Wotr.uss `.appear-host.closing`). It counts as closed at once
-  (`Appearance.Closed`, which the left rail's tabs, the Politics presentation and the exit lock read instead of its
-  display), its controls take no press, release or click while it fades, and opening it again during the fade keeps it.
+  (`Appearance.Closed`, which the left rail's tabs, the window family, the placement of windows around occupied panels,
+  the Politics presentation and the exit lock read instead of its display), its controls take no press, release or click
+  while it fades, and opening it again during the fade keeps it. The exit lock's grey layer gives the screen its input
+  back at once and fades out over it.
   An element holding a filtered one (a presentation glow, a hit's drop shadow) leaves at once, because Unity's renderer
   fails on a fading element with filtered children. It applies to every element UI-321 fades in.
 - **Numbers.** A changed count swells and lights for 0.32 s while its new value already stands (`ValuePulse`, Wotr.uss
@@ -1358,13 +1360,15 @@ frame; with it, and in a quiet view (reconnect, change of side, a replay's manua
   stack that leaves fades out where it stood (a renamed `leaving-…` copy, so no query finds it) and its neighbours close up
   after it; a stack whose count changed pulses (`BattleStackMemory`, `BattleContext`). The presented opponent round keeps
   UI-337's hits. A view drawn twice in a frame compares with what was on screen before that frame (`ShownBefore`).
-- **The army flare.** UI-334's blurred flare joins an army marker only while it shows and leaves once it has faded: a
-  permanent blurred element on every marker made Unity's renderer fail when the Fellowship track's layout changed.
+- **The map's armies use no filter.** A blurred element on an army marker (UI-334's flare, the soft emergence of UI-334 and
+  UI-338) made Unity's renderer fail (`RenderTreeCompositor`) when the panel's scale, size or target changed, so the flare
+  is the soft glow texture and the figures emerge and leave in opacity only. The flare joins a marker only while it shows.
 
 Tests: `AppearanceTests` (a closing panel fades out but is closed at once and takes no click; Skip closes at once),
 `ValuePulseTests`, `DieFaceCrossfadeTests`, `BattleStackFadeTests`, `ArmyEmergeTests`, `ArmyLeaveTests`,
-`FellowshipTrackLayoutTests`; the "is closed" assertions of `PoliticalPanelTests` and `OpponentRecruitmentPoliticsTests`
-read `Appearance.Closed`.
+`FellowshipTrackLayoutTests`, `Shadow02LayoutTests`; the "is closed" checks of `PoliticalPanelTests`,
+`OpponentRecruitmentPoliticsTests`, `WindowFamilyNetworkTests`, the edge-panel tests and the profile drivers read
+`Appearance.Closed`.
 
 <a id="nazwy--ui-331"></a>
 ## Names, never codes — UI-331 (2026-10-25)

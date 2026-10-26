@@ -44,8 +44,8 @@ namespace Wotr.Client
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
         private readonly Button button;
-        // UI-334's flare is blurred; it joins the marker only while it shows (UI-322: a blurred element on every resting
-        // marker made Unity's renderer fail when the layout changed), and leaves once it has faded.
+        // UI-322: the flare joins the marker only while it shows and leaves once it has faded, so a resting marker carries
+        // nothing of it.
         private readonly VisualElement flare = Ignored("army-flare");
         private const long FlareFadeMilliseconds = 300;
         private IVisualElementScheduledItem dropFlare;

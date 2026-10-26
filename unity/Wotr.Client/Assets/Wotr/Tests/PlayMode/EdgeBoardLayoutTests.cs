@@ -132,7 +132,7 @@ namespace Wotr.PlayTests
             board.Root.Q("board-stage"), board.Fellowship.Root, board.Hunt.Root, board.Hand.parent
         }.Select(e => e.name + "=" + e.worldBound));
 
-        private static bool Visible(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None &&
+        private static bool Visible(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
             element.worldBound.width > 0 && element.worldBound.height > 0;
     }
 }
