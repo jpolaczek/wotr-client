@@ -73,7 +73,7 @@ namespace Wotr.Client.Diagnostics
         {
             if (board.TableEffects.SelectedSource != inspected)
                 throw new InvalidOperationException("Effects did not select the requested source.");
-            if (board.Cards.Root.resolvedStyle.display != DisplayStyle.None)
+            if (!Appearance.Closed(board.Cards.Root) && board.Cards.Root.resolvedStyle.display != DisplayStyle.None)
                 throw new InvalidOperationException("An Effects source opened a separate card window.");
             if (CardLibrary.Cards.ContainsKey(inspected))
                 InGameProfileScene.Visible(root.Q("effect-card"));
@@ -82,7 +82,7 @@ namespace Wotr.Client.Diagnostics
         public void VerifyRendered(string kind)
         {
             var root = kind == "effects" ? board.TableEffects.Root : kind == "victory" ? board.Victory.Root : board.OwnDice;
-            if (open != (root.resolvedStyle.display != DisplayStyle.None))
+            if (open != (!Appearance.Closed(root) && root.resolvedStyle.display != DisplayStyle.None))
                 throw new InvalidOperationException("The requested inspection visibility was not rendered: " + kind);
             if (!open)
                 return;

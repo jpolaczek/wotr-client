@@ -95,8 +95,8 @@ namespace Wotr.Client
             summaryStateText = hidden;
             summaryState.text = hidden;
             summaryJourney.sprite = FellowshipArtwork.Sprite(fellowship.MordorStep.HasValue ? "mordor-gate" : "journey");
-            summaryProgress.text = fellowship.MordorStep.HasValue ? travel.Value + "/5" : travel.Value.ToString();
-            summaryCorruption.text = damage.Value.ToString();
+            ValuePulse.Set(summaryProgress, fellowship.MordorStep.HasValue ? travel.Value + "/5" : travel.Value.ToString());
+            ValuePulse.Set(summaryCorruption, damage.Value.ToString());
             state.text = hidden;
             FellowshipArtwork.Show(condition, travel.Symbol);
             state.tooltip = fellowship.Hidden ? "The Fellowship is hidden." : "The Fellowship is revealed. Hide before moving again.";

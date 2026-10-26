@@ -46,8 +46,8 @@ namespace Wotr.Client
             if (shown == key)
                 return;
             shown = key;
-            eyes.text = eyeCount.ToString();
-            freeDice.text = freeTotal.ToString();
+            ValuePulse.Set(eyes, eyeCount.ToString());
+            ValuePulse.Set(freeDice, freeTotal.ToString());
             // UI-160: both counters keep their place in the console, zero included.
             eyeEntry.text = "Eyes · " + eyeCount;
             eyeEntry.tooltip = "Shadow dice in the Hunt Box";

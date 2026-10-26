@@ -92,9 +92,12 @@ namespace Wotr.Client
             return true;
         }
 
-        // An inline display is current immediately; the resolved style lags until the next style pass.
+        // An inline display is current immediately; the resolved style lags until the next style pass. A window fading out
+        // is already closed (UI-322).
         private static bool Hidden(VisualElement element)
         {
+            if (element.ClassListContains(Appearance.ClosingClass))
+                return true;
             var inline = element.style.display;
             return inline.keyword == StyleKeyword.Undefined
                 ? inline.value == DisplayStyle.None

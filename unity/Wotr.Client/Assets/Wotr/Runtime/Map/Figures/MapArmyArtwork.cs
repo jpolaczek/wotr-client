@@ -44,7 +44,11 @@ namespace Wotr.Client
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
         private readonly Button button;
+        // UI-322: the flare joins the marker only while it shows and leaves once it has faded, so a resting marker carries
+        // nothing of it.
         private readonly VisualElement flare = Ignored("army-flare");
+        private const long FlareFadeMilliseconds = 300;
+        private IVisualElementScheduledItem dropFlare;
         private int shown;
         // UI-334: the number the army shows once it has emerged; null while nothing emerges.
         private string emergingCount;
@@ -58,7 +62,6 @@ namespace Wotr.Client
             button.AddToClassList("illustrated-army");
             // UI-301: the ChoiceGlow halo of an army a click may choose, behind the artwork (Armies.uss).
             button.Add(Ignored("army-choice-glow"));
-            button.Add(flare);
             Root.Add(Ignored("army-plinth"));
             // Every shadow goes first, so no shadow falls on the figure beside it.
             for (var i = 0; i < shadows.Length; i++)
@@ -130,6 +133,9 @@ namespace Wotr.Client
             EndEmerge();
             emergingCount = count.text;
             count.text = before?.ToString() ?? count.text;
+            dropFlare?.Pause();
+            if (flare.parent == null)
+                button.Insert(1, flare);
             button.AddToClassList(FlaringClass);
             button.EnableInClassList(HiddenClass, before == null);
             reveal = button.schedule.Execute(() => button.RemoveFromClassList(HiddenClass));
@@ -167,6 +173,11 @@ namespace Wotr.Client
             button.RemoveFromClassList(ShrinkingClass);
             button.RemoveFromClassList(HiddenClass);
             button.RemoveFromClassList(FlaringClass);
+            if (flare.parent != null)
+            {
+                dropFlare = button.schedule.Execute(() => flare.RemoveFromHierarchy());
+                dropFlare.ExecuteLater(FlareFadeMilliseconds);
+            }
             if (emergingCount == null)
                 return;
             count.text = emergingCount;

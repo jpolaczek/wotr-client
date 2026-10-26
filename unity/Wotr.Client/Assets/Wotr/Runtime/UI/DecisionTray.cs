@@ -65,6 +65,8 @@ namespace Wotr.Client
         // battle window's own ribbon, the one its presented round shows, so a stage reached in the presentation is not glided
         // to again when the decision takes the row.
         private readonly StageRibbon battleRibbon;
+        // UI-322: the battle's stacks as the tray last drew them, so a changed one pulses and a gone one fades out.
+        private readonly BattleStackMemory battleStacks = new BattleStackMemory();
 
         public DecisionTray(VisualElement root, BoardPresentation data = null, CardInspector cards = null,
             CompanionSetupPanel setup = null, StageRibbon battleRibbon = null)
@@ -339,7 +341,7 @@ namespace Wotr.Client
                 root.Add(battleRibbon.Root);
                 BattleStages.Apply(battleRibbon, view.Battle);
                 var battle = new BattleContext(root, view.Battle, view, draft, action => DraftEdited?.Invoke(action), id => CardInspected?.Invoke(id), cards,
-                    action => ChoiceCompleted?.Invoke(action));
+                    action => ChoiceCompleted?.Invoke(action), battleStacks);
                 refreshChoices.Add(battle.Refresh);
                 title.text = data.Regions[view.Battle.RegionId].Name + " · " + view.Battle.Mode + " · Round " + view.Battle.Round +
                     (view.Battle.MandatorySiegeRounds > 0 && view.Battle.Round <= view.Battle.MandatorySiegeRounds ? "/" + view.Battle.MandatorySiegeRounds : "") +

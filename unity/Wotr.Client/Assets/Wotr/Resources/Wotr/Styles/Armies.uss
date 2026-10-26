@@ -22,27 +22,29 @@
 .army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
 
 .army-artwork { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
-/* UI-334: an army that appears or grows — a warm flare behind it first, then the figures emerge from transparent and soft
-   to clear (MapArmyArtwork.Emerge); the flare fades as the number steps. Nothing moves under Skip animations. */
+/* UI-334: an army that appears or grows — a warm flare behind it first, then the figures emerge from transparent to clear
+   (MapArmyArtwork.Emerge); the flare fades as the number steps. Nothing moves under Skip animations. UI-322: no filter on
+   the map's armies — a blurred element there made Unity's renderer fail when the panel's scale or target changed — so the
+   flare is the soft glow texture and the figures fade in opacity only. */
 .army-flare {
     position: absolute;
-    left: 8%;
-    top: 18%;
-    right: 8%;
-    bottom: 4%;
-    border-radius: 50%;
-    background-color: rgba(255, 236, 186, 0.9);
-    filter: blur(12px);
+    left: -4%;
+    top: 6%;
+    right: -4%;
+    bottom: -8%;
+    background-image: resource("Wotr/Art/UI/ornaments/move-glow");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 236, 186);
     opacity: 0;
 }
 .army.army-flaring .army-flare { opacity: 1; }
-.army.army-emerge-hidden .army-artwork { opacity: 0; filter: blur(5px); }
+.army.army-emerge-hidden .army-artwork { opacity: 0; }
 .motion-enabled .army .army-flare { transition-property: opacity; transition-duration: 0.3s; transition-timing-function: ease-out-sine; }
 .motion-enabled .army.army-flaring .army-flare { transition-duration: 0.15s; }
-.motion-enabled .army .army-artwork { transition-property: opacity, filter; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
-/* UI-338: the counterpart — a marker whose figures all left fades from clear to transparent and soft before it is removed;
-   a shrinking army's figures dim for a moment as its number steps down. At once under Skip animations. */
-.army.army-leaving .army-artwork { opacity: 0; filter: blur(5px); }
+.motion-enabled .army .army-artwork { transition-property: opacity; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
+/* UI-338: the counterpart — a marker whose figures all left fades from clear to transparent before it is removed; a
+   shrinking army's figures dim for a moment as its number steps down. At once under Skip animations. */
+.army.army-leaving .army-artwork { opacity: 0; }
 /* Leaving is slower and eased at both ends, so the figures stay readable while they go. */
 .motion-enabled .army.army-leaving .army-artwork { transition-duration: 0.7s; transition-timing-function: ease-in-out-sine; }
 .army.army-shrinking .army-artwork { opacity: 0.45; }

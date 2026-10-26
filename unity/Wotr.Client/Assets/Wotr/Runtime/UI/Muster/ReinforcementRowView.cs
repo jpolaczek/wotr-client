@@ -120,7 +120,7 @@ namespace Wotr.Client
             {
                 Button.name = state.TokenPrefix + nation + "-" + figure.Kind;
                 image.sprite = FigureArtwork.Sprite(FigureAppearances.Unit(nation, figure.Kind, state.Side));
-                count.text = figure.Reserve.ToString();
+                ValuePulse.Set(count, figure.Reserve.ToString());
                 Button.userData = figure.ReserveId == null ? null : new DraftToken(DraftObject.Reserve, figure.ReserveId);
                 Button.SetEnabled(state.Interactive && figure.ReserveId != null);
                 // Outside a recruitment the reserves are there to read, not greyed as refused.

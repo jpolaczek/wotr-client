@@ -86,6 +86,7 @@ namespace Wotr.Client
                 });
         }
 
-        private static bool Visible(VisualElement element) => element.resolvedStyle.display != DisplayStyle.None && element.worldBound.width > 0;
+        private static bool Visible(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
+            element.worldBound.width > 0;
     }
 }

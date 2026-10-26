@@ -711,3 +711,11 @@ forces are drawn above them, and each drawing stands in its region clear of the 
 Panels, windows and dialogs that come into view fade in over 0.18 s, only in opacity, so they can be clicked and measured
 from the first frame. The setting "Skip animations" (formerly "Reduced motion") makes every change happen at once
 ([UX_SPEC](UX_SPEC.md#plynne-przejscia--ui-321)).
+
+<a id="plynne-zamykanie--ui-322"></a>
+## Panels fade out; numbers, die faces and battle stacks change smoothly — UI-322 (2026-10-25)
+
+A panel or window that closes fades out where it stands over 0.15 s, but it is closed at once: a click on its tab opens
+it again and none of its controls takes a click meanwhile. A changed count pulses, a die's changed face crossfades, and in
+the battle window a stack that leaves fades out where it stood. Skip animations and a quiet view change everything at
+once ([UX_SPEC](UX_SPEC.md#plynne-zamykanie--ui-322)).

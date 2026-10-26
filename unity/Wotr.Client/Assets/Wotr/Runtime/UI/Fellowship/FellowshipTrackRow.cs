@@ -158,7 +158,7 @@ namespace Wotr.Client
         public void Apply(FellowshipTrackState state)
         {
             Root.tooltip = state.Description;
-            Value.text = state.Value.ToString();
+            ValuePulse.Set(Value, state.Value.ToString());
             Value.tooltip = state.Description;
             Root.EnableInClassList("track-overflow", state.BeyondTrack);
             if (selected != state.Position)

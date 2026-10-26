@@ -90,7 +90,10 @@ namespace Wotr.PlayTests
                     Fits(menu.Root.Q("public-room-room0"), menu.Root.Q<ScrollView>("public-games-scroll").contentViewport);
                     Assert.LessOrEqual(menu.Root.Q("public-room-room0").worldBound.height, 47f, "Open games rows are compact.");
                     // LOBBY-02: unfolded, the players online lie over the chat's log and input; the chat keeps its width and
-                    // the tab its place.
+                    // the tab its place. LOBBY-05: the column starts unfolded; folded first, the chat is measured without it.
+                    Assert.IsTrue(menu.Lobby.OnlineShown, "LOBBY-05: the players online start unfolded.");
+                    menu.Lobby.ToggleOnline();
+                    yield return Settle();
                     var onlineTab = menu.Root.Q<Button>("lobby-online-tab");
                     var tabBefore = onlineTab.worldBound;
                     var logBefore = menu.Root.Q("lobby-chat-log").worldBound;

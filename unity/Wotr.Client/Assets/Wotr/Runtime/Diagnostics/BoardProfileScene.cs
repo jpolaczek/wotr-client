@@ -74,7 +74,7 @@ namespace Wotr.Client.Diagnostics
             if (element?.panel == null || element.worldBound.width <= 0 || element.worldBound.height <= 0)
                 return false;
             for (var current = element; current != null; current = current.parent)
-                if (current.resolvedStyle.display == DisplayStyle.None || current.resolvedStyle.visibility != Visibility.Visible)
+                if (Appearance.Closed(current) || current.resolvedStyle.display == DisplayStyle.None || current.resolvedStyle.visibility != Visibility.Visible)
                     return false;
             return true;
         }
