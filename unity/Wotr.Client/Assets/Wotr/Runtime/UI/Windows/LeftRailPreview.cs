@@ -64,10 +64,18 @@ namespace Wotr.Client
             });
             panel.RegisterCallback<PointerEnterEvent>(e =>
             {
+                // UI-362: a panel rolling back rises under a still pointer; that is its own motion, not a hover.
+                if (entry.Closing && Still(entry, e.position))
+                    return;
                 if (RememberPointer(entry, e.position))
                     Enter(entry, false);
             });
-            panel.RegisterCallback<PointerMoveEvent>(e => RememberPointer(entry, e.position));
+            panel.RegisterCallback<PointerMoveEvent>(e =>
+            {
+                var moved = !Still(entry, e.position);
+                if (RememberPointer(entry, e.position) && moved && entry.Closing && !entry.OverPanel)
+                    Enter(entry, false);
+            });
             panel.RegisterCallback<PointerLeaveEvent>(e =>
             {
                 RememberPointer(entry, e.position);
@@ -125,6 +133,9 @@ namespace Wotr.Client
             entry.SuppressedFocus = tab;
             entry.SuppressedPointer = entry.Pointer;
         }
+
+        // The pointer stands where it was last seen over the tab or the panel.
+        private static bool Still(Entry entry, Vector2 position) => (position - entry.Pointer).sqrMagnitude < .01f;
 
         // Closing a panel can uncover its tab under a stationary pointer. That layout-generated
         // enter is not a fresh hover; a real move or leave makes the tab available again.
