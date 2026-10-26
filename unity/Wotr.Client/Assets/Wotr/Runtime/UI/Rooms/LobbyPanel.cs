@@ -10,7 +10,7 @@ namespace Wotr.Client
     // LOBBY-01: the Open games screen's chat under the game list, with a compact column of the players online beside it.
     // LOBBY-02: the column folds into a grey strip at the right edge; the tab at the strip's bottom folds and unfolds it
     // and never moves. Unfolded, the column lies over the chat's right side and its input instead of narrowing them.
-    // LOBBY-05 (owner 2026-10-26: "the chat in the main menu is to be unfolded by default"): it starts unfolded. A
+    // LOBBY-06 (owner 2026-10-26: "the chat in the main menu is to be unfolded by default"): it starts unfolded. A
     // right-click on a player's name (in the column or on a message) opens a small tab with Send challenge. The panel
     // keeps a fixed height; only its own log scrolls.
     public sealed class LobbyPanel
