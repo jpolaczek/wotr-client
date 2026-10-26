@@ -540,8 +540,9 @@ players online beside it, and challenges between them; the game rows are compact
   last 20 s, this player marked "(you)". LOBBY-02 (2026-10-18, the owner's request): no fold button in the chat line; a
   16 px grey strip at the panel's right edge (`lobby-online-strip`) carries a tab at its bottom (`lobby-online-tab`,
   "Online" written upwards) that unfolds the column and folds it back. The tab never moves. Unfolded, the column (160 px,
-  dark and opaque) lies over the chat's right side and its input instead of narrowing them; it starts folded, so the
-  input is free.
+  dark and opaque) lies over the chat's right side and its input instead of narrowing them. LOBBY-04 (2026-10-26, the
+  owner: "the chat in the main menu is to be unfolded by default"): it starts unfolded (before, folded, so the input was
+  free); the tab still folds it.
 - **Challenge.** A right-click on another player's name — in the column or on a message — opens a small tab
   (`lobby-context`) with the name and **Send challenge**; Esc or a press elsewhere closes it. The status line confirms
   the challenge or says why the server refused it (offline, already challenged, too many pending, yourself).
