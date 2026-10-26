@@ -67,8 +67,9 @@ namespace Wotr.PlayTests
                 guest.Root.Q<Label>("lobby-status").text + "', input '" + guest.Root.Q<TextField>("lobby-chat-input").value + "'", token);
             await ReturnTestFixture.Until(() => Shows(host.Root, text), token);
 
-            // LOBBY-02: the players online start folded; the strip's tab shows them over the chat.
-            await ReturnTestFixture.ClickReady(host.Root, "lobby-online-tab", token);
+            // LOBBY-06: the players online start unfolded over the chat; no tab click is needed (it would fold them).
+            Assert.IsFalse(host.Root.Q("lobby-online-tab").ClassListContains("lobby-online-tab-folded"),
+                "LOBBY-06: the players online start unfolded.");
             await ReturnTestFixture.Until(() => host.Root.Q<Label>("lobby-player-" + challenged).worldBound.height > 0, token);
             RightClick(host.Root.Q<Label>("lobby-player-" + challenged));
             await ReturnTestFixture.Until(() => host.Root.Q("lobby-context").resolvedStyle.display == DisplayStyle.Flex, token);

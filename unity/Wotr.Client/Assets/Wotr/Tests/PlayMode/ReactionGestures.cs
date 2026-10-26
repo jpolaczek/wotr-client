@@ -7,7 +7,8 @@ using Wotr.Client;
 namespace Wotr.PlayTests
 {
     // UI-247: a reaction is used at its source — a battle portrait, the Guide's portrait in the Fellowship panel, a table
-    // card's × in the Effects panel — or, without one, at its console or tray button.
+    // card's × in the Effects panel, a Guide's Hunt response in the Hunt window's response row (UI-360) — or, without one,
+    // at its console or tray button.
     internal static class ReactionGestures
     {
         private const string PortraitPrefix = "fellowship-portrait-";
@@ -34,7 +35,27 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(guide);
                 return;
             }
+            if (HuntGuideResponses.InRow(view, reactionId))
+            {
+                await GuideResponse(room, client, reactionId);
+                return;
+            }
             PointerGestureEvents.ClickAt(MatchTestRoom.TrayOrConsole(client, "effect-choice-" + reactionId));
+        }
+
+        // UI-360: a Guide's Hunt response is its portrait in the Hunt window's response row, not a tray choice.
+        public static async Task GuideResponse(MatchTestRoom room, MountedMatchClient client, string reactionId)
+        {
+            var board = client.Board;
+            if (!board.Hunt.IsOpen)
+                board.Hunt.Open();
+            await room.Settle();
+            var response = board.Hunt.Responses.Root.Q<Button>("effect-choice-" + reactionId);
+            Assert.IsNotNull(response, "The Guide's response stands in the Hunt window's response row.");
+            Assert.IsTrue(response.ClassListContains(ChoiceGlow.ClassName), "The Guide's response glows.");
+            Assert.IsNull(board.Tray.Q<Button>("effect-choice-" + reactionId), "The tray lists no Guide response.");
+            StringAssert.EndsWith("Or Pass to skip it.", response.tooltip);
+            PointerGestureEvents.ClickAt(response);
         }
 
         public static async Task TableCard(MatchTestRoom room, MountedMatchClient client, string card)

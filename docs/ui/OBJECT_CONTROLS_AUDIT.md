@@ -50,7 +50,7 @@ the protection window may open on a tile with no damage (`HuntCardSteps.ShadowHu
 
 | # | Where | Now | Existing object |
 | --- | --- | --- | --- |
-| 1 | Guide reactions in the Hunt: Merry, Pippin (`guide-separate-to-reduce-hunt-one`), Gollum's reveal (`hunt.guide`) | text rectangles in the Hunt tray (`FellowshipActions.RosterReaction` leaves the Hunt out) | the Guide's portrait as a response object in `HuntResponsesView` |
+| 1 | Guide reactions in the Hunt: Merry, Pippin (`guide-separate-to-reduce-hunt-one`), Gollum's reveal (`hunt.guide`) | done by UI-360 (2026-10-26, owner's D9): the Guide's portrait in the response row; formerly text rectangles in the Hunt tray | the Guide's portrait as a response object in `HuntResponsesView` |
 | 2 | Fellowship-hosted tray footer: Declare/Reveal ("Undo step", "Cancel", text "Declare"/"Reveal"), separation ("Cancel"), Mordor ("Remove from play") | the footer duplicates the console | the console's ↶/✓ (greyed meanwhile) |
 | 3 | Worn with Sorrow and Toil (`CharacterCardDiscard`) | text "Mithril", "Axe and Bow", "Horn", "Staff", "Random hand", "Keep cards" in the Hunt tray; `DecisionRoutes` claims Hand (`:65`) but the hand lights nothing | the Effects panel's table cards with × (`TableEffectsView.Offer`) |
 | 4 | Character abilities and components (`Application/ComponentContextInteraction.cs`), e.g. Saruman's Voice | text buttons in the region panel, the Characters inspector and the decision dock | the figure's portrait, the inspector's ability chips |

@@ -7,7 +7,9 @@ namespace Wotr.Client
         public float Zoom = .5f;
         public Vector2 Pan;
         public float MinimumZoom { get; private set; } = .28f;
-        public float MaximumZoom => Mathf.Max(2.6f, MinimumZoom);
+        // The closest the map comes, unless the board itself needs more to cover the viewport.
+        public const float ClosestZoom = 2.6f;
+        public float MaximumZoom => Mathf.Max(ClosestZoom, MinimumZoom);
         private const float GeometryTolerance = .001f;
         private Rect board;
         private Rect viewport;

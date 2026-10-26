@@ -4,21 +4,21 @@
   "packages": [
     {
       "name": "com.wotr.contracts",
-      "version": "0.11.0",
-      "archive": "com.wotr.contracts-0.11.0.tgz",
-      "sha256": "fb26d5581a8deaf53cf30cf09a875e934b2cf107cf9bd815ae1c9acb6d6e984f",
-      "size": 20218,
-      "commit": "14a9fda8a8762227178f59c8ab34b42a8572126f"
+      "version": "0.12.0",
+      "archive": "com.wotr.contracts-0.12.0.tgz",
+      "sha256": "07e9f720d92d0c54f7232753bfdd1dd30acfc36c5f387f934d9b5d2b189f5a4a",
+      "size": 20282,
+      "commit": "de0feb3a70e73e19c555c7b66a07feba04988d70"
     },
     {
       "name": "com.wotr.public-content",
-      "version": "1.0.12",
-      "archive": "com.wotr.public-content-1.0.12.tgz",
-      "sha256": "5d0389d6c3418e8be81090531500aec189cc8c1b559caf24cb8b7a08b12f33bb",
+      "version": "1.0.13",
+      "archive": "com.wotr.public-content-1.0.13.tgz",
+      "sha256": "2729e2694bf4bd86f41df332b83558e36a78a45fe7e1b9022e0eea9a2302c801",
       "size": 651414,
-      "commit": "14a9fda8a8762227178f59c8ab34b42a8572126f",
+      "commit": "de0feb3a70e73e19c555c7b66a07feba04988d70",
       "requires": {
-        "com.wotr.contracts": "0.11.0"
+        "com.wotr.contracts": "0.12.0"
       },
       "contentVersion": "base-setup-1",
       "fingerprint": "15e85801b8690cd20cced167464dde453e3582ea4b400d4fb1405f5444f49136",

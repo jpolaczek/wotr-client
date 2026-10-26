@@ -18,6 +18,38 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator HoverUnrollsAnInteractivePanelAndNothingPinsItInFourLayouts() => MatchTestRoom.Wait(Preview());
 
+        // UI-362 (owner report): with the pointer still just above the unrolled corner panel, the panel's roll-back (it
+        // rises 10 points) must not catch the pointer and unroll it again: it closes once and stays closed.
+        [UnityTest]
+        public IEnumerator ARollingBackPanelDoesNotCatchAStillPointer() => MatchTestRoom.Wait(StillPointer());
+
+        private static async Task StillPointer()
+        {
+            // As the owner reported it, the Shadow's: its Fellowship panel hosts no decision that would hold it open.
+            using var room = await UI10TestRoom.Connect("map15-navigation");
+            var board = room.Sh.Board;
+            var panels = board.Edges.CornerPanels;
+            Assert.IsFalse(board.Fellowship.Held);
+            CardGestures.Move(board.Edges.Corner);
+            await Task.Delay(260);
+            Assert.IsTrue(Visible(panels), "Hovering the corner tab unrolls the Fellowship.");
+            var above = new Vector2(panels.worldBound.center.x, panels.worldBound.yMin - 4);
+            CardGestures.Move(board.Root, above);
+            var shown = true;
+            var changes = 0;
+            for (var sample = 0; sample < 40; sample++)
+            {
+                await Task.Delay(50);
+                if (board.Fellowship.IsOpen == shown)
+                    continue;
+                shown = !shown;
+                changes++;
+            }
+            Assert.IsFalse(shown, $"The panel rolls back ({changes} changes; under the pointer {board.Root.panel.Pick(above)?.name}, " +
+                $"previewing '{board.Edges.Preview.Previewing}', panels {panels.worldBound}, tab {board.Edges.Corner.worldBound}).");
+            Assert.AreEqual(1, changes, "It closes once and stays closed while the pointer stays still.");
+        }
+
         private static async Task Preview()
         {
             using var room = await UI10TestRoom.Connect("map15-navigation");

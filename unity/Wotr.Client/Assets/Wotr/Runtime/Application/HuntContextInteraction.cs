@@ -29,6 +29,7 @@ namespace Wotr.Client
             board.Hunt.Dice.Selected += Reroll;
             board.Hunt.Guides.Selected += Guide;
             board.Hunt.Responses.Selected += Respond;
+            board.Hunt.Responses.GuideResponse += GuideResponse;
             board.Hunt.Responses.CardResponse += CardResponse;
             board.Hunt.Tile.Selected += ApplyResponse;
         }
@@ -95,10 +96,23 @@ namespace Wotr.Client
                 CompleteResponse(response);
         }
 
+        // UI-360: a Guide's response object in the row, sent with its click (UI-142).
+        private void GuideResponse(string id)
+        {
+            if (HuntGuideResponses.InRow(view, id))
+                SendReaction(id);
+        }
+
         // UI-285: a table card's response object in the row: its click uses the card, sent at once (UI-142).
         private void CardResponse(string id)
         {
-            if (busy() || draft == null || !HuntCardResponses.InRow(view, id))
+            if (HuntCardResponses.InRow(view, id))
+                SendReaction(id);
+        }
+
+        private void SendReaction(string id)
+        {
+            if (busy() || draft == null)
                 return;
             edit(() =>
             {
@@ -149,6 +163,7 @@ namespace Wotr.Client
             board.Hunt.Dice.Selected -= Reroll;
             board.Hunt.Guides.Selected -= Guide;
             board.Hunt.Responses.Selected -= Respond;
+            board.Hunt.Responses.GuideResponse -= GuideResponse;
             board.Hunt.Responses.CardResponse -= CardResponse;
             board.Hunt.Tile.Selected -= ApplyResponse;
         }

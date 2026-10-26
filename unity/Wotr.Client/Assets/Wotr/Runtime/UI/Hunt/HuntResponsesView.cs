@@ -10,8 +10,13 @@ namespace Wotr.Client
     {
         public VisualElement Root { get; } = new VisualElement { name = "hunt-responses" };
         public event Action<HuntResponse> Selected;
+        // UI-360: a Guide's response (HuntGuideResponses), by its reaction id.
+        public event Action<string> GuideResponse;
         // UI-285: a table card's response (HuntCardResponses), by its choice id.
         public event Action<string> CardResponse;
+        private readonly VisualElement guideRow = BoardScreen.Row("hunt-guide-responses");
+        private readonly ChoicePulse guidePulse;
+        private string guideKey = "";
         private readonly VisualElement cardRow = BoardScreen.Row("hunt-card-responses");
         private readonly ChoicePulse cardPulse;
         private string cardKey = "";
@@ -37,12 +42,60 @@ namespace Wotr.Client
                 choices.Add(response, button);
             }
             Root.Add(row);
+            guideRow.name = "hunt-guide-responses";
+            guidePulse = new ChoicePulse(guideRow);
+            Root.Add(guideRow);
             cardRow.name = "hunt-card-responses";
             cardPulse = new ChoicePulse(cardRow);
             Root.Add(cardRow);
             Root.Add(guideOrder);
             // UI-235: only a damage decision fills and shows the row (Context); a replay or an observer never calls it.
             Root.style.display = DisplayStyle.None;
+        }
+
+        // UI-360: the Guides' responses as response objects: the Guide's portrait, its name and what the response does;
+        // they glow while they can be used, and a click uses one.
+        private void GuideResponses(PlayerView view, IReadOnlyList<EffectChoiceView> offered, bool enabled)
+        {
+            var key = string.Join("|", offered.Select(c => c.Id + ":" + Shown(view, HuntGuideResponses.Figure(view, c))));
+            if (key != guideKey)
+            {
+                guideKey = key;
+                guideRow.Clear();
+                foreach (var choice in offered)
+                    guideRow.Add(GuideButton(view, choice));
+            }
+            guideRow.style.display = offered.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            foreach (var button in guideRow.Query<Button>().ToList())
+            {
+                button.SetEnabled(enabled);
+                button.EnableInClassList("legal-target", enabled);
+                ChoiceGlow.Apply(button, enabled);
+            }
+            guidePulse.Run(enabled && offered.Count > 0);
+        }
+
+        private Button GuideButton(PlayerView view, EffectChoiceView choice)
+        {
+            var id = choice.Id;
+            var figure = HuntGuideResponses.Figure(view, choice);
+            var button = BoardScreen.Button("", () => GuideResponse?.Invoke(id));
+            button.name = "effect-choice-" + id;
+            button.AddToClassList("hunt-response-object");
+            button.AddToClassList("hunt-guide-response");
+            var header = BoardScreen.Row("hunt-response-heading");
+            header.pickingMode = PickingMode.Ignore;
+            var portrait = new VisualElement { name = "hunt-response-art", pickingMode = PickingMode.Ignore };
+            portrait.AddToClassList("hunt-response-icon");
+            portrait.AddToClassList("hunt-guide-portrait");
+            portrait.Add(FigureArtwork.Image(FigureAppearances.Character(Shown(view, figure), Side.FreePeoples)));
+            header.Add(portrait);
+            header.Add(new Label(CharacterLibrary.ShortName(view, figure)) { name = "hunt-response-name", pickingMode = PickingMode.Ignore });
+            button.Add(header);
+            button.Add(new Label(HuntGuideResponses.Consequence(choice))
+                { name = "hunt-response-consequence", pickingMode = PickingMode.Ignore });
+            button.tooltip = HuntGuideResponses.Tooltip(view, choice);
+            return button;
         }
 
         // UI-285: the table cards' responses as response objects: a small card, its name and what using it does; they
@@ -90,17 +143,22 @@ namespace Wotr.Client
             return button;
         }
 
-        // The Guide's figure, as the Fellowship panel shows it: its own version when the Companion is the player's.
         private void ShowGuide(PlayerView view)
         {
-            var guide = view.Fellowship.Guide;
-            var version = view.OwnCompanions.Any(c => c.Id == guide)
-                ? CharacterLibrary.Version(view, guide) : FellowshipGuideText.PublicVersion(view.Fellowship, guide);
-            var shown = version.Length > 0 ? version : guide;
+            var shown = Shown(view, view.Fellowship.Guide);
             if (shown == guideShown)
                 return;
             guideShown = shown;
             guideArt.sprite = FigureArtwork.Sprite(FigureAppearances.Character(shown, Side.FreePeoples));
+        }
+
+        // A Fellowship character's figure as the Fellowship panel shows it: its own version when the Companion is the
+        // player's, otherwise its public version.
+        private static string Shown(PlayerView view, string character)
+        {
+            var version = view.OwnCompanions.Any(c => c.Id == character)
+                ? CharacterLibrary.Version(view, character) : FellowshipGuideText.PublicVersion(view.Fellowship, character);
+            return version.Length > 0 ? version : character;
         }
 
         // UI-288: each response shows its picture: the Ring with its drop of Corruption, the Guide's own figure, the
@@ -124,9 +182,11 @@ namespace Wotr.Client
         public void Context(PlayerView view, TurnDraft draft, bool enabled)
         {
             var option = HuntResponseActions.Option(view);
+            var guides = HuntGuideResponses.Offered(view);
+            GuideResponses(view, guides, enabled);
             var cards = HuntCardResponses.Offered(view);
             CardResponses(cards, enabled);
-            Root.style.display = option == null && cards.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            Root.style.display = option == null && guides.Count == 0 && cards.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             guideOrder.style.display = option?.HuntResponses.Contains(HuntResponse.Guide) == true ||
                 option?.HuntResponses.Contains(HuntResponse.RandomCompanion) == true ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var pair in choices)

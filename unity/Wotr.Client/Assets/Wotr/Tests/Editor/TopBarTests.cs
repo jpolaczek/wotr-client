@@ -31,7 +31,8 @@ namespace Wotr.EditorTests
             var chips = new[] { "cards", "rings", "spent", "out" }.Select(key => summary.Root.Q("opponent-" + key)).ToArray();
             var values = chips.Select(chip => chip.Q<Label>(className: "summary-value")).ToArray();
             CollectionAssert.AreEqual(new[] { "6", "1", "1", "1" }, values.Select(label => label.text));
-            Assert.AreEqual("Shadow · Cards in hand: 6", chips[0].tooltip);
+            // UI-361: the card counter says what the rules make public (OpponentCardsTests).
+            StringAssert.StartsWith("Shadow · 6 cards in hand", chips[0].tooltip);
             Assert.AreEqual("Shadow · Dice out of play: 1", chips[3].tooltip);
             Assert.IsTrue(chips.All(chip => chip.pickingMode == PickingMode.Position), "Chips carry the hover tooltip.");
             Assert.IsTrue(chips.All(chip => chip.Query<VisualElement>().ToList().Skip(1).All(child => child.pickingMode == PickingMode.Ignore)));
