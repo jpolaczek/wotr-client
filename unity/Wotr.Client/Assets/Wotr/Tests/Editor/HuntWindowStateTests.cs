@@ -53,6 +53,41 @@ namespace Wotr.EditorTests
             Assert.AreEqual(4, HuntWindowState.Index(view, hunt));
         }
 
+        // UI-340: the stages a presented Fellowship move records (wotr-server HuntRuntime): its start before its stage is set,
+        // the roll, the drawn tile with its damage pending, the damage, the table cards' window — never back.
+        [Test]
+        public void ARecordedFellowshipMoveGoesForwardFromRoll()
+        {
+            var hunt = new HuntView { SourceId = HuntWindowState.MoveSource, Stage = "BeforeDraw" };
+            var view = View(hunt);
+            Assert.AreEqual(0, HuntWindowState.Index(view, hunt), "Started: Roll, not Tile.");
+            hunt.Dice = new List<HuntDieView> { new HuntDieView { Result = 6, Success = true }, new HuntDieView { Result = 2 } };
+            Assert.AreEqual(0, HuntWindowState.Index(view, hunt), "Rolled: Roll while the dice show.");
+            hunt.Dice[1].Rerolled = true;
+            Assert.AreEqual(1, HuntWindowState.Index(view, hunt), "Rerolled: Re-roll.");
+            hunt.Stage = "Draw";
+            Assert.AreEqual(2, HuntWindowState.Index(view, hunt), "The draw's window: Tile.");
+            hunt.Stage = "DetermineDamage";
+            hunt.TileId = "base.hunt.standard.1.1.1";
+            hunt.DamagePending = true;
+            Assert.AreEqual(2, HuntWindowState.Index(view, hunt), "Tile drawn: Tile while its damage is pending.");
+            hunt.Stage = "Table";
+            hunt.DamagePending = false;
+            Assert.AreEqual(3, HuntWindowState.Index(view, hunt), "Damage determined, table cards' window: Damage, not back to Tile.");
+            hunt.Stage = "Guide";
+            Assert.AreEqual(3, HuntWindowState.Index(view, hunt));
+        }
+
+        [Test]
+        public void ACardsHuntShowsNoStageUntilItRollsOrDraws()
+        {
+            var hunt = new HuntView { SourceId = "base.sh.character.05", Stage = "BeforeDraw" };
+            var view = View(hunt);
+            Assert.AreEqual(-1, HuntWindowState.Index(view, hunt), "Started: neither Roll nor Tile yet.");
+            hunt.Stage = "Draw";
+            Assert.AreEqual(2, HuntWindowState.Index(view, hunt), "A tile-only Hunt goes to Tile.");
+        }
+
         [Test]
         public void AHuntInMordorHasNoRoll()
         {

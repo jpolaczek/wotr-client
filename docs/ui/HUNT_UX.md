@@ -439,6 +439,14 @@ well; tokens that change their state should turn over to their other side smooth
   battle). A new Hunt — its window key — or a new battle — its id — starts the row afresh, so the marker stands at the
   new Roll (Cards) at once; before, it glided back from the last Hunt's Result and the next Hunt looked as if it began at
   a later phase.
+- UI-340 (owner 2026-10-26, playing the Shadow against the CPU: "the new Hunt still starts visually at the Tile phase"):
+  the stage follows what the window shows, not the server's stage name alone. The server records a Hunt's start before its
+  stage is set (`BeforeDraw`), keeps `BeforeDraw` after the roll and opens the table cards' window (`Table`) after the
+  damage is set, so the presented Hunt opened at Tile, stayed there through the roll and went Damage → Tile → Damage. Now
+  dice without a tile are Roll (Re-roll once rerolled or while a reroll is offered), the draw's own window is Tile, a drawn
+  tile is Tile while its damage is pending and Damage after, and a Hunt that has only started is Roll for a Fellowship
+  move (`fellowship-move`) and shows no stage for a card's Hunt until it rolls or draws (`HuntWindowState.Index`). The
+  marker never goes back within one Hunt.
 - The Ring's Hidden/Revealed art — on the plaque, in the Fellowship panel and on the journey track's marker — turns over
   when it changes (`TokenFlip`: it narrows to its edge in 0.15 s, shows its other side at the middle of the turn and widens
   in 0.15 s); a nation's token turns over to its active side the same way.
