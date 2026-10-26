@@ -45,6 +45,8 @@ namespace Wotr.PlayTests
                             await room.Settle();
                             Assert.IsTrue(client.Board.Fellowship.IsOpen);
                             Assert.IsTrue(client.Board.Hunt.IsOpen);
+                            // UI-322: the layout is read once what closed has faded and the windows have glided to their places.
+                            await Task.Delay((int)(Appearance.CloseMilliseconds + FloatingWindow.GlideSeconds * 1000) + 100);
                             Check(client.Board);
                             LayoutTests.AssertNoDecisionScroll(client.Board);
                             LayoutTests.Save(target, $"ui75-paired-{client.Board.View.You}-{width}-{scale:0.00}.png");

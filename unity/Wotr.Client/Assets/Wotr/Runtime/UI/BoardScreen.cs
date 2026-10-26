@@ -405,7 +405,10 @@ namespace Wotr.Client
             Edges = new BoardEdgeLayout(this, stage);
             // UI-324: a left panel held open narrows the middle; the windows placed there move clear of it.
             foreach (var panel in Edges.LeftPanels)
+            {
                 panel.RegisterCallback<GeometryChangedEvent>(_ => Windows.MoveMiddle());
+                panel.RegisterCallback<Appearance.ClosingEvent>(_ => Windows.MoveMiddle());
+            }
             Windows.MiddleMoved += Cards.MiddleMoved;
             Victory.KeepShortcutClearOf(Characters.Tab);
             AttachDieGlows();
@@ -808,8 +811,8 @@ namespace Wotr.Client
             element.worldBound.width > 0 && element.worldBound.height > 0;
 
         // A left panel open beside its tab, not a hover's preview that only lies over the board. Its laid-out place, so
-        // its unrolling slide does not drag the windows along.
-        private static bool Held(VisualElement panel) => panel.parent != null && OnScreen(panel) &&
+        // its unrolling slide does not drag the windows along. A panel fading out is no longer held (UI-322).
+        private static bool Held(VisualElement panel) => panel.parent != null && !Appearance.Closed(panel) && OnScreen(panel) &&
             !panel.ClassListContains(LeftRailPreview.PreviewClass);
 
         public bool ReducedMotion()

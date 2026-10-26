@@ -67,5 +67,25 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, drawer.style.display.value, "…and then leaves.");
             Assert.IsTrue(Appearance.Closed(drawer));
         }
+
+        // A left panel fading out no longer narrows the board's middle: the windows standing there move back as it begins.
+        [UnityTest]
+        public IEnumerator AClosingLeftPanelNoLongerNarrowsTheMiddle()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            yield return stage.Ready();
+            var board = stage.Board;
+            var drawer = board.Nations.Drawer;
+            board.Nations.Open();
+            yield return new WaitForSecondsRealtime(.4f);
+            Assert.That(board.Windows.Middle().Value.xMin, Is.EqualTo(drawer.worldBound.xMax).Within(2), "The open panel narrows the middle.");
+            var moved = 0;
+            board.Windows.MiddleMoved += () => moved++;
+            board.Nations.Close();
+            yield return null;
+            Assert.AreEqual(DisplayStyle.Flex, drawer.resolvedStyle.display, "The panel is still fading out…");
+            Assert.Greater(moved, 0, "…but the middle moved as the fade began…");
+            Assert.That(board.Windows.Middle().Value.xMin, Is.EqualTo(board.Edges.Left.worldBound.xMax).Within(1), "…to the left rail.");
+        }
     }
 }

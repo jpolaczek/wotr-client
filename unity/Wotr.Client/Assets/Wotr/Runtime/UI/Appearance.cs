@@ -17,6 +17,12 @@ namespace Wotr.Client
         public const string ClosingClass = "closing";
         public const long CloseMilliseconds = 150;
 
+        // Sent to an element as its fade out begins: it is closed from now, though its layout stays until the fade ends, so
+        // whatever measures open panels (the board's middle) measures again at once.
+        public sealed class ClosingEvent : EventBase<ClosingEvent>
+        {
+        }
+
         public static void Display(VisualElement element, bool visible)
         {
             if (!visible)
@@ -103,6 +109,9 @@ namespace Wotr.Client
             element.AddToClassList(ClosingClass);
             BlockPointer(element);
             element.schedule.Execute(() => Leave(element)).ExecuteLater(CloseMilliseconds);
+            using var closing = ClosingEvent.GetPooled();
+            closing.target = element;
+            element.SendEvent(closing);
         }
 
         // Out of the layout first; the fade's class goes a frame later, so its opacity never animates back on a shown element.
