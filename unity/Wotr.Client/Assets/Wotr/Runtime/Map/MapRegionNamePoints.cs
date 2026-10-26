@@ -41,20 +41,21 @@ namespace Wotr.Client
         private const float ZoneBelow = 12;
         private const float CentredZoneHalfHeight = 32;
 
-        public static MapNamePoint For(RegionGeometry region, bool settled)
+        // clearOfForces: false finds the region's roomiest point wherever its forces stand (UI-363).
+        public static MapNamePoint For(RegionGeometry region, bool settled, bool clearOfForces = true)
         {
             var anchor = new Vector2(region.Anchor[0], region.Anchor[1]);
             var borders = Borders(region);
             var bounds = Bounds(region);
             var step = Mathf.Max(2, Mathf.Min(bounds.width, bounds.height) / Grid);
-            var best = Search(region, borders, anchor, settled, bounds, step, out var score);
+            var best = Search(region, borders, anchor, settled, clearOfForces, bounds, step, out var score);
             var fine = new Rect(best - Vector2.one * step, Vector2.one * step * 2);
-            best = Search(region, borders, anchor, settled, fine, step * 2 / Refinement, out _, score, best);
+            best = Search(region, borders, anchor, settled, clearOfForces, fine, step * 2 / Refinement, out _, score, best);
             return new MapNamePoint(best, Chord(borders, best, Vector2.right), Chord(borders, best, Vector2.up));
         }
 
-        private static Vector2 Search(RegionGeometry region, List<Vector2[]> borders, Vector2 anchor, bool settled, Rect area,
-            float step, out float bestScore, float startScore = float.MinValue, Vector2 start = default)
+        private static Vector2 Search(RegionGeometry region, List<Vector2[]> borders, Vector2 anchor, bool settled, bool clearOfForces,
+            Rect area, float step, out float bestScore, float startScore = float.MinValue, Vector2 start = default)
         {
             var best = start;
             bestScore = startScore;
@@ -64,7 +65,7 @@ namespace Wotr.Client
                     var point = new Vector2(x, y);
                     if (!MapContourMath.Contains(region, point))
                         continue;
-                    var score = Score(borders, anchor, settled, point);
+                    var score = Score(borders, anchor, settled, clearOfForces, point);
                     if (score > bestScore)
                     {
                         bestScore = score;
@@ -76,13 +77,13 @@ namespace Wotr.Client
             return best;
         }
 
-        private static float Score(List<Vector2[]> borders, Vector2 anchor, bool settled, Vector2 point)
+        private static float Score(List<Vector2[]> borders, Vector2 anchor, bool settled, bool clearOfForces, Vector2 point)
         {
             var clearance = Clearance(borders, point);
             if (clearance < MinimumClearance)
                 return clearance - ZonePenalty * 2;
             var score = Mathf.Min(clearance, ClearanceCap);
-            if (InForcesZone(anchor, settled, point))
+            if (clearOfForces && InForcesZone(anchor, settled, point))
                 score -= ZonePenalty;
             if (point.y > anchor.y + ZoneBelow)
                 score += BelowBonus;

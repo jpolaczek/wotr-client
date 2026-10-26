@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Wotr.Contracts;
 
 namespace Wotr.Client
 {
@@ -19,6 +20,9 @@ namespace Wotr.Client
         private const float ReadingSize = 15;
         // The width of a capital in Cinzel, in letter heights, for choosing one or two lines.
         private const float CapitalWidth = .72f;
+        // The widest letter spacing and the line height of the names at their reading size (Styles/MapNames.uss).
+        private const float LetterSpacing = 1.6f;
+        private const float LineHeight = 1.25f;
         private static Dictionary<string, MapNamePoint> sharedPoints;
         private readonly List<Entry> entries = new List<Entry>();
         // The last layout, repeated for a name once its text is measured.
@@ -68,8 +72,31 @@ namespace Wotr.Client
             var points = new Dictionary<string, MapNamePoint>();
             foreach (var region in data.Regions.Values)
                 if (data.Shapes.TryGetValue(region.Id, out var shape))
-                    points[region.Id] = MapRegionNamePoints.For(shape, region.Settlement != null);
+                    points[region.Id] = Point(region, shape);
             return sharedPoints = points;
+        }
+
+        // UI-363: a name stands clear of the forces unless it could never be read there — wider or taller than its room
+        // even at the closest zoom (a small region the forces' zone nearly fills); then it takes the region's roomiest
+        // point, and only a force really standing over it hides it (the occupied check of Place).
+        public static MapNamePoint Point(RegionDefinition region, RegionGeometry shape)
+        {
+            var settled = region.Settlement != null;
+            var height = region.Settlement is "Stronghold" or "City" ? MajorLetterHeight : LetterHeight;
+            var clear = MapRegionNamePoints.For(shape, settled);
+            if (Readable(region.Name, clear, height))
+                return clear;
+            var roomiest = MapRegionNamePoints.For(shape, settled, false);
+            return Readable(region.Name, roomiest, height) ? roomiest : clear;
+        }
+
+        // Whether the name at its reading size fits the point's room at the closest zoom.
+        public static bool Readable(string name, MapNamePoint point, float letterHeight)
+        {
+            var lines = Lines(name, point, letterHeight).Split('\n');
+            var width = lines.Max(line => line.Length) * (CapitalWidth * ReadingSize + LetterSpacing);
+            var height = lines.Length * ReadingSize * LineHeight;
+            return width <= point.HalfWidth * 2 * CameraState.ClosestZoom && height <= point.HalfHeight * 2 * CameraState.ClosestZoom;
         }
 
         // A name of several words that is wider than its region breaks into two lines at the middle space.

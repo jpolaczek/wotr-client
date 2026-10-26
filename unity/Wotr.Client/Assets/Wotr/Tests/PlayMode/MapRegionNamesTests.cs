@@ -43,6 +43,14 @@ namespace Wotr.PlayTests
                     // still show on the smallest screen.
                     Assert.GreaterOrEqual(fit, 5, "The whole map names its strongholds and cities · " + label);
                     Assert.Greater(near, 8, "The zoomed view names the regions around it · " + label);
+                    // UI-363 (owner report): a small region its forces' zone nearly fills names itself up close.
+                    var western = map.Data.Shapes["western-mirkwood"].Anchor;
+                    map.FocusOn(new Vector2(western[0], western[1]), map.Camera.MaximumZoom);
+                    yield return Settle();
+                    Check(map, "western mirkwood " + label);
+                    LayoutTests.Save(texture, $"ui363-western-mirkwood-{width}-{scale:0.00}.png");
+                    Assert.IsTrue(map.Names.Shown.Any(name => name.name == "map-name-western-mirkwood"),
+                        "Western Mirkwood shows its name up close · " + label);
                     client.Panel.targetTexture = client.Viewport;
                     texture.Release();
                     Object.Destroy(texture);

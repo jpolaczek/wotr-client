@@ -39,6 +39,28 @@ namespace Wotr.EditorTests
             Assert.LessOrEqual(crowded, points.Count / 10, "Only small regions put their name where the forces stand.");
         }
 
+        // UI-363 (owner report): a small region whose forces' zone nearly fills it still shows its name at a reading zoom;
+        // a name that fits beside the forces stays there.
+        [Test]
+        public void ASmallRegionsNameCanBeReadAtTheClosestZoom()
+        {
+            var data = BoardPresentation.Load();
+            foreach (var id in new[] { "western-mirkwood", "rhosgobel", "narrows-of-the-forest" })
+            {
+                var region = data.Regions[id];
+                var point = MapRegionNames.Point(region, data.Shapes[id]);
+                var beside = MapRegionNamePoints.For(data.Shapes[id], region.Settlement != null);
+                Assert.IsFalse(MapRegionNames.Readable(region.Name, beside, 11), id + " has no room for its name beside the forces");
+                Assert.IsTrue(MapRegionNames.Readable(region.Name, point, 11), id + " can be read at its roomiest point");
+            }
+            var eastern = data.Regions["eastern-mirkwood"];
+            Assert.AreEqual(MapRegionNamePoints.For(data.Shapes[eastern.Id], eastern.Settlement != null).Point,
+                MapRegionNames.Point(eastern, data.Shapes[eastern.Id]).Point, "A name that fits beside the forces stays there.");
+            var unreadable = data.Regions.Values.Where(r => data.Shapes.ContainsKey(r.Id) &&
+                !MapRegionNames.Readable(r.Name, MapRegionNames.Point(r, data.Shapes[r.Id]), r.Settlement is "Stronghold" or "City" ? 12.5f : 11));
+            TestContext.WriteLine("Names without room anywhere: " + string.Join(", ", unreadable.Select(r => r.Id)));
+        }
+
         [Test]
         public void ALongNameBreaksAtItsMiddleSpaceWhenItsRegionIsNarrow()
         {
