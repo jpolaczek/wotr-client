@@ -40,7 +40,8 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void TheAlternateGuidesRespondInTheHuntRowAndTheBaseGuidesKeepTheirPlace()
+        // UI-270, UI-360 (EXP-15 D9): the alternate and the base Guides all respond in the Hunt's response row.
+        public void TheAlternateAndTheBaseGuidesRespondInTheHuntRow()
         {
             var view = new PlayerView
             {
@@ -55,20 +56,20 @@ namespace Wotr.EditorTests
                         EffectChoices =
                         {
                             new EffectChoiceView { Id = "council.boromir-guide", Title = "Separate · Reduce damage", SourceId = "base.character.boromir" },
-                            new EffectChoiceView { Id = "character.merry-guide", Title = "Guide" }
+                            new EffectChoiceView { Id = "character.merry-guide", Title = "Separate · Reduce damage", SourceId = "base.character.merry" }
                         }
                     }
                 }
             };
             var offered = HuntGuideResponses.Offered(view);
-            Assert.AreEqual(new[] { "council.boromir-guide" }, offered.Select(c => c.Id).ToArray());
+            Assert.AreEqual(new[] { "council.boromir-guide", "character.merry-guide" }, offered.Select(c => c.Id).ToArray());
             Assert.IsTrue(HuntGuideResponses.InRow(view, "council.boromir-guide"));
-            Assert.IsFalse(HuntGuideResponses.InRow(view, "character.merry-guide"));
+            Assert.IsTrue(HuntGuideResponses.InRow(view, "character.merry-guide"));
             StringAssert.StartsWith("Click to use Boromir's response · Separate · Reduce damage", HuntGuideResponses.Tooltip(view, offered[0]));
             var responses = new HuntResponsesView();
             responses.Context(view, new TurnDraft(), true);
             Assert.IsNotNull(responses.Root.Q<Button>("effect-choice-council.boromir-guide"));
-            Assert.IsNull(responses.Root.Q<Button>("effect-choice-character.merry-guide"));
+            Assert.IsNotNull(responses.Root.Q<Button>("effect-choice-character.merry-guide"));
             Assert.AreEqual(DisplayStyle.Flex, responses.Root.style.display.value);
             view.Hunt = null;
             Assert.IsEmpty(HuntGuideResponses.Offered(view));

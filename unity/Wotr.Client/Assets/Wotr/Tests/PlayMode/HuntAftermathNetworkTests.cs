@@ -50,7 +50,12 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, board.View.Fellowship.Corruption);
             AssertContinuation(room, cost, reportId, true);
             await Recover(room);
-            await Click(room, board.Tray.Q<Button>("effect-choice-character.merry-guide"));
+            // UI-360: Merry's response is his portrait in the Hunt window's response row, not a tray choice.
+            var merry = board.Hunt.Responses.Root.Q<Button>("effect-choice-character.merry-guide");
+            Assert.IsTrue(merry.ClassListContains(ChoiceGlow.ClassName), "Merry's response glows.");
+            Assert.IsNull(board.Tray.Q<Button>("effect-choice-character.merry-guide"), "The tray lists no Guide response.");
+            StringAssert.StartsWith("Click Merry's glowing response in the Hunt window", board.Console.Status.Hint.text);
+            await Click(room, merry);
             await room.At(4);
             Assert.AreEqual(DecisionKind.CompanionSeparation, board.View.Decision.Kind);
             Assert.AreEqual(0, board.View.Hunt.Damage);

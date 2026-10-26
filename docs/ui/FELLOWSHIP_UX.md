@@ -63,7 +63,7 @@ The legal subsequent regions and the selected end are highlighted, without arrow
 <a id="f04--przewodnik-i-towarzysze"></a>
 ## F04 — Guide and Companion
 
-Portrait of Guide has a `Guide` badge, name and access to the ability. Since UI-249 there is no `Change guide` mode: in the Fellowship phase the legal candidates glow at once and their tooltip reads `Click to make … the Guide · This ends the Fellowship phase` before the click; one click on the portrait makes the decision. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma.
+Portrait of Guide has a `Guide` badge, name and access to the ability. Since UI-249 there is no `Change guide` mode: in the Fellowship phase the legal candidates glow at once and their tooltip reads `Click to make … the Guide · This ends the Fellowship phase` before the click; one click on the portrait makes the decision. `Finish phase` leaves the current legal Guide. The mandatory selection after re-synthesis has its own context and continuity. The server solves the forced single kandydat/Golluma. In the Hunt the Guide's own response (Merry's or Pippin's separation, Gollum's reveal) is not used on this portrait but on the Guide's portrait in the Hunt window's response row (UI-360, HUNT_UX).
 
 `Separate companions` leads through portraits → common route → `Separate here`. The selected group, range and effects are visible before the final click. Information `Separated companions cannot rejoin` explains the decision durability. The change of the group converts the legality of draft according to options; it does not select alternate characters. The usual action requires a specific dice, the forced effect retains its own cost and returns to the overriding decision.
 
@@ -536,7 +536,7 @@ Council decision opens the generic window, and the separate Setup window and its
 3. **The alternate Guides' responses.** In the Hunt's Guide window the alternates' responses — Boromir, Gimli and
    Legolas separate and reduce the damage; both alternate Hobbits cancel the tile; Fate's Gimli, Dwarven Lord, leaves
    as the Guide — stand as response objects in the Hunt window's response row (portrait, name, what it does); a click
-   uses one, the console's Pass declines (UI-291). The base Guides' responses keep their place.
+   uses one, the console's Pass declines (UI-291). Since UI-360 the base Guides' responses (Merry, Pippin, Gollum) stand in the same row.
 4. **Art of Disappearing.** A Hobbit alternate eliminated in a battle chooses its adjacent region on the map, as every
    region step (also during the battle).
 5. **The Fellowship Box.** In a Council game the Free Peoples' pool counts the dice in the Fellowship Box (Strider,

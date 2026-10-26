@@ -106,8 +106,9 @@ namespace Wotr.Client
                 if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
-                // UI-270: an alternate companion's Guide response is a response object in the Hunt's response row; UI-272: so
-                // is a Lords table card's response, and We Won't Go Back's Character cards glow in the hand.
+                // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
+                // every Guide's response; UI-272: so is a Lords table card's response, and We Won't Go Back's Character
+                // cards glow in the hand.
                 if (HuntGuideResponses.InRow(view, id) || HuntCardResponses.InRow(view, id) ||
                     view.Decision?.Presentation == HuntCardResponses.Smeagol && view.Hand.Contains(id) || InspectedHand.Contains(view, id))
                     continue;

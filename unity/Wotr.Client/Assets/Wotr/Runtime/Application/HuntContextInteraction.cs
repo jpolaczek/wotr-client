@@ -96,17 +96,11 @@ namespace Wotr.Client
                 CompleteResponse(response);
         }
 
-        // UI-270: an alternate companion's Guide response, sent with its click.
+        // UI-360: a Guide's response object in the row, sent with its click (UI-142).
         private void GuideResponse(string id)
         {
-            if (busy() || draft == null || !HuntGuideResponses.InRow(view, id))
-                return;
-            edit(() =>
-            {
-                if (draft.Kind != CommandKind.RespondEffect)
-                    draft.Choose(CommandKind.RespondEffect);
-                draft.Change(p => p.ReactionId = id);
-            }, true);
+            if (HuntGuideResponses.InRow(view, id))
+                SendReaction(id);
         }
 
         // UI-285: a table card's response object in the row: its click uses the card, sent at once (UI-142); UI-272:
@@ -116,16 +110,21 @@ namespace Wotr.Client
             var response = busy() || draft == null ? null : HuntCardResponses.Find(view, id);
             if (response == null)
                 return;
+            if (response.Reaction)
+                SendReaction(id);
+            else
+                edit(() => CardDraft.Choose(draft, DraftOptions.For(view, draft), id), true);
+        }
+
+        private void SendReaction(string id)
+        {
+            if (busy() || draft == null)
+                return;
             edit(() =>
             {
-                if (response.Reaction)
-                {
-                    if (draft.Kind != CommandKind.RespondEffect)
-                        draft.Choose(CommandKind.RespondEffect);
-                    draft.Change(p => p.ReactionId = id);
-                }
-                else
-                    CardDraft.Choose(draft, DraftOptions.For(view, draft), id);
+                if (draft.Kind != CommandKind.RespondEffect)
+                    draft.Choose(CommandKind.RespondEffect);
+                draft.Change(p => p.ReactionId = id);
             }, true);
         }
 

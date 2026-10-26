@@ -145,21 +145,22 @@ namespace Wotr.Client
         // last landing takes the rest of a count larger than the backs shown); the backs and the signed count follow.
         private IPresentationBeat Drawn(Side owner, IReadOnlyList<ActionCardFact> cards, int count, double now)
         {
-            var origins = cards.SelectMany(card => Enumerable.Repeat(Deck(card.Deck), Math.Max(1, card.Count)))
-                .Take(MostBacks).ToList();
+            var decks = cards.SelectMany(card => Enumerable.Repeat(card.Deck, Math.Max(1, card.Count))).ToList();
+            var origins = decks.Take(MostBacks).Select(Deck).ToList();
             return new DrawFlight(now, board.Dissolve.Root, () => HandCount(owner), origins,
                 () => marks.Place(() => marks.Light(HandCount(owner))),
-                index => Step(owner, index == origins.Count - 1 ? count - index : 1),
+                index => Step(owner, index == origins.Count - 1 ? decks.Skip(index) : decks.Skip(index).Take(1)),
                 () => marks.Add(() => marks.Plate(HandCount(owner), Backs(cards, count), PlateSide.Before)),
                 marks.End);
         }
 
         private VisualElement Deck(string deck) => board.Decks.Root.Q<Button>("deck-" + deck);
 
-        // One landing: the count steps while it stays lit.
-        private void Step(Side owner, int cards)
+        // One landing: the count steps while it stays lit (the last landing takes the rest of the drawn cards).
+        private void Step(Side owner, IEnumerable<string> decks)
         {
-            staged.Hand(owner, cards);
+            foreach (var deck in decks)
+                staged.Hand(owner, 1, deck);
             board.StageHand(owner, staged.View);
             marks.Add(() =>
             {
@@ -178,7 +179,9 @@ namespace Wotr.Client
             // UI-326: a discard's two backs dissolve out of the count as it drops.
             if (count < 0)
                 board.Dissolve.Play(HandCount(owner).worldBound, board.Shown(owner) ? 1 : OpponentScale);
-            staged.Hand(owner, count);
+            var sign = Math.Sign(count);
+            foreach (var card in cards)
+                staged.Hand(owner, sign * card.Count, card.Deck);
             board.StageHand(owner, staged.View);
             marks.Add(() =>
             {

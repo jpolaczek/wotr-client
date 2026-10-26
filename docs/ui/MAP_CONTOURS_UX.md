@@ -327,6 +327,15 @@ User application from 2026-10-15: "let's add (well stylized) region names on the
 So, on the whole map of a small screen (1366×768 at 125%) the names of fortresses and cities remain.
 - The long name of a few words, wider than the region, breaks into two lines at the middle space
   (e.g. “Narrows of / the Forest”).
+- UI-363 (owner report, 2026-10-26, Western Mirkwood without a name): in a small region the forces' zone (±42 × ±32
+  units around the anchor of a region without a settlement) nearly fills it, so the point clear of the forces lay in a
+  corner where the name could not fit even at the closest zoom (2.6): Western Mirkwood, Rhosgobel and Narrows of the
+  Forest never showed one. `MapRegionNames.Point` keeps the point clear of the forces when the name can be read there
+  at the closest zoom (`Readable`: its longest line at 15 points with the letter spacing, its lines at 1.25 line
+  height); otherwise it takes the region's roomiest point (`MapRegionNamePoints.For(..., clearOfForces: false)`),
+  where only a force really standing over the name hides it. South Anduin Vale has no room for its name anywhere.
+  Tests: EditMode `MapRegionNamePointsTests.ASmallRegionsNameCanBeReadAtTheClosestZoom`; PlayMode
+  `MapRegionNamesTests` (Western Mirkwood named up close, `ui363-western-mirkwood-*.png`).
 
 ## Political view — UI-218 (2026-10-17)
 

@@ -136,12 +136,18 @@ namespace Wotr.Client
             die.Location = change.To;
         }
 
-        // UI-312: a side's hand after drawing (+) or discarding (−) cards.
-        public void Hand(Side side, int change)
+        // UI-312: a side's hand after drawing (+) or discarding (−) cards; UI-361: its split by deck follows when the
+        // card's deck is known, so the counter's tooltip agrees with its number.
+        public void Hand(Side side, int change, string deck = "")
         {
             var player = View.Players.FirstOrDefault(p => p.Side == side);
-            if (player != null)
-                player.HandCount = System.Math.Max(0, player.HandCount + change);
+            if (player == null)
+                return;
+            player.HandCount = System.Math.Max(0, player.HandCount + change);
+            if (deck.Length == 0 || player.HandDeckCounts.Count == 0)
+                return;
+            player.HandDeckCounts.TryGetValue(deck, out var cards);
+            player.HandDeckCounts[deck] = System.Math.Max(0, cards + change);
         }
 
         // UI-307: a recorded political change of one nation.

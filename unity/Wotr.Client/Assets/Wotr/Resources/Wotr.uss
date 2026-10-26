@@ -514,6 +514,8 @@
 .hunt-panel .companion-token { width: 61px; min-width: 32px; flex-shrink: 1; height: 44px; min-height: 44px; flex-direction: column; justify-content: center; align-items: center; padding: 0; margin-right: 5px; }
 .hunt-panel .fellowship-members { flex-wrap: nowrap; }
 .hunt-response-objects { flex-direction: row; justify-content: center; margin-top: 4px; }
+/* UI-360: the Guides' responses, each the Guide's portrait with its name and what it does. */
+.hunt-guide-responses { flex-direction: row; justify-content: center; margin-top: 4px; }
 /* UI-285: the table cards' responses, each a small parchment card with its name and what it does. */
 .hunt-card-responses { flex-direction: row; justify-content: center; margin-top: 4px; }
 /* UI-288: the card face carries the symbol printed on the card's corner, in ink. */

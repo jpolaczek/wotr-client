@@ -84,8 +84,14 @@ namespace Wotr.PlayTests
         public static void Move(VisualElement target)
         {
             Assert.IsNotNull(target);
-            var root = target.panel.visualTree;
-            using var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseMove, mousePosition = target.worldBound.center });
+            Move(target, target.worldBound.center);
+        }
+
+        // The pointer moves to a point of the panel that holds the element, whatever lies there.
+        public static void Move(VisualElement inPanel, Vector2 position)
+        {
+            var root = inPanel.panel.visualTree;
+            using var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseMove, mousePosition = position });
             root.SendEvent(move);
         }
     }

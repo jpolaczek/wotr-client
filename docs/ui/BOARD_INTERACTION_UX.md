@@ -163,6 +163,13 @@ The cards slots have fixed positions (absolute layout counted in `HandView`), so
 
 `LeftRailPreview` opens the panel with the normal `Open` path (one tab at a time), means it with the `edge-panel-preview` class. The UI-97 curtain stopped pressing and fastened the panel; UI-98 removes it (see below). The panel opened earlier by context is remembered and opened again after the preview has been rolled.
 
+UI-362 (owner report, 2026-10-26): a panel rolling back takes the entering state (it rises 10 points and shrinks), so
+with the pointer still just beyond its edge — the corner panel under the top bar's opponent counters — it rose under the
+pointer, UI Toolkit reported an enter, the preview unrolled it again and it sank away: it blinked. A panel that is
+rolling back now ignores an enter at the very position where the pointer left it; a pointer that moves onto it still
+keeps it. Test: `LeftRailPreviewTests.ARollingBackPanelDoesNotCatchAStillPointer` (the Shadow's corner panel, the pointer
+four points above it: it closes once and stays closed).
+
 <a id="zakładka-w-rogu-i-panele-bez-przypinania--ui-98"></a>
 ## Corner tab and non-pinning panels — UI-98
 
