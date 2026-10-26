@@ -560,6 +560,13 @@ responses now fit the console. The opponent's window never enables it. Tests: `C
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
 `CardPack04NetworkTests`.
 
+Expansions (owner, EXP-15, 2026-10-26; not yet implemented): D7 extends this to every optional decline of the
+expansions — Vilya's "Spend the die", Lore's "Keep results", Wind's and the Balrog card's "Finish", Orderly
+Withdrawal's "Keep the hit", We Won't Go Back's "No Corruption", "Keep card effects" (Brand, the Chieftains) and
+Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348). D8
+keeps forced single steps (one legal region or plan) resolved by the server without a click, the result named in the
+effect trail and the log. Checks: [EXPANSIONS_DECISIONS_PLAYTEST](EXPANSIONS_DECISIONS_PLAYTEST.md).
+
 ## The status plaque lights only when its click opens something — UI-292 (2026-10-20)
 
 The owner's decision: the plaque ("YOUR ACTION", "YOUR DECISION · …") no longer glows, pulses or presses when its click

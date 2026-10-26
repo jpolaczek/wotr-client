@@ -135,6 +135,27 @@ Messenger of the Dwarves shows the generic ability picture (`AbilityPictures.cs:
 
 Each is a question of what goes where and in what shape; a recommendation follows each.
 
+**Owner's answers (2026-10-26).** Every decision takes its recommended option (a); D8's automatic resolution has the
+owner's explicit OK. Additions: D1 is a scene on the map at the sovereign's region (a Leader giving way to the
+sovereign's figure at an awakening, the dark marker emerging at a corruption and fading at a removal), so D2's tile back
+and D5's plate land there too; D14's second click needs an explicit console hint naming it; D17's gilt chip carries the
+arms of Brand or the Chieftain and its tooltip names the card it cancels; D21's hover only highlights. The checks for
+each answer, and the mechanics that needed explaining, are in
+[EXPANSIONS_DECISIONS_PLAYTEST](EXPANSIONS_DECISIONS_PLAYTEST.md).
+
+| Decision | Answer | Task |
+| --- | --- | --- |
+| D1–D5 | map scene; tile back to the region and a hatched pip; opponent token chips in the top bar; my Ruler die's reroll as the opponent's beat; revealed tiles as a brief plate | UI-344 |
+| D6 | lit art plus the shared pulse | UI-345 |
+| D7 | the console's Pass declines every optional decline, its tooltip naming it | UI-276, UI-277, UI-347, UI-348 |
+| D8 | forced single steps stay automatic, the result in the effect trail and log | — |
+| D9 | every Guide response in the Hunt's response row (the base Guides also on `main`) | UI-345 |
+| D10–D14 | the "−1" pip; the Balrog's figure and the glowing army; the Mouth's portrait; a medallion's click uses it; a second click keeps the companion, with a console hint | UI-347 |
+| D15–D16 | object first; the king in the battle column when he takes part | UI-278 |
+| D17 | the gilt chip beside the own Combat card, Pass keeping its effect | UI-348 |
+| D18–D20 | Thranduil's ability picture; the token in the pool and a badge on the portrait; the die's click alone | UI-276 |
+| D21–D22 | two console buttons, hover highlights only; the region panel | UI-349 |
+
 **The opponent's expansion actions**
 
 - **D1 — Where a sovereign's change plays** (awakening, corruption, removal, a tile attached). The portraits live in the
