@@ -123,7 +123,11 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(Visible(chip.Q<Label>(className: "summary-caption")), entry.Key + " · " + label);
                 var picked = board.Root.panel.Pick(chip.worldBound.center);
                 Assert.IsTrue(picked == chip || chip.Contains(picked), entry.Key + " tooltip target covered by " + picked?.name);
-                StringAssert.EndsWith(": " + entry.Value, chip.tooltip);
+                // UI-361: the card counter's tooltip opens with the hand's size, then what else is public about the cards.
+                if (entry.Key == "cards")
+                    StringAssert.Contains(" · " + entry.Value + (entry.Value == 1 ? " card" : " cards") + " in hand", chip.tooltip);
+                else
+                    StringAssert.EndsWith(": " + entry.Value, chip.tooltip);
             }
         }
 

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
 
@@ -29,10 +30,12 @@ namespace Wotr.Client
         {
             var counts = SideResourceCounts.From(view, side);
             var owner = BoardScreen.SideName(side);
-            cards.Show(counts.Cards, owner);
-            rings.Show(counts.Rings, owner);
-            spent.Show(counts.Spent, owner);
-            removed.Show(counts.Out, owner);
+            // UI-361: the card counter's tooltip says what the rules make public about the cards.
+            var player = view.Players.FirstOrDefault(p => p.Side == side);
+            cards.Show(counts.Cards, player != null ? OpponentCards.Tooltip(player, owner) : cards.Describe(owner, counts.Cards));
+            rings.Show(counts.Rings, rings.Describe(owner, counts.Rings));
+            spent.Show(counts.Spent, spent.Describe(owner, counts.Spent));
+            removed.Show(counts.Out, removed.Describe(owner, counts.Out));
             Root.style.display = DisplayStyle.Flex;
         }
 
@@ -72,9 +75,10 @@ namespace Wotr.Client
                 Root.Add(text);
             }
 
-            public void Show(int count, string owner)
+            public string Describe(string owner, int count) => owner + " · " + description + ": " + count;
+
+            public void Show(int count, string tooltip)
             {
-                var tooltip = owner + " · " + description + ": " + count;
                 if (shown == tooltip)
                     return;
                 shown = tooltip;
