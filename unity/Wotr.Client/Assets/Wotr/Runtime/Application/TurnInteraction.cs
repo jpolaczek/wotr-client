@@ -107,12 +107,12 @@ namespace Wotr.Client
                 () => SelectionBusy);
             huntContext = new HuntContextInteraction(board, EditSelection, () => SelectionBusy);
             resources = new ResourceContextInteraction(board, EditSelection,
-                () => SelectionBusy);
+                () => SelectionBusy, ChooseComponent);
             sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy);
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
-            figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy);
+            figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry);
             context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id) ||
                 figureAbilities.Figure(id);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
@@ -136,7 +136,7 @@ namespace Wotr.Client
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
-                ChooseComponent, ChooseRing, () => reinforcements.Planning);
+                ChooseDecline, ChooseComponent, ChooseRing, () => reinforcements.Planning);
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             lore = new LoreInteraction(board, EditSelection, () => SelectionBusy);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
@@ -603,6 +603,25 @@ namespace Wotr.Client
             var option = DraftOptions.For(view, draft);
             if (option != null && !draft.Payload.Ids.Contains(choice.Id))
                 CompleteChoice(() => CardDraft.Choose(draft, option, choice.Id));
+        }
+
+        // UI-347 (D7): the console's Pass sends an optional decline: Vilya's command, or the decline's effect choice alone
+        // (a partial selection of the same step is dropped, as passing answers the whole step).
+        private void ChooseDecline(ConsoleOption decline)
+        {
+            if (SelectionBusy || view?.Decision == null)
+                return;
+            if (decline.Command.HasValue)
+            {
+                Choose(decline.Command.Value);
+                return;
+            }
+            CompleteChoice(() =>
+            {
+                if (draft.Kind != CommandKind.ChooseEffect)
+                    DraftGesture.Choose(draft, view, CommandKind.ChooseEffect);
+                CardDraft.Choose(draft, decline.Id);
+            });
         }
 
         private void Choose(CommandKind kind)

@@ -103,8 +103,9 @@ namespace Wotr.PlayTests
                     var choice = choices[index];
                     await Place(room, choice.CharacterId, choice.Targets.Single(), index % 2 == 0);
                 }
+                // UI-347 (D14): the first click selects the placed companion, the second keeps it with the Fellowship.
                 await Press(room, board, "fellowship-portrait-" + choices[0].CharacterId);
-                await Press(room, board, "homeland-stay");
+                await Press(room, board, "fellowship-portrait-" + choices[0].CharacterId);
                 Assert.AreEqual("", Portrait(board, choices[0].CharacterId).Q<Label>("homeland-location").text);
                 Assert.AreEqual(count == 2 ? "Shadow chooses one" : "Shadow receives both", Effect(board));
                 await Place(room, choices[0].CharacterId, choices[0].Targets.Single(), false);
@@ -164,7 +165,10 @@ namespace Wotr.PlayTests
         private static async Task Place(BoardScreen board, Func<Task> settle, string id, string region, bool drag)
         {
             var camera = board.Map.Camera.Pan;
-            PointerGestureEvents.ClickAt(Portrait(board, id));
+            // UI-347 (D14): a click on the selected companion already placed keeps it with the Fellowship, so a move to
+            // another homeland starts from the lit homelands.
+            if (!Portrait(board, id).ClassListContains("selected"))
+                PointerGestureEvents.ClickAt(Portrait(board, id));
             await settle();
             Assert.AreEqual(camera, board.Map.Camera.Pan, "Selecting a portrait never moves the camera.");
             Assert.IsTrue(board.Map.DraftOverlay.Targets.Contains(region));

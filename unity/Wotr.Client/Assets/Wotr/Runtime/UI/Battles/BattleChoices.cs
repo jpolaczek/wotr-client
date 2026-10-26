@@ -69,7 +69,9 @@ namespace Wotr.Client
                 AddSelectAll(footer, option, draft, edit);
                 AddDirect(footer, "Stay", "battle-stay", draft.Kind.Value, direct);
             }
-            foreach (var choice in view.Options.Where(o => o.Kind != draft.Kind && BattleDraft.IsImmediate(o.Kind)))
+            // UI-347 (D12): Evil Knowledge is the Mouth of Sauron's portrait, not a button beside Extend / Stop.
+            foreach (var choice in view.Options.Where(o => o.Kind != draft.Kind && BattleDraft.IsImmediate(o.Kind) &&
+                         !(o.Kind == CommandKind.UseEvilKnowledge && EvilKnowledgeChoice.OnPortrait(view))))
                 AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct);
         }
 

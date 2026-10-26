@@ -147,13 +147,19 @@ namespace Wotr.PlayTests
                 var dice = room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Available);
                 var token = travel ? "council.move-shadow-characters" : "council.advance-politics";
                 var initialRevision = room.Sh.Board.View.Revision;
+                // UI-347 (D13): the Black Serpent can enter with the token, so its first click marks it and the console
+                // names both ways on; the second click on the marked token starts its printed use. No panel step.
                 PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
-                Assert.IsTrue(room.Sh.Board.ResourceDecision.IsOpen);
-                Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
-                Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Selecting the token does not choose its use.");
-                PointerGestureEvents.ClickAt(room.Sh.Board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + token));
+                var hint = room.Sh.Board.Console.Status.Hint.text;
+                StringAssert.StartsWith("Click a lit Chieftain's row", hint);
+                StringAssert.Contains("click the token again for its printed use", hint);
+                PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
+                Assert.IsFalse(room.Sh.Board.Console.Status.Hint.text.StartsWith("Click a lit Chieftain's row"));
+                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen, "No Dice & tokens panel step.");
+                Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
+                Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Its use still waits for its nation or figures.");
                 string figure = "";
                 var politics = room.Sh.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar;
                 if (travel)
@@ -202,17 +208,19 @@ namespace Wotr.PlayTests
                     .Single(c => c.CharacterId == "kings.character.black-serpent");
                 const string token = "council.advance-politics";
                 var initialRevision = room.Sh.Board.View.Revision;
+                // UI-347 (D13): a Chieftain can enter with the token, so its click marks it and lights his row; no panel.
                 PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
-                Assert.IsTrue(room.Sh.Board.ResourceDecision.IsOpen);
+                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen, "No Dice & tokens panel step.");
+                StringAssert.StartsWith("Click a lit Chieftain's row", room.Sh.Board.Console.Status.Hint.text);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>(choice.Dice[0]).ClassListContains("resource-candidate"));
                 await ComponentGestures.Cost(room, room.Sh, choice.Dice[0]);
                 Assert.IsEmpty(room.Sh.Board.ActionDie.DieId, "An entry cost must not enable the die's ordinary actions.");
                 await Reconnect(room, room.Sh);
                 Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
-                // UI-108/UI-142: the token panel has no entry button; the Serpent's row enters by a click.
-                Assert.IsNull(room.Sh.Board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + ComponentGestures.Character(choice)));
+                // UI-108/UI-142: the Serpent's row enters by a click; no panel offers it.
+                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen);
                 await ComponentGestures.Enter(room, room.Sh, choice);
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("cost-" + choice.Dice[0]), "UI-239: the only die is not a button.");
                 await Layout(room, room.Sh, "entry-token", "ui09");

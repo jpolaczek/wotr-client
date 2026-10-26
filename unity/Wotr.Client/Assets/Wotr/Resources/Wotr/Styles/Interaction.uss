@@ -217,10 +217,11 @@
 }
 #board-screen .battle-force .selected > .battle-leadership-points { background-color: rgb(214, 170, 70); color: rgb(30, 20, 10); }
 #board-screen .battle-hit-cancels { flex-direction: row; align-items: center; flex-shrink: 0; margin-left: 6px; }
+/* UI-347: 33 px, so the panel scale's rounding keeps the 32 px target (31.87 px at 1.25 on 1366 × 768). */
 #board-screen .battle-choice-pip {
     min-width: 40px;
-    height: 32px;
-    min-height: 32px;
+    height: 33px;
+    min-height: 33px;
     margin: 0 2px;
     padding: 0 6px;
     border-width: 1px;

@@ -1305,18 +1305,19 @@ Every Lords character ability is used on its object; no ability button stands in
   ("Gothmog · Minas Morgul") offers a Sauron Regular (recruit beside him) and an Elite (replace a Regular there); the
   token's click uses the ability at once (`GothmogReinforcements`). Under UI-317 a die that pays him backs the Reserve
   even when it cannot recruit (`MusterActions.BacksReserve`).
-- **Evil Knowledge** is a graphic choice in the siege footer (an eye over a tower) whose tooltip says it extends the
-  siege without downgrading an Elite.
+- **Evil Knowledge** is the Mouth of Sauron's glowing portrait in the Battle window's besieging column; its click
+  extends the siege without downgrading an Elite (UI-347, D12; [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md)).
 - **The Chief's reactions**: Spear of Terror lights the Shadow's Character deck ("Click to draw a Character card ·
   Spear of Terror…"); He Sees, He Knows lights the Chief's region and his figure, whose click moves him to the
   Fellowship (`ChiefReactionObjects`). The console's Pass declines them (UI-291).
 - **One movement pattern**: a card that moves Shadow characters uses the Nazgûl flight gesture (UI-212) for all of
   them. A walker (the Balrog alone, the Lords Minions) goes along its shortest path within its level, alone in its
   group, its ghost is its own figure, and the console speaks of figures rather than Nazgûl. The Balrog card's order
-  (alone / army / finish) is three console buttons.
+  stands on his figure (alone) and his army's figures (with it), and Pass finishes (UI-347, D11;
+  [CARD_CHOICES_UX](CARD_CHOICES_UX.md)).
 
 Tests: `CharacterRosterVersionsTests`, `NazgulFlightDraftTests.AWalkingCharacterMovesAlongItsPathWithTheSameGesture`,
-`CardConsoleOptionsTests.TheBalrogsOrderIsThreeConsoleButtonsAndNoWindow`,
+`CardConsoleOptionsTests.TheBalrogsOrderStandsOnHisFigureAndHisArmy`,
 `CardConsoleOptionsTests.TheChiefsReactionsLeaveTheConsoleForTheirObjects`, `ExpansionAbilityNetworkTests` (Balrog
 figure, Gothmog's Reserve row), `ExpansionWindowNetworkTests` (Evil Knowledge), `LordsCharacterNetworkTests`
 (entries, the Witch-king's switch, Spear, He Sees, the Balrog alone), seeder scenarios `ui271-*`
@@ -1413,7 +1414,7 @@ Every expansion decision kind and card presentation has a host other than the ge
 | Decision | Host now | Moves to its object in |
 |---|---|---|
 | Special die (Lords), Ruler discard (Kings) | lit dice in the pool; the console hint says what the click does | UI-267, UI-273 (art, dimmed slots) |
-| Vilya keep, Dismay, Council token | Dice & tokens panel | UI-268, UI-276, UI-270 |
+| Vilya keep, Dismay, Council token | Vilya's socket and the console's Pass (UI-347); Dismay in Dice & tokens; the Council medallions (UI-347) | UI-268, UI-276, UI-270 |
 | Companion versions, homelands (Council) | setup panel | UI-269, UI-270 |
 | Corruption tile, a card's choice of a sovereign | the kings' portraits, attempt buttons and tiles (UI-274) | UI-278 |
 | Fate's Monsters branch, Kings cards' branches | console buttons | — |

@@ -22,6 +22,7 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator TheGatesAnswerADeclarationAtTheirCross() => Wait(GatesDeclaration());
         [UnityTest] public IEnumerator WindDiscardsAShadowTableCardAtItsCross() => Wait(WindTable());
         [UnityTest] public IEnumerator WindShowsTheShadowHandInTheDrawer() => Wait(WindHand());
+        [UnityTest] public IEnumerator WindsFinishIsTheConsolesPass() => Wait(WindFinish());
         [UnityTest] public IEnumerator SafePathsDiscardsASmeagolCardAtItsCross() => Wait(SafePaths());
         [UnityTest] public IEnumerator ThreeRingsRecoversRingsOnTheirSockets() => Wait(ThreeRings());
 
@@ -67,6 +68,24 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-347 (D7): the console's Pass finishes Wind from the West without inspecting the Shadow hand; the hint says so.
+        private static async Task WindFinish()
+        {
+            using (var room = await Connect("ui347-wind-finish", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Fp;
+                await room.Settle();
+                StringAssert.EndsWith("Or Pass to finish without inspecting the Shadow hand.", client.Board.Console.Status.Hint.text);
+                Assert.IsTrue(client.Board.Console.Actions.Pass.ClassListContains(ChoiceGlow.ClassName), "A Pass that declines glows.");
+                var shadowHand = room.Sh.Board.View.Hand.Count;
+                await room.Pass(client, "Pass · Finish without inspecting the Shadow hand");
+                Assert.AreNotEqual(InspectedHand.Presentation, client.Board.View.Decision?.Presentation ?? "");
+                Assert.AreEqual(shadowHand, room.Sh.Board.View.Hand.Count);
+                watch.NeverOpened();
+            }
+        }
+
         private static async Task WindHand()
         {
             using (var room = await Connect("ui272-wind-hand", ScenarioKind.CardPack))
@@ -75,7 +94,9 @@ namespace Wotr.PlayTests
                 var client = room.Fp;
                 await room.Settle();
                 watch.OnItsObject(client);
-                Assert.IsNotNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.finish"));
+                // UI-347 (D7): Finish is the console's Pass, not a button.
+                Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.finish"));
+                Assert.AreEqual("Pass · Finish without inspecting the Shadow hand", client.Board.Console.Actions.Pass.tooltip);
                 await room.Direct(client, "effect-choice-wind.inspect-hand");
                 Assert.AreEqual(InspectedHand.Presentation, client.Board.View.Decision.Presentation);
                 await CardGestures.Open(client);

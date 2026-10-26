@@ -139,7 +139,7 @@ namespace Wotr.EditorTests
             var view = CouncilView(false);
             var draft = CouncilDraft();
             Assert.IsTrue(ResourcePresentation.CanSelectCouncil(view, ExpansionDraft.CouncilPolitics));
-            var entry = ResourcePresentation.CouncilChoices(view, draft).Single();
+            var entry = ComponentActions.For(view, draft).Single();
             Assert.AreEqual(CommandKind.EnterCharacter, entry.Kind);
             Assert.IsTrue(entry.Enabled);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
@@ -162,13 +162,50 @@ namespace Wotr.EditorTests
             Assert.IsFalse(token.ClassListContains("legal-target"), "An expired entry loses its target highlight.");
         }
 
+        // UI-347 (EXP-15 D13): a medallion's click starts its printed use at once; when a Chieftain can enter with the token,
+        // the first click marks it (his row lights) and a click on the marked token starts the printed use; during his
+        // entry the token is its cost. No Dice & tokens panel step remains.
+        [Test]
+        public void ACouncilMedallionStartsItsUseOrMarksItForAChieftain()
+        {
+            var view = CouncilView(true);
+            Assert.AreEqual(CouncilClick.Mark, ResourcePresentation.Clicked(view, new TurnDraft(), ExpansionDraft.CouncilPolitics));
+            var draft = CouncilDraft();
+            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft), "No Dice & tokens panel step.");
+            Assert.AreEqual(CouncilClick.Use, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
+            var hint = ResourcePresentation.CouncilHint(view, draft);
+            StringAssert.StartsWith("Click a lit Chieftain's row", hint);
+            StringAssert.Contains("click the token again for its printed use (Council · Politics)", hint);
+            var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
+            Assert.IsTrue(ComponentActions.Select(view, draft, entry));
+            Assert.AreEqual(CouncilClick.EntryCost, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
+
+            var plain = CouncilView(true);
+            plain.Options.RemoveAll(o => o.Kind == CommandKind.EnterCharacter);
+            Assert.AreEqual(CouncilClick.Use, ResourcePresentation.Clicked(plain, new TurnDraft(), ExpansionDraft.CouncilPolitics));
+            plain.You = Side.FreePeoples;
+            Assert.AreEqual(CouncilClick.None, ResourcePresentation.Clicked(plain, new TurnDraft(), ExpansionDraft.CouncilPolitics));
+        }
+
+        // UI-347 (D13): an entry that requires the only token it may use takes it, so no button asks for it.
+        [Test]
+        public void AChieftainsRequiredOnlyTokenIsTakenWithoutAButton()
+        {
+            var view = CouncilView(false);
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
+            Assert.IsTrue(ComponentActions.Select(view, draft, entry));
+            Assert.AreEqual(ExpansionDraft.CouncilPolitics, draft.Payload.CouncilTokenId);
+        }
+
         [Test]
         public void CouncilOffersBothUsesAndSuppressesUnrelatedComponentsWithoutChoosingAnAction()
         {
             var view = CouncilView(true);
             view.Options.Add(new ActionOption { Kind = CommandKind.DiscardDie, EligibleDice = { "muster" } });
             var draft = CouncilDraft("muster");
-            var choices = ResourcePresentation.CouncilChoices(view, draft).ToList();
+            var choices = ComponentActions.For(view, draft).ToList();
             CollectionAssert.AreEquivalent(new[] { CommandKind.UseCouncilToken, CommandKind.EnterCharacter }, choices.Select(c => c.Kind));
             Assert.IsTrue(choices.All(c => c.Enabled));
             Assert.IsNull(draft.Kind);
@@ -197,7 +234,7 @@ namespace Wotr.EditorTests
                 edit();
                 if (complete)
                     sends++;
-            }, () => false);
+            }, () => false, _ => { });
             using var actions = new ActionContextInteraction(board, edit => edit(), () => false);
             resources.Refresh(view, draft);
             Assert.IsTrue(token.ClassListContains("selected"));
@@ -216,7 +253,7 @@ namespace Wotr.EditorTests
             Assert.IsFalse(actions.ArmyActive);
             Assert.AreEqual(0, sends);
             Assert.IsFalse(draft.Reconcile(view));
-            var entry = ResourcePresentation.CouncilChoices(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
+            var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
             Assert.AreEqual("ruler", draft.Payload.DieId);
             Assert.AreEqual(ExpansionDraft.CouncilPolitics, draft.Payload.CouncilTokenId);
@@ -262,7 +299,7 @@ namespace Wotr.EditorTests
         {
             var view = CouncilView(false);
             var draft = CouncilDraft();
-            var entry = ResourcePresentation.CouncilChoices(view, draft).Single();
+            var entry = ComponentActions.For(view, draft).Single();
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
             draft.Change(p => p.RegionId = "near-harad");
             var complete = false;
@@ -270,7 +307,7 @@ namespace Wotr.EditorTests
             {
                 edit();
                 complete = submit;
-            }, () => false);
+            }, () => false, _ => { });
             resources.Refresh(view, draft);
             Assert.IsTrue(resources.Die("ruler"));
             Assert.IsTrue(complete);
@@ -286,7 +323,7 @@ namespace Wotr.EditorTests
             var draft = CouncilDraft();
             view.You = Side.FreePeoples;
             Assert.IsFalse(ResourcePresentation.CanSelectCouncil(view, ExpansionDraft.CouncilPolitics));
-            Assert.IsEmpty(ResourcePresentation.CouncilChoices(view, draft));
+            Assert.IsEmpty(ComponentActions.For(view, draft));
             Assert.IsEmpty(ResourcePresentation.CouncilDice(view, draft));
             view.You = Side.Shadow;
             view.Winner = Side.FreePeoples;

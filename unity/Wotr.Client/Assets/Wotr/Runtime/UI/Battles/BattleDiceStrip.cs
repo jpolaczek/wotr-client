@@ -79,7 +79,8 @@ namespace Wotr.Client
         }
 
         // UI-246: Heroic Death cancels the opponent's hits on their own indicator: one button per amount it may cancel
-        // (−1, −2, …); the chosen amount is selected. Keep hits (zero) stays a button with Keep all.
+        // (−1, −2, …); the chosen amount is selected. Keep hits (zero) stays a button with Keep all. UI-347 (D10): Orderly
+        // Withdrawal's one hit is the same "−1"; its click sends it, and the console's Pass keeps the hit.
         private void HitCancels(VisualElement heading, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             if (draft == null || edit == null || force.Side == view.You)

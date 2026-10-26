@@ -20,7 +20,7 @@ separate on their own branch, checked separately later"). Read-only audit of cli
 | 8 | Lords Hunt table-card responses (`Presentation/HuntCardResponses.cs:48`) | the response row admits only `lords.*` ids; when the base fix for table-card reactions on `main` merges here, both must share one row | `HuntCardResponses` + `HuntContextInteraction.CardResponse` | Lords |
 | 9 | Alternate Guides in the Hunt (`HuntGuideResponses.Alternate`, `:27`) | admits only `council.*` and `fate.gimli-guide`; the base Guides' fix on `main` must join this row on merge | `HuntResponsesView.GuideButton` | Lords, Fate |
 | 10 | Orderly Withdrawal (`CombatEffect`) | "Cancel hit · withdraw" / "Keep the hit" text buttons | the hit pips (`BattleChoicePip`, UI-246) | Lords |
-| 11 | Council entry cost "No token" / token names (`CharacterChoices.cs:90-105`) | text buttons duplicating the pool's Council medallions | the medallions | Lords (Council) |
+| 11 | Council entry cost "No token" / token names (`CharacterChoices.cs:90-105`; removed by UI-347) | text buttons duplicating the pool's Council medallions | the medallions | Lords (Council) |
 | 12 | Balrog order (`BalrogEventStep`) | "Move Balrog alone" / "Move or attack with army" console buttons | the figure and its army on the map (`CardArmyInteraction`, UI-216) | Lords |
 | 13 | Latent text fallbacks: `CorruptionAttemptChoices`, `CorruptionInspectionChoices` (`SovereignPresentation` owns these first, `DecisionTray.cs:387`) | nearly dead code | — | Kings |
 

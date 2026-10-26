@@ -10,11 +10,13 @@ namespace Wotr.Client
     // (Keep misses, Keep Minions) keeps its button.
     // UI-246: a choice that belongs to an object without being one sits on it: a Nazgûl Leadership point beside the
     // figure that forfeits it (the choice's SourceId) and a Heroic Death hit amount on the incoming hits. Keep hits
-    // (zero) and Keep all keep their buttons.
+    // (zero) and Keep all keep their buttons. UI-347 (EXP-15 D10): Orderly Withdrawal's cancelled hit is a "−1" pip there
+    // too; Keep the hit is the console's Pass (OptionalDecline).
     public static class BattleObjectChoices
     {
         public const string LeadershipPresentation = "NazgulLeadership";
         public const string SacrificePresentation = "SacrificeAndHits";
+        public const string WithdrawalCancel = "withdrawal.cancel-hit";
         private const string HitsGroup = "Hits";
         // Read only: the selection of a draft that has not started a choice.
         private static readonly TurnDraft NoSelection = new TurnDraft();
@@ -116,10 +118,17 @@ namespace Wotr.Client
             choice != null && view.Decision.Presentation == LeadershipPresentation && choice.SourceId.Length > 0 &&
             Owns(view, choice.SourceId);
 
-        // The server titles an amount with one dot per cancelled hit ("− ●●"); zero is "Keep hits".
-        private static int HitAmount(PlayerView view, EffectChoiceView choice) =>
-            choice != null && view.Decision.Presentation == SacrificePresentation && choice.SelectionGroup == HitsGroup
+        // The server titles an amount with one dot per cancelled hit ("− ●●"); zero is "Keep hits". Orderly Withdrawal
+        // cancels one hit.
+        private static int HitAmount(PlayerView view, EffectChoiceView choice)
+        {
+            if (choice == null)
+                return 0;
+            if (choice.Id == WithdrawalCancel)
+                return 1;
+            return view.Decision.Presentation == SacrificePresentation && choice.SelectionGroup == HitsGroup
                 ? choice.Title.Count(c => c == '●') : 0;
+        }
 
         private static HashSet<string> Objects(BattleView battle)
         {

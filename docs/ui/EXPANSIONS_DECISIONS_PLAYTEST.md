@@ -102,8 +102,9 @@ difference in the rules (`Kings/KingsDismay.cs`).
 - [ ] **D6 — Lit art also pulses.** Try: `lords-special-dice-choice`, `lords-fp-vilya`, `lords-council-token`.
   Expect: the special dice, Keeper Ring sockets, Council medallions, Lore dice and the Spear's deck keep their lit art
   and pulse like every other usable choice; nothing pulses that a click cannot use.
-- [ ] **D7 — Optional declines are the console's Pass.** Try: `lords-fp-vilya` (Spend the die) and the cards below as
-  their tasks land. Expect: no "Spend the die", "Keep results", "Finish" (Wind, the Balrog card), "Keep the hit", "No
+- [ ] **D7 — Optional declines are the console's Pass.** Try: `lords-fp-vilya` (Spend the die), `lords-card-wind-finish`
+  (Finish), `lords-card-balrog` (Finish) and `lords-card-orderly-withdrawal` (Keep the hit); the Lords part landed with
+  UI-347, Brand's, the Chieftains' and Dismay's with UI-276–UI-277 and UI-348. Expect: no "Spend the die", "Keep results", "Finish" (Wind, the Balrog card), "Keep the hit", "No
   Corruption", "Keep card effects" or "Keep tokens" button; the console's Pass declines, glows and its tooltip names
   what it skips.
 - [ ] **D8 — Forced single steps stay automatic.** Try: `fate-card-book-of-mazarbul`, `fate-card-orcs-multiplying-again`,
@@ -116,14 +117,16 @@ difference in the rules (`Kings/KingsDismay.cs`).
 
 ### Lords — UI-347
 
-- [ ] **D10 — Orderly Withdrawal.** Try: no scenario yet. Expect: a "−1" pip on the hit in the battle window
+- [ ] **D10 — Orderly Withdrawal.** Try: `lords-card-orderly-withdrawal` (UI-347). Expect: a "−1" pip on the hit in the battle window
   (`BattleChoicePip`, as UI-246); its click removes the hit; Pass keeps it.
-- [ ] **D11 — A Balrog is Come!** Try: no scenario yet. Expect: the Balrog's figure glows — its click moves him alone;
-  a glowing army moves him with the army; Pass finishes. No console buttons.
-- [ ] **D12 — Evil Knowledge.** Try: no scenario yet (a siege with the Mouth of Sauron). Expect: the Mouth of Sauron's
+- [ ] **D11 — A Balrog is Come!** Try: `lords-card-balrog` (UI-347). Expect: the Balrog's region glows; in its panel his figure moves
+  him alone and a figure of his army moves it with him (the army's move then starts at once); Pass finishes. No console
+  buttons.
+- [ ] **D12 — Evil Knowledge.** Try: `lords-evil-knowledge` (UI-347). Expect: the Mouth of Sauron's
   portrait in the battle window's force column glows; its click extends the siege without downgrading an Elite.
 - [ ] **D13 — Council tokens.** Try: `lords-council-token`. Expect: a medallion's click starts its printed use at once,
-  with no panel step; when a Kings Chieftain can enter with it, his Characters row lights instead; no "No token" buttons.
+  with no panel step; when a Kings Chieftain can enter with it, his Characters row lights instead and a second click on the
+  marked medallion starts its printed use; no "No token" buttons (the Chieftain case needs a game with Lords, the Council and Kings).
 - [ ] **D14 — Homelands' keep.** Try: `fate-gimli-homeland` (the Council's homelands with Gimli,
   Dwarven Lord, chosen; UI-349). Expect: a second click on
   the companion already placed keeps him with the Fellowship, and the console's hint says so explicitly (for example

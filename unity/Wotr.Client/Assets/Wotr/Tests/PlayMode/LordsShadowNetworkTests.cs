@@ -19,7 +19,7 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator SmeagolCostIsOptionalAndOnlyShadowMakesTheChoice() => Wait(Smeagol());
 
         // UI-272: Lore is card → die → face: the rolled Eye in the Hunt box glows in the pool's row, its click opens the
-        // new results over it, and the result's click sends the change; Keep results is the console's button.
+        // new results over it, and the result's click sends the change; Keep results is the console's Pass (UI-347, D7).
         private static async Task Lore()
         {
             using (var room = await Connect("lords-lore-choice", ScenarioKind.CardPack))
@@ -28,8 +28,10 @@ namespace Wotr.PlayTests
                 Assert.IsNull(room.Fp.Board.View.Decision);
                 await room.Settle();
                 watch.OnItsObject(room.Sh);
-                Assert.IsNotNull(room.Sh.Board.Console.Status.Options.Q<Button>("effect-choice-" + LoreChoice.Keep));
+                Assert.IsNull(room.Sh.Board.Console.Status.Options.Q<Button>("effect-choice-" + LoreChoice.Keep));
+                Assert.AreEqual("Pass · Keep your dice as they are", room.Sh.Board.Console.Actions.Pass.tooltip);
                 StringAssert.StartsWith("Click a lit die", room.Sh.Board.Console.Status.Hint.text);
+                StringAssert.Contains("Or Pass to keep your dice as they are", room.Sh.Board.Console.Status.Hint.text);
                 var die = room.Sh.Board.View.Dice.First(d => d.Owner == Side.Shadow && d.Location == DieLocation.Hunt);
                 await LoreGestures.Die(room, room.Sh, die.Id);
                 Assert.IsNotNull(LoreGestures.Face(room.Sh, "lore.Character.keep"));
@@ -99,10 +101,11 @@ namespace Wotr.PlayTests
             using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 Assert.IsNull(room.Fp.Board.View.Decision);
-                // UI-272: We Won't Go Back's cost stands in the Hunt window's response row: the table card and No
-                // Corruption; the Character cards it accepts glow in the hand.
+                // UI-272: We Won't Go Back's cost stands in the Hunt window's response row: the table card; the Character
+                // cards it accepts glow in the hand; UI-347 (D7): No Corruption is the console's Pass.
                 var row = room.Sh.Board.Hunt.Responses.Root.Q("hunt-card-responses");
-                Assert.IsNotNull(row.Q<Button>("effect-choice-smeagol.no-corruption"));
+                Assert.IsNull(row.Q<Button>("effect-choice-smeagol.no-corruption"));
+                Assert.AreEqual("Pass · Take no Corruption and keep your cards", room.Sh.Board.Console.Actions.Pass.tooltip);
                 var card = row.Q<Button>("effect-choice-lords.sh.character.25");
                 StringAssert.StartsWith("Click to discard", card.tooltip);
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("effect-choice-smeagol.no-corruption"));

@@ -416,6 +416,18 @@ namespace Wotr.PlayTests
             await Settle();
             await OpenBattles();
         }
+        // UI-291/UI-347: the console's Pass, which also declines a reaction window or an optional decline.
+        public async Task Pass(MountedMatchClient client, string tooltip = null)
+        {
+            var pass = client.Board.Console.Actions.Pass;
+            await Until(() => pass.enabledInHierarchy);
+            if (tooltip != null)
+                Assert.AreEqual(tooltip, pass.tooltip);
+            var revision = client.Board.View.Revision;
+            CardNetworkTests.Click(pass);
+            await At(revision + 1);
+        }
+
         public async Task Direct(MountedMatchClient client, string button)
         {
             var revision = client.Board.View.Revision;

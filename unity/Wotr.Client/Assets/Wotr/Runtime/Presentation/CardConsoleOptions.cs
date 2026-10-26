@@ -41,8 +41,8 @@ namespace Wotr.Client
             "CaptainOrder", "LureCompanion", "FellowshipAction", "NazgulStrike",
             // UI-264: the expansions' two-way card modes (Fate's Monsters, the Kings cards' branches).
             "EffectTargets", "SovereignCardBranch",
-            // UI-271: the Balrog card's order: move him alone, move his army, or finish.
-            "BalrogOrder",
+            // UI-271: the Balrog card's order; UI-347 (D11): on the Balrog's figure and his army, Finish is the Pass.
+            BalrogCardOrder.Presentation,
             // UI-272: the Lore of the Elven Rings: its die and result are chosen on the pool; Keep results is a button.
             // Wind from the West and Safe Paths in the Dark discard Shadow table cards with their × in the Effects
             // panel; Three Rings for the Elven-Kings recovers Rings on their sockets.
@@ -65,9 +65,9 @@ namespace Wotr.Client
                 return CardArmyEvent.Alternatives(view, draft);
             if (Card(view, draft))
                 return CardOptions(view, draft);
-            // UI-268: Vilya is kept on its socket; spending the die is the console's button.
+            // UI-268: Vilya is kept on its socket; UI-347 (D7): spending the die is the console's Pass.
             if (NamedRings.VilyaDecision(view))
-                return NamedRings.SpendTheDie(view) is { } spend ? new List<ConsoleOption> { spend } : None;
+                return None;
             // UI-274: Sequential corruption's Draw again; the tiles stand beside the king.
             if (SovereignAttempt.OwnAttempt(view))
                 return SovereignAttempt.ConsoleOptions(view);
@@ -102,15 +102,16 @@ namespace Wotr.Client
                 return None;
             if (RegionChoice(view))
                 return Alternatives(view, draft, option);
-            if (view.Decision.Presentation == LoreChoice.Presentation)
-                return option.EffectChoices.Where(LoreChoice.KeepOption).Select(c => Effect(view, draft, option, c)).ToList();
-            if (view.Decision.Presentation == RingRecovery.Presentation)
+            // UI-347 (D7): the Lore's Keep results is the console's Pass; its die and result stay on the pool. D11: the
+            // Balrog card's order stands on his figure and his army (BalrogCardOrder).
+            if (view.Decision.Presentation is LoreChoice.Presentation or RingRecovery.Presentation or BalrogCardOrder.Presentation)
                 return None;
             // UI-274: the kings and their tiles are chosen in the Characters panel; Keep tiles is a button.
             if (SovereignChoices.Owns(view))
                 return SovereignChoices.ConsoleOptions(view, draft);
             // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
-            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id))
+            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id) &&
+                    !OptionalDecline.Declines(c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();
             if (option.EffectChoices.Any(TableCard))
                 options.Insert(0, new ConsoleOption

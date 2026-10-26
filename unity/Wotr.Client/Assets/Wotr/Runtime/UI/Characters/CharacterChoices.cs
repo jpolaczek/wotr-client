@@ -68,7 +68,14 @@ namespace Wotr.Client
             if (draft.Kind != CommandKind.EnterCharacter || draft.Payload.RegionId.Length > 0)
                 return "";
             var selected = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
-            return selected == null || selected.Recruitment.Count > 0 ? "" : CharacterLibrary.Name(selected.CharacterId) + " · Choose a highlighted region on the map";
+            if (selected == null || selected.Recruitment.Count > 0)
+                return "";
+            // UI-347 (D13): an entry that requires a Council token waits for its medallion.
+            if (selected.RequiresCouncilToken && draft.Payload.CouncilTokenId.Length == 0)
+                return CharacterLibrary.Name(selected.CharacterId) + " · Click a glowing Council token to pay the entry";
+            return CharacterLibrary.Name(selected.CharacterId) + " · Choose a highlighted region on the map" +
+                (selected.CouncilTokens.Count > 0 && !selected.RequiresCouncilToken && draft.Payload.CouncilTokenId.Length == 0
+                    ? " · Or click a glowing Council token to enter with it" : "");
         }
 
         // One die, or dice of one kind, are chosen for the player; only different dice are a choice worth a button.
@@ -87,21 +94,7 @@ namespace Wotr.Client
                 root.Add(button);
                 refresh.Add(() => button.EnableInClassList("selected", draft.Payload.DieId == id));
             }
-            if (choice.CouncilTokens.Count == 0)
-                return;
-            if (!choice.RequiresCouncilToken)
-                CouncilCost(root, draft, edit, "", "No token");
-            foreach (var id in choice.CouncilTokens)
-                CouncilCost(root, draft, edit, id, ExpansionLabels.CouncilToken(id));
-        }
-
-        private void CouncilCost(VisualElement row, TurnDraft draft, Action<Action> edit, string id, string label)
-        {
-            var button = BoardScreen.Button(label, () => edit(() => draft.Change(p => p.CouncilTokenId = id)));
-            button.name = "entry-token-" + id;
-            button.tooltip = "Entry cost · Spent with the selected die when this choice is complete";
-            row.Add(button);
-            refresh.Add(() => button.EnableInClassList("selected", draft.Payload.CouncilTokenId == id));
+            // UI-347 (D13): a Council token that pays the entry is its medallion in the pool, not a button here.
         }
 
         public void Refresh()

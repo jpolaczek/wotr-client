@@ -22,8 +22,8 @@ namespace Wotr.Client
     // response row, beside the Ring, Guide and random-companion responses; one click uses the card (discarding it when
     // that is its cost), and the console's Pass declines (UI-291). They no longer fall to the generic choice list.
     // UI-272: the Lords Shadow table cards answer the same way — We Shall Get It! (replace the drawn tile) and The Gates
-    // are Closed (an extra tile after a reveal) — and We Won't Go Back's cost offers the table card and No Corruption as
-    // objects, while the Character cards it accepts glow in the hand.
+    // are Closed (an extra tile after a reveal) — and We Won't Go Back's cost offers the table card as an object, while the
+    // Character cards it accepts glow in the hand; No Corruption is the console's Pass (UI-347, D7).
     public static class HuntCardResponses
     {
         public const string WeWontGoBack = "lords.sh.character.25";
@@ -82,12 +82,7 @@ namespace Wotr.Client
                     Tooltip = "Click to discard " + CardLibrary.Title(WeWontGoBack) + " from the table · The Fellowship takes 2 Corruption" +
                         "\nOr click a glowing Character card in your hand to discard it instead."
                 });
-            if (option.EligibleIds.Contains(NoCorruption))
-                responses.Add(new HuntCardResponse
-                {
-                    Id = NoCorruption, Name = "No Corruption", Consequence = "Keep the cards",
-                    Tooltip = "Click to discard nothing · The Fellowship takes no Corruption from Sméagol's tile."
-                });
+            // UI-347 (D7): No Corruption is the console's Pass.
             return responses;
         }
     }

@@ -286,7 +286,7 @@ No Lords card decision opens the generic window:
 - **The Lore of the Elven Rings** is used card → die → face (`LoreChoice`, `LoreInteraction`). Its eligible Shadow dice
   glow in the pool (a Hunt-box die stands in the pool's row, UI-230); a click picks one and its new results open in a
   popover over it (`BoardScreen.LorePicker`, the Ring picker of UI-161), a special die's results also with the ★ Remove
-  symbol; the result's click sends the change. Keep results is the console's button. With Kings, Dismay's "Use Lore
+  symbol; the result's click sends the change. Keep results is the console's Pass (UI-347). With Kings, Dismay's "Use Lore
   first" is the Lore card's click in the Effects panel: the card glows and says what its click does (`EffectEntry.Use`,
   `TableEffectsView.Uses`). The Dice & tokens panel no longer hosts Lore.
 - **Removing Lore and The Gates are Closed** is paid like Palantír of Orthanc (UI-248): the eligible dice glow in the
@@ -294,11 +294,12 @@ No Lords card decision opens the generic window:
   console asks for the Ring while a die waits for one. The tray lists neither dice nor Rings.
 - **We Shall Get It! and The Gates are Closed in a Hunt** are response objects in the Hunt window's response row
   (`HuntCardResponses`, the card, its name and what it does); their click discards the card and answers, the console's Pass declines (UI-291).
-  **We Won't Go Back**'s cost offers the table card (+2 Corruption) and No Corruption in the same row, while the
-  Character cards it accepts glow in the hand. The Gates on a declaration (no Hunt) keep their × in the Effects panel
+  **We Won't Go Back**'s cost offers the table card (+2 Corruption) in the same row, while the Character cards it
+  accepts glow in the hand; No Corruption is the console's Pass (UI-347). The Gates on a declaration (no Hunt) keep their × in the Effects panel
   (UI-247); the console's Pass declines (UI-291).
 - **Wind from the West and Safe Paths in the Dark** discard Shadow table cards with their × in the Effects panel
-  ("Discard a table card" opens it, as for The Nazgûl Strike!); Wind's Inspect / Finish are console buttons, and the
+  ("Discard a table card" opens it, as for The Nazgûl Strike!); Wind's Inspect is a console button and its Finish the
+  console's Pass (UI-347), and the
   inspected Shadow hand stands in the player's hand drawer with a Shadow-red edge, marked to discard (`InspectedHand`):
   the click on one discards it.
 - **Three Rings for the Elven-Kings** recovers Rings on their sockets in the console (`RingRecovery`): the Rings it may
@@ -370,3 +371,26 @@ their backs to the player that dissolve in the air".
   drawn; Skip of a presentation clears it.
 - The opponent's presented discard dissolves a smaller pair out of its hand count in the top bar as the count drops
   ([OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md)).
+
+## The Lords' optional declines and the Balrog card — UI-347 (2026-10-27)
+
+The owner's decisions EXP-15 D7 and D11 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)):
+
+- **Optional declines are the console's Pass** (`OptionalDecline`), as a reaction window's skip (UI-291): Vilya's
+  "Spend the die", the Lore of the Elven Rings' "Keep results", Wind from the West's and A Balrog is Come!'s "Finish",
+  Orderly Withdrawal's "Keep the hit" and We Won't Go Back's "No Corruption" have no button in the console, the tray, the
+  Battle window or the Hunt's response row. The Pass lights while it can send one, its tooltip names what it skips
+  ("Pass · Finish without inspecting the Shadow hand") and the console's hint ends with "Or Pass to …" unless it names
+  Pass already. Passing answers the whole step: a partial selection of it is dropped.
+- **A Balrog is Come!** (`BalrogCardOrder`): the Balrog's region glows on the map; in its panel the Balrog's figure moves
+  him alone and a figure of the army he stands with moves that army with him — the card's army step then opens with
+  that army's move already started and its panel open (`CardArmyInteraction.Carry`). The console's hint names both
+  clicks and the Pass; no console button remains.
+
+Tests: `LordsCardChoicesTests`, `CardConsoleOptionsTests.TheBalrogsOrderStandsOnHisFigureAndHisArmy`,
+`NamedRingsTests.VilyaIsKeptOnItsSocketAndSpendingTheDieIsThePass`, `LordsCardNetworkTests.WindsFinishIsTheConsolesPass`,
+`LordsCharacterNetworkTests` (the Balrog alone, with his army, Finish through Pass), `LordsShadowNetworkTests` (Lore,
+We Won't Go Back), `ExpansionDecisionNetworkTests` and `ExpansionWindowNetworkTests` (Vilya); seeder scenarios
+`ui347-balrog`, `ui347-balrog-finish`, `ui271-balrog-order`, `ui272-wind-hand`, `ui347-wind-finish` (tests share a
+seeded match by its name, so each test has its own); test-menu group "Lords · Decisions" (wotr-server
+`LordsDecisionScenarios`).

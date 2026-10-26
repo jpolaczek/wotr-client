@@ -25,7 +25,7 @@ namespace Wotr.Client
             }
             else if (draft.Kind == CommandKind.ChooseCouncilHomelands)
             {
-                var choices = new CouncilHomelandChoices(root, view, option, draft, edit, data);
+                var choices = new CouncilHomelandChoices(root, view, draft);
                 refresh.Add(choices.Refresh);
             }
             // UI-270: the Council's token choice is made on the tokens in the Shadow's pool (CouncilTokenSlots).

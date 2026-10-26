@@ -10,15 +10,18 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
+        private readonly Action<ComponentAction> select;
         private readonly ChoicePulse litArt;
         private PlayerView view;
         private TurnDraft draft;
 
-        public ResourceContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
+        // select: a component's own path (UI-347: a Council token's printed use, started on its medallion).
+        public ResourceContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, Action<ComponentAction> select)
         {
             this.board = board;
             this.edit = edit;
             this.busy = busy;
+            this.select = select;
             litArt = new ChoicePulse(board.OwnDice, ChoiceGlow.LitArtPulseClass);
             board.Sovereigns.Activate = Sovereign;
             board.CouncilTokenSelected += Council;
@@ -154,8 +157,36 @@ namespace Wotr.Client
                 }, true);
                 return;
             }
-            if (view == null || busy() || !ResourcePresentation.CanSelectCouncil(view, id))
+            if (view == null || busy())
                 return;
+            // UI-347 (D13): a medallion's click starts its printed use at once. When a Kings Chieftain can enter with the
+            // token, the first click marks it and lights his Characters row instead; a click on the marked token starts its
+            // printed use.
+            switch (ResourcePresentation.Clicked(view, draft, id))
+            {
+                case CouncilClick.EntryCost:
+                    EntryCost(id);
+                    break;
+                case CouncilClick.Mark:
+                    Mark(id);
+                    break;
+                case CouncilClick.Use:
+                    select(ResourcePresentation.CouncilUse(view, draft, id));
+                    break;
+            }
+        }
+
+        // UI-347 (D13): during a Chieftain's entry the token is his entry cost: its click adds it, and takes it back when
+        // the entry does not require it.
+        private void EntryCost(string id)
+        {
+            var entry = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
+            var remove = draft.Payload.CouncilTokenId == id && !entry.RequiresCouncilToken;
+            edit(() => draft.Change(p => p.CouncilTokenId = remove ? "" : id), false);
+        }
+
+        private void Mark(string id)
+        {
             var die = draft.Payload.DieId;
             edit(() =>
             {
@@ -167,7 +198,6 @@ namespace Wotr.Client
                         p.DieId = die;
                 });
             }, false);
-            board.ResourceDecision.Open();
         }
 
         public bool Drop(DraftToken source, DraftToken target)

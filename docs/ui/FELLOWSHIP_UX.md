@@ -526,13 +526,20 @@ Council decision opens the generic window, and the separate Setup window and its
    in its homeland glows; a click selects it and lights its homelands on the map, and a click on one places it (a drag
    of the portrait onto the region is a shortcut). The portrait then shows where it starts ("→ Ered Luin"), and its
    tooltip names the homelands and the version's nation ("Leaving activates the Elves", or that a version without a
-   nation icon activates none). "Keep with the Fellowship" sets the selected companion down again; the line beside it
+   nation icon activates none). A second click on the selected companion already placed keeps it with the Fellowship
+   (UI-347, D14; the "Keep with the Fellowship" button is gone): its tooltip and the console's hint say so whenever
+   that click is available ("Click Gimli again to keep this companion with the Fellowship …"). The line in the panel
    says which Council Action Tokens the Shadow will receive (none, a choice of one, both). The ✓ sends, an empty choice
    included. Enter in the panel's part never sends; Escape passes the held panel by.
 2. **Council Action Tokens.** In a Council game the Shadow's pool has two fixed token slots, Politics (a war banner
    stepping forward) and Travel (the wings of a fell beast) — `graphicalassets/ui/src/tokens/council-*.svg`. A token
    not received or spent is greyed; a ready one shows plain; while the Council's choice offers both (one companion
-   left) they glow and a click takes one at once; during an action a usable token glows and its click starts its use.
+   left) they glow and a click takes one at once; during an action a usable token glows and its click starts its
+   printed use at once, with no Dice & tokens panel step (UI-347, D13). When a Kings Chieftain can enter with the
+   token, its first click marks it and lights his Characters row instead, and a click on the marked token starts its
+   printed use; the console's hint names both. During the Chieftain's entry the medallion is its cost: its click adds
+   the token and takes it back when the entry does not require it; a required single token is taken at once. No "No
+   token" or token-name button remains.
 3. **The alternate Guides' responses.** In the Hunt's Guide window the alternates' responses — Boromir, Gimli and
    Legolas separate and reduce the damage; both alternate Hobbits cancel the tile; Fate's Gimli, Dwarven Lord, leaves
    as the Guide — stand as response objects in the Hunt window's response row (portrait, name, what it does); a click

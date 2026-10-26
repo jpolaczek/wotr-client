@@ -481,3 +481,22 @@ Regular or kill a Regular, each server-committed decision shown separately."
 - Only committed facts play (`Facts.LossDetails`, in the order of the decision); a decision of several losses plays them
   one after another. The player's own committed casualties play the same way (a shared battle resolution, UI-303).
 - Reduced motion keeps the flash, the ring and the fade without movement; Skip animations shows the latest state at once.
+
+## Orderly Withdrawal and Evil Knowledge on their objects — UI-347 (2026-10-27)
+
+The owner's decisions EXP-15 D10 and D12 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)):
+
+- **Orderly Withdrawal** (Wind from the West's and Three Rings' Combat side) cancels one hit on the opponent's hits: the
+  same "−1" as Heroic Death (UI-246, `BattleObjectChoices.WithdrawalCancel`; 33 px since UI-347, so the panel scale's
+  rounding keeps the 32 px target), glowing, whose tooltip says what
+  the withdrawal does; its click completes the step and sends it. "Keep the hit" is the console's Pass
+  (`OptionalDecline`, tooltip "Pass · Keep the hit and fight on"); no text button remains.
+- **Evil Knowledge** is the Mouth of Sauron's portrait in the besieging column while the siege may go on
+  (`EvilKnowledgeChoice`, `BattleContext.EvilKnowledgeSource`): the portrait glows, its tooltip says the siege goes on
+  one round without downgrading an Elite, and its click sends `UseEvilKnowledge`. The button beside Extend / Stop is
+  gone, also from the option row the tray shows when Extend is disabled (no Elite to downgrade, so the portrait is the
+  only way on); it comes back only if no portrait carries the ability (`EvilKnowledgeChoice.OnPortrait`).
+
+Tests: `BattleObjectChoicesTests.OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass`,
+`LordsBattleNetworkTests` (the pip, the Pass, the Mouth's portrait), `ExpansionWindowNetworkTests` (the portrait with
+an Elite); seeder scenarios `ui347-orderly-withdrawal`, `ui347-orderly-withdrawal-pass`, `ui347-evil-knowledge`.

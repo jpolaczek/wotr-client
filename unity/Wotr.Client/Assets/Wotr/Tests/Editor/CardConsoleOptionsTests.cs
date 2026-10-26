@@ -55,19 +55,31 @@ namespace Wotr.EditorTests
             Assert.IsFalse(WindowChoices(view, draft));
         }
 
-        // UI-271: the Balrog card's order is three console buttons.
+        // UI-347 (EXP-15 D11): the Balrog card's order stands on the Balrog's figure (alone) and his army's figures (with
+        // it); Finish is the console's Pass, so the console has no button and no window opens.
         [Test]
-        public void TheBalrogsOrderIsThreeConsoleButtonsAndNoWindow()
+        public void TheBalrogsOrderStandsOnHisFigureAndHisArmy()
         {
-            var view = Card("BalrogOrder",
-                new EffectChoiceView { Id = "balrog.alone", Title = "Move the Balrog alone" },
-                new EffectChoiceView { Id = "balrog.army", Title = "Move or attack with his army" },
-                new EffectChoiceView { Id = "balrog.finish", Title = "Finish" });
+            var view = Card(BalrogCardOrder.Presentation,
+                new EffectChoiceView { Id = BalrogCardOrder.Alone, Title = "Move the Balrog alone" },
+                new EffectChoiceView { Id = BalrogCardOrder.Army, Title = "Move or attack with his army" },
+                new EffectChoiceView { Id = OptionalDecline.BalrogFinish, Title = "Finish" });
+            view.Characters.Add(new CharacterView { Id = "lords.character.balrog", DefinitionId = "lords.character.balrog", Side = Side.Shadow, Location = "moria" });
+            view.Units.Add(new UnitView { Id = "orc-1", Side = Side.Shadow, Location = "moria" });
+            view.Units.Add(new UnitView { Id = "orc-2", Side = Side.Shadow, Location = "dol-guldur" });
             var draft = Draft(CommandKind.ChooseEffect);
-            var options = CardConsoleOptions.For(view, draft);
-            CollectionAssert.AreEqual(new[] { "effect-choice-balrog.alone", "effect-choice-balrog.army", "effect-choice-balrog.finish" },
-                options.Select(o => o.Name));
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
             Assert.IsFalse(WindowChoices(view, draft));
+            var figures = BalrogCardOrder.Figures(view);
+            Assert.AreEqual(BalrogCardOrder.Alone, figures["lords.character.balrog"]);
+            Assert.AreEqual(BalrogCardOrder.Army, figures["orc-1"]);
+            Assert.IsFalse(figures.ContainsKey("orc-2"), "Only the army he stands with.");
+            Assert.AreEqual("moria", BalrogCardOrder.Region(view));
+            Assert.AreEqual("Click the Balrog's glowing region, then his figure to move him alone or a figure of his army to move it with him.",
+                BalrogCardOrder.Hint(view));
+            Assert.AreEqual(OptionalDecline.BalrogFinish, OptionalDecline.Option(view, draft).Id);
+            view.Options[0].EligibleIds.Remove(BalrogCardOrder.Army);
+            Assert.AreEqual(new[] { "lords.character.balrog" }, BalrogCardOrder.Figures(view).Keys.ToArray());
         }
 
         // UI-271: the Chief's Spear of Terror is used at the Character deck and He Sees, He Knows at his figure; the console

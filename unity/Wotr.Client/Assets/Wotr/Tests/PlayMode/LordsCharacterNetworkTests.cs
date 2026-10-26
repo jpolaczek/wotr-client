@@ -13,7 +13,7 @@ namespace Wotr.PlayTests
 {
     // UI-271: the Lords characters act on their objects: entries from their rows in the Characters panel (the Mouth's and
     // the Witch-king's versions as rows of their own), the Chief's reactions at the Character deck and at his figure, and
-    // the Balrog card's order in the console with his walk on the map. No decision window opens.
+    // the Balrog card's order on his figure and his army (UI-347, D11) with his walk on the map. No decision window opens.
     public class LordsCharacterNetworkTests
     {
         private const string Mouth = "base.character.mouth-of-sauron";
@@ -28,6 +28,8 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator SpearOfTerrorDrawsFromTheCharacterDeck() => Wait(Spear());
         [UnityTest] public IEnumerator HeSeesMovesTheChiefFromHisFigure() => Wait(HeSees());
         [UnityTest] public IEnumerator TheBalrogsCardMovesHimAloneAlongHisPath() => Wait(BalrogAlone());
+        [UnityTest] public IEnumerator TheBalrogsCardMovesHisArmyFromItsFigure() => Wait(BalrogArmy());
+        [UnityTest] public IEnumerator TheBalrogsCardFinishesWithThePass() => Wait(BalrogFinish());
 
         private static async Task Keepers()
         {
@@ -145,8 +147,9 @@ namespace Wotr.PlayTests
             }
         }
 
-        // The Balrog card's order stands in the console; "alone" arms his region on the map, and the click on a lit region
-        // two steps away walks him there along his path; the console's ✓ sends the move.
+        // UI-347 (D11): the Balrog card's order stands on his figure in his region's panel, with no console button; "alone"
+        // arms his region on the map, and the click on a lit region two steps away walks him there along his path; the
+        // console's ✓ sends the move.
         private static async Task BalrogAlone()
         {
             using (var room = await Connect("ui271-balrog-order", ScenarioKind.CardPack))
@@ -154,8 +157,17 @@ namespace Wotr.PlayTests
             {
                 var client = room.Sh;
                 await room.Settle();
-                Assert.IsNotNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-balrog.finish"));
-                await room.Direct(client, "effect-choice-balrog.alone");
+                foreach (var choice in new[] { BalrogCardOrder.Alone, BalrogCardOrder.Army, OptionalDecline.BalrogFinish })
+                    Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-" + choice), choice);
+                StringAssert.StartsWith("Click the Balrog's glowing region, then his figure", client.Board.Console.Status.Hint.text);
+                StringAssert.EndsWith("Or Pass to finish without moving the Balrog.", client.Board.Console.Status.Hint.text);
+                var figure = await PanelFigure(room, client, "moria", Balrog);
+                StringAssert.Contains(BalrogCardOrder.Offer(BalrogCardOrder.Alone), figure.tooltip);
+                await Layout(room, client, "balrog-order", "ui347");
+                figure = await PanelFigure(room, client, "moria", Balrog);
+                var order = client.Board.View.Revision;
+                CardNetworkTests.Click(figure);
+                await room.At(order + 1);
                 Assert.AreEqual(DecisionKind.CharacterEvent, client.Board.View.Decision.Kind);
                 var travel = client.Board.View.Options.Single(o => o.Kind == CommandKind.MoveShadowCharacters).Travel.Single();
                 var near = client.Board.Presentation.Regions["moria"].Neighbors;
@@ -178,6 +190,53 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(far, room.Fp.Board.View.Characters.Single(c => c.Id == Balrog).Location);
                 watch.NeverOpened();
             }
+        }
+
+        // UI-347 (D11): a figure of the army the Balrog stands with moves that army with him: the card's army step opens
+        // with that army's move already started and its panel open.
+        private static async Task BalrogArmy()
+        {
+            using (var room = await Connect("ui347-balrog", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Sh;
+                await room.Settle();
+                var unit = client.Board.View.Units.First(u => u.Location == "moria" && u.Side == Side.Shadow);
+                var figure = await PanelFigure(room, client, "moria", unit.Id);
+                StringAssert.Contains(BalrogCardOrder.Offer(BalrogCardOrder.Army), figure.tooltip);
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(figure);
+                await room.At(revision + 1);
+                Assert.AreEqual(DecisionKind.ArmyEvent, client.Board.View.Decision.Kind);
+                await room.Until(() => client.Board.Hover.Panel.Root.Q<Button>("hover-figure-" + unit.Id)?.ClassListContains("selected") == true);
+                Assert.AreEqual("moria", client.Board.Hover.Panel.Region, "The army's move starts with its panel open.");
+                watch.NeverOpened();
+            }
+        }
+
+        // UI-347 (D7, D11): the console's Pass finishes the card without moving the Balrog.
+        private static async Task BalrogFinish()
+        {
+            using (var room = await Connect("ui347-balrog-finish", ScenarioKind.CardPack))
+            using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
+            {
+                var client = room.Sh;
+                await room.Settle();
+                await room.Pass(client, "Pass · Finish without moving the Balrog");
+                Assert.AreEqual("moria", room.Fp.Board.View.Characters.Single(c => c.Id == Balrog).Location);
+                Assert.AreNotEqual(BalrogCardOrder.Presentation, client.Board.View.Decision?.Presentation ?? "");
+                watch.NeverOpened();
+            }
+        }
+
+        private static async Task<Button> PanelFigure(MatchTestRoom room, MountedMatchClient client, string region, string id)
+        {
+            client.Board.Hover.Open(region);
+            await room.Settle();
+            var figure = client.Board.Hover.Panel.Root.Q<Button>("hover-figure-" + id);
+            Assert.IsNotNull(figure, id);
+            Assert.IsTrue(figure.ClassListContains("eligible-figure"), id + " is lit.");
+            return figure;
         }
 
         private static CharacterActionOption Entry(MountedMatchClient client, string version) => client.Board.View.Options

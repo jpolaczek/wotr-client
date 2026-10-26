@@ -44,18 +44,18 @@ Most of the expansions already follow the shape:
 
 | # | Item | Now |
 | --- | --- | --- |
-| 1 | Council Travel token | half fixed: Travel and Politics are drawn on the map and the nation row; the medallion still opens the Dice & tokens panel's text button first (UI-347) |
+| 1 | Council Travel token | fixed (UI-347): the medallion's click starts its use at once |
 | 2 | Kings Nation step (Wisdom, It Is Not So Dark Here) | open: routed to the map (`DecisionRoutes.cs:99`) but nothing handles it, so nation text buttons stand in the window (UI-278) |
 | 3 | Palantír of Anárion "Skip extra card" | open: "Deck" is missing from `CardConsoleOptions` (UI-348) |
 | 4 | Brand's combat replacement | open: text buttons in the battle window (UI-348, decision D17) |
 | 5 | Welcome removal | mostly fixed: the pool die and × work; the tray's die buttons are still reachable (`CostDice.cs:51-53`) (UI-278) |
 | 6 | Dismay | open (UI-276) |
-| 7 | Narya and Far-sighted as text components | open: Narya's "○★ Narya" component (`ComponentActions.cs:84-89`) can open the generic window although the nation row hosts it (UI-347); Far-sighted (UI-276, D18) |
+| 7 | Narya and Far-sighted as text components | Narya fixed (UI-347): no dock component, the nation row and Gandalf's row host it; Far-sighted open (UI-276, D18) |
 | 8 | Lords Hunt table cards | fixed by the merge (one `HuntCardResponses`) |
 | 9 | Alternate Guides in the Hunt | Gimli's and the Council's are portrait objects; the base Guides still respond elsewhere (D9) |
-| 10 | Orderly Withdrawal | open: "Cancel hit · withdraw" / "Keep the hit" text buttons (UI-347, D10) |
-| 11 | Council entry token | open: "No token" and token-name buttons (`CharacterChoices.cs:90-105`) (UI-347, D13) |
-| 12 | A Balrog is Come! | open: console buttons (UI-347, D11) |
+| 10 | Orderly Withdrawal | fixed (UI-347): the "−1" on the hits, Pass keeps the hit |
+| 11 | Council entry token | fixed (UI-347): the medallion marks it and lights the Chieftain's row; no buttons |
+| 12 | A Balrog is Come! | fixed (UI-347): the Balrog's figure and his army's figures; Pass finishes |
 | 13 | Corruption choices' tray fallbacks | dead code (`DecisionTray.cs:396-399`, `CardChoices.cs:75-79`) (UI-348) |
 
 ## Gaps
@@ -111,7 +111,7 @@ but §6.1 promised "a ruler or council token at its row".
   but Vilya, the token's owner or the ability's title is lost; `ExpansionLabels` has the names.
 - The server-side half (texts with names for installed clients) belongs with QUAL-21.
 
-### Lords objects (UI-347)
+### Lords objects (UI-347 — done 2026-10-27; the owner's playtest of D7 and D10–D14 is pending)
 
 Narya's dock component (row 7) goes: the nation row and Gandalf's Characters row already host it. Council token use
 (row 1), the entry token (row 11), Orderly Withdrawal (row 10), A Balrog is Come! (row 12), Evil Knowledge's button beside

@@ -145,6 +145,39 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "heroic-death.decline" }, draft.Payload.Ids, "Keep all clears the plan.");
         }
 
+        // UI-347 (EXP-15 D10): Orderly Withdrawal's cancelled hit is a "−1" pip on the opponent's hits; Keep the hit is the
+        // console's Pass, so no list repeats either.
+        [Test]
+        public void OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Decision = new DecisionView { Id = "withdrawal", Kind = DecisionKind.EffectChoice, Presentation = "CombatEffect" };
+            var option = new ActionOption { Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1 };
+            option.EffectChoices.Add(new EffectChoiceView { Id = BattleObjectChoices.WithdrawalCancel, Title = "Cancel hit · withdraw",
+                Detail = "Resolve both armies' remaining casualties, then end the attack or retreat if possible." });
+            option.EffectChoices.Add(new EffectChoiceView { Id = OptionalDecline.WithdrawalKeep, Title = "Keep the hit" });
+            option.EligibleIds.AddRange(option.EffectChoices.Select(c => c.Id));
+            view.Options.Clear();
+            view.Options.Add(option);
+
+            Assert.IsTrue(BattleObjectChoices.Offered(view, BattleObjectChoices.WithdrawalCancel));
+            Assert.AreEqual(OptionalDecline.WithdrawalKeep, OptionalDecline.Option(view, new TurnDraft()).Id);
+            Assert.AreEqual("Pass · Keep the hit and fight on", OptionalDecline.Option(view, new TurnDraft()).Tooltip);
+            var draft = new TurnDraft();
+            var root = new VisualElement();
+            var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { });
+            context.Refresh();
+            var pip = root.Q("battle-defender").Q<Button>("battle-hit-cancel-1");
+            Assert.AreEqual("−1", pip.text);
+            Assert.IsTrue(pip.ClassListContains(ChoiceGlow.ClassName));
+            StringAssert.StartsWith("Cancel hit · withdraw", pip.tooltip);
+            BattleObjectChoices.Choose(view, draft, BattleObjectChoices.WithdrawalCancel);
+            CollectionAssert.AreEqual(new[] { BattleObjectChoices.WithdrawalCancel }, draft.Payload.Ids);
+            Assert.IsTrue(CardActions.SingleEffect(view, draft), "The pip's click completes the step, so it is sent.");
+        }
+
         private static PlayerView LeadershipView(int minimum, int maximum)
         {
             var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);

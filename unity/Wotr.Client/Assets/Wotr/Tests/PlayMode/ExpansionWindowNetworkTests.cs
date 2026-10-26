@@ -26,16 +26,19 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.SiegeContinuation, room.Sh.Board.View.Decision.Kind);
                 var elites = room.Sh.Board.View.Units.Where(u => u.Location == "minas-tirith" && u.Kind == UnitKind.Elite).Select(u => u.Id).ToArray();
                 var paid = room.Sh.Board.View.Dice.Count(d => d.Location is DieLocation.Resolving or DieLocation.Spent);
-                var evilKnowledge = room.Sh.Board.Tray.Q<Button>("action-UseEvilKnowledge");
-                Assert.IsTrue(evilKnowledge.enabledSelf);
-                Assert.IsNotNull(evilKnowledge.Q(className: "battle-direct-icon-evil-knowledge"), "UI-271: the siege footer shows Evil Knowledge as a graphic choice.");
-                StringAssert.StartsWith("Click to extend the siege", evilKnowledge.tooltip);
+                // UI-347 (D12): Evil Knowledge is the Mouth of Sauron's portrait, not a footer button.
+                Assert.IsNull(room.Sh.Board.Tray.Q<Button>("action-UseEvilKnowledge"));
+                var portrait = room.Sh.Board.Tray.Q<VisualElement>("portrait-base.character.mouth-of-sauron");
+                Assert.IsTrue(portrait.ClassListContains(ChoiceGlow.ClassName));
+                StringAssert.StartsWith("Click to extend the siege", portrait.tooltip);
                 Assert.IsTrue(room.Sh.Board.View.Options.Any(o => o.Kind == CommandKind.ExtendSiege));
                 Assert.IsTrue(room.Sh.Board.View.Options.Any(o => o.Kind == CommandKind.StopBattle));
                 await Layout(room, room.Sh, "evil-knowledge", "t34");
                 await Layout(room, room.Fp, "siege-defender", "t34");
                 await Reconnect(room, room.Sh);
-                await room.Direct(room.Sh, "action-UseEvilKnowledge");
+                var revision = room.Sh.Board.View.Revision;
+                PointerGestureEvents.ClickAt(room.Sh.Board.Tray.Q<VisualElement>("portrait-base.character.mouth-of-sauron"));
+                await room.At(revision + 1);
                 Assert.AreEqual(2, room.Fp.Board.View.Battle.Round);
                 Assert.IsTrue(elites.All(id => room.Fp.Board.View.Units.Any(u => u.Id == id && u.Location == "minas-tirith")));
                 Assert.AreEqual(paid, room.Fp.Board.View.Dice.Count(d => d.Location is DieLocation.Resolving or DieLocation.Spent));
@@ -124,7 +127,8 @@ namespace Wotr.PlayTests
             using (var room = await Connect("t34-vilya-decline", ScenarioKind.CardPack))
             {
                 var paid = room.Fp.Board.View.Dice.Single(d => d.Location == DieLocation.Resolving).Id;
-                await room.Direct(room.Fp, "action-DeclineVilya");
+                // UI-347 (D7): spending the die is the console's Pass.
+                await room.Pass(room.Fp, "Pass · Spend the die and keep Vilya");
                 Assert.AreEqual(DieLocation.Spent, room.Sh.Board.View.Dice.Single(d => d.Id == paid).Location);
                 Assert.AreEqual(Side.FreePeoples, room.Sh.Board.View.Rings.Single(r => r.Id == "lords.ring.vilya").Owner);
             }

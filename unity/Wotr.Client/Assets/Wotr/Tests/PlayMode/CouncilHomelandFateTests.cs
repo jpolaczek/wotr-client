@@ -30,7 +30,9 @@ namespace Wotr.PlayTests
                     var shadow = JsonConvert.SerializeObject(room.Sh.Board.View);
                     await Place(room, Gimli, "iron-hills", false);
                     await Place(room, Gimli, "ered-luin", true);
-                    await Press(room, board, "homeland-stay");
+                    // UI-347 (D14): a second click on the placed companion keeps it with the Fellowship.
+                    StringAssert.StartsWith("Click Gimli again to keep this companion", board.Console.Status.Hint.text);
+                    await Press(room, board, "fellowship-portrait-" + Gimli);
                     Assert.AreEqual("", Portrait(board, Gimli).Q<Label>("homeland-location").text);
                     Assert.AreEqual("No tokens", Effect(board));
                     await Place(room, Gimli, destination, destination == "ered-luin");

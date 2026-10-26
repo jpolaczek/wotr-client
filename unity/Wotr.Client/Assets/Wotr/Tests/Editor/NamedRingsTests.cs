@@ -47,7 +47,7 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void VilyaIsKeptOnItsSocketAndSpendingTheDieIsAConsoleButton()
+        public void VilyaIsKeptOnItsSocketAndSpendingTheDieIsThePass()
         {
             var view = Lords();
             view.Decision = new DecisionView { Id = "d", Kind = DecisionKind.KeepActionDie };
@@ -61,10 +61,12 @@ namespace Wotr.EditorTests
             Assert.AreEqual(CommandKind.UseVilya, draft.Kind);
             Assert.AreEqual("paid", draft.Payload.DieId, "One paid die makes the socket's click complete.");
             Assert.AreEqual(NamedRings.Vilya, draft.Payload.RingId);
-            var spend = CardConsoleOptions.For(view, draft).Single();
-            Assert.AreEqual("action-DeclineVilya", spend.Name);
-            Assert.AreEqual("Spend the die", spend.Label);
+            // UI-347 (D7): spending the die is the console's Pass, not a button.
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
+            var spend = OptionalDecline.Option(view, draft);
             Assert.AreEqual(CommandKind.DeclineVilya, spend.Command);
+            Assert.AreEqual("Pass · Spend the die and keep Vilya", spend.Tooltip);
+            StringAssert.Contains("Pass to spend the die", ResourcePresentation.Consequence(view, null));
             Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft), "The resource panel does not host Vilya.");
         }
 

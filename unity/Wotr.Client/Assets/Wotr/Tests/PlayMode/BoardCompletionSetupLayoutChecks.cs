@@ -67,7 +67,8 @@ namespace Wotr.PlayTests
             await PlaceHomeland(room, board, "iron-hills", false);
             await PlaceHomeland(room, board, "ered-luin", true);
             Assert.AreEqual("Shadow chooses one", board.Root.Q<Label>("homeland-token-effect").text);
-            await Press(room, board.Root.Q<Button>("homeland-stay"));
+            // UI-347 (D14): a second click on the placed companion keeps it with the Fellowship.
+            await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Gimli));
             Assert.AreEqual("", HomelandLocation(board));
             Assert.AreEqual("No tokens", board.Root.Q<Label>("homeland-token-effect").text);
             await PlaceHomeland(room, board, "ered-luin", false);

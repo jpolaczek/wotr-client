@@ -524,11 +524,12 @@ aura of a Keeper ability offered now (`keeper-ready`). A base game keeps its pla
    button; a line in it points at the ring, and the console's Pass declines (UI-291).
 3. Vilya: after a paid action Elrond can keep the action's die. The paid die glows in the pool and the Vilya socket
    glows; a click on either keeps the die (one paid die makes the socket's click complete) and Vilya passes to the
-   Shadow. "Spend the die" is the console's button (`action-DeclineVilya`). No panel or window opens.
+   Shadow. Spending the die is the console's Pass (UI-347; it was the button `action-DeclineVilya`). No panel or window
+   opens.
 4. Narya: Gandalf's activation stays on the nation's row of the Politics panel (`nation-activate-<nation>`); the
    Narya socket's tooltip says so.
 
-Tests: `NamedRingsTests` (fixed sockets and art, the Nenya and Vilya Keeper steps, the console's Spend the die);
+Tests: `NamedRingsTests` (fixed sockets and art, the Nenya and Vilya Keeper steps, spending the die with Pass);
 `ExpansionWindowNetworkTests.NenyaTransfersOnlyItsOwnRingAndResumesTheHunt` and
 `ExpansionDecisionNetworkTests.VilyaKeepsTheResolvingDieAvailable` (socket glow, one click, reconnect, layouts, no
 window); `ExpansionDecisionNetworkTests.NaryaActivatesItsNationWithTheChosenDie` (the nation row).
@@ -560,7 +561,7 @@ responses now fit the console. The opponent's window never enables it. Tests: `C
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
 `CardPack04NetworkTests`.
 
-Expansions (owner, EXP-15, 2026-10-26; not yet implemented): D7 extends this to every optional decline of the
+Expansions (owner, EXP-15, 2026-10-26; the Lords' part implemented by UI-347, `OptionalDecline`): D7 extends this to every optional decline of the
 expansions — Vilya's "Spend the die", Lore's "Keep results", Wind's and the Balrog card's "Finish", Orderly
 Withdrawal's "Keep the hit", We Won't Go Back's "No Corruption", "Keep card effects" (Brand, the Chieftains) and
 Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348). D8

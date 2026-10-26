@@ -165,6 +165,7 @@ namespace Wotr.Client
                 CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
                 SovereignPresentation.Hint(view, draft),
                 RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
+                BalrogCardOrder.Hint(view),
                 ResourcePresentation.PoolHint(view)
             })
                 if (hint.Length > 0)
@@ -372,7 +373,7 @@ namespace Wotr.Client
                 root.Add(battleRibbon.Root);
                 BattleStages.Apply(battleRibbon, view.Battle);
                 var battle = new BattleContext(root, view.Battle, view, draft, action => DraftEdited?.Invoke(action), id => CardInspected?.Invoke(id), cards,
-                    action => ChoiceCompleted?.Invoke(action), battleStacks);
+                    action => ChoiceCompleted?.Invoke(action), battleStacks, kind => DirectChosen?.Invoke(kind));
                 refreshChoices.Add(battle.Refresh);
                 title.text = data.Regions[view.Battle.RegionId].Name + " · " + view.Battle.Mode + " · Round " + view.Battle.Round +
                     (view.Battle.MandatorySiegeRounds > 0 && view.Battle.Round <= view.Battle.MandatorySiegeRounds ? "/" + view.Battle.MandatorySiegeRounds : "") +
@@ -521,9 +522,10 @@ namespace Wotr.Client
             var row = BoardScreen.Row();
             root.Add(row);
             // UI-247: reactions used on their portraits in the Battle window need no Respond step here. UI-291: the
-            // console's Pass declines a reaction window.
+            // console's Pass declines a reaction window. UI-347 (D12): Evil Knowledge is the Mouth of Sauron's portrait.
             foreach (var option in DraftOptions.All(view, draft).Where(o => o.Kind is not (CommandKind.PlayEvent or CommandKind.DeclineReaction) &&
-                !(o.Kind == CommandKind.RespondEffect && BattleReactions.AllOnPortraits(view))))
+                !(o.Kind == CommandKind.RespondEffect && BattleReactions.AllOnPortraits(view)) &&
+                !(o.Kind == CommandKind.UseEvilKnowledge && EvilKnowledgeChoice.OnPortrait(view))))
             {
                 var button = BoardScreen.Button(Label(option.Kind), () => ActionChosen?.Invoke(option.Kind));
                 button.SetEnabled(option.Enabled);

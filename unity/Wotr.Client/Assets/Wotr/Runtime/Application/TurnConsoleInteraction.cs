@@ -16,6 +16,7 @@ namespace Wotr.Client
         private readonly Action confirm;
         private readonly Action finish;
         private readonly Action decline;
+        private readonly Action<ConsoleOption> declineOption;
         private readonly Action<ComponentAction> component;
         private readonly Action<string> ring;
         private readonly Func<bool> reinforcing;
@@ -30,7 +31,8 @@ namespace Wotr.Client
         // reinforcing: a card or ability recruitment plan is under way; the Reinforcements panel holds its choices
         // and its own ✓, so the decision window stays closed and the status opens that panel.
         public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action confirm, Action finish,
-            Action decline, Action<ComponentAction> component, Action<string> ring, Func<bool> reinforcing)
+            Action decline, Action<ConsoleOption> declineOption, Action<ComponentAction> component, Action<string> ring,
+            Func<bool> reinforcing)
         {
             this.board = board;
             this.tray = tray;
@@ -38,6 +40,7 @@ namespace Wotr.Client
             this.confirm = confirm;
             this.finish = finish;
             this.decline = decline;
+            this.declineOption = declineOption;
             this.component = component;
             this.ring = ring;
             this.reinforcing = reinforcing;
@@ -90,10 +93,13 @@ namespace Wotr.Client
             var components = ComponentActions.For(view, draft).ToList();
             var pass = components.FirstOrDefault(c => c.Kind == CommandKind.Pass);
             var discard = components.FirstOrDefault(c => c.Kind == CommandKind.DiscardDie);
-            // UI-291: in the player's own reaction window Pass declines it and names what it skips.
+            // UI-291: in the player's own reaction window Pass declines it and names what it skips; UI-347 (D7): so it does
+            // for the Lords' optional declines.
             var skip = ReactionSkip.Option(view) != null;
-            var passable = idle && (skip || pass?.Enabled == true);
-            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view) : Tooltip("Pass", CommandKind.Pass, pass));
+            var optional = skip ? null : OptionalDecline.Option(view, draft);
+            var passable = idle && (skip || optional?.Enabled == true || pass?.Enabled == true);
+            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view)
+                : optional != null ? optional.Tooltip : Tooltip("Pass", CommandKind.Pass, pass));
             actions.Invite(actions.Pass, passable);
             ConsoleActions.Set(actions.Discard, idle && discard?.Enabled == true,
                 Tooltip("Discard the selected die without effect", CommandKind.DiscardDie, discard));
@@ -159,7 +165,14 @@ namespace Wotr.Client
             var own = trayHint.Length > 0;
             var text = own ? trayHint : fallback;
             var progress = view != null && draft != null && CardDecisions.Owns(view, draft) ? CardDecisions.Progress(view, draft) : "";
-            board.Console.Status.SetHint(progress.Length > 0 ? progress + " · " + text : text, own ? trayDetail : fallback);
+            board.Console.Status.SetHint(WithDecline(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallback);
+        }
+
+        // UI-347 (D7): a step whose decline is the console's Pass says so, unless its hint already names Pass.
+        private string WithDecline(string text)
+        {
+            var decline = view != null && draft != null ? OptionalDecline.Hint(view, draft) : "";
+            return decline.Length == 0 || text.Contains("Pass") ? text : (text.Length > 0 ? text + " " : "") + decline;
         }
 
         private bool Finishing() => view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Owner == view.You;
@@ -201,8 +214,12 @@ namespace Wotr.Client
 
         private void Pass()
         {
-            if (view != null && idle && ReactionSkip.Option(view) != null)
+            if (view == null || !idle)
+                return;
+            if (ReactionSkip.Option(view) != null)
                 decline();
+            else if (OptionalDecline.Option(view, draft) is { Enabled: true } optional)
+                declineOption(optional);
             else
                 Choose(CommandKind.Pass);
         }

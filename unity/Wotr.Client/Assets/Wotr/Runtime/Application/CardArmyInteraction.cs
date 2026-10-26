@@ -13,6 +13,7 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private PlayerView view;
         private TurnDraft draft;
+        private string carried = "";
 
         public bool Active => view != null && CardArmyEvent.Active(view, draft);
 
@@ -28,9 +29,28 @@ namespace Wotr.Client
             view = latest;
             draft = selection;
             if (!Active)
+            {
+                if (!BalrogCardOrder.Active(view))
+                    carried = "";
                 return;
+            }
+            StartCarried();
             HighlightFigures();
             board.Map.HighlightSources(CardArmyEvent.Sources(view, draft), view.You);
+        }
+
+        // UI-347 (D11): the army whose figure chose "with the army" on A Balrog is Come! starts its move once the card's army
+        // step opens; the player picked it already.
+        public void Carry(string region) => carried = region;
+
+        private void StartCarried()
+        {
+            if (carried.Length == 0)
+                return;
+            var region = carried;
+            carried = "";
+            if (CardArmyEvent.ArmyRegion(draft).Length == 0)
+                board.Root.schedule.Execute(() => Region(region));
         }
 
         private void HighlightFigures() => PanelFigureHighlight.Add(board.Hover.Panel,

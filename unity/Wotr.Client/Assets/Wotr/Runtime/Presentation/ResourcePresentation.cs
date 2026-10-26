@@ -4,6 +4,18 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // UI-347 (D13): what a click on a Council medallion does now.
+    public enum CouncilClick
+    {
+        None,
+        // During a Chieftain's entry the token is its cost.
+        EntryCost,
+        // A Chieftain can enter with the token: it is marked and his Characters row lights.
+        Mark,
+        // The token's printed use starts.
+        Use
+    }
+
     public static class ResourcePresentation
     {
         public static bool OwnsDecision(PlayerView view, TurnDraft draft)
@@ -14,8 +26,8 @@ namespace Wotr.Client
             // UI-268: Vilya's decision is made on the paid die and the Vilya socket, with Spend the die in the console.
             // UI-270: the Council's token choice is made on the tokens in the pool.
             // UI-272: the Lore of the Elven Rings is made on the pool's dice and a result popover (LoreChoice).
-            return view.Decision.Kind is DecisionKind.Dismay ||
-                view.Decision.Kind == DecisionKind.Action && CouncilPending(draft);
+            // UI-347 (D13): a Council token's use starts on its medallion and a Chieftain's entry on his row.
+            return view.Decision.Kind is DecisionKind.Dismay;
         }
 
         public static bool CouncilPending(TurnDraft draft) => draft != null && draft.Kind == null && draft.Payload.CouncilTokenId.Length > 0;
@@ -25,9 +37,38 @@ namespace Wotr.Client
                 (o.Kind == CommandKind.UseCouncilToken && o.EligibleIds.Contains(token) ||
                 o.Kind == CommandKind.EnterCharacter && o.CharacterActions.Any(c => c.CouncilTokens.Contains(token))));
 
-        public static IEnumerable<ComponentAction> CouncilChoices(PlayerView view, TurnDraft draft) =>
-            CouncilPending(draft) ? ComponentActions.For(view, draft)
-                : Enumerable.Empty<ComponentAction>();
+        // UI-347 (D13): a Kings Chieftain can enter with this Council token now, so its first click marks the token and
+        // lights his Characters row.
+        public static bool CouncilEntry(PlayerView view, string token) => view.Options.Any(o => o.Enabled &&
+            o.Kind == CommandKind.EnterCharacter && o.CharacterActions.Any(c => c.CouncilTokens.Contains(token) && c.Dice.Count > 0));
+
+        public static CouncilClick Clicked(PlayerView view, TurnDraft draft, string token)
+        {
+            if (!CanSelectCouncil(view, token))
+                return CouncilClick.None;
+            if (draft.Kind == CommandKind.EnterCharacter &&
+                CharacterDraft.Selected(draft, DraftOptions.For(view, draft))?.CouncilTokens.Contains(token) == true)
+                return CouncilClick.EntryCost;
+            var marked = CouncilPending(draft) && draft.Payload.CouncilTokenId == token;
+            if (CouncilEntry(view, token) && !marked)
+                return CouncilClick.Mark;
+            return CouncilUse(view, draft, token) != null ? CouncilClick.Use : CouncilClick.None;
+        }
+
+        // The token's printed use (Politics or Travel), or null.
+        public static ComponentAction CouncilUse(PlayerView view, TurnDraft draft, string token) => ComponentActions.For(view, draft)
+            .FirstOrDefault(c => c.Kind == CommandKind.UseCouncilToken && c.AbilityId == token && c.Enabled);
+
+        // The console's hint while a marked token waits for a Chieftain's entry or its second click.
+        public static string CouncilHint(PlayerView view, TurnDraft draft)
+        {
+            if (!CouncilPending(draft) || view?.Decision?.Kind != DecisionKind.Action)
+                return "";
+            var token = draft.Payload.CouncilTokenId;
+            return "Click a lit Chieftain's row in the Characters panel to enter him with this token" +
+                (CouncilUse(view, draft, token) != null ? ", or click the token again for its printed use (" + ExpansionLabels.CouncilToken(token) + ")" : "") +
+                ". An entry also spends the die you select.";
+        }
 
         public static IEnumerable<string> CouncilDice(PlayerView view, TurnDraft draft)
         {
@@ -52,15 +93,13 @@ namespace Wotr.Client
         public static string PoolHint(PlayerView view) => !PoolDecision(view) ? ""
             : SpecialDice.Choosing(view) ? SpecialDice.Hint(view) : RulerDice.Discarding(view) ? RulerDice.Hint(view) : Consequence(view, null);
 
-        public static string Consequence(PlayerView view, TurnDraft draft) => CouncilPending(draft)
-            ? "Choose a highlighted use. Chieftain entry also spends the exact die you select."
-            : view.Decision?.Kind switch
+        public static string Consequence(PlayerView view, TurnDraft draft) => view.Decision?.Kind switch
         {
             DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Your other special dice wait for the next turn.",
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
             DecisionKind.Dismay => "Choose a token, then either highlighted Ruler. The server rolls its new result.",
             DecisionKind.CouncilToken => "Click the glowing Council token you take; you use it later in an action, without a die.",
-            DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or spend the die and keep Vilya.",
+            DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or Pass to spend the die and keep Vilya.",
             _ => "Choose the exact die and its new face. Changing the face does not use the die."
         };
 

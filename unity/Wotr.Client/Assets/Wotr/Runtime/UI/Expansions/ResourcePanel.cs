@@ -9,7 +9,6 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "resource-panel" };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "resource-decision-host" };
         public Button Tab { get; }
-        public ComponentActionView CouncilChoices { get; } = new ComponentActionView { Fades = true };
         // UI-345: a panel fading out is already closed (UI-322).
         public bool IsOpen => !Appearance.Closed(Root);
         private readonly Label consequence = new Label { name = "resource-consequence" };
@@ -35,7 +34,6 @@ namespace Wotr.Client
             Root.Add(header);
             consequence.AddToClassList("resource-consequence");
             Root.Add(consequence);
-            Root.Add(CouncilChoices.Root);
             Root.Add(DecisionHost);
             Tab.style.display = DisplayStyle.None;
             Close();

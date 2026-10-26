@@ -126,11 +126,15 @@ namespace Wotr.Client
         private void Portrait(string id)
         {
             // UI-270: a companion who may start in its homeland is selected by its click; its homelands light on the map.
+            // UI-347 (D14): a second click on the selected companion already placed keeps it with the Fellowship.
             if (CompanionSetupPresentation.HomelandOption(view) is { } homelands)
             {
-                if (!busy() && draft.Kind == CommandKind.ChooseCouncilHomelands && draft.Payload.CharacterId != id &&
-                    homelands.CharacterActions.Any(c => c.CharacterId == id))
+                if (busy() || draft.Kind != CommandKind.ChooseCouncilHomelands || homelands.CharacterActions.All(c => c.CharacterId != id))
+                    return;
+                if (draft.Payload.CharacterId != id)
                     edit(() => draft.Change(p => p.CharacterId = id), false);
+                else if (CouncilHomelandPresentation.Placed(draft, id))
+                    edit(() => CouncilDraft.Homeland(draft, id, ""), false);
                 return;
             }
             var kind = FellowshipActions.PortraitKind(view, board.ActionDie, id, draft);

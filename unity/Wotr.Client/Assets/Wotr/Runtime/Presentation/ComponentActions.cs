@@ -128,6 +128,9 @@ namespace Wotr.Client
                     p.CardId = item.CardId;
                 if (item.Kind == CommandKind.EnterCharacter && item.Character?.CouncilTokens.Contains(council) == true)
                     p.CouncilTokenId = council;
+                // UI-347 (D13): an entry that requires the only token it may use takes it; no button asks.
+                else if (item.Kind == CommandKind.EnterCharacter && item.Character is { RequiresCouncilToken: true, CouncilTokens: { Count: 1 } })
+                    p.CouncilTokenId = item.Character.CouncilTokens[0];
             });
             return true;
         }

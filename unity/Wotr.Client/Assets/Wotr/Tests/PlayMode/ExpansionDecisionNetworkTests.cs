@@ -166,9 +166,10 @@ namespace Wotr.PlayTests
             StringAssert.Contains("Click to keep the die that paid for this action", socket.tooltip);
             Assert.IsTrue(client.Board.OwnDice.Q<Button>(die).ClassListContains("resource-candidate"), "The paid die glows in the pool.");
             Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + die), "No second die picker.");
-            var spend = client.Board.Console.Status.Options.Q<Button>("action-DeclineVilya");
-            Assert.IsNotNull(spend, "Spend the die is the console's button.");
-            Assert.AreEqual("Spend the die", spend.text);
+            // UI-347 (D7): spending the die is the console's Pass.
+            Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("action-DeclineVilya"));
+            Assert.IsTrue(client.Board.Console.Actions.Pass.enabledSelf);
+            Assert.AreEqual("Pass · Spend the die and keep Vilya", client.Board.Console.Actions.Pass.tooltip);
             Assert.IsFalse(client.Board.ResourceDecision.IsOpen, "No resource panel opens.");
         }
 

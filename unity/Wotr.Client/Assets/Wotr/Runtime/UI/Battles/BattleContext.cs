@@ -14,15 +14,18 @@ namespace Wotr.Client
         private readonly List<Action> refresh = new List<Action>();
         // UI-247: sends a complete choice at once (a character's reaction on its portrait).
         private readonly Action<Action> complete;
+        // UI-347 (D12): sends an immediate battle command (Evil Knowledge on the Mouth of Sauron's portrait).
+        private readonly Action<CommandKind> direct;
         // UI-322: the live window's last stacks; null where nothing is compared (a report, a presented state).
         private readonly BattleStackMemory stacks;
         private readonly bool moving;
 
         public BattleContext(VisualElement root, BattleView battle, PlayerView view, TurnDraft draft,
             Action<Action> edit, Action<string> inspect, CardInspector cards = null, Action<Action> complete = null,
-            BattleStackMemory stacks = null)
+            BattleStackMemory stacks = null, Action<CommandKind> direct = null)
         {
             this.complete = complete;
+            this.direct = direct;
             this.stacks = stacks;
             moving = Appearance.Moving(root) && !ValuePulse.Quiet;
             var row = BoardScreen.Row("battle-forces");
@@ -74,7 +77,8 @@ namespace Wotr.Client
                 // One click handler per portrait; a reaction or Leadership points refresh after the choice target.
                 Action other = null;
                 ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => other?.Invoke());
-                other = ReactionSource(portrait, character, view, draft) ?? Points(portrait, view, draft, edit, new[] { character.Id });
+                other = ReactionSource(portrait, character, view, draft) ?? EvilKnowledgeSource(portrait, character, view, draft) ??
+                    Points(portrait, view, draft, edit, new[] { character.Id });
                 portraits.Add(portrait);
             }
             column.Add(portraits);
@@ -201,6 +205,22 @@ namespace Wotr.Client
                 portrait.tooltip = tooltip;
             });
             return () => complete(() => BattleReactions.Choose(draft, reaction.Id));
+        }
+
+        // UI-347 (D12): the Mouth of Sauron's Evil Knowledge is his glowing portrait while the siege may go on; its click
+        // extends the siege without downgrading an Elite. Returns that click, or null.
+        private Action EvilKnowledgeSource(VisualElement portrait, CharacterView character, PlayerView view, TurnDraft draft)
+        {
+            if (draft == null || direct == null || !EvilKnowledgeChoice.On(view, character))
+                return null;
+            portrait.pickingMode = PickingMode.Position;
+            var tooltip = EvilKnowledgeChoice.Offer + "\n" + portrait.tooltip;
+            refresh.Add(() =>
+            {
+                ChoiceGlow.Apply(portrait, true);
+                portrait.tooltip = tooltip;
+            });
+            return () => direct(CommandKind.UseEvilKnowledge);
         }
 
         // UI-246: the Leadership points a Nazgûl card may forfeit belong to the figure or portrait that has them, so the

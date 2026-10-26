@@ -49,11 +49,9 @@ namespace Wotr.Client
             if (!Active(view))
                 return "";
             return ChosenDie(view, draft).Length == 0
-                ? "Click a lit die to change its result with Lore · Or keep the results"
+                ? "Click a lit die to change its result with Lore · Or Pass to keep your dice as they are"
                 : "Click the die's new result above it · Or click another lit die";
         }
-
-        public static bool KeepOption(EffectChoiceView choice) => choice.Id == Keep;
 
         private static readonly IReadOnlyDictionary<string, string> NoUse = new Dictionary<string, string>();
 

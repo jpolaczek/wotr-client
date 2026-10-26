@@ -20,7 +20,6 @@ namespace Wotr.Client
             board.Components.Selected += select;
             board.Hover.Panel.Components.Selected += select;
             board.TableEffects.RemovalSelected += select;
-            board.ResourceDecision.CouncilChoices.Selected += select;
             board.Characters.Actions.Selected += select;
         }
 
@@ -30,12 +29,12 @@ namespace Wotr.Client
             Current = components;
             var idle = draft.Kind == null;
             var council = ResourcePresentation.CouncilPending(draft);
-            board.ResourceDecision.CouncilChoices.Apply(council ? components.Where(c => c.Kind != CommandKind.EnterCharacter)
-                : Enumerable.Empty<ComponentAction>(), enabled);
             // UI-108: a character enters from its row in the Characters list, never from a button in the decision dock.
-            // UI-160: Pass and discarding a die are permanent actions of the turn console.
+            // UI-160: Pass and discarding a die are permanent actions of the turn console. UI-347: a Council token's use
+            // starts on its medallion (D13), and Narya on its nation's row and Gandalf's Characters row.
             board.Components.Apply(components.Where(c => c.CardId.Length == 0 && c.Region.Length == 0 && idle &&
-                c.Kind is not (CommandKind.UseCouncilToken or CommandKind.EnterCharacter or CommandKind.Pass or CommandKind.DiscardDie) &&
+                c.Kind is not (CommandKind.UseCouncilToken or CommandKind.EnterCharacter or CommandKind.Pass or CommandKind.DiscardDie or
+                    CommandKind.UseNarya) &&
                 !council), enabled);
             // UI-271: an ability used on its own object (the Balrog's figure, Gothmog's Reserve row) has no button here.
             board.Hover.Panel.Context(components.Where(c => c.Region.Length > 0 && idle && !CharacterAbilityPlaces.OwnPlace(c)), enabled);
@@ -50,7 +49,6 @@ namespace Wotr.Client
             board.Components.Selected -= select;
             board.Hover.Panel.Components.Selected -= select;
             board.TableEffects.RemovalSelected -= select;
-            board.ResourceDecision.CouncilChoices.Selected -= select;
             board.Characters.Actions.Selected -= select;
         }
     }

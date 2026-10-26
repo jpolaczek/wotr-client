@@ -106,6 +106,9 @@ namespace Wotr.Client
                 if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
+                // UI-347 (D7): an optional decline is the console's Pass.
+                if (OptionalDecline.Declines(id))
+                    continue;
                 // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
                 // every Guide's response; UI-272: so is a Lords table card's response, and We Won't Go Back's Character
                 // cards glow in the hand.

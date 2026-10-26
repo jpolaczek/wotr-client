@@ -30,7 +30,7 @@ namespace Wotr.Client
                 Own = own,
                 Headline = own ? RingChoice.Headline(draft) is { Length: > 0 } ring ? ring : OwnHeadline(view, draft, die)
                     : WaitingHeadline(view, owner, regionName),
-                Guidance = own ? OwnGuidance(view, die) : owner.HasValue
+                Guidance = own ? OwnGuidance(view, draft, die) : owner.HasValue
                     ? "The opponent is deciding. The notices under the top bar show what they do."
                     : "The game moves to its next step."
             };
@@ -51,7 +51,26 @@ namespace Wotr.Client
             return card.Length > 0 ? card : DecisionTray.Title(view.Decision.Kind, draft.Kind);
         }
 
-        private static string OwnGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
+        // UI-347: a step made on its objects names their clicks — a marked Council token (D13), the Balrog card's order
+        // (D11), the Council's homelands with the second click that keeps a companion (D14).
+        private static string ObjectGuidance(PlayerView view, TurnDraft draft)
+        {
+            foreach (var hint in new[]
+                     {
+                         ResourcePresentation.CouncilHint(view, draft), BalrogCardOrder.Hint(view), CouncilHomelandPresentation.Hint(view, draft)
+                     })
+                if (hint.Length > 0)
+                    return hint;
+            return "";
+        }
+
+        private static string OwnGuidance(PlayerView view, TurnDraft draft, ActionDieContext die)
+        {
+            var objects = ObjectGuidance(view, draft);
+            return objects.Length > 0 ? objects : DecisionGuidance(view, die);
+        }
+
+        private static string DecisionGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
         {
             DecisionKind.Action when die.DieId.Length == 0 => "Choose an action die, then what it acts on: the map, a card or a panel.",
             DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),

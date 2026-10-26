@@ -8,9 +8,10 @@ namespace Wotr.EditorTests
     // UI-272: the Lords cards' choices on their objects (CARD_CHOICES_UX).
     public sealed class LordsCardChoicesTests
     {
-        // Lore is die → face: the chosen die's results, a special die's with the Remove star, Keep results in the console.
+        // Lore is die → face: the chosen die's results, a special die's with the Remove star; UI-347 (D7): Keep results is
+        // the console's Pass, so the console shows no button.
         [Test]
-        public void LoreOffersTheChosenDiesResultsAndKeepsResultsInTheConsole()
+        public void LoreOffersTheChosenDiesResultsAndKeepsResultsThroughPass()
         {
             var view = Decision(Side.Shadow, DecisionKind.EffectChoice, LoreChoice.Presentation, CommandKind.ChooseEffect,
                 new EffectChoiceView { Id = LoreChoice.Keep, Title = "Keep results", Exclusive = true },
@@ -28,8 +29,12 @@ namespace Wotr.EditorTests
             var faces = LoreChoice.Faces(view, draft);
             CollectionAssert.AreEqual(new[] { false, true }, faces.Select(f => f.Remove));
             Assert.IsTrue(faces.All(f => f.Face == DieFace.Muster));
-            var console = CardConsoleOptions.For(view, draft);
-            CollectionAssert.AreEqual(new[] { "effect-choice-" + LoreChoice.Keep }, console.Select(o => o.Name));
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
+            var pass = OptionalDecline.Option(view, draft);
+            Assert.AreEqual(LoreChoice.Keep, pass.Id);
+            Assert.AreEqual(ConsoleOptionKind.Effect, pass.Kind);
+            Assert.AreEqual("Pass · Keep your dice as they are", pass.Tooltip);
+            Assert.AreEqual("Or Pass to keep your dice as they are.", OptionalDecline.Hint(view, draft));
         }
 
         // With Kings, Lore before Dismay is the Lore card's click in the Effects panel, not a tray button.
@@ -44,7 +49,8 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(LoreChoice.CardUses(view));
         }
 
-        // We Shall Get It! in the Hunt is a response object; We Won't Go Back's cost offers the card and No Corruption.
+        // We Shall Get It! in the Hunt is a response object; We Won't Go Back's cost offers the card, and No Corruption is
+        // the console's Pass (UI-347, D7).
         [Test]
         public void HuntCardResponsesStandInTheResponseRow()
         {
@@ -64,9 +70,10 @@ namespace Wotr.EditorTests
                 new EffectChoiceView { Id = HuntCardResponses.NoCorruption },
                 new EffectChoiceView { Id = "base.sh.character.01" });
             cost.Hunt = new HuntView();
-            CollectionAssert.AreEqual(new[] { HuntCardResponses.WeWontGoBack, HuntCardResponses.NoCorruption },
-                HuntCardResponses.Offered(cost).Select(r => r.Id));
+            CollectionAssert.AreEqual(new[] { HuntCardResponses.WeWontGoBack }, HuntCardResponses.Offered(cost).Select(r => r.Id));
             Assert.IsFalse(HuntCardResponses.Offered(cost).Any(r => r.Reaction));
+            Assert.AreEqual(HuntCardResponses.NoCorruption, OptionalDecline.Option(cost, new TurnDraft()).Id);
+            Assert.AreEqual("Pass · Take no Corruption and keep your cards", OptionalDecline.Option(cost, new TurnDraft()).Tooltip);
         }
 
         // Wind from the West: the Shadow table cards at their ×, the inspected hand in the drawer.
@@ -85,6 +92,26 @@ namespace Wotr.EditorTests
                 new EffectChoiceView { Id = "base.sh.character.01", SourceId = "base.sh.character.01" });
             CollectionAssert.AreEqual(new[] { "base.sh.character.01" }, InspectedHand.Cards(hand));
             Assert.AreEqual(DecisionHost.Hand, DecisionRoutes.Of(hand));
+
+            // Without Shadow table cards: Inspect the hand stays a button, Finish is the console's Pass (UI-347, D7).
+            var empty = Decision(Side.FreePeoples, DecisionKind.EffectChoice, "TableCards", CommandKind.ChooseEffect,
+                new EffectChoiceView { Id = "wind.inspect-hand", Title = "Inspect Shadow hand" },
+                new EffectChoiceView { Id = OptionalDecline.WindFinish, Title = "Finish" });
+            CollectionAssert.AreEqual(new[] { "effect-choice-wind.inspect-hand" }, CardConsoleOptions.For(empty, draft).Select(o => o.Name));
+            Assert.AreEqual(OptionalDecline.WindFinish, OptionalDecline.Option(empty, draft).Id);
+            Assert.IsNull(OptionalDecline.Option(table, draft), "With table cards Wind offers no Finish.");
+        }
+
+        // UI-347 (D7): the opponent's decline is never this player's Pass.
+        [Test]
+        public void TheOpponentsDeclineIsNotThisPlayersPass()
+        {
+            var view = Decision(Side.FreePeoples, DecisionKind.EffectChoice, "CombatEffect", CommandKind.ChooseEffect,
+                new EffectChoiceView { Id = "withdrawal.cancel-hit" }, new EffectChoiceView { Id = OptionalDecline.WithdrawalKeep });
+            Assert.AreEqual(OptionalDecline.WithdrawalKeep, OptionalDecline.Option(view, new TurnDraft()).Id);
+            view.You = Side.Shadow;
+            Assert.IsNull(OptionalDecline.Option(view, new TurnDraft()));
+            Assert.AreEqual("", OptionalDecline.Hint(view, new TurnDraft()));
         }
 
         // Three Rings: the count left to recover, on the sockets.

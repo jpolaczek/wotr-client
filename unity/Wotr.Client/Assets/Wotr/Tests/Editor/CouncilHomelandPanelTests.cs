@@ -39,15 +39,15 @@ namespace Wotr.EditorTests
             option.CharacterActions.Clear();
             var draft = Draft(view);
             var root = new VisualElement();
-            var edits = 0;
-            var choices = new CouncilHomelandChoices(root, view, option, draft, action => { edits++; action(); }, BoardPresentation.Load());
+            var choices = new CouncilHomelandChoices(root, view, draft);
             choices.Refresh();
             Assert.IsTrue(CouncilHomelandPresentation.Owns(view));
             Assert.IsTrue(draft.Ready(option));
             Assert.IsEmpty(draft.Payload.Placements);
             Assert.IsEmpty(draft.Payload.CharacterId);
-            Assert.AreEqual(0, edits);
-            Assert.IsFalse(root.Q<Button>("homeland-stay").enabledSelf);
+            // UI-347 (D14): no Keep button; the hint says what the ✓ does.
+            Assert.IsNull(root.Q<Button>("homeland-stay"));
+            Assert.AreEqual("All companions stay with the Fellowship · ✓ confirms.", root.Q<Label>("homeland-hint").text);
             Assert.AreEqual("No tokens", root.Q<Label>("homeland-token-effect").text);
             Assert.IsNotNull(root.Q<VisualElement>("council-homeland-choices"));
         }
@@ -81,7 +81,7 @@ namespace Wotr.EditorTests
             var view = View();
             var draft = Draft(view);
             var root = new VisualElement();
-            var choices = new CouncilHomelandChoices(root, view, view.Options.Single(), draft, action => action(), BoardPresentation.Load());
+            var choices = new CouncilHomelandChoices(root, view, draft);
             for (var i = 0; i < count; i++)
                 draft.Payload.Placements.Add(new UnitPlacementChoice { UnitId = "companion-" + i, RegionId = "the-shire" });
             choices.Refresh();
@@ -127,7 +127,7 @@ namespace Wotr.EditorTests
             var view = View();
             view.You = Side.Shadow;
             var root = new VisualElement();
-            var choices = new CouncilHomelandChoices(root, view, view.Options.Single(), new TurnDraft(), action => action(), BoardPresentation.Load());
+            var choices = new CouncilHomelandChoices(root, view, new TurnDraft());
             choices.Refresh();
             Assert.IsFalse(CouncilHomelandPresentation.Owns(view));
             Assert.AreEqual(0, root.childCount);

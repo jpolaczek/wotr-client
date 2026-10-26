@@ -26,7 +26,11 @@ namespace Wotr.Client
             var state = placement == null ? "stays with the Fellowship" : "starts in " + regionName(placement.RegionId);
             var nation = string.IsNullOrEmpty(nationIcon) ? "No nation icon: leaving does not activate a nation."
                 : "Leaving activates the " + FigureGrid.Name(nationIcon) + ".";
-            return "Click, then a lit homeland on the map, to start " + name + " in " + homes + " · Now " + state + "\n" + nation;
+            // UI-347 (D14): the selected, placed companion's second click keeps it with the Fellowship.
+            var click = placement != null && draft.Payload.CharacterId == choice.CharacterId
+                ? "Click again to keep " + name + " with the Fellowship, or a lit homeland to start in " + homes
+                : "Click, then a lit homeland on the map, to start " + name + " in " + homes;
+            return click + " · Now " + state + "\n" + nation;
         }
 
         // UI-269: the Free Peoples' private versions and starting Guide, chosen on the Fellowship panel's portraits.

@@ -181,9 +181,13 @@ namespace Wotr.PlayTests
             var board = room.Sh.Board;
             const string token = ExpansionDraft.CouncilTravel;
             var dice = board.View.Dice.Count(d => d.Location == DieLocation.Available);
+            // UI-347 (D13): the Black Serpent can enter with the token, so the first click marks it and the second
+            // starts Travel.
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
             await room.Settle();
-            PointerGestureEvents.ClickAt(board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + token));
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
+            await room.Settle();
+            Assert.IsFalse(board.ResourceDecision.IsOpen);
             await Pick(room, room.Sh, "base.character.witch-king");
             var revision = board.View.Revision;
             FellowshipGestures.FinishRoute(room.Sh, "hollin");
@@ -202,8 +206,7 @@ namespace Wotr.PlayTests
                 .Single(c => c.CharacterId == "kings.character.black-serpent");
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
             await room.Settle();
-            Assert.IsNull(board.ResourceDecision.CouncilChoices.Root.Q<Button>("component-" + ComponentGestures.Character(choice)),
-                "The token panel offers no entry button (UI-108).");
+            Assert.IsFalse(board.ResourceDecision.IsOpen, "No token panel; the Serpent's row enters (UI-108, UI-347).");
             await ComponentGestures.Enter(room, room.Sh, choice);
             AssertNoEntryWindow(board);
             var revision = board.View.Revision;
