@@ -8,7 +8,7 @@
       "archive": "com.wotr.contracts-0.12.0.tgz",
       "sha256": "07e9f720d92d0c54f7232753bfdd1dd30acfc36c5f387f934d9b5d2b189f5a4a",
       "size": 20282,
-      "commit": "67b9586d6d4f2288722fcdb8f52b6e497b20e62f"
+      "commit": "de0feb3a70e73e19c555c7b66a07feba04988d70"
     },
     {
       "name": "com.wotr.public-content",
@@ -16,7 +16,7 @@
       "archive": "com.wotr.public-content-1.0.13.tgz",
       "sha256": "2729e2694bf4bd86f41df332b83558e36a78a45fe7e1b9022e0eea9a2302c801",
       "size": 651414,
-      "commit": "67b9586d6d4f2288722fcdb8f52b6e497b20e62f",
+      "commit": "de0feb3a70e73e19c555c7b66a07feba04988d70",
       "requires": {
         "com.wotr.contracts": "0.12.0"
       },
