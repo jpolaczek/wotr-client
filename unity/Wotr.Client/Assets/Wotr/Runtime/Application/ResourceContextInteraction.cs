@@ -10,6 +10,7 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
+        private readonly ChoicePulse litArt;
         private PlayerView view;
         private TurnDraft draft;
 
@@ -18,6 +19,7 @@ namespace Wotr.Client
             this.board = board;
             this.edit = edit;
             this.busy = busy;
+            litArt = new ChoicePulse(board.OwnDice, ChoiceGlow.LitArtPulseClass);
             board.Sovereigns.Activate = Sovereign;
             board.CouncilTokenSelected += Council;
         }
@@ -40,6 +42,7 @@ namespace Wotr.Client
                 LoreChoice.Active(view)) && option?.Enabled == true;
             var councilDice = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
             var councilToken = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
+            var lit = false;
             foreach (var pool in new[] { board.OwnDice, board.OpponentDice })
                 foreach (var button in pool.Query<Button>().ToList())
                 {
@@ -53,10 +56,15 @@ namespace Wotr.Client
                     var eligible = councilDice.Contains(token.Id) || choosing && (option.EligibleDice.Contains(token.Id) ||
                         view.Decision.Presentation == "DieAndResult" && option.EligibleIds.Contains(token.Id));
                     button.EnableInClassList("resource-candidate", eligible);
+                    lit |= eligible && pool == board.OwnDice;
                     if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
                         button.SetEnabled(true);
                     SpecialCandidate(button, token.Id, eligible);
                 }
+            // UI-345 (D6): the lit dice and Council medallions pulse in the shared rhythm.
+            lit |= board.OwnDice.Query<Button>(className: ActionPoolView.CouncilTokenClass).ToList()
+                .Any(button => button.ClassListContains("legal-target"));
+            litArt.Run(lit);
         }
 
         // UI-267: during the special-die choice a die an Eye rules out is disabled (its tooltip, DieHints, says why).

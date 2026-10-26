@@ -1351,6 +1351,18 @@ Owner decision 2026-10-19: the kings' decisions are made on their objects, and n
   portrait chooses him. The corrupted marker glows and acts the same way. Otherwise its click opens the king's
   information.
 
+- **Motion and glow (UI-345, 2026-10-26).** A king whose portrait changes (awakened, corrupted) crossfades to it, a
+  changed status pulses on its badge and a changed corruption on the meter; the first values never pulse. The inspector
+  opens and closes with a fade, its rows fade in and out, a value of the same king that changes pulses (another king's
+  values do not), and a newly attached tile fades in. A lit portrait, attempt button or tile pulses with the Characters
+  roster in its one rhythm (`CharacterRosterPanel.OfferSovereigns`); the attempt button and the tiles show their
+  ChoiceGlow rim. The Dice & tokens panel, its tab and the Council's choices fade; a new Ruler or Dismay token arrives
+  in the pool and a Council medallion whose state changes flashes its art (it does not grow: the pool's row has no room
+  beside it). The expansions' tray choices (`ExpansionChoices`) and the version card not chosen glow and pulse (the
+  version card in its rim and plate only, as it fills the tray's width). Per D6 the lit art — special, Lore and Council dice, Keeper Ring sockets
+  offered now, Council medallions, the Spear's deck — keeps its art and dims and back in the shared 750 ms rhythm
+  (`ChoiceGlow.LitArtPulseClass`, a ticker per host that runs only while something is lit).
+
 This supersedes UI-59's decision host and UI-101's hiding of portraits. Tests: `SovereignPanelTests`,
 `SovereignMapTests`, `DecisionRoutesTests`, `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests`,
 `KingsCards01–04NetworkTests`, `UI63SiegeNetworkTests`, `SovereignSectionLayoutTests`, `ReturnListTests`.

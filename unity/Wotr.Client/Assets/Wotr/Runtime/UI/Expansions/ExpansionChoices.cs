@@ -116,7 +116,12 @@ namespace Wotr.Client
         {
             var button = BoardScreen.Button(label, () => edit(change));
             button.name = name;
-            refresh.Add(() => button.EnableInClassList("selected", selected()));
+            refresh.Add(() =>
+            {
+                button.EnableInClassList("selected", selected());
+                // UI-345: a choice not yet taken glows (ChoiceGlow) and pulses with its row.
+                ChoiceGlow.Apply(button, !selected());
+            });
             return button;
         }
 

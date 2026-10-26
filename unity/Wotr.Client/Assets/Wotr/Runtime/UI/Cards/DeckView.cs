@@ -11,9 +11,11 @@ namespace Wotr.Client
         public VisualElement Root { get; } = BoardScreen.Row("card-decks");
         public event Action<string> Selected;
         private readonly Dictionary<string, Button> buttons = new Dictionary<string, Button>();
+        private readonly ChoicePulse litArt;
 
         public DeckView()
         {
+            litArt = new ChoicePulse(Root, ChoiceGlow.LitArtPulseClass);
             foreach (var id in new[] { "character", "strategy" })
             {
                 var button = BoardScreen.Button("", () => Selected?.Invoke(id));
@@ -29,9 +31,13 @@ namespace Wotr.Client
             }
         }
 
+        // UI-345 (EXP-15 D6): the Character deck that Spear of Terror lights.
+        public const string SpearClass = "spear-deck";
+
         public void Refresh(PlayerView view, TurnDraft draft, ActionDieContext context, bool busy)
         {
             var counts = view.Players.FirstOrDefault(p => p.Side == view.You)?.DeckCounts;
+            var spearOffered = false;
             foreach (var entry in buttons)
             {
                 var count = counts != null && counts.TryGetValue(entry.Key, out var n) ? n : 0;
@@ -39,6 +45,8 @@ namespace Wotr.Client
                 var spear = ChiefReactionObjects.DeckReaction(view, entry.Key).Length > 0;
                 var available = spear || CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
+                entry.Value.EnableInClassList(SpearClass, spear);
+                spearOffered |= spear;
                 entry.Value.EnableInClassList("empty-deck", count == 0);
                 ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
@@ -46,6 +54,7 @@ namespace Wotr.Client
                 entry.Value.tooltip = spear ? ChiefReactionObjects.SpearOffer + "\n" + state :
                     state + (count == 0 ? " · Empty" : available ? " · Draw" : " · Choose an Event die to draw");
             }
+            litArt.Run(spearOffered);
         }
     }
 }

@@ -17,7 +17,8 @@ namespace Wotr.Client
         public VisualElement Inspector => inspector.Root;
         public string Selected => selected;
         public string DecisionTarget { get; private set; } = "";
-        public bool IsOpen => Inspector.style.display.value != DisplayStyle.None;
+        // UI-345: an inspector fading out is already closed (UI-322).
+        public bool IsOpen => !Appearance.Closed(Inspector);
         public bool Pinned { get; private set; }
         public FloatingWindow Window { get; set; }
         public Func<string, bool> Activate { get; set; }
@@ -153,7 +154,7 @@ namespace Wotr.Client
             selected = "";
             foreach (var portrait in portraits.Values)
                 portrait.Portrait.EnableInClassList("inspected-sovereign", false);
-            Inspector.style.display = DisplayStyle.None;
+            Appearance.Display(Inspector, false);
         }
 
         private void FocusChanged(bool focused) { if (!focused) CloseTransient(); }
@@ -169,7 +170,7 @@ namespace Wotr.Client
             if (!IsOpen || selected != id)
                 Opening?.Invoke();
             selected = id;
-            Inspector.style.display = DisplayStyle.Flex;
+            Appearance.Display(Inspector, true);
             Inspector.BringToFront();
             Render();
         }

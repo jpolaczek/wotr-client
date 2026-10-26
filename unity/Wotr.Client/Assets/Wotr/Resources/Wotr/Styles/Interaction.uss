@@ -78,7 +78,9 @@
 }
 /* UI-284: a journey's portraits fill their row edge to edge, so their pulse changes the rim and plate only (they are
    .action buttons too, so the scale of the rule above is undone here). UI-285: so do the Hunt's table-card responses;
-   UI-291: and the console's actions, whose column keeps its fixed size; UI-360: and the Guides' Hunt responses. */
+   UI-291: and the console's actions, whose column keeps its fixed size; UI-360: and the Guides' Hunt responses; UI-345:
+   and the Council's version cards, which fill the decision tray's width. */
+.motion-enabled #board-screen .choice-glow-pulse .setup-version-card.choice-glow,
 .motion-enabled #board-screen .choice-glow-pulse .companion-portrait.choice-glow,
 .motion-enabled #board-screen .choice-glow-pulse .hunt-card-response.choice-glow,
 .motion-enabled #board-screen .choice-glow-pulse .hunt-guide-response.choice-glow,
@@ -258,3 +260,50 @@
 /* UI-113 for battle objects: a portrait or figure stack that a choice made clickable sinks while pressed (ObjectPress). */
 #board-screen .battle-force .portrait-medallion.pressed,
 #board-screen .battle-force .battle-figure.pressed { translate: 0 1px; }
+
+/* UI-345 (EXP-15 D6): the expansions' lit art — special, Lore and Council dice (resource-candidate), Keeper Ring
+   sockets (keeper-ready), Council medallions and the Spear's deck — keeps its art and dims a little and back in the
+   shared 750 ms rhythm while its host's ticker runs (ChoicePulse with lit-art-pulse). Reduced motion keeps it still. */
+.motion-enabled #board-screen .die.resource-candidate,
+.motion-enabled #board-screen .council-token.legal-target,
+.motion-enabled #board-screen .card-deck.spear-deck {
+    transition-property: opacity;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .console-ring-socket.keeper-ready {
+    transition-property: scale, opacity;
+    transition-duration: 0.18s, 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .lit-art-pulse .die.resource-candidate,
+.motion-enabled #board-screen .lit-art-pulse .council-token.legal-target,
+.motion-enabled #board-screen .lit-art-pulse .console-ring-socket.keeper-ready,
+.motion-enabled #board-screen .card-decks.lit-art-pulse .card-deck.spear-deck {
+    opacity: 0.7;
+}
+/* UI-345: a Council medallion whose state changed flashes its art instead of growing (ValuePulse's scale): the pool's
+   row has no room beside it. Placed after the lit-art rule, so it keeps that rule's opacity rhythm. */
+.motion-enabled #board-screen .council-token.value-pulse-host {
+    transition-property: opacity, -unity-background-image-tint-color;
+    transition-duration: 750ms, 0.16s;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .council-token.value-pulse {
+    scale: 1 1;
+    -unity-background-image-tint-color: rgb(255, 236, 170);
+}
+
+/* UI-345: the sovereign's attempt button and its tiles show their ChoiceGlow (their art has no border of its own),
+   and pulse without moving. */
+#board-screen .edge-left-panel .sovereign-slot > .sovereign-attempt.choice-glow,
+#board-screen .edge-left-panel .sovereign-tiles > .sovereign-tile.choice-glow {
+    border-width: 2px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .edge-left-panel .choice-glow-pulse .sovereign-slot > .sovereign-attempt.choice-glow,
+.motion-enabled #board-screen .edge-left-panel .choice-glow-pulse .sovereign-tiles > .sovereign-tile.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+}

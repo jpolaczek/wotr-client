@@ -17,7 +17,7 @@ namespace Wotr.Client
         public Button Portrait { get; }
         public Button Attempt { get; }
         private readonly string id;
-        private readonly Image image = new Image { name = "sovereign-portrait-image", pickingMode = PickingMode.Ignore, scaleMode = UnityEngine.ScaleMode.ScaleToFit };
+        private Image image = Image();
         private readonly VisualElement badge = new VisualElement { name = "sovereign-status", pickingMode = PickingMode.Ignore };
         private readonly Label title = new Label { name = "sovereign-name", pickingMode = PickingMode.Ignore, enableRichText = false };
         private readonly VisualElement meter = new VisualElement { name = "sovereign-meter" };
@@ -26,6 +26,7 @@ namespace Wotr.Client
         private string status = "";
         private string tileKey = "";
         private string art = "";
+        private string meterKey = "";
 
         public SovereignPortrait(string id, Action portrait, Action attempt, Action<string, string> tileChosen)
         {
@@ -38,7 +39,6 @@ namespace Wotr.Client
             Portrait.AddToClassList("sovereign-portrait");
             Portrait.AddToClassList(RuntimeTooltip.RichHoverClass);
             Portrait.userData = new DraftToken(DraftObject.Sovereign, id);
-            image.AddToClassList("sovereign-portrait-image");
             badge.AddToClassList("sovereign-status");
             Portrait.Add(image);
             Portrait.Add(badge);
@@ -59,8 +59,9 @@ namespace Wotr.Client
         {
             if (Art(king) != art)
             {
+                var changed = art.Length > 0;
                 art = Art(king);
-                image.sprite = PortraitArtwork.Sprite(art);
+                ShowArt(changed);
             }
             Status(king.Status);
             title.text = king.Title.Split(' ')[0];
@@ -75,6 +76,28 @@ namespace Wotr.Client
             Tiles(SovereignAttempt.Tiles(view, king));
         }
 
+        // UI-345: a king whose portrait changes (awakened, corrupted) crossfades to it (UI-322); the first shows at once.
+        private void ShowArt(bool changed)
+        {
+            if (!changed || !Appearance.Moving(Portrait))
+            {
+                image.sprite = PortraitArtwork.Sprite(art);
+                return;
+            }
+            var next = Image();
+            next.sprite = PortraitArtwork.Sprite(art);
+            Portrait.Insert(Portrait.IndexOf(image) + 1, next);
+            Appearance.Crossfade(image, next);
+            image = next;
+        }
+
+        private static Image Image()
+        {
+            var image = new Image { name = "sovereign-portrait-image", pickingMode = PickingMode.Ignore, scaleMode = UnityEngine.ScaleMode.ScaleToFit };
+            image.AddToClassList("sovereign-portrait-image");
+            return image;
+        }
+
         // An Initial king shows his awakened portrait, dimmed; a Corrupted one his corrupted portrait.
         private string Art(SovereignView king) => king.DefinitionId.Length > 0 ? king.DefinitionId
             : "kings.character." + id.Substring(id.LastIndexOf('.') + 1) + ".awakened";
@@ -84,6 +107,9 @@ namespace Wotr.Client
             var key = value.ToString().ToLowerInvariant();
             if (key == status)
                 return;
+            // UI-345: a changed status pulses on its badge.
+            if (status.Length > 0)
+                ValuePulse.Pulse(badge);
             badge.RemoveFromClassList("sovereign-status-" + status);
             Portrait.RemoveFromClassList("sovereign-" + status);
             status = key;
@@ -112,6 +138,11 @@ namespace Wotr.Client
             meter.tooltip = SovereignPresentation.Corruption(king) + (hidden > 0 ? " · " + hidden + " hidden tile" + (hidden == 1 ? "" : "s") : "") +
                 " · Resistance " + king.Resistance;
             meter.style.display = king.Status == SovereignStatus.Initial ? DisplayStyle.Flex : DisplayStyle.None;
+            // UI-345: a changed corruption (a tile attached, one returned) pulses on the meter.
+            var key = king.Resistance + ":" + known + ":" + hidden;
+            if (meterKey.Length > 0 && key != meterKey)
+                ValuePulse.Pulse(meter);
+            meterKey = key;
         }
 
         // Beside an Initial king for the Shadow; it keeps its place, disabled with its reason, when unusable.

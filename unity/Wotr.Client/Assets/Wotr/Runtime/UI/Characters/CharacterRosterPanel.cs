@@ -35,6 +35,8 @@ namespace Wotr.Client
         private readonly Label empty = new Label("No named characters in this view") { name = "characters-empty" };
         private VisualElement sovereigns;
         private readonly ChoicePulse pulse;
+        private bool rosterOffered;
+        private bool sovereignsOffered;
         private PlayerView view;
         private VisualElement source;
         private bool visible;
@@ -161,7 +163,15 @@ namespace Wotr.Client
                 row.Value.Offer(entry);
                 row.Value.Choose(chosen);
             }
-            pulse.Run(offered);
+            rosterOffered = offered;
+            pulse.Run(rosterOffered || sovereignsOffered);
+        }
+
+        // UI-345: a lit sovereign's portrait, attempt or tile pulses with the roster, in its one rhythm.
+        public void OfferSovereigns(bool any)
+        {
+            sovereignsOffered = any;
+            pulse.Run(rosterOffered || sovereignsOffered);
         }
 
         public void Attach(VisualElement tray, VisualElement dock) => Actions.Attach(tray, dock);

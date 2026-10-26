@@ -9,8 +9,9 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "resource-panel" };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "resource-decision-host" };
         public Button Tab { get; }
-        public ComponentActionView CouncilChoices { get; } = new ComponentActionView();
-        public bool IsOpen => Root.style.display.value != DisplayStyle.None;
+        public ComponentActionView CouncilChoices { get; } = new ComponentActionView { Fades = true };
+        // UI-345: a panel fading out is already closed (UI-322).
+        public bool IsOpen => !Appearance.Closed(Root);
         private readonly Label consequence = new Label { name = "resource-consequence" };
         private VisualElement tray;
         private VisualElement dock;
@@ -59,7 +60,8 @@ namespace Wotr.Client
                 DecisionHost.Add(tray);
             else if (!active && tray?.parent == DecisionHost)
                 dock.Add(tray);
-            Tab.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
+            // UI-345: the tab and the panel fade in and out instead of jumping (UI-321, UI-322).
+            Appearance.Display(Tab, active);
             Tab.EnableInClassList("legal-target", active);
             consequence.text = active ? ResourcePresentation.Consequence(view, draft) : "";
             var decision = view.Decision?.Id ?? "";
@@ -79,6 +81,6 @@ namespace Wotr.Client
             Root.BringToFront();
         }
 
-        public void Close() => Root.style.display = DisplayStyle.None;
+        public void Close() => Appearance.Display(Root, false);
     }
 }

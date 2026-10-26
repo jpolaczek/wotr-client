@@ -15,6 +15,8 @@ namespace Wotr.Client
         private readonly Action<Action> edit;
         private readonly VersionComparison versions;
         private readonly VisualElement comparison = BoardScreen.Row("setup-comparison");
+        // UI-345: the version card not chosen glows (CompanionSetupCard) and pulses in the shared rhythm.
+        private readonly ChoicePulse pulse;
         private CompanionSetupCard original;
         private CompanionSetupCard alternate;
         private string compared = "";
@@ -26,6 +28,7 @@ namespace Wotr.Client
             this.draft = draft;
             this.edit = edit;
             this.versions = versions;
+            pulse = new ChoicePulse(comparison);
             var choices = new VisualElement { name = "companion-setup-choices" };
             root.Add(choices);
             var hint = new Label("Click a portrait marked with two faces to compare its versions; a crown makes the starting Guide.")
@@ -84,6 +87,7 @@ namespace Wotr.Client
             var selectedVersion = selected == null ? "" : CouncilDraft.Version(draft.Payload, selected);
             original?.Select(original.DefinitionId == selectedVersion);
             alternate?.Select(alternate.DefinitionId == selectedVersion);
+            pulse.Run(original != null);
         }
     }
 }

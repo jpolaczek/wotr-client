@@ -85,7 +85,7 @@ but §6.1 promised "a ruler or council token at its row".
   (`HuntPresenter.cs:93-103`); resolve the source through `CharacterLibrary.Find(SourceId)`.
 - Observers and replays use the same presenters, so every gap applies to them (they do see the Dismay reroll).
 
-### Transitions and glow (UI-345)
+### Transitions and glow (UI-345 — done 2026-10-26; the corruption draw counter goes with the dead fallbacks of UI-348)
 
 - **One-frame panels:** the Dice & tokens panel's close and its tab (`ResourcePanel.cs:62,82`), the sovereign inspector
   and its rows (`SovereignPanel.cs:156,172`, `SovereignInspector.cs:76,104,127`), the Council choices

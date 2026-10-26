@@ -32,6 +32,12 @@ namespace Wotr.EditorTests
             Assert.IsNotNull(root.Q<Button>("version-base.character.gimli"));
             Assert.IsNull(root.Q<Button>("version-" + Grey));
             Assert.AreEqual(2, root.Query<Button>(className: "setup-version-card").ToList().Count);
+            // UI-345: the version not chosen glows as a choice; the chosen one is marked selected instead.
+            var chosen = root.Q<Button>("version-base.character.gimli");
+            var other = root.Query<Button>(className: "setup-version-card").ToList().Single(card => card != chosen);
+            Assert.IsTrue(other.ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsFalse(chosen.ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(chosen.ClassListContains("selected"));
         }
 
         [Test]

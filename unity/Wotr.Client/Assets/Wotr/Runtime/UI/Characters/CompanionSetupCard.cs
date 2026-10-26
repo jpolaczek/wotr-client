@@ -39,6 +39,8 @@ namespace Wotr.Client
         public void Select(bool selected)
         {
             Root.EnableInClassList("selected", selected);
+            // UI-345: the version not chosen glows as a choice.
+            ChoiceGlow.Apply(Root, !selected);
             selection.text = selected ? "✓" : "○";
         }
 

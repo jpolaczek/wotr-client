@@ -38,6 +38,11 @@ namespace Wotr.Client
         private readonly Dictionary<(string, Side, DieLocation), int> shownCounts = new Dictionary<(string, Side, DieLocation), int>();
         // UI-322: the faces each pool showed (by match and die), so a die whose face changed in place crossfades to its new
         // face; a die that joins the pool shows its face at once.
+        // UI-345: the tokens each pool showed (by match), so a token that joins it arrives; and each Council medallion's
+        // last state, so a change pulses.
+        private readonly Dictionary<VisualElement, (string Match, HashSet<string> Ids)> shownTokens =
+            new Dictionary<VisualElement, (string, HashSet<string>)>();
+        private readonly Dictionary<string, CouncilTokenState> councilStates = new Dictionary<string, CouncilTokenState>();
         private readonly ShownBefore<VisualElement, IReadOnlyDictionary<string, DieFace?>> shownFaces =
             new ShownBefore<VisualElement, IReadOnlyDictionary<string, DieFace?>>(new Dictionary<string, DieFace?>());
 
@@ -233,6 +238,9 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row("pool-tokens");
             root.Add(row);
+            var before = shownTokens.TryGetValue(root, out var shown) && shown.Match == view.MatchId ? shown.Ids : null;
+            var now = new HashSet<string>();
+            shownTokens[root] = (view.MatchId, now);
             foreach (var token in view.RulerTokens.Where(t => t.Location == (side == Side.FreePeoples ? "free-peoples" : "dismay")))
             {
                 var name = ExpansionLabels.Token(view, token.Id).Split(' ')[0];
@@ -244,6 +252,9 @@ namespace Wotr.Client
                 button.EnableInClassList("resource-unavailable", !DraftOptions.CanSelectToken(view, token.Id));
                 button.userData = new DraftToken(DraftObject.RulerToken, token.Id);
                 row.Add(button);
+                now.Add(token.Id);
+                if (before != null && !before.Contains(token.Id))
+                    Appearance.Arrive(button);
             }
             if (!CouncilTokenSlots.Shown(view, side))
                 return;
@@ -259,17 +270,21 @@ namespace Wotr.Client
         }
 
         // UI-270: a Council token's slot shows whether it was received, is offered, ready, usable now or spent.
-        private static void CouncilToken(Button button, PlayerView view)
+        private void CouncilToken(Button button, PlayerView view)
         {
             var id = button.name.Substring("pool-".Length);
             var state = CouncilTokenSlots.State(view, id);
+            var key = view.MatchId + "/" + id;
+            if (councilStates.TryGetValue(key, out var previous) && previous != state)
+                ValuePulse.Pulse(button);
+            councilStates[key] = state;
             button.tooltip = CouncilTokenSlots.Tooltip(view, id);
             button.EnableInClassList("legal-target", state is CouncilTokenState.Offered or CouncilTokenState.Usable);
             button.EnableInClassList("council-spent", state is CouncilTokenState.Spent or CouncilTokenState.Missing);
             button.SetEnabled(state is CouncilTokenState.Offered or CouncilTokenState.Usable or CouncilTokenState.Ready);
         }
 
-        private static void RefreshDetails(VisualElement root, PlayerView view, bool own)
+        private void RefreshDetails(VisualElement root, PlayerView view, bool own)
         {
             if (!own)
                 return;

@@ -12,6 +12,9 @@ namespace Wotr.Client
         public VisualElement Root { get; } = BoardScreen.Row("component-actions");
         public event Action<ComponentAction> Selected;
         public Func<ComponentAction, string> Label { get; set; }
+        // UI-345: the row fades in and out (UI-321/UI-322) instead of appearing in one frame; the Council's choices in the
+        // Dice & tokens panel use it.
+        public bool Fades { get; set; }
         private readonly Dictionary<string, Button> buttons = new Dictionary<string, Button>();
         private Dictionary<string, ComponentAction> choices = new Dictionary<string, ComponentAction>();
         private readonly ChoicePulse pulse;
@@ -54,7 +57,10 @@ namespace Wotr.Client
                     ChoiceGlow.Apply(button, enabled && item.Enabled);
             }
             pulse.Run(enabled && choices.Values.Any(item => item.Picture.Length > 0 && item.Enabled));
-            Root.style.display = choices.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            if (Fades)
+                Appearance.Display(Root, choices.Count > 0);
+            else
+                Root.style.display = choices.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
         private static Button Create(ComponentAction item, Action select)

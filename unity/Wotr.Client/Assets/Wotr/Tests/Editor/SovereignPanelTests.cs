@@ -272,6 +272,25 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(panel.Inspector.Q<Label>("sovereign-availability").tooltip);
         }
 
+        // UI-345: a sovereign's changed status and corruption pulse on his slot; his first values never do.
+        [Test]
+        public void AChangedStatusOrCorruptionPulsesOnTheSlot()
+        {
+            var view = View();
+            view.Decision = null;
+            view.CorruptionAttempt = null;
+            var panel = Panel(view);
+            var slot = panel.Root.Q("sovereign-slot-king");
+            Assert.IsFalse(slot.Q("sovereign-status").ClassListContains(ValuePulse.PulseClass), "A first status never pulses.");
+            Assert.IsFalse(slot.Q("sovereign-meter").ClassListContains(ValuePulse.PulseClass), "A first meter never pulses.");
+            view.Sovereigns[0].Tiles.Add(new CorruptionTileView { Id = "back-0" });
+            panel.Apply(view);
+            Assert.IsTrue(slot.Q("sovereign-meter").ClassListContains(ValuePulse.PulseClass), "An attached tile pulses on the meter.");
+            view.Sovereigns[0].Status = SovereignStatus.Corrupted;
+            panel.Apply(view);
+            Assert.IsTrue(slot.Q("sovereign-status").ClassListContains(ValuePulse.PulseClass), "A changed status pulses on its badge.");
+        }
+
         private static SovereignPanel Panel(PlayerView view)
         {
             var panel = new SovereignPanel(BoardPresentation.Load(), _ => Assert.Fail("Inspection cannot move the camera."));

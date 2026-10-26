@@ -9,6 +9,9 @@ namespace Wotr.Client
     {
         public const string ClassName = "choice-glow";
         public const string PulseClass = "choice-glow-pulse";
+        // UI-345 (EXP-15 D6): the expansions' lit art (special, Lore and Council dice; Keeper Ring sockets; Council
+        // medallions; the Spear's deck) keeps its art and pulses in the same rhythm, with a ticker of its own.
+        public const string LitArtPulseClass = "lit-art-pulse";
 
         public static void Apply(VisualElement element, bool on) => element.EnableInClassList(ClassName, on);
     }
@@ -17,12 +20,14 @@ namespace Wotr.Client
     public sealed class ChoicePulse
     {
         private readonly VisualElement host;
+        private readonly string pulseClass;
         private readonly IVisualElementScheduledItem tick;
 
-        public ChoicePulse(VisualElement host)
+        public ChoicePulse(VisualElement host, string pulseClass = ChoiceGlow.PulseClass)
         {
             this.host = host;
-            tick = host.schedule.Execute(() => host.ToggleInClassList(ChoiceGlow.PulseClass)).Every(MapTargetGlow.PulseMilliseconds);
+            this.pulseClass = pulseClass;
+            tick = host.schedule.Execute(() => host.ToggleInClassList(pulseClass)).Every(MapTargetGlow.PulseMilliseconds);
             tick.Pause();
         }
 
@@ -34,7 +39,7 @@ namespace Wotr.Client
                 return;
             }
             tick.Pause();
-            host.RemoveFromClassList(ChoiceGlow.PulseClass);
+            host.RemoveFromClassList(pulseClass);
         }
     }
 }

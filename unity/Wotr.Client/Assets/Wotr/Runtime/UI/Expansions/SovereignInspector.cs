@@ -24,6 +24,8 @@ namespace Wotr.Client
         private readonly VisualElement tiles = BoardScreen.Row("sovereign-tiles");
         private readonly Dictionary<string, Label> faces = new Dictionary<string, Label>();
         private string region = "";
+        // UI-345: the sovereign shown, so a changed value of the same one pulses and another one's values do not.
+        private string shown = "";
 
         public SovereignInspector(BoardPresentation data, Action<string> focus, Action close)
         {
@@ -60,27 +62,30 @@ namespace Wotr.Client
 
         public void Apply(PlayerView view, SovereignView sovereign, TurnDraft draft, bool ownsDecision)
         {
-            title.text = sovereign.Title + " · " + SovereignPresentation.Status(sovereign.Status);
+            var same = sovereign.Id == shown;
+            shown = sovereign.Id;
+            Set(title, sovereign.Title + " · " + SovereignPresentation.Status(sovereign.Status), same);
             region = sovereign.RegionId;
-            location.text = data.Regions.TryGetValue(region, out var definition) ? definition.Name : "Out of play";
+            Set(location, data.Regions.TryGetValue(region, out var definition) ? definition.Name : "Out of play", same);
             location.SetEnabled(definition != null);
-            state.text = SovereignPresentation.Corruption(sovereign) + (sovereign.Garrison ? " · Garrison" : "") +
-                (sovereign.AttemptedThisTurn ? " · Attempt used" : "");
+            Set(state, SovereignPresentation.Corruption(sovereign) + (sovereign.Garrison ? " · Garrison" : "") +
+                (sovereign.AttemptedThisTurn ? " · Attempt used" : ""), same);
             state.tooltip = "Resistance " + sovereign.Resistance + (sovereign.Corruption.HasValue ? "" : " · Attached tile values are not public.");
-            Tiles(sovereign);
+            Tiles(sovereign, same);
             var abilityTitle = sovereign.Status == SovereignStatus.Initial ? "After awakening · Abilities" :
                 sovereign.Status == SovereignStatus.Corrupted ? "Weaknesses · Hover" : "Abilities · Hover";
             Show(ability, sovereign.DefinitionId.Length > 0 ? abilityTitle : "");
             ability.tooltip = sovereign.DefinitionId.Length > 0 ? CharacterLibrary.Description(sovereign.DefinitionId) : "";
             var explanation = ResourcePresentation.Explain(view, sovereign.Id);
-            availability.style.display = explanation.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(availability, explanation.Length > 0);
             availability.tooltip = explanation;
             Attempt(view, sovereign.Id);
             Show(cost, SovereignPresentation.Cost(view, draft, sovereign.Id));
             Show(consequence, ownsDecision ? SovereignPresentation.Consequence(view, draft) : "");
         }
 
-        private void Tiles(SovereignView sovereign)
+        // UI-345: a tile newly attached to the same sovereign fades in.
+        private void Tiles(SovereignView sovereign, bool same)
         {
             var visible = sovereign.Tiles.Select(t => t.Id).ToHashSet();
             foreach (var id in faces.Keys.Where(id => !visible.Contains(id)).ToArray())
@@ -96,12 +101,14 @@ namespace Wotr.Client
                     face.AddToClassList("corruption-tile");
                     faces.Add(tile.Id, face);
                     tiles.Add(face);
+                    if (same)
+                        Appearance.Arrive(face);
                 }
                 face.text = ExpansionLabels.Tile(tile);
                 face.tooltip = tile.Kings ? "Kings tile · Corruption 0" : tile.Value.HasValue
                     ? "Corruption " + tile.Value + (tile.Reveal ? " · Reveal" : "") : "Face-down Corruption tile";
             }
-            tiles.style.display = faces.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(tiles, faces.Count > 0);
         }
 
         private void Attempt(PlayerView view, string id)
@@ -124,7 +131,15 @@ namespace Wotr.Client
         private static void Show(Label label, string text)
         {
             label.text = text;
-            label.style.display = text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            Appearance.Display(label, text.Length > 0);
+        }
+
+        private static void Set(TextElement label, string text, bool same)
+        {
+            if (same)
+                ValuePulse.Set(label, text);
+            else
+                label.text = text;
         }
     }
 }

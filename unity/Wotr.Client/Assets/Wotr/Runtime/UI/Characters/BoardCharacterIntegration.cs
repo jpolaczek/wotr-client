@@ -19,6 +19,7 @@ namespace Wotr.Client
             board.Sovereigns.FallbackAnchor = () => characters.Tab;
             board.Sovereigns.Applied += () => characters.ShowSovereigns(board.Sovereigns.HasShownPortraits);
             board.Sovereigns.Highlighted += any => characters.Tab.EnableInClassList("legal-target", any);
+            board.Sovereigns.Highlighted += characters.OfferSovereigns;
             characters.InspectorWindow = new FloatingWindow(characters.Inspector.Root, board.Windows,
                 () => characters.InspectorPinned, characters.PinInspection, characters.PositionInspector, rememberInitial: false);
             characters.IsRegionSource = element => element != null && board.Hover.Panel.Root.Contains(element);
