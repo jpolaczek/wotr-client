@@ -447,6 +447,11 @@ well; tokens that change their state should turn over to their other side smooth
   tile is Tile while its damage is pending and Damage after, and a Hunt that has only started is Roll for a Fellowship
   move (`fellowship-move`) and shows no stage for a card's Hunt until it rolls or draws (`HuntWindowState.Index`). The
   marker never goes back within one Hunt.
+- UI-341 (owner 2026-10-26: after the player's own Fellowship move, first the roll, then the tile): the mover's own Hunt is
+  already presented like the opponent's — every shared Hunt resolution is presentable, the mover's own click included
+  (UI-303) — so with UI-340 the window opens at Roll, shows the dice and successes there, then the tile and the damage,
+  and the mover's choice comes after that presentation (the owner's exception to UI-321's "a choice is never hidden behind
+  an animation"). Skip and Skip animations end it at the latest state, as any presentation.
 - The Ring's Hidden/Revealed art — on the plaque, in the Fellowship panel and on the journey track's marker — turns over
   when it changes (`TokenFlip`: it narrows to its edge in 0.15 s, shows its other side at the middle of the turn and widens
   in 0.15 s); a nation's token turns over to its active side the same way.
