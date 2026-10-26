@@ -43,8 +43,11 @@ namespace Wotr.Client
             staged = new StagedBoard(board);
             Trace = new MapObservedTrace(board.Map);
             Skip = new SkipControl(board, layer, Playback, SkipNow);
-            // UI-333: before any scene, a finished battle's window steps aside for the next one.
+            // UI-333: before any scene, a finished battle's window steps aside for the next one; UI-342: so does the
+            // Politics panel the presentation opened.
             Playback.Register(new BattleWindowRetirement(board, Playback));
+            politics = new PoliticsPresenter(board, staged, layer);
+            Playback.Register(new PoliticsRetirement(politics, Playback));
             Playback.Register(cost);
             Playback.Register(camera);
             cards = new CardRevealPresenter(board, Playback, camera, layer);
@@ -57,7 +60,6 @@ namespace Wotr.Client
             Playback.Register(battles);
             Playback.Register(new ControlPresenter(board, staged, Trace));
             Playback.Register(new FigureChangePresenter(board, staged, Trace));
-            politics = new PoliticsPresenter(board, staged, layer);
             Playback.Register(politics);
             fellowshipPanel = new FellowshipReading(board);
             hunt = new HuntPresenter(board, staged, layer, fellowshipPanel, Sounds);

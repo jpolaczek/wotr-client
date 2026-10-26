@@ -374,7 +374,8 @@ plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
 - **Political track.**
   - The Politics panel opens read-only for the beat, never while it is live for the player's own decision (a legal
     target on its tab or a station).
-  - A panel the player had open stays open; one the presentation opened closes at the release.
+  - A panel the player had open stays open; one the presentation opened closes as the next scene begins (UI-342,
+    [below](#polityka-zamknieta--ui-342)), at the latest at the release.
   - A panel the player closes during the presentation is not reopened by its later beats.
   - The nation's token is traced. An **activation** lights the crest first, then the token travels its recorded steps
     (an eased 0.6 s `left` transition only while `presenting-politics` is set; a jump under Reduced motion). Since
@@ -1282,6 +1283,18 @@ Owner: "we need the same animations that show who does what for replay playback 
 
 In the battle beats of §8 a decided battle's window closes as the next scene begins, unless the player moved it
 ([BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md#zamkniecie--ui-333)).
+
+<a id="polityka-zamknieta--ui-342"></a>
+## The Politics panel closes as the next scene begins — UI-342 (2026-10-26)
+
+Owner: "let's not wait for the end of the opponent's turn to close the politics track; close it when the next animation
+begins".
+
+- A Politics panel the presentation opened closes (fading out, UI-322) as soon as a scene that is not a political change
+  begins — before the camera, the cost or the figures of the next step — instead of staying open until the release
+  (`PoliticsRetirement`, registered first like UI-333's battle window, and `PoliticsPresenter.Retire`).
+- It stays open when the step that begins changes politics as well (its die's cost comes first), so it does not close and
+  open again within one step; a panel the player had open stays open, as before.
 
 <a id="wylanianie--ui-334"></a>
 ## Recruits flare and emerge — UI-334 (2026-10-25)

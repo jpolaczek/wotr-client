@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 
@@ -45,6 +46,18 @@ namespace Wotr.Client
                 return null;
             var settle = OpenPanel();
             return new Beat(this, change.Id, wasActive, steps, change.Active, change.StepsToWar, settle, now);
+        }
+
+        // UI-342: the next scene begins — a panel the presentation opened closes, unless that scene's step changes politics
+        // as well (its die's cost comes first), so the panel does not close and open again within one step.
+        public void Retire(PresentationCue cue, IEnumerable<PresentationCue> upcoming)
+        {
+            if (!opened || cue.Kind == PresentationCueKind.Politics ||
+                upcoming.Any(next => next.Kind == PresentationCueKind.Politics && next.StepId == cue.StepId))
+                return;
+            if (Visible)
+                Panel.Close();
+            opened = false;
         }
 
         // The presentation ended: a panel it opened closes again.

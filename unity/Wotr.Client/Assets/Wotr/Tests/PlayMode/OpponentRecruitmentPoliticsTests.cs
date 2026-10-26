@@ -194,6 +194,31 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(stage.Lit);
         }
 
+        // UI-342 (owner 2026-10-26: "let's not wait for the end of the opponent's turn to close the politics track; close it
+        // when the next animation begins"): the panel the presentation opened closes as the next step's scene begins.
+        [UnityTest]
+        public IEnumerator ThePanelThePresentationOpenedClosesAsTheNextSceneBegins()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false);
+            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            sauron.Active = true;
+            sauron.StepsToWar = 2;
+            yield return stage.Ready();
+            var reserve = stage.Reserve("sauron", UnitKind.Regular, 2);
+            var latest = stage.Latest();
+            Nation(latest, "sauron", true, 1);
+            PresentedBoardStage.Place(latest, reserve, "dol-guldur");
+            stage.Play(latest, null, Politics(stage.Step(1), "sauron", true, 2, true, 1), stage.Recruits(stage.Step(2), reserve, "dol-guldur"));
+            var drawer = stage.Board.Nations.Drawer;
+            var token = drawer.Q<Button>("nation-status-sauron");
+            yield return stage.Until(() => PresentationGlow.IsLit(token));
+            Assert.IsFalse(Appearance.Closed(drawer), "The panel stands through its own step.");
+            yield return stage.Until(() => Appearance.Closed(drawer));
+            Assert.IsTrue(stage.Playback.Holding, "It closes as the recruitment begins, before the presentation ends.");
+            yield return stage.Released();
+            Assert.IsTrue(Appearance.Closed(drawer));
+        }
+
         [UnityTest]
         public IEnumerator APanelThePlayerOpenedStaysAndOneTheyClosedIsNotReopened()
         {
