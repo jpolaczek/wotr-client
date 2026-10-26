@@ -81,7 +81,7 @@ namespace Wotr.EditorTests
             panel.Submit();
             Assert.AreEqual("hello", sent);
             Assert.AreEqual("", panel.Input.value);
-            Assert.IsTrue(panel.OnlineShown, "LOBBY-05: the players online start unfolded.");
+            Assert.IsTrue(panel.OnlineShown, "LOBBY-06: the players online start unfolded.");
             Assert.AreEqual(DisplayStyle.Flex, panel.Root.Q("lobby-online").style.display.value);
             StringAssert.Contains("Hide", panel.Root.Q<Button>("lobby-online-tab").tooltip);
             panel.ToggleOnline();
