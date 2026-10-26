@@ -1539,6 +1539,12 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
   tile 1 is in play."
 - An identifier the client cannot name reads as what it is ("a card", "a Hunt tile", "a character"), never as its
   code; `CardLibrary.Title` and the Hunt report's source and region fall back the same way.
+- UI-346 (expansions): a standard action die (`FreePeoples.standard.2`) reads "a Free Peoples action die"; the Ruler
+  dice "the Free Peoples/Shadow Ruler die"; a Lords special die "the Balrog die"; a Keeper Ring by its name ("Vilya");
+  a Ruler token by its sovereign ("Dáin Ironfoot's Ruler token"); an ability id by its printed title ("Great Sorcery",
+  from `CharacterAbilityLibrary`) or, for the commands' own ids, by what it does ("Use the Balrog", "Fling into the fray
+  (recruit)") (`ExpansionLabels`). Tests: `ReadableTextTests.TheExpansionsDiceRingsTokensAndAbilitiesReadAsTheirNames`,
+  `ARulerTokenReadsAsItsSovereigns`.
 - Guards: an EditMode test reads every recorded text of the wire fixtures and fails on any code; a network test scans the
   rendered Log and its opened card.
 - Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.

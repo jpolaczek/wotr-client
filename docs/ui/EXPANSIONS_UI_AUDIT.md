@@ -101,7 +101,7 @@ but §6.1 promised "a ruler or council token at its row".
   (`HuntGuideResponses.cs:36`; Pass since UI-291). The lit art of the special dice, sockets, medallions, Lore dice and the
   Spear's deck never pulses (D6).
 
-### Names in the log (UI-346)
+### Names in the log (UI-346 — done 2026-10-26, UX_SPEC "No identifier is ever shown")
 
 - Standard die ids reach the log as codes: `RulerDieDiscarded` and Vilya write `FreePeoples.standard.2`
   (`Kings/KingsDice.cs:71`, `Lords/VilyaCompletion.cs:36`), and `ReadableText` (`ReadableText.cs:15-24`) turns only the

@@ -6,12 +6,41 @@ namespace Wotr.Client
     public static class ExpansionLabels
     {
         public static bool Special(DieView die) => die.Source.Length > 0 && die.Source != "standard";
-        public static string DieSource(DieView die) => die.Source == "ruler" ? "Ruler" : die.Source.Split('.').Last() switch
+        public static string DieSource(DieView die) => die.Source == "ruler" ? "Ruler"
+            : Special(die) ? DieOrigin(die.Source.Split('.').Last()) : "Action die";
+
+        private static string DieOrigin(string key) => key switch
         {
             "narya" => "Narya", "nenya" => "Nenya", "vilya" => "Vilya",
             "balrog" => "Balrog", "gothmog" => "Gothmog",
-            _ => Special(die) ? FigureGrid.Name(die.Source) : "Action die"
+            _ => FigureGrid.Name(key)
         };
+
+        // UI-346: a die, a token or an ability id as a recorded text names it.
+        public static string StandardDie(string id) => id.StartsWith("FreePeoples.", System.StringComparison.Ordinal)
+            ? "a Free Peoples action die" : "a Shadow action die";
+
+        public static string DieName(string id) => id switch
+        {
+            "kings.die.fp.ruler" => "the Free Peoples Ruler die",
+            "kings.die.sh.ruler" => "the Shadow Ruler die",
+            _ => id.StartsWith("lords.die.", System.StringComparison.Ordinal) ? "the " + DieOrigin(id.Split('.').Last()) + " die" : "a die"
+        };
+
+        public static string RulerToken(string id) => ActionCardText.Source("kings.sovereign." + id.Split('.').Last()) + "'s Ruler token";
+
+        // The commands' ability ids that no printed card titles; the others read as their card's title.
+        private static readonly System.Collections.Generic.IReadOnlyDictionary<string, string> CommandAbilities =
+            new System.Collections.Generic.Dictionary<string, string>
+            {
+                ["use-balrog"] = "Use the Balrog",
+                ["activate-balrog"] = "Activate the Balrog",
+                ["deactivate-balrog"] = "Deactivate the Balrog",
+                ["gothmog-recruit"] = "Fling into the fray (recruit)",
+                ["gothmog-upgrade"] = "Fling into the fray (upgrade)"
+            };
+
+        public static string Ability(string id) => CommandAbilities.TryGetValue(id, out var name) ? name : CharacterAbilityLibrary.Title(id);
         public static string DieFace(DieView die) => AssetCatalog.Current.Die(die.Face) + (die.RemoveSymbol ? " ×" : "");
         public static string DieCost(PlayerView view, TurnDraft draft, DieView die)
         {

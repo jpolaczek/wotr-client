@@ -29,12 +29,25 @@ namespace Wotr.Client
         }
 
         private static IReadOnlyDictionary<string, IReadOnlyList<CharacterAbilityText>> cards;
+        private static IReadOnlyDictionary<string, string> titles;
 
         public static IReadOnlyList<CharacterAbilityText> For(string definitionId)
         {
-            cards ??= JsonConvert.DeserializeObject<Catalog>(Resources.Load<TextAsset>("character-ability-text").text)
-                .Cards.ToDictionary(c => c.Id, c => (IReadOnlyList<CharacterAbilityText>)c.Abilities);
+            Load();
             return cards.TryGetValue(definitionId, out var card) ? card : Array.Empty<CharacterAbilityText>();
         }
+
+        // UI-346: the printed title of an ability id, from the first card that prints it, or null.
+        public static string Title(string abilityId)
+        {
+            Load();
+            titles ??= cards.Values.SelectMany(abilities => abilities).GroupBy(ability => ability.Id)
+                .ToDictionary(group => group.Key, group => group.First().Title);
+            return titles.TryGetValue(abilityId, out var title) ? title : null;
+        }
+
+        private static void Load() =>
+            cards ??= JsonConvert.DeserializeObject<Catalog>(Resources.Load<TextAsset>("character-ability-text").text)
+                .Cards.ToDictionary(c => c.Id, c => (IReadOnlyList<CharacterAbilityText>)c.Abilities);
     }
 }
