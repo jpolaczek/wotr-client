@@ -1344,8 +1344,9 @@ frame; with it, and in a quiet view (reconnect, change of side, a replay's manua
 - **Closing.** A panel, window or part of a window that closes fades out where it stands over 0.15 s and only then
   leaves the layout (`Appearance.Display`, Wotr.uss `.appear-host.closing`). It counts as closed at once
   (`Appearance.Closed`, which the left rail's tabs, the window family, the placement of windows around occupied panels,
-  the Politics presentation and the exit lock read instead of its display), its controls take no press, release or click
-  while it fades, and opening it again during the fade keeps it. The exit lock's grey layer gives the screen its input
+  the board's middle, the Politics presentation and the exit lock read instead of its display), its controls take no
+  press, release or click while it fades, and opening it again during the fade keeps it. A left panel that starts to fade
+  no longer narrows the middle, so the windows standing there glide back at once (`Appearance.ClosingEvent`). The exit lock's grey layer gives the screen its input
   back at once and fades out over it.
   An element holding a filtered one (a presentation glow, a hit's drop shadow) leaves at once, because Unity's renderer
   fails on a fading element with filtered children. It applies to every element UI-321 fades in.
@@ -1364,7 +1365,8 @@ frame; with it, and in a quiet view (reconnect, change of side, a replay's manua
   UI-338) made Unity's renderer fail (`RenderTreeCompositor`) when the panel's scale, size or target changed, so the flare
   is the soft glow texture and the figures emerge and leave in opacity only. The flare joins a marker only while it shows.
 
-Tests: `AppearanceTests` (a closing panel fades out but is closed at once and takes no click; Skip closes at once),
+Tests: `AppearanceTests` (a closing panel fades out but is closed at once and takes no click; Skip closes at once; a
+closing left panel no longer narrows the middle),
 `ValuePulseTests`, `DieFaceCrossfadeTests`, `BattleStackFadeTests`, `ArmyEmergeTests`, `ArmyLeaveTests`,
 `FellowshipTrackLayoutTests`, `Shadow02LayoutTests`; the "is closed" checks of `PoliticalPanelTests`,
 `OpponentRecruitmentPoliticsTests`, `WindowFamilyNetworkTests`, the edge-panel tests and the profile drivers read
