@@ -28,3 +28,6 @@ Exceptions recorded only by agents, for the owner to confirm or drop when the ex
 buttons until UI-278; Dismay and Council in Dice & tokens until UI-276; "Keep with the Fellowship" (UI-270); Lure,
 Captain and Balrog alternatives (UI-271); the Fate and Kings card branches as console buttons (UI-264/266).
 Owner-approved: the kings' attempt buttons beside their portraits (UI-274).
+
+Re-checked on 2026-10-26 after the merge of `main` (EXP-14): each row's status, the new findings and the owner's open decisions are in
+[EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md).
