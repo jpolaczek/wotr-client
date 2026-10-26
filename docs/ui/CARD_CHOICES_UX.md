@@ -293,10 +293,10 @@ No Lords card decision opens the generic window:
   pool (`CostDice`), a Ring is paid on its socket, a Will of the West die pays alone and drops a chosen Ring, and the
   console asks for the Ring while a die waits for one. The tray lists neither dice nor Rings.
 - **We Shall Get It! and The Gates are Closed in a Hunt** are response objects in the Hunt window's response row
-  (`HuntCardResponses`, the card, its name and what it does); their click discards the card and answers, Skip declines.
+  (`HuntCardResponses`, the card, its name and what it does); their click discards the card and answers, the console's Pass declines (UI-291).
   **We Won't Go Back**'s cost offers the table card (+2 Corruption) and No Corruption in the same row, while the
   Character cards it accepts glow in the hand. The Gates on a declaration (no Hunt) keep their × in the Effects panel
-  with the console's Decline (UI-247).
+  (UI-247); the console's Pass declines (UI-291).
 - **Wind from the West and Safe Paths in the Dark** discard Shadow table cards with their × in the Effects panel
   ("Discard a table card" opens it, as for The Nazgûl Strike!); Wind's Inspect / Finish are console buttons, and the
   inspected Shadow hand stands in the player's hand drawer with a Shadow-red edge, marked to discard (`InspectedHand`):

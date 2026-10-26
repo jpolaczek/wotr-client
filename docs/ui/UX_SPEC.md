@@ -1303,12 +1303,13 @@ Every Lords character ability is used on its object; no ability button stands in
   figure in its panel glows and says what the click does (`FigureAbilityInteraction`, `CharacterAbilityPlaces`).
 - **Gothmog**'s "fling into the fray" stands in the Reserve panel while a Muster die is selected: his row
   ("Gothmog · Minas Morgul") offers a Sauron Regular (recruit beside him) and an Elite (replace a Regular there); the
-  token's click uses the ability at once (`GothmogReinforcements`).
+  token's click uses the ability at once (`GothmogReinforcements`). Under UI-317 a die that pays him backs the Reserve
+  even when it cannot recruit (`MusterActions.BacksReserve`).
 - **Evil Knowledge** is a graphic choice in the siege footer (an eye over a tower) whose tooltip says it extends the
   siege without downgrading an Elite.
 - **The Chief's reactions**: Spear of Terror lights the Shadow's Character deck ("Click to draw a Character card ·
   Spear of Terror…"); He Sees, He Knows lights the Chief's region and his figure, whose click moves him to the
-  Fellowship (`ChiefReactionObjects`). The console keeps only Decline.
+  Fellowship (`ChiefReactionObjects`). The console's Pass declines them (UI-291).
 - **One movement pattern**: a card that moves Shadow characters uses the Nazgûl flight gesture (UI-212) for all of
   them. A walker (the Balrog alone, the Lords Minions) goes along its shortest path within its level, alone in its
   group, its ghost is its own figure, and the console speaks of figures rather than Nazgûl. The Balrog card's order

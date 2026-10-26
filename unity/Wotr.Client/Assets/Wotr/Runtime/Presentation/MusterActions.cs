@@ -19,6 +19,12 @@ namespace Wotr.Client
             Active(view, draft, context) && (Option(view, context, CommandKind.Recruit) != null ||
                 view.Decision.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.Recruit);
 
+        // UI-271 under UI-317: the die also backs the Reserve while it can pay Gothmog's reinforcement, whose tokens stand
+        // in his Reserve row.
+        public static bool BacksReserve(PlayerView view, TurnDraft draft, ActionDieContext context) =>
+            CanRecruit(view, draft, context) || Active(view, draft, context) && draft.Kind == null &&
+                ComponentActions.For(view, draft).Any(item => item.Enabled && CharacterAbilityPlaces.InReserve(item));
+
         public static ActionOption Option(PlayerView view, ActionDieContext context, CommandKind kind) =>
             view.Options.FirstOrDefault(o => o.Kind == kind && context.Allows(o));
 

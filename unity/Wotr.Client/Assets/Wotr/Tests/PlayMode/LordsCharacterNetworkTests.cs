@@ -104,7 +104,9 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-" + ChiefReactionObjects.Spear),
                     "Spear of Terror is used at the Character deck, not a console button.");
-                Assert.IsNotNull(client.Board.Console.Status.Options.Q<Button>("action-DeclineReaction"));
+                // UI-291: the console's Pass declines the window; no Decline option.
+                Assert.IsTrue(client.Board.Console.Actions.Pass.enabledSelf);
+                StringAssert.Contains("Spear of Terror", client.Board.Console.Actions.Pass.tooltip);
                 var deck = client.Board.Decks.Root.Q<Button>("deck-character");
                 Assert.IsTrue(deck.enabledInHierarchy && deck.ClassListContains("legal-target"));
                 StringAssert.StartsWith("Click to draw a Character card · Spear of Terror", deck.tooltip);

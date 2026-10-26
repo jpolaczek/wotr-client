@@ -98,7 +98,7 @@ namespace Wotr.Client
                 () => SelectionBusy);
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
-            reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.CanRecruit,
+            reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.BacksReserve,
                 id => muster.RecruitAtOnly(id), Confirm, FinishSequence, ChooseComponent);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
@@ -789,7 +789,7 @@ namespace Wotr.Client
                     ? "Choose a highlighted nation." : "Choose a deck.");
                 return;
             }
-            if (muster.CanRecruit && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
+            if (muster.BacksReserve && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
                 tray.Preview(false, notice.Length > 0 ? notice : draft.Kind == CommandKind.AdvancePolitics
                     ? "Choose the highlighted space on this nation’s track."
                     : draft.ReserveId.Length > 0 ? "Choose a highlighted settlement."
@@ -842,8 +842,8 @@ namespace Wotr.Client
             board.Root.EnableInClassList("fellowship-context", FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft));
             tray.DirectArmy = directArmy;
             tray.DirectCard = draft.Kind is CommandKind.PlayEvent or CommandKind.DrawCard;
-            // UI-317: a Muster die that cannot recruit routes nothing to Reinforcements; Politics takes the tray.
-            tray.DirectMuster = muster.CanRecruit && draft.Kind is null or CommandKind.Recruit;
+            // UI-317: a Muster die that can neither recruit nor pay Gothmog (UI-271) routes nothing to Reinforcements.
+            tray.DirectMuster = muster.BacksReserve && draft.Kind is null or CommandKind.Recruit;
             tray.DirectPolitics = politics.Active && draft.Kind is null or CommandKind.AdvancePolitics or CommandKind.UseCouncilToken;
             tray.DirectTravel = travel.Active;
             tray.ContextualFellowship = FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft);

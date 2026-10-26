@@ -536,7 +536,7 @@ Council decision opens the generic window, and the separate Setup window and its
 3. **The alternate Guides' responses.** In the Hunt's Guide window the alternates' responses — Boromir, Gimli and
    Legolas separate and reduce the damage; both alternate Hobbits cancel the tile; Fate's Gimli, Dwarven Lord, leaves
    as the Guide — stand as response objects in the Hunt window's response row (portrait, name, what it does); a click
-   uses one, Skip declines. The base Guides' responses keep their place.
+   uses one, the console's Pass declines (UI-291). The base Guides' responses keep their place.
 4. **Art of Disappearing.** A Hobbit alternate eliminated in a battle chooses its adjacent region on the map, as every
    region step (also during the battle).
 5. **The Fellowship Box.** In a Council game the Free Peoples' pool counts the dice in the Fellowship Box (Strider,

@@ -33,7 +33,9 @@ namespace Wotr.PlayTests
                 var client = room.Sh;
                 await room.Settle();
                 watch.OnItsObject(client);
-                Assert.IsNotNull(client.Board.Console.Status.Options.Q<Button>("action-DeclineReaction"));
+                // UI-291: the console's Pass declines the window; no Decline option.
+                Assert.IsTrue(client.Board.Console.Actions.Pass.enabledSelf);
+                StringAssert.Contains("The Gates are Closed", client.Board.Console.Actions.Pass.tooltip);
                 var cross = await Cross(room, client, Gates);
                 await Layout(room, client, "gates-declaration", "ui272");
                 var revision = client.Board.View.Revision;

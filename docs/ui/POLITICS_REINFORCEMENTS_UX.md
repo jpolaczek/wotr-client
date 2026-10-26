@@ -208,6 +208,12 @@ yet; it should open no window and light only the tabs where something can be don
   settlement click, no route from the console plaque, and the tray's hint is the political one. The Politics tab keeps its
   die light and legal target. `MusterActions.Active` is unchanged, so the political step works as before.
 - With Recruit enabled nothing changes: the tab lights and the panel unrolls only on the player's gesture (UI-181).
+- Expansions (Lords, EXP-14 merge): the die also backs the Reserve while it pays Gothmog's "fling into the fray", whose
+  Regular and Elite tokens stand in his Reserve row (UI-271). `MusterActions.BacksReserve` is `CanRecruit` or an enabled
+  Gothmog ability for the chosen die; it gates the panel, the console route and the tray's hint. A die that can neither
+  recruit nor pay Gothmog still lights only Politics. Tests: EditMode
+  `MusterActionTests.AMusterDieThatPaysGothmogBacksTheReserveWithoutARecruit`; PlayMode
+  `ExpansionAbilityNetworkTests.Gothmog*`.
 - Tests: EditMode `MusterActionTests.TheMusterDieCanRecruitOnlyWithAnEnabledRecruitOrAnOpenSequence`; PlayMode
   `BoardInteractionTests.UI317AMusterDieThatCannotRecruitLightsOnlyPolitics` (no window, no Reserve light, Politics lit,
   no console route, a settlement click brings no Reserve).

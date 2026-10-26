@@ -521,7 +521,7 @@ aura of a Keeper ability offered now (`keeper-ready`). A base game keeps its pla
    The tooltip names the ring, its owner and its Keeper ability.
 2. Nenya: in the Hunt's tile step, when Galadriel can replace a drawn Eye tile, the Nenya socket glows; its click
    removes the tile from the game and draws another, and Nenya passes to the Shadow. The Hunt window lists no Nenya
-   button; a line in it points at the ring, and Skip declines.
+   button; a line in it points at the ring, and the console's Pass declines (UI-291).
 3. Vilya: after a paid action Elrond can keep the action's die. The paid die glows in the pool and the Vilya socket
    glows; a click on either keeps the die (one paid die makes the socket's click complete) and Vilya passes to the
    Shadow. "Spend the die" is the console's button (`action-DeclineVilya`). No panel or window opens.
