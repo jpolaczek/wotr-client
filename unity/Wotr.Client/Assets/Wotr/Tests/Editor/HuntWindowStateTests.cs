@@ -28,7 +28,21 @@ namespace Wotr.EditorTests
             Assert.AreEqual(key, HuntWindowState.Key(view), "Later stages of the same Hunt keep its key.");
             view.HuntReport = new HuntReportView { Id = "report-2", StartedRevision = 9 };
             Assert.AreNotEqual(key, HuntWindowState.Key(view), "The next Hunt opens the window again.");
+            // UI-343: a report records a chain; its second Hunt is a new Hunt for the window.
+            var first = Entry(1, HuntReportKind.Started);
+            view.HuntReport.Entries.Add(first);
+            var chainKey = HuntWindowState.Key(view);
+            view.HuntReport.Entries.Add(Entry(1, HuntReportKind.Rolled));
+            Assert.AreEqual(chainKey, HuntWindowState.Key(view), "The same Hunt keeps its key through its entries.");
+            view.HuntReport.Entries.Add(Entry(2, HuntReportKind.Started));
+            Assert.AreNotEqual(chainKey, HuntWindowState.Key(view), "The chain's next Hunt is a new Hunt.");
+            view.HuntReport.StartedRevision = 11;
+            var staged = HuntWindowState.Key(view);
+            view.HuntReport.StartedRevision = 9;
+            Assert.AreEqual(staged, HuntWindowState.Key(view), "A presented report keys the same as the live one.");
         }
+
+        private static HuntReportEntryView Entry(int hunt, HuntReportKind kind) => new HuntReportEntryView { HuntId = hunt, Kind = kind };
 
         [Test]
         public void TheRibbonFollowsTheRollTheTileAndTheDamage()

@@ -46,6 +46,8 @@ namespace Wotr.Client
             // UI-333: before any scene, a finished battle's window steps aside for the next one; UI-342: so does the
             // Politics panel the presentation opened.
             Playback.Register(new BattleWindowRetirement(board, Playback));
+            // UI-343: and so does the Hunt window once its Hunt is over and the next action begins.
+            Playback.Register(new HuntWindowRetirement(board, Playback));
             politics = new PoliticsPresenter(board, staged, layer);
             Playback.Register(new PoliticsRetirement(politics, Playback));
             Playback.Register(cost);

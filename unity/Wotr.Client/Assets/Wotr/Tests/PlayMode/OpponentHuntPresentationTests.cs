@@ -52,6 +52,61 @@ namespace Wotr.PlayTests
             Assert.IsFalse(stage.Board.TracksStaged, "Nothing moves twice at the release.");
         }
 
+        // UI-343 (owner 2026-10-26: "once the Hunt reaches its end and the next actions start to animate, the Hunt window is
+        // to close; if the user closed it earlier it does not open again, only for a separate new Hunt").
+        [UnityTest]
+        public IEnumerator TheHuntWindowClosesAsTheNextActionBegins()
+        {
+            using var stage = Watching();
+            var north = stage.Before.Nations.Single(n => n.Id == "north");
+            north.Active = false;
+            north.StepsToWar = 3;
+            yield return stage.Ready();
+            var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw"))
+                .Then(o => o.Progress = 2).Entry(HuntReportKind.Progressed)
+                .Entry(HuntReportKind.Rolled, Snapshot("BeforeDraw", 3, 2)).Entry(HuntReportKind.HuntCompleted, Snapshot("Done", 3, 2));
+            var steps = script.Finish().ToList();
+            var next = stage.Step(1, 2);
+            next.Facts.Nations.Add(new ActionNationChange { Id = "north", WasActive = false, PreviousStepsToWar = 3, Active = false, StepsToWar = 2 });
+            steps.Add(next);
+            script.Latest.Revision = 2;
+            script.Latest.Nations.Single(n => n.Id == "north").StepsToWar = 2;
+            var hunt = stage.Board.Hunt;
+            var progress = Plaque(stage, "progress");
+            var before = progress.text;
+            stage.Play(script.Latest, null, steps.ToArray());
+            yield return stage.Until(() => hunt.ShowsFinishedHunt);
+            yield return stage.Until(() => progress.text != before);
+            Assert.IsTrue(hunt.IsOpen, "The result stays while the Fellowship's tracks move after its own Hunt.");
+            yield return stage.Until(() => !hunt.IsOpen);
+            Assert.IsTrue(stage.Playback.Holding, "It closes as the next action begins, within the presentation.");
+            yield return stage.Until(() => !Appearance.Closed(stage.Board.Nations.Drawer));
+            LayoutTests.Save(stage.Texture, "ui343-next-action.png");
+            yield return stage.Released();
+            Assert.IsFalse(hunt.IsOpen, "It does not open again at the release.");
+        }
+
+        [UnityTest]
+        public IEnumerator AHuntWindowTheUserClosedDoesNotOpenAgainWithinThatHunt()
+        {
+            using var stage = Watching();
+            yield return stage.Ready();
+            var steps = Hit(stage, out var latest);
+            var hunt = stage.Board.Hunt;
+            stage.Play(latest, null, steps);
+            yield return stage.Until(() => hunt.IsOpen);
+            hunt.Close();
+            var reopened = false;
+            while (stage.Playback.Holding)
+            {
+                reopened |= hunt.IsOpen;
+                yield return null;
+            }
+            yield return null;
+            reopened |= hunt.IsOpen;
+            Assert.IsFalse(reopened, "Closed by the player, it stays closed through the rest of its Hunt and the release.");
+        }
+
         [UnityTest]
         public IEnumerator AHitShowsItsTileAndDamageThenTheProgressAndTheCorruptionAsTwoStages()
         {

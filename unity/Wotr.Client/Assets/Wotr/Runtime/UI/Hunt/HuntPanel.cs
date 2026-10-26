@@ -182,6 +182,12 @@ namespace Wotr.Client
 
         private static bool Underway(PlayerView view) => view.Hunt != null || view.HuntReport?.Completed == false;
 
+        // UI-343: the window is open on the result of the Hunt it opened for (HuntWindowRetirement closes it).
+        public bool ShowsFinishedHunt => IsOpen && !Underway(view) && view.HuntReport?.Completed == true && view.HuntReport.Id == result;
+
+        // The report the window shows.
+        public string ShownChain => view?.HuntReport?.Id ?? "";
+
         // A new Hunt opens the window for both players unless the player closed it during this very Hunt.
         private void OpenNewHunt()
         {

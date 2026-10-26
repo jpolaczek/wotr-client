@@ -452,6 +452,13 @@ well; tokens that change their state should turn over to their other side smooth
   (UI-303) — so with UI-340 the window opens at Roll, shows the dice and successes there, then the tile and the damage,
   and the mover's choice comes after that presentation (the owner's exception to UI-321's "a choice is never hidden behind
   an animation"). Skip and Skip animations end it at the latest state, as any presentation.
+- UI-343 (owner 2026-10-26: "once the Hunt reaches its end and the next actions start to animate, the Hunt window is to
+  close; if the user closed it earlier it does not open again, only for a separate new Hunt"): in a presentation the window
+  showing a finished Hunt closes (fading out) as the next action's first scene begins; the Fellowship's tracks moving after
+  the Hunt belong to its own action, so the result stays while they move (`HuntWindowRetirement`, registered first like
+  UI-333's battle window). A window the player closed stays closed for the rest of that Hunt, the release included; each
+  Hunt of a report's chain is a new Hunt for the window (`HuntWindowState.Key`: the report and the Hunt's number, no longer
+  its starting revision, so a presented report keys the same as the live one).
 - The Ring's Hidden/Revealed art — on the plaque, in the Fellowship panel and on the journey track's marker — turns over
   when it changes (`TokenFlip`: it narrows to its edge in 0.15 s, shows its other side at the middle of the turn and widens
   in 0.15 s); a nation's token turns over to its active side the same way.

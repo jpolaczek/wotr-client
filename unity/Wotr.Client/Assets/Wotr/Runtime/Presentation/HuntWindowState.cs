@@ -23,14 +23,15 @@ namespace Wotr.Client
             ("tile", "Tile"), ("damage", "Damage"), ("step", "Step")
         };
 
-        // One key per Hunt: the report that records it (id and starting revision), or its source without a report.
+        // One key per Hunt: the report that records it and the Hunt's number in it (UI-343: a report records a chain of
+        // Hunts, and each one is a new Hunt for the window), or its source without a report.
         public static string Key(PlayerView view)
         {
             if (view?.Hunt == null)
                 return "";
             var report = view.HuntReport;
-            return view.MatchId + "/" + (report != null && !report.Completed
-                ? report.Id + "/" + report.StartedRevision
+            return view.MatchId + "/" + (report != null
+                ? report.Id + "/" + (report.Entries.LastOrDefault(entry => entry.Kind == HuntReportKind.Started)?.HuntId ?? 0)
                 : view.Hunt.SourceId);
         }
 
