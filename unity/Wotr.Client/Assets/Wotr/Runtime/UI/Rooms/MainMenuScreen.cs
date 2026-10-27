@@ -345,6 +345,15 @@ namespace Wotr.Client
 
         private void ShowTestScenarioList() => ShowPage("Test scenarios", testScenarios.Root);
 
+        // UI-368: the test list's place, kept when a scenario starts and returned to when the player leaves it.
+        public TestScenarioList.Place TestScenarioPlace => testScenarios.Remember();
+
+        public void ReturnToTestScenarios(TestScenarioList.Place place)
+        {
+            testScenarios.Return(place);
+            ShowTestScenarioList();
+        }
+
         public void Busy(bool value)
         {
             host.Busy(value);

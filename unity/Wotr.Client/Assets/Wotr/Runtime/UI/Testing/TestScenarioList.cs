@@ -75,6 +75,40 @@ namespace Wotr.Client
             scroll.scrollOffset = Vector2.zero;
         }
 
+        // UI-368: where the player left the list — its tab, search and scroll — so leaving a scenario returns there.
+        public sealed class Place
+        {
+            public string Tab = TestScenarioTabs.General;
+            public string Query = "";
+            public Vector2 Offset;
+        }
+
+        public Place Remember() => new Place { Tab = Tab, Query = query, Offset = scroll.scrollOffset };
+
+        // After Show: a tab the server no longer offers keeps the one Show chose.
+        public void Return(Place place)
+        {
+            if (TestScenarioTabs.For(catalog).Contains(place.Tab))
+                Tab = place.Tab;
+            query = place.Query ?? "";
+            Search.SetValueWithoutNotify(query);
+            RenderTabs();
+            RenderScenarios();
+            ScrollAfterLayout(place.Offset);
+        }
+
+        // The rows are laid out only once the page is shown; the offset waits for them.
+        private void ScrollAfterLayout(Vector2 offset)
+        {
+            EventCallback<GeometryChangedEvent> apply = null;
+            apply = _ =>
+            {
+                scroll.contentContainer.UnregisterCallback(apply);
+                scroll.scrollOffset = offset;
+            };
+            scroll.contentContainer.RegisterCallback(apply);
+        }
+
         // UI-295: the scenarios whose name holds every word of the query, from all tabs.
         public void Find(string value)
         {

@@ -338,7 +338,7 @@ Focus starts at “Cancel”. Esc, “Cancel” and click next to the window do 
     „Main menu” (`game-deleted-menu`), that goes back to menu Main.
 
 Esc and click next to it do not close this window. The player who selected the “Delete” himself does not get this window.
-- Test scenario: ‘Delete game’ ends the scenario like ‘Games’.
+- Test scenario: ‘Delete game’ ends the scenario and, like Exit, returns to Test scenarios (UI-368).
 - Local data of the deleted batch play remain on the disk, but are no longer read because the batch
   is not on the list “My games”.
 - Common Question Window: `ConfirmationDialog` with name prefix (`quit-…`, `delete-…`) and
@@ -584,3 +584,13 @@ accents ("smeagol" finds "Sméagol", "nazgul strike" finds "The Nazgûl Strike!"
 names, no tab is marked as the list meanwhile, and a query that matches nothing says so. The × beside the field clears
 it, and so does a click on a tab, which shows that tab again (`TestScenarioSearch`, `TestScenarioList.Find`). Tests:
 `TestScenarioClientTests.TheSearchFindsScenariosByNameAcrossTabs`, `TestScenarioNetworkTests` (typing in the real menu).
+
+<a id="leaving-a-test-scenario--ui-368-2026-10-27"></a>
+## Leaving a test scenario returns to the list — UI-368 (2026-10-27)
+
+The owner's request: leaving a test scenario goes back to Test scenarios, not to the main menu's first page. Exit on the
+test bar, and the way back after deleting the test game, end the test on the server and reopen the Test scenarios
+page as soon as the catalog is loaded, on the tab, search and scroll the player started from
+(`TestScenarioList.Place`, `MainMenuScreen.ReturnToTestScenarios`). Games and Quit in the board menu keep their own
+destinations; a catalog that cannot be read leaves the main menu. Test: `TestScenarioNetworkTests` (the list after
+Exit with the search kept, `ui368-back-to-test-scenarios.png`).

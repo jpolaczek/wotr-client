@@ -45,6 +45,9 @@ namespace Wotr.PlayTests
             await ClickReady(client.Root, "clear-test-scenario-search", token);
             await Task.Delay(120, token);
             Assert.AreEqual("", client.Root.Q<TextField>("test-scenario-search").value);
+            // UI-368: the scenario starts from a search, which the list keeps for the way back.
+            client.Root.Q<TextField>("test-scenario-search").value = "pass";
+            await Task.Delay(120, token);
             await ClickReady(client.Root, "test-scenario-fp-pass", token);
             await Live(client, Side.FreePeoples, token);
             var first = client.Board.View;
@@ -73,7 +76,11 @@ namespace Wotr.PlayTests
             Assert.IsTrue(restarted.Options.Any(o => o.Enabled && o.Kind == CommandKind.Pass), "The same situation offers the pass again.");
 
             await ClickReady(client.Root, "test-exit", token);
-            await Until(() => client.Board == null && client.Root.Q("main-menu") != null, token);
+            await Until(() => client.Board == null && client.Root.Q("test-scenarios")?.resolvedStyle.display == DisplayStyle.Flex, token);
+            Assert.AreEqual("Test scenarios", client.Root.Q<Label>("menu-window-title").text, "Exit returns to the test list.");
+            Assert.AreEqual("pass", client.Root.Q<TextField>("test-scenario-search").value, "The list keeps the search.");
+            Assert.IsNotNull(client.Root.Q<Button>("test-scenario-fp-pass"));
+            LayoutTests.Save(client.Panel.targetTexture, "ui368-back-to-test-scenarios.png");
             var games = await api.Get<MatchListView>("api/matches?status=All&limit=50", token);
             Assert.IsFalse(games.Matches.Any(m => m.MatchId == first.MatchId || m.MatchId == restarted.MatchId), "Test games are not saved games.");
             try
