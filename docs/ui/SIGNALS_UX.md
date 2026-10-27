@@ -453,7 +453,7 @@ The opponent's character moment and a moving group's identities are observed mar
 - they ignore the pointer, so the figure under them keeps its own tooltip and click;
 - they fade in over 200 ms and out over 400 ms, and appear without fades under Reduced motion.
 
-A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt pale-blue trace.
+A dimmed portrait marks a removal. A reaction's source is ringed with the same 2 pt gold trace (UI-378).
 
 <a id="ui-312"></a>
 ## Pennants and the opponent's resources — UI-312 (2026-10-24)

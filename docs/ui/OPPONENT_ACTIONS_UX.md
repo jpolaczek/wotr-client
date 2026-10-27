@@ -105,16 +105,17 @@ An observed consequence must not be confused with an offered action. Existing me
 | Darker, one point lower (`pressed`) | the control under the held pointer |
 
 The new **observed trace** is the program's single result treatment, derived from the existing history outline
-(`MapActionOverlay`, pale blue `rgba(146, 212, 242, 0.85)`):
+(`MapActionOverlay`; since UI-378 (owner, 2026-10-27) the ChoiceGlow's gold `rgba(255, 214, 112, 0.85)`, never with the
+choices' plate or pulse; pale blue before):
 
-- **Regions:** a 2 pt pale-blue outline that fades in over 200 ms, holds for the beat and fades out over 400 ms. It
+- **Regions:** a 2 pt gold outline that fades in over 200 ms, holds for the beat and fades out over 400 ms. It
   never pulses and never fills, and it is hidden while the player drags, pans or has draft targets (as the history
   outline is today).
 - **Objects** (a figure stack, a die, a crest, a track marker, a portrait, a card): the object's own **glow** — since
   UI-314 (owner review 2026-10-24: "armies and characters are not marked by a rectangle around them but glow") a soft
-  pale-blue light around the object's own shape (`PresentationGlow`: a zero-offset `drop-shadow` filter, a tight
-  core and a wide halo), with no plate, no pulse and no lift, fading in over 200 ms and out over 400 ms. It is never
-  the gold ChoiceGlow halo. Before UI-314 this was a 2 pt pale-blue ring; settlements keep that ring.
+  gold light around the object's own shape (`PresentationGlow`: a zero-offset `drop-shadow` filter, a tight
+  core and a wide halo), with no plate, no pulse and no lift, fading in over 200 ms and out over 400 ms. It never
+  wears the ChoiceGlow's plate or pulse. Before UI-314 this was a 2 pt ring; settlements keep that ring.
 - **Delta badge:** beside the affected stack or row, a small dark plate with the unit-type icon or symbol, the nation
   crest and a signed count in Alegreya SemiBold ("+3", "−1"); for an upgrade, the regular and elite icons with an
   arrow. It appears with the change and fades with the beat.
@@ -411,7 +412,7 @@ Code: `Runtime/UI/Playback/CardRevealPresenter.cs` and `LayerRing.cs`, plus `Car
   draws never do, and combat reveals belong to the battle window.
   - The card opens in the existing CardInspector, read-only: no Play bar, and the status line "Event played".
   - It opens at its own readable width (the inspector's viewport rules; text is never shrunk and nothing scrolls).
-  - The used Event half carries the observed treatment: a pale-blue bar and tint. The inspector's own
+  - The used Event half carries the observed treatment: a gold bar and tint. The inspector's own
     `focused-effect` heading was indistinguishable on the board's parchment.
   - It stands at the top of the half of the safe map area away from the action's first effect (the first upcoming cue
     of the action with a region). It never covers the console or that effect.
@@ -780,7 +781,7 @@ Code: `Runtime/UI/Playback/PresentationGlow.cs` (`PresentationGlow`, `ObjectGlow
 `FigureChangePresenter`.
 
 - **The glow.** A soft light around the object's own shape (§5): three zero-offset `drop-shadow` filters — a white
-  core, a light-blue glow and a wide saturated halo — so it reads on the parchment and on the dark HUD.
+  core, a gold glow and a wide amber halo — so it reads on the parchment and on the dark HUD.
   - It fades in over 200 ms and out over 400 ms (a `filter` transition under `.motion-enabled`); under Reduced motion
     it appears and leaves at once.
   - It changes only the object's filter. The object keeps its size, place, pointer, cursor and tooltip, and the

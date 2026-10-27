@@ -9,7 +9,8 @@
     bottom: 0;
 }
 
-/* The observed trace: a 2 pt pale-blue ring, no plate, no pulse, no lift (never a legal target or a choice). */
+/* The observed trace: a 2 pt ring, no plate, no pulse, no lift (never a legal target or a choice). UI-378 (owner):
+   the observed marks wear the ChoiceGlow's gold, without its plate or pulse, instead of pale blue. */
 .observed-trace {
     position: absolute;
     left: 0;
@@ -17,7 +18,7 @@
     right: 0;
     bottom: 0;
     border-width: 2px;
-    border-color: rgba(146, 212, 242, 0.85);
+    border-color: rgba(255, 214, 112, 0.85);
 }
 
 .presentation-cost {
@@ -121,14 +122,14 @@
 .observed-ring {
     position: absolute;
     border-width: 2px;
-    border-color: rgba(146, 212, 242, 0.85);
+    border-color: rgba(255, 214, 112, 0.85);
 }
-/* UI-314 (owner review): the observed light (PresentationGlow) — a soft pale-blue glow around the marked object's own
-   shape — a white core, a light-blue glow and a wide saturated halo that reads on the parchment; never a frame, never
-   the gold ChoiceGlow. It fades in over 200 ms and out over 400 ms under .motion-enabled. */
+/* UI-314 (owner review): the observed light (PresentationGlow) — a soft glow around the marked object's own shape — a
+   white core, a gold glow and a wide amber halo that reads on the parchment (UI-378: gold, pale blue before); never a
+   frame, never the ChoiceGlow's plate or pulse. It fades in over 200 ms and out over 400 ms under .motion-enabled. */
 .presentation-glow {
-    filter: drop-shadow(0px 0px 2px rgb(255, 255, 255)) drop-shadow(0px 0px 6px rgb(150, 215, 255))
-        drop-shadow(0px 0px 14px rgba(84, 176, 245, 0.95));
+    filter: drop-shadow(0px 0px 2px rgb(255, 255, 255)) drop-shadow(0px 0px 6px rgb(255, 214, 112))
+        drop-shadow(0px 0px 14px rgba(214, 142, 28, 0.95));
 }
 .motion-enabled .presentation-glow-host {
     transition-property: filter;
@@ -220,8 +221,8 @@
    focused-effect heading looks the same as the other half on the parchment). */
 #board-screen .card-inspector.presented-card .card-effect.focused-effect {
     border-left-width: 3px;
-    border-left-color: rgba(98, 172, 214, 1);
-    background-color: rgba(146, 212, 242, 0.18);
+    border-left-color: rgba(214, 160, 52, 1);
+    background-color: rgba(255, 214, 112, 0.18);
 }
 
 /* UI-309: a character's larger moment above its force: its portrait in the side's medallion over its title. */
@@ -287,12 +288,12 @@
     background-image: resource("Wotr/Art/UI/battle/portrait-medallion-shadow");
 }
 
-/* UI-311: the battle window's presented round. A die the recorded roll changed wears the observed pale-blue ring (never a
+/* UI-311: the battle window's presented round. A die the recorded roll changed wears the observed gold ring (never a
    choice glow) and lifts for a moment; a revealed or cancelled card is ringed the same way. */
 .regional-battle .battle-presented .battle-die.presented-roll,
 .regional-battle .battle-presented .presented-card-mark {
     border-width: 2px;
-    border-color: rgba(146, 212, 242, 0.85);
+    border-color: rgba(255, 214, 112, 0.85);
     border-radius: 6px;
 }
 .motion-enabled .regional-battle .battle-presented .battle-die {

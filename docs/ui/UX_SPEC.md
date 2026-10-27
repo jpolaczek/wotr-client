@@ -1633,8 +1633,11 @@ Owner requests of 2026-10-27:
   the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
   the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
   are gold, a framed button adds the warm plate, and inside a pulsing host it breathes with the other choices. A
-  usable Click to use (UI-369) wears the ChoiceGlow. The opponent's presentation and history marks keep their light
-  blue: they are not choices.
+  usable Click to use (UI-369) wears the ChoiceGlow. UI-378 (owner, 2026-10-27): the opponent's presentation and history
+  marks (the observed trace, rings and light, a revealed card's used half, a presented die, the map's observed
+  outlines, a planned group's portrait, the recorded map label and the history host) turn gold as well; they are not
+  choices, so they never wear the plate or the pulse. Side colours (the Free Peoples' blue against the Shadow's red)
+  stay.
 - UI-373 — a button that spends a die names the die and what it does: the decision tray's ✓ (and the console's, which
   reads it) and Click to use read "Use your Muster die: <the server preview's summary>" (`DieUse`); before the
   preview the action's name stands for the effect, and without a die the effect stands alone.

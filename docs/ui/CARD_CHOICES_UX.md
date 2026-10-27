@@ -318,7 +318,7 @@ Back), `LordsFinalCardsNetworkTests` (We Shall Get It!), `ExpansionWindowNetwork
 
 When the opponent plays a public Event, the card opens by itself in the existing read-only inspector for at least 3 s
 ([OPPONENT_ACTIONS_UX §6.12](OPPONENT_ACTIONS_UX.md#wdrozone-308)): no Play bar, the status line "Event played", the
-Event half marked with the observed pale-blue treatment, at the card's normal readable width. This is the limited
+Event half marked with the observed gold treatment (UI-378), at the card's normal readable width. This is the limited
 exception of the opponent-action program; the player's own cards still open only by a click or Enter/Space. A click on
 the shown card pins it and holds the presentation until it is closed; it then docks as "✓ <card>" in the console trail
 for the rest of the presentation. Opening or closing it never plays, discards or marks anything read. A committed

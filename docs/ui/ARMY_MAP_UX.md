@@ -668,7 +668,7 @@ own draft. During an opponent presentation:
   its rear guard and the destination its true count (dimmed until the flight lands);
 - only the recorded participants fly, with the same flight figures, sizes and timing as today's figure motion;
 - attackers stay at their origin; a retreat into a stronghold lands on its garrison row and a sortie leaves it;
-- the acting stack glows in the observed pale-blue light around its own figures (UI-314; before it a ring), never the
+- the acting stack glows in the observed gold light around its own figures (UI-314; before it a ring), never the
   legal-target, choice, selected or ghost treatments;
 - the release applies the latest view without replaying the presented flights.
 
@@ -688,11 +688,11 @@ trace ignore the pointer; the marker keeps its own inspection.
 
 Owner review of the live presentation: armies and characters are not marked by a rectangle around them, they glow. A
 presented force, the march's source and destination, a character's force and the Fellowship's figure light around their
-own shapes — the plinth, the figures, the emblems and the count — in the observed pale-blue light (`PresentationGlow`, a
+own shapes — the plinth, the figures, the emblems and the count — in the observed gold light (`PresentationGlow`, a
 zero-offset `drop-shadow` filter on the marker's artwork), fading in over 200 ms and out over 400 ms; Reduced motion
 shows it without the fades. It is never the gold ChoiceGlow halo of a choosable army, takes no pointer and moves nothing.
 New figures — recruits, an upgrade's Elite, an entering character — land and keep glowing for 1.5 s, with the delta badge
-beside them. Settlements keep their pale-blue ring. Spec: [OPPONENT_ACTIONS_UX §5](OPPONENT_ACTIONS_UX.md#slownik) and
+beside them. Settlements keep their ring, gold since UI-378. Spec: [OPPONENT_ACTIONS_UX §5](OPPONENT_ACTIONS_UX.md#slownik) and
 §6.18.
 
 <a id="region-zrodlowy--ui-323"></a>

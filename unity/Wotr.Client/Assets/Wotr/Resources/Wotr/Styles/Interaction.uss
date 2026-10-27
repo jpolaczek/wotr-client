@@ -260,7 +260,8 @@
 #board-screen .region-hover .hover-force.choice-glow > .hover-force-header { color: rgb(255, 226, 150); }
 
 /* UI-250: a member of another planned group stays in the roster, dimmed with a blue rim; its click selects that group. */
-#board-screen .companion-portrait.planned-group { opacity: 0.7; border-color: rgb(140, 176, 210); }
+/* UI-378: a planned group's portrait dims with a faint gold rim, no pale blue. */
+#board-screen .companion-portrait.planned-group { opacity: 0.7; border-color: rgba(255, 214, 112, 0.55); }
 
 /* UI-113 for battle objects: a portrait or figure stack that a choice made clickable sinks while pressed (ObjectPress). */
 #board-screen .battle-force .portrait-medallion.pressed,

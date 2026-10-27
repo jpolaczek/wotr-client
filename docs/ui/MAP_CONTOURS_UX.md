@@ -379,7 +379,7 @@ unit or character stands — it is not always obvious".
   travel origin), the armed Nazgûl, a Companion leaving the Fellowship (its origin), a character using an ability (its
   location). The sets are `MapDraftOverlay.SourceRegions`.
 - **No pulse.** It never pulses, so it never reads as "choosable" (the pulsing gold ChoiceGlow). It is distinct from the
-  green and red targets and the pale-blue history outline. A source that is also a target (the Fellowship's stay) shows
+  green and red targets and the gold history outline (UI-378). A source that is also a target (the Fellowship's stay) shows
   both.
 - **Repaints.** The layer repaints only when its regions change. Without a draft nothing is marked; fills, markers and the
   region panel are unchanged.
