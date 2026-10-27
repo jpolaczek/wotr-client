@@ -12,7 +12,7 @@ namespace Wotr.EditorTests
 {
     public sealed class BattleConclusionTests
     {
-        [TestCase(UnitKind.Regular, false, "Remove regular · Sovereign weakness.")]
+        [TestCase(UnitKind.Regular, false, "Eliminate a Regular · Corrupted sovereign's weakness.")]
         [TestCase(UnitKind.Elite, false, "No regular available · Elite removed.")]
         [TestCase(UnitKind.Elite, true, "Elite → Regular.")]
         public void SiegeCostUsesActualFigureAndPreviewInsteadOfBattleHits(UnitKind kind, bool replacement, string expected)

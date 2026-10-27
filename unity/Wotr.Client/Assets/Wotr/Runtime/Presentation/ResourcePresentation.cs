@@ -89,8 +89,8 @@ namespace Wotr.Client
         {
             DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Your other special dice wait for the next turn.",
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
-            DecisionKind.Dismay => "Click a glowing Ruler die to spend a Dismay token and re-roll it. The server rolls its new result.",
-            DecisionKind.CouncilToken => "Click the glowing Council token you take; you use it later in an action, without a die.",
+            DecisionKind.Dismay => "Click a glowing Ruler die to spend a Dismay token and re-roll it.",
+            DecisionKind.CouncilToken => "Click the glowing Council token you want; you use it later in an action, without a die.",
             DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or Pass to spend the die and keep Vilya.",
             _ => "Choose the exact die and its new face. Changing the face does not use the die."
         };

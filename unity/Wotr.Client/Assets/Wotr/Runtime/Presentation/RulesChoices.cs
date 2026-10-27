@@ -58,11 +58,11 @@ namespace Wotr.Client
         public static string VariantEffect(string variant) => variant switch
         {
             NewCities => "Ered Luin and South Rhûn count as Cities.",
-            Council => "Companion versions stay private, and Companions may start outside the Fellowship; the Shadow then gains Council tokens.",
-            Dismay => "A spent Ruler token or a fallen Awakened Sovereign gives the Shadow a Dismay token to re-roll a Ruler die.",
+            Council => "Companion versions stay private, and alternate Companions may start outside the Fellowship; the Shadow then gains Council tokens.",
+            Dismay => "A spent Ruler token or a fallen Awakened sovereign gives the Shadow a Dismay token to re-roll a Ruler die.",
             VisibleCorruption => "Corruption tiles on the sovereigns are face up for both players.",
-            SequentialCorruption => "A corruption attempt draws its tiles one at a time and keeps only the last.",
-            _ => "No Ruler tokens are used; only a fallen Awakened Sovereign gives Dismay."
+            SequentialCorruption => "In a corruption attempt the Shadow draws tiles one at a time and may stop; only the last tile drawn is kept.",
+            _ => "No Ruler tokens are used; only a fallen Awakened sovereign gives Dismay."
         };
 
         public static bool Editable(RoomView room) =>

@@ -93,12 +93,12 @@ namespace Wotr.Client
             if (draft?.Kind == CommandKind.AwakenSovereign)
                 return "Return all attached tiles · " + (view.Configuration.RemovingRulerTokens
                     ? "Ruler tokens are not used."
-                    : "Gain its Ruler token.") + "\nShared Ruler: next Recover if an Awakened Sovereign remains.";
+                    : "Gain his Ruler token.") + "\nThe shared Ruler die arrives at the next Recover if an Awakened sovereign remains.";
             if (draft?.Kind == CommandKind.RemoveCorruptedSovereign)
-                return "Remove this Corrupted Sovereign through the eligible Companion. This is not a tile return.";
+                return "Remove this Corrupted sovereign from play; his weaknesses end.";
             if (view.CorruptionAttempt != null)
-                return view.CorruptionAttempt.Sequential ? "Draw again or keep only the latest tile. Kings ends the draw."
-                    : "Draw up to the limit, then choose one tile. Kings ends the draw.";
+                return view.CorruptionAttempt.Sequential ? "Draw again, or keep the latest tile. A Kings tile ends the draw."
+                    : "Draw up to the limit, then choose one tile. A Kings tile ends the draw.";
             return "";
         }
 

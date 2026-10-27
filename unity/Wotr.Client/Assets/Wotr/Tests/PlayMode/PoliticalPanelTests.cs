@@ -230,7 +230,7 @@ namespace Wotr.PlayTests
                 var activate = panel.Drawer.Q<Button>("nation-activate-" + id);
                 Assert.AreEqual(Visibility.Visible, activate.resolvedStyle.visibility);
                 Assert.IsTrue(activate.enabledInHierarchy, id);
-                StringAssert.Contains("Use Narya with the selected die", activate.tooltip);
+                StringAssert.Contains("Click to use Narya with the selected die", activate.tooltip);
                 Inside(activate.worldBound, panel.Drawer.worldBound);
                 Assert.That(activate.worldBound.xMin, Is.GreaterThanOrEqualTo(Token(panel, id).worldBound.xMax));
                 Hit(activate);

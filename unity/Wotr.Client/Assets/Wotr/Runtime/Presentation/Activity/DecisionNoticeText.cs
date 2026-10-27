@@ -42,7 +42,7 @@ namespace Wotr.Client
                 DecisionKind.CouncilHomelands => "Place Companions in homelands",
                 DecisionKind.CouncilToken => "Choose a Council token",
                 DecisionKind.RulerDiscard => "Discard a die after the roll",
-                DecisionKind.Dismay => "Choose a Ruler re-roll",
+                DecisionKind.Dismay => "Dismay · Re-roll a Ruler die?",
                 _ => throw new ArgumentOutOfRangeException(nameof(choice.Kind))
             };
         }

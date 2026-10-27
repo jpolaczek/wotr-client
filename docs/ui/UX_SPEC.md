@@ -1408,7 +1408,8 @@ sovereign state, Dark Chieftain and the Dwarven Lord has its own ("kings.charact
 the figure silhouette. The prompts for the expansion characters' figures and portraits (and the five corrupted
 sovereigns' portraits) are in `graphicalassets/figures/v3/prompts.json` under these keys; ART-05–ART-07 generate them.
 Every ability of the expansions' characters has a one-line tooltip form (`character-ability-summaries.json`, at most
-72 characters, no rule added); where one ability id reads differently on another card, the card has its own form
+72 characters — 85 since UI-365, so a condition can name its subject — no rule added); where one ability id reads
+differently on another card, the card has its own form
 ("fate.character.gimli-dwarven-lord#messenger-dwarves"). Tests: `PortraitArtworkTests.EveryCharacterCardResolvesItsOwnPortraitKey`,
 `CharacterAbilitySummariesTests.EveryAbilityOfEveryCharacterHasOneShortLine`.
 
@@ -1603,3 +1604,19 @@ Gondor; Keep tiles is the console's Pass; There Is Hope for Victory and His Powe
 the battle in its army, any other king by his portrait; Your Welcome Is Doubtful and the Palantír of Barad-dûr are paid
 in the pool with the Ring on its socket; the Palantír's Muster-as-Event starts at its card on the table. No Kings card
 decision opens the generic window.
+
+## The expansions' texts name their subject — UI-365 (2026-10-27)
+
+Owner's report: Gimli's Dwarf of Renown read "Any die in Iron Hills or Ered Luin moves the Dwarves a step toward war",
+as if the die stood in the region. Every expansion text the client writes (ability lines, tooltips, console hints,
+notices, the rules strip) now follows one rule: a condition names its subject and place ("With Gimli in Iron Hills or
+Ered Luin, any die moves the Dwarves a step toward war"), a lit control says what its click does, the game's own terms
+are used (Awakened sovereign, Council token, Ruler die, Hunt Pool) and no engine word ("server", "decision") reaches a
+player. An expansion ability line may have 85 characters (the base game's keep 72). The audit also corrected texts
+that did not match the rules: Narya's line and Keeper note (Gandalf outside the Fellowship in an unconquered Free
+Peoples Settlement; the Ring is given and a die spent), Nenya's (a standard Eye only), Vilya's (Elrond may keep the
+die), Strider's Guide (the Fellowship's first move), Sméagol's departure (the Fellowship declares), Evil Knowledge
+(no Elite downgraded), Spear of Terror (it replaces any Palantír draw), the Sequential Corruption variant (the Shadow may
+stop; the last tile is kept) and the Council variant (only alternate Companions start outside the Fellowship).
+Tests: `CharacterAbilitySummariesTests`, `NamedRingsTests`, `SovereignPanelTests`, `BattleConclusionTests`,
+`PoliticalPanelTests`.

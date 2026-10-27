@@ -35,7 +35,7 @@ namespace Wotr.Client
             "lords.character.boromir" or "lords.character.gimli" or "lords.character.legolas" or "fate.character.gimli-dwarven-lord" =>
                 "Guide: you may separate to reduce Hunt damage by 1, to a minimum of 0. Companions leaving against the same tile travel as one group.",
             "lords.character.smeagol" =>
-                "Must be the Guide. His level equals the highest other companion. Separation removes him from play; he has no figure on the map.",
+                "Must be the Guide. His level equals the highest level among the other companions. Separation removes him from play; he has no figure on the map.",
             "base.character.gimli" or "base.character.boromir" or "base.character.legolas" or "fate.character.gimli" => "No Guide ability.",
             _ => ""
         };

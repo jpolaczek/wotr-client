@@ -53,7 +53,7 @@ namespace Wotr.Client
             if (draft.Payload.RulerTokenId.Length == 0)
                 return "";
             var die = view.Dice.FirstOrDefault(d => d.Id == draft.Payload.DieId);
-            return Token(view, draft.Payload.RulerTokenId) + " token + Ruler" +
+            return Token(view, draft.Payload.RulerTokenId) + "'s Ruler token + Ruler die" +
                 (die == null ? "" : " " + DieCost(view, draft, die)) + " · ";
         }
         // UI-97: one short line (source, face and state); recovery rules stay in the Why? and help panels.

@@ -8,10 +8,12 @@ namespace Wotr.EditorTests
 {
     // UI-187: every ability of the base game's characters has a short form for tooltips, one line each, without the
     // title repeated in its gist. ART-04: so has every ability of the expansions' characters; a card's own form
-    // ("<card id>#<ability id>") exists only for a card that has that ability.
+    // ("<card id>#<ability id>") exists only for a card that has that ability. UI-365: an expansion form names the
+    // subject of its condition ("With Gimli in Iron Hills or Ered Luin, …"), so it may be a little longer.
     public sealed class CharacterAbilitySummariesTests
     {
         private const int Longest = 72;
+        private const int LongestExpansion = 85;
 
         [Test]
         public void EveryAbilityOfEveryCharacterHasOneShortLine()
@@ -35,10 +37,12 @@ namespace Wotr.EditorTests
                 Assert.IsNotNull(card, own + " names a card");
                 Assert.IsTrue(card["abilities"].Any(a => a.Value<string>("id") == parts[1]), own + " names one of its abilities");
             }
+            var basic = cards.Where(card => card.Value<string>("id").StartsWith("base."))
+                .SelectMany(card => card["abilities"].Select(ability => ability.Value<string>("id"))).ToHashSet();
             foreach (var summary in summaries.Properties())
             {
                 var text = summary.Value.Value<string>();
-                Assert.LessOrEqual(text.Length, Longest, summary.Name + " stays short");
+                Assert.LessOrEqual(text.Length, basic.Contains(summary.Name) ? Longest : LongestExpansion, summary.Name + " stays short");
                 Assert.IsFalse(text.EndsWith("."), summary.Name + " reads as a tooltip phrase, not a sentence");
                 Assert.IsFalse(text.Contains("\n"), summary.Name + " stays on one line");
             }
@@ -62,9 +66,12 @@ namespace Wotr.EditorTests
                 CharacterAbilitySummaries.Append("Galadriel", "lords.character.galadriel"));
             // ART-04: the Dwarven Lord's Messenger works in his own homelands, so his card has its own form.
             Assert.IsTrue(CharacterAbilitySummaries.Lines("fate.character.gimli-dwarven-lord")
-                .Any(line => line.EndsWith(" · Any die in Iron Hills or Ered Luin activates and advances the Dwarves")));
+                .Any(line => line.EndsWith(" · With Gimli in Iron Hills or Ered Luin, any die activates and advances the Dwarves")));
             Assert.IsTrue(CharacterAbilitySummaries.Lines("lords.character.gimli")
-                .Any(line => line.EndsWith(" · Any die in Erebor activates and advances the Dwarves")));
+                .Any(line => line.EndsWith(" · With Gimli in Erebor, any die activates and advances the Dwarves")));
+            // UI-365 (owner's report): Dwarf of Renown names Gimli as the condition's subject, not the die.
+            CollectionAssert.Contains(CharacterAbilitySummaries.Lines("fate.character.gimli"),
+                "Dwarf of Renown · With Gimli in Iron Hills or Ered Luin, any die moves the Dwarves a step toward war");
         }
     }
 }

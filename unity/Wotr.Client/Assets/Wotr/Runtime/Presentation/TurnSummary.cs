@@ -9,7 +9,7 @@ namespace Wotr.Client
         {
             var token = ExpansionLabels.TokenCost(view, draft);
             if (draft.Payload.AbilityId == "kings.far-sighted" && draft.Kind is CommandKind.MoveCompanions or CommandKind.MoveShadowCharacters)
-                return (token.Length > 0 ? token : "Spend Ruler · ") + "Move selected groups · Range +1.";
+                return (token.Length > 0 ? token : "Spend the selected die · ") + "Far-sighted · Move selected groups · Range +1.";
             return token + (draft.Payload.AbilityId == CardDrawDraft.Palantir ? "Palantír · Muster as Event · Once this turn. " :
                 draft.Payload.AbilityId == "kings.far-sighted" ? "Far-sighted · " + (draft.Kind == CommandKind.MoveFellowship ? "One fewer Hunt die. " : "Range +1. ") :
                 draft.Payload.AbilityId == "muster-as-army-once-per-turn" ? "Messenger · Once this turn. " : "") + ActionSummary(view, draft, preview, board);

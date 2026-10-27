@@ -54,9 +54,10 @@ namespace Wotr.Client
 
         public static string Keeper(string ringId) => ringId switch
         {
-            Vilya => "Keeper · after a paid action Elrond keeps its die; Vilya then passes to the Shadow.",
-            Nenya => "Keeper · in the Hunt Galadriel replaces a drawn Eye tile; Nenya then passes to the Shadow.",
-            Narya => "Keeper · Gandalf activates a nation and puts it at war, on its row in the Politics panel.",
+            Vilya => "Keeper · after a paid action, Elrond may keep its die; Vilya then passes to the Shadow.",
+            Nenya => "Keeper · when a standard Eye tile is drawn, Galadriel may replace it; Nenya then passes to the Shadow.",
+            Narya => "Keeper · with Gandalf outside the Fellowship in an unconquered Free Peoples Settlement, any die puts " +
+                "that nation at war, on its row in the Politics panel.",
             _ => ""
         };
 

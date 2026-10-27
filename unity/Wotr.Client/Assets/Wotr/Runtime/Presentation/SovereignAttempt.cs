@@ -52,7 +52,7 @@ namespace Wotr.Client
             {
                 var eye = view.Dice.First(d => d.Id == Eye(view, draft));
                 return "Click to attempt to corrupt " + name + " · Pays " + DieDescriptions.Summary(eye) +
-                    "\nDraw up to three tiles with the other Eyes in the Hunt Box.";
+                    "\nDraw a tile for each other Eye in the Hunt Box, up to three.";
             }
             if (Option(view)?.EligibleIds.Contains(king.Id) == true)
                 return "Attempt to corrupt " + name + "\nClick the special Eye that pays in the Hunt Box first.";

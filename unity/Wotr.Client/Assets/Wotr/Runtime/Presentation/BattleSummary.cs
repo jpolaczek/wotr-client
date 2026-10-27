@@ -38,7 +38,7 @@ namespace Wotr.Client
         private static string SiegeExtension(TurnDraft draft, PlayerView view, ActionPreview preview)
         {
             var unit = view.Units.First(u => draft.Payload.Ids.Contains(u.Id));
-            var cost = unit.Kind == UnitKind.Regular ? "Remove regular · Sovereign weakness." :
+            var cost = unit.Kind == UnitKind.Regular ? "Eliminate a Regular · Corrupted sovereign's weakness." :
                 preview.Placements.Count > 0 ? "Elite → Regular." : "No regular available · Elite removed.";
             var survivors = view.Battle.Attacker.Units.Any(u => ArmyDraft.IsCombat(u) && !preview.RemovedIds.Contains(u.Id)) || preview.Placements.Count > 0;
             return cost + (survivors ? " Continue the siege." : " Last fighting unit lost · Battle ends.");

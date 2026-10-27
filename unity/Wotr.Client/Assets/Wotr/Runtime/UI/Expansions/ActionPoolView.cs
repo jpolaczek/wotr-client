@@ -289,8 +289,11 @@ namespace Wotr.Client
         private static void TokenDetails(Button button, PlayerView view, string id, bool free)
         {
             var usable = free && DraftOptions.CanSelectToken(view, id);
+            // UI-365: a lit token says what its click does.
+            var ruler = usable ? "Click to use " + ExpansionLabels.Token(view, id) + "'s Ruler token with your Ruler die"
+                : "Ruler token · " + ExpansionLabels.Token(view, id);
             button.tooltip = free
-                ? ResourcePresentation.WithExplanation(view, id, "Ruler token · " + ExpansionLabels.Token(view, id))
+                ? ResourcePresentation.WithExplanation(view, id, ruler)
                 : "Dismay · " + ExpansionLabels.Token(view, id) + "'s token\nSpent by clicking a glowing Ruler die after the roll";
             button.EnableInClassList("ruler-token-lit", usable);
             button.EnableInClassList("resource-unavailable", free && !usable);

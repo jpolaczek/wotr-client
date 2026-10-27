@@ -118,7 +118,7 @@ namespace Wotr.Client
                 current.DrawnCount + " / " + current.DrawLimit + " drawn" + (view.You == Side.FreePeoples ? " · Shadow chooses" : ""));
             Show(revealed, current == null || current.RevealedTiles.Count == 0 ? "" : "Public tiles · " +
                 string.Join(" · ", current.RevealedTiles.Select(TileFace)));
-            revealed.tooltip = "Revealed by the server · Replaced tiles remain outside the pool until this attempt ends.";
+            revealed.tooltip = "Revealed in this attempt · Replaced tiles stay out of the Hunt Pool until it ends.";
         }
 
         private string TileFace(string id)

@@ -46,8 +46,8 @@ namespace Wotr.Client
             var count = draft.Payload.Placements.Count;
             consequence.text = CouncilHomelandPresentation.TokenEffect(count);
             consequence.tooltip = CouncilHomelandPresentation.TokenDetail(count);
-            politics.tooltip = "Council Action Token: advance a Shadow nation without a die.\n" + consequence.tooltip;
-            travel.tooltip = "Council Action Token: move Nazgûl and Minions without a die.\n" + consequence.tooltip;
+            politics.tooltip = "Council token · Politics: advance a Shadow nation politically, without a die.\n" + consequence.tooltip;
+            travel.tooltip = "Council token · Travel: move Nazgûl and Minions, without a die.\n" + consequence.tooltip;
             foreach (var token in new[] { politics, travel })
             {
                 token.EnableInClassList("homeland-token-none", count == 0);

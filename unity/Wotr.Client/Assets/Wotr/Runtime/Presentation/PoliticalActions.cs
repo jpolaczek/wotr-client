@@ -14,7 +14,7 @@ namespace Wotr.Client
             if (AdvanceOption(view, draft, die) != null)
                 return "Politics → click a nation’s arrow or token to move it one step toward war.";
             if (draft.Kind == CommandKind.UseCouncilToken)
-                return "The Council politics token is not available in this decision.";
+                return "The Council Politics token cannot be used now.";
             return "Select an available Muster result from your dice, then continue in Politics.";
         }
 
@@ -78,7 +78,7 @@ namespace Wotr.Client
         {
             if (!ActivationOffered(view, draft, nation))
                 return "";
-            return (CanActivate(view, draft, nation) ? "Use Narya with the selected die." : "Select an available action die to use Narya.") +
+            return (CanActivate(view, draft, nation) ? "Click to use Narya with the selected die." : "Select an available action die to use Narya.") +
                 "\nSpend the die and transfer Narya to the Shadow. Activate this nation and place it At War.";
         }
 

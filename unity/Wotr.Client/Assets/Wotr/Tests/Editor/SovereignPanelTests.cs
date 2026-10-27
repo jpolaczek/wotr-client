@@ -210,7 +210,7 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             draft.Choose(CommandKind.RemoveCorruptedSovereign, "cost");
             draft.Change(p => p.CharacterId = "king");
-            StringAssert.Contains("not a tile return", SovereignPresentation.Consequence(view, draft));
+            StringAssert.Contains("his weaknesses end", SovereignPresentation.Consequence(view, draft));
             view.Winner = Side.FreePeoples;
             Assert.IsFalse(SovereignPresentation.OwnsDecision(view, draft));
         }
@@ -243,7 +243,7 @@ namespace Wotr.EditorTests
             var text = SovereignPresentation.Consequence(view, draft);
             StringAssert.Contains("Return all attached tiles", text);
             StringAssert.Contains("Ruler token", text);
-            StringAssert.Contains("if an Awakened Sovereign remains", text);
+            StringAssert.Contains("if an Awakened sovereign remains", text);
             view.Configuration.RemovingRulerTokens = true;
             StringAssert.Contains("tokens are not used", SovereignPresentation.Consequence(view, draft));
             Assert.AreEqual("cost", draft.Payload.DieId);

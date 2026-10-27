@@ -18,7 +18,7 @@ namespace Wotr.EditorTests
                 .Select(index => NamedRings.Keys.Single(key => rings.Socket(index).ClassListContains("ring-" + key)));
             CollectionAssert.AreEqual(new[] { "vilya", "nenya", "narya" }, classes);
             Assert.AreSame(rings.Socket(1), rings.For(NamedRings.Nenya));
-            StringAssert.Contains("Keeper · in the Hunt Galadriel", rings.For(NamedRings.Nenya).tooltip);
+            StringAssert.Contains("Keeper · when a standard Eye tile is drawn, Galadriel may replace it", rings.For(NamedRings.Nenya).tooltip);
             StringAssert.Contains("on its row in the Politics panel", rings.For(NamedRings.Narya).tooltip);
             Assert.IsFalse(rings.Socket(0).ClassListContains(ConsoleRings.KeeperReadyClass));
         }

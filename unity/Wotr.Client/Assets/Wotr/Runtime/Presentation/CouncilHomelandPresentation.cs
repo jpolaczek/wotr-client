@@ -33,9 +33,9 @@ namespace Wotr.Client
             : departures == 1 ? "Shadow chooses one" : "Shadow receives both";
 
         public static string TokenDetail(int departures) => departures == 0
-            ? "All companions stay with the Fellowship. Shadow receives no Council Action Tokens."
+            ? "All companions stay with the Fellowship. The Shadow receives no Council tokens."
             : departures == 1
-                ? "After you confirm, Shadow chooses either the Politics or Travel Action Token in a separate decision."
-                : "After you confirm, Shadow receives both Council Action Tokens. No further token choice is required.";
+                ? "After you confirm, the Shadow chooses the Politics or the Travel Council token."
+                : "After you confirm, the Shadow receives both Council tokens.";
     }
 }

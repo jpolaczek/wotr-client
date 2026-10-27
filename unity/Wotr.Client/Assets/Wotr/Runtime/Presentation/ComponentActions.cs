@@ -86,7 +86,7 @@ namespace Wotr.Client
             if (option.Kind == CommandKind.UseNarya)
                 yield return new ComponentAction
                 {
-                    Key = "narya", Owner = "Narya", Symbol = "○★", Detail = "Narya · Activate the nation of Gandalf’s settlement",
+                    Key = "narya", Owner = "Narya", Symbol = "○★", Detail = "Narya · Put the nation of Gandalf’s Settlement at war",
                     Enabled = option.EligibleDice.Contains(die)
                 };
             if (option.Kind is CommandKind.Pass or CommandKind.DiscardDie)

@@ -9,7 +9,7 @@ namespace Wotr.Client
     {
         public const string Spear = "lords.chief.spear-of-terror";
         public const string Follow = "lords.chief.he-sees-he-knows";
-        public const string SpearOffer = "Click to draw a Character card · Spear of Terror, instead of a Palantír draw for this Event";
+        public const string SpearOffer = "Click to draw a Character card · Spear of Terror · It replaces any Palantír draw for this Event";
         public const string FollowOffer = "Click to move the Chief of the Ringwraiths to the Fellowship · He Sees, He Knows";
         private const string Chief = "lords.character.witch-king";
 
