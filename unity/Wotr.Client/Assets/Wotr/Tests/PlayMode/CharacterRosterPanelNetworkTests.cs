@@ -124,7 +124,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(ability.tooltip, tooltip.text);
             Assert.AreEqual(DisplayStyle.Flex, tooltip.resolvedStyle.display);
             StringAssert.Contains("5 combat dice", tooltip.text.ToLowerInvariant());
-            // UI-139: a click unrolls the ability's full text under the chips; a second click rolls it up.
+            // UI-139: a click unrolls the ability's full text under the chips; UI-369: a second click keeps it unrolled.
             var text = board.Characters.Inspector.Root.Q<Label>("character-ability-text");
             Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
             PointerGestureEvents.ClickAt(ability);
@@ -132,9 +132,10 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display);
             StringAssert.Contains("5 combat dice", text.text.ToLowerInvariant());
             Assert.IsTrue(ability.ClassListContains("selected"));
+            Assert.Greater(text.resolvedStyle.height, 20, "The unrolled label measures its text.");
             PointerGestureEvents.ClickAt(ability);
             await room.Settle();
-            Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
+            Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display, "A second click on the selected chip changes nothing.");
             Assert.AreEqual(pan, board.Map.Camera.Pan);
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("selected"));
             await ComponentGestures.Hover(board.Phase);
