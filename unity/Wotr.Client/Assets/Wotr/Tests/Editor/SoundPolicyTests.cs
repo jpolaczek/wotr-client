@@ -17,6 +17,7 @@ namespace Wotr.EditorTests
                 SoundCue.BattleStarted => 0.88f,
                 SoundCue.FellowshipAdvanced or SoundCue.CorruptionChanged => 0.38f,
                 SoundCue.DecisionRequired => 0.7f,
+                SoundCue.PoliticsMoved => 1.6f,
                 _ => 0.2f
             };
             public SoundChannel Channel(SoundCue cue) => cue is SoundCue.BattleStarted or SoundCue.DecisionRequired or
@@ -62,6 +63,22 @@ namespace Wotr.EditorTests
             policy.Resolve(new[] { new SoundRequest(SoundCue.DecisionRequired, "d1"), new SoundRequest(SoundCue.BattleStarted, "b1") });
             Assert.AreEqual(SoundCue.BattleStarted, output.Cues.Last(), "On screen the battle stands for the decision of the same event.");
             Assert.AreEqual(0.6f, output.Played.Last().Volume, "Alerts at 60% by default.");
+        }
+
+        // AUDIO-12: the Politics bell outranks the card that moved the nation, keeps a click out during the token's slide
+        // and lets one replace its quiet ring afterwards.
+        [Test]
+        public void ThePoliticsBellHoldsOnlyThroughTheSlide()
+        {
+            policy.Resolve(new[] { new SoundRequest(SoundCue.CardMove, "cards/5"), new SoundRequest(SoundCue.PoliticsMoved, "track/politics/5") });
+            CollectionAssert.AreEqual(new[] { SoundCue.PoliticsMoved }, output.Cues);
+            At(0.5);
+            policy.Request(new SoundRequest(SoundCue.UiClick));
+            CollectionAssert.AreEqual(new[] { SoundCue.PoliticsMoved }, output.Cues, "the slide keeps its bell");
+            At(0.9);
+            policy.Request(new SoundRequest(SoundCue.UiClick));
+            CollectionAssert.AreEqual(new[] { SoundCue.PoliticsMoved, SoundCue.UiClick }, output.Cues);
+            Assert.Less(SoundCues.Priority(SoundCue.PoliticsMoved), SoundCues.Priority(SoundCue.FellowshipAdvanced));
         }
 
         [Test]

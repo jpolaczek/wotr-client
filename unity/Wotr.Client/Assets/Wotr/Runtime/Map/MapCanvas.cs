@@ -445,9 +445,12 @@ namespace Wotr.Client
                 marker.Button.EnableInClassList("eligible-army", eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison)));
                 ApplySovereignHint(marker);
             }
-            armyPulse.Run(eligibleSources.Count > 0);
+            RunArmyPulse();
             Redraw();
         }
+
+        // UI-374: the lit sources and the owners of a figure's ability pulse together.
+        private void RunArmyPulse() => armyPulse.Run(eligibleSources.Count > 0 || ownerRegions.Count > 0);
 
         // UI-212: the source whose Nazgûl a destination click flies; null clears it.
         public void MarkArmed(ArmyOption source, Side side)
@@ -506,6 +509,7 @@ namespace Wotr.Client
             ownerRegions.UnionWith(regions);
             foreach (var marker in markers.Values)
                 marker.Button.EnableInClassList("ability-owner", ownerRegions.Contains(marker.Army.RegionId));
+            RunArmyPulse();
             Redraw();
         }
 

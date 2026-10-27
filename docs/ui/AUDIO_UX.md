@@ -28,6 +28,7 @@ The name of the `SoundCue` client is in English. Each cue has a clear channel, p
 | `DecisionRequired` | A gentle metallic tone when the game starts to require the player's decision after waiting. | Alerts | AUDIO-07 |
 | `ActionFailed` | Short, muffled tone after a conscious failed attempt requiring correction or manual re-renewal. | Alerts | AUDIO-05 |
 | `Victory`, `Defeat` | Quiet chords to one second, consistent with the player's perspective. | Alerts | AUDIO-07 |
+| `PoliticsMoved` | One deep, struck metal note between a bell and an anvil, 1.6 s, ringing through the token's 0.7 s slide; a nation's step or activation on the Politics track. | Effects | AUDIO-12 |
 
 The paper, clicks, steps and Ring retain 2–3 very similar variants for the often repeated effects. We recognize the heavier Ring after lower timbre and resonance, not volume jump. The sounds are to be leveled, without overshooting, long reverberation, sharp peaks and noise at the beginning or end. The WAV files are attached locally to the client; the manifest describes the origin, variants, length and assignment of the cue. The game does not download or generate sounds during the batch.
 
@@ -457,6 +458,8 @@ The accepted sounds are bit in bit unchanged. The re-hearsal of five fixes is op
 | `action-failed-1.wav` | ActionFailed | 0.26 | -20 | -8.6 |
 | `victory-1.wav` | Victory | 1.00 | -17 | -4.0 |
 | `defeat-1.wav` | Defeat | 1.00 | -18 | -5.8 |
+| `politics-moved-1.wav` | PoliticsMoved | 1.60 | -22 | -6.6 |
+| `politics-moved-2.wav` | PoliticsMoved | 1.60 | -22 | -5.7 |
 
 <a id="muzyka-innych-aplikacji-i-game-mode-macos--audio-09"></a>
 ## Other applications and Game Mode macOS — AUDIO-09
@@ -538,3 +541,26 @@ Hunt's roll ([OPPONENT_ACTIONS_UX §6.14](OPPONENT_ACTIONS_UX.md#wdrozone-310)).
 - **The opponent's action-dice roll stays the release's (UI-313).** UI-312's beat in the opponent's dice pool is
   silent: the view released after it sounds the roll, so when the same step passes a decision to the viewer one tone
   plays, the more important one (`SoundResultsNetworkTests`).
+
+<a id="dzwon-polityki--audio-12"></a>
+## The Politics bell — AUDIO-12 (2026-10-27)
+
+Owner (2026-10-27): the political token now travels for 0.7 s (UI-319, UI-366), so its sound should last as long,
+"more like a bell or an anvil, more metallic and deep, but not irritating or harsh to the ear".
+
+- **Sound.** `PoliticsMoved` (Effects, two variants a semitone apart: B2 and A♯2) is one struck note of 1.6 s: the bell
+  partials (hum, prime, minor tierce, quint, nominal) ring longest, each with a slightly detuned twin for a slow beat;
+  the anvil's inharmonic upper modes, up to about 1.6 kHz, carry the metal and die within a fraction of a second; a
+  felt-wrapped hammer gives a soft attack; nothing passes about 2.6 kHz. Its spectrum sits near CorruptionChanged's
+  (61–73% under 300 Hz, 25–35% at 300 Hz–1 kHz, 2–4% at 1–2.5 kHz, none above), about 8 dB down when the slide
+  ends and 13 dB a little later, at -22 LU like the track steps.
+- **When.** The bell strikes as the token starts to change: in the opponent's political beat at the crest's
+  activation, or else at the slide, after the token's flare (`PoliticsPresenter`, through UI-310's beat sounds, so
+  the released view does not sound it again); for the player's own step when its projection arrives and the token
+  slides (`SoundFacts`). Nations first shown (a new game or a catch-up) and an unchanged track add nothing.
+- **Priority.** Above the card or die that caused the step and below the Fellowship's tracks, a decision, a battle,
+  a failure and the end of the game. It keeps lesser cues out only through the slide (0.8 s,
+  `SoundCues.Holds`); afterwards a click may replace its quiet ring with the usual 40 ms fade.
+- **Checks.** `AudioCatalogTests` (catalogue, channel, length between 1.2 and 1.8 s, import), `SoundFactsTests`
+  (`APoliticalStepSoundsThePoliticsBell`), `SoundPolicyTests` (`ThePoliticsBellHoldsOnlyThroughTheSlide`). The
+  timbre still needs the owner's listening check.

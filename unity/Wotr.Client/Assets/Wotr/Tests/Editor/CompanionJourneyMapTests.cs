@@ -67,6 +67,22 @@ namespace Wotr.EditorTests
             Assert.IsTrue(FellowshipActions.UsesPanel(view, draft));
         }
 
+        // UI-375: a separated Guide whose group is chosen waits for a region; the console says so and names him.
+        [Test]
+        public void AChosenSeparationAsksForARegion()
+        {
+            var view = Journey(out _);
+            var separation = new ActionOption { Kind = CommandKind.SeparateCompanions, Enabled = true, EligibleIds = { Strider } };
+            separation.Travel.Add(new TravelOption { Id = Strider, Origin = "moria", Range = 3, Targets = { "lorien" } });
+            view.Options.Insert(0, separation);
+            var draft = new TurnDraft();
+            DraftGesture.Choose(draft, view, CommandKind.SeparateCompanions);
+            Assert.AreEqual("", TravelDraft.DestinationHint(view, draft), "no companion chosen yet");
+            draft.Change(p => p.Ids.Add(Strider));
+            Assert.AreEqual(CharacterLibrary.Name(view, Strider) + " · Click a highlighted region to move there.",
+                TravelDraft.DestinationHint(view, draft));
+        }
+
         private static PlayerView Journey(out ActionOption option)
         {
             var view = new PlayerView

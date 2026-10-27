@@ -50,7 +50,7 @@ namespace Wotr.Client
             Playback.Register(new BattleWindowRetirement(board, Playback));
             // UI-343: and so does the Hunt window once its Hunt is over and the next action begins.
             Playback.Register(new HuntWindowRetirement(board, Playback));
-            politics = new PoliticsPresenter(board, staged, layer);
+            politics = new PoliticsPresenter(board, staged, layer, Sounds);
             Playback.Register(new PoliticsRetirement(politics, Playback));
             Playback.Register(cost);
             Playback.Register(camera);

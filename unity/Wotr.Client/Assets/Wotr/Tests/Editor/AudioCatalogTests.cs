@@ -15,7 +15,7 @@ namespace Wotr.EditorTests
             ("UiClick", "Effects"), ("CardInspect", "Effects"), ("CardMove", "Effects"), ("DiceRoll", "Effects"),
             ("ActionAccepted", "Effects"), ("BattleStarted", "Alerts"), ("FellowshipAdvanced", "Effects"),
             ("CorruptionChanged", "Effects"), ("DecisionRequired", "Alerts"), ("ActionFailed", "Alerts"),
-            ("Victory", "Alerts"), ("Defeat", "Alerts")
+            ("Victory", "Alerts"), ("Defeat", "Alerts"), ("PoliticsMoved", "Effects")
         };
 
         private static JObject Cues() => (JObject)JObject.Parse(Resources.Load<TextAsset>("Wotr/Audio/audio-catalog").text)["cues"];
@@ -34,6 +34,8 @@ namespace Wotr.EditorTests
             // The two track sounds play one after the other in at most 900 ms (AUDIO_UX).
             var pair = cues["FellowshipAdvanced"].Value<float>("longestSeconds") + cues["CorruptionChanged"].Value<float>("longestSeconds");
             Assert.LessOrEqual(pair, 0.9f);
+            // AUDIO-12: the Politics bell rings through the token's 0.7 s slide and ends before the beat's hold does.
+            Assert.That(cues["PoliticsMoved"].Value<float>("longestSeconds"), Is.InRange(1.2f, 1.8f));
         }
 
         [Test]

@@ -164,6 +164,9 @@ namespace Wotr.Client
             var objectHint = ObjectHint(view, draft);
             if (objectHint.Length > 0)
                 return objectHint;
+            var destination = TravelDraft.DestinationHint(view, draft);
+            if (destination.Length > 0)
+                return destination;
             if (draft.Kind == CommandKind.SelectGuide && ContextualFellowship)
                 return FellowshipGuideText.ChooseHint;
             if (CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions)

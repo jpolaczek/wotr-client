@@ -1,6 +1,6 @@
 {
   "generator": "graphicalassets/audio/generate.py",
-  "version": 5,
+  "version": 6,
   "sampleRate": 48000,
   "format": "WAV PCM 16-bit mono",
   "source": "Procedural synthesis only; no recordings or downloaded samples.",
@@ -328,6 +328,32 @@
       "startAmplitude": 0.0,
       "endAmplitude": 0.0,
       "dcOffset": -1.4e-05,
+      "clippedSamples": 0
+    },
+    {
+      "cue": "PoliticsMoved",
+      "file": "politics-moved-1.wav",
+      "seed": 13000,
+      "seconds": 1.6,
+      "loudness": -22.0,
+      "truePeakDb": -6.6,
+      "sha256": "bd0c0d4ed88968ccf5100505eec15110e89a6e877c1c935ed4f7770aa1c87437",
+      "startAmplitude": 0.0,
+      "endAmplitude": 0.0,
+      "dcOffset": 1e-06,
+      "clippedSamples": 0
+    },
+    {
+      "cue": "PoliticsMoved",
+      "file": "politics-moved-2.wav",
+      "seed": 13001,
+      "seconds": 1.6,
+      "loudness": -22.0,
+      "truePeakDb": -5.7,
+      "sha256": "7ab364fbb615f82fab53a4d2ef3fbb3c084d1467e560f34ea6e5d0a2fa0195e9",
+      "startAmplitude": 0.0,
+      "endAmplitude": 0.0,
+      "dcOffset": -2e-06,
       "clippedSamples": 0
     }
   ]

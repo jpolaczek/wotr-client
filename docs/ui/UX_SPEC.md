@@ -1638,3 +1638,22 @@ Owner requests of 2026-10-27:
   reads it) and Click to use read "Use your Muster die: <the server preview's summary>" (`DieUse`); before the
   preview the action's name stands for the effect, and without a die the effect stands alone.
 
+<a id="balrog-order-and-separation-hints--ui-374-ui-375-2026-10-27"></a>
+## The Balrog's glowing region, a separation's region hint — UI-374, UI-375 (2026-10-27)
+
+Owner reports of 2026-10-27 (playtest of the expansions' test scenarios):
+
+- UI-374 — A Balrog is Come! said "Click the Balrog's glowing region" while nothing glowed and a click on Moria did
+  nothing (only Pass worked). The army of a figure whose ability or order a click uses (`ability-owner`: the Balrog's
+  activation, the Chief, A Balrog is Come!) now wears the ChoiceGlow halo over its gold plinth and pulses with the
+  other choices ([ARMY_MAP_UX states](ARMY_MAP_UX.md#stany)); a click on the Balrog's region (its contour or its
+  marker) opens his panel also while the card's ChooseEffect draft stands (`FigureAbilityInteraction.Region`), where
+  his figure moves him alone and his army's figures move it with him. Test:
+  `LordsCharacterNetworkTests.TheBalrogsCardMovesHimAloneAlongHisPath` (glow, map click, lit figure).
+- UI-375 — separating Gimli as the Guide said "Select the highlighted characters, then confirm." when only his region
+  was left to choose. Once a separation's or a companion move's figures are chosen, the console names them and asks
+  for the region, as the Fellowship panel does: "Gimli · Click a highlighted region to move there."
+  (`TravelDraft.DestinationHint`). Tests: `CompanionJourneyMapTests.AChosenSeparationAsksForARegion`,
+  `FateGimliNetworkTests.GuideLeavesDuringHuntAndMovesWithThePrintedRange`.
+- AUDIO-12 — the political token's step sounds a deep bell ([AUDIO_UX](AUDIO_UX.md#dzwon-polityki--audio-12)).
+

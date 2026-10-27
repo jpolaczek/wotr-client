@@ -64,6 +64,9 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(3, room.Fp.Board.View.Options.Single().Travel.Single().Range);
                 // UI-105: South Dunland lies two regions away; one click on it sends Gimli there.
                 Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.Targets.Contains("south-dunland"));
+                // UI-375 (owner's report): the console asks for his region, not for highlighted characters.
+                StringAssert.EndsWith("· Click a highlighted region to move there.", room.Fp.Board.Console.Status.Hint.text);
+                StringAssert.StartsWith("Gimli", room.Fp.Board.Console.Status.Hint.text);
                 await Layout(room, room.Fp, "departure", "fate-gimli");
                 await Reconnect(room, room.Fp);
                 var departure = room.Fp.Board.View.Revision;

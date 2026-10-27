@@ -116,8 +116,9 @@
 /* UI-301 (owner's decision): an army a click may choose wears the shared ChoiceGlow, as the usable tabs and the
    Fellowship's portraits do: a halo behind the marker with a thick gold rim on a warm plate (army-choice-glow), which
    pulses and swells a little in the 750 ms rhythm under .motion-enabled (MapCanvas runs the pulse) and stays bright
-   and still under Reduced motion; the plinth and figures keep their pictures and size. A chosen, armed or acting army
-   shows its selection instead. */
+   and still under Reduced motion; the plinth and figures keep their pictures and size. A chosen or armed army shows its
+   selection instead. UI-374 (owner): the army of a figure whose ability or order a click uses (ability-owner: the
+   Balrog, the Chief, A Balrog is Come!) wears the glow too, over its gold plinth. */
 .army-choice-glow {
     position: absolute;
     left: -5px;
@@ -131,16 +132,17 @@
     background-color: rgba(120, 88, 24, 0.55);
 }
 .army-token > .army-choice-glow { border-radius: 27px; }
-.army.eligible-army > .army-choice-glow { display: flex; }
+.army.eligible-army > .army-choice-glow,
+.army.ability-owner > .army-choice-glow { display: flex; }
 .army.eligible-army.selected-force > .army-choice-glow,
-.army.eligible-army.armed-force > .army-choice-glow,
-.army.eligible-army.ability-owner > .army-choice-glow { display: none; }
+.army.eligible-army.armed-force > .army-choice-glow { display: none; }
 .motion-enabled .army > .army-choice-glow {
     transition-property: border-color, background-color, scale;
     transition-duration: 750ms;
     transition-timing-function: ease-in-out-sine;
 }
-.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow {
+.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow,
+.motion-enabled .map.choice-glow-pulse .army.ability-owner > .army-choice-glow {
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1.05 1.05;

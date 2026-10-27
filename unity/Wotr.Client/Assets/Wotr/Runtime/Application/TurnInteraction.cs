@@ -188,6 +188,9 @@ namespace Wotr.Client
             // UI-215: a region holding a card's offered figures opens its panel, where the figures are chosen.
             if (cardFigures.Region(region))
                 return;
+            // UI-374: so does A Balrog is Come!'s region, whose figures order him.
+            if (figureAbilities.Region(region))
+                return;
             // UI-216: a lit army of a card's army event starts its move and opens its panel.
             if (cardArmies.Region(region))
                 return;

@@ -54,6 +54,16 @@ namespace Wotr.Client
             PanelFigureHighlight.Add(board.Hover.Panel, uses.Keys.ToHashSet(), new HashSet<string>(), busy);
         }
 
+        // UI-374: the Balrog's lit region opens his panel, also while the card's choice is drafted; its figures choose.
+        public bool Region(string region)
+        {
+            if (busy() || view == null || !BalrogCardOrder.Active(view) || BalrogCardOrder.Figures(view).Count == 0 ||
+                BalrogCardOrder.Region(view) != region)
+                return false;
+            board.Hover.OpenDecision(region, view.Decision.Id);
+            return true;
+        }
+
         // A lit figure clicked in the region panel.
         public bool Figure(string id)
         {

@@ -9,7 +9,8 @@ namespace Wotr.Client
     // presentation; a panel the player had open stays open. UI-315 (owner review): at the shared pace — a panel the beat
     // opened settles first; then the nation's row and token glow before anything changes; an activation lights its crest; the
     // token slides its recorded steps (eased, a jump under Reduced motion) and stays lit at its new station; reaching war
-    // adds the short caption "At war". Values the record lacks come from the presented state.
+    // adds the short caption "At war". Values the record lacks come from the presented state. AUDIO-12: the first change
+    // (the crest lighting, or else the slide) strikes the Politics bell, which rings through the slide.
     public sealed class PoliticsPresenter : ICuePresenter
     {
         public const string CaptionName = "presentation-caption";
@@ -18,14 +19,16 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly PresentationLayer layer;
+        private readonly PresentationSoundSink sounds;
         private bool opened;
         private bool dismissed;
 
-        public PoliticsPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer)
+        public PoliticsPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer, PresentationSoundSink sounds)
         {
             this.board = board;
             this.staged = staged;
             this.layer = layer;
+            this.sounds = sounds;
         }
 
         private PoliticalPanel Panel => board.Nations;
@@ -45,7 +48,7 @@ namespace Wotr.Client
             if (wasActive == change.Active && steps == change.StepsToWar)
                 return null;
             var settle = OpenPanel();
-            return new Beat(this, change.Id, wasActive, steps, change.Active, change.StepsToWar, settle, now);
+            return new Beat(this, change.Id, wasActive, steps, change.Active, change.StepsToWar, settle, now, "presented/" + cue.Id);
         }
 
         // UI-342: the next scene begins — a panel the presentation opened closes, unless that scene's step changes politics
@@ -116,15 +119,18 @@ namespace Wotr.Client
             private readonly double activateAt;
             private readonly double moveAt;
             private readonly double endAt;
+            private readonly string soundKey;
             private readonly ObjectGlow glow = new ObjectGlow();
             private readonly ObjectGlow row = new ObjectGlow();
             private Label caption;
             private bool flared;
             private int phase;
 
-            public Beat(PoliticsPresenter owner, string id, bool wasActive, int fromSteps, bool active, int toSteps, bool settle, double now)
+            public Beat(PoliticsPresenter owner, string id, bool wasActive, int fromSteps, bool active, int toSteps, bool settle, double now,
+                string soundKey)
             {
                 this.owner = owner;
+                this.soundKey = soundKey;
                 this.id = id;
                 this.active = active;
                 this.fromSteps = fromSteps;
@@ -155,11 +161,16 @@ namespace Wotr.Client
                     phase = 1;
                     Flare(false);
                     if (activation)
+                    {
+                        Strike();
                         owner.Stage(id, true, fromSteps);
+                    }
                 }
                 if (phase == 1 && now >= moveAt)
                 {
                     phase = 2;
+                    if (!activation)
+                        Strike();
                     owner.Stage(id, active, toSteps);
                     if (toSteps == 0 && moves)
                         Caption();
@@ -168,6 +179,8 @@ namespace Wotr.Client
             }
 
             public void Finish() => End();
+
+            private void Strike() => owner.sounds.Play(SoundCue.PoliticsMoved, soundKey);
 
             private bool End()
             {

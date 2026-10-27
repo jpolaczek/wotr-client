@@ -25,6 +25,30 @@ namespace Wotr.EditorTests
 
         private static List<SoundRequest> Between(PlayerView before, PlayerView after) => SoundFacts.Between(before, after);
 
+        // AUDIO-12: a step or an activation of a nation already shown sounds the Politics bell once; the first view of the
+        // nations and an unchanged track add nothing.
+        [Test]
+        public void APoliticalStepSoundsThePoliticsBell()
+        {
+            var before = View(1);
+            before.Nations.Add(new NationView { Id = "dwarves", Active = false, StepsToWar = 2 });
+            before.Nations.Add(new NationView { Id = "elves", Active = true, StepsToWar = 1 });
+            var same = Next(before);
+            Assert.IsFalse(Between(before, same).Any(r => r.Cue == SoundCue.PoliticsMoved));
+            var stepped = Next(same);
+            stepped.Nations.Single(n => n.Id == "dwarves").StepsToWar = 1;
+            var requests = Between(same, stepped);
+            Assert.AreEqual(1, requests.Count(r => r.Cue == SoundCue.PoliticsMoved));
+            Assert.AreEqual("track/politics/" + stepped.Revision, requests.Single(r => r.Cue == SoundCue.PoliticsMoved).Key);
+            var activated = Next(stepped);
+            activated.Nations.Single(n => n.Id == "dwarves").Active = true;
+            Assert.AreEqual(1, Between(stepped, activated).Count(r => r.Cue == SoundCue.PoliticsMoved));
+            var first = View(4);
+            var shown = Next(first);
+            shown.Nations.Add(new NationView { Id = "north", StepsToWar = 2 });
+            Assert.IsFalse(Between(first, shown).Any(r => r.Cue == SoundCue.PoliticsMoved));
+        }
+
         [Test]
         public void TheActionDiceSoundOnceForTheTurnsRoll()
         {

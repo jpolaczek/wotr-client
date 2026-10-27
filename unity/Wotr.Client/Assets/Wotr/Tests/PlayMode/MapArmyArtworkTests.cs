@@ -83,9 +83,9 @@ namespace Wotr.PlayTests
             Assert.AreEqual(Picture(sample), plinth.resolvedStyle.backgroundImage.texture?.name,
                 "The base picture follows the level, side, garrison and state: " + button.name);
             // UI-301: an army a click may choose keeps its picture and wears the ChoiceGlow halo behind it, larger than
-            // the marker; no other state shows the halo.
+            // the marker; UI-374: so does the army of a figure whose ability a click uses; no other state shows the halo.
             var halo = button.Q("army-choice-glow");
-            var eligible = sample.State == "eligible-army";
+            var eligible = sample.State is "eligible-army" or "ability-owner";
             Assert.AreEqual(eligible ? DisplayStyle.Flex : DisplayStyle.None, halo.resolvedStyle.display, button.name);
             if (eligible)
             {

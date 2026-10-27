@@ -161,7 +161,7 @@ namespace Wotr.PlayTests
                     Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-" + choice), choice);
                 StringAssert.StartsWith("Click the Balrog's glowing region, then his figure", client.Board.Console.Status.Hint.text);
                 StringAssert.EndsWith("Or Pass to finish without moving the Balrog.", client.Board.Console.Status.Hint.text);
-                var figure = await PanelFigure(room, client, "moria", Balrog);
+                var figure = await MapFigure(room, client, "moria", Balrog);
                 StringAssert.Contains(BalrogCardOrder.Offer(BalrogCardOrder.Alone), figure.tooltip);
                 await Layout(room, client, "balrog-order", "ui347");
                 figure = await PanelFigure(room, client, "moria", Balrog);
@@ -227,6 +227,21 @@ namespace Wotr.PlayTests
                 Assert.AreNotEqual(BalrogCardOrder.Presentation, client.Board.View.Decision?.Presentation ?? "");
                 watch.NeverOpened();
             }
+        }
+
+        // UI-374 (owner's report): the Balrog's army glows on the map and a click on his region opens the panel of his
+        // figures while the card's order is drafted.
+        private static async Task<Button> MapFigure(MatchTestRoom room, MountedMatchClient client, string region, string id)
+        {
+            var marker = client.Board.Map.Q<Button>("army-" + region + "-Shadow");
+            Assert.IsNotNull(marker, region);
+            Assert.AreEqual(DisplayStyle.Flex, marker.Q(className: "army-choice-glow").resolvedStyle.display, region + " glows.");
+            MapContourProbe.ClickRegion(client.Board.Map, region);
+            await room.Settle();
+            var figure = client.Board.Hover.Panel.Root.Q<Button>("hover-figure-" + id);
+            Assert.IsNotNull(figure, id + " in the panel the click opened");
+            Assert.IsTrue(figure.ClassListContains("eligible-figure"), id + " is lit.");
+            return figure;
         }
 
         private static async Task<Button> PanelFigure(MatchTestRoom room, MountedMatchClient client, string region, string id)

@@ -84,7 +84,7 @@ The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 
 | Hover | `:hover` | base game Lightening |
 | Legal Source | `eligible-army` | ChoiceGlow halo behind the marker (UI-301): gold rim on a warm plate, pulsing |
 | Chosen Army | `selected-force` | Gold border and lift 2 |
-| Capacity owner | `ability-owner` | gold border without lifting |
+| Capacity owner | `ability-owner` | gold plinth without lifting and, since UI-374, the ChoiceGlow halo, pulsing |
 | Pressing | `pressed` | principle UI-114 |
 | After the march | `moved` | extinguishing and sign ✓ on the stand |
 | The Spirit of Purpose | `army-ghost` | 40% opacity, without hitbox |
