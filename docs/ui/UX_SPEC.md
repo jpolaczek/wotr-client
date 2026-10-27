@@ -1376,6 +1376,12 @@ the Shadow of Mirkwood and Uglúk — figure and portrait. `docs/sources/ART-FIG
 UI pieces of the module (Ruler die body, Ruler and Dismay tokens, the corruption-attempt button, the Kings Hunt tile)
 come with UI-273, UI-274 and UI-276.
 
+UI part (2026-10-27): the Ruler die has its own round body, as a Lords special die — `dice/special.svg`'s
+`ruler-free` and `ruler-shadow` variants (a royal blue enamel with an ivory band for the Free Peoples, crimson with an
+iron band for the Shadow; hover, lit and pressed), its crown (UI-273) on its top edge — in place of UI-264's framed tile
+with a text caption, in the pool and in the top bar. With the Ruler and Dismay coins (UI-276), the attempt button and
+the tile back (UI-274) and the Kings mark on a Hunt tile, no Kings placeholder remains. Test: `UiArtKitTests`.
+
 ## Lords of Middle-earth art — ART-06 (2026-10-19)
 
 Generated with `graphicalassets/figures/v3/generate.py` (prompts in `prompts.json`) and built with

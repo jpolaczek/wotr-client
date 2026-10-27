@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "05d13217b268c0fa01db266a9c2bf808dcc8ee12b72a45d45c1dc46faf294ac7"
+    "assets.json": "5ff5dbe3fdd02f3acd0a57055fff3c1507c2ec1478134f7acccc4e88278a076c"
   },
   "assets": [
     {
@@ -1046,6 +1046,134 @@
       "alpha": true,
       "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
       "png_sha256": "f6dfea9ba8ac6184ee4769e2aee90636891d5f65934ff3fd71735d64557de75a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-free.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-free",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "fde58ad9db59d10f73c77719128f113c25ade65ca25dd9551061f30c4ffbd655"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-free-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-free-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "e7657170a1022812c57e2582673c19133c994a44ad5222e78f394df96e441f3c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-free-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-free-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "1e656777daa91461b77b66246c9694af23d0678beddb7d995cdff86afc3b3691"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-free-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-free-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "f30b1f696d7216d134509b7dfe9fb589d8859693d18480881bb6218497d6b3ef"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-shadow.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-shadow",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "2150176dac715eca3013cb4d7e945866897e1c4d0109daac1018030f902257c6"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-shadow-hover.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-shadow-hover",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "a7fdf8fe631a0c17a32b652537743dcceb2c28d3be75031c39d400ac761ed0db"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-shadow-lit.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-shadow-lit",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "ed9731d50921b9ac93bcbe81e80646de8c6b741642729a3eedbd24c0900a67a5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/special-ruler-shadow-pressed.png",
+      "source": "src/dice/special.svg",
+      "variant": "ruler-shadow-pressed",
+      "logical": [
+        40,
+        40
+      ],
+      "pixels": [
+        80,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "9ea050466827a4e72cbd3983b26ffc262a3d7bcb9edd8f6c9c309764cafe314a",
+      "png_sha256": "f599029526ef4ef3df4fbb19b5ac1b4dac20560bd7eb72cff9c2aa4ed48136a6"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/remove-star.png",

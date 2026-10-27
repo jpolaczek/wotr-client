@@ -318,6 +318,21 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 .dice-panel .die.ruler-discarded { opacity: 0.45; }
+/* ART-07: the Ruler die is the round die in its side's royal art (dice/special-ruler-<free|shadow>) with its crown on
+   the top edge; lit while a choice can take it (the Ruler discard, Dismay). The lit art carries the glow, so the
+   generic candidate border stays off. */
+.dice-panel .available-dice .die.ruler-die { width: 36px; min-width: 36px; border-radius: 18px; }
+.dice-panel .available-dice .die.ruler-die.resource-candidate { border-color: rgba(0, 0, 0, 0); }
+.dice-panel .die.ruler-die.die-free { background-image: resource("Wotr/Art/UI/dice/special-ruler-free"); }
+.dice-panel .die.ruler-die.die-free:hover { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-hover"); }
+.dice-panel .die.ruler-die.die-free:focus { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-hover"); }
+.dice-panel .die.ruler-die.die-free.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-lit"); }
+.dice-panel .die.ruler-die.die-free:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-pressed"); }
+.dice-panel .die.ruler-die.die-shadow { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow"); }
+.dice-panel .die.ruler-die.die-shadow:hover { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-hover"); }
+.dice-panel .die.ruler-die.die-shadow:focus { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-hover"); }
+.dice-panel .die.ruler-die.die-shadow.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-lit"); }
+.dice-panel .die.ruler-die.die-shadow:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-pressed"); }
 
 /* UI-276 (EXP-15 D19): the Ruler tokens are crowned coins with their king's nation emblem over the lower half — blue while
    the Free Peoples hold them (lit while a die can use one), red for the Shadow's Dismay tokens (information: a Ruler die's

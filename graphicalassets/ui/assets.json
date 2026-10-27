@@ -461,6 +461,92 @@
       "--gilt-shadow": "#4b3512",
       "--glow-opacity": "0.15"
     },
+    "ruler-free": {
+      "--enamel-light": "#3c64b4",
+      "--enamel-mid": "#1e3a78",
+      "--enamel-dark": "#0e1e44",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b"
+    },
+    "ruler-free-hover": {
+      "--enamel-light": "#3c64b4",
+      "--enamel-mid": "#1e3a78",
+      "--enamel-dark": "#0e1e44",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "ruler-free-lit": {
+      "--enamel-light": "#3c64b4",
+      "--enamel-mid": "#1e3a78",
+      "--enamel-dark": "#0e1e44",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "ruler-free-pressed": {
+      "--enamel-light": "#22407e",
+      "--enamel-mid": "#122650",
+      "--enamel-dark": "#08122a",
+      "--special-band-light": "#f6f1e2",
+      "--special-band-dark": "#8f897b",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
+    "ruler-shadow": {
+      "--enamel-light": "#a3241c",
+      "--enamel-mid": "#5e100c",
+      "--enamel-dark": "#2e0705",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925"
+    },
+    "ruler-shadow-hover": {
+      "--enamel-light": "#a3241c",
+      "--enamel-mid": "#5e100c",
+      "--enamel-dark": "#2e0705",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925",
+      "--gilt-highlight": "#fff3cc",
+      "--gilt-light": "#e9c977",
+      "--gilt-mid": "#b08a40",
+      "--gilt-shadow": "#7a5822",
+      "--glow-opacity": "0.45"
+    },
+    "ruler-shadow-lit": {
+      "--enamel-light": "#a3241c",
+      "--enamel-mid": "#5e100c",
+      "--enamel-dark": "#2e0705",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "ruler-shadow-pressed": {
+      "--enamel-light": "#5e100c",
+      "--enamel-mid": "#2e0705",
+      "--enamel-dark": "#1a0403",
+      "--special-band-light": "#b9b0a6",
+      "--special-band-dark": "#2f2925",
+      "--gilt-highlight": "#cbb37c",
+      "--gilt-light": "#a5853f",
+      "--gilt-mid": "#765820",
+      "--gilt-shadow": "#4b3512",
+      "--glow-opacity": "0.15"
+    },
     "keeper-lit": {
       "--keeper-aura-opacity": "1"
     },
@@ -710,7 +796,7 @@
     {
       "source": "dice/special.svg",
       "base": false,
-      "role": "UI-267: a Lords special die: the round action die with a rune-studded band and enamel in the colours of its origin (Vilya sapphire, Nenya mithril, Narya ruby, the Balrog's ember, Gothmog's Morgul green); hover and pressed as the other dice, lit while the special-die choice can keep it.",
+      "role": "UI-267: a Lords special die: the round action die with a rune-studded band and enamel in the colours of its origin (Vilya sapphire, Nenya mithril, Narya ruby, the Balrog's ember, Gothmog's Morgul green); hover and pressed as the other dice, lit while the special-die choice can keep it ART-07: the Kings Ruler die is the same round die in its side's enamel (a royal blue for the Free Peoples, crimson for the Shadow) with an ivory or an iron band; its crown (dice/ruler-crown) stands on its top edge.",
       "variants": [
         "vilya",
         "vilya-hover",
@@ -731,7 +817,15 @@
         "gothmog",
         "gothmog-hover",
         "gothmog-lit",
-        "gothmog-pressed"
+        "gothmog-pressed",
+        "ruler-free",
+        "ruler-free-hover",
+        "ruler-free-lit",
+        "ruler-free-pressed",
+        "ruler-shadow",
+        "ruler-shadow-hover",
+        "ruler-shadow-lit",
+        "ruler-shadow-pressed"
       ]
     },
     {

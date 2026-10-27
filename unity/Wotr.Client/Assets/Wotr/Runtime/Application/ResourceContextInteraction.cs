@@ -62,10 +62,11 @@ namespace Wotr.Client
                     button.EnableInClassList("resource-candidate", eligible);
                     lit |= eligible && pool == board.OwnDice;
                     litOpponent |= eligible && pool == board.OpponentDice;
-                    // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does.
-                    if (pool == board.OpponentDice && view.Dice.FirstOrDefault(d => d.Id == token.Id) is { } die)
-                        button.tooltip = DismayChoice.Token(view, die.Id).Length > 0
-                            ? DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id) : DieDescriptions.Tooltip(die);
+                    // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does; every other die keeps
+                    // the pool's own tooltip (a Lords die set aside says so).
+                    if (pool == board.OpponentDice && view.Dice.FirstOrDefault(d => d.Id == token.Id) is { } die &&
+                        DismayChoice.Token(view, die.Id).Length > 0)
+                        button.tooltip = DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id);
                     if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
                         button.SetEnabled(true);
                     SpecialCandidate(button, token.Id, eligible);

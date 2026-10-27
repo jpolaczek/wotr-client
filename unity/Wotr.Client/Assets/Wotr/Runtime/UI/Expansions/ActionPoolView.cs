@@ -123,7 +123,8 @@ namespace Wotr.Client
         private Button Die(DieView die, bool own, bool discarded, string key, IReadOnlyDictionary<string, DieFace?> before)
         {
             var lordsOrigin = SpecialDice.Origin(die);
-            var special = ExpansionLabels.Special(die) && lordsOrigin.Length == 0;
+            // ART-07: the Ruler die has its own round body and crown (no framed tile, no caption).
+            var special = ExpansionLabels.Special(die) && lordsOrigin.Length == 0 && !RulerDice.IsRuler(die);
             var button = BoardScreen.Die("", () => dieChosen(die.Id));
             ShowFace(button, die.Face, key, before);
             button.name = die.Id;

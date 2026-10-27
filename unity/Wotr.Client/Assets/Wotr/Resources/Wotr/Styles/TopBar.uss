@@ -255,4 +255,16 @@
 .topbar-compact #open-board-menu { width: 56px; min-width: 56px; }
 /* UI-273: the opponent's Ruler die keeps its crown; a die discarded after the roll stays dimmed. */
 #opponent-dice .die.ruler-die > .ruler-crown { top: -7px; translate: -7px 0; width: 14px; height: 9px; }
+/* ART-07: the opponent's Ruler die in its round royal art, as a Lords special die. */
+#opponent-dice .die.ruler-die { width: 29px; min-width: 29px; height: 29px; min-height: 29px; border-radius: 14.5px; }
+#opponent-dice .die.ruler-die.die-free { background-image: resource("Wotr/Art/UI/dice/special-ruler-free"); }
+#opponent-dice .die.ruler-die.die-free:hover { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-hover"); }
+#opponent-dice .die.ruler-die.die-free:focus { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-hover"); }
+#opponent-dice .die.ruler-die.die-free.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-lit"); }
+#opponent-dice .die.ruler-die.die-free:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-free-pressed"); }
+#opponent-dice .die.ruler-die.die-shadow { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow"); }
+#opponent-dice .die.ruler-die.die-shadow:hover { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-hover"); }
+#opponent-dice .die.ruler-die.die-shadow:focus { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-hover"); }
+#opponent-dice .die.ruler-die.die-shadow.resource-candidate { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-lit"); }
+#opponent-dice .die.ruler-die.die-shadow:active { background-image: resource("Wotr/Art/UI/dice/special-ruler-shadow-pressed"); }
 #opponent-dice .die.ruler-discarded { opacity: 0.45; }
