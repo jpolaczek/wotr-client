@@ -1396,8 +1396,9 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
 Owner requests of 2026-10-27:
 
 - UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
-  the roster moves; switching an ability's text, a page or a version keeps its top-left and only pulls it back inside
-  the board (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`).
+  the roster moves; switching an ability's text or a page keeps its top-left and only pulls it back inside the board
+  (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`). A version a decision selects is not the player's
+  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve.
 - UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
   the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
   the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)

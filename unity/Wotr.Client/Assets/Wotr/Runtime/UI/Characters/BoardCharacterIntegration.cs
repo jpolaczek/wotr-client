@@ -84,6 +84,9 @@ namespace Wotr.Client
                     board.Map.Refresh();
                     board.Sovereigns.RequestPosition();
                 });
+            // A Ruler's Reserve fills its rows (or ends its arrival) after the window was placed beside it.
+            board.Reinforcements.Root.RegisterCallback<GeometryChangedEvent>(_ => characters.ObstacleChanged());
+            board.Reinforcements.Root.RegisterCallback<TransitionEndEvent>(_ => characters.ObstacleChanged());
         }
 
         private static bool Visible(VisualElement element) => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&
