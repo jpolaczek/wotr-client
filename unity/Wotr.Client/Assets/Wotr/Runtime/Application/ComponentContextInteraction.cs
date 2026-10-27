@@ -19,6 +19,14 @@ namespace Wotr.Client
             board.TableEffects.RemovalSelected += select;
             board.ResourceDecision.CouncilChoices.Selected += select;
             board.Characters.Actions.Selected += select;
+            board.Characters.Actions.Selected += PresentPolitics;
+        }
+
+        // UI-366: a political ability used from its chip shows its step on the nation's track.
+        private void PresentPolitics(ComponentAction item)
+        {
+            if (CharacterPolitics.IsPolitical(item.Character?.AbilityId))
+                board.Nations.PresentOwnStep();
         }
 
         public void Refresh(PlayerView view, TurnDraft draft, bool enabled)
@@ -47,6 +55,7 @@ namespace Wotr.Client
             board.TableEffects.RemovalSelected -= select;
             board.ResourceDecision.CouncilChoices.Selected -= select;
             board.Characters.Actions.Selected -= select;
+            board.Characters.Actions.Selected -= PresentPolitics;
         }
     }
 }

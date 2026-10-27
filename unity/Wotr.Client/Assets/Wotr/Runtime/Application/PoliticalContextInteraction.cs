@@ -28,6 +28,9 @@ namespace Wotr.Client
             var option = PoliticalActions.AdvanceOption(view, draft, board.ActionDie);
             Active = option != null || PoliticalActions.UsesPanel(draft);
             var selected = draft.Kind is CommandKind.AdvancePolitics or CommandKind.UseCouncilToken ? draft.Payload.NationId : "";
+            // UI-366: a character's political ability lights its nation; it does not take over the console's hint.
+            board.Nations.Abilities = draft.Kind == null ? CharacterPolitics.For(view, board.ActionDie)
+                : new System.Collections.Generic.Dictionary<string, CharacterPolitics.Offer>();
             board.Nations.RefreshActions(option, selected, !busy(), draft);
         }
 
@@ -43,12 +46,21 @@ namespace Wotr.Client
             if (view == null || busy())
                 return false;
             var next = draft.Fork();
-            var valid = activation ? PoliticalActions.Activate(next, view, nation)
-                : PoliticalActions.Advance(next, view, board.ActionDie, nation);
+            var valid = activation ? PoliticalActions.Activate(next, view, nation) : Step(next, nation);
             if (!valid)
                 return false;
             edit(() => draft.Adopt(next), true);
+            board.Nations.PresentOwnStep();
             return true;
+        }
+
+        // The die's own step first; a character's ability when the die cannot step this nation or the ability does more.
+        private bool Step(TurnDraft next, string nation)
+        {
+            var die = board.ActionDie;
+            if (CharacterPolitics.Preferred(view, die, nation))
+                return CharacterPolitics.Use(next, view, die, nation) || PoliticalActions.Advance(next, view, die, nation);
+            return PoliticalActions.Advance(next, view, die, nation) || draft.Kind == null && CharacterPolitics.Use(next, view, die, nation);
         }
 
         public bool Drop(DraftToken source, DraftToken target) =>

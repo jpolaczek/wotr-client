@@ -165,6 +165,53 @@ namespace Wotr.EditorTests
             }), "Saruman's two Voice commands use his printed ability's chip.");
         }
 
+        // UI-366: a die that pays for a character's political ability lights Politics (not Characters), names the nation,
+        // and the nation's click becomes the ability's command with that die and the character's region.
+        [Test]
+        public void APoliticalAbilityIsOfferedOnItsNationsTrack()
+        {
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples,
+                DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action },
+                Dice = { new DieView { Id = "fp-die-1", Owner = Side.FreePeoples, Face = DieFace.Army, Location = DieLocation.Available } },
+                Nations = { new NationView { Id = "dwarves", Active = true, StepsToWar = 2 } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.UseCharacterAbility, Enabled = true,
+                        CharacterActions =
+                        {
+                            new CharacterActionOption
+                            {
+                                CharacterId = "base.character.gimli", AbilityId = "politics-dwarves-at-erebor", Title = "Advance dwarves",
+                                Dice = { "fp-die-1" }, Targets = { "erebor" }
+                            }
+                        }
+                    }
+                }
+            };
+            var die = new ActionDieContext();
+            die.Sync(view, "fp-die-1");
+            var offers = CharacterPolitics.For(view, die);
+            CollectionAssert.AreEquivalent(new[] { "dwarves" }, offers.Keys);
+            var options = DieOptions.For(view, new TurnDraft(), die);
+            Assert.IsTrue(options.Politics, "The die lights Politics.");
+            Assert.IsFalse(options.Characters, "A political ability is used on its track, not from Characters.");
+            Assert.AreEqual("Gimli in Erebor · Dwarf of Erebor: click to spend this die to move the Dwarves one step toward war.",
+                CharacterPolitics.Hint(view, offers["dwarves"], id => id == "erebor" ? "Erebor" : id));
+            var draft = new TurnDraft();
+            Assert.IsTrue(CharacterPolitics.Use(draft, view, die, "dwarves"));
+            Assert.AreEqual(CommandKind.UseCharacterAbility, draft.Kind);
+            Assert.AreEqual("base.character.gimli", draft.Payload.CharacterId);
+            Assert.AreEqual("politics-dwarves-at-erebor", draft.Payload.AbilityId);
+            Assert.AreEqual("fp-die-1", draft.Payload.DieId);
+            CollectionAssert.AreEqual(new[] { "erebor" }, draft.Payload.Ids);
+            Assert.IsFalse(CharacterPolitics.Use(new TurnDraft(), view, die, "elves"), "Another nation is not this ability's.");
+        }
+
         [Test]
         public void RosterRowCarriesTheLevelAndAStatusSymbol()
         {
