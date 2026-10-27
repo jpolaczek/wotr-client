@@ -12,16 +12,16 @@
     },
     {
       "name": "com.wotr.public-content",
-      "version": "1.0.16",
-      "archive": "com.wotr.public-content-1.0.16.tgz",
-      "sha256": "6bfb1607dd687aa005bf18abf3b885f2ed9b9dfb67a86b0fb8a3631c3b30db3d",
-      "size": 651413,
-      "commit": "6c4da1bedb6a2c04db4b67658b4851fa3cc9b198",
+      "version": "1.0.17",
+      "archive": "com.wotr.public-content-1.0.17.tgz",
+      "sha256": "0c7bfab2dc5d84669bb5228441f64bbf8b416eac3a04b1d32f4d3a5c19fd3bd3",
+      "size": 650135,
+      "commit": "6981baec7266e0792913bf37a8633af893dd6006",
       "requires": {
         "com.wotr.contracts": "0.15.0"
       },
       "contentVersion": "base-setup-1",
-      "fingerprint": "15e85801b8690cd20cced167464dde453e3582ea4b400d4fb1405f5444f49136",
+      "fingerprint": "c5ae53d19041659afeab81c320e70ba72eafb3d95f19ff512f6fe31e9e736703",
       "public": [
         {
           "name": "base-board.json",
@@ -41,11 +41,11 @@
         },
         {
           "name": "character-ability-text.json",
-          "sha256": "03e9ebe8856e4d998e79321a1c71d5e8dd266145afa1ef0f63fe326713d830f6"
+          "sha256": "fa80fb29a30ca64945ecf17ae7cfc8b5f8c571cf4448fd2e23fe1bd709703f7f"
         },
         {
           "name": "fate-card-text.json",
-          "sha256": "a39fa6c67723bdf3eae96f075fa5fd71f235d1baf23286f725ef0425037e4b65"
+          "sha256": "341b4091802014f9708425d45c605cfbb07ec645a8287e4bd8ea16c70a33a309"
         },
         {
           "name": "fate-cards.json",
@@ -57,7 +57,7 @@
         },
         {
           "name": "kings-card-text.json",
-          "sha256": "78e96738061e77046939c8f304d955beefe6856891406851ee2a247d8e75a69b"
+          "sha256": "8b4befa44b8d30825329dd60efd5e61d8d810e6d8add2684418e1b33430a023f"
         },
         {
           "name": "kings-cards.json",
@@ -69,7 +69,7 @@
         },
         {
           "name": "lords-card-text.json",
-          "sha256": "8b2165bf6c38630788808e61f59dc9a50b604382ced58f2c5adaf520a7f510a2"
+          "sha256": "cc4828dae425253a60b44e88436d418c9289180a6220e3c7006bcc680cc58788"
         },
         {
           "name": "lords-cards.json",
@@ -101,20 +101,20 @@
   "testPackages": [
     {
       "name": "wotr-seeder",
-      "version": "991a115410e6",
-      "archive": "wotr-seeder-991a115410e6.tgz",
-      "sha256": "6c185835dc58959af724aefb075bd98fe043d87494dc7220de59f8ed02c86a6e",
-      "size": 4507477,
-      "commit": "991a115410e610a82d9c963a5294f1e686ba167c",
+      "version": "6981baec7266",
+      "archive": "wotr-seeder-6981baec7266.tgz",
+      "sha256": "9984ad4a2c759c083a6d1807b37cf7d252cdd9c31676a9b36c4c2433cd8f0933",
+      "size": 4508170,
+      "commit": "6981baec7266e0792913bf37a8633af893dd6006",
       "entry": "wotr-seeder/Wotr.Scenarios.dll"
     },
     {
       "name": "wotr-server",
-      "version": "991a115410e6",
-      "archive": "wotr-server-991a115410e6.tgz",
-      "sha256": "d60317f895fc66d58374240c49c953a40d1e9e2c3b8c53c9f39f487b4f02a6e1",
-      "size": 4226033,
-      "commit": "991a115410e610a82d9c963a5294f1e686ba167c",
+      "version": "6981baec7266",
+      "archive": "wotr-server-6981baec7266.tgz",
+      "sha256": "7a841bc07acae64369f1cee47c67ebcec69fca01071c1ce35280179d90393780",
+      "size": 4226568,
+      "commit": "6981baec7266e0792913bf37a8633af893dd6006",
       "entry": "wotr-server/Wotr.Server.dll"
     }
   ]
