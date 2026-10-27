@@ -1084,7 +1084,7 @@
 .action-summary .window-header #pin-action-summary { width: auto; min-width: 32px; }
 
 .map-action-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
-.recorded-map-label { position: absolute; width: 232px; font-size: 11px; white-space: normal; color: rgb(255, 214, 112); background-color: rgba(28, 26, 24, .9); padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(145, 212, 238); }
+.recorded-map-label { position: absolute; width: 232px; font-size: 11px; white-space: normal; color: rgb(255, 214, 112); background-color: rgba(28, 26, 24, .9); padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(255, 214, 112); }
 /* UI-378: the history's marks are gold, as the observed ones. */
 .history-context-host { border-top-color: rgb(255, 214, 112); }
 
