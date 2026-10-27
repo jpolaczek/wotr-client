@@ -125,6 +125,46 @@ namespace Wotr.EditorTests
                 "The full ability text unrolls only after a click.");
         }
 
+        // UI-369: a usable ability's chip glows; selected, it offers Click to use; an action without a chip keeps its button.
+        [Test]
+        public void AUsableAbilityGlowsAndOffersClickToUseOnlyOnceSelected()
+        {
+            var view = Read("CharacterRosterWire.json");
+            var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
+            Assert.IsTrue(inspector.Apply(view, "base.character.gimli"));
+            var ability = CharacterAbilityLibrary.For(inspector.DefinitionId).First().Id;
+            var politics = new ComponentAction
+            {
+                Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility, Enabled = true, Detail = "Move the Dwarves one step toward war.",
+                Character = new CharacterActionOption { CharacterId = "base.character.gimli", AbilityId = ability, Title = "Dwarf of Erebor" }
+            };
+            var entry = new ComponentAction { Key = "entry", Kind = CommandKind.EnterCharacter, Enabled = true, Character = new CharacterActionOption() };
+            var buttons = inspector.Abilities.Usable(new[] { politics, entry }, true);
+            CollectionAssert.AreEqual(new[] { entry }, buttons, "Only an action without a chip keeps its own button.");
+            var chip = inspector.Root.Q<Button>("character-ability-" + ability);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "A usable ability's chip glows.");
+            Assert.IsNull(inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass), "Click to use waits for the chip to be selected.");
+            Assert.AreEqual(DisplayStyle.None, inspector.Root.Q<Label>("character-ability-text").style.display.value);
+            inspector.Abilities.Select(ability);
+            Assert.AreEqual(DisplayStyle.Flex, inspector.Root.Q<Label>("character-ability-text").style.display.value);
+            inspector.Abilities.Select(ability);
+            Assert.AreEqual(DisplayStyle.Flex, inspector.Root.Q<Label>("character-ability-text").style.display.value,
+                "Selecting the selected chip again keeps its text unrolled.");
+            var use = inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass);
+            Assert.IsNotNull(use, "The selected usable chip offers Click to use.");
+            Assert.AreEqual("Click to use", use.Q<Label>().text);
+            Assert.IsTrue(use.enabledSelf);
+            inspector.Abilities.Usable(new[] { new ComponentAction { Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility,
+                Character = politics.Character } }, true);
+            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "A disabled action does not light its chip.");
+            Assert.IsFalse(inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass).enabledSelf,
+                "Its Click to use stays in place, disabled.");
+            Assert.AreEqual("muster-each-isengard-settlement-or-upgrade-two", CharacterAbilityChips.ChipOf(new ComponentAction
+            {
+                Character = new CharacterActionOption { AbilityId = "voice-upgrade" }
+            }), "Saruman's two Voice commands use his printed ability's chip.");
+        }
+
         [Test]
         public void RosterRowCarriesTheLevelAndAStatusSymbol()
         {

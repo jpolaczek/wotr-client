@@ -41,6 +41,7 @@ namespace Wotr.Client
                     _ => item.Owner
                 });
             actions.Selected += item => Selected?.Invoke(item);
+            panel.Inspector.Abilities.Use += item => Selected?.Invoke(item);
             reaction = BoardScreen.Button("Open decision", () => OpenReaction?.Invoke());
             reaction.name = "character-reaction-link";
             resume = BoardScreen.Button("Resume character action", OpenDecision);
@@ -121,8 +122,10 @@ namespace Wotr.Client
             var choices = (view == null || draft?.Kind != null ? Enumerable.Empty<ComponentAction>() :
                 CharacterRosterActions.For(view, inspector.FigureId, inspector.DefinitionId, components))
                 .Where(item => item.Kind != CommandKind.EnterCharacter || Entries(inspector.FigureId).Count > 1).ToList();
-            actions.Apply(choices, enabled);
-            Present(actions.Root, choices.Count > 0);
+            // UI-369: an ability with a chip is used from its chip; only the other actions keep a button.
+            var buttons = inspector.Abilities.Usable(choices, enabled);
+            actions.Apply(buttons, enabled);
+            Present(actions.Root, buttons.Count > 0);
             Present(resume, DecisionFigure.Length > 0 && !active);
             Present(reaction, view != null && CharacterRosterActions.HasReaction(view, inspector.FigureId));
         }
