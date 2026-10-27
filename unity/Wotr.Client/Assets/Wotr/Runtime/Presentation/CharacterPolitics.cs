@@ -15,11 +15,21 @@ namespace Wotr.Client
         {
             ["politics-dwarves-at-erebor"] = "dwarves",
             ["politics-gondor-at-city-or-stronghold"] = "gondor",
-            ["politics-elves-at-stronghold"] = "elves"
+            ["politics-elves-at-stronghold"] = "elves",
+            // Fate: Gimli's Dwarf of Renown in the Iron Hills or Ered Luin.
+            ["politics-dwarves-at-fate-homelands"] = "dwarves",
+            // Lords' Council: the Messengers of Elrond and Prince of Mirkwood (the server's CouncilAbilities.Nations).
+            ["messenger-gondor"] = "gondor",
+            ["messenger-dwarves"] = "dwarves",
+            ["messenger-north"] = "north",
+            ["prince-of-mirkwood"] = "elves"
         };
 
         // The abilities that also activate a passive nation before its step.
-        private static readonly HashSet<string> Activating = new HashSet<string>();
+        private static readonly HashSet<string> Activating = new HashSet<string>
+        {
+            "messenger-gondor", "messenger-dwarves", "messenger-north"
+        };
 
         public sealed class Offer
         {
@@ -69,7 +79,9 @@ namespace Wotr.Client
             var title = CharacterAbilityLibrary.For(definition).FirstOrDefault(a => a.Id == choice.AbilityId)?.Title ?? choice.Title;
             var region = choice.Targets.Count > 0 && regionName != null ? regionName(choice.Targets[0]) : "";
             var nation = NationPhrase(offer.Nation);
-            var effect = offer.Activates ? "activate " + nation + " and move it one step toward war" : "move " + nation + " one step toward war";
+            var atWar = view.Nations.Any(n => n.Id == offer.Nation && n.StepsToWar == 0);
+            var effect = offer.Activates && atWar ? "activate " + nation
+                : offer.Activates ? "activate " + nation + " and move it one step toward war" : "move " + nation + " one step toward war";
             return CharacterLibrary.Name(definition) + (region.Length > 0 ? " in " + region : "") + " · " + title +
                 ": click to spend this die to " + effect + ".";
         }

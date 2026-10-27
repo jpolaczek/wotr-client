@@ -212,6 +212,51 @@ namespace Wotr.EditorTests
             Assert.IsFalse(CharacterPolitics.Use(new TurnDraft(), view, die, "elves"), "Another nation is not this ability's.");
         }
 
+        // UI-366: on the expansions line Gimli's Dwarf of Renown moves the Dwarves; a Council Messenger also activates a
+        // passive nation, which makes the click use the ability even when the die could step the nation.
+        [Test]
+        public void TheExpansionsPoliticalAbilitiesActOnTheirTracks()
+        {
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples,
+                DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action },
+                Dice = { new DieView { Id = "fp-die-1", Owner = Side.FreePeoples, Face = DieFace.Muster, Location = DieLocation.Available } },
+                Nations = { new NationView { Id = "dwarves", Active = true, StepsToWar = 2 }, new NationView { Id = "north", Active = false, StepsToWar = 2 } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.UseCharacterAbility, Enabled = true,
+                        CharacterActions =
+                        {
+                            new CharacterActionOption
+                            {
+                                CharacterId = "base.character.gimli", AbilityId = "politics-dwarves-at-fate-homelands", Title = "Dwarf of Renown",
+                                Dice = { "fp-die-1" }, Targets = { "iron-hills" }
+                            },
+                            new CharacterActionOption
+                            {
+                                CharacterId = "base.character.merry", AbilityId = "messenger-north", Title = "Messenger of Elrond",
+                                Dice = { "fp-die-1" }, Targets = { "dale" }
+                            }
+                        }
+                    }
+                }
+            };
+            var die = new ActionDieContext();
+            die.Sync(view, "fp-die-1");
+            var offers = CharacterPolitics.For(view, die);
+            CollectionAssert.AreEquivalent(new[] { "dwarves", "north" }, offers.Keys);
+            Assert.IsFalse(CharacterPolitics.Preferred(view, die, "dwarves"), "Renown does not activate.");
+            Assert.IsTrue(CharacterPolitics.Preferred(view, die, "north"), "A Messenger activates the passive North.");
+            StringAssert.EndsWith("click to spend this die to activate the North and move it one step toward war.",
+                CharacterPolitics.Hint(view, offers["north"], id => id));
+            StringAssert.EndsWith("click to spend this die to move the Dwarves one step toward war.",
+                CharacterPolitics.Hint(view, offers["dwarves"], id => id));
+        }
+
         [Test]
         public void RosterRowCarriesTheLevelAndAStatusSymbol()
         {
