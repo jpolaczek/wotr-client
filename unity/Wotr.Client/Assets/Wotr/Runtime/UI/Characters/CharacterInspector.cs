@@ -17,6 +17,8 @@ namespace Wotr.Client
         public string FigureId { get; private set; } = "";
         public string DefinitionId => version;
         public event Action Changed;
+        // UI-371: the player is about to change the window's content (an ability's text, a page, a version).
+        public event Action ContentChanging;
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
         private readonly Label edition = Text("character-edition");
@@ -61,6 +63,7 @@ namespace Wotr.Client
             location.Add(locate);
             Root.Add(location);
             Root.Add(stats.Root);
+            abilities.Changing += () => ContentChanging?.Invoke();
             Root.Add(abilities.Root);
             Root.Add(abilities.Pages);
             limits.AddToClassList("character-limits");
@@ -124,6 +127,7 @@ namespace Wotr.Client
         {
             if (row == null || id == version || id != row.CurrentDefinitionId && row.FutureVersions.All(item => item.DefinitionId != id))
                 return;
+            ContentChanging?.Invoke();
             version = id;
             Refresh();
         }

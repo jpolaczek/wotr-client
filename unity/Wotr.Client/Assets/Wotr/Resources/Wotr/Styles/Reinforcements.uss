@@ -51,7 +51,7 @@
 .reinforcement-row.recruitable {
     background-color: rgba(64, 84, 52, 0.55);
     border-left-width: 3px;
-    border-left-color: rgb(144, 203, 172);
+    border-left-color: rgb(255, 214, 112);
     padding-left: 1px;
 }
 .reinforcement-closed .reinforcement-name, .reinforcement-closed .reinforcement-badge { opacity: 0.55; }

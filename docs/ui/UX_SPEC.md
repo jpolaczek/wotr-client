@@ -1390,3 +1390,21 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
   rendered Log and its opened card.
 - Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.
 
+<a id="one-window-one-glow-named-dice--ui-371-ui-373-2026-10-27"></a>
+## One window, one glow, named dice — UI-371, UI-372, UI-373 (2026-10-27)
+
+Owner requests of 2026-10-27:
+
+- UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
+  the roster moves; switching an ability's text, a page or a version keeps its top-left and only pulls it back inside
+  the board (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`).
+- UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
+  the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
+  the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
+  are gold, a framed button adds the warm plate, and inside a pulsing host it breathes with the other choices. A
+  usable Click to use (UI-369) wears the ChoiceGlow. The opponent's presentation and history marks keep their light
+  blue: they are not choices.
+- UI-373 — a button that spends a die names the die and what it does: the decision tray's ✓ (and the console's, which
+  reads it) and Click to use read "Use your Muster die: <the server preview's summary>" (`DieUse`); before the
+  preview the action's name stands for the effect, and without a die the effect stands alone.
+

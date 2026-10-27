@@ -136,6 +136,16 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(ability);
             await room.Settle();
             Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display, "A second click on the selected chip changes nothing.");
+            // UI-371: another ability's text changes the window's content, not its place.
+            var placed = board.Characters.Inspector.Root.worldBound.position;
+            PointerGestureEvents.ClickAt(board.Characters.Inspector.Root.Q<Button>("character-ability-politics-dwarves-at-erebor"));
+            await room.Settle();
+            Assert.That(Vector2.Distance(placed, board.Characters.Inspector.Root.worldBound.position), Is.LessThan(1f),
+                "The window stays where it stood.");
+            // UI-372: no choice highlight is the old pale blue.
+            var mint = new Color(144 / 255f, 203 / 255f, 172 / 255f);
+            foreach (var target in board.Root.Query(className: "legal-target").ToList())
+                Assert.Greater(Vector4.Distance(target.resolvedStyle.borderTopColor, mint), 0.05f, target.name + " is still pale blue.");
             Assert.AreEqual(pan, board.Map.Camera.Pan);
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("selected"));
             await ComponentGestures.Hover(board.Phase);

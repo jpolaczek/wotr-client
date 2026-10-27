@@ -165,7 +165,7 @@
 }
 #board-screen .console-hunt .hunt-tab:hover,
 #board-screen .console-hunt .hunt-tab:focus { background-color: rgba(241, 209, 122, 0.12); }
-#board-screen .console-hunt .hunt-tab.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .console-hunt .hunt-tab.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
 /* UI-172: during the Shadow's own allocation the plaque is its confirmation: lit when ready, dimmed until then. */
 #board-screen .console-hunt .hunt-tab.hunt-confirm-ready {
     border-width: 2px;

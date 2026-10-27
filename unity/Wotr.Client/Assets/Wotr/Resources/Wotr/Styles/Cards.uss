@@ -43,7 +43,7 @@
 #board-screen .edge-cards .card-decks #deck-character { margin-right: 6px; }
 #board-screen .edge-cards .card-decks .card-deck:hover,
 #board-screen .edge-cards .card-decks .card-deck:focus { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/cards/back-hover"); }
-#board-screen .edge-cards .card-decks .card-deck.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .edge-cards .card-decks .card-deck.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
 #board-screen .edge-cards .card-deck .unity-label { margin: 0 3px; font-size: 12px; letter-spacing: 1px; -unity-font-style: bold; }
 #board-screen .edge-cards .card-deck #deck-count { color: rgb(214, 190, 140); letter-spacing: 0; -unity-font-style: normal; }
 #board-screen .edge-cards .card-deck .action-symbol { width: 18px; height: 18px; }
