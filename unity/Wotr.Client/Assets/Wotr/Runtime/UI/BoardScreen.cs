@@ -197,6 +197,7 @@ namespace Wotr.Client
             Root.Insert(Root.IndexOf(Viewing.Root) + 1, Replay.Root);
             Log.CardBounds = CardBounds;
             Nations = new PoliticalPanel(Root, Presentation.Board);
+            Nations.RegionName = id => ActionCardText.Region(id, Presentation);
             stage.Add(Nations.Root);
             stage.Add(Nations.Drawer);
             Fellowship = new FellowshipPanel(FocusFellowship, Map);

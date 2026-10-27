@@ -26,6 +26,7 @@ namespace Wotr.Client
         private readonly Button[] slots = new Button[4];
         private readonly Action<string> advance;
         private bool highlighted;
+        private string advanceHint = "";
         private bool advancing;
         private bool activating;
 
@@ -157,6 +158,7 @@ namespace Wotr.Client
         {
             highlighted = actions.Highlighted;
             advancing = actions.CanAdvance;
+            advanceHint = actions.AdvanceHint;
             activating = actions.CanActivate;
             Token.EnableInClassList("selected", highlighted);
             Token.EnableInClassList("legal-target", advancing || actions.CardTarget);
@@ -176,7 +178,8 @@ namespace Wotr.Client
             Advance.style.visibility = actions.ActivationOffered ? Visibility.Hidden : Visibility.Visible;
             Advance.SetEnabled(advancing);
             Advance.EnableInClassList("legal-target", advancing);
-            Advance.tooltip = advancing ? "Move " + FigureGrid.Name(Nation.Id) + " one step toward war" : ArrowHint();
+            Advance.tooltip = !advancing ? ArrowHint() : advanceHint.Length > 0 ? advanceHint
+                : "Move " + FigureGrid.Name(Nation.Id) + " one step toward war";
             Activation.style.visibility = actions.ActivationOffered ? Visibility.Visible : Visibility.Hidden;
             Activation.SetEnabled(activating);
             Activation.EnableInClassList("legal-target", activating);
@@ -191,6 +194,7 @@ namespace Wotr.Client
 
         private string TokenHint(NationRowActions actions) =>
             actions.CardTarget ? (actions.CardHint.Length > 0 ? actions.CardHint : "Choose this nation for the card.") :
+            advancing && advanceHint.Length > 0 ? advanceHint :
             advancing ? "Click this token, its arrow or the lit station to move it one step toward war. Dragging also moves it." :
             ArrowHint();
 

@@ -278,3 +278,21 @@ Owner request: in a character's window the chip of an ability that can be used n
 - Tests: `CharacterRosterPanelTests.AUsableAbilityGlowsAndOffersClickToUseOnlyOnceSelected`,
   `CharacterRosterActionNetworkTests` (Gimli's Messenger of Elrond through its chip, `ui369-click-to-use.png`).
 
+<a id="political-abilities-on-their-track--ui-366-2026-10-27"></a>
+## A character's political ability acts on its nation's track — UI-366 (2026-10-27)
+
+Owner request: a political ability (base game: Gimli in Erebor, Legolas in an Elven Stronghold, Boromir in a Gondor
+City or Stronghold; on the expansions line also Gimli's Dwarf of Renown, the Council's Messengers and Prince of
+Mirkwood) is used on its nation's track, not through Characters.
+
+- A die that pays for it lights the Politics tab (not Characters, `DieOptions`); open, the panel lights only that
+  nation's token, arrow and next station, whose tooltip names who, where and what: "Gimli in Erebor · Dwarf of Erebor:
+  click to spend this die to move the Dwarves one step toward war." (`CharacterPolitics`). A click on any of them sends
+  the ability with the die and the character's region. The console's hint is not taken over.
+- When the same die could also make the Muster step on that nation, the click makes the Muster step (the ability's
+  explanation then stands aside); an ability that also activates a passive nation is preferred.
+- Using it, from the track or from the chip's Click to use (UI-369), opens Politics if it is closed and the token
+  travels to its new station as in the opponent's political beat (`PoliticalPanel.PresentOwnStep`); every own step from
+  the track travels the same way.
+- Test: `CharacterRosterPanelTests.APoliticalAbilityIsOfferedOnItsNationsTrack`.
+
