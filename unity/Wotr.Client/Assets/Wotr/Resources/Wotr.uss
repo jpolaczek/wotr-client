@@ -999,14 +999,14 @@
     background-color: rgb(47, 44, 41);
 }
 .hand-card .action-symbol { position: relative; left: 0; top: 0; width: 20px; height: 20px; flex-shrink: 0; }
-.hand .hand-card.playable-card { border-top-color: rgb(144, 203, 172); border-bottom-color: rgb(144, 203, 172); }
+.hand .hand-card.playable-card { border-top-color: rgb(255, 214, 112); border-bottom-color: rgb(255, 214, 112); }
 .hand .hand-card.selected { background-color: rgb(82, 79, 43); border-color: rgb(241, 206, 119); }
 .card-decks { flex-direction: row; flex-wrap: nowrap; height: 40px; margin-bottom: 2px; }
 .card-decks .card-deck { flex-direction: row; align-items: center; justify-content: center; width: 50%; min-width: 0; height: 36px; min-height: 36px; padding: 2px; margin: 0; border-left-width: 4px; }
 .card-deck .action-symbol { position: relative; left: 0; top: 0; width: 22px; height: 22px; }
 .card-deck .unity-label { font-size: 12px; }
 .card-deck.empty-deck { opacity: .4; }
-.legal-target { border-top-color: rgb(144, 203, 172); border-right-color: rgb(144, 203, 172); border-bottom-color: rgb(144, 203, 172); border-width: 2px; }
+.legal-target { border-top-color: rgb(255, 214, 112); border-right-color: rgb(255, 214, 112); border-bottom-color: rgb(255, 214, 112); border-width: 2px; }
 
 .component-actions { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; margin-left: 10px; margin-right: 10px; }
 .component-actions > Button { min-width: 33px; padding-left: 7px; padding-right: 7px; }
@@ -1037,11 +1037,11 @@
 .card-effect-heading { font-size: 12px; color: rgb(205, 186, 138); white-space: normal; margin: 0 0 4px 0; }
 .focused-effect .card-effect-heading { color: rgb(244, 230, 184); }
 #card-combat-section { border-top-width: 1px; border-top-color: rgb(80, 98, 101); margin-top: 6px; }
-.card-effect.playable-effect { border-left-color: rgb(144, 203, 172); background-color: rgb(32, 56, 50); }
+.card-effect.playable-effect { border-left-color: rgb(255, 214, 112); background-color: rgb(70, 52, 18); }
 .card-inspector.compact-card { padding: 8px; }
 .compact-card .card-effect { padding-top: 4px; padding-bottom: 4px; }
 .card-inspector #card-window { font-size: 11px; white-space: normal; margin: 0 0 4px 0; }
-.card-inspector.playable-preview { border-top-color: rgb(144, 203, 172); }
+.card-inspector.playable-preview { border-top-color: rgb(255, 214, 112); }
 .hand .hand-card.playable-card { background-color: rgb(40, 73, 62); border-top-width: 3px; }
 .card-ready { position: absolute; right: 3px; top: 1px; color: rgb(190, 235, 184); font-size: 13px; }
 

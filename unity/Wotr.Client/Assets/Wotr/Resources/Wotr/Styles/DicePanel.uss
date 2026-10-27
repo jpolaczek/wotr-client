@@ -276,7 +276,7 @@
     background-color: rgba(231, 193, 107, 0.1);
     padding: 1px 6px 1px 6px;
 }
-#board-screen .dice-panel .die.hunt-candidate { border-width: 2px; border-color: rgb(144, 203, 172); border-radius: 18px; }
+#board-screen .dice-panel .die.hunt-candidate { border-width: 2px; border-color: rgb(255, 214, 112); border-radius: 18px; }
 /* UI-204: with motion on, the dice the Hunt can still take pulse together, so adding them is the evident next step. */
 .motion-enabled #board-screen .dice-panel .die.hunt-candidate {
     transition-property: border-color, background-color;
@@ -285,21 +285,21 @@
 }
 .motion-enabled #board-screen .dice-panel.hunt-candidates-bright .die.hunt-candidate {
     border-color: rgb(196, 240, 214);
-    background-color: rgba(144, 203, 172, 0.28);
+    background-color: rgba(255, 214, 112, 0.28);
 }
 /* UI-205: before any die is in the allocation the candidates call loudest — a thicker, lighter ring and a fill, and
    with motion on they swell a little on the beat; after the first die the gentler pulse of UI-204 remains. */
 #board-screen .dice-panel.hunt-choose-dice .die.hunt-candidate {
     border-width: 3px;
     border-color: rgb(176, 232, 200);
-    background-color: rgba(144, 203, 172, 0.22);
+    background-color: rgba(255, 214, 112, 0.22);
 }
 .motion-enabled #board-screen .dice-panel.hunt-choose-dice .die.hunt-candidate {
     transition-property: border-color, background-color, scale;
 }
 .motion-enabled #board-screen .dice-panel.hunt-choose-dice.hunt-candidates-bright .die.hunt-candidate {
     border-color: rgb(226, 255, 238);
-    background-color: rgba(144, 203, 172, 0.46);
+    background-color: rgba(255, 214, 112, 0.46);
     scale: 1.1;
 }
 #board-screen .dice-panel .die.hunt-allocated { border-width: 2px; border-color: rgb(247, 213, 120); border-radius: 18px; }

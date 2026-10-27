@@ -63,6 +63,10 @@
     border-color: rgb(255, 214, 112);
     background-color: rgba(120, 88, 24, 0.55);
 }
+/* UI-372 (owner): one highlight for every choice. A legal target wears the same gold rim (Wotr.uss) and, on a framed
+   button, the warm plate; inside a pulsing host it breathes with the glowing choices. No pale blue is left. */
+#board-screen .action.legal-target { border-color: rgb(255, 214, 112); background-color: rgba(120, 88, 24, 0.55); }
+.motion-enabled #board-screen .choice-glow-pulse .legal-target { border-color: rgba(255, 214, 112, 0.4); }
 .motion-enabled #board-screen .choice-glow {
     transition-property: border-color, background-color, scale;
     transition-duration: 750ms;

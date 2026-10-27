@@ -131,7 +131,7 @@
 #opponent-dice .special-die .die-face { left: 13px; right: 13px; top: 2px; bottom: 12px; }
 #opponent-dice .die-origin { bottom: 1px; height: 12px; font-size: 9px; color: rgb(233, 227, 207); }
 #opponent-dice .die.selected { border-color: rgb(245, 212, 133); }
-#opponent-dice .die.legal-target { border-color: rgb(144, 203, 172); }
+#opponent-dice .die.legal-target { border-color: rgb(255, 214, 112); }
 #opponent-dice .die.resource-candidate { border-color: rgb(231, 193, 107); }
 
 /* UI-267: the opponent's Lords special dice in their origin's art (Styles/DicePanel.uss), at the top bar's size. */

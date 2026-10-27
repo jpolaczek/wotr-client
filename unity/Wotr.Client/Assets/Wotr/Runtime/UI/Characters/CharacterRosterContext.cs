@@ -123,7 +123,7 @@ namespace Wotr.Client
                 CharacterRosterActions.For(view, inspector.FigureId, inspector.DefinitionId, components))
                 .Where(item => item.Kind != CommandKind.EnterCharacter || Entries(inspector.FigureId).Count > 1).ToList();
             // UI-369: an ability with a chip is used from its chip; only the other actions keep a button.
-            var buttons = inspector.Abilities.Usable(choices, enabled);
+            var buttons = inspector.Abilities.Usable(choices, enabled, id => DieUse.Name(view, id));
             actions.Apply(buttons, enabled);
             Present(actions.Root, buttons.Count > 0);
             Present(resume, DecisionFigure.Length > 0 && !active);

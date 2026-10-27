@@ -263,7 +263,7 @@
 #board-screen .edge-left-panel .effect-entry.shadow-effect:hover { background-image: resource("Wotr/Art/UI/frames/entry-shadow-hover"); }
 #board-screen .edge-left-panel .effect-entry.selected-effect { border-width: 2px; border-color: rgb(228, 197, 127); }
 #board-screen .edge-left-panel .character-roster-grid .action.selected { border-width: 2px; border-color: rgb(245, 212, 133); }
-#board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
 /* UI-101/UI-274: the sovereigns sit in one row of fixed slots under the characters: the painted portrait with its
    status badge, the Shadow's attempt button at its corner, the name, the corruption meter and the tiles drawn or
    inspected beside the king. Every slot keeps its size in every state. */

@@ -53,6 +53,9 @@ namespace Wotr.Client
                 layoutKey = null;
             }
         }
+        // UI-373: the view and draft the confirm's tooltip names the die from.
+        private PlayerView shownView;
+        private TurnDraft shownDraft;
         private Action<ActionPreview> battlePreview;
         // UI-160/UI-164: whether the tray offers choices of its own: a shown button other than Back and the
         // Reinforcements flag. A step whose choices are on the board (a region, a die, a deck) leaves the decision
@@ -94,6 +97,8 @@ namespace Wotr.Client
 
         public void Render(PlayerView view, TurnDraft draft, bool busy, bool uncertain, string pendingProblem = "")
         {
+            shownView = view;
+            shownDraft = draft;
             cardDecision = CardDecisions.Owns(view, draft);
             root.EnableInClassList("event-army-planning", view.Decision?.Kind == DecisionKind.ArmyEvent);
             root.EnableInClassList("table-card-removal", draft.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardDenethor or CommandKind.DiscardLore or CommandKind.DiscardGates or CommandKind.DiscardWelcome);
@@ -285,7 +290,7 @@ namespace Wotr.Client
             confirm = text == null ? IconButton.Create("confirm", Label(option.Kind), () => Confirm?.Invoke())
                 : BoardScreen.Button(text, () => Confirm?.Invoke());
             confirm.name = "confirm-decision";
-            confirm.tooltip = Label(option.Kind);
+            confirm.tooltip = DieUse.Tooltip(view, draft, Label(option.Kind) + ".");
             confirm.SetEnabled(false);
             ConfirmChanged?.Invoke(false);
             (ConfirmHost ?? footer).Add(confirm);
@@ -499,6 +504,9 @@ namespace Wotr.Client
         {
             Problem = legal ? "" : message;
             confirm?.SetEnabled(legal);
+            // UI-373: once the server confirms the step, the ✓ says what it does and with which die.
+            if (legal && confirm != null && message.Length > 0)
+                confirm.tooltip = DieUse.Tooltip(shownView, shownDraft, message);
             ConfirmChanged?.Invoke(confirm != null && legal);
             if (Legal != legal)
             {

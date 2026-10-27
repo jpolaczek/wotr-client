@@ -20,6 +20,9 @@ namespace Wotr.Client
         public event Action<string> EntryRequested;
         public FloatingWindow Window { get; set; }
         public FloatingWindow InspectorWindow { get; set; }
+        // UI-371: the player changed the window's content (an ability's text, a page, a version), so it stays where it
+        // stands until a figure opens, the roster moves or the board is resized.
+        private bool keepPlace;
         public bool Pinned => hover.Pinned;
         public bool InspectorPinned { get; private set; }
         public event Action Opening;
@@ -52,6 +55,7 @@ namespace Wotr.Client
             Root.style.display = DisplayStyle.None;
             pulse = new ChoicePulse(Root);
             Inspector = new CharacterInspector(data, focus, CloseInspection, PinInspection);
+            Inspector.ContentChanging += () => keepPlace = true;
             Actions = new CharacterRosterContext(this);
             var header = BoardScreen.Row("character-header");
             FloatingWindow.MarkHandle(header);
@@ -202,6 +206,7 @@ namespace Wotr.Client
             Inspecting?.Invoke();
             Inspector.Root.style.display = DisplayStyle.Flex;
             Inspector.Root.BringToFront();
+            keepPlace = false;
             PositionInspector();
         }
 
@@ -230,14 +235,22 @@ namespace Wotr.Client
             Window?.Refresh();
         }
 
+        // UI-371 (owner): one window in one place. It is placed beside its source; after the player changes its content
+        // (another ability's text, a page, a version) it keeps its top-left and is only pulled back inside the board.
         public void PositionInspector()
         {
             if (Inspector.Root.style.display.value == DisplayStyle.None || Inspector.Root.parent == null || InspectorWindow?.Restore() == true || source == null)
                 return;
             var viewport = Inspector.Root.parent;
-            var point = viewport.WorldToLocal(source.worldBound.center);
             var size = Inspector.Root.layout.size;
-            if (size.x <= 0 || float.IsNaN(size.x))
+            var measured = size.x > 0 && !float.IsNaN(size.x);
+            if (keepPlace && measured)
+            {
+                KeepInspectorInView(viewport, size);
+                return;
+            }
+            var point = viewport.WorldToLocal(source.worldBound.center);
+            if (!measured)
                 size = new Vector2(420, 280);
             var obstacles = (Occlusions?.Invoke() ?? new[] { source.worldBound })
                 .Select(r => new Rect(viewport.WorldToLocal(r.position), r.size));
@@ -252,6 +265,17 @@ namespace Wotr.Client
                 Inspector.Root.style.left = rectangle.x;
             if (Mathf.Abs(Inspector.Root.style.top.value.value - rectangle.y) > .25f)
                 Inspector.Root.style.top = rectangle.y;
+        }
+
+        private void KeepInspectorInView(VisualElement viewport, Vector2 size)
+        {
+            var area = viewport.contentRect;
+            var left = Mathf.Clamp(Inspector.Root.layout.x, area.xMin, Mathf.Max(area.xMin, area.xMax - size.x));
+            var top = Mathf.Clamp(Inspector.Root.layout.y, area.yMin, Mathf.Max(area.yMin, area.yMax - size.y));
+            if (Mathf.Abs(Inspector.Root.layout.x - left) > .25f)
+                Inspector.Root.style.left = left;
+            if (Mathf.Abs(Inspector.Root.layout.y - top) > .25f)
+                Inspector.Root.style.top = top;
         }
 
         // A single click inspects, except when the row can be entered: its double-click must not flash the window.
@@ -291,11 +315,11 @@ namespace Wotr.Client
 
         private void BindInspection(VisualElement surface)
         {
-            Root.RegisterCallback<GeometryChangedEvent>(_ => PositionInspector());
+            Root.RegisterCallback<GeometryChangedEvent>(_ => PlaceInspectorAgain());
             Root.RegisterCallback<TransitionEndEvent>(evt =>
             {
                 if (evt.target == Root)
-                    PositionInspector();
+                    PlaceInspectorAgain();
             });
             Inspector.Root.RegisterCallback<GeometryChangedEvent>(e =>
             {
@@ -304,8 +328,24 @@ namespace Wotr.Client
                 if (PopoverPlacement.SizeChanged(e.oldRect, e.newRect))
                     PositionInspector();
             });
+            // UI-371: a new board size or interface scale changes what the window must avoid, so it is placed again.
+            Inspector.Root.RegisterCallback<AttachToPanelEvent>(_ =>
+                Inspector.Root.parent?.RegisterCallback<GeometryChangedEvent>(BoardResized));
             Root.RegisterCallback<AttachToPanelEvent>(_ => Application.focusChanged += FocusChanged);
             Root.RegisterCallback<DetachFromPanelEvent>(_ => { Application.focusChanged -= FocusChanged; Close(); });
+        }
+
+        // The roster's own move (unrolling, closing) changes what the window must avoid, so it is placed again.
+        private void PlaceInspectorAgain()
+        {
+            keepPlace = false;
+            PositionInspector();
+        }
+
+        private void BoardResized(GeometryChangedEvent change)
+        {
+            if (PopoverPlacement.SizeChanged(change.oldRect, change.newRect))
+                PlaceInspectorAgain();
         }
 
         private void FocusChanged(bool focused) { if (!focused) CloseTransient(); }

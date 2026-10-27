@@ -23,6 +23,8 @@ namespace Wotr.Client
             ["voice-upgrade"] = "muster-each-isengard-settlement-or-upgrade-two"
         };
         public event Action<ComponentAction> Use;
+        // UI-371: a click changes the unrolled text or the page; the window keeps its place for it.
+        public event Action Changing;
         public VisualElement Root { get; } = new VisualElement { name = "character-abilities" };
         public VisualElement Pages { get; } = BoardScreen.Row("character-ability-pages");
         public Label Text { get; } = new Label { name = "character-ability-text", enableRichText = false };
@@ -35,6 +37,7 @@ namespace Wotr.Client
         private readonly ChoicePulse pulse;
         private ILookup<string, ComponentAction> usable = Enumerable.Empty<ComponentAction>().ToLookup(ChipOf);
         private bool editable;
+        private Func<string, string> dieName;
         private string shownUse = "";
         private string version = "";
         private string opened = "";
@@ -90,8 +93,9 @@ namespace Wotr.Client
 
         // UI-369: the figure's actions that use a chip's ability light that chip; the others are returned, for their
         // own buttons.
-        public IReadOnlyList<ComponentAction> Usable(IEnumerable<ComponentAction> actions, bool enabled)
+        public IReadOnlyList<ComponentAction> Usable(IEnumerable<ComponentAction> actions, bool enabled, Func<string, string> dieNames = null)
         {
+            dieName = dieNames;
             var printed = CharacterAbilityLibrary.For(version).Select(ability => ability.Id).ToHashSet();
             var all = actions.ToList();
             usable = all.Where(action => printed.Contains(ChipOf(action))).ToLookup(ChipOf);
@@ -116,6 +120,7 @@ namespace Wotr.Client
 
         private void Turn(int step)
         {
+            Changing?.Invoke();
             page += step;
             opened = "";
             Refresh();
@@ -126,6 +131,7 @@ namespace Wotr.Client
             var id = chips[slot].userData as string ?? "";
             if (id == opened)
                 return;
+            Changing?.Invoke();
             opened = id;
             Refresh();
         }
@@ -156,7 +162,8 @@ namespace Wotr.Client
             Text.style.display = open == null ? DisplayStyle.None : DisplayStyle.Flex;
             sheet.style.display = Text.style.display;
             ShowUse(open == null ? new List<ComponentAction>() : usable[open.Id].ToList());
-            pulse.Run(chips.Any(chip => chip.ClassListContains(ChoiceGlow.ClassName)));
+            pulse.Run(chips.Any(chip => chip.ClassListContains(ChoiceGlow.ClassName)) ||
+                use.Children().Any(button => button.ClassListContains(ChoiceGlow.ClassName)));
             Pages.style.display = entries.Count > PageSize ? DisplayStyle.Flex : DisplayStyle.None;
             previous.SetEnabled(page > 0);
             next.SetEnabled((page + 1) * PageSize < entries.Count);
@@ -188,15 +195,19 @@ namespace Wotr.Client
             title.AddToClassList("character-ability-use-title");
             button.Add(title);
             button.SetEnabled(editable && action.Enabled);
+            // UI-372: a usable Click to use glows like every other choice.
+            ChoiceGlow.Apply(button, editable && action.Enabled);
             button.tooltip = UseTooltip(action);
             return button;
         }
 
-        private static string UseTooltip(ComponentAction action)
+        // UI-373: "Use your Event die: <what the ability does>".
+        private string UseTooltip(ComponentAction action)
         {
             if (!action.Enabled)
                 return "Select an eligible die to use it.";
-            return action.Detail.Length > 0 ? action.Detail : "Use this ability.";
+            var effect = action.Detail.Length > 0 ? action.Detail : "Use this ability.";
+            return DieUse.Tooltip(dieName?.Invoke(action.DieId) ?? "", effect);
         }
     }
 }
