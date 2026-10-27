@@ -187,7 +187,6 @@ namespace Wotr.PlayTests
             await room.Settle();
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
             await room.Settle();
-            Assert.IsFalse(board.ResourceDecision.IsOpen);
             await Pick(room, room.Sh, "base.character.witch-king");
             var revision = board.View.Revision;
             FellowshipGestures.FinishRoute(room.Sh, "hollin");
@@ -206,7 +205,6 @@ namespace Wotr.PlayTests
                 .Single(c => c.CharacterId == "kings.character.black-serpent");
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
             await room.Settle();
-            Assert.IsFalse(board.ResourceDecision.IsOpen, "No token panel; the Serpent's row enters (UI-108, UI-347).");
             await ComponentGestures.Enter(room, room.Sh, choice);
             AssertNoEntryWindow(board);
             var revision = board.View.Revision;

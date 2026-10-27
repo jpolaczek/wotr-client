@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- UI-276: a Kings Ruler token, a gilt coin with a domed enamel face and an ivory crown at its top; the code lays the
+       king's nation emblem over its lower half. Variants: free (a Ruler token the Free Peoples hold), free-lit (usable now,
+       gold glow), shadow (a Dismay token the Shadow holds), shadow-lit. -->
+  <circle cx="16" cy="16" r="15.2" fill="none" style="stroke: var(--gilt-highlight); opacity: var(--glow-opacity)" stroke-width="2.4" filter="url(#glow)"/>
+  <g filter="url(#lift)">
+    <circle cx="16" cy="16" r="14" fill="url(#gilt-diagonal)" style="stroke: var(--gilt-edge)" stroke-width="0.5"/>
+    <circle cx="16" cy="16" r="12.2" fill="url(#gilt-bevel)"/>
+    <circle cx="16" cy="16" r="11.3" style="fill: var(--ink)"/>
+    <circle cx="16" cy="16" r="10.8" fill="url(#enamel-dome)"/>
+    <path d="M10.4 12.6 L10.4 7.6 L12.8 9.8 L16 6.6 L19.2 9.8 L21.6 7.6 L21.6 12.6 Z"
+          style="fill: var(--ivory); stroke: var(--ink)" stroke-width="0.5" stroke-linejoin="round"/>
+    <path d="M10.4 12.6 L21.6 12.6" style="stroke: var(--gilt-light)" stroke-width="1.1" stroke-linecap="round"/>
+  </g>
+</svg>

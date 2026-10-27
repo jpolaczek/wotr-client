@@ -318,3 +318,34 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 .dice-panel .die.ruler-discarded { opacity: 0.45; }
+
+/* UI-276 (EXP-15 D19): the Ruler tokens are crowned coins with their king's nation emblem over the lower half — blue while
+   the Free Peoples hold them (lit while a die can use one), red for the Shadow's Dismay tokens (information: a Ruler die's
+   click spends one, D20). */
+#board-screen .dice-panel .pool-tokens .ruler-token {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    min-height: 30px;
+    margin: 0 3px 0 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .dice-panel .pool-tokens .ruler-token-free { background-image: resource("Wotr/Art/UI/tokens/ruler-token-free"); }
+#board-screen .dice-panel .pool-tokens .ruler-token-free.ruler-token-lit,
+#board-screen .dice-panel .pool-tokens .ruler-token-free.selected { background-image: resource("Wotr/Art/UI/tokens/ruler-token-free-lit"); }
+#board-screen .dice-panel .pool-tokens .ruler-token-dismay { background-image: resource("Wotr/Art/UI/tokens/ruler-token-shadow"); }
+#board-screen .dice-panel .pool-tokens .ruler-token:active { scale: 0.92 0.92; }
+#board-screen .dice-panel .pool-tokens .ruler-token-dismay:active { scale: 1 1; }
+#board-screen .dice-panel .pool-tokens .ruler-token-emblem {
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    top: 14px;
+    bottom: 5px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+

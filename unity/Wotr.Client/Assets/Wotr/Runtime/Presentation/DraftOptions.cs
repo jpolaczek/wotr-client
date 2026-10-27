@@ -69,24 +69,13 @@ namespace Wotr.Client
             AllowEmptySelection = source.AllowEmptySelection
         };
 
-        public static bool CanSelectToken(PlayerView view, string id) => view.RulerTokenActions.Any(o => o.TokenId == id) ||
-            view.Options.Any(o => o.Enabled && o.Kind == CommandKind.UseDismay && o.EligibleIds.Contains(id));
+        // UI-276 (D20): a Dismay token is picked by the Ruler die's click, so only the Free Peoples' Ruler tokens select.
+        public static bool CanSelectToken(PlayerView view, string id) => view.RulerTokenActions.Any(o => o.TokenId == id);
 
         public static void SelectToken(TurnDraft draft, PlayerView view, string id)
         {
             if (id.Length > 0 && !CanSelectToken(view, id))
                 return;
-            if (view.You == Side.Shadow && id.Length > 0)
-            {
-                if (draft.Kind != CommandKind.UseDismay)
-                    DraftGesture.Choose(draft, view, CommandKind.UseDismay);
-                draft.Change(p =>
-                {
-                    p.Ids.Clear();
-                    p.Ids.Add(id);
-                });
-                return;
-            }
             draft.Clear();
             draft.Change(p => p.RulerTokenId = id);
         }

@@ -291,6 +291,25 @@ namespace Wotr.EditorTests
             Assert.IsTrue(slot.Q("sovereign-status").ClassListContains(ValuePulse.PulseClass), "A changed status pulses on its badge.");
         }
 
+        // UI-276 (EXP-15 D19): a king who holds his Ruler token wears its badge on his portrait; the token itself stands in
+        // the dice pool.
+        [Test]
+        public void AKingHoldingHisRulerTokenWearsItsBadge()
+        {
+            var view = View();
+            view.Decision = null;
+            view.CorruptionAttempt = null;
+            view.RulerTokens.Add(new RulerTokenView { Id = "kings.token.king", SovereignId = "king", Location = "free-peoples" });
+            var panel = Panel(view);
+            var portrait = panel.Root.Q<Button>("sovereign-king");
+            Assert.AreEqual(DisplayStyle.Flex, portrait.Q("sovereign-token").style.display.value);
+            StringAssert.Contains("Holds his Ruler token", portrait.tooltip);
+            Assert.AreEqual(DisplayStyle.None, panel.Root.Q<Button>("sovereign-other").Q("sovereign-token").style.display.value);
+            view.RulerTokens[0].Location = "dismay";
+            panel.Apply(view);
+            Assert.AreEqual(DisplayStyle.None, portrait.Q("sovereign-token").style.display.value, "A spent token leaves the badge.");
+        }
+
         private static SovereignPanel Panel(PlayerView view)
         {
             var panel = new SovereignPanel(BoardPresentation.Load(), _ => Assert.Fail("Inspection cannot move the camera."));

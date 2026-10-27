@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "70b44fef05a09fe2ae1f09cd2ef4b7c3a19b6ecc86dba4011f589cc91d0ac653"
+    "assets.json": "05d13217b268c0fa01db266a9c2bf808dcc8ee12b72a45d45c1dc46faf294ac7"
   },
   "assets": [
     {
@@ -5318,6 +5318,70 @@
       "alpha": true,
       "source_sha256": "dcf9334d77601675f2e37be417311ce9671ec566529a4d6b02e58580e759c62e",
       "png_sha256": "08ac9feedf0ee45278ea90368a383e269dc318167a5252cce911251b4b25ac6d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/ruler-token-free.png",
+      "source": "src/tokens/ruler-token.svg",
+      "variant": "free",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "f937b3a9b2b809471cff6cf18a42b627a35ab2b1181041c747fef618f83106f0",
+      "png_sha256": "7ebc3a35ad3d67071fcfcf795cdab90d18294eefb0664e909b00c4bc3cf1d25d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/ruler-token-free-lit.png",
+      "source": "src/tokens/ruler-token.svg",
+      "variant": "free-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "f937b3a9b2b809471cff6cf18a42b627a35ab2b1181041c747fef618f83106f0",
+      "png_sha256": "702ec5f01d464503d2d92c52a630b696b37d29ca5034e2d345d754606e284226"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/ruler-token-shadow.png",
+      "source": "src/tokens/ruler-token.svg",
+      "variant": "shadow",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "f937b3a9b2b809471cff6cf18a42b627a35ab2b1181041c747fef618f83106f0",
+      "png_sha256": "95669714c529ba0f9031b96e76c10204b8a1104c4a26f942b47d3e4e8bf28d47"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/tokens/ruler-token-shadow-lit.png",
+      "source": "src/tokens/ruler-token.svg",
+      "variant": "shadow-lit",
+      "logical": [
+        32,
+        32
+      ],
+      "pixels": [
+        64,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "f937b3a9b2b809471cff6cf18a42b627a35ab2b1181041c747fef618f83106f0",
+      "png_sha256": "d922b9525467f3841a1ce3643463ea3abcc284e651f302fc3cc15832f7239ad5"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/alternate.png",

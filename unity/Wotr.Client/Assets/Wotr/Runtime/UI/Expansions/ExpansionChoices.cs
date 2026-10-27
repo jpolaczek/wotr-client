@@ -32,11 +32,9 @@ namespace Wotr.Client
             var sovereignContext = SovereignPresentation.OwnsDecision(view, draft);
             if (!sovereignContext && draft.Kind is CommandKind.AwakenSovereign or CommandKind.RemoveCorruptedSovereign or CommandKind.AttemptCorruption)
                 Sovereigns(root, view, option);
-            // UI-268: Vilya's die is the lit die in the pool.
-            if (!sovereignContext && draft.Kind != CommandKind.UseVilya)
+            // UI-268: Vilya's die is the lit die in the pool; UI-276 (D20): so are the Ruler dice Dismay re-rolls.
+            if (!sovereignContext && draft.Kind is not (CommandKind.UseVilya or CommandKind.UseDismay))
                 Dice(root, view, option);
-            if (draft.Kind == CommandKind.UseDismay)
-                Dismay(root, view, option);
             if (draft.Kind == CommandKind.AwakenSovereign && draft.Payload.CharacterId.Length > 0)
             {
                 var travel = new FellowshipChoices(root, view, draft, edit, data);
@@ -84,15 +82,6 @@ namespace Wotr.Client
                 button.tooltip = sovereign.Status + " · Resistance " + sovereign.Resistance;
                 row.Add(button);
             }
-        }
-
-        private void Dismay(VisualElement root, PlayerView view, ActionOption option)
-        {
-            var row = BoardScreen.Row();
-            root.Add(row);
-            foreach (var id in option.EligibleIds)
-                row.Add(Choice("Dismay · " + ExpansionLabels.Token(view, id), "dismay-" + id,
-                    () => draft.Payload.Ids.Contains(id), () => CardDraft.Choose(draft, id)));
         }
 
         private void Council(VisualElement root, PlayerView view, BoardPresentation data)

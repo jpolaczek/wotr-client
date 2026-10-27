@@ -117,7 +117,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DieFace.Muster, room.Fp.Board.View.Dice.Single(d => d.Id == die.Id).Face);
                 Assert.AreEqual(tokens, room.Fp.Board.View.RulerTokens.Count(t => t.Location == "dismay"));
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("action-UseLoreBeforeActions"));
-                await room.Direct(room.Sh, "action-DeclineDismay");
+                // UI-276 (D7): keeping the tokens is the console's Pass.
+                await room.Pass(room.Sh, "Pass · Keep your Dismay tokens");
                 Assert.AreEqual(DecisionKind.Action, room.Fp.Board.View.Decision.Kind);
             }
         }

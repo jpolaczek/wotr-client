@@ -15,7 +15,7 @@ A set of interchangeable elements of the board interface in the style of lacquer
 | `src/ornaments/` | Separators and fine ornaments, wax seal with number of notifications (UI-99), gold glow track icons when its click moves Fellowship (`move-glow`, UI-110). |
 | `src/dice/` | dice mounts: regular medallion dice (variants of the `free`/`shadow` page with `hover` and `selected`), special tile dice. |
 | `src/dice/faces/` | Wall symbols (UI-97): Character, Army, Muster, Army/Muster, Event, Will of the West, Eye, and Card Draw and Use Balrog dice special; die ivory with ink contour on enamel. |
-| `src/tokens/` | Track tokens, e.g. the party's enamel policy. |
+| `src/tokens/` | Track tokens, e.g. the party's enamel policy; the Council medallions (UI-270); the Kings Ruler token (UI-276: a crowned gilt coin, `free` blue for a Ruler token, `shadow` red for a Dismay token, `-lit` while usable; the code lays the king's nation emblem over it). |
 | `src/cards/` | card Hand: parchment lico (variants `playable` with a green glow of legal purpose from UI-124 , `armed` with a golden glow card selected, for example as cost), leather waist-back; arms seal removed in UI-194 ( card One click plays). |
 | `src/icons/` | Counter icons (cards, ring, spent, hunt, out), panels (politics, effects, characters, columnship; Hunt uses `hunt`) and Log at the notification stack (`log`, UI-100). |
 | `src/icons/nations/` | The shebs of eight nations: original, simplified symbols. |

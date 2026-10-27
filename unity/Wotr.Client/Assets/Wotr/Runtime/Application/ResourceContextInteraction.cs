@@ -12,6 +12,7 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private readonly Action<ComponentAction> select;
         private readonly ChoicePulse litArt;
+        private readonly ChoicePulse litOpponentArt;
         private PlayerView view;
         private TurnDraft draft;
 
@@ -23,6 +24,7 @@ namespace Wotr.Client
             this.busy = busy;
             this.select = select;
             litArt = new ChoicePulse(board.OwnDice, ChoiceGlow.LitArtPulseClass);
+            litOpponentArt = new ChoicePulse(board.OpponentDice, ChoiceGlow.LitArtPulseClass);
             board.Sovereigns.Activate = Sovereign;
             board.CouncilTokenSelected += Council;
         }
@@ -31,7 +33,6 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            board.ResourceDecision.Context(view, draft);
             board.Sovereigns.Context(view, draft);
             board.Root.EnableInClassList("sovereign-context", board.Sovereigns.DecisionTarget.Length > 0);
             HighlightCandidates();
@@ -41,11 +42,11 @@ namespace Wotr.Client
         private void HighlightCandidates()
         {
             var option = DraftOptions.For(view, draft);
-            var choosing = (ResourcePresentation.OwnsDecision(view, draft) || ResourcePresentation.PoolDecision(view) ||
-                LoreChoice.Active(view)) && option?.Enabled == true;
+            var choosing = (ResourcePresentation.PoolDecision(view) || LoreChoice.Active(view)) && option?.Enabled == true;
             var councilDice = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
             var councilToken = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
             var lit = false;
+            var litOpponent = false;
             foreach (var pool in new[] { board.OwnDice, board.OpponentDice })
                 foreach (var button in pool.Query<Button>().ToList())
                 {
@@ -60,6 +61,11 @@ namespace Wotr.Client
                         view.Decision.Presentation == "DieAndResult" && option.EligibleIds.Contains(token.Id));
                     button.EnableInClassList("resource-candidate", eligible);
                     lit |= eligible && pool == board.OwnDice;
+                    litOpponent |= eligible && pool == board.OpponentDice;
+                    // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does.
+                    if (pool == board.OpponentDice && view.Dice.FirstOrDefault(d => d.Id == token.Id) is { } die)
+                        button.tooltip = DismayChoice.Token(view, die.Id).Length > 0
+                            ? DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id) : DieDescriptions.Tooltip(die);
                     if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
                         button.SetEnabled(true);
                     SpecialCandidate(button, token.Id, eligible);
@@ -68,6 +74,7 @@ namespace Wotr.Client
             lit |= board.OwnDice.Query<Button>(className: ActionPoolView.CouncilTokenClass).ToList()
                 .Any(button => button.ClassListContains("legal-target"));
             litArt.Run(lit);
+            litOpponentArt.Run(litOpponent);
         }
 
         // UI-267: during the special-die choice a die an Eye rules out is disabled (its tooltip, DieHints, says why).
@@ -82,6 +89,13 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || busy())
                 return false;
+            // UI-276 (D20): a glowing Ruler die's click spends a Dismay token picked for it and re-rolls the die.
+            var dismay = DismayChoice.Token(view, id);
+            if (dismay.Length > 0)
+            {
+                edit(() => DismayChoice.Choose(draft, id, dismay), true);
+                return true;
+            }
             if (ResourcePresentation.CouncilPending(draft) ||
                 draft.Kind == CommandKind.EnterCharacter && draft.Payload.CouncilTokenId.Length > 0)
             {
@@ -213,17 +227,10 @@ namespace Wotr.Client
             }
             else if (source.Object == DraftObject.RulerToken && target.Object == DraftObject.Die)
             {
-                if (ExpansionActions.RulerToken(view, next, source.Id, target.Id))
-                {
-                    edit(() => draft.Adopt(next), false);
-                    return true;
-                }
-                var option = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.UseDismay &&
-                    o.EligibleIds.Contains(source.Id) && o.EligibleDice.Contains(target.Id));
-                if (option == null)
+                if (!ExpansionActions.RulerToken(view, next, source.Id, target.Id))
                     return false;
-                next.Choose(CommandKind.UseDismay, target.Id);
-                next.Change(p => p.Ids.Add(source.Id));
+                edit(() => draft.Adopt(next), false);
+                return true;
             }
             else if (source.Object == DraftObject.Die && target.Object == DraftObject.Sovereign)
             {

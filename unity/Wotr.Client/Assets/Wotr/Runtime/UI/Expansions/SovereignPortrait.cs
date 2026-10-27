@@ -19,6 +19,8 @@ namespace Wotr.Client
         private readonly string id;
         private Image image = Image();
         private readonly VisualElement badge = new VisualElement { name = "sovereign-status", pickingMode = PickingMode.Ignore };
+        // UI-276 (D19): the king holds his Ruler token; the token itself stands in the dice pool.
+        private readonly VisualElement token = new VisualElement { name = "sovereign-token", pickingMode = PickingMode.Ignore };
         private readonly Label title = new Label { name = "sovereign-name", pickingMode = PickingMode.Ignore, enableRichText = false };
         private readonly VisualElement meter = new VisualElement { name = "sovereign-meter" };
         private readonly VisualElement tiles = new VisualElement { name = "sovereign-tiles" };
@@ -40,8 +42,10 @@ namespace Wotr.Client
             Portrait.AddToClassList(RuntimeTooltip.RichHoverClass);
             Portrait.userData = new DraftToken(DraftObject.Sovereign, id);
             badge.AddToClassList("sovereign-status");
+            token.AddToClassList("sovereign-token");
             Portrait.Add(image);
             Portrait.Add(badge);
+            Portrait.Add(token);
             Attempt = new Button(attempt) { name = "sovereign-attempt-" + id };
             Attempt.AddToClassList("sovereign-attempt");
             title.AddToClassList("sovereign-name");
@@ -68,6 +72,10 @@ namespace Wotr.Client
             var region = data.Regions.TryGetValue(king.RegionId, out var definition) ? definition.Name : "Out of play";
             var description = king.Title + " · " + SovereignPresentation.Status(king.Status) + " · " + region + (king.Garrison ? " · Garrison" : "") +
                 "\n" + SovereignPresentation.Corruption(king);
+            var holds = view.RulerTokens.Any(t => t.SovereignId == king.Id && t.Location == "free-peoples");
+            token.style.display = holds ? DisplayStyle.Flex : DisplayStyle.None;
+            if (holds)
+                description += "\nHolds his Ruler token: it stands in the Free Peoples' dice pool";
             Portrait.tooltip = hint != null ? hint + "\n" + description : description;
             Portrait.EnableInClassList(LitClass, hint != null);
             ChoiceGlow.Apply(Portrait, hint != null);

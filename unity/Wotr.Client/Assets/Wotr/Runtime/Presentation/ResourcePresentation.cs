@@ -16,20 +16,12 @@ namespace Wotr.Client
         Use
     }
 
+    // UI-264 to UI-276: every resource decision is made on its objects — the special-die pick and the Ruler discard on
+    // the pool's dice (UI-264), Vilya on the paid die and its socket (UI-268), the Council's tokens on their medallions
+    // (UI-270, UI-347), the Lore on the pool's dice and a result popover (UI-272), Dismay on the glowing Ruler dice
+    // (UI-276) — so the Dice & tokens panel is gone.
     public static class ResourcePresentation
     {
-        public static bool OwnsDecision(PlayerView view, TurnDraft draft)
-        {
-            if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
-                return false;
-            // UI-264: the special-die pick and the Ruler discard are made on the dice in the pool, not in this panel.
-            // UI-268: Vilya's decision is made on the paid die and the Vilya socket, with Spend the die in the console.
-            // UI-270: the Council's token choice is made on the tokens in the pool.
-            // UI-272: the Lore of the Elven Rings is made on the pool's dice and a result popover (LoreChoice).
-            // UI-347 (D13): a Council token's use starts on its medallion and a Chieftain's entry on his row.
-            return view.Decision.Kind is DecisionKind.Dismay;
-        }
-
         public static bool CouncilPending(TurnDraft draft) => draft != null && draft.Kind == null && draft.Payload.CouncilTokenId.Length > 0;
 
         public static bool CanSelectCouncil(PlayerView view, string token) => view?.Decision?.Kind == DecisionKind.Action &&
@@ -86,7 +78,7 @@ namespace Wotr.Client
         // UI-264: the special-die pick and the Ruler discard are made on the lit dice in the pool.
         public static bool PoolDecision(PlayerView view) =>
             view?.Decision?.Kind is DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard or DecisionKind.KeepActionDie or
-                DecisionKind.CouncilToken &&
+                DecisionKind.CouncilToken or DecisionKind.Dismay &&
             view.DecisionOwner == view.You && !view.Winner.HasValue;
 
         // The console's hint says what a click on a lit die does.
@@ -97,7 +89,7 @@ namespace Wotr.Client
         {
             DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Your other special dice wait for the next turn.",
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
-            DecisionKind.Dismay => "Choose a token, then either highlighted Ruler. The server rolls its new result.",
+            DecisionKind.Dismay => "Click a glowing Ruler die to spend a Dismay token and re-roll it. The server rolls its new result.",
             DecisionKind.CouncilToken => "Click the glowing Council token you take; you use it later in an action, without a die.",
             DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or Pass to spend the die and keep Vilya.",
             _ => "Choose the exact die and its new face. Changing the face does not use the die."

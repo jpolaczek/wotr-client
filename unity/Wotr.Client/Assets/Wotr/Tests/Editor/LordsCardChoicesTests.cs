@@ -44,7 +44,6 @@ namespace Wotr.EditorTests
             var view = Decision(Side.Shadow, DecisionKind.Dismay, "", CommandKind.UseDismay);
             view.Options.Add(new ActionOption { Kind = CommandKind.UseLoreBeforeActions, Enabled = true });
             Assert.AreEqual(LoreChoice.CardUse, LoreChoice.CardUses(view)[LoreChoice.Card]);
-            Assert.IsFalse(ExpansionDecision.Alternatives(view, new TurnDraft()).Any(o => o.Kind == CommandKind.UseLoreBeforeActions));
             view.Options.Last().Enabled = false;
             Assert.IsEmpty(LoreChoice.CardUses(view));
         }

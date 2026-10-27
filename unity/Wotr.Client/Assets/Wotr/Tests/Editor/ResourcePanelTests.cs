@@ -8,69 +8,45 @@ namespace Wotr.EditorTests
 {
     public sealed class ResourcePanelTests
     {
+        // UI-276 (EXP-15 D7, D20): Dismay is made on the glowing Ruler dice — a die's click spends the first Dismay token,
+        // since which one makes no difference — and keeping the tokens is the console's Pass; no panel hosts it.
         [Test]
-        public void ClosingPreservesDraftAndRefreshDoesNotReopenTheSameDecision()
-        {
-            var panel = new ResourcePanel();
-            var tray = new VisualElement();
-            var dock = new VisualElement();
-            dock.Add(tray);
-            panel.Attach(tray, dock);
-            var view = View(DecisionKind.Dismay);
-            var draft = new TurnDraft();
-            draft.Choose(CommandKind.UseDismay);
-            draft.Change(p => p.Ids.Add("token"));
-            panel.Context(view, draft);
-            Assert.IsTrue(panel.IsOpen);
-            Assert.AreSame(panel.DecisionHost, tray.parent);
-            panel.Close();
-            view.Revision++;
-            panel.Context(view, draft);
-            Assert.IsFalse(panel.IsOpen);
-            CollectionAssert.AreEqual(new[] { "token" }, draft.Payload.Ids);
-            panel.Open();
-            Assert.IsTrue(panel.IsOpen);
-            panel.Close();
-            view.Decision.Id = "next";
-            panel.Context(view, draft);
-            Assert.IsTrue(panel.IsOpen);
-            view.DecisionOwner = Side.Shadow;
-            panel.Context(view, draft);
-            Assert.IsFalse(panel.IsOpen);
-            Assert.AreEqual(DisplayStyle.None, panel.Tab.style.display.value);
-            Assert.AreSame(dock, tray.parent);
-        }
-
-        [Test]
-        public void OnlyOwnResourceWindowsUseThisHostAndNeverReplaceHuntOrNarya()
+        public void DismayIsTheRulerDiesClickAndKeepingIsThePass()
         {
             var view = View(DecisionKind.Dismay);
-            Assert.IsTrue(ResourcePresentation.OwnsDecision(view, null));
             view.You = Side.Shadow;
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
-            view.You = Side.FreePeoples;
-            view.Decision.Kind = DecisionKind.Reaction;
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
-            view.Decision.Kind = DecisionKind.Action;
+            view.DecisionOwner = Side.Shadow;
+            view.Options.Add(new ActionOption
+            {
+                Kind = CommandKind.UseDismay, Enabled = true, EligibleIds = { "kings.token.theoden", "kings.token.dain" }, EligibleDice = { "ruler" }
+            });
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineDismay, Enabled = true });
+            Assert.IsTrue(ResourcePresentation.PoolDecision(view));
+            Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(view));
+            StringAssert.StartsWith("Click a glowing Ruler die to spend a Dismay token", ResourcePresentation.PoolHint(view));
+            Assert.AreEqual("kings.token.theoden", DismayChoice.Token(view, "ruler"));
+            Assert.AreEqual("", DismayChoice.Token(view, "other"));
             var draft = new TurnDraft();
-            draft.Choose(CommandKind.UseNarya);
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
-            // UI-161: the base Elven Ring is used at its console socket, the dice and the result popover.
-            draft.Choose(CommandKind.UseRing);
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
-            view.Decision.Kind = DecisionKind.Dismay;
-            Assert.IsTrue(ResourcePresentation.OwnsDecision(view, draft));
-            view.Winner = Side.Shadow;
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft));
+            DismayChoice.Choose(draft, "ruler", DismayChoice.Token(view, "ruler"));
+            Assert.AreEqual(CommandKind.UseDismay, draft.Kind);
+            Assert.AreEqual("ruler", draft.Payload.DieId);
+            CollectionAssert.AreEqual(new[] { "kings.token.theoden" }, draft.Payload.Ids);
+            Assert.IsTrue(draft.Ready(view.Options[0]));
+            var pass = OptionalDecline.Option(view, new TurnDraft());
+            Assert.AreEqual(CommandKind.DeclineDismay, pass.Command);
+            Assert.AreEqual("Pass · Keep your Dismay tokens", pass.Tooltip);
+            Assert.AreEqual("Or Pass to keep your Dismay tokens.", OptionalDecline.Hint(view, new TurnDraft()));
+            Assert.IsFalse(DraftOptions.CanSelectToken(view, "kings.token.theoden"), "The die's click picks the token.");
+            view.You = Side.FreePeoples;
+            Assert.AreEqual("", DismayChoice.Token(view, "ruler"), "The opponent's Dismay lights nothing.");
         }
 
-        // UI-264: the special-die pick and the Ruler discard are made on the pool's lit dice, never in this panel.
+        // UI-264: the special-die pick and the Ruler discard are made on the pool's lit dice.
         [TestCase(DecisionKind.SpecialDieChoice)]
         [TestCase(DecisionKind.RulerDiscard)]
-        public void PoolDecisionsStayOutOfThePanel(DecisionKind kind)
+        public void PoolDecisionsAreMadeOnThePoolDice(DecisionKind kind)
         {
             var view = View(kind);
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, null));
             Assert.IsTrue(ResourcePresentation.PoolDecision(view));
             // UI-273: the Ruler discard's hint says the click discards and when the die returns.
             StringAssert.StartsWith(kind == DecisionKind.RulerDiscard ? "Click a glowing die to discard it" : "Click a highlighted die",
@@ -171,7 +147,6 @@ namespace Wotr.EditorTests
             var view = CouncilView(true);
             Assert.AreEqual(CouncilClick.Mark, ResourcePresentation.Clicked(view, new TurnDraft(), ExpansionDraft.CouncilPolitics));
             var draft = CouncilDraft();
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft), "No Dice & tokens panel step.");
             Assert.AreEqual(CouncilClick.Use, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
             var hint = ResourcePresentation.CouncilHint(view, draft);
             StringAssert.StartsWith("Click a lit Chieftain's row", hint);
@@ -197,6 +172,36 @@ namespace Wotr.EditorTests
             var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
             Assert.AreEqual(ExpansionDraft.CouncilPolitics, draft.Payload.CouncilTokenId);
+        }
+
+        // UI-276 (EXP-15 D19): the Ruler tokens are graphics in the pool with their king's nation emblem: the Free Peoples'
+        // lit while a die can use one; the Shadow's Dismay tokens are information, spent by a Ruler die's click.
+        [Test]
+        public void RulerTokensAreCoinsWithTheirKingsEmblem()
+        {
+            var view = View(DecisionKind.Action);
+            view.Sovereigns.Add(new SovereignView { Id = "kings.sovereign.theoden", Title = "Théoden", Nation = "rohan" });
+            view.RulerTokens.Add(new RulerTokenView { Id = "kings.token.theoden", SovereignId = "kings.sovereign.theoden", Location = "free-peoples" });
+            view.RulerTokenActions.Add(new RulerTokenActionOption { TokenId = "kings.token.theoden", AbilityId = "ability", Action = new ActionOption() });
+            var pool = new ActionPoolView(_ => { }, _ => { });
+            var root = new VisualElement();
+            pool.Apply(root, view, Side.FreePeoples, true);
+            var token = root.Q<Button>("ruler-token-kings.token.theoden");
+            Assert.IsTrue(token.ClassListContains("ruler-token-free") && token.ClassListContains("ruler-token-lit"));
+            Assert.IsTrue(token.Q("ruler-token-emblem").ClassListContains("nation-emblem-rohan"));
+            Assert.IsInstanceOf<DraftToken>(token.userData);
+
+            view.You = Side.Shadow;
+            view.DecisionOwner = Side.Shadow;
+            view.RulerTokens[0].Location = "dismay";
+            view.RulerTokenActions.Clear();
+            root = new VisualElement();
+            pool.Apply(root, view, Side.Shadow, true);
+            var dismay = root.Q<Button>("ruler-token-kings.token.theoden");
+            Assert.IsTrue(dismay.ClassListContains("ruler-token-dismay"));
+            Assert.IsFalse(dismay.ClassListContains("ruler-token-lit"));
+            Assert.IsNull(dismay.userData, "A Dismay token is not picked by hand.");
+            StringAssert.Contains("Spent by clicking a glowing Ruler die", dismay.tooltip);
         }
 
         [Test]

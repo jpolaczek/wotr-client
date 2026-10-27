@@ -135,7 +135,6 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DecisionKind.CouncilToken, client.Board.View.Decision.Kind);
             Assert.IsEmpty(client.Board.View.CouncilTokens);
             // UI-270: the token is taken on its lit medallion in the Shadow's pool; no panel opens.
-            Assert.IsFalse(client.Board.ResourceDecision.IsOpen);
             foreach (var id in CouncilTokenSlots.Ids)
                 Assert.IsTrue(client.Board.OwnDice.Q<Button>("pool-" + id).ClassListContains("legal-target"));
             Assert.AreEqual(0, boundary.Commands);

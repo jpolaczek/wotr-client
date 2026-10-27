@@ -21,7 +21,7 @@ namespace Wotr.PlayTests
         public IEnumerator EmptyAndStayKeepTheSamePrivateWaitingViewAndGrantNoTokens() => MatchTestRoom.Wait(Empty());
 
         [UnityTest]
-        public IEnumerator OneDepartureHandsEitherTokenToTheShadowResourcePanel() => MatchTestRoom.Wait(One());
+        public IEnumerator OneDepartureHandsEitherTokenToTheShadowsPool() => MatchTestRoom.Wait(One());
 
         [UnityTest]
         public IEnumerator TwoAndFiveDeparturesShareClickDropUndoAndGrantBothTokensOnce() => MatchTestRoom.Wait(Many());
@@ -64,7 +64,6 @@ namespace Wotr.PlayTests
                 // UI-270: the Shadow takes its token on the lit medallion in its pool; no panel or window opens.
                 await room.Settle();
                 Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(room.Sh.Board.View));
-                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen);
                 Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen);
                 foreach (var id in CouncilTokenSlots.Ids)
                 {

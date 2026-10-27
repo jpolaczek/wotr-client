@@ -243,14 +243,7 @@ namespace Wotr.Client
             shownTokens[root] = (view.MatchId, now);
             foreach (var token in view.RulerTokens.Where(t => t.Location == (side == Side.FreePeoples ? "free-peoples" : "dismay")))
             {
-                var name = ExpansionLabels.Token(view, token.Id).Split(' ')[0];
-                var button = BoardScreen.Button((side == Side.FreePeoples ? "♛ " : "◈ ") + name.Substring(0, Math.Min(3, name.Length)), () => tokenChosen(token.Id));
-                button.name = "ruler-token-" + token.Id;
-                button.AddToClassList("ruler-token");
-                button.tooltip = ResourcePresentation.WithExplanation(view, token.Id,
-                    (side == Side.FreePeoples ? "Ruler token · " : "Dismay · ") + ExpansionLabels.Token(view, token.Id));
-                button.EnableInClassList("resource-unavailable", !DraftOptions.CanSelectToken(view, token.Id));
-                button.userData = new DraftToken(DraftObject.RulerToken, token.Id);
+                var button = RulerToken(view, token, side);
                 row.Add(button);
                 now.Add(token.Id);
                 if (before != null && !before.Contains(token.Id))
@@ -267,6 +260,39 @@ namespace Wotr.Client
                 button.AddToClassList(CouncilTokenClass + "-" + CouncilTokenSlots.Key(token));
                 row.Add(button);
             }
+        }
+
+        // UI-276 (D19): a Ruler token is a crowned coin with its king's nation emblem: blue while the Free Peoples hold it,
+        // lit while a die can use it now; a Dismay token is the red coin the Shadow holds, information only, since a Ruler
+        // die's click spends one (D20).
+        private Button RulerToken(PlayerView view, RulerTokenView token, Side side)
+        {
+            var free = side == Side.FreePeoples;
+            var button = new Button(() => tokenChosen(token.Id)) { name = "ruler-token-" + token.Id };
+            button.AddToClassList("ruler-token");
+            button.AddToClassList(free ? "ruler-token-free" : "ruler-token-dismay");
+            var emblem = new VisualElement { name = "ruler-token-emblem", pickingMode = PickingMode.Ignore };
+            emblem.AddToClassList("ruler-token-emblem");
+            var nation = view.Sovereigns.FirstOrDefault(s => s.Id == token.SovereignId)?.Nation ?? "";
+            if (nation.Length > 0)
+                emblem.AddToClassList("nation-emblem-" + nation);
+            button.Add(emblem);
+            if (free)
+                button.userData = new DraftToken(DraftObject.RulerToken, token.Id);
+            else
+                ReadOnlyControl.Apply(button, false);
+            TokenDetails(button, view, token.Id, free);
+            return button;
+        }
+
+        private static void TokenDetails(Button button, PlayerView view, string id, bool free)
+        {
+            var usable = free && DraftOptions.CanSelectToken(view, id);
+            button.tooltip = free
+                ? ResourcePresentation.WithExplanation(view, id, "Ruler token · " + ExpansionLabels.Token(view, id))
+                : "Dismay · " + ExpansionLabels.Token(view, id) + "'s token\nSpent by clicking a glowing Ruler die after the roll";
+            button.EnableInClassList("ruler-token-lit", usable);
+            button.EnableInClassList("resource-unavailable", free && !usable);
         }
 
         // UI-270: a Council token's slot shows whether it was received, is offered, ready, usable now or spent.
@@ -290,12 +316,8 @@ namespace Wotr.Client
                 return;
             foreach (var button in root.Query<Button>().ToList())
             {
-                if (button.userData is DraftToken ruler && ruler.Object == DraftObject.RulerToken)
-                {
-                    button.tooltip = ResourcePresentation.WithExplanation(view, ruler.Id,
-                        (view.You == Side.FreePeoples ? "Ruler token · " : "Dismay · ") + ExpansionLabels.Token(view, ruler.Id));
-                    button.EnableInClassList("resource-unavailable", !DraftOptions.CanSelectToken(view, ruler.Id));
-                }
+                if (button.ClassListContains("ruler-token"))
+                    TokenDetails(button, view, button.name.Substring("ruler-token-".Length), view.You == Side.FreePeoples);
                 else if (button.ClassListContains(CouncilTokenClass))
                     CouncilToken(button, view);
             }

@@ -137,7 +137,6 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DecisionKind.CouncilToken, room.Sh.Board.View.Decision.Kind);
             // UI-270: the Shadow takes its token in its pool; no panel hosts the decision.
             Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(room.Sh.Board.View));
-            Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen);
             var oldRecord = await room.Sh.Api.Get<ActionLogView>("api/matches/" + board.View.MatchId +
                 "/actions/" + guideGroup.Id, room.Token);
             Assert.IsFalse(oldRecord.Steps.Any(step => step.Facts.Targets.Contains("fate.character.gimli-dwarven-lord")),

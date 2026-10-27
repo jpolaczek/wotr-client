@@ -95,10 +95,9 @@ namespace Wotr.PlayTests
             using (var room = await Connect("ui09-dismay", ScenarioKind.CardPack))
             {
                 Assert.AreEqual(DecisionKind.Dismay, room.Sh.Board.View.Decision.Kind);
+                // UI-276 (D20): the Ruler die's click alone spends the first Dismay token.
                 var option = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseDismay);
-                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>("ruler-token-" + option.EligibleIds[0]));
                 var id = option.EligibleDice.Last();
-                Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("ruler-token-" + option.EligibleIds[0]).ClassListContains("selected"));
                 await Layout(room, room.Sh, "dismay", "ui09");
                 await Reconnect(room, room.Sh);
                 var revision = room.Sh.Board.View.Revision;
@@ -170,7 +169,6 @@ namespace Wotr.PlayTests
             Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("action-DeclineVilya"));
             Assert.IsTrue(client.Board.Console.Actions.Pass.enabledSelf);
             Assert.AreEqual("Pass · Spend the die and keep Vilya", client.Board.Console.Actions.Pass.tooltip);
-            Assert.IsFalse(client.Board.ResourceDecision.IsOpen, "No resource panel opens.");
         }
 
         private static async Task Awaken()

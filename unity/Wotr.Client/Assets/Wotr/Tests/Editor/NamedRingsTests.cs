@@ -67,7 +67,6 @@ namespace Wotr.EditorTests
             Assert.AreEqual(CommandKind.DeclineVilya, spend.Command);
             Assert.AreEqual("Pass · Spend the die and keep Vilya", spend.Tooltip);
             StringAssert.Contains("Pass to spend the die", ResourcePresentation.Consequence(view, null));
-            Assert.IsFalse(ResourcePresentation.OwnsDecision(view, draft), "The resource panel does not host Vilya.");
         }
 
         private static PlayerView Lords() => new PlayerView

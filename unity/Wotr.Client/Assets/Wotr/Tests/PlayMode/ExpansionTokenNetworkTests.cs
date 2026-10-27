@@ -157,7 +157,6 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
                 Assert.IsFalse(room.Sh.Board.Console.Status.Hint.text.StartsWith("Click a lit Chieftain's row"));
-                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen, "No Dice & tokens panel step.");
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
                 Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Its use still waits for its nation or figures.");
                 string figure = "";
@@ -211,7 +210,6 @@ namespace Wotr.PlayTests
                 // UI-347 (D13): a Chieftain can enter with the token, so its click marks it and lights his row; no panel.
                 PointerGestureEvents.ClickAt(room.Sh.Board.OwnDice.Q<Button>("pool-" + token));
                 await room.Settle();
-                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen, "No Dice & tokens panel step.");
                 StringAssert.StartsWith("Click a lit Chieftain's row", room.Sh.Board.Console.Status.Hint.text);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>(choice.Dice[0]).ClassListContains("resource-candidate"));
                 await ComponentGestures.Cost(room, room.Sh, choice.Dice[0]);
@@ -220,7 +218,6 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
                 // UI-108/UI-142: the Serpent's row enters by a click; no panel offers it.
-                Assert.IsFalse(room.Sh.Board.ResourceDecision.IsOpen);
                 await ComponentGestures.Enter(room, room.Sh, choice);
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("cost-" + choice.Dice[0]), "UI-239: the only die is not a button.");
                 await Layout(room, room.Sh, "entry-token", "ui09");

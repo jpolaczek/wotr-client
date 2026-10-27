@@ -83,7 +83,7 @@ namespace Wotr.PlayTests
             // UI-98: the corner tab's plaques are soft occlusions, like the hand (BoardScreen fixedControls).
             var fixedControls = new VisualElement[] { board.Map.Legend.Toggle, board.Map.Legend.PoliticalToggle, board.Nations.Root,
                 board.TableEffects.Tab,
-                board.HandDrawer.Tab, board.ResourceDecision.Tab, board.Victory.Tab, board.Victory.Banner };
+                board.HandDrawer.Tab, board.Victory.Tab, board.Victory.Banner };
             foreach (var control in fixedControls.Where(c => c != null && Visible(c) && (c.childCount > 0 || c is TextElement)))
                 Assert.IsFalse(panel.worldBound.Overlaps(control.worldBound), "Fixed control is covered: " + control.name);
             Assert.IsEmpty(panel.Query<ScrollView>().ToList());

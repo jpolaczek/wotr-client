@@ -45,7 +45,6 @@ namespace Wotr.PlayTests
             await Task.Delay(120, token);
             CheckDice(board, true);
             Assert.IsFalse(board.RingPicker.IsOpen, "No results before a die is chosen.");
-            Assert.IsFalse(board.ResourceDecision.IsOpen, "The base ring needs no resource panel.");
             StringAssert.StartsWith("Click a highlighted die", board.Console.Status.Hint.text);
             Assert.IsTrue(socket.ClassListContains("selected") && socket.ClassListContains("legal-target"));
             TurnConsoleLayoutTests.AssertRoundRingOnly(socket, "armed");

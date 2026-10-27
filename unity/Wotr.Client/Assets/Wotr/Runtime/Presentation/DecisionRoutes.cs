@@ -26,7 +26,6 @@ namespace Wotr.Client
         Fellowship,
         Characters,
         Console,
-        Resources,
         Window
     }
 
@@ -65,7 +64,8 @@ namespace Wotr.Client
             DecisionKind.SpecialDieChoice or DecisionKind.RulerDiscard => DecisionHost.Dice,
             DecisionKind.KeepActionDie => DecisionHost.Rings,
             DecisionKind.CouncilToken => DecisionHost.Dice,
-            DecisionKind.Dismay => DecisionHost.Resources,
+            // UI-276 (D20): Dismay is the glowing Ruler dice in the pools.
+            DecisionKind.Dismay => DecisionHost.Dice,
             DecisionKind.CouncilVersions => DecisionHost.Fellowship,
             DecisionKind.CouncilHomelands => DecisionHost.Fellowship,
             DecisionKind.CorruptionTile => DecisionHost.Characters,

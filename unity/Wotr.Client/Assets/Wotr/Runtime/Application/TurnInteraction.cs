@@ -932,8 +932,6 @@ namespace Wotr.Client
                 return;
             if (board.Tray.parent == board.Hunt.DecisionHost)
                 board.Hunt.Open();
-            else if (board.Tray.parent == board.ResourceDecision.DecisionHost)
-                board.ResourceDecision.Open();
             else if (board.Tray.parent == board.TableEffects.DecisionHost)
                 board.TableEffects.Open();
             else if (board.Tray.parent == board.Characters.DecisionHost)

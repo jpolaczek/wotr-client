@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -41,11 +39,5 @@ namespace Wotr.Client
             CommandKind.UseEvilKnowledge => "Evil Knowledge",
             _ => ""
         };
-
-        // UI-272: Lore before Dismay is the Lore card's click in the Effects panel (LoreChoice.CardUses), not a button.
-        // UI-274: a corruption attempt's draw and keep are the king's tiles and the console's Draw again.
-        public static IEnumerable<ActionOption> Alternatives(PlayerView view, TurnDraft draft) =>
-            view.Decision.Kind is DecisionKind.Dismay
-                ? view.Options.Where(o => o.Kind != draft.Kind && o.Kind != CommandKind.UseLoreBeforeActions) : Enumerable.Empty<ActionOption>();
     }
 }

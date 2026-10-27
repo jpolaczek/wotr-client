@@ -561,7 +561,7 @@ responses now fit the console. The opponent's window never enables it. Tests: `C
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
 `CardPack04NetworkTests`.
 
-Expansions (owner, EXP-15, 2026-10-26; the Lords' part implemented by UI-347, `OptionalDecline`): D7 extends this to every optional decline of the
+Expansions (owner, EXP-15, 2026-10-26; implemented by UI-347 for Lords, UI-348 for Anárion and Brand, UI-276 for Dismay — `OptionalDecline`): D7 extends this to every optional decline of the
 expansions — Vilya's "Spend the die", Lore's "Keep results", Wind's and the Balrog card's "Finish", Orderly
 Withdrawal's "Keep the hit", We Won't Go Back's "No Corruption", "Keep card effects" (Brand, the Chieftains) and
 Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348). D8

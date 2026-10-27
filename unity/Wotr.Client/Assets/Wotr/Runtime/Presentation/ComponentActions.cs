@@ -71,6 +71,8 @@ namespace Wotr.Client
                     Key = "far-sighted-" + option.Kind, Owner = "Thranduil",
                     OwnerId = "kings.sovereign.thranduil",
                     Symbol = option.Kind == CommandKind.MoveFellowship ? "◇→" : option.Kind == CommandKind.SeparateCompanions ? "♟↗" : "♟→",
+                    // UI-276 (D18): Thranduil's ability picture, glowing with an eligible die; the standard move is not using it.
+                    Picture = AbilityPictures.For(option.Kind, option.RulerTravel.AbilityId),
                     Detail = "Far-sighted · " + TravelLabel(option.Kind),
                     AbilityId = option.RulerTravel.AbilityId, Enabled = true
                 };

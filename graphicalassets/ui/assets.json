@@ -514,6 +514,26 @@
       "--gilt-shadow": "#3d3628",
       "--ivory": "#9a927f",
       "--ember": "#6a5a50"
+    },
+    "free-lit": {
+      "--enamel-light": "#2f5f82",
+      "--enamel-mid": "#183c58",
+      "--enamel-dark": "#0c2135",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
+    },
+    "shadow-lit": {
+      "--enamel-light": "#7c2b22",
+      "--enamel-mid": "#4b1712",
+      "--enamel-dark": "#2a0b09",
+      "--gilt-highlight": "#fff6d6",
+      "--gilt-light": "#f2d283",
+      "--gilt-mid": "#c49a45",
+      "--gilt-shadow": "#83601f",
+      "--glow-opacity": "1"
     }
   },
   "assets": [
@@ -1661,6 +1681,17 @@
         "council-lit",
         "council-hover",
         "council-spent"
+      ],
+      "base": false
+    },
+    {
+      "source": "tokens/ruler-token.svg",
+      "role": "UI-276: a Kings Ruler token, a gilt coin with a crown; the code lays the king's nation emblem over it. Blue enamel for a Ruler token the Free Peoples hold, red for a Dismay token the Shadow holds; lit while usable now.",
+      "variants": [
+        "free",
+        "free-lit",
+        "shadow",
+        "shadow-lit"
       ],
       "base": false
     },

@@ -49,8 +49,8 @@ Most of the expansions already follow the shape:
 | 3 | Palantír of Anárion "Skip extra card" | fixed (UI-348): the console's Pass (D7, every optional decline); the decks draw |
 | 4 | Brand's combat replacement | fixed (UI-348): the gilt chip beside the own card; Pass keeps the card's effects |
 | 5 | Welcome removal | mostly fixed: the pool die and × work; the tray's die buttons are still reachable (`CostDice.cs:51-53`) (UI-278) |
-| 6 | Dismay | open (UI-276) |
-| 7 | Narya and Far-sighted as text components | Narya fixed (UI-347): no dock component, the nation row and Gandalf's row host it; Far-sighted open (UI-276, D18) |
+| 6 | Dismay | fixed (UI-276): the glowing Ruler die's click, the console's Pass; the Dice & tokens panel deleted |
+| 7 | Narya and Far-sighted as text components | fixed: Narya on the nation row and Gandalf's row (UI-347); Far-sighted is Thranduil's picture (UI-276) |
 | 8 | Lords Hunt table cards | fixed by the merge (one `HuntCardResponses`) |
 | 9 | Alternate Guides in the Hunt | Gimli's and the Council's are portrait objects; the base Guides still respond elsewhere (D9) |
 | 10 | Orderly Withdrawal | fixed (UI-347): the "−1" on the hits, Pass keeps the hit |

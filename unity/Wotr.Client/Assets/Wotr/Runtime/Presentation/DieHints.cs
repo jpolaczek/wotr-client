@@ -14,6 +14,9 @@ namespace Wotr.Client
             var choice = SpecialDice.Tooltip(view, die);
             if (choice.Length > 0)
                 return choice;
+            // UI-276 (D20): a Ruler die Dismay may re-roll says which token its click spends.
+            if (DismayChoice.Token(view, die.Id).Length > 0)
+                return DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id);
             // UI-273: a die the Ruler discard may take says what its click does; a discarded one when it comes back.
             if (RulerDice.Candidate(view, die))
                 return RulerDice.CandidateTooltip(die);

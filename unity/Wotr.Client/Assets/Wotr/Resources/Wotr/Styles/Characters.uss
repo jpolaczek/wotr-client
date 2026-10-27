@@ -153,3 +153,15 @@
 .character-roster-line { flex-direction: row; align-items: center; height: 12px; }
 .character-roster-line > .character-status-icon { width: 11px; height: 11px; margin-right: 2px; }
 .character-roster-line > .character-roster-detail { flex-shrink: 1; min-width: 0; }
+
+/* UI-276 (D19): a king who holds his Ruler token wears the token in his portrait's corner. */
+#board-screen .sovereign-portrait > .sovereign-token {
+    position: absolute;
+    right: 1px;
+    bottom: 1px;
+    width: 16px;
+    height: 16px;
+    background-image: resource("Wotr/Art/UI/tokens/ruler-token-free");
+    -unity-background-scale-mode: scale-to-fit;
+}
+

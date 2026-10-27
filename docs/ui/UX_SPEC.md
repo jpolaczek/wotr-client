@@ -1357,7 +1357,7 @@ Owner decision 2026-10-19: the kings' decisions are made on their objects, and n
   opens and closes with a fade, its rows fade in and out, a value of the same king that changes pulses (another king's
   values do not), and a newly attached tile fades in. A lit portrait, attempt button or tile pulses with the Characters
   roster in its one rhythm (`CharacterRosterPanel.OfferSovereigns`); the attempt button and the tiles show their
-  ChoiceGlow rim. The Dice & tokens panel, its tab and the Council's choices fade; a new Ruler or Dismay token arrives
+  ChoiceGlow rim. The Dice & tokens panel (deleted in UI-276), its tab and the Council's choices fade; a new Ruler or Dismay token arrives
   in the pool and a Council medallion whose state changes flashes its art (it does not grow: the pool's row has no room
   beside it). The expansions' tray choices (`ExpansionChoices`) and the version card not chosen glow and pulse (the
   version card in its rim and plate only, as it fills the tray's width). Per D6 the lit art — special, Lore and Council dice, Keeper Ring sockets
@@ -1414,14 +1414,14 @@ Every expansion decision kind and card presentation has a host other than the ge
 | Decision | Host now | Moves to its object in |
 |---|---|---|
 | Special die (Lords), Ruler discard (Kings) | lit dice in the pool; the console hint says what the click does | UI-267, UI-273 (art, dimmed slots) |
-| Vilya keep, Dismay, Council token | Vilya's socket and the console's Pass (UI-347); Dismay in Dice & tokens; the Council medallions (UI-347) | UI-268, UI-276, UI-270 |
+| Vilya keep, Dismay, Council token | Vilya's socket and the console's Pass (UI-347); Dismay on the glowing Ruler dice and the Pass (UI-276); the Council medallions (UI-347) | UI-268, UI-276, UI-270 |
 | Companion versions, homelands (Council) | setup panel | UI-269, UI-270 |
 | Corruption tile, a card's choice of a sovereign | the kings' portraits, attempt buttons and tiles (UI-274) | UI-278 |
 | Fate's Monsters branch, Kings cards' branches | console buttons | — |
 
 The special-die pick, the Ruler discard, the Council setup and token and the corruption tile are required decisions
 (`RequiredDecisions`): the red notice at the top waits for them. Vilya's keep and Dismay can be declined and are not.
-Dice & tokens no longer opens for the two pool decisions; the last of UI-268, UI-270, UI-272 and UI-276 deletes it.
+Dice & tokens no longer opens for the two pool decisions; UI-276, the last of UI-268, UI-270, UI-272 and UI-276, deleted it.
 Tests: `DecisionRoutesTests.EveryDecisionKindHasAnObjectHost`, `ExpansionDecisionsHaveTheirHosts`,
 `ExpansionCardStepsHaveObjectHosts`, `RequiredDecisionTests`, `ResourcePanelTests.PoolDecisionsStayOutOfThePanel`,
 `ResourcePanelNetworkTests.SpecialChoicesAndBothDiscardsAreMadeOnThePoolDiceWithoutAPanel`.
@@ -1562,3 +1562,27 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
   rendered Log and its opened card.
 - Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.
 
+## Ruler tokens, Dismay and Far-sighted on their objects — UI-276 (2026-10-27)
+
+The owner's decisions EXP-15 D7 and D18–D20 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)); the Dice & tokens panel is
+deleted, since no resource decision is made in it any more (UI-264's plan).
+
+- **Dismay (D20, D7).** After the roll the Shadow spends Dismay by clicking a glowing Ruler die alone — the Free Peoples'
+  in the opponent's pool, or the Shadow's own: it pulses with the expansions' lit art, and its tooltip names the token
+  it spends ("Click to spend Théoden's Dismay token and re-roll this Ruler die"). Which token is spent makes no
+  difference (KINGS, `Kings/KingsDismay.cs`), so the first one offered is picked (`DismayChoice`); the log names it.
+  The Dismay tokens in the Shadow's pool are information. Keeping the tokens is the console's Pass ("Pass · Keep your
+  Dismay tokens"), and the console's hint ends with it; no button, panel or window remains.
+- **Ruler tokens (D19).** A Ruler token is a crowned coin (`graphicalassets/ui/src/tokens/ruler-token.svg`, replaceable
+  art) with its king's nation emblem: blue while the Free Peoples hold it and lit while a die can use it, red for the
+  Shadow's Dismay tokens. The usable token stands in the dice pool; the king who holds it wears it as a small badge on
+  his Characters portrait, whose tooltip says the token stands in the pool.
+- **Far-sighted (D18).** Thranduil's ability is his move picture, offered while a die that can pay it is selected;
+  the standard move simply does not use it — no toggle or mode chip.
+
+Tests: `ResourcePanelTests.DismayIsTheRulerDiesClickAndKeepingIsThePass`, `RulerTokensAreCoinsWithTheirKingsEmblem`,
+`ExpansionDraftTests.ADismayTokenIsPickedByTheRulerDiesClick`, `SovereignPanelTests.AKingHoldingHisRulerTokenWearsItsBadge`,
+`ComponentActionTests.FarSightedIsThranduilsPicture`, `ResourcePanelNetworkTests` (Dismay on the opponent's die, Dismay
+before Lore), `ExpansionDecisionNetworkTests` (Dismay), `ExpansionWindowNetworkTests` (Keep tokens through Pass),
+`ExpansionTokenNetworkTests` (Far-sighted, Ruler tokens); test-menu scenarios `kings-dismay`, `kings-far-sighted`,
+`kings-fp-ruler-token`.

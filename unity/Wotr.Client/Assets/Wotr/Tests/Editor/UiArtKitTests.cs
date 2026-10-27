@@ -95,6 +95,8 @@ namespace Wotr.EditorTests
             ("tokens/council-travel-council", 32, 32, true), ("tokens/council-travel-council-lit", 32, 32, true),
             ("tokens/council-travel-council-hover", 32, 32, true), ("tokens/council-travel-council-spent", 32, 32, true),
             ("tokens/politics-token-free", 28, 28, true), ("tokens/politics-token-shadow", 28, 28, true),
+            ("tokens/ruler-token-free", 32, 32, true), ("tokens/ruler-token-free-lit", 32, 32, true),
+            ("tokens/ruler-token-shadow", 32, 32, true), ("tokens/ruler-token-shadow-lit", 32, 32, true),
             ("icons/cards", 26, 26, true), ("icons/ring", 26, 26, true), ("icons/ring-captured", 26, 26, true), ("icons/spent", 26, 26, true),
             ("icons/hunt", 26, 26, true), ("icons/out", 26, 26, true), ("icons/log", 20, 20, true),
             ("icons/politics", 28, 28, true), ("icons/effects", 28, 28, true), ("icons/characters", 28, 28, true),

@@ -9,13 +9,14 @@ namespace Wotr.Client
     // what passing skips: Vilya's Spend the die, the Lore of the Elven Rings' Keep results, Wind from the West's and the
     // Balrog card's Finish, Orderly Withdrawal's Keep the hit and We Won't Go Back's No Corruption. UI-348: Palantír of
     // Anárion's Skip extra card and a Combat card replacement's Keep card effects (Brand, the Dark Chieftains), whose ids
-    // are generic and count only in their own steps.
+    // are generic and count only in their own steps. UI-276: Dismay's Keep tokens.
     public static class OptionalDecline
     {
         public const string BalrogFinish = "balrog.finish";
         public const string WindFinish = "wind.finish";
         public const string WithdrawalKeep = "withdrawal.decline";
         private const string VilyaSkip = "spend the die and keep Vilya";
+        private const string DismaySkip = "keep your Dismay tokens";
 
         // What passing does, completing "Pass to …".
         private static readonly IReadOnlyDictionary<string, string> Skips = new Dictionary<string, string>
@@ -50,6 +51,8 @@ namespace Wotr.Client
         {
             if (NamedRings.VilyaDecision(view))
                 return Vilya(view);
+            if (view?.Decision?.Kind == DecisionKind.Dismay && view.DecisionOwner == view.You && !view.Winner.HasValue)
+                return Dismay(view);
             var option = Choice(view);
             var id = option?.EligibleIds.FirstOrDefault(candidate => Declines(view, candidate));
             if (id == null)
@@ -70,7 +73,12 @@ namespace Wotr.Client
             var decline = Option(view, draft);
             if (decline == null || !decline.Enabled)
                 return "";
-            return "Or Pass to " + (decline.Command == CommandKind.DeclineVilya ? VilyaSkip : Skip(view, decline.Id)) + ".";
+            return "Or Pass to " + decline.Command switch
+            {
+                CommandKind.DeclineVilya => VilyaSkip,
+                CommandKind.DeclineDismay => DismaySkip,
+                _ => Skip(view, decline.Id)
+            } + ".";
         }
 
         private static ConsoleOption Vilya(PlayerView view)
@@ -81,6 +89,21 @@ namespace Wotr.Client
             spend.Label = "Pass";
             spend.Tooltip = spend.Enabled ? Tooltip(VilyaSkip) : "Pass · " + spend.Tooltip;
             return spend;
+        }
+
+        private static ConsoleOption Dismay(PlayerView view)
+        {
+            var keep = view.Options.FirstOrDefault(o => o.Kind == CommandKind.DeclineDismay);
+            return keep == null ? null : new ConsoleOption
+            {
+                Id = "keep-tokens",
+                Name = "action-DeclineDismay",
+                Label = "Pass",
+                Tooltip = keep.Enabled ? Tooltip(DismaySkip) : "Pass · " + keep.Reason,
+                Kind = ConsoleOptionKind.Action,
+                Command = CommandKind.DeclineDismay,
+                Enabled = keep.Enabled
+            };
         }
 
         private static string Tooltip(string skip) => "Pass · " + char.ToUpperInvariant(skip[0]) + skip.Substring(1);

@@ -17,7 +17,7 @@ namespace Wotr.PlayTests
         public IEnumerator SpecialChoicesAndBothDiscardsAreMadeOnThePoolDiceWithoutAPanel() => Wait(Choices());
 
         [UnityTest]
-        public IEnumerator DismayTargetsTheOpponentsRetainedRulerAfterClosingAndReconnect() => Wait(Dismay());
+        public IEnumerator DismayIsTheClickOnTheOpponentsGlowingRulerDie() => Wait(Dismay());
 
         [UnityTest]
         public IEnumerator RulerTokenDropKeepsItsIdentityThroughBothDenethorDraws() => Wait(Ruler());
@@ -36,14 +36,12 @@ namespace Wotr.PlayTests
             var token = option.EligibleIds.Single();
             var ruler = actor.Board.View.Dice.Single(d => d.Owner == Side.Shadow && option.EligibleDice.Contains(d.Id));
             var revision = actor.Board.View.Revision;
-            PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>("ruler-token-" + token));
-            await room.Settle();
+            // UI-276 (D20): the Ruler die's click alone spends the Dismay token.
             PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(ruler.Id));
             await room.At(revision + 1);
             Assert.AreEqual("removed", actor.Board.View.RulerTokens.Single(t => t.Id == token).Location);
             Assert.AreEqual("DieAndResult", actor.Board.View.Decision.Presentation);
-            // UI-272: Lore is made on the pool's die and its result popover; the Dice & tokens panel stays closed.
-            Assert.AreNotSame(actor.Board.ResourceDecision.DecisionHost, actor.Board.Tray.parent);
+            // UI-272: Lore is made on the pool's die and its result popover.
             await LoreGestures.Die(room, actor, ruler.Id);
             var face = actor.Board.View.Dice.Single(d => d.Id == ruler.Id).Face == DieFace.Muster
                 ? DieFace.Character : DieFace.Muster;
@@ -70,11 +68,8 @@ namespace Wotr.PlayTests
                     var before = actor.Board.View.Revision;
                     var id = actor.Board.View.Options.Single().EligibleDice.First();
                     await Reconnect(room, actor);
-                    Assert.IsFalse(actor.Board.ResourceDecision.IsOpen, "The pool's decision opens no panel.");
-                    Assert.AreNotSame(actor.Board.ResourceDecision.DecisionHost, actor.Board.Tray.parent);
                     Assert.IsFalse(actor.Board.DecisionWindow.IsOpen, "The pool's decision opens no window.");
                     var opponent = actor == room.Fp ? room.Sh : room.Fp;
-                    Assert.IsFalse(opponent.Board.ResourceDecision.IsOpen);
                     Assert.IsTrue(actor.Board.OwnDice.Q<Button>(id).ClassListContains("resource-candidate"));
                     Assert.IsNull(actor.Board.Tray.Q<Button>("cost-" + id), "Choose the actual die in its pool, without a duplicate picker.");
                     Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
@@ -124,6 +119,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual("0", actor.Board.OwnDice.Q<Button>("pool-Discarded").text);
         }
 
+        // UI-276 (EXP-15 D20): the Shadow's click on the opponent's glowing Ruler die spends a Dismay token picked for it,
+        // which its tooltip names; the Dismay tokens are information; no panel or window opens.
         private static async Task Dismay()
         {
             using var room = await Connect("ui09-dismay", ScenarioKind.CardPack);
@@ -131,16 +128,16 @@ namespace Wotr.PlayTests
             var option = actor.Board.View.Options.Single(o => o.Kind == CommandKind.UseDismay);
             var die = actor.Board.View.Dice.Single(d => d.Owner == Side.FreePeoples && option.EligibleDice.Contains(d.Id));
             var token = option.EligibleIds[0];
-            var revision = actor.Board.View.Revision;
-            PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>("ruler-token-" + token));
-            await room.Settle();
-            actor.Board.ResourceDecision.Close();
             await Reconnect(room, actor);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
-            Assert.IsTrue(actor.Board.OwnDice.Q<Button>("ruler-token-" + token).ClassListContains("selected"));
-            Assert.IsTrue(actor.Board.OpponentDice.Q<Button>(die.Id).ClassListContains("resource-candidate"));
-            PointerGestureEvents.ClickAt(actor.Board.ResourceDecision.Tab);
-            await room.Settle();
+            var button = actor.Board.OpponentDice.Q<Button>(die.Id);
+            Assert.IsTrue(button.ClassListContains("resource-candidate"));
+            StringAssert.Contains("Dismay token and re-roll this Ruler die", button.tooltip);
+            Assert.IsTrue(actor.Board.OwnDice.Q<Button>("ruler-token-" + token).ClassListContains("ruler-token-dismay"));
+            StringAssert.Contains("Spent by clicking a glowing Ruler die", actor.Board.OwnDice.Q<Button>("ruler-token-" + token).tooltip);
+            Assert.AreEqual("Pass · Keep your Dismay tokens", actor.Board.Console.Actions.Pass.tooltip);
+            Assert.IsFalse(actor.Board.DecisionWindow.IsOpen);
+            await Layout(room, actor, "dismay", "ui276");
+            var revision = actor.Board.View.Revision;
             PointerGestureEvents.ClickAt(actor.Board.OpponentDice.Q<Button>(die.Id));
             await room.At(revision + 1);
             Assert.AreEqual("removed", actor.Board.View.RulerTokens.Single(t => t.Id == token).Location);
@@ -181,20 +178,17 @@ namespace Wotr.PlayTests
             // panel; a reconnect restores the popover from the saved draft.
             PointerGestureEvents.ClickAt(actor.Board.Console.Rings.For(ring));
             await room.Settle();
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
             PointerGestureEvents.ClickAt(actor.Board.OwnDice.Q<Button>(die.Id));
             await room.Settle();
             Assert.IsTrue(actor.Board.RingPicker.IsOpen);
             await Reconnect(room, actor);
             await room.Until(() => actor.Board.RingPicker.IsOpen);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
             PointerGestureEvents.ClickAt(actor.Board.RingPicker.Root.Q<Button>("ring-face-muster"));
             await room.At(revision + 1);
             Assert.AreEqual(DieFace.Muster, actor.Board.View.Dice.Single(d => d.Id == die.Id).Face);
             Assert.AreEqual(DieLocation.Available, actor.Board.View.Dice.Single(d => d.Id == die.Id).Location);
             Assert.AreEqual(Side.Shadow, actor.Board.View.Rings.Single(r => r.Id == ring).Owner);
             Assert.AreEqual(Side.FreePeoples, actor.Board.View.DecisionOwner);
-            Assert.IsFalse(actor.Board.ResourceDecision.IsOpen);
         }
     }
 }

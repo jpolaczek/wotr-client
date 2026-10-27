@@ -48,7 +48,7 @@ namespace Wotr.EditorTests
         [TestCase(DecisionKind.SpecialDieChoice, DecisionHost.Dice)]
         [TestCase(DecisionKind.RulerDiscard, DecisionHost.Dice)]
         [TestCase(DecisionKind.KeepActionDie, DecisionHost.Rings)]      // UI-268: Vilya socket and the paid die
-        [TestCase(DecisionKind.Dismay, DecisionHost.Resources)]         // UI-276: glowing Ruler dice
+        [TestCase(DecisionKind.Dismay, DecisionHost.Dice)]              // UI-276: glowing Ruler dice
         [TestCase(DecisionKind.CouncilToken, DecisionHost.Dice)]         // UI-270: the tokens in the Shadow pool
         [TestCase(DecisionKind.CouncilVersions, DecisionHost.Fellowship)] // UI-269: Fellowship portraits
         [TestCase(DecisionKind.CouncilHomelands, DecisionHost.Fellowship)] // UI-270: Fellowship portraits and regions

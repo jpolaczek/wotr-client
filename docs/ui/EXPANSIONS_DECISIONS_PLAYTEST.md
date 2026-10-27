@@ -143,11 +143,11 @@ difference in the rules (`Kings/KingsDismay.cs`).
   Expect: after the reveal a gilt chip with Brand's arms stands beside the player's own Combat card, its tooltip naming
   the card it cancels; its click makes the replacement; Pass keeps the card's effect. The same for a Corrupted Brand
   (Shadow) and for the Chieftains (UI-277).
-- [ ] **D18 — Far-sighted.** Try: no scenario yet (Thranduil Awakened, a Fellowship move). Expect: Thranduil's ability
+- [ ] **D18 — Far-sighted.** Try: `kings-far-sighted` (UI-276). Expect: Thranduil's ability
   picture glows with an eligible die; using it is Far-sighted, not using it is the standard move; no toggle or mode chip.
 - [ ] **D19 — Where the Ruler tokens sit.** Try: `kings-fp-ruler-token`. Expect: the usable token stands in the dice
   pool beside the Ruler die; the king's portrait wears a badge that he holds it.
-- [ ] **D20 — Spending Dismay.** Try: no scenario yet. Expect: the Shadow clicks the Free Peoples Ruler die to reroll;
+- [ ] **D20 — Spending Dismay.** Try: `kings-dismay` (UI-276). Expect: the Shadow clicks the Free Peoples Ruler die to reroll;
   the token is picked automatically and named in the tooltip and the log.
 
 ### Fate — UI-349

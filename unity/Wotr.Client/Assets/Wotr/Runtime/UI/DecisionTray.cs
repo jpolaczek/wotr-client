@@ -152,7 +152,6 @@ namespace Wotr.Client
             // UI-291: a reaction the console hosts is guided by the console's own hint (TurnConsoleState).
             var silent = ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
                 view.Decision?.Kind == DecisionKind.Reaction && CardConsoleOptions.Owns(view, draft) ||
-                ResourcePresentation.OwnsDecision(view, draft) && ExpansionActions.Immediate(draft.Kind) ||
                 SovereignPresentation.OwnsDecision(view, draft) || ContextualCharacter || CompanionSetupPresentation.Homelands(view);
             return silent ? "" : DecisionObjects.Confirm(view, draft);
         }
@@ -240,8 +239,7 @@ namespace Wotr.Client
                 footer.AddToClassList("battle-choice-footer");
                 PlayerSide(footer, view);
             }
-            if (!ContextualHunt && !CompanionSetupPresentation.Setup(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
-                !ResourcePresentation.PoolDecision(view) &&
+            if (!ContextualHunt && !CompanionSetupPresentation.Setup(view) && !ResourcePresentation.PoolDecision(view) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
@@ -259,13 +257,6 @@ namespace Wotr.Client
                     button.SetEnabled(alternative.Enabled);
                     footer.Add(button);
                 }
-            foreach (var alternative in ExpansionDecision.Alternatives(view, draft))
-            {
-                var button = BoardScreen.Button(Label(alternative.Kind), () => ActionChosen?.Invoke(alternative.Kind));
-                button.name = "action-" + alternative.Kind;
-                button.SetEnabled(alternative.Enabled);
-                footer.Add(button);
-            }
             // UI-274: a king's decision is sent by the click on his portrait, attempt button or tile; no Confirm.
             if (SovereignPresentation.OwnsDecision(view, draft) || draft.Kind == CommandKind.AwakenSovereign || ComponentActions.Immediate(view, draft) || ExpansionActions.Immediate(draft.Kind) || FellowshipActions.Immediate(draft.Kind) || ContextualFellowship && FellowshipDraft.UsesRoute(draft.Kind) &&
                 option.Travel.Count > 0 && !TravelDraft.IsGrouped(draft.Kind) && !FellowshipDraft.LocationRoute(draft.Kind) ||

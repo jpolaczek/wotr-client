@@ -187,6 +187,26 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "legolas" }, draft.Payload.Ids);
         }
 
+        // UI-276 (EXP-15 D18): Far-sighted is Thranduil's ability picture, offered with an eligible die; there is no mode chip.
+        [Test]
+        public void FarSightedIsThranduilsPicture()
+        {
+            var view = View();
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Options.Add(new ActionOption
+            {
+                Kind = CommandKind.MoveCompanions, Enabled = true, EligibleDice = { "ruler" },
+                RulerTravel = new RulerTravelOption { AbilityId = "kings.far-sighted", Dice = { "ruler" } }
+            });
+            var draft = new TurnDraft();
+            Assert.IsEmpty(ComponentActions.For(view, draft).Where(c => c.Key.StartsWith("far-sighted")), "No die, no picture.");
+            draft.Change(p => p.DieId = "ruler");
+            var picture = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
+            Assert.AreEqual(AbilityPictures.Move, picture.Picture);
+            Assert.AreEqual("kings.sovereign.thranduil", picture.OwnerId);
+        }
+
         private static PlayerView View() => new PlayerView
         {
             MatchId = "component", You = Side.Shadow, DecisionOwner = Side.Shadow,
