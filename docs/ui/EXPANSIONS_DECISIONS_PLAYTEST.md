@@ -13,6 +13,10 @@ How to use it:
 - **Expect** is what must happen; anything that jumps, opens by itself or needs an extra click is a finding. "Skip
   animations" must still show the end state at once.
 - Tick a row when it passed in the build that carries its task, and note the build and anything that felt wrong.
+- Since TEST-12–TEST-14 (2026-10-27) every Lords, Kings and Fate card (its event and its Combat side) and every new
+  mechanic has a scenario in its expansion's tab of the Test scenarios list (Lords, Kings, Fate), on a board where the
+  effect's condition holds; search by the card's, character's or mechanic's name. The server's TEST_SCENARIOS lists them
+  with the condition each one meets.
 
 ## The mechanics behind the decisions
 
@@ -77,8 +81,8 @@ difference in the rules (`Kings/KingsDismay.cs`).
 - [ ] **Gothmog with a Muster die that cannot recruit.** Try: `lords-sh-gothmog-muster`. Expect: selecting the Muster
   die lights the Reserve; Gothmog's row ("Gothmog · Minas Morgul") offers a Regular and an Elite; a token's click uses
   the ability at once. A Muster die that can neither recruit nor pay Gothmog lights only Politics.
-- [ ] **The Gates and Spear of Terror declined with Pass.** Try: no scenario yet (a Shadow declaration with the Gates on
-  the table; an Event's Palantír draw with the Chief). Expect: the console's Pass glows, its tooltip names the Gates or
+- [ ] **The Gates and Spear of Terror declined with Pass.** Try: `lords-card-gates-declaration` (a Shadow declaration
+  with the Gates on the table) and `lords-sh-spear-of-terror` (an Event's Palantír draw with the Chief) (TEST-12). Expect: the console's Pass glows, its tooltip names the Gates or
   Spear of Terror, and its click declines; the Gates' × and the Character deck stay the ways to use them.
 
 ### The opponent's expansion actions — UI-344
@@ -89,18 +93,21 @@ difference in the rules (`Kings/KingsDismay.cs`).
   removal fades it out. The Characters panel never opens by itself; the portrait, status and meter match at the release.
 - [ ] **D2 — A hidden tile attached.** Try: `kings-sh-corruption`, watched by the Free Peoples. Expect: a tile back
   travels from the Hunt pool to the sovereign's region; a hatched pip appears on his meter; no value is ever shown.
-- [ ] **D3 — The opponent's tokens.** Try: `kings-fp-ruler-token`, `lords-council-token`, watched from the other side (UI-344).
+- [ ] **D3 — The opponent's tokens.** Try: `kings-fp-ruler-token`, `lords-council-token`, and `kings-dismay-from-token`
+  (a spent Ruler token gives the Shadow Dismay; TEST-13), watched from the other side (UI-344).
   Expect: fixed chips for the opponent's Ruler, Dismay and Council tokens in the top bar's opponent summary; a spent or
   gained token changes there in the presentation, not at the release.
 - [ ] **D4 — Dismay rerolls my Ruler die.** Try: `kings-dismay` as the Shadow, watched by the Free Peoples (UI-344).
   Expect: the reroll of my own Ruler die is its own beat of the opponent's presentation, not a silent crossfade at the
   release; the Shadow's Dismay chip in the top bar counts down.
-- [ ] **D5 — Tiles revealed at a corruption.** Try: `kings-sh-corruption` until the resistance is reached. Expect: the
+- [ ] **D5 — Tiles revealed at a corruption.** Try: `kings-corruption-reaches-resistance` (the attempt reaches the
+  king's resistance at once; TEST-13), or `kings-sh-corruption` until the resistance is reached. Expect: the
   revealed tiles' faces stand briefly as a plate at the sovereign's region, then go to the pool.
 
 ### Glow and declines — UI-345, UI-347, UI-276, UI-277, UI-348
 
-- [ ] **D6 — Lit art also pulses.** Try: `lords-special-dice-choice`, `lords-fp-vilya`, `lords-council-token`.
+- [ ] **D6 — Lit art also pulses.** Try: `lords-special-dice-choice`, `lords-fp-vilya`, `lords-council-token`,
+  `lords-card-lore-change-die` (Lore dice) and `lords-sh-spear-of-terror` (the Spear's deck) (TEST-12).
   Expect: the special dice, Keeper Ring sockets, Council medallions, Lore dice and the Spear's deck keep their lit art
   and pulse like every other usable choice; nothing pulses that a click cannot use.
 - [ ] **D7 — Optional declines are the console's Pass.** Try: `lords-fp-vilya` (Spend the die), `lords-card-wind-finish`
@@ -110,10 +117,11 @@ difference in the rules (`Kings/KingsDismay.cs`).
   Corruption", "Keep card effects", "Keep tokens" or "Keep tiles" button; the console's Pass declines, glows and its
   tooltip names what it skips.
 - [ ] **D8 — Forced single steps stay automatic.** Try: `fate-card-book-of-mazarbul`, `fate-card-orcs-multiplying-again`,
-  `fate-card-monsters-roused`. Expect: where only one region or plan is legal the server applies it without a click,
+  `fate-card-monsters-roused`, and `fate-card-orcs-erebor-held` (a North army holds Erebor, so Mount Gundabad and its
+  plan are the only legal choice; TEST-14). Expect: where only one region or plan is legal the server applies it without a click,
   and the console's effect trail and the log name the result. A step with two or more legal choices still waits.
 - [ ] **D9 — Every Guide response in the Hunt's response row.** Try: `fate-gimli-guide` (Gimli, Dwarven Lord, as Guide;
-  UI-349) and a Hunt with Merry, Pippin or Gollum as Guide (base part released in 0.9.0-rc.14, UI-360). Expect: every Guide's response is a portrait in the Hunt window's
+  UI-349), `lords-council-guide-separate` and `lords-council-hobbit-guide` (the Council's Guides; TEST-12) and a Hunt with Merry, Pippin or Gollum as Guide (base part released in 0.9.0-rc.14, UI-360). Expect: every Guide's response is a portrait in the Hunt window's
   response row (portrait, name, what it does); none is a text rectangle in the tray. The base Guides' part is a base-game
   change and lands on `main` too.
 
@@ -128,7 +136,8 @@ difference in the rules (`Kings/KingsDismay.cs`).
   portrait in the battle window's force column glows; its click extends the siege without downgrading an Elite.
 - [ ] **D13 — Council tokens.** Try: `lords-council-token`. Expect: a medallion's click starts its printed use at once,
   with no panel step; when a Kings Chieftain can enter with it, his Characters row lights instead and a second click on the
-  marked medallion starts its printed use; no "No token" buttons (the Chieftain case needs a game with Lords, the Council and Kings).
+  marked medallion starts its printed use; no "No token" buttons (the Chieftain case: `lords-kings-council-chieftain`,
+  Lords, the Council and Kings; TEST-12).
 - [ ] **D14 — Homelands' keep.** Try: `fate-gimli-homeland` (the Council's homelands with Gimli,
   Dwarven Lord, chosen; UI-349). Expect: a second click on
   the companion already placed keeps him with the Fellowship, and the console's hint says so explicitly (for example
@@ -149,12 +158,14 @@ difference in the rules (`Kings/KingsDismay.cs`).
 - [ ] **The Palantír of Barad-dûr (owner's decision 17, 2026-10-19).** Try: `kings-card-palantir` (UI-278). Expect: the
   card glows in the Effects panel; its click, then a glowing Muster die (or the die, then the card), turns the die into
   an Event die for one card or draw this turn; no cost button is offered beside the die.
-- [ ] **D17 — Brand's replacement.** Try: `kings-brand-heir` and `kings-brand-shadows` (UI-348), and for the Chieftains
-  `kings-chieftain-substitution` (UI-277).
+- [ ] **D17 — Brand's replacement.** Try: `kings-brand-heir` and `kings-brand-shadows` (UI-348), for the Chieftains
+  `kings-chieftain-substitution` (UI-277), and `kings-brand-vs-swarm` (Swarm of Bats at initiative 0 resolves before
+  Brand could replace it; TEST-13).
   Expect: after the reveal a gilt chip with Brand's arms stands beside the player's own Combat card, its tooltip naming
   the card it cancels; its click makes the replacement; Pass keeps the card's effect. The same for a Corrupted Brand
   (Shadow) and for the Chieftains (UI-277).
-- [ ] **D18 — Far-sighted.** Try: `kings-far-sighted` (UI-276). Expect: Thranduil's ability
+- [ ] **D18 — Far-sighted.** Try: `kings-far-sighted` (UI-276) and `kings-far-sighted-hunt` (three Hunt dice, so the
+  Fellowship mode's reduction acts; TEST-13). Expect: Thranduil's ability
   picture glows with an eligible die; using it is Far-sighted, not using it is the standard move; no toggle or mode chip.
 - [ ] **D19 — Where the Ruler tokens sit.** Try: `kings-fp-ruler-token`. Expect: the usable token stands in the dice
   pool beside the Ruler die; the king's portrait wears a badge that he holds it.

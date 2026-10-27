@@ -15,11 +15,15 @@ using static Wotr.PlayTests.ReturnTestFixture;
 namespace Wotr.PlayTests
 {
     // TEST-03: a test scenario from the main menu against the real server: the tested action, both sides,
-    // restart to the same situation and exit without a saved game.
+    // restart to the same situation and exit without a saved game. TEST-12–TEST-14: every expansion scenario of the
+    // server stands in its expansion's tab, and the search finds an expansion card by its name.
     public sealed class TestScenarioNetworkTests
     {
         [UnityTest]
         public IEnumerator AScenarioPlaysBothSidesRestartsAndLeavesNoSavedGame() => MatchTestRoom.Wait(Scenario());
+
+        [UnityTest]
+        public IEnumerator EveryExpansionScenarioStandsInItsExpansionsTab() => MatchTestRoom.Wait(ExpansionTabs());
 
         private static async Task Scenario()
         {
@@ -78,6 +82,42 @@ namespace Wotr.PlayTests
                 Assert.Fail("Exit removes the test game.");
             }
             catch (ApiException error) when (error.Status == 404) { }
+        }
+
+        private static async Task ExpansionTabs()
+        {
+            var fixture = Load();
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var token = timeout.Token;
+            using var api = await fixture.Login(Side.FreePeoples, token);
+            var catalog = await api.Get<TestScenarioCatalogView>("api/test-scenarios", token);
+            AssertTab(catalog, "fate-", TestScenarioTabs.Fate, 30);
+            AssertTab(catalog, "lords-", TestScenarioTabs.Lords, 80);
+            AssertTab(catalog, "kings-", TestScenarioTabs.Kings, 80);
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-test12-" + Guid.NewGuid().ToString("N")));
+            await ClickReady(client.Root, "open-test-scenarios", token);
+            foreach (var tab in TestScenarioTabs.Modules)
+            {
+                await ClickReady(client.Root, TestScenarioTabs.Name(tab), token);
+                await Task.Delay(120, token);
+                var first = catalog.Scenarios.First(scenario => TestScenarioTabs.Of(scenario) == tab);
+                Assert.IsNotNull(client.Root.Q<Button>("test-scenario-" + first.Id), tab + " lists its scenarios.");
+                LayoutTests.Save(client.Panel.targetTexture, "test12-tab-" + tab.ToLowerInvariant() + ".png");
+            }
+            client.Root.Q<TextField>("test-scenario-search").value = "captain of despair";
+            await Task.Delay(120, token);
+            Assert.IsNotNull(client.Root.Q<Button>("test-scenario-lords-card-captain-of-despair-event"), "The search finds a Lords card.");
+            Assert.IsNull(client.Root.Q<Button>("test-scenario-fp-pass"), "Only matching names stay.");
+            LayoutTests.Save(client.Panel.targetTexture, "test12-search-captain-of-despair.png");
+        }
+
+        // Every scenario named for an expansion stands in that expansion's tab, and the tab holds at least the given number.
+        private static void AssertTab(TestScenarioCatalogView catalog, string prefix, string tab, int least)
+        {
+            var scenarios = catalog.Scenarios.Where(scenario => scenario.Id.StartsWith(prefix, StringComparison.Ordinal)).ToList();
+            Assert.GreaterOrEqual(scenarios.Count, least, tab);
+            foreach (var scenario in scenarios)
+                Assert.AreEqual(tab, TestScenarioTabs.Of(scenario), scenario.Id);
         }
 
         private static Task Live(MountedFlowClient client, Side side, CancellationToken token) =>
