@@ -60,7 +60,7 @@ Most of the expansions already follow the shape:
 
 ## Gaps
 
-### The opponent's expansion actions jump (UI-344)
+### The opponent's expansion actions jump (UI-344 — done 2026-10-27; the owner's playtest of D1–D5 is pending)
 
 The opponent presentation was built on the base game; OPPONENT_ACTIONS_UX §1 left expansion choreography out of scope,
 but §6.1 promised "a ruler or council token at its row".
@@ -146,7 +146,7 @@ each answer, and the mechanics that needed explaining, are in
 
 | Decision | Answer | Task |
 | --- | --- | --- |
-| D1–D5 | map scene; tile back to the region and a hatched pip; opponent token chips in the top bar; my Ruler die's reroll as the opponent's beat; revealed tiles as a brief plate | UI-344 |
+| D1–D5 | map scene; tile back to the region and a hatched pip; opponent token chips in the top bar; my Ruler die's reroll as the opponent's beat; revealed tiles as a brief plate | UI-344 (done 2026-10-27) |
 | D6 | lit art plus the shared pulse | UI-345 |
 | D7 | the console's Pass declines every optional decline, its tooltip naming it | UI-276, UI-277, UI-347, UI-348 |
 | D8 | forced single steps stay automatic, the result in the effect trail and log | — |

@@ -22,7 +22,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapLegend.cs` | 29 | icon | political |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapPlannedRecruits.cs` | 89 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapPlannedRecruits.cs` | 97 | icon | close |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapSovereignMarkers.cs` | 85 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/Map/MapSovereignMarkers.cs` | 104 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 40 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 138 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/Map/Mordor/MapMordorTrack.cs` | 150 | art | (new Button) |

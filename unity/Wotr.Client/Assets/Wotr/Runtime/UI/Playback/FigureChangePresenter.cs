@@ -74,9 +74,11 @@ namespace Wotr.Client
         // An upgrade pairs its Regular and Elite halves; a transformation its old and new versions.
         private static IEnumerable<FigureDelta> Replacements(PresentationCue cue)
         {
+            // UI-344: a change in place with the same art (the Balrog's level) needs no badge.
             if (cue.Kind == PresentationCueKind.Transformation)
                 return cue.Figures.Where(change => change.Before != null && change.After != null)
-                    .Select(change => new FigureDelta { From = Art(change.Before), Art = Art(change.After), Count = 1 });
+                    .Select(change => new FigureDelta { From = Art(change.Before), Art = Art(change.After), Count = 1 })
+                    .Where(delta => !Equals(delta.From, delta.Art));
             var regulars = cue.Figures.Where(change => change.Before?.UnitKind == UnitKind.Regular && change.To != cue.Regions[0]).ToList();
             var elites = cue.Figures.Where(change => change.After?.UnitKind == UnitKind.Elite && change.To == cue.Regions[0]).ToList();
             var nation = elites.FirstOrDefault()?.After.NationId ?? "";

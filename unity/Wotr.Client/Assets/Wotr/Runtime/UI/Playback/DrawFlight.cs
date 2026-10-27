@@ -20,8 +20,11 @@ namespace Wotr.Client
         public const double StaggerSeconds = .18;
         private const long FlashMilliseconds = 220;
         private const float Pull = 16;
-        private static readonly Vector2 BackSize = new Vector2(34, 48);
+        private static readonly Vector2 CardBack = new Vector2(34, 48);
         private readonly List<Flight> flights = new List<Flight>();
+        // UI-344: a Corruption tile's back flies the same way, round and smaller.
+        private readonly string backClass;
+        private readonly Vector2 backSize;
         private readonly VisualElement host;
         private readonly Func<VisualElement> count;
         private readonly Action<int> landed;
@@ -45,8 +48,10 @@ namespace Wotr.Client
         // `origins` are the decks' plaques in the order of the cards; `landed` gets each landing's index, `done` follows the
         // last one, `end` the beat's end.
         public DrawFlight(double now, VisualElement host, Func<VisualElement> count, IReadOnlyList<VisualElement> origins, Action light,
-            Action<int> landed, Action done, Action end)
+            Action<int> landed, Action done, Action end, string back = BackClass, Vector2? size = null)
         {
+            backClass = back;
+            backSize = size ?? CardBack;
             this.host = host;
             this.count = count;
             this.landed = landed;
@@ -88,18 +93,18 @@ namespace Wotr.Client
             var target = count().worldBound;
             var from = Shown(flight.Origin) ? flight.Origin.worldBound : new Rect(target.center + new Vector2(0, 60), Vector2.zero);
             var back = new VisualElement { pickingMode = PickingMode.Ignore };
-            back.AddToClassList(BackClass);
+            back.AddToClassList(backClass);
             var centre = host.WorldToLocal(from.center);
-            back.style.left = centre.x - BackSize.x / 2;
-            back.style.top = centre.y - BackSize.y / 2;
-            back.style.width = BackSize.x;
-            back.style.height = BackSize.y;
+            back.style.left = centre.x - backSize.x / 2;
+            back.style.top = centre.y - backSize.y / 2;
+            back.style.width = backSize.x;
+            back.style.height = backSize.y;
             back.style.opacity = 0;
             host.Add(back);
             host.BringToFront();
             flight.Back = back;
             flight.Travel = target.center - from.center;
-            flight.Scale = Mathf.Clamp(target.height / BackSize.y, .25f, 1);
+            flight.Scale = Mathf.Clamp(target.height / backSize.y, .25f, 1);
         }
 
         // Out of the deck (a short slide up as it shows), then the eased flight into the count, shrinking; then it lands.

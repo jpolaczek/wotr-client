@@ -89,11 +89,12 @@ difference in the rules (`Kings/KingsDismay.cs`).
   removal fades it out. The Characters panel never opens by itself; the portrait, status and meter match at the release.
 - [ ] **D2 — A hidden tile attached.** Try: `kings-sh-corruption`, watched by the Free Peoples. Expect: a tile back
   travels from the Hunt pool to the sovereign's region; a hatched pip appears on his meter; no value is ever shown.
-- [ ] **D3 — The opponent's tokens.** Try: `kings-fp-ruler-token`, `lords-council-token`, watched from the other side.
+- [ ] **D3 — The opponent's tokens.** Try: `kings-fp-ruler-token`, `lords-council-token`, watched from the other side (UI-344).
   Expect: fixed chips for the opponent's Ruler, Dismay and Council tokens in the top bar's opponent summary; a spent or
   gained token changes there in the presentation, not at the release.
-- [ ] **D4 — Dismay rerolls my Ruler die.** Try: no scenario yet (Dismay is no die result). Expect: the reroll of my
-  own Ruler die is its own beat of the opponent's presentation, not a silent crossfade at the release.
+- [ ] **D4 — Dismay rerolls my Ruler die.** Try: `kings-dismay` as the Shadow, watched by the Free Peoples (UI-344).
+  Expect: the reroll of my own Ruler die is its own beat of the opponent's presentation, not a silent crossfade at the
+  release; the Shadow's Dismay chip in the top bar counts down.
 - [ ] **D5 — Tiles revealed at a corruption.** Try: `kings-sh-corruption` until the resistance is reached. Expect: the
   revealed tiles' faces stand briefly as a plate at the sovereign's region, then go to the pool.
 

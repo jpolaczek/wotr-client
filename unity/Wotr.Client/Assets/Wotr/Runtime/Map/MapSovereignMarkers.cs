@@ -10,10 +10,14 @@ namespace Wotr.Client
     // UI-274: a corrupted king is no figure, so a dark marker stands by his capital, beside its forces. A click chooses
     // him when a decision or the selected die lights him (the tooltip says what it does), and otherwise shows his
     // information.
+    // UI-344 (D1): after the first board, a new marker emerges by fading in and a marker gone fades out where it stood.
     public sealed class MapSovereignMarkers
     {
         public const string ClassName = "sovereign-marker";
         public const string LitClass = "legal-target";
+        public const string LeavingClass = "sovereign-marker-leaving";
+        private const long LeaveMilliseconds = 450;
+        private bool seeded;
         private static readonly Vector2 Size = new Vector2(30, 34);
         public event Action<string> Selected;
         private readonly MapCanvas map;
@@ -31,7 +35,7 @@ namespace Wotr.Client
             stale.AddRange(markers.Keys.Where(id => data.CorruptedSovereigns.All(s => s.Id != id)));
             foreach (var id in stale)
             {
-                markers[id].Button.RemoveFromHierarchy();
+                Leave(markers[id].Button);
                 markers.Remove(id);
             }
             foreach (var king in data.CorruptedSovereigns)
@@ -40,11 +44,26 @@ namespace Wotr.Client
                 {
                     marker = Create(king.Id);
                     markers.Add(king.Id, marker);
+                    if (seeded)
+                        Appearance.Arrive(marker.Button);
                 }
                 marker.Region = king.RegionId;
                 marker.Description = king.Title + " · Corrupted · " + data.Regions[king.RegionId].Name;
             }
+            seeded = true;
             Light(hint);
+        }
+
+        private void Leave(Button button)
+        {
+            button.pickingMode = PickingMode.Ignore;
+            if (!seeded || !Appearance.Moving(button))
+            {
+                button.RemoveFromHierarchy();
+                return;
+            }
+            button.AddToClassList(LeavingClass);
+            button.schedule.Execute(button.RemoveFromHierarchy).ExecuteLater(LeaveMilliseconds);
         }
 
         // What a click on each king does now, or null when it only informs.

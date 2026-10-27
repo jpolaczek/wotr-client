@@ -10,7 +10,9 @@ namespace Wotr.Client
     public enum PresentationCueKind
     {
         Cost, Card, March, Travel, Attack, Retreat, Advance, Recruit, Upgrade, Removal, Entry, Transformation, Relocation,
-        Politics, Control, Fellowship, Hunt, Battle, Losses, Die, Resource, Draw, Outcome
+        Politics, Control, Fellowship, Hunt, Battle, Losses, Die, Resource, Draw, Outcome,
+        // UI-344: a Kings sovereign's change — a tile attached or returned, corrupted, removed, awakened.
+        Sovereign
     }
 
     // UI-303: the immutable cue contract. One visible result of a recorded step, its place in the action and the authorized
@@ -42,6 +44,9 @@ namespace Wotr.Client
         public ActionDieChange Die { get; }
         public ActionResourceChange Resource { get; }
         public ActionOutcome Outcome { get; }
+        // UI-344: the sovereign as the step left him (public: hidden tiles have no value) and the tiles the action revealed.
+        public SovereignView Sovereign { get; }
+        public IReadOnlyList<string> Tiles { get; }
         // UI-305: the revision holds the player's own decision, so this cue is a shared result of their own click (a
         // roll, their retreat or advance). It still plays in its window, but the camera never moves for it.
         public bool OwnCommand { get; internal set; }
@@ -72,6 +77,8 @@ namespace Wotr.Client
             Die = CueCopy.Of(payload.Die);
             Resource = CueCopy.Of(payload.Resource);
             Outcome = CueCopy.Of(payload.Outcome);
+            Sovereign = CueCopy.Of(payload.Sovereign);
+            Tiles = payload.Tiles.ToArray();
         }
 
         public override string ToString() => Id;
@@ -95,6 +102,8 @@ namespace Wotr.Client
         public ActionDieChange Die { get; set; }
         public ActionResourceChange Resource { get; set; }
         public ActionOutcome Outcome { get; set; }
+        public SovereignView Sovereign { get; set; }
+        public List<string> Tiles { get; } = new List<string>();
     }
 
     // A cue copies its contract objects once, when it is made; a handful of small objects per revision (a battle snapshot is

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
 
@@ -89,17 +90,28 @@ namespace Wotr.Client
             return steps;
         }
 
-        // What answered the Hunt: its character's portrait, the Ring, the Guide, or the table card it came from.
+        // What answered the Hunt: its character's portrait, the Ring, the Guide, or the table card it came from. UI-344: a
+        // character's own response (Gimli's or the Council's Guide, Nenya's Galadriel) names him by its source only.
         private VisualElement Response(HuntReportEntryView entry)
         {
             if (entry.CharacterId.Length > 0)
                 return reading.Portrait(entry.CharacterId);
+            if (CharacterLibrary.Find(entry.SourceId) != null)
+                return reading.Portrait(Holder(entry.SourceId));
             return entry.Response switch
             {
                 HuntResponse.Ring => board.Fellowship.Status.Q("fellowship-ring"),
                 HuntResponse.Guide => reading.Portrait(staged.View.Fellowship.Guide),
                 _ => CardLibrary.Cards.ContainsKey(entry.SourceId) ? board.TableEffects.Tab : null
             };
+        }
+
+        // The Companion of that identity as the roster shows him (the Free Peoples' own figure id, or the identity).
+        private string Holder(string source)
+        {
+            var identity = CharacterLibrary.Identity(source);
+            return staged.View.OwnCompanions.Concat(staged.View.Characters)
+                .FirstOrDefault(c => CharacterLibrary.Identity(c.DefinitionId) == identity)?.Id ?? identity;
         }
 
         private void Leave(string id)

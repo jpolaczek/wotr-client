@@ -25,6 +25,8 @@ namespace Wotr.Client
         private readonly FellowshipPresenter fellowship;
         private readonly BattlePresenter battles;
         private readonly ResourcePresenter resources;
+        private readonly SovereignPresenter sovereigns;
+        private readonly TokenPresenter tokens;
         public MapObservedTrace Trace { get; }
         public SkipControl Skip { get; }
         public PresentationCamera Camera => camera;
@@ -63,6 +65,9 @@ namespace Wotr.Client
             Playback.Register(new ControlPresenter(board, staged, Trace));
             Playback.Register(new FigureChangePresenter(board, staged, Trace));
             Playback.Register(politics);
+            // UI-344: a Kings sovereign's change at his region.
+            sovereigns = new SovereignPresenter(board, staged, Trace, layer);
+            Playback.Register(sovereigns);
             fellowshipPanel = new FellowshipReading(board);
             hunt = new HuntPresenter(board, staged, layer, fellowshipPanel, Sounds);
             Playback.Register(hunt);
@@ -70,6 +75,9 @@ namespace Wotr.Client
             Playback.Register(fellowship);
             resources = new ResourcePresenter(board, staged, Playback, layer);
             Playback.Register(resources);
+            // UI-344: the expansions' tokens and the Rings' holders at their chips and pool.
+            tokens = new TokenPresenter(board, staged, layer);
+            Playback.Register(tokens);
             Playback.Paused = Reading;
             Playback.Released += Released;
             binding.Ticked += Skip.Refresh;
@@ -134,6 +142,8 @@ namespace Wotr.Client
             hunt.Released();
             battles.Released();
             resources.Released();
+            sovereigns.Released();
+            tokens.Released();
             fellowship.Released();
             fellowshipPanel.Released();
             staged.Reset();

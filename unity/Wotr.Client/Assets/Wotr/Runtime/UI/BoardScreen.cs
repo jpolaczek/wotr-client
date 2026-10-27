@@ -581,6 +581,9 @@ namespace Wotr.Client
         public void StageOpponentDice(PlayerView staged) => actionPool.Apply(OpponentDice, staged, Opponent(staged), false);
         public void StageOpponentSummary(PlayerView staged) => TopBar.Opponent.Apply(staged, Opponent(staged));
 
+        // UI-344: the kings' portraits in the Characters panel as a presentation stages them (a tile's hatched pip, a status).
+        public void StageSovereigns(PlayerView staged) => Sovereigns.Apply(staged);
+
         // UI-330: an observer's presentation shows both sides' actions — the side the board is shown from has its dice at the
         // bottom and its cards in the hand, the other side its dice and its card count in the top bar. A player's
         // presentation only ever names the opponent.

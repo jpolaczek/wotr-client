@@ -78,12 +78,30 @@ namespace Wotr.Client
         public static string Identity(string id) => Characters.TryGetValue(id, out var item) ? item.Identity : id;
 
         // UI-309: a die ability's history records only its ability id; the one identity whose public abilities list it,
-        // or null when none or several do (the client never guesses the source).
+        // or null when none or several do (the client never guesses the source). UI-344: the commands of the Lords' and
+        // Kings' abilities carry their own ids, named here by the printed ability they use.
         public static string AbilityHolder(string abilityId)
         {
-            var identities = Characters.Values.Where(c => c.Abilities.Contains(abilityId)).Select(c => c.Identity).Distinct().Take(2).ToList();
+            var printed = PrintedAbility(abilityId);
+            var identities = Characters.Values.Where(c => c.Abilities.Contains(printed)).Select(c => c.Identity).Distinct().Take(2).ToList();
             return identities.Count == 1 ? identities[0] : null;
         }
+
+        private static readonly IReadOnlyDictionary<string, string> CommandAbilities = new Dictionary<string, string>
+        {
+            ["activate-balrog"] = "balrog-activation",
+            ["deactivate-balrog"] = "balrog-activation",
+            ["use-balrog"] = "balrog-activation",
+            ["gothmog-recruit"] = "fling-them-into-the-fray",
+            ["gothmog-upgrade"] = "fling-them-into-the-fray"
+        };
+
+        // The Kings' Ruler abilities are recorded as "kings.<ability>".
+        private static string PrintedAbility(string abilityId) =>
+            CommandAbilities.TryGetValue(abilityId, out var printed) ? printed
+            : abilityId.StartsWith(KingsPrefix, System.StringComparison.Ordinal) ? abilityId.Substring(KingsPrefix.Length) : abilityId;
+
+        private const string KingsPrefix = "kings.";
         public static string Version(PlayerView view, string id)
         {
             var definition = view.Characters.Concat(view.OwnCompanions).FirstOrDefault(c => c.Id == id)?.DefinitionId;

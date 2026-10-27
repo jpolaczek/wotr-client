@@ -27,6 +27,8 @@ namespace Wotr.Client
         {
             var steps = group.OrderBy(step => step.Order).ToList();
             var figures = FigureCuesByStep(steps, shown, data);
+            var revealed = RevealedTiles(steps);
+            var corrupted = steps.Any(step => step.Facts.Sovereigns.Any(s => s.Status == SovereignStatus.Corrupted));
             var released = new List<PresentationCue>();
             foreach (var step in steps)
             {
@@ -39,6 +41,7 @@ namespace Wotr.Client
                     .Concat(Hunt(step))
                     .Concat(Fellowship(step))
                     .Concat(Politics(step))
+                    .Concat(Sovereigns(step, revealed, corrupted))
                     .Concat(Control(step))
                     .Concat(Dice(step, memory, you))
                     .Concat(Resources(step))
@@ -259,11 +262,36 @@ namespace Wotr.Client
             return new PresentationCue(step, PresentationCueKind.Control, change.RegionId + "/" + change.After, payload);
         });
 
+        // UI-344: a Kings sovereign's change, once per state (the producer step and the primary step record the same); the
+        // tiles the action revealed (an attempt's returned draws) stand with it, with his corruption when it is one.
+        private static IEnumerable<PresentationCue> Sovereigns(ActionLogStep step, IReadOnlyList<string> revealed, bool corruption) =>
+            step.Facts.Sovereigns.Select(sovereign =>
+            {
+                var payload = new CuePayload { Sovereign = sovereign };
+                payload.Regions.Add(sovereign.RegionId);
+                if (!corruption || sovereign.Status == SovereignStatus.Corrupted)
+                    payload.Tiles.AddRange(revealed);
+                return new PresentationCue(step, PresentationCueKind.Sovereign,
+                    sovereign.Id + "/" + sovereign.Status + "/" + sovereign.Tiles.Count + "/" + sovereign.Corruption, payload);
+            });
+
+        // The Corruption tiles the revision revealed, each recorded by its own automatic step.
+        private static List<string> RevealedTiles(IEnumerable<ActionLogStep> steps) => steps
+            .Where(step => step.Kind == RevealedTile).SelectMany(step => step.Facts.Targets).Distinct().ToList();
+
+        private const string RevealedTile = "CorruptionTileRevealed";
+
         // The opponent's dice that changed face or place, except the die that paid for the action (its cost cue shows it).
+        // UI-344 (D4): and the player's own die the opponent rerolled in place (Dismay re-rolls a Ruler die); a reroll is a
+        // beat even when it lands on the same face.
         private static IEnumerable<PresentationCue> Dice(ActionLogStep step, ActionMemory memory, Side? you) => step.Facts.Dice
-            .Where(die => die.Owner != you && !memory.CostDice.Contains(die.Id) && (die.Before != die.After || die.From != die.To))
+            .Where(die => (die.Owner != you || Rerolled(step, die, you)) && !memory.CostDice.Contains(die.Id) &&
+                (die.Before != die.After || die.From != die.To || Rerolled(step, die, you)))
             .Select(die => new PresentationCue(step, PresentationCueKind.Die, die.Id + "/" + die.From + ">" + die.To + "/" + die.After,
                 new CuePayload { Die = die }));
+
+        private static bool Rerolled(ActionLogStep step, ActionDieChange die, Side? you) =>
+            step.Actor.HasValue && step.Actor != you && die.From == die.To && die.Before.HasValue && die.After.HasValue;
 
         private static IEnumerable<PresentationCue> Resources(ActionLogStep step) => step.Facts.Resources.Select(resource =>
             new PresentationCue(step, PresentationCueKind.Resource, resource.Kind + "/" + resource.Id + "/" + resource.From + ">" + resource.To,

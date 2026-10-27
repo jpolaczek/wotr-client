@@ -171,6 +171,10 @@
 .summary-icon-rings { background-image: resource("Wotr/Art/UI/icons/ring"); }
 .summary-icon-spent { background-image: resource("Wotr/Art/UI/icons/spent"); }
 .summary-icon-out { background-image: resource("Wotr/Art/UI/icons/out"); }
+/* UI-344 (D3): the opponent's expansion tokens, with the tokens' own art. */
+.summary-icon-ruler { background-image: resource("Wotr/Art/UI/tokens/ruler-token-free"); }
+.summary-icon-dismay { background-image: resource("Wotr/Art/UI/tokens/ruler-token-shadow"); }
+.summary-icon-council { background-image: resource("Wotr/Art/UI/tokens/council-politics-council"); }
 .summary-text { flex-direction: column; justify-content: center; }
 .summary-caption {
     display: none;

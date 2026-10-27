@@ -217,6 +217,13 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 #board-screen .sovereign-marker:hover { -unity-background-image-tint-color: rgb(255, 236, 214); }
+/* UI-344 (D1): a removed king's marker fades out where it stood. */
+.motion-enabled .sovereign-marker {
+    transition-property: opacity;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out-sine;
+}
+#board-screen .sovereign-marker.sovereign-marker-leaving { opacity: 0; }
 #board-screen .sovereign-marker.pressed { scale: 0.94 0.94; }
 #board-screen .sovereign-marker.choice-glow {
     border-width: 3px;

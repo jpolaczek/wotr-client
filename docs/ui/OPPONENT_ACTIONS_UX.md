@@ -17,8 +17,9 @@ through source → place → action → consequence, then gives the board back.
 
 - **Scope:** the base game (Second Edition) in a player's session, both sides, including the opponent's reaction during
   the player's own action and shared public Battle/Hunt resolutions completed by the player's own click.
-- **Out of scope:** expansion-specific choreography, observers and replays (they keep working as today through the
-  shared code), the game-end screen (reused as it is), and the separately blocked audio acceptance program.
+- **Out of scope:** expansion-specific choreography (since UI-344 the expansions' own actions have their scenes, see
+  the section at the end), observers and replays (they keep working as today through the shared code), the game-end
+  screen (reused as it is), and the separately blocked audio acceptance program.
 - **Not a rules change:** the presentation only delivers information the server has already recorded and authorized for
   this player. Rules and randomness stay on the server.
 
@@ -128,7 +129,8 @@ The new **observed trace** is the program's single result treatment, derived fro
 ### 6.1 Cost
 
 - The action's cost is emphasized **once per action**, before its first effect: the die by its stable id in the
-  opponent's dice (top bar), a Ring at its holder, a ruler or council token at its row, a card at its source (§6.2).
+  opponent's dice (top bar), a Ring at its holder, a ruler or council token at its row (UI-344: the opponent's token
+  chip in the top bar, the player's own token in their pool), a card at its source (§6.2).
 - If the authoritative pool has already consumed the die, a **visual copy** stands at the die's last anchor for the
   whole action, with an observed trace; when the die was used as another face (Will of the West), the copy shows the
   rolled face, a small arrow and the used face. The copy never reflows the live pool and disappears with the action's
@@ -1302,3 +1304,34 @@ begins".
 A presented recruit or entry that makes an army appear or grow flares, emerges and then shows its new number, as the
 player's own does ([ARMY_MAP_UX](ARMY_MAP_UX.md#pojawienie--ui-334)); Skip ends it at the final state.
 
+## The expansions' actions on their objects — UI-344 (2026-10-27)
+
+The owner's decisions EXP-15 D1–D5 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)). Every scene comes from recorded
+facts (`PresentationCueExtraction`), for a player, an observer and a replay alike; Skip ends it at the latest state.
+
+- **A sovereign's change (D1)** is a scene on the map at his region (`SovereignPresenter`, from `Facts.Sovereigns`,
+  once per state): an awakening is his Leader's transformation into his figure, which lands with the arrival accent and
+  his portrait's moment (`FigureCues`: a unit becoming a character with the same id); a corruption glows his force, then
+  his Leader leaves and the dark marker emerges by his capital; a removal glows the marker, which fades out
+  (`MapSovereignMarkers`). The Characters panel never opens by itself; its portraits follow the staged board.
+- **A hidden tile attached (D2)**: a tile back flies from the Hunt plaque to his force, where a plate of his meter shows
+  a pip per point of resistance, hatched for each hidden tile; never a value. A returned tile flies back.
+- **The opponent's tokens (D3)** have fixed chips in the top bar's opponent summary while the game's modules use them —
+  the Free Peoples' Ruler tokens, the Shadow's Dismay and Council tokens (`OpponentSummary`). A token the opponent pays
+  with lights its chip; a token or an Elven Ring changing hands lights where it stands, then the count changes while lit
+  (`TokenPresenter`).
+- **Dismay rerolling the player's Ruler die (D4)** is the opponent's die beat on the player's own pool: the die glows,
+  then its old → new face (an own die rerolled in place by the opponent's step).
+- **Revealed tiles (D5)** stand briefly as a plate of their faces beside the corrupted king's marker (or beside his force
+  for an attempt's returned draws).
+- **The Balrog's activation and deactivation** change his level in place: his force glows and his portrait's moment
+  shows; the die's source is framed, since the Lords' and Kings' ability commands (`activate-balrog`, `gothmog-recruit`,
+  `kings.mustering-of-the-mark`) name their printed abilities (`CharacterLibrary.AbilityHolder`).
+- **Sméagol leaving the Fellowship** outside the Hunt is marked on his roster portrait, which then leaves; the server
+  records his announced departure as a public figure change. A Hunt casualty stays the Hunt's beat.
+- **A character's own Hunt response** (Gimli's or the Council's Guide, Nenya's Galadriel) marks that character's roster
+  portrait (`CharacterLibrary.Find(SourceId)`).
+
+Tests: `OpponentExpansionCueTests` (the cues and the chips), `OpponentExpansionPresentationTests` (corruption, removal,
+awakening, the Ruler chip, Dismay on my die, Sméagol; both motion settings), `TopBarTests`; the server's
+`LordsSmeagolTests`.

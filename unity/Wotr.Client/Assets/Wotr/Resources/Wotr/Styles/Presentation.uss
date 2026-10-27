@@ -387,3 +387,49 @@
     transition-duration: 0.6s;
     transition-timing-function: ease-in-out;
 }
+
+/* UI-344 (D2): a hidden Corruption tile's back flies from the Hunt plaque to the king's force (DrawFlight moves it). */
+.presentation-tile-back {
+    position: absolute;
+    border-radius: 15px;
+    background-image: resource("Wotr/Art/UI/kings/tile-back");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* UI-344 (D2): the king's meter beside his force, a pip per point of resistance, hatched for each hidden tile. */
+.presentation-sovereign-meter {
+    flex-direction: row;
+    padding: 3px 4px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.presentation-sovereign-pip {
+    width: 10px;
+    height: 6px;
+    margin: 0 1px;
+    border-width: 1px;
+    border-radius: 1px;
+    border-color: rgb(150, 132, 92);
+}
+.presentation-sovereign-pip.filled { background-color: rgb(196, 64, 46); border-color: rgb(120, 30, 20); }
+.presentation-sovereign-pip.hidden {
+    background-color: rgb(92, 84, 70);
+    background-image: resource("Wotr/Art/UI/kings/tile-back");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* UI-344 (D5): the tiles a corruption revealed, briefly beside the king's marker. */
+.presentation-revealed-tiles {
+    flex-direction: row;
+    padding: 3px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+}
+.presentation-revealed-tiles > .hunt-face {
+    width: 40px;
+    height: 40px;
+    margin: 0 2px;
+    align-items: center;
+    justify-content: center;
+    -unity-background-scale-mode: scale-to-fit;
+}

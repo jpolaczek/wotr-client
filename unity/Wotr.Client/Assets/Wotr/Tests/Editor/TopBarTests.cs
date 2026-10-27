@@ -36,7 +36,8 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Shadow · Dice out of play: 1", chips[3].tooltip);
             Assert.IsTrue(chips.All(chip => chip.pickingMode == PickingMode.Position), "Chips carry the hover tooltip.");
             Assert.IsTrue(chips.All(chip => chip.Query<VisualElement>().ToList().Skip(1).All(child => child.pickingMode == PickingMode.Ignore)));
-            Assert.AreEqual(3, summary.Root.Query(className: "summary-divider").ToList().Count);
+            // UI-344: the expansions' token chips and their dividers stay hidden in a base game.
+            Assert.AreEqual(3, summary.Root.Query(className: "summary-divider").ToList().Count(d => d.style.display != DisplayStyle.None));
 
             summary.Apply(View(handFp: 4, handShadow: 7), Side.Shadow);
             Assert.AreSame(values[0], chips[0].Q<Label>(className: "summary-value"), "Values update without rebuilding chips.");
