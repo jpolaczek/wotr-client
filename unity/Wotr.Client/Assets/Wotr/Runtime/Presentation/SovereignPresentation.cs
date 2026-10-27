@@ -39,15 +39,27 @@ namespace Wotr.Client
                 return view.CorruptionAttempt?.Sequential == true ? "Click the latest tile beside the king to keep it · Or draw again"
                     : SovereignAttempt.MustDraw(view) ? "Click Draw tiles to draw the Corruption tiles" : "Click a glowing tile beside the king to attach it";
             if (view.Decision.Presentation == SovereignChoices.Inspection)
-                return "Click a tile beside the king to return it to the Hunt Pool · Or keep the tiles";
+                return "Click a tile beside the king to return it to the Hunt Pool";
             if (view.Decision.Presentation == "CorruptionRemoval")
-                return "Click the glowing king to return one random tile · Or keep the tiles";
+                return "Click the glowing king to return one random tile";
             if (view.Decision.Presentation == SovereignChoices.Sovereign)
-                return "Click a glowing king, by his portrait or on the map";
+                return SovereignInBattle(view);
             if (KingAction(view, draft) && draft.Payload.CharacterId.Length == 0)
                 return draft.Kind == CommandKind.AttemptCorruption ? "Click the attempt button beside a king in the Characters panel"
                     : "Click a glowing king, by his portrait or on the map";
             return draft?.Kind == CommandKind.AwakenSovereign ? "Click a highlighted region on the map for the awakened king" : "";
+        }
+
+        // UI-278 (D16): a king who takes part in the battle glows in its window's army, any other by his portrait.
+        private static string SovereignInBattle(PlayerView view)
+        {
+            var kings = view.Options.Where(o => o.Enabled && o.Kind == CommandKind.ChooseEffect).SelectMany(o => o.EligibleIds)
+                .Where(id => view.Sovereigns.Any(s => s.Id == id)).ToList();
+            var battle = kings.Count(id => SovereignChoices.InBattle(view, id));
+            if (battle == 0)
+                return "Click a glowing king, by his portrait or on the map";
+            return battle == kings.Count ? "Click a glowing king in the battle window's army"
+                : "Click a glowing king in the battle window's army or by his portrait";
         }
 
         // UI-274: what a click on a king the selected die lights does, for his portrait's and map object's tooltips.

@@ -19,6 +19,8 @@ namespace Wotr.Client
         private readonly Action confirm;
         private readonly Action finish;
         private readonly Action<ComponentAction> ability;
+        private readonly Action<Action> complete;
+        private readonly BranchCarry carry;
         private PlayerView view;
         private TurnDraft draft;
         private List<ComponentAction> abilities = new List<ComponentAction>();
@@ -26,7 +28,7 @@ namespace Wotr.Client
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
         public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster, Func<string, bool> recruitAtOnly,
-            Action confirm, Action finish, Action<ComponentAction> ability)
+            Action confirm, Action finish, Action<ComponentAction> ability, Action<Action> complete, BranchCarry carry)
         {
             this.board = board;
             this.edit = edit;
@@ -36,6 +38,8 @@ namespace Wotr.Client
             this.confirm = confirm;
             this.finish = finish;
             this.ability = ability;
+            this.complete = complete;
+            this.carry = carry;
             board.Reinforcements.FigureChosen += Choose;
             board.Reinforcements.PlacementRemoved += Remove;
             board.Reinforcements.Finish += Finish;
@@ -54,12 +58,31 @@ namespace Wotr.Client
                 ? ComponentActions.For(view, draft).Where(CharacterAbilityPlaces.InReserve).ToList() : new List<ComponentAction>();
             board.Reinforcements.Apply(State(plan));
             board.Map.PlannedRecruits.Apply(plan?.Placements ?? Nothing, view.You, !busy());
+            if (plan != null && !busy() && carry.Take(view, BranchCarry.Reserve) is { Length: > 0 } figure)
+                board.Root.schedule.Execute(() => PlanCarried(figure));
         }
+
+        // UI-278 (D15): the figure whose click chose a Kings card's recruit is planned in its next step, when offered; a
+        // card's single figure is then sent at once.
+        private void PlanCarried(string figure)
+        {
+            var plan = ReinforcementPlans.For(view, draft, board.Presentation);
+            var unit = view.Units.FirstOrDefault(u => u.Id == figure);
+            var offered = plan?.Rows.Where(r => r.Nation == unit?.Nation).SelectMany(r => r.Figures)
+                .FirstOrDefault(f => f.Kind == unit?.Kind && f.ReserveId != null)?.ReserveId;
+            if (offered != null && !busy())
+                edit(() => ReinforcementPlans.Choose(draft, view, offered));
+        }
+
+        // UI-278 (D15): a Kings card's recruit branch waits on its king's nation in the Reserve.
+        private string BranchNation() => view == null || ReinforcementPlans.Active(view, draft) ? "" : KingsCardChoices.RecruitNation(view);
 
         private ReinforcementsState State(ReinforcementPlan plan)
         {
             if (plan != null)
                 return ReinforcementsState.For(view, plan, draft.ReserveId, !busy());
+            if (BranchNation() is { Length: > 0 } nation)
+                return ReinforcementsState.Branch(view, nation, !busy());
             if (!muster() || draft.Kind is not (null or CommandKind.Recruit))
                 return ReinforcementsState.Browse(view);
             var recruitment = MusterActions.Option(view, board.ActionDie, CommandKind.Recruit);
@@ -78,6 +101,11 @@ namespace Wotr.Client
                 ability(chosen);
                 return;
             }
+            if (BranchNation().Length > 0)
+            {
+                Recruit(id);
+                return;
+            }
             if (Planning)
                 edit(() => ReinforcementPlans.Choose(draft, view, id));
             else if (muster())
@@ -89,6 +117,15 @@ namespace Wotr.Client
             }
             // The lit settlements may lie off screen: the view moves there.
             board.Map.Reveal(board.Map.DraftOverlay.Targets);
+        }
+
+        private void Recruit(string figure)
+        {
+            var option = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.ChooseEffect);
+            if (option == null)
+                return;
+            carry.Set(view, BranchCarry.Reserve, figure);
+            complete(() => EffectChoiceSelection.Choose(view, draft, option, KingsCardChoices.Recruit));
         }
 
         // UI-135: a settlement clicked during a recruitment brings the panel back and marks its nation's row.

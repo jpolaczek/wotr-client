@@ -16,8 +16,9 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
                 return null;
-            // UI-274: a king's decision is made in the Characters panel, on his portrait or tiles.
-            if (SovereignPresentation.OwnsDecision(view, null))
+            // UI-274: a king's decision is made in the Characters panel, on his portrait or tiles. UI-278 (D16): a Combat
+            // card's choice of a king is made with the battle window open, where a king who takes part glows.
+            if (SovereignPresentation.OwnsDecision(view, null) && !SovereignChoices.InBattleWindow(view))
             {
                 var sovereign = SovereignPresentation.DecisionTarget(view, null);
                 return At(DecisionContext.Sovereign, view.Sovereigns.FirstOrDefault(s => s.Id == sovereign)?.RegionId, sovereign);

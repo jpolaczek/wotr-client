@@ -57,7 +57,8 @@ namespace Wotr.Client
         {
             foreach (var hint in new[]
                      {
-                         ResourcePresentation.CouncilHint(view, draft), BalrogCardOrder.Hint(view), CouncilHomelandPresentation.Hint(view, draft)
+                         ResourcePresentation.CouncilHint(view, draft), BalrogCardOrder.Hint(view), CouncilHomelandPresentation.Hint(view, draft),
+                         KingsCardChoices.Hint(view)
                      })
                 if (hint.Length > 0)
                     return hint;

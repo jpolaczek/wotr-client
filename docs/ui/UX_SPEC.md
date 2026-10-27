@@ -1416,8 +1416,8 @@ Every expansion decision kind and card presentation has a host other than the ge
 | Special die (Lords), Ruler discard (Kings) | lit dice in the pool; the console hint says what the click does | UI-267, UI-273 (art, dimmed slots) |
 | Vilya keep, Dismay, Council token | Vilya's socket and the console's Pass (UI-347); Dismay on the glowing Ruler dice and the Pass (UI-276); the Council medallions (UI-347) | UI-268, UI-276, UI-270 |
 | Companion versions, homelands (Council) | setup panel | UI-269, UI-270 |
-| Corruption tile, a card's choice of a sovereign | the kings' portraits, attempt buttons and tiles (UI-274) | UI-278 |
-| Fate's Monsters branch, Kings cards' branches | console buttons | — |
+| Corruption tile, a card's choice of a sovereign | the kings' portraits, attempt buttons and tiles (UI-274); in a battle a king who takes part glows in its army (UI-278, D16) | UI-278 |
+| Fate's Monsters branch, Kings cards' branches | Monsters: console buttons; Kings: the nation tokens, the kings and the Reserve (UI-278, D15) | — |
 
 The special-die pick, the Ruler discard, the Council setup and token and the corruption tile are required decisions
 (`RequiredDecisions`): the red notice at the top waits for them. Vilya's keep and Dismay can be declined and are not.
@@ -1586,3 +1586,14 @@ Tests: `ResourcePanelTests.DismayIsTheRulerDiesClickAndKeepingIsThePass`, `Ruler
 before Lore), `ExpansionDecisionNetworkTests` (Dismay), `ExpansionWindowNetworkTests` (Keep tokens through Pass),
 `ExpansionTokenNetworkTests` (Far-sighted, Ruler tokens); test-menu scenarios `kings-dismay`, `kings-far-sighted`,
 `kings-fp-ruler-token`.
+
+## The Kings cards on their objects — UI-278 (2026-10-27)
+
+The owner's decisions EXP-15 D15–D16 and decision 17 of 2026-10-19 ([CARD_CHOICES_UX](CARD_CHOICES_UX.md),
+[BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md)): the Kings Nation step is the nation tokens in Politics; Wisdom of Elrond's and
+the recruit-or-cleanse cards' branches stand on the nation tokens, the kings' portraits and the king's nation in the
+Reserve, and a branch's object carries into the card's next step, so one click on Gondor's token activates and advances
+Gondor; Keep tiles is the console's Pass; There Is Hope for Victory and His Power Waxes light a king who takes part in
+the battle in its army, any other king by his portrait; Your Welcome Is Doubtful and the Palantír of Barad-dûr are paid
+in the pool with the Ring on its socket; the Palantír's Muster-as-Event starts at its card on the table. No Kings card
+decision opens the generic window.

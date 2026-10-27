@@ -101,20 +101,20 @@
   "testPackages": [
     {
       "name": "wotr-seeder",
-      "version": "dcaaa0f5a621",
-      "archive": "wotr-seeder-dcaaa0f5a621.tgz",
-      "sha256": "6a012df15f88ab7b38d5535baf40bf122be11ff6f54c1087afd4f1fa4f6fac70",
-      "size": 4462013,
-      "commit": "dcaaa0f5a621fdc22e91707243e92bb59ab5cf63",
+      "version": "34a1e4fa3efd",
+      "archive": "wotr-seeder-34a1e4fa3efd.tgz",
+      "sha256": "f6894777fe7e71ee249d9c08d20bfb6818a8533f6df95284bfc0789c9a4db211",
+      "size": 4464713,
+      "commit": "34a1e4fa3efde8fb5c5ddb3f4ac075f5f9f351d6",
       "entry": "wotr-seeder/Wotr.Scenarios.dll"
     },
     {
       "name": "wotr-server",
-      "version": "dcaaa0f5a621",
-      "archive": "wotr-server-dcaaa0f5a621.tgz",
-      "sha256": "70139577598c2d50142d08601befd1e3ca0a7131aa5517bbd31295a288e7bf58",
-      "size": 4181206,
-      "commit": "dcaaa0f5a621fdc22e91707243e92bb59ab5cf63",
+      "version": "34a1e4fa3efd",
+      "archive": "wotr-server-34a1e4fa3efd.tgz",
+      "sha256": "a5c3dbe6f30d5bc97fe0f3203da41402abf383203384557aba7c74d02c4aa19d",
+      "size": 4185095,
+      "commit": "34a1e4fa3efde8fb5c5ddb3f4ac075f5f9f351d6",
       "entry": "wotr-server/Wotr.Server.dll"
     }
   ]

@@ -48,7 +48,9 @@ namespace Wotr.Client
             // panel; Three Rings for the Elven-Kings recovers Rings on their sockets.
             LoreChoice.Presentation, "TableCards", RingRecovery.Presentation,
             // UI-274: a card's choice of a king, the cleanse and the inspection of a king's tiles.
-            SovereignChoices.Sovereign, SovereignChoices.Removal, SovereignChoices.Inspection
+            SovereignChoices.Sovereign, SovereignChoices.Removal, SovereignChoices.Inspection,
+            // UI-278: the Kings Nation step on the nation tokens.
+            KingsCardChoices.NationStep
         };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
@@ -106,12 +108,14 @@ namespace Wotr.Client
             // Balrog card's order stands on his figure and his army (BalrogCardOrder).
             if (view.Decision.Presentation is LoreChoice.Presentation or RingRecovery.Presentation or BalrogCardOrder.Presentation)
                 return None;
-            // UI-274: the kings and their tiles are chosen in the Characters panel; Keep tiles is a button.
-            if (SovereignChoices.Owns(view))
-                return SovereignChoices.ConsoleOptions(view, draft);
+            // UI-274: the kings and their tiles are chosen in the Characters panel; UI-278 (D7): Keep tiles is the Pass.
+            // The Kings Nation step stands on the nation tokens.
+            if (SovereignChoices.Owns(view) || view.Decision.Presentation == KingsCardChoices.NationStep)
+                return None;
             // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
+            // UI-278 (D15): a Kings card's branch on its object (a nation token, a king, the Reserve) stays there.
             var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id) &&
-                    !OptionalDecline.Declines(view, c.Id))
+                    !OptionalDecline.Declines(view, c.Id) && !KingsCardChoices.OnObject(view, c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();
             if (option.EffectChoices.Any(TableCard))
                 options.Insert(0, new ConsoleOption

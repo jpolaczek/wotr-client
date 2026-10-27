@@ -45,10 +45,10 @@ Most of the expansions already follow the shape:
 | # | Item | Now |
 | --- | --- | --- |
 | 1 | Council Travel token | fixed (UI-347): the medallion's click starts its use at once |
-| 2 | Kings Nation step (Wisdom, It Is Not So Dark Here) | open: routed to the map (`DecisionRoutes.cs:99`) but nothing handles it, so nation text buttons stand in the window (UI-278) |
+| 2 | Kings Nation step (Wisdom, It Is Not So Dark Here) | fixed (UI-278): the nation tokens in Politics, which opens for the step; Wisdom's politics branch carries its nation there |
 | 3 | Palantír of Anárion "Skip extra card" | fixed (UI-348): the console's Pass (D7, every optional decline); the decks draw |
 | 4 | Brand's combat replacement | fixed (UI-348): the gilt chip beside the own card; Pass keeps the card's effects |
-| 5 | Welcome removal | mostly fixed: the pool die and × work; the tray's die buttons are still reachable (`CostDice.cs:51-53`) (UI-278) |
+| 5 | Welcome removal | fixed (UI-278): the pool die and ×; the tray lists no removal's dice; Barad-dûr's Ring on its socket |
 | 6 | Dismay | fixed (UI-276): the glowing Ruler die's click, the console's Pass; the Dice & tokens panel deleted |
 | 7 | Narya and Far-sighted as text components | fixed: Narya on the nation row and Gandalf's row (UI-347); Far-sighted is Thranduil's picture (UI-276) |
 | 8 | Lords Hunt table cards | fixed by the merge (one `HuntCardResponses`) |
@@ -123,7 +123,7 @@ move onto objects once D10–D14 are decided.
 Brand's replacement (row 4, D17), Anárion's skip (row 3), the dead fallbacks (row 13), and the Kings ability pictures:
 the upgrades and the Ruler abilities fall back to the generic scroll (`AbilityPictures.cs:26-31`). UI-276 keeps the Ruler
 tokens, Dismay and Far-sighted (D18–D20); UI-278 the Nation step, the card branches, the in-battle sovereign targets,
-Welcome and Barad-dûr (D15–D16); UI-277 the Chieftains (done 2026-10-27: their substitution is the gilt chip, Keep card
+Welcome and Barad-dûr (D15–D16; done 2026-10-27, the owner's playtest pending); UI-277 the Chieftains (done 2026-10-27: their substitution is the gilt chip, Keep card
 effects the Pass, an applied replacement a gilt marker for both players).
 
 ### Fate (UI-349)
@@ -152,7 +152,7 @@ each answer, and the mechanics that needed explaining, are in
 | D8 | forced single steps stay automatic, the result in the effect trail and log | — |
 | D9 | every Guide response in the Hunt's response row (the base Guides also on `main`) | UI-345 |
 | D10–D14 | the "−1" pip; the Balrog's figure and the glowing army; the Mouth's portrait; a medallion's click uses it; a second click keeps the companion, with a console hint | UI-347 |
-| D15–D16 | object first; the king in the battle column when he takes part | UI-278 |
+| D15–D16 | object first; the king in the battle column when he takes part | UI-278 (done 2026-10-27) |
 | D17 | the gilt chip beside the own Combat card, Pass keeping its effect | UI-348 |
 | D18–D20 | Thranduil's ability picture; the token in the pool and a badge on the portrait; the die's click alone | UI-276 |
 | D21–D22 | two console buttons, hover highlights only; the region panel | UI-349 |

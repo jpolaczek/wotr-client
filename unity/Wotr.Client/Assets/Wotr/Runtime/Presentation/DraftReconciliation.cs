@@ -25,6 +25,11 @@ namespace Wotr.Client
                     draft.Payload.DieId = "";
                     return true;
                 }
+                if (PalantirConversion.Armed(draft) && PalantirConversion.Dice(view, draft).Count == 0)
+                {
+                    draft.Clear();
+                    return true;
+                }
                 if (draft.Payload.DieId.Length == 0 || view.Dice.Any(die => die.Id == draft.Payload.DieId &&
                     die.Owner == view.You && die.Location == DieLocation.Available))
                     return false;

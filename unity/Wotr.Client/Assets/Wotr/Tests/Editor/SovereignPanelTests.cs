@@ -184,9 +184,13 @@ namespace Wotr.EditorTests
             view.Options.Add(new ActionOption { Kind = CommandKind.ChooseEffect, Enabled = true, EligibleIds = { "remove", "decline" },
                 EffectChoices = { new EffectChoiceView { Id = "remove", TargetId = "king" }, new EffectChoiceView { Id = "decline", TargetId = "king", Title = "Keep tiles" } } });
             Assert.AreEqual("king", SovereignPresentation.DecisionTarget(view, null));
-            // UI-274: the king's portrait returns the tile; Keep tiles is the console's button.
+            // UI-274: the king's portrait returns the tile; UI-278 (D7): Keep tiles is the console's Pass.
             StringAssert.StartsWith("Click to return one random tile of Dáin", SovereignChoices.Portraits(view)["king"].Tooltip);
-            CollectionAssert.AreEqual(new[] { "effect-choice-decline" }, SovereignChoices.ConsoleOptions(view, new TurnDraft()).Select(o => o.Name));
+            Assert.AreEqual("decline", OptionalDecline.Option(view, new TurnDraft()).Id);
+            Assert.AreEqual("Pass · Keep the king's tiles in place", OptionalDecline.Option(view, new TurnDraft()).Tooltip);
+            var effect = new TurnDraft();
+            effect.Choose(CommandKind.ChooseEffect);
+            Assert.IsEmpty(CardConsoleOptions.For(view, effect), "No Keep tiles button remains.");
             var attention = DecisionAttention.For(view);
             Assert.AreEqual(DecisionContext.Sovereign, attention.Context);
             Assert.AreEqual("king", attention.Subject);

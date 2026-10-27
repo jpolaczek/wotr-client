@@ -108,9 +108,13 @@ namespace Wotr.PlayTests
                 var die = option.DrawCosts.First(c => c.AbilityId.Length > 0).DieId;
                 CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die));
                 await room.Settle();
-                CardNetworkTests.Click(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event"));
+                // UI-278 (owner's decision 17): the conversion starts at the Palantír's card on the table, not the picker.
+                Assert.IsNull(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event"));
+                var card = await PalantirCard(room);
+                StringAssert.StartsWith("Click to spend this Muster die as an Event die", card.tooltip);
+                CardNetworkTests.Click(card);
+                await room.Settle();
                 await Layout(room, room.Sh, "palantir-draw");
-                Assert.That(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event").tooltip, Does.Contain("Palantír"));
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 await CardGestures.Draw(room, room.Sh, "strategy");
                 Assert.AreEqual(DieLocation.Spent, room.Fp.Board.View.Dice.Single(d => d.Id == die).Location);
@@ -141,9 +145,15 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-palantir-event", ScenarioKind.CardPack))
             {
                 var die = room.Sh.Board.View.Dice.First(d => d.Owner == Side.Shadow && d.Location == DieLocation.Available).Id;
-                CardNetworkTests.Click(room.Sh.Board.OwnDice.Q<Button>(die));
+                // UI-278: the card first; the Muster die it may convert glows and says what its click does.
+                var card = await PalantirCard(room);
+                StringAssert.StartsWith("Click, then a glowing Muster die", card.tooltip);
+                CardNetworkTests.Click(card);
                 await room.Settle();
-                CardNetworkTests.Click(room.Sh.Board.CardCosts.Root.Q<Button>("card-cost-Event"));
+                var button = room.Sh.Board.OwnDice.Q<Button>(die);
+                StringAssert.Contains("Click to spend this Muster die as an Event die", button.tooltip);
+                CardNetworkTests.Click(button);
+                await room.Settle();
                 await Layout(room, room.Sh, "palantir-event");
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 await CardGestures.Play(room, room.Sh, "kings.sh.strategy.05");
@@ -152,6 +162,17 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(room.Fp.Board.View.Players.Single(p => p.Side == Side.Shadow).TableCards.Contains("kings.sh.strategy.05"));
                 Assert.AreEqual(DieFace.Muster, room.Fp.Board.View.Dice.Single(d => d.Id == die).Face);
             }
+        }
+
+        // The Palantír of Barad-dûr's card in the Effects panel, glowing for its conversion.
+        private static async Task<Button> PalantirCard(MatchTestRoom room)
+        {
+            room.Sh.Board.TableEffects.Open();
+            await room.Settle();
+            var card = room.Sh.Board.TableEffects.Root.Q<Button>("effect-source-kings.sh.strategy.25");
+            Assert.IsNotNull(card);
+            Assert.IsTrue(card.ClassListContains("legal-target"), "The Palantír's card glows while it converts a die.");
+            return card;
         }
 
         private static async Task Power()

@@ -538,3 +538,17 @@ Tests: `KingsCards02Tests` (the Chieftain's chip, the applied marker for both pl
 (the Chieftain's chip before the reveal, Keep through Pass, the entry without a token; Brand's applied marker),
 `ExpansionTokenNetworkTests.CouncilTokenAndMusterEnterAKingsChieftain`; seeder scenarios `ui277-chieftain`,
 `ui277-chieftain-keep`, `ui277-chieftain-entry`; test-menu scenario `kings-chieftain-substitution`.
+
+## A king chosen in the battle — UI-278 (2026-10-27)
+
+The owner's decision EXP-15 D16 for There Is Hope for Victory (Ever at Your Service, Men of Little Villages) and His Power
+Waxes (the Palantír of Barad-dûr, Work of the Enemy): while a king takes part in the battle — an Initial king's Leader,
+an Awakened king's portrait in the force column — his figure glows there and its click chooses him; its tooltip reads
+"Théoden · Awaken here if permitted. Add +1 to your Leader re-roll." A king outside the battle (a Corrupted king has no
+figure) keeps his Characters portrait, and the console's hint names both places ("Click a glowing king in the battle
+window's army or by his portrait"). The battle window stays open for the choice (`SovereignChoices.InBattleWindow`).
+
+Tests: `KingsCardChoicesTests.AKingWhoTakesPartInTheBattleIsChosenInItsArmy`,
+`KingsCards02NetworkTests.HopeChoosesWhichInitialSovereignAwakensDuringBattle`,
+`KingsBranchNetworkTests.HisPowerWaxesFindsTheDefendingKingInHisArmy`; seeder scenario `ui278-power-defender`;
+test-menu scenarios `kings-card-hope`, `kings-card-power-waxes`.

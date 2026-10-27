@@ -104,9 +104,10 @@ difference in the rules (`Kings/KingsDismay.cs`).
   and pulse like every other usable choice; nothing pulses that a click cannot use.
 - [ ] **D7 — Optional declines are the console's Pass.** Try: `lords-fp-vilya` (Spend the die), `lords-card-wind-finish`
   (Finish), `lords-card-balrog` (Finish) and `lords-card-orderly-withdrawal` (Keep the hit); the Lords part landed with
-  UI-347, Brand's, the Chieftains' and Dismay's with UI-276–UI-277 and UI-348. Expect: no "Spend the die", "Keep results", "Finish" (Wind, the Balrog card), "Keep the hit", "No
-  Corruption", "Keep card effects" or "Keep tokens" button; the console's Pass declines, glows and its tooltip names
-  what it skips.
+  UI-347, Brand's, the Chieftains' and Dismay's with UI-276–UI-277 and UI-348, the kings' Keep tiles with UI-278
+  (`kings-card-wisdom`: inspect a king, then Pass). Expect: no "Spend the die", "Keep results", "Finish" (Wind, the Balrog card), "Keep the hit", "No
+  Corruption", "Keep card effects", "Keep tokens" or "Keep tiles" button; the console's Pass declines, glows and its
+  tooltip names what it skips.
 - [ ] **D8 — Forced single steps stay automatic.** Try: `fate-card-book-of-mazarbul`, `fate-card-orcs-multiplying-again`,
   `fate-card-monsters-roused`. Expect: where only one region or plan is legal the server applies it without a click,
   and the console's effect trail and the log name the result. A step with two or more legal choices still waits.
@@ -134,11 +135,19 @@ difference in the rules (`Kings/KingsDismay.cs`).
 
 ### Kings — UI-276, UI-278, UI-348
 
-- [ ] **D15 — Card branches, object first.** Try: no catalog scenario yet (Wisdom; the Stewards, the Riders, Brand's Men,
-  Dáin's Guard, Thranduil's Archers). Expect: a glowing Reserve figure recruits, a glowing king cleanses, nation tokens
-  activate, a king's click otherwise informs; the console offers only a branch without an object.
-- [ ] **D16 — Hope and His Power Waxes in battle.** Try: no scenario yet. Expect: while the king takes part in a battle
-  he glows in the battle window's force column; otherwise his Characters portrait glows (a Corrupted king has no figure).
+- [ ] **D15 — Card branches, object first.** Try: `kings-card-wisdom` (Wisdom of Elrond, It Is Not So Dark Here) and
+  `kings-card-recruit-or-cleanse` (the Stewards, the Riders, Brand's Men, Dáin's Guard, Thranduil's Archers) (UI-278).
+  Expect: a glowing Reserve figure recruits, a glowing king cleanses, nation tokens activate, a king's click otherwise
+  informs; the console offers only a branch without an object. Check the interpretation recorded with UI-278: the
+  branch's object carries into the card's next step — one click on Gondor's token activates and advances Gondor, one
+  click on Dáin shows Dáin's tiles, one click on Thranduil's Elite recruits that Elite, and the Riders' Elite starts the
+  plan with it. Say whether one click should do both or each step should wait for its own click.
+- [ ] **D16 — Hope and His Power Waxes in battle.** Try: `kings-card-hope` and `kings-card-power-waxes` (UI-278).
+  Expect: while the king takes part in a battle he glows in the battle window's force column; otherwise his Characters
+  portrait glows (a Corrupted king has no figure).
+- [ ] **The Palantír of Barad-dûr (owner's decision 17, 2026-10-19).** Try: `kings-card-palantir` (UI-278). Expect: the
+  card glows in the Effects panel; its click, then a glowing Muster die (or the die, then the card), turns the die into
+  an Event die for one card or draw this turn; no cost button is offered beside the die.
 - [ ] **D17 — Brand's replacement.** Try: `kings-brand-heir` and `kings-brand-shadows` (UI-348), and for the Chieftains
   `kings-chieftain-substitution` (UI-277).
   Expect: after the reveal a gilt chip with Brand's arms stands beside the player's own Combat card, its tooltip naming

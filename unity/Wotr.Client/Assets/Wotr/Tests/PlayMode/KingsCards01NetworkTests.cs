@@ -27,10 +27,15 @@ namespace Wotr.PlayTests
                 await Layout(room, "wisdom-branch");
                 await Reconnect(room);
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
-                Click(room.Fp, "effect-choice-kings.wisdom.inspect");
-                await room.At(revision + 1);
-                await KingsCardNetworkChecks.ChooseKing(room, room.Fp, "kings.sovereign.dain");
+                // UI-278 (D15): Dáin's portrait chooses the inspection and carries Dáin into the choice of a king.
+                Assert.IsNull(room.Fp.Board.Console.Status.Options.Q<Button>("effect-choice-kings.wisdom.inspect"));
+                var dain = await BoardNavigation.Sovereign(room.Fp.Board, "kings.sovereign.dain");
+                Assert.IsTrue(dain.ClassListContains("legal-target"));
+                StringAssert.StartsWith("Click to look at Dáin Ironfoot's Corruption tiles", dain.tooltip);
+                PointerGestureEvents.ClickAt(dain);
+                await room.At(revision + 2);
                 Assert.AreEqual("InspectedCorruption", room.Fp.Board.View.Decision.Presentation);
+                Assert.AreEqual("kings.sovereign.dain", Wotr.Client.SovereignChoices.InspectedKing(room.Fp.Board.View));
                 CollectionAssert.AreEqual(originalPolitics, room.Fp.Board.View.Nations.Select(n => n.StepsToWar));
                 Assert.IsNull(room.Sh.Board.View.Decision);
             }
@@ -42,7 +47,7 @@ namespace Wotr.PlayTests
             {
                 const string tile = "base.hunt.standard.1.0.1";
                 var revision = room.Fp.Board.View.Revision;
-                // UI-274: the inspected tiles stand face up beside Dáin; Keep tiles is the console's button.
+                // UI-274: the inspected tiles stand face up beside Dáin; UI-278 (D7): Keep tiles is the console's Pass.
                 var inspected = await KingsCardNetworkChecks.InspectedTile(room, room.Fp, "kings.sovereign.dain", tile);
                 Assert.IsTrue(inspected.ClassListContains("legal-target"));
                 StringAssert.StartsWith("Click to return this tile", inspected.tooltip);
@@ -53,7 +58,10 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
                 Assert.IsTrue(room.Fp.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.dain").Tiles.All(t => t.Value.HasValue));
                 if (keep)
-                    Click(room.Fp, "effect-choice-keep");
+                {
+                    StringAssert.Contains("Or Pass to finish looking without returning a tile", room.Fp.Board.Console.Status.Hint.text);
+                    await room.Pass(room.Fp, "Pass · Finish looking without returning a tile");
+                }
                 else
                     PointerGestureEvents.ClickAt(await KingsCardNetworkChecks.InspectedTile(room, room.Fp, "kings.sovereign.dain", tile));
                 await room.At(revision + 1);

@@ -25,9 +25,11 @@ separate on their own branch, checked separately later"). Read-only audit of cli
 | 13 | Latent text fallbacks: `CorruptionAttemptChoices`, `CorruptionInspectionChoices` (`SovereignPresentation` owns these first, `DecisionTray.cs:387`) | nearly dead code | — | Kings |
 
 Exceptions recorded only by agents, for the owner to confirm or drop when the expansions are checked: Barad-dûr's
-buttons until UI-278; Dismay and Council in Dice & tokens until UI-276; "Keep with the Fellowship" (UI-270); Lure,
-Captain and Balrog alternatives (UI-271); the Fate and Kings card branches as console buttons (UI-264/266).
+buttons until UI-278 (gone 2026-10-27); Dismay and Council in Dice & tokens until UI-276; "Keep with the Fellowship"
+(UI-270); Lure, Captain and Balrog alternatives (UI-271); the Fate card branches as console buttons (UI-264/266; the
+Kings branches stand on their objects since UI-278, D15).
 Owner-approved: the kings' attempt buttons beside their portraits (UI-274).
 
 Re-checked on 2026-10-26 after the merge of `main` (EXP-14): each row's status, the new findings and the owner's open decisions are in
-[EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md).
+[EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md). UI-278 (2026-10-27) fixed rows 2 and 5: the Nation step on the nation
+tokens, Welcome's and Barad-dûr's dice in the pool and Barad-dûr's Ring on its socket.

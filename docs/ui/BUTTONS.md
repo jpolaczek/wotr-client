@@ -49,8 +49,8 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleChoices.cs` | 128 | text | title |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleCombatHand.cs` | 46 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleCombatHand.cs` | 63 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleContext.cs` | 221 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleContext.cs` | 334 | text | label + (force.CardCancelled ? " · Cancelled" : "") |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleContext.cs` | 224 | art | (new Button) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleContext.cs` | 353 | text | label + (force.CardCancelled ? " · Cancelled" : "") |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleDiceStrip.cs` | 28 | icon | next |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattleLossChoices.cs` | 37 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Battles/BattlePolicyControl.cs` | 17 | text | Skip cards this battle |
@@ -64,7 +64,7 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs` | 469 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/BoardScreen.cs` | 524 | art | (new Button) |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardChoices.cs` | 248 | text | label |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardCostPicker.cs` | 30 | art | "" |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardCostPicker.cs` | 33 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs` | 63 | icon | pin |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardInspector.cs` | 67 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Cards/CardPlayButtons.cs` | 74 | art | "" |
@@ -103,14 +103,14 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 112 | text | ✓ … |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Console/ConsoleStatus.cs` | 159 | text | option.Label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionNotice.cs` | 21 | text | ◎ Your decision |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 188 | text | Check result |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 247 | icon | back |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 255 | text | Label(alternative.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 270 | icon | confirm |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 271 | text | text |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 379 | icon | reinforcements |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 519 | text | Label(option.Kind) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 584 | text | label |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 187 | text | Check result |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 246 | icon | back |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 254 | text | Label(alternative.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 269 | icon | confirm |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 270 | text | text |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 380 | icon | reinforcements |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 520 | text | Label(option.Kind) |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DecisionTray.cs` | 573 | text | label |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 36 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/DisplaySettingsSection.cs` | 52 | art | "" |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Expansions/ActionPoolView.cs` | 222 | text | dice.Count.ToString() |
@@ -168,8 +168,8 @@ Kinds: `icon` (action icon with a tooltip), `text` (word label on a `frames/butt
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 65 | icon | next |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 69 | icon | confirm |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/NationTrackRow.cs` | 88 | art | (new Button) |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 39 | text | Politics |
-| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 51 | icon | close |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 40 | text | Politics |
+| `unity/Wotr.Client/Assets/Wotr/Runtime/UI/Politics/PoliticalPanel.cs` | 52 | icon | close |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 144 | text | ◇ … |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 201 | icon | select-all |
 | `unity/Wotr.Client/Assets/Wotr/Runtime/UI/RegionHoverPanel.cs` | 211 | text | symbol |

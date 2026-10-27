@@ -243,8 +243,9 @@ pool, the chosen one is selected, the pool's frame lights, and a click on anothe
 decision window lists no dice. Palantír of Orthanc takes its Elven Ring on the Ring in the console: a click on the
 chosen Ring takes it back without choosing another payment, and choosing a Will of the West die (which pays alone)
 drops a Ring chosen for another die. Hand discards keep their red marking (UI-222). An incomplete payment spends
-nothing; a complete one keeps its single commit. The expansions' Palantír of Barad-dûr, Lore, Council tokens and
-special dice keep their buttons. Test: `CostDiceTests`; `EffectsNetworkTests` (Palantír on the Ring).
+nothing; a complete one keeps its single commit. The expansions' Lore (UI-272), Your Welcome Is Doubtful and Palantír
+of Barad-dûr (UI-278) are paid the same way; the Council tokens and special dice are their own objects (UI-267, UI-270).
+Test: `CostDiceTests`; `EffectsNetworkTests` (Palantír on the Ring).
 
 ## A region's two forces on their sections — UI-251 (2026-10-17)
 
@@ -409,3 +410,40 @@ seeded match by its name, so each test has its own); test-menu group "Lords · D
 
 Tests: `KingsCards02Tests` (the hosts of the corruption choices, Anárion's Pass, the Kings pictures),
 `KingsDecisionNetworkTests.AnarionsSkipIsThePass`; seeder scenario `ui348-anarion`; test-menu scenario `kings-anarion`.
+
+## The Kings cards on their objects — UI-278 (2026-10-27)
+
+The owner's decisions EXP-15 D15–D16 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)) and decision 17 of 2026-10-19:
+
+- **The Nation step** (It Is Not So Dark Here, Wisdom of Elrond's politics) is the Free Peoples' nation tokens in the
+  Politics panel, which opens for it; each token's tooltip says what its click does ("Click to choose The North for It
+  Is Not So Dark Here · Advance one step, if possible. This does not activate the nation."), and the click sends.
+- **The card branches are object first (D15).** Wisdom's politics is a nation token, its inspection a king's portrait
+  (an Initial king who carries tiles); a recruit-or-cleanse card (House of the Stewards, Riders of Théoden, King
+  Brand's Men, Dáin Ironfoot's Guard, Thranduil's Archers) recruits from its king's nation in the Reserve, whose tab and
+  figures glow, and cleanses on the king's portrait. The console keeps only a branch whose object is not on the board
+  (an empty Reserve, no king to inspect). The server names each branch's object (`KingsRecruitOrCleanseStep`'s
+  `TargetId`: the nation, the sovereign).
+- **A branch's object carries into the card's next step** (`BranchCarry`, an interpretation of D15 recorded here): the
+  click on Gondor's token both chooses the politics and is the Nation step's Gondor, a click on Dáin is the inspection's
+  Dáin, and a Reserve figure is the recruit — sent at once when the card recruits one figure (the Stewards, Thranduil),
+  the plan's first figure otherwise (the Riders, Dáin's Guard). A carry ends with any other decision; nothing else is
+  sent without a click.
+- **Keep tiles** after an inspection and after a political cleanse is the console's Pass (D7), its tooltip "Pass ·
+  Finish looking without returning a tile" / "Pass · Keep the king's tiles in place".
+- **Removals.** Your Welcome Is Doubtful and the Palantír of Barad-dûr are removed as Palantír of Orthanc is: the die in
+  the pool, the × on the card, Barad-dûr's Elven Ring on its socket; the tray lists no removal's dice and the "No Ring"
+  and "O" buttons are gone (`CostDice`).
+- **The Palantír of Barad-dûr's Muster-as-Event starts at its card** (owner, 2026-10-19): while the Shadow may convert a
+  die this turn the card glows in the Effects panel; its click converts the selected Muster die, or lights the Muster
+  dice it may convert so the next die click does (`PalantirConversion`); the hand's cards and the decks then take it.
+  The cost picker no longer offers it.
+
+Tests: `KingsCardChoicesTests` (the Nation step, Wisdom's and a recruit-or-cleanse card's branches, the carry, D16,
+Keep tiles, the Palantír's conversion, the Kings removals), `KingsBranchNetworkTests` (Wisdom's nation token, It Is
+Not So Dark Here, the Stewards' cleanse, Thranduil's and the Riders' Reserve figures, His Power Waxes with a defending
+king), `KingsCards01NetworkTests` (Wisdom's inspection on Dáin's portrait, Keep tiles through Pass),
+`KingsCards02NetworkTests.HopeChoosesWhichInitialSovereignAwakensDuringBattle` (the kings in the attacking army),
+`KingsCards03NetworkTests` (the Palantír from its card), `SovereignPanelNetworkTests` (the cleanse's Pass); seeder
+scenarios `ui278-*`; test-menu scenarios `kings-card-wisdom`, `kings-card-recruit-or-cleanse`, `kings-card-hope`,
+`kings-card-power-waxes`, `kings-card-palantir`.

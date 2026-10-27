@@ -13,12 +13,14 @@ namespace Wotr.Client
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
         private readonly Func<string, bool> previousActivate;
+        private readonly BranchCarry carry;
         private PlayerView view;
         private TurnDraft draft;
 
-        public SovereignInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
+        public SovereignInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, BranchCarry carry)
         {
             this.board = board;
+            this.carry = carry;
             this.edit = edit;
             this.busy = busy;
             previousActivate = board.Sovereigns.Activate;
@@ -32,6 +34,9 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
+            // UI-278 (D15): the king whose portrait chose Wisdom's inspection is the inspection's king.
+            if (!busy() && carry.Take(view, SovereignChoices.Sovereign) is { Length: > 0 } king)
+                board.Root.schedule.Execute(() => Portrait(king));
         }
 
         private SovereignChoice Choice(string id) =>
@@ -43,7 +48,9 @@ namespace Wotr.Client
             var option = EffectOption();
             if (choice == null || option == null)
                 return false;
-            edit(() => CardDraft.Choose(draft, option, choice.EffectId), true);
+            if (choice.EffectId == KingsCardChoices.Inspect)
+                carry.Set(view, SovereignChoices.Sovereign, id);
+            edit(() => EffectChoiceSelection.Choose(view, draft, option, choice.EffectId), true);
             return true;
         }
 

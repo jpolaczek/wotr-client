@@ -121,7 +121,16 @@ namespace Wotr.PlayTests
             {
                 await Layout(room, room.Fp, "hope");
                 await Reconnect(room, room.Fp);
-                await ChooseKing(room, room.Fp, "kings.sovereign.theoden");
+                // UI-278 (D16): both kings take part in the attack, so they glow in the battle window's army, not by
+                // their portraits.
+                var theoden = await KingsBranchNetworkTests.BattleKing(room, room.Fp.Board, "battle-attacker", "battle-figure-rohan-Leader");
+                StringAssert.StartsWith("Théoden · Awaken here if permitted", theoden.tooltip);
+                Assert.IsNotNull(await KingsBranchNetworkTests.BattleKing(room, room.Fp.Board, "battle-attacker", "battle-figure-gondor-Leader"));
+                // The portrait is read without unrolling the Characters panel, which would cover the attacker's column.
+                Assert.IsFalse(room.Fp.Board.Sovereigns.Root.Q<Button>("sovereign-kings.sovereign.theoden").ClassListContains("legal-target"));
+                var revision = room.Fp.Board.View.Revision;
+                PointerGestureEvents.ClickAt(theoden);
+                await room.At(revision + 1);
                 Assert.AreEqual(SovereignStatus.Awakened, room.Sh.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.theoden").Status);
                 Assert.AreEqual(SovereignStatus.Initial, room.Sh.Board.View.Sovereigns.Single(s => s.Id == "kings.sovereign.denethor").Status);
                 Assert.AreEqual("lossarnach", room.Sh.Board.View.Characters.Single(c => c.Id == "kings.sovereign.theoden").Location);

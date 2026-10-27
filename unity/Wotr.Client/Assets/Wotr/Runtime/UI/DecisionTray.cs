@@ -18,7 +18,6 @@ namespace Wotr.Client
         public event Action<CommandKind> ActionChosen;
         public event Action<CommandKind> DirectChosen;
         public event Action<string> DieChosen;
-        public event Action<string> RingChosen;
         public event Action<string> CardOrDieToggled;
         public event Action<string> DeckChosen;
         public event Action<string> CardInspected;
@@ -164,7 +163,7 @@ namespace Wotr.Client
                 CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
                 SovereignPresentation.Hint(view, draft),
                 RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
-                BalrogCardOrder.Hint(view),
+                BalrogCardOrder.Hint(view), KingsCardChoices.Hint(view),
                 ResourcePresentation.PoolHint(view)
             })
                 if (hint.Length > 0)
@@ -348,7 +347,9 @@ namespace Wotr.Client
                 : view.Decision.Presentation == "Region" ? "Choose a region" : view.Decision.Presentation == "ActionDie" ? "Change action dice"
                 : view.Decision.Window == "fellowship.revealed" ? "Revelation response" : Title(view.Decision.Kind, draft.Kind));
             root.Add(title);
-            if (SovereignPresentation.OwnsDecision(view, draft))
+            // UI-278 (D16): a card's choice of a king during a battle keeps the battle window, where a king who takes part
+            // glows in his army.
+            if (SovereignPresentation.OwnsDecision(view, draft) && !SovereignChoices.InBattleWindow(view))
                 return;
             if (!ContextualHunt)
                 HuntContext.Add(root, view, data);
@@ -529,21 +530,9 @@ namespace Wotr.Client
         {
             var row = BoardScreen.Row();
             root.Add(row);
-            // UI-248: Palantír of Orthanc takes its Ring on the Ring itself and its die in the pool, and so does Lore since
-            // UI-272; the Kings' Palantír of Barad-dûr keeps these buttons until UI-278.
-            if (option.Kind == CommandKind.DiscardBaradPalantir)
-            {
-                var noRing = Choice("No Ring", () => draft.Payload.RingId == "", () => RingChosen?.Invoke(""), "A Will of the West die needs no Ring.");
-                noRing.name = "palantir-no-ring";
-                row.Add(noRing);
-                foreach (var id in option.EligibleIds)
-                {
-                    var ring = Choice("O", () => draft.Payload.RingId == id, () => RingChosen?.Invoke(id), "Elven Ring");
-                    ring.name = "ring-cost-" + id;
-                    row.Add(ring);
-                }
-            }
-            foreach (var id in CostDice.InPool(view, draft) ? new List<string>() : option.EligibleDice)
+            // UI-248: a table card's removal takes its Ring on the Ring itself and its die in the pool (UI-272: Lore;
+            // UI-278: Welcome and the Palantír of Barad-dûr), so the tray lists neither.
+            foreach (var id in CostDice.InPool(view, draft) || CostDice.Removal(draft.Kind) ? new List<string>() : option.EligibleDice)
             {
                 var die = view.Dice.Single(d => d.Id == id);
                 var conversion = option.DrawCosts.Any(c => c.DieId == id && c.AbilityId == CardDrawDraft.Palantir);

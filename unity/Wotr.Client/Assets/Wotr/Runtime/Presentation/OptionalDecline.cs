@@ -9,7 +9,8 @@ namespace Wotr.Client
     // what passing skips: Vilya's Spend the die, the Lore of the Elven Rings' Keep results, Wind from the West's and the
     // Balrog card's Finish, Orderly Withdrawal's Keep the hit and We Won't Go Back's No Corruption. UI-348: Palantír of
     // Anárion's Skip extra card and a Combat card replacement's Keep card effects (Brand, the Dark Chieftains), whose ids
-    // are generic and count only in their own steps. UI-276: Dismay's Keep tokens.
+    // are generic and count only in their own steps. UI-276: Dismay's Keep tokens. UI-278: the kings' Keep tiles after an
+    // inspection (Wisdom of Elrond, It Is Not So Dark Here) and after a political cleanse.
     public static class OptionalDecline
     {
         public const string BalrogFinish = "balrog.finish";
@@ -33,7 +34,9 @@ namespace Wotr.Client
             new Dictionary<(string, string), string>
             {
                 [("Deck", "decline")] = "complete the action without an extra card",
-                [(CombatReplacementChoice.Presentation, CombatReplacementChoice.Keep)] = "keep your card's effects"
+                [(CombatReplacementChoice.Presentation, CombatReplacementChoice.Keep)] = "keep your card's effects",
+                [(SovereignChoices.Inspection, SovereignChoices.Keep)] = "finish looking without returning a tile",
+                [(SovereignChoices.Removal, SovereignChoices.Decline)] = "keep the king's tiles in place"
             };
 
         // This effect choice is sent by the console's Pass, so its old host (console, tray, Hunt row) leaves it out.

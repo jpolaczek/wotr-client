@@ -161,7 +161,7 @@ namespace Wotr.Client
             Token.EnableInClassList("selected", highlighted);
             Token.EnableInClassList("legal-target", advancing || actions.CardTarget);
             Root.EnableInClassList("selected-nation", highlighted);
-            Token.tooltip = PoliticalActions.Describe(Nation) + "\n" + TokenHint(actions.CardTarget);
+            Token.tooltip = PoliticalActions.Describe(Nation) + "\n" + TokenHint(actions);
             if (Own && !Nation.Active)
                 Token.tooltip += "\n" + PoliticalActions.ActivationSources;
             RefreshArrow(actions);
@@ -189,8 +189,8 @@ namespace Wotr.Client
             !Nation.Active && Nation.StepsToWar == 1 ? "Activate this nation before it can enter war." :
             "Select a legal Muster result to advance this nation.";
 
-        private string TokenHint(bool cardTarget) =>
-            cardTarget ? "Choose this nation for the card." :
+        private string TokenHint(NationRowActions actions) =>
+            actions.CardTarget ? (actions.CardHint.Length > 0 ? actions.CardHint : "Choose this nation for the card.") :
             advancing ? "Click this token, its arrow or the lit station to move it one step toward war. Dragging also moves it." :
             ArrowHint();
 

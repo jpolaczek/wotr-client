@@ -57,6 +57,8 @@ namespace Wotr.Client
         private CancellationTokenSource previewLifetime;
         private bool sending;
         // UI-304: an opponent presentation plays or waits for its history; no new command leaves until it ends.
+        // UI-278 (D15): the object a Kings card branch's click carries into the card's next step.
+        private readonly BranchCarry branchCarry = new BranchCarry();
         private bool held;
         private bool online;
         private bool previewLegal;
@@ -84,7 +86,6 @@ namespace Wotr.Client
             tray.CardInspected += id => { if (view?.Battle != null) board.Cards.ShowCombat(id); else board.Cards.Show(id, true); };
             tray.DraftEdited += EditChoice;
             tray.ChoiceCompleted += CompleteChoice;
-            tray.RingChosen += id => EditChoice(() => draft.Change(p => p.RingId = id));
             tray.CardOrDieToggled += id => Edit(() => draft.Toggle(id));
             tray.DeckChosen += deck => Edit(() => draft.Change(p => p.Deck = deck));
             tray.Cancel += Back;
@@ -93,13 +94,13 @@ namespace Wotr.Client
             tray.ConfirmChanged += board.Reinforcements.ConfirmLegal;
             context = new ActionContextInteraction(board, Edit, () => SelectionBusy);
             cards = new CardContextInteraction(board, EditSelection,
-                () => SelectionBusy, ShowChoiceProblem);
+                () => SelectionBusy, ShowChoiceProblem, branchCarry);
             battles = new BattleContextInteraction(EditSelection,
                 () => SelectionBusy);
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
             reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.BacksReserve,
-                id => muster.RecruitAtOnly(id), Confirm, FinishSequence, ChooseComponent);
+                id => muster.RecruitAtOnly(id), Confirm, FinishSequence, ChooseComponent, CompleteChoice, branchCarry);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);
@@ -108,7 +109,7 @@ namespace Wotr.Client
             huntContext = new HuntContextInteraction(board, EditSelection, () => SelectionBusy);
             resources = new ResourceContextInteraction(board, EditSelection,
                 () => SelectionBusy, ChooseComponent);
-            sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy);
+            sovereigns = new SovereignInteraction(board, EditSelection, () => SelectionBusy, branchCarry);
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
@@ -134,7 +135,7 @@ namespace Wotr.Client
             board.Map.RegionSelected += ChooseRegion;
             board.Map.ArmySelected += ChooseArmy;
             components = new ComponentContextInteraction(board, ChooseComponent);
-            consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
+            consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption, UsePalantir);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
                 ChooseDecline, ChooseComponent, ChooseRing, () => reinforcements.Planning);
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
@@ -144,6 +145,9 @@ namespace Wotr.Client
             if (persistence != null)
                 persistence.Changed += Render;
         }
+
+        // UI-278: the Palantír of Barad-dûr's card converts the selected Muster die, or waits for one.
+        private void UsePalantir() => Edit(() => PalantirConversion.Use(view, draft));
 
         private void ChooseRegion(string region)
         {
@@ -832,6 +836,7 @@ namespace Wotr.Client
 
         private bool RefreshContexts()
         {
+            branchCarry.Expire(view);
             context.Refresh(view, draft);
             cards.Refresh(view, draft);
             battles.Refresh(view, draft);
@@ -888,7 +893,8 @@ namespace Wotr.Client
                 {
                     var die = view.Dice.FirstOrDefault(d => d.Id == token.Id);
                     if (die != null)
-                        button.tooltip = DieHints.Describe(view, die) + AllocationHint(allocation, token.Id);
+                        button.tooltip = DieHints.Describe(view, die) + AllocationHint(allocation, token.Id) +
+                            PalantirConversion.DieHint(view, draft, token.Id);
                 }
                 if (token.Object == DraftObject.Die && view.Decision?.Presentation is "ActionDie" or "DieAndResult")
                     button.SetEnabled(view.Options.Any(o => o.Kind == CommandKind.ChooseEffect && o.EligibleIds.Contains(token.Id)));

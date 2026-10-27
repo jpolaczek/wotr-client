@@ -11,12 +11,15 @@ namespace Wotr.Client
     {
         private readonly BoardScreen board;
         private readonly Action<ConsoleOption> choose;
+        private readonly Action convert;
         private PlayerView view;
+        private TurnDraft draft;
 
-        public ConsoleOptionsInteraction(BoardScreen board, Action<ConsoleOption> choose)
+        public ConsoleOptionsInteraction(BoardScreen board, Action<ConsoleOption> choose, Action convert)
         {
             this.board = board;
             this.choose = choose;
+            this.convert = convert;
             board.Console.Status.OptionChosen += Chosen;
             board.TableEffects.OfferChosen += TableCard;
             board.TableEffects.UseChosen += CardUse;
@@ -31,12 +34,25 @@ namespace Wotr.Client
                 return;
             }
             this.view = view;
+            this.draft = draft;
             var panel = board.Hover.Panel;
             panel.ForceChoice = (side, garrison) => enabled ? RegionForceChoices.For(view, draft, panel.Region, garrison) : "";
             panel.RefreshForces();
             board.Console.Status.SetOptions(CardConsoleOptions.For(view, draft), enabled);
             board.TableEffects.Offer(TableOffers(view, draft), enabled);
-            board.TableEffects.Uses(enabled ? LoreChoice.CardUses(view) : new Dictionary<string, string>());
+            board.TableEffects.Uses(enabled ? CardUses(view, draft) : new Dictionary<string, string>());
+        }
+
+        // UI-272: the Lore before Dismay; UI-278: the Palantír of Barad-dûr's Muster-as-Event.
+        private static IReadOnlyDictionary<string, string> CardUses(PlayerView view, TurnDraft draft)
+        {
+            var palantir = PalantirConversion.CardUses(view, draft);
+            if (palantir.Count == 0)
+                return LoreChoice.CardUses(view);
+            var uses = new Dictionary<string, string>(LoreChoice.CardUses(view));
+            foreach (var use in palantir)
+                uses[use.Key] = use.Value;
+            return uses;
         }
 
         // The Nazgûl Strike's table cards and, outside a battle or the Hunt, a table card's own reaction (UI-247).
@@ -78,10 +94,12 @@ namespace Wotr.Client
 
         private void Force(string id) => choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Effect });
 
-        // UI-272: the Lore card's click starts Lore before Dismay.
+        // UI-272: the Lore card's click starts Lore before Dismay; UI-278: the Palantír's converts a Muster die.
         private void CardUse(string id)
         {
-            if (LoreChoice.CardUses(view).ContainsKey(id))
+            if (PalantirConversion.CardUses(view, draft).ContainsKey(id))
+                convert();
+            else if (LoreChoice.CardUses(view).ContainsKey(id))
                 choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Action, Command = CommandKind.UseLoreBeforeActions });
         }
 

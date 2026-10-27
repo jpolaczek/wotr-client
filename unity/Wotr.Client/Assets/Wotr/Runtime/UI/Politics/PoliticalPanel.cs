@@ -24,7 +24,8 @@ namespace Wotr.Client
         private readonly VisualElement tracks = new VisualElement { name = "politics-tracks" };
         private readonly PoliticalHover hover;
         private readonly Dictionary<string, Side> sides;
-        private HashSet<string> cardTargets = new HashSet<string>();
+        // A card's nation targets and what each click does ("" for the general hint).
+        private IReadOnlyDictionary<string, string> cardTargets = new Dictionary<string, string>();
         private PlayerView view;
         private TurnDraft draft = new TurnDraft();
         private ActionOption advancement;
@@ -139,9 +140,12 @@ namespace Wotr.Client
             RefreshRows();
         }
 
-        public void Highlight(IEnumerable<string> targets)
+        public void Highlight(IEnumerable<string> targets) => Highlight(targets.Distinct().ToDictionary(id => id, _ => ""));
+
+        // UI-278: the Kings cards' nation choices say what their token's click does.
+        public void Highlight(IReadOnlyDictionary<string, string> targets)
         {
-            cardTargets = targets.ToHashSet();
+            cardTargets = targets;
             RefreshRows();
         }
 
@@ -178,7 +182,8 @@ namespace Wotr.Client
             {
                 CanAdvance = interactive && own && advancement?.Targets.Contains(id) == true,
                 Highlighted = (dragged ?? selected) == id,
-                CardTarget = cardTargets.Contains(id),
+                CardTarget = cardTargets.ContainsKey(id),
+                CardHint = cardTargets.TryGetValue(id, out var hint) ? hint : "",
                 ActivationOffered = own && PoliticalActions.ActivationOffered(view, draft, id),
                 CanActivate = interactive && own && PoliticalActions.CanActivate(view, draft, id),
                 ActivationHint = PoliticalActions.ActivationHint(view, draft, id)

@@ -137,7 +137,7 @@ namespace Wotr.PlayTests
             watch.NeverOpened();
         }
 
-        // UI-274: the cleanse is the glowing king's click; Keep tiles is the console's button.
+        // UI-274: the cleanse is the glowing king's click; UI-278 (D7): Keep tiles is the console's Pass.
         private static async Task Cleansing()
         {
             foreach (var choice in new[] { "remove", "decline" })
@@ -156,18 +156,13 @@ namespace Wotr.PlayTests
                 var portrait = await BoardNavigation.Sovereign(board, id);
                 Assert.IsTrue(portrait.ClassListContains("legal-target"));
                 StringAssert.StartsWith("Click to return one random tile", portrait.tooltip);
-                var keep = board.Console.Status.Options.Q<Button>("effect-choice-decline");
-                Assert.IsNotNull(keep);
+                Assert.IsNull(board.Console.Status.Options.Q<Button>("effect-choice-decline"), "No Keep tiles button.");
                 await SovereignPanelLayoutChecks.Slots(room, room.Fp, "cleanse-" + choice);
                 await KingsCardNetworkChecks.Reconnect(room, room.Fp);
                 if (choice == "remove")
                     PointerGestureEvents.ClickAt(await BoardNavigation.Sovereign(board, id));
                 else
-                {
-                    keep = board.Console.Status.Options.Q<Button>("effect-choice-decline");
-                    await Ready(room, keep);
-                    PointerGestureEvents.ClickAt(keep);
-                }
+                    await room.Pass(room.Fp, "Pass · Keep the king's tiles in place");
                 await room.At(revision + 1);
                 var sovereign = board.View.Sovereigns.Single(s => s.Id == id);
                 Assert.AreEqual(SovereignStatus.Initial, sovereign.Status);

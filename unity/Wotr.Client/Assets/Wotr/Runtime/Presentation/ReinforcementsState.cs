@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -31,6 +32,31 @@ namespace Wotr.Client
         // UI-179: outside a recruitment the tab lists the player's reserves, every row plain and inert.
         public static ReinforcementsState Browse(PlayerView view) =>
             new ReinforcementsState { Side = view.You, Rows = ReinforcementRows.For(view, null) };
+
+        // UI-278 (D15): a Kings card's recruit branch is its king's nation in the Reserve; a figure's click chooses the recruit
+        // and, when the card's next step offers its kind, that figure.
+        public static ReinforcementsState Branch(PlayerView view, string nation, bool interactive)
+        {
+            var row = ReinforcementRows.For(view, null).FirstOrDefault(r => r.Nation == nation) ??
+                new ReinforcementRow { Nation = nation, Name = FigureGrid.Name(nation) };
+            foreach (var figure in row.Figures)
+            {
+                figure.ReserveId = view.Units.FirstOrDefault(u => u.Nation == nation && u.Kind == figure.Kind && u.Location == "reserve")?.Id;
+                figure.Reason = figure.ReserveId == null ? "No figures left in reserve" : "";
+            }
+            row.CanRecruit = row.Figures.Any(f => f.ReserveId != null);
+            row.Reason = "";
+            return new ReinforcementsState
+            {
+                Open = true,
+                Interactive = interactive,
+                Title = "Reserve · " + CardLibrary.Title(view.Decision.SourceId),
+                TokenPrefix = "branch-reserve-",
+                TokenHint = KingsCardChoices.RecruitHint(view),
+                Side = view.You,
+                Rows = new List<ReinforcementRow> { row }
+            };
+        }
 
         public static ReinforcementsState For(PlayerView view, ActionOption recruit, string selected, bool interactive) =>
             new ReinforcementsState

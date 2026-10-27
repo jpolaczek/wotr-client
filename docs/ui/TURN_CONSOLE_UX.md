@@ -402,8 +402,9 @@ UI-264 (2026-10-19) gives each of them a host in `DecisionRoutes.Expansion`: the
 are made on the lit dice in the pool, with the console's hint saying what the click does ("Click a highlighted die to
 keep it …") and no panel, window or Back; Vilya's keep, Dismay and the Council token stay with Dice & tokens until
 UI-268, UI-276 and UI-270; Companion versions and homelands stay with the setup panel (UI-269, UI-270); a corruption
-tile and a card's choice of a sovereign belong to the sovereigns (UI-274, UI-278). Fate's Monsters branch and the
-Kings cards' two-way branches are console buttons like the base cards' modes (`CardConsoleOptions`).
+tile and a card's choice of a sovereign belong to the sovereigns (UI-274, UI-278). Fate's Monsters branch is console
+buttons like the base cards' modes (`CardConsoleOptions`); since UI-278 (D15) the Kings cards' branches stand on their
+objects, and the console keeps only a branch without one.
 
 <a id="wdrożenie-ui-164"></a>
 ### implementation UI-164
@@ -561,10 +562,11 @@ responses now fit the console. The opponent's window never enables it. Tests: `C
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
 `CardPack04NetworkTests`.
 
-Expansions (owner, EXP-15, 2026-10-26; implemented by UI-347 for Lords, UI-348 for Anárion and Brand, UI-276 for Dismay — `OptionalDecline`): D7 extends this to every optional decline of the
+Expansions (owner, EXP-15, 2026-10-26; implemented by UI-347 for Lords, UI-348 for Anárion and Brand, UI-276 for Dismay, UI-278 for the kings' Keep tiles — `OptionalDecline`): D7 extends this to every optional decline of the
 expansions — Vilya's "Spend the die", Lore's "Keep results", Wind's and the Balrog card's "Finish", Orderly
 Withdrawal's "Keep the hit", We Won't Go Back's "No Corruption", "Keep card effects" (Brand, the Chieftains) and
-Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348). D8
+Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348);
+UI-278 adds the kings' "Keep tiles" after an inspection or a political cleanse. D8
 keeps forced single steps (one legal region or plan) resolved by the server without a click, the result named in the
 effect trail and the log. Checks: [EXPANSIONS_DECISIONS_PLAYTEST](EXPANSIONS_DECISIONS_PLAYTEST.md).
 
