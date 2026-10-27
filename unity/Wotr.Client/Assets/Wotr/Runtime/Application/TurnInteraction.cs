@@ -40,6 +40,7 @@ namespace Wotr.Client
         private readonly CardFigureInteraction cardFigures;
         private readonly CardArmyInteraction cardArmies;
         private readonly FigureAbilityInteraction figureAbilities;
+        private readonly CouncilTravelInteraction councilTravel;
         private readonly LoreInteraction lore;
         private readonly FellowshipContextInteraction fellowshipContext;
         private readonly HuntContextInteraction huntContext;
@@ -114,6 +115,7 @@ namespace Wotr.Client
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
             figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry);
+            councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy, Confirm, () => tray.Legal);
             context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id) ||
                 figureAbilities.Figure(id);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
@@ -693,6 +695,13 @@ namespace Wotr.Client
                 Edit(() => { draft.Clear(); draft.Change(p => p.DieId = id); });
                 return;
             }
+            // UI-376: a die chosen while a Council token's use waits leaves the token for that die.
+            if (draft.Kind == CommandKind.UseCouncilToken &&
+                view.Dice.Any(d => d.Id == id && d.Owner == view.You && d.Location == DieLocation.Available))
+            {
+                Edit(() => { draft.Clear(); draft.Change(p => p.DieId = id); });
+                return;
+            }
             if (muster.Active && view.Dice.Any(d => d.Id == id && d.Owner == view.You && d.Location == DieLocation.Available))
             {
                 Edit(() => { draft.Clear(); draft.Change(p => p.DieId = id); });
@@ -927,6 +936,7 @@ namespace Wotr.Client
             tray.Render(view, draft, sending || policy.Busy || held, sender.Pending != null && !sending, pendingProblem);
             console.Refresh(view, draft, online, sending || policy.Busy || held, sender.Pending != null);
             rings.Refresh(view, draft, online && !CommandBusy);
+            councilTravel.Refresh(view, draft, online && !CommandBusy);
             RevealRecovery();
             board.Map.DraftOverlay.Apply(view, draft, context.ArmyActive || muster.Active ? board.ActionDie : null);
         }
@@ -1089,6 +1099,7 @@ namespace Wotr.Client
             consoleOptions.Dispose();
             rings.Dispose();
             lore.Dispose();
+            councilTravel.Dispose();
             console.Dispose();
             board.Characters.EntryRequested -= RequestEntry;
             board.Characters.Enterable = _ => false;

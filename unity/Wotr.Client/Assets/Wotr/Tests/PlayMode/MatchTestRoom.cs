@@ -238,9 +238,11 @@ namespace Wotr.PlayTests
 
         // UI-214: a card's object-less options and a reaction's responses are buttons in the console, named as in the tray.
         // UI-291: a reaction window is declined with the console's Pass.
+        // UI-370: during the Council's setup the tray's ✓ stands beside Finish phase in the Fellowship panel.
         internal static Button TrayOrConsole(MountedMatchClient client, string name) =>
             name == DeclineName ? client.Board.Console.Actions.Pass
-                : client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name);
+                : client.Board.Tray.Q<Button>(name) ?? client.Board.Console.Status.Options.Q<Button>(name) ??
+                client.Board.Fellowship.ActionRow.Q<Button>(name);
 
         internal const string DeclineName = "action-DeclineReaction";
 

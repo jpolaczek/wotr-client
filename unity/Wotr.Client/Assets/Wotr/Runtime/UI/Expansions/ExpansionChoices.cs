@@ -24,11 +24,10 @@ namespace Wotr.Client
                 refresh.Add(council.Refresh);
                 return;
             }
+            // UI-376/UI-377 (owner): a Council token's printed use stands on its objects — its medallion in the pool, the
+            // Politics panel it opens, the Nazgûl above the token — so the decision tray lists nothing for it.
             if (draft.Kind == CommandKind.UseCouncilToken)
-            {
-                Council(root, view, data);
                 return;
-            }
             var sovereignContext = SovereignPresentation.OwnsDecision(view, draft);
             if (!sovereignContext && draft.Kind is CommandKind.AwakenSovereign or CommandKind.RemoveCorruptedSovereign or CommandKind.AttemptCorruption)
                 Sovereigns(root, view, option);
@@ -82,23 +81,6 @@ namespace Wotr.Client
                 button.tooltip = sovereign.Status + " · Resistance " + sovereign.Resistance;
                 row.Add(button);
             }
-        }
-
-        private void Council(VisualElement root, PlayerView view, BoardPresentation data)
-        {
-            var tokens = BoardScreen.Row();
-            root.Add(tokens);
-            foreach (var option in view.Options.Where(o => o.Kind == CommandKind.UseCouncilToken && o.Enabled))
-                foreach (var id in option.EligibleIds)
-                    tokens.Add(Choice(ExpansionLabels.CouncilToken(id), "council-use-" + id,
-                        () => draft.Payload.AbilityId == id, () => ExpansionDraft.CouncilToken(draft, id)));
-            if (draft.Payload.AbilityId == ExpansionDraft.CouncilTravel)
-            {
-                var travel = new FellowshipChoices(root, view, draft, edit, data, tokens);
-                refresh.Add(travel.Refresh);
-            }
-            if (draft.Payload.AbilityId == ExpansionDraft.CouncilPolitics)
-                root.Add(new Label("Politics → click a nation’s arrow"));
         }
 
         private Button Choice(string label, string name, Func<bool> selected, Action change)

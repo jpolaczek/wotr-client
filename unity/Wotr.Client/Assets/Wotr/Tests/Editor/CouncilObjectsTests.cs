@@ -117,6 +117,44 @@ namespace Wotr.EditorTests
             Assert.AreEqual(DecisionHost.Map, DecisionRoutes.Of(view));
         }
 
+        // UI-376/UI-377: the political use waits for its nation on the Politics panel; the travel lists the Nazgûl it may
+        // move above the token and guides the console until their destination.
+        [Test]
+        public void TheCouncilTokensUsesStandOnTheirObjects()
+        {
+            const string first = "base.sauron.nazgul.01";
+            const string second = "base.sauron.nazgul.02";
+            var view = Shadow();
+            view.Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action };
+            var option = new ActionOption { Kind = CommandKind.UseCouncilToken, Enabled = true,
+                EligibleIds = { ExpansionDraft.CouncilPolitics, ExpansionDraft.CouncilTravel }, Targets = { "sauron" } };
+            foreach (var id in new[] { first, second })
+            {
+                option.Travel.Add(new TravelOption { Id = id, Origin = "dol-guldur", Range = 99, Flight = true, Targets = { "hollin" } });
+                view.Units.Add(new UnitView { Id = id, Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "dol-guldur" });
+            }
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.UseCouncilToken);
+            ExpansionDraft.CouncilToken(draft, ExpansionDraft.CouncilPolitics);
+            Assert.IsTrue(ExpansionDraft.CouncilPoliticsPending(draft));
+            Assert.IsFalse(CouncilTravel.Active(view, draft));
+            draft.Change(p => p.NationId = "sauron");
+            Assert.IsFalse(ExpansionDraft.CouncilPoliticsPending(draft), "A chosen nation ends the wait.");
+            ExpansionDraft.CouncilToken(draft, ExpansionDraft.CouncilTravel);
+            Assert.IsTrue(CouncilTravel.Active(view, draft));
+            CollectionAssert.AreEqual(new[] { first, second }, CouncilTravel.Figures(view, draft));
+            Assert.AreEqual("Council token · Click the Nazgûl above the token, then their destination on the map.",
+                CouncilTravel.Hint(view, draft));
+            TravelDraft.ToggleCompanion(draft, view, DraftOptions.For(view, draft), first);
+            Assert.IsTrue(CouncilTravel.Chosen(draft, first));
+            Assert.IsFalse(CouncilTravel.Planned(draft, first), "The chosen group is not another planned one.");
+            StringAssert.EndsWith(" · Click a highlighted region to move there.", CouncilTravel.Hint(view, draft));
+            view.DecisionOwner = Side.FreePeoples;
+            Assert.IsFalse(CouncilTravel.Active(view, draft), "Only the player's own action.");
+            Assert.AreEqual("", CouncilTravel.Hint(view, draft));
+        }
+
         private static PlayerView Shadow() => new PlayerView
         {
             You = Side.Shadow, DecisionOwner = Side.Shadow,

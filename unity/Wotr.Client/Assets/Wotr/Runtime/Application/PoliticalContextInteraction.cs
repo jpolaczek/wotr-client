@@ -10,6 +10,9 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private PlayerView view;
         private TurnDraft draft;
+        // UI-376: the political Council token's use is pending, and whether its start opened the Politics panel.
+        private bool councilPending;
+        private bool councilOpened;
         public bool Active { get; private set; }
 
         public PoliticalContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
@@ -32,6 +35,26 @@ namespace Wotr.Client
             board.Nations.Abilities = draft.Kind == null ? CharacterPolitics.For(view, board.ActionDie)
                 : new System.Collections.Generic.Dictionary<string, CharacterPolitics.Offer>();
             board.Nations.RefreshActions(option, selected, !busy(), draft);
+            FollowCouncil();
+        }
+
+        // UI-376 (owner): the political Council token's use opens the Politics panel; another choice closes the panel it
+        // opened; a panel the player closed stays closed (its tab keeps glowing), and one already open stays as it was.
+        private void FollowCouncil()
+        {
+            var pending = view?.DecisionOwner == view?.You && ExpansionDraft.CouncilPoliticsPending(draft);
+            if (pending && !councilPending)
+            {
+                councilOpened = !board.Nations.IsOpen;
+                board.Nations.Open();
+            }
+            else if (!pending && councilPending && councilOpened)
+            {
+                councilOpened = false;
+                if (board.Nations.IsOpen)
+                    board.Nations.Close();
+            }
+            councilPending = pending;
         }
 
         private void OnAdvanced(string nation) => Commit(nation, false);
@@ -49,6 +72,8 @@ namespace Wotr.Client
             var valid = activation ? PoliticalActions.Activate(next, view, nation) : Step(next, nation);
             if (!valid)
                 return false;
+            // UI-376: the step's own presentation keeps the panel the Council token opened.
+            councilOpened = false;
             edit(() => draft.Adopt(next), true);
             board.Nations.PresentOwnStep();
             return true;

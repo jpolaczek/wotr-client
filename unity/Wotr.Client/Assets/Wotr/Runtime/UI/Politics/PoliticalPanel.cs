@@ -12,6 +12,7 @@ namespace Wotr.Client
         public Button Root { get; }
         public VisualElement Drawer { get; } = new VisualElement { name = "politics-panel" };
         public bool Pinned => hover.Pinned;
+        public bool IsOpen => hover.Visible;
         public FloatingWindow Window { get; set; }
         // UI-197: a short caption keeps the narrower header clear of the title; the tooltip says it in full.
         public Toggle ShowOpponent { get; } = new Toggle("Opponent") { name = "politics-show-opponent", value = true,

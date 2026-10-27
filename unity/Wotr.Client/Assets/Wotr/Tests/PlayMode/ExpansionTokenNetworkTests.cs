@@ -161,12 +161,21 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Its use still waits for its nation or figures.");
                 string figure = "";
                 var politics = room.Sh.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar;
+                // UI-376/UI-377 (owner): the token's use opens no decision window.
+                Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen, "The Council token's use stands on its objects.");
                 if (travel)
                 {
                     figure = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.First().Id;
-                    Click(room.Sh, "companion-" + figure);
+                    var picker = await CouncilPicker(room);
+                    Assert.IsFalse(room.Sh.Board.Nations.IsOpen);
+                    PointerGestureEvents.ClickAt(picker.Root.Q<Button>("council-travel-" + figure));
+                    await room.Settle();
+                    Assert.IsTrue(picker.Root.Q<Button>("council-travel-" + figure).ClassListContains("selected"));
                     Assert.IsTrue(room.Sh.Board.Map.DraftOverlay.Targets.Contains("hollin"));
+                    StringAssert.Contains("Click a highlighted region to move there", room.Sh.Board.Console.Status.Hint.text);
                 }
+                else
+                    await CouncilPolitics(room, token);
                 await Layout(room, room.Sh, travel ? "council-travel" : "council-politics", "ui09");
                 await Reconnect(room, room.Sh);
                 if (travel)
@@ -179,8 +188,7 @@ namespace Wotr.PlayTests
                 else
                 {
                     var revision = room.Sh.Board.View.Revision;
-                    room.Sh.Board.Nations.Open();
-                    await room.Settle();
+                    Assert.IsTrue(room.Sh.Board.Nations.IsOpen, "The token's use opened Politics.");
                     PoliticalRecoveryTests.AssertNoBottomPolitics(room.Sh.Board);
                     Assert.AreEqual(revision, room.Sh.Board.View.Revision);
                     Assert.IsNull(room.Sh.Board.Tray.Q<Button>("confirm-decision"));
@@ -197,6 +205,51 @@ namespace Wotr.PlayTests
                 else
                     Assert.AreEqual(politics - 1, room.Fp.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar);
             }
+        }
+
+        // UI-377: the Council token's travel is a small popover above the token pool, holding only the Nazgûl and the ✓.
+        private static async Task<Wotr.Client.CouncilTravelPicker> CouncilPicker(MatchTestRoom room)
+        {
+            var board = room.Sh.Board;
+            var picker = board.CouncilPicker;
+            await room.Settle();
+            Assert.IsTrue(picker.IsOpen, "The token's travel shows its popover.");
+            Assert.LessOrEqual(picker.Root.worldBound.yMax, board.OwnDice.worldBound.yMin, "It stands above the token pool.");
+            var token = board.OwnDice.Q<Button>("pool-" + Wotr.Client.ExpansionDraft.CouncilTravel).worldBound;
+            Assert.That(picker.Root.worldBound.center.x, Is.EqualTo(token.center.x).Within(picker.Root.worldBound.width / 2));
+            var figures = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.Select(t => t.Id).ToList();
+            CollectionAssert.AreEquivalent(figures.Select(id => "council-travel-" + id),
+                picker.Root.Query<Button>(className: "council-travel-figure").ToList().Select(b => b.name));
+            Assert.AreEqual(figures.Count + 1, picker.Root.Query<Button>().ToList().Count, "Only the Nazgûl and the ✓.");
+            return picker;
+        }
+
+        // UI-376 (owner): the political token's use opened the Politics panel; another choice closes it at once, and a
+        // panel the player closed stays closed while its tab keeps glowing.
+        private static async Task CouncilPolitics(MatchTestRoom room, string token)
+        {
+            var board = room.Sh.Board;
+            Assert.IsTrue(board.Nations.IsOpen, "The token's use opens Politics.");
+            Assert.AreEqual(Wotr.Client.ExpansionDraft.CouncilPoliticsHint, board.Console.Status.Hint.text);
+            var die = board.View.Dice.First(d => d.Owner == board.View.You && d.Location == DieLocation.Available);
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die.Id));
+            await room.Settle();
+            Assert.AreEqual(die.Id, board.ActionDie.DieId, "The die's click chose that die instead of the token.");
+            Assert.IsFalse(board.Nations.IsOpen, "Another choice closes the panel the token opened.");
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die.Id));
+            await room.Settle();
+            for (var click = 0; click < 2 && !board.Nations.IsOpen; click++)
+            {
+                PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
+                await room.Settle();
+            }
+            Assert.IsTrue(board.Nations.IsOpen, "The token's use opens Politics again.");
+            board.Nations.Close();
+            await room.Settle();
+            Assert.IsFalse(board.Nations.IsOpen, "A panel the player closed stays closed.");
+            Assert.IsTrue(board.Nations.Root.ClassListContains("legal-target"), "Its tab keeps glowing.");
+            board.Nations.Open();
+            await room.Settle();
         }
 
         private static async Task Entry()

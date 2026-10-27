@@ -1626,8 +1626,9 @@ Tests: `CharacterAbilitySummariesTests`, `NamedRingsTests`, `SovereignPanelTests
 Owner requests of 2026-10-27:
 
 - UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
-  the roster moves; switching an ability's text, a page or a version keeps its top-left and only pulls it back inside
-  the board (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`).
+  the roster moves; switching an ability's text or a page keeps its top-left and only pulls it back inside the board
+  (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`). A version a decision selects is not the player's
+  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve.
 - UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
   the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
   the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
@@ -1656,4 +1657,27 @@ Owner reports of 2026-10-27 (playtest of the expansions' test scenarios):
   (`TravelDraft.DestinationHint`). Tests: `CompanionJourneyMapTests.AChosenSeparationAsksForARegion`,
   `FateGimliNetworkTests.GuideLeavesDuringHuntAndMovesWithThePrintedRange`.
 - AUDIO-12 — the political token's step sounds a deep bell ([AUDIO_UX](AUDIO_UX.md#dzwon-polityki--audio-12)).
+
+<a id="council-token-uses-on-their-objects--ui-376-ui-377-2026-10-27"></a>
+## A Council token's uses on their objects — UI-376, UI-377 (2026-10-27)
+
+Owner requests of 2026-10-27; the token's printed use still starts on its medallion in the pool (UI-347 D13), and
+neither use opens the decision window any longer (`ExpansionChoices` lists nothing for `UseCouncilToken`).
+
+- UI-376 — the token that advances a Shadow nation opens the Politics panel as its use starts; the console says
+  "Council token · Click a glowing step of a Shadow nation on the Politics track." If the player chooses anything
+  else (another token, Back, or one of the own action dice, whose click now leaves the token's use for that die
+  instead of being ignored), the panel the token opened closes at once; a panel that was already
+  open stays as it was; if the player closes it, it stays closed and its tab keeps glowing until the use ends. The
+  step's own presentation keeps the panel (`PoliticalContextInteraction.FollowCouncil`).
+- UI-377 — the token that moves Nazgûl shows a small popover just above the token pool, pointing at the token on the
+  Ring picker's frame (`CouncilTravelPicker`): only the icons of the Nazgûl it may move and the ✓ that ends the
+  choice. A lit icon (ChoiceGlow) adds its Nazgûl to the group being planned, as its figure on the map does; the
+  destination's click on the map moves the chosen Nazgûl at once (UI-105), and the ✓ (like the console's) sends a
+  plan that is ready but not yet sent, such as one restored after a reconnect; a planned icon dims. The console says
+  "Council token · Click the Nazgûl above the token, then their destination on the map." and, once chosen,
+  "<Nazgûl> · Click a highlighted region to move there." (`CouncilTravel.Hint`).
+- Tests: `ExpansionTokenNetworkTests.CouncilPoliticsSpendsTheTokenWithoutADie` (opening, closing on a die's click,
+  staying closed with a glowing tab, the step), `ExpansionTokenNetworkTests.CouncilTravelMovesTheChosenNazgulWithoutADie`
+  (no decision window, the popover above the pool with only the Nazgûl and ✓, the icon's selection, the move).
 

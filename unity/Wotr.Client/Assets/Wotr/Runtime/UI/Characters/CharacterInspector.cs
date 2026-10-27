@@ -17,7 +17,8 @@ namespace Wotr.Client
         public string FigureId { get; private set; } = "";
         public string DefinitionId => version;
         public event Action Changed;
-        // UI-371: the player is about to change the window's content (an ability's text, a page, a version).
+        // UI-371: the player is about to change the window's content (an ability's text, a page). A version the decision
+        // selects is not such a change: the window still moves clear of the panels the decision opens.
         public event Action ContentChanging;
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
@@ -127,7 +128,6 @@ namespace Wotr.Client
         {
             if (row == null || id == version || id != row.CurrentDefinitionId && row.FutureVersions.All(item => item.DefinitionId != id))
                 return;
-            ContentChanging?.Invoke();
             version = id;
             Refresh();
         }

@@ -167,6 +167,11 @@ namespace Wotr.Client
             var destination = TravelDraft.DestinationHint(view, draft);
             if (destination.Length > 0)
                 return destination;
+            var council = CouncilTravel.Hint(view, draft);
+            if (council.Length > 0)
+                return council;
+            if (ExpansionDraft.CouncilPoliticsPending(draft))
+                return ExpansionDraft.CouncilPoliticsHint;
             if (draft.Kind == CommandKind.SelectGuide && ContextualFellowship)
                 return FellowshipGuideText.ChooseHint;
             if (CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions)
@@ -482,8 +487,9 @@ namespace Wotr.Client
 
         // In a card decision the console confirms (UI-211), so its Confirm is no choice of the window. UI-297: the
         // effect trail is recalled only in the console, never in the tray.
+        // UI-377: the Council token's travel is confirmed by the ✓ above the token (or the console's).
         private bool Offered(Button button) => button.name is not ("decision-back" or "open-reinforcements") &&
-            !(cardDecision && button == confirm) && Shown(button);
+            !((cardDecision || CouncilTravel.Active(shownView, shownDraft)) && button == confirm) && Shown(button);
 
         // The tray sits in the Fellowship panel (FellowshipActions.UsesPanel), not in the Hunt window.
         private bool FellowshipHost => ContextualFellowship && !ContextualHunt;

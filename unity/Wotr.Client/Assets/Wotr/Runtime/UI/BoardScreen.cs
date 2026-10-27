@@ -69,6 +69,8 @@ namespace Wotr.Client
         public RingFacePicker RingPicker { get; } = new RingFacePicker();
         // UI-272: the new results of a die changed by The Lore of the Elven Rings.
         public RingFacePicker LorePicker { get; } = new RingFacePicker("lore-face-picker");
+        // UI-377: the Nazgûl a Council token's travel may move, above the token.
+        public CouncilTravelPicker CouncilPicker { get; } = new CouncilTravelPicker();
         public PoliticalPanel Nations { get; }
         private readonly Label loading = new Label("Loading match…") { name = "match-loading" };
         public CardInspector Cards { get; } = new CardInspector();
@@ -198,6 +200,7 @@ namespace Wotr.Client
             Log.CardBounds = CardBounds;
             Nations = new PoliticalPanel(Root, Presentation.Board);
             Nations.RegionName = id => ActionCardText.Region(id, Presentation);
+            CouncilPicker.RegionName = id => ActionCardText.Region(id, Presentation);
             stage.Add(Nations.Root);
             stage.Add(Nations.Drawer);
             Fellowship = new FellowshipPanel(FocusFellowship, Map);
@@ -386,6 +389,7 @@ namespace Wotr.Client
             Root.Add(bottom);
             Root.Add(RingPicker.Root);
             Root.Add(LorePicker.Root);
+            Root.Add(CouncilPicker.Root);
             Root.Add(GameEnd.Root);
             var mapOcclusions = overlays.Concat(new[] { top, Notifications.Root, bottom }).ToArray();
             Map.Occlusions = () => mapOcclusions.Where(element => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&

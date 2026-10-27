@@ -20,7 +20,7 @@ namespace Wotr.Client
         public event Action<string> EntryRequested;
         public FloatingWindow Window { get; set; }
         public FloatingWindow InspectorWindow { get; set; }
-        // UI-371: the player changed the window's content (an ability's text, a page, a version), so it stays where it
+        // UI-371: the player changed the window's content (an ability's text, a page), so it stays where it
         // stands until a figure opens, the roster moves or the board is resized.
         private bool keepPlace;
         public bool Pinned => hover.Pinned;
@@ -236,7 +236,7 @@ namespace Wotr.Client
         }
 
         // UI-371 (owner): one window in one place. It is placed beside its source; after the player changes its content
-        // (another ability's text, a page, a version) it keeps its top-left and is only pulled back inside the board.
+        // (another ability's text, a page) it keeps its top-left and is only pulled back inside the board.
         public void PositionInspector()
         {
             if (Inspector.Root.style.display.value == DisplayStyle.None || Inspector.Root.parent == null || InspectorWindow?.Restore() == true || source == null)
@@ -333,6 +333,17 @@ namespace Wotr.Client
                 Inspector.Root.parent?.RegisterCallback<GeometryChangedEvent>(BoardResized));
             Root.RegisterCallback<AttachToPanelEvent>(_ => Application.focusChanged += FocusChanged);
             Root.RegisterCallback<DetachFromPanelEvent>(_ => { Application.focusChanged -= FocusChanged; Close(); });
+        }
+
+        // A panel beside the window grew or finished appearing over it (a Ruler's Reserve filling its rows after the
+        // window was placed): the window moves clear of it again, as when it opened.
+        public void ObstacleChanged()
+        {
+            if (Inspector.Root.style.display.value == DisplayStyle.None || Occlusions == null)
+                return;
+            var bounds = Inspector.Root.worldBound;
+            if (Occlusions().Any(obstacle => obstacle.Overlaps(bounds)))
+                PlaceInspectorAgain();
         }
 
         // The roster's own move (unrolling, closing) changes what the window must avoid, so it is placed again.
