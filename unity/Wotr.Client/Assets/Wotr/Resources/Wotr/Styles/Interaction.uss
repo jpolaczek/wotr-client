@@ -335,4 +335,9 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 .motion-enabled #board-screen .choice-glow-pulse .battle-replacement-chip.choice-glow { border-color: rgba(255, 214, 112, 0.45); }
+/* UI-277: a replacement already made: the same gilt chip, solid as a chosen control, for both players. */
+#board-screen .battle-replacement-chip.battle-replacement-applied {
+    background-color: rgb(214, 170, 70);
+    border-color: rgb(255, 236, 170);
+}
 

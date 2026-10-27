@@ -192,6 +192,61 @@ namespace Wotr.EditorTests
 
             view.Decision.Presentation = "Region";
             Assert.IsNull(OptionalDecline.Option(view, new TurnDraft()), "A generic keep counts only in its own step.");
+
+            // UI-277: once made, the replacement is a gilt marker beside the replaced card, for both players.
+            view.Decision = null;
+            view.Options.Clear();
+            view.CombatReplacements.Add(new CombatReplacementView { Side = Side.FreePeoples, SourceId = "kings.sovereign.brand" });
+            foreach (var side in new[] { Side.FreePeoples, Side.Shadow })
+            {
+                view.You = side;
+                root = new VisualElement();
+                new BattleContext(root, view.Battle, view, new TurnDraft(), edit => edit(), _ => { }, complete: action => action()).Refresh();
+                var marker = root.Q("battle-defender").Q("battle-replacement-applied");
+                Assert.IsNotNull(marker, side + " sees the replacement beside the Free Peoples' card.");
+                Assert.IsTrue(marker.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
+                Assert.AreEqual("replaces the Combat card's effects this round", marker.tooltip.Substring(marker.tooltip.IndexOf("replaces")));
+                Assert.IsNull(root.Q("battle-attacker").Q("battle-replacement-applied"));
+            }
+        }
+
+        // UI-277 (D17): a Dark Chieftain's substitution names his effect instead of the card's and wears his nation's arms.
+        [Test]
+        public void AChieftainsSubstitutionIsAChipWithHisArms()
+        {
+            var view = new PlayerView
+            {
+                You = Side.Shadow, DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "chieftain", Kind = DecisionKind.EffectChoice, Presentation = CombatReplacementChoice.Presentation },
+                Battle = new BattleView
+                {
+                    Attacker = new BattleForceView { Side = Side.FreePeoples },
+                    Defender = new BattleForceView { Side = Side.Shadow, CardId = "kings.sh.strategy.01" }
+                },
+                Characters = { new CharacterView { Id = "kings.character.black-serpent", DefinitionId = "kings.character.black-serpent", Side = Side.Shadow } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1,
+                        EligibleIds = { "kings.character.black-serpent", "keep" },
+                        EffectChoices =
+                        {
+                            new EffectChoiceView { Id = "kings.character.black-serpent", SourceId = "kings.character.black-serpent",
+                                Title = "The Black Serpent", Detail = "Take one hit before reveal. Combat +1 at initiative 3." },
+                            new EffectChoiceView { Id = "keep", Title = "Keep card effects" }
+                        }
+                    }
+                }
+            };
+            var chip = CombatReplacementChoice.Chips(view).Single();
+            Assert.AreEqual("southrons", CombatReplacementChoice.Nation(view, chip));
+            StringAssert.StartsWith("Click to use The Black Serpent instead of ", CombatReplacementChoice.Tooltip(view, chip));
+            StringAssert.Contains("Take one hit before reveal", CombatReplacementChoice.Tooltip(view, chip));
+            Assert.AreEqual("keep", OptionalDecline.Option(view, new TurnDraft()).Id);
+            var root = new VisualElement();
+            new BattleContext(root, view.Battle, view, new TurnDraft(), edit => edit(), _ => { }, complete: action => action()).Refresh();
+            Assert.IsNotNull(root.Q("battle-defender").Q<Button>("battle-replacement-kings.character.black-serpent"));
         }
 
         // UI-348 (D7): Palantír of Anárion's Skip extra card is the console's Pass; the decks are the draw.

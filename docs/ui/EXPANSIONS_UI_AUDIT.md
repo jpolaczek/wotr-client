@@ -123,7 +123,8 @@ move onto objects once D10–D14 are decided.
 Brand's replacement (row 4, D17), Anárion's skip (row 3), the dead fallbacks (row 13), and the Kings ability pictures:
 the upgrades and the Ruler abilities fall back to the generic scroll (`AbilityPictures.cs:26-31`). UI-276 keeps the Ruler
 tokens, Dismay and Far-sighted (D18–D20); UI-278 the Nation step, the card branches, the in-battle sovereign targets,
-Welcome and Barad-dûr (D15–D16); UI-277 the Chieftains (their substitution keeps a "Keep card effects" text button).
+Welcome and Barad-dûr (D15–D16); UI-277 the Chieftains (done 2026-10-27: their substitution is the gilt chip, Keep card
+effects the Pass, an applied replacement a gilt marker for both players).
 
 ### Fate (UI-349)
 

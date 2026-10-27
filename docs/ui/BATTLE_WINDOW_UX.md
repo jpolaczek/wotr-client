@@ -505,7 +505,7 @@ an Elite); seeder scenarios `ui347-orderly-withdrawal`, `ui347-orderly-withdrawa
 
 The owner's decision EXP-15 D17 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)): after the reveal, Brand's Heir of Bard
 (Brand Awakened, Free Peoples) and Shadows in the North (Brand Corrupted, Shadow) — and a Dark Chieftain's substitution
-when UI-277 lands — are a gilt chip beside the player's own Combat card (`CombatReplacementChoice`,
+(UI-277) — are a gilt chip beside the player's own Combat card (`CombatReplacementChoice`,
 `BattleContext.ReplacementChip`). The chip wears its source's arms (the nation emblem — the North for Brand, the
 Chieftain's nation — stands in until their own art exists), glows and pulses with the window's choices, and its tooltip
 names the card it cancels ("Click to use Heir of Bard · Cancels Valinor at initiative 0; …'s effects are given up · Once
@@ -516,3 +516,25 @@ no text button remains.
 Tests: `KingsCards02Tests.BrandsReplacementIsAChipAndKeepingIsThePass`, `KingsDecisionNetworkTests` (Heir of Bard,
 Shadows in the North, Keep through Pass); seeder scenarios `ui348-brand-heir`, `ui348-brand-heir-keep`,
 `ui348-brand-shadows`; test-menu group "Kings · Decisions" (wotr-server `KingsDecisionScenarios`).
+
+## The Dark Chieftains' substitution and the applied replacement — UI-277 (2026-10-27)
+
+The owner's decisions EXP-15 D7 and D17 for the Kings Dark Chieftains:
+
+- **Before the reveal** the Shadow may substitute a Chieftain's effect for its Combat card's (the Black Serpent's Red
+  Wrath, the Shadow of Mirkwood's bats, Uglúk's command — `Kings/KingsChieftainCombat.cs`). Each Chieftain who may is a
+  gilt chip with his nation's arms beside the Shadow's own card (`CombatReplacementChoice`, as Brand's, UI-348); its
+  tooltip names the card whose effects it replaces and what the Chieftain does instead ("Click to use The Black Serpent
+  instead of Deadly Strife's effects · Take one hit before reveal…"). Keep card effects is the console's Pass. The Free
+  Peoples see neither the choice nor the Shadow card (server privacy, `KingsChieftainCombatTests`).
+- **Once made**, a replacement — Brand's or a Chieftain's — stands as the same gilt marker, solid and without a click,
+  beside the replaced card for both players (`BattleContext.AppliedReplacement`, from `CombatReplacements`); its tooltip
+  names the source, and the opponent's card stays unnamed until the reveal ("The Black Serpent replaces the Combat
+  card's effects this round").
+- **Entry.** A Chieftain enters from his Characters row (UI-108): with a Council token the medallion marks it and lights
+  his row (UI-347, D13); without the Council the die alone pays.
+
+Tests: `KingsCards02Tests` (the Chieftain's chip, the applied marker for both players), `KingsDecisionNetworkTests`
+(the Chieftain's chip before the reveal, Keep through Pass, the entry without a token; Brand's applied marker),
+`ExpansionTokenNetworkTests.CouncilTokenAndMusterEnterAKingsChieftain`; seeder scenarios `ui277-chieftain`,
+`ui277-chieftain-keep`, `ui277-chieftain-entry`; test-menu scenario `kings-chieftain-substitution`.

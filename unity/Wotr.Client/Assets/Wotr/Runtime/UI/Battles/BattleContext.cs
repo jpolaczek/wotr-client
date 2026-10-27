@@ -60,14 +60,17 @@ namespace Wotr.Client
             if (outside.Length > 0)
                 column.Add(Shelf(outside));
             var chips = draft != null && complete != null && force.Side == view.You ? CombatReplacementChoice.Chips(view) : NoChips;
-            var cardHost = chips.Count > 0 ? BoardScreen.Row("battle-card-row") : column;
-            if (chips.Count > 0)
+            var applied = chips.Count == 0 ? CombatReplacementChoice.Applied(view, force.Side) : null;
+            var cardHost = chips.Count > 0 || applied != null ? BoardScreen.Row("battle-card-row") : column;
+            if (cardHost != column)
                 column.Add(cardHost);
             Card(cardHost, force, role, heading, inspect, force.Side != Side.FreePeoples ? "" :
                 battle.DenethorBlocksCards ? "Denethor · No card" :
                 battle.CompanionRequiredForCard && force.Characters.Count == 0 ? "No Companion · No card this round" : "", cards);
             foreach (var choice in chips)
                 cardHost.Add(ReplacementChip(view, draft, choice));
+            if (applied != null)
+                cardHost.Add(AppliedReplacement(view, applied));
             var dice = new BattleDiceStrip(column, force, battle, view, draft, edit);
             refresh.Add(dice.Refresh);
         }
@@ -232,6 +235,22 @@ namespace Wotr.Client
             chip.tooltip = CombatReplacementChoice.Tooltip(view, choice);
             ChoiceGlow.Apply(chip, true);
             return chip;
+        }
+
+        // UI-277: a replacement already made stands as the same gilt marker beside the replaced card, for both players.
+        private static VisualElement AppliedReplacement(PlayerView view, CombatReplacementView applied)
+        {
+            var marker = new VisualElement { name = "battle-replacement-applied" };
+            marker.AddToClassList("battle-replacement-chip");
+            marker.AddToClassList("battle-replacement-applied");
+            var arms = new VisualElement { name = "battle-replacement-arms", pickingMode = PickingMode.Ignore };
+            arms.AddToClassList("battle-replacement-arms");
+            var nation = CombatReplacementChoice.Nation(view, applied.SourceId);
+            if (nation.Length > 0)
+                arms.AddToClassList("nation-emblem-" + nation);
+            marker.Add(arms);
+            marker.tooltip = CombatReplacementChoice.AppliedTooltip(view, applied);
+            return marker;
         }
 
         // UI-347 (D12): the Mouth of Sauron's Evil Knowledge is his glowing portrait while the siege may go on; its click
