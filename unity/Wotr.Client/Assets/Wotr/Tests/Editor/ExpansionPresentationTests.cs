@@ -46,27 +46,6 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void SequentialDrawStillShowsAnEnabledStopTileAndNoOpponentChoice()
-        {
-            var view = new PlayerView { CorruptionAttempt = new CorruptionAttemptView
-                { Sequential = true, DrawnCount = 1, DrawLimit = 3, OwnChoices = { new CorruptionTileView { TileId = "one", Value = 1 } } },
-                Options = { new ActionOption { Kind = CommandKind.DrawCorruptionTile },
-                    new ActionOption { Kind = CommandKind.ChooseCorruptionTile, EligibleIds = { "one" } } } };
-            var draft = new TurnDraft();
-            draft.Choose(CommandKind.DrawCorruptionTile);
-            var root = new VisualElement();
-            var refresh = CorruptionAttemptChoices.Render(root, view, view.Options[0], draft, action => action());
-            refresh();
-            var stop = root.Q<Button>("corruption-choice-one");
-            Assert.IsTrue(stop.enabledSelf);
-            StringAssert.StartsWith("Stop", stop.text);
-            view.CorruptionAttempt.OwnChoices.Clear();
-            root.Clear();
-            CorruptionAttemptChoices.Render(root, view, view.Options[0], draft, action => action())();
-            Assert.IsEmpty(root.Query<Button>().ToList());
-        }
-
-        [Test]
         public void SpecialDiceShowOriginRemovalAndPendingChoiceWhileKeeperEyeRemainsInItsPhysicalOwnersPool()
         {
             var view = new PlayerView { You = Side.FreePeoples, Configuration = new MatchConfiguration { Lords = true }, Dice =

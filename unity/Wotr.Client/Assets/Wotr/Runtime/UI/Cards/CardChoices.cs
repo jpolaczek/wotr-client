@@ -62,7 +62,8 @@ namespace Wotr.Client
             if (view.Decision?.Presentation == "Deck")
             {
                 root.Add(new Label("Choose a highlighted deck."));
-                foreach (var choice in option.EffectChoices.Where(c => c.Id is not ("character" or "strategy")))
+                // UI-348 (D7): Palantír of Anárion's Skip extra card is the console's Pass.
+                foreach (var choice in option.EffectChoices.Where(c => c.Id is not ("character" or "strategy") && !OptionalDecline.Declines(view, c.Id)))
                     root.Add(EffectButton(option, choice));
                 return;
             }
@@ -70,11 +71,6 @@ namespace Wotr.Client
             if (view.Decision?.Presentation == "ReserveFigures" && reinforcements != null)
             {
                 root.Add(reinforcements());
-                return;
-            }
-            if (view.Decision?.Presentation == "InspectedCorruption")
-            {
-                refresh.Add(CorruptionInspectionChoices.Render(root, view, option, draft, edit));
                 return;
             }
             // UI-215/UI-289: a card's figures and the King's companions are chosen in the region panel and on the map
@@ -106,8 +102,8 @@ namespace Wotr.Client
                 if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
                     continue;
-                // UI-347 (D7): an optional decline is the console's Pass.
-                if (OptionalDecline.Declines(id))
+                // UI-347 (D7): an optional decline is the console's Pass; UI-348 (D17): a card's replacement is its chip.
+                if (OptionalDecline.Declines(view, id) || CombatReplacementChoice.OnChip(view, id))
                     continue;
                 // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
                 // every Guide's response; UI-272: so is a Lords table card's response, and We Won't Go Back's Character

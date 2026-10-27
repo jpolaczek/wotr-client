@@ -81,33 +81,6 @@ namespace Wotr.EditorTests
         }
 
         [Test]
-        public void CorruptionSelectionIsPrivateLocalAndNeedsOneExplicitTile()
-        {
-            var view = new PlayerView { CorruptionAttempt = new CorruptionAttemptView
-            {
-                DrawLimit = 2, DrawnCount = 2, OwnChoices = new List<CorruptionTileView>
-                {
-                    new CorruptionTileView { Id = "one", TileId = "one", Value = 1 },
-                    new CorruptionTileView { Id = "two", TileId = "two", Value = 2, Reveal = true }
-                }
-            } };
-            var option = new ActionOption { Kind = CommandKind.ChooseCorruptionTile, Minimum = 1, Maximum = 1,
-                EligibleIds = new List<string> { "one", "two" } };
-            var draft = new TurnDraft();
-            draft.Choose(CommandKind.ChooseCorruptionTile);
-            var root = new VisualElement();
-            var refresh = CorruptionAttemptChoices.Render(root, view, option, draft, edit => edit());
-            Assert.IsFalse(draft.Ready(option));
-            CardDraft.Choose(draft, option, "two");
-            refresh();
-            Assert.IsTrue(draft.Ready(option));
-            Assert.AreEqual("2 ◉", root.Q<Button>("corruption-choice-two").text);
-            Assert.IsTrue(root.Q<Button>("corruption-choice-two").ClassListContains("selected"));
-            Assert.AreEqual(2, root.Query<Button>().ToList().Count);
-            Assert.IsEmpty(root.Query<ScrollView>().ToList());
-        }
-
-        [Test]
         public void WelcomeRequiresEligibleDieAndVainAllowsZeroWithAccuratePreview()
         {
             var draft = new TurnDraft();
@@ -136,6 +109,123 @@ namespace Wotr.EditorTests
                 Assert.IsNotEmpty(card.Combat);
                 Assert.AreEqual(initiatives[i], card.Initiative.Single());
             }
+        }
+
+        // UI-348: a corruption attempt's tiles and the inspection of a king's tiles are made on the kings' portraits,
+        // attempt buttons and tiles (UI-274), so the tray keeps no fallback for them.
+        [Test]
+        public void CorruptionChoicesAreHostedByTheKingsObjects()
+        {
+            var view = new PlayerView
+            {
+                You = Side.Shadow, DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "tile", Kind = DecisionKind.CorruptionTile },
+                CorruptionAttempt = new CorruptionAttemptView { SovereignId = "kings.sovereign.theoden" },
+                Options = { new ActionOption { Kind = CommandKind.ChooseCorruptionTile, Enabled = true, EligibleIds = { "one" } } }
+            };
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.ChooseCorruptionTile);
+            Assert.IsTrue(SovereignPresentation.OwnsDecision(view, draft), "The attempt's tiles stand beside the king.");
+            view.CorruptionAttempt = null;
+            view.Decision = new DecisionView { Id = "inspect", Kind = DecisionKind.EffectChoice, Presentation = SovereignChoices.Inspection };
+            view.Options[0] = new ActionOption
+            {
+                Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1, EligibleIds = { "tile" },
+                EffectChoices = { new EffectChoiceView { Id = "tile", TargetId = "kings.sovereign.theoden" } }
+            };
+            Assert.IsTrue(SovereignPresentation.OwnsDecision(view, new TurnDraft()), "The inspected tiles stand beside the king.");
+        }
+
+        // UI-348 (EXP-15 D17): Brand's Heir of Bard is a gilt chip with the North's arms beside the own card, its tooltip
+        // naming the Shadow card it cancels; Keep card effects is the console's Pass. A Chieftain's substitution names
+        // his effect instead.
+        [Test]
+        public void BrandsReplacementIsAChipAndKeepingIsThePass()
+        {
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "brand", Kind = DecisionKind.EffectChoice, Presentation = CombatReplacementChoice.Presentation },
+                Battle = new BattleView
+                {
+                    Attacker = new BattleForceView { Side = Side.Shadow, CardId = "" },
+                    Defender = new BattleForceView { Side = Side.FreePeoples, CardId = "" }
+                },
+                Sovereigns = { new SovereignView { Id = "kings.sovereign.brand", Nation = "north", Status = SovereignStatus.Awakened } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1, EligibleIds = { "replace", "keep" },
+                        EffectChoices =
+                        {
+                            new EffectChoiceView { Id = "replace", SourceId = "kings.sovereign.brand", Title = "Use Brand" },
+                            new EffectChoiceView { Id = "keep", Title = "Keep card effects" }
+                        }
+                    }
+                }
+            };
+            var chip = CombatReplacementChoice.Chips(view).Single();
+            Assert.AreEqual("replace", chip.Id);
+            Assert.IsTrue(CombatReplacementChoice.OnChip(view, "replace"));
+            Assert.IsFalse(CombatReplacementChoice.OnChip(view, "keep"));
+            Assert.AreEqual("north", CombatReplacementChoice.Nation(view, chip));
+            StringAssert.StartsWith("Click to use Heir of Bard · Cancels no card at initiative 0", CombatReplacementChoice.Tooltip(view, chip));
+            var pass = OptionalDecline.Option(view, new TurnDraft());
+            Assert.AreEqual("keep", pass.Id);
+            Assert.AreEqual("Pass · Keep your card's effects", pass.Tooltip);
+
+            var root = new VisualElement();
+            var draft = new TurnDraft();
+            var sent = 0;
+            var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { }, complete: action =>
+            {
+                action();
+                sent++;
+            });
+            context.Refresh();
+            var button = root.Q("battle-defender").Q<Button>("battle-replacement-replace");
+            Assert.IsNotNull(button, "The chip stands in the own column.");
+            Assert.IsNull(root.Q("battle-attacker").Q<Button>("battle-replacement-replace"));
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(button.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
+
+            view.Decision.Presentation = "Region";
+            Assert.IsNull(OptionalDecline.Option(view, new TurnDraft()), "A generic keep counts only in its own step.");
+        }
+
+        // UI-348 (D7): Palantír of Anárion's Skip extra card is the console's Pass; the decks are the draw.
+        [Test]
+        public void AnarionsSkipIsThePass()
+        {
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "anarion", Kind = DecisionKind.EffectChoice, Presentation = "Deck" },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1, EligibleIds = { "character", "decline" },
+                        EffectChoices = { new EffectChoiceView { Id = "character" }, new EffectChoiceView { Id = "decline", Title = "Skip extra card" } }
+                    }
+                }
+            };
+            Assert.AreEqual("decline", OptionalDecline.Option(view, new TurnDraft()).Id);
+            Assert.AreEqual("Pass · Complete the action without an extra card", OptionalDecline.Option(view, new TurnDraft()).Tooltip);
+            Assert.IsFalse(OptionalDecline.Declines(view, "character"));
+        }
+
+        // UI-348: every Kings ability shown as a picture has one of its own, not the generic scroll.
+        [Test]
+        public void KingsAbilitiesHaveTheirPictures()
+        {
+            Assert.AreEqual(AbilityPictures.Muster, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.mustering-of-the-mark"));
+            Assert.AreEqual(AbilityPictures.Upgrade, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.dwarvenking"));
+            Assert.AreEqual(AbilityPictures.Draw, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.palantir-of-anarion"));
+            Assert.AreEqual(AbilityPictures.Move, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.far-sighted"));
+            foreach (var ability in new[] { "kings.call-to-arms", "kings.iron-guard", "kings.stewardship", "kings.elvenking" })
+                Assert.AreNotEqual(AbilityPictures.Ability, AbilityPictures.For(CommandKind.UseCharacterAbility, ability), ability);
         }
     }
 }

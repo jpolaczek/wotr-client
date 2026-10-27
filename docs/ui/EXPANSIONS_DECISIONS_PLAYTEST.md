@@ -139,7 +139,7 @@ difference in the rules (`Kings/KingsDismay.cs`).
   activate, a king's click otherwise informs; the console offers only a branch without an object.
 - [ ] **D16 — Hope and His Power Waxes in battle.** Try: no scenario yet. Expect: while the king takes part in a battle
   he glows in the battle window's force column; otherwise his Characters portrait glows (a Corrupted king has no figure).
-- [ ] **D17 — Brand's replacement.** Try: no scenario yet (a North unit in battle with Brand Awakened, then Corrupted).
+- [ ] **D17 — Brand's replacement.** Try: `kings-brand-heir` and `kings-brand-shadows` (UI-348).
   Expect: after the reveal a gilt chip with Brand's arms stands beside the player's own Combat card, its tooltip naming
   the card it cancels; its click makes the replacement; Pass keeps the card's effect. The same for a Corrupted Brand
   (Shadow) and for the Chieftains (UI-277).

@@ -396,9 +396,7 @@ namespace Wotr.Client
             // UI-274: the kings' decisions are made on their portraits, attempt buttons, tiles and the map.
             if (SovereignPresentation.OwnsDecision(view, draft))
                 return;
-            if (option.Kind is CommandKind.ChooseCorruptionTile or CommandKind.DrawCorruptionTile)
-                refreshChoices.Add(CorruptionAttemptChoices.Render(root, view, option, draft, action => DraftEdited?.Invoke(action), kind => ActionChosen?.Invoke(kind)));
-            else if (ExpansionDraft.Handles(draft.Kind))
+            if (ExpansionDraft.Handles(draft.Kind))
             {
                 var choices = new ExpansionChoices(root, view, draft, action => DraftEdited?.Invoke(action), data, versions);
                 refreshChoices.Add(choices.Refresh);

@@ -111,7 +111,7 @@ namespace Wotr.Client
                 return SovereignChoices.ConsoleOptions(view, draft);
             // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
             var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id) &&
-                    !OptionalDecline.Declines(c.Id))
+                    !OptionalDecline.Declines(view, c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();
             if (option.EffectChoices.Any(TableCard))
                 options.Insert(0, new ConsoleOption

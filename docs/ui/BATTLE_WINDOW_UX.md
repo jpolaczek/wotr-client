@@ -500,3 +500,19 @@ The owner's decisions EXP-15 D10 and D12 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AU
 Tests: `BattleObjectChoicesTests.OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass`,
 `LordsBattleNetworkTests` (the pip, the Pass, the Mouth's portrait), `ExpansionWindowNetworkTests` (the portrait with
 an Elite); seeder scenarios `ui347-orderly-withdrawal`, `ui347-orderly-withdrawal-pass`, `ui347-evil-knowledge`.
+
+## A Combat card's replacement is a gilt chip — UI-348 (2026-10-27)
+
+The owner's decision EXP-15 D17 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)): after the reveal, Brand's Heir of Bard
+(Brand Awakened, Free Peoples) and Shadows in the North (Brand Corrupted, Shadow) — and a Dark Chieftain's substitution
+when UI-277 lands — are a gilt chip beside the player's own Combat card (`CombatReplacementChoice`,
+`BattleContext.ReplacementChip`). The chip wears its source's arms (the nation emblem — the North for Brand, the
+Chieftain's nation — stands in until their own art exists), glows and pulses with the window's choices, and its tooltip
+names the card it cancels ("Click to use Heir of Bard · Cancels Valinor at initiative 0; …'s effects are given up · Once
+per battle"); its click sends the replacement. The card and the chip share a row only during that step. "Keep card
+effects" is the console's Pass (`OptionalDecline`, a decline that counts only in its own step since its id is generic);
+no text button remains.
+
+Tests: `KingsCards02Tests.BrandsReplacementIsAChipAndKeepingIsThePass`, `KingsDecisionNetworkTests` (Heir of Bard,
+Shadows in the North, Keep through Pass); seeder scenarios `ui348-brand-heir`, `ui348-brand-heir-keep`,
+`ui348-brand-shadows`; test-menu group "Kings · Decisions" (wotr-server `KingsDecisionScenarios`).

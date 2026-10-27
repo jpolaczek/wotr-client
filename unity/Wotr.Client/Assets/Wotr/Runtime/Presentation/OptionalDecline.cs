@@ -7,7 +7,9 @@ namespace Wotr.Client
     // UI-347 (EXP-15 D7, owner's decision): an optional decline of the Lords has no button of its own. The console's Pass
     // sends it, as it declines a reaction window (UI-291), lights while it can, and its tooltip and the console's hint name
     // what passing skips: Vilya's Spend the die, the Lore of the Elven Rings' Keep results, Wind from the West's and the
-    // Balrog card's Finish, Orderly Withdrawal's Keep the hit and We Won't Go Back's No Corruption.
+    // Balrog card's Finish, Orderly Withdrawal's Keep the hit and We Won't Go Back's No Corruption. UI-348: Palantír of
+    // Anárion's Skip extra card and a Combat card replacement's Keep card effects (Brand, the Dark Chieftains), whose ids
+    // are generic and count only in their own steps.
     public static class OptionalDecline
     {
         public const string BalrogFinish = "balrog.finish";
@@ -25,8 +27,23 @@ namespace Wotr.Client
             [HuntCardResponses.NoCorruption] = "take no Corruption and keep your cards"
         };
 
+        // Declines with a generic id, by the presentation of their step.
+        private static readonly IReadOnlyDictionary<(string Presentation, string Id), string> StepSkips =
+            new Dictionary<(string, string), string>
+            {
+                [("Deck", "decline")] = "complete the action without an extra card",
+                [(CombatReplacementChoice.Presentation, CombatReplacementChoice.Keep)] = "keep your card's effects"
+            };
+
         // This effect choice is sent by the console's Pass, so its old host (console, tray, Hunt row) leaves it out.
-        public static bool Declines(string id) => Skips.ContainsKey(id);
+        public static bool Declines(PlayerView view, string id) => Skip(view, id).Length > 0;
+
+        private static string Skip(PlayerView view, string id)
+        {
+            if (Skips.TryGetValue(id, out var skip))
+                return skip;
+            return StepSkips.TryGetValue((view?.Decision?.Presentation ?? "", id), out var step) ? step : "";
+        }
 
         // The decline the console's Pass sends now, or null.
         public static ConsoleOption Option(PlayerView view, TurnDraft draft)
@@ -34,7 +51,7 @@ namespace Wotr.Client
             if (NamedRings.VilyaDecision(view))
                 return Vilya(view);
             var option = Choice(view);
-            var id = option?.EligibleIds.FirstOrDefault(Declines);
+            var id = option?.EligibleIds.FirstOrDefault(candidate => Declines(view, candidate));
             if (id == null)
                 return null;
             return new ConsoleOption
@@ -42,7 +59,7 @@ namespace Wotr.Client
                 Id = id,
                 Name = "decline-" + id,
                 Label = "Pass",
-                Tooltip = Tooltip(Skips[id]),
+                Tooltip = Tooltip(Skip(view, id)),
                 Kind = ConsoleOptionKind.Effect
             };
         }
@@ -53,7 +70,7 @@ namespace Wotr.Client
             var decline = Option(view, draft);
             if (decline == null || !decline.Enabled)
                 return "";
-            return "Or Pass to " + (decline.Command == CommandKind.DeclineVilya ? VilyaSkip : Skips[decline.Id]) + ".";
+            return "Or Pass to " + (decline.Command == CommandKind.DeclineVilya ? VilyaSkip : Skip(view, decline.Id)) + ".";
         }
 
         private static ConsoleOption Vilya(PlayerView view)

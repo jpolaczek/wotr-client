@@ -19,6 +19,7 @@ namespace Wotr.Client
         // UI-322: the live window's last stacks; null where nothing is compared (a report, a presented state).
         private readonly BattleStackMemory stacks;
         private readonly bool moving;
+        private static readonly IReadOnlyList<EffectChoiceView> NoChips = new EffectChoiceView[0];
 
         public BattleContext(VisualElement root, BattleView battle, PlayerView view, TurnDraft draft,
             Action<Action> edit, Action<string> inspect, CardInspector cards = null, Action<Action> complete = null,
@@ -58,9 +59,15 @@ namespace Wotr.Client
             var outside = draft == null ? "" : BattleForceText.Nonparticipants(force, battle, view);
             if (outside.Length > 0)
                 column.Add(Shelf(outside));
-            Card(column, force, role, heading, inspect, force.Side != Side.FreePeoples ? "" :
+            var chips = draft != null && complete != null && force.Side == view.You ? CombatReplacementChoice.Chips(view) : NoChips;
+            var cardHost = chips.Count > 0 ? BoardScreen.Row("battle-card-row") : column;
+            if (chips.Count > 0)
+                column.Add(cardHost);
+            Card(cardHost, force, role, heading, inspect, force.Side != Side.FreePeoples ? "" :
                 battle.DenethorBlocksCards ? "Denethor · No card" :
                 battle.CompanionRequiredForCard && force.Characters.Count == 0 ? "No Companion · No card this round" : "", cards);
+            foreach (var choice in chips)
+                cardHost.Add(ReplacementChip(view, draft, choice));
             var dice = new BattleDiceStrip(column, force, battle, view, draft, edit);
             refresh.Add(dice.Refresh);
         }
@@ -205,6 +212,26 @@ namespace Wotr.Client
                 portrait.tooltip = tooltip;
             });
             return () => complete(() => BattleReactions.Choose(draft, reaction.Id));
+        }
+
+        // UI-348 (D17): a Combat card's replacement (Brand, a Dark Chieftain) is a gilt chip with its source's arms beside
+        // the player's own card; its tooltip names the card it cancels and its click sends the replacement.
+        private Button ReplacementChip(PlayerView view, TurnDraft draft, EffectChoiceView choice)
+        {
+            var chip = new Button(() => complete(() => BattleObjectChoices.Choose(view, draft, choice.Id)))
+            {
+                name = "battle-replacement-" + choice.Id
+            };
+            chip.AddToClassList("battle-replacement-chip");
+            var arms = new VisualElement { name = "battle-replacement-arms", pickingMode = PickingMode.Ignore };
+            arms.AddToClassList("battle-replacement-arms");
+            var nation = CombatReplacementChoice.Nation(view, choice);
+            if (nation.Length > 0)
+                arms.AddToClassList("nation-emblem-" + nation);
+            chip.Add(arms);
+            chip.tooltip = CombatReplacementChoice.Tooltip(view, choice);
+            ChoiceGlow.Apply(chip, true);
+            return chip;
         }
 
         // UI-347 (D12): the Mouth of Sauron's Evil Knowledge is his glowing portrait while the siege may go on; its click

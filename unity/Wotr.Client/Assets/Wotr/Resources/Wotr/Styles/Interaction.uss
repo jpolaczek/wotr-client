@@ -308,3 +308,31 @@
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
 }
+
+/* UI-348 (EXP-15 D17): a Combat card's replacement is a gilt chip with its source's arms (the nation emblem stands in for
+   Brand's or the Chieftain's arms until their own art exists) beside the player's own card, which shares its row. */
+#board-screen .battle-card-row { flex-direction: row; align-items: center; }
+#board-screen .battle-card-row > .battle-card { width: auto; flex-grow: 1; flex-shrink: 1; }
+#board-screen .battle-replacement-chip {
+    width: 40px;
+    min-width: 40px;
+    height: 33px;
+    min-height: 33px;
+    margin: 0 0 0 4px;
+    padding: 0;
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.9);
+    flex-shrink: 0;
+}
+#board-screen .battle-replacement-arms {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 3px;
+    bottom: 3px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.motion-enabled #board-screen .choice-glow-pulse .battle-replacement-chip.choice-glow { border-color: rgba(255, 214, 112, 0.45); }
+

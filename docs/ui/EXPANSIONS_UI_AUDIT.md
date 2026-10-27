@@ -46,8 +46,8 @@ Most of the expansions already follow the shape:
 | --- | --- | --- |
 | 1 | Council Travel token | fixed (UI-347): the medallion's click starts its use at once |
 | 2 | Kings Nation step (Wisdom, It Is Not So Dark Here) | open: routed to the map (`DecisionRoutes.cs:99`) but nothing handles it, so nation text buttons stand in the window (UI-278) |
-| 3 | Palantír of Anárion "Skip extra card" | open: "Deck" is missing from `CardConsoleOptions` (UI-348) |
-| 4 | Brand's combat replacement | open: text buttons in the battle window (UI-348, decision D17) |
+| 3 | Palantír of Anárion "Skip extra card" | fixed (UI-348): the console's Pass (D7, every optional decline); the decks draw |
+| 4 | Brand's combat replacement | fixed (UI-348): the gilt chip beside the own card; Pass keeps the card's effects |
 | 5 | Welcome removal | mostly fixed: the pool die and × work; the tray's die buttons are still reachable (`CostDice.cs:51-53`) (UI-278) |
 | 6 | Dismay | open (UI-276) |
 | 7 | Narya and Far-sighted as text components | Narya fixed (UI-347): no dock component, the nation row and Gandalf's row host it; Far-sighted open (UI-276, D18) |
@@ -56,7 +56,7 @@ Most of the expansions already follow the shape:
 | 10 | Orderly Withdrawal | fixed (UI-347): the "−1" on the hits, Pass keeps the hit |
 | 11 | Council entry token | fixed (UI-347): the medallion marks it and lights the Chieftain's row; no buttons |
 | 12 | A Balrog is Come! | fixed (UI-347): the Balrog's figure and his army's figures; Pass finishes |
-| 13 | Corruption choices' tray fallbacks | dead code (`DecisionTray.cs:396-399`, `CardChoices.cs:75-79`) (UI-348) |
+| 13 | Corruption choices' tray fallbacks | removed (UI-348) with `CorruptionAttemptChoices` and `CorruptionInspectionChoices` |
 
 ## Gaps
 
@@ -85,7 +85,7 @@ but §6.1 promised "a ruler or council token at its row".
   (`HuntPresenter.cs:93-103`); resolve the source through `CharacterLibrary.Find(SourceId)`.
 - Observers and replays use the same presenters, so every gap applies to them (they do see the Dismay reroll).
 
-### Transitions and glow (UI-345 — done 2026-10-26; the corruption draw counter goes with the dead fallbacks of UI-348)
+### Transitions and glow (UI-345 — done 2026-10-26; the corruption draw counter went with the dead fallbacks in UI-348)
 
 - **One-frame panels:** the Dice & tokens panel's close and its tab (`ResourcePanel.cs:62,82`), the sovereign inspector
   and its rows (`SovereignPanel.cs:156,172`, `SovereignInspector.cs:76,104,127`), the Council choices
@@ -118,7 +118,7 @@ Narya's dock component (row 7) goes: the nation row and Gandalf's Characters row
 Continue / Stop (`BattleChoices.cs:150-166`) and the homelands' "Keep with the Fellowship" (`CouncilHomelandChoices.cs:35`)
 move onto objects once D10–D14 are decided.
 
-### Kings outside UI-276–UI-278 (UI-348)
+### Kings outside UI-276–UI-278 (UI-348 — done 2026-10-27; the owner's playtest of D17 is pending)
 
 Brand's replacement (row 4, D17), Anárion's skip (row 3), the dead fallbacks (row 13), and the Kings ability pictures:
 the upgrades and the Ruler abilities fall back to the generic scroll (`AbilityPictures.cs:26-31`). UI-276 keeps the Ruler

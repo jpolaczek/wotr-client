@@ -394,3 +394,18 @@ We Won't Go Back), `ExpansionDecisionNetworkTests` and `ExpansionWindowNetworkTe
 `ui347-balrog`, `ui347-balrog-finish`, `ui271-balrog-order`, `ui272-wind-hand`, `ui347-wind-finish` (tests share a
 seeded match by its name, so each test has its own); test-menu group "Lords · Decisions" (wotr-server
 `LordsDecisionScenarios`).
+
+## The Kings' leftovers on their objects — UI-348 (2026-10-27)
+
+- **Palantír of Anárion's Skip extra card** is the console's Pass (EXP-15 D7, every optional decline; it counts only in
+  the deck step, whose id is generic): the decks stay the draw, no button remains in the tray.
+- **The Kings abilities have their pictures** (`AbilityPictures`): the Ruler die's recruitments (Call to Arms, Iron
+  Guard, Mustering of the Mark) the muster, the sovereigns' upgrades (Dwarvenking, Stewardship, Elvenking) the level,
+  the Palantír of Anárion the card draw, Far-sighted the move — none falls back to the generic scroll.
+- **The tray's corruption fallbacks are gone** (`CorruptionAttemptChoices`, `CorruptionInspectionChoices`): the kings'
+  portraits, attempt buttons and tiles host the attempt and the inspection (UI-274), so the tray never built them; the
+  one-frame draw counter of UI-345's audit went with them.
+- **Brand's replacement** is a gilt chip in the Battle window ([BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md)).
+
+Tests: `KingsCards02Tests` (the hosts of the corruption choices, Anárion's Pass, the Kings pictures),
+`KingsDecisionNetworkTests.AnarionsSkipIsThePass`; seeder scenario `ui348-anarion`; test-menu scenario `kings-anarion`.
