@@ -26,6 +26,8 @@ namespace Wotr.Client
         public bool Usable { get; private set; }
         public event Action UsableChanged;
         public bool Docked { get; set; }
+        // UI-370: the action row of Finish phase, where the Council setup's ✓ stands.
+        public VisualElement ActionRow => controls.Row;
         // UI-98: a docked panel unrolls under its top-bar plaque and is held open while it hosts a decision.
         public bool Held { get; private set; }
         public bool IsOpen => view != null && (Held || hover.Visible.Length > 0);

@@ -33,6 +33,23 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-370 (owner): the Council's setup starts complete — Gandalf the Grey as Guide and every required companion
+        // as printed — so Confirm can be clicked at once; the crowns and the version cards still change both.
+        private const string Gandalf = "base.character.gandalf-grey";
+
+        public static void Defaults(TurnDraft draft, ActionOption option)
+        {
+            if (option == null || draft.Kind != CommandKind.ChooseCompanionVersions)
+                return;
+            draft.Change(p =>
+            {
+                if (p.GuideId.Length == 0 && option.Targets.Contains(Gandalf))
+                    p.GuideId = Gandalf;
+                foreach (var group in option.CompanionVersions.Where(group => group.Required && Version(p, group).Length == 0))
+                    p.Ids.Add(group.BaseId);
+            });
+        }
+
         public static bool Ready(TurnDraft draft, ActionOption option)
         {
             var p = draft.Payload;

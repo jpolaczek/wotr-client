@@ -38,6 +38,21 @@ namespace Wotr.Client
         private Button confirm;
         private Label status;
         private string layoutKey;
+        private VisualElement confirmHost;
+
+        // UI-370: where the confirm stands instead of the footer (the Fellowship panel's action row during the Council's
+        // setup); null keeps it in the footer. A change rebuilds the tray.
+        public VisualElement ConfirmHost
+        {
+            get => confirmHost;
+            set
+            {
+                if (confirmHost == value)
+                    return;
+                confirmHost = value;
+                layoutKey = null;
+            }
+        }
         private Action<ActionPreview> battlePreview;
         // UI-160/UI-164: whether the tray offers choices of its own: a shown button other than Back and the
         // Reinforcements flag. A step whose choices are on the board (a region, a die, a deck) leaves the decision
@@ -174,6 +189,7 @@ namespace Wotr.Client
         private void Build(PlayerView view, TurnDraft draft, bool uncertain)
         {
             root.Clear();
+            confirm?.RemoveFromHierarchy();
             confirm = null;
             status = null;
             battlePreview = null;
@@ -272,7 +288,7 @@ namespace Wotr.Client
             confirm.tooltip = Label(option.Kind);
             confirm.SetEnabled(false);
             ConfirmChanged?.Invoke(false);
-            footer.Add(confirm);
+            (ConfirmHost ?? footer).Add(confirm);
             root.Add(footer);
         }
 

@@ -50,7 +50,12 @@ namespace Wotr.PlayTests
                 Assert.AreSame(board.Fellowship.Root, board.Tray.parent, "The versions are chosen on the Fellowship panel.");
                 Assert.IsTrue(board.Fellowship.IsOpen);
                 Assert.AreEqual(configuration.Council ? 7 : 1, option.CompanionVersions.Count);
-                Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                // UI-370: Gandalf is the starting Guide by default, so Confirm is ready at once, beside Finish phase.
+                var ready = board.Fellowship.Root.Q<Button>("confirm-decision");
+                Assert.IsTrue(ready.enabledInHierarchy, "The default setup can be confirmed at once.");
+                Assert.AreSame(board.Fellowship.ActionRow, ready.parent, "Confirm stands in the row of Finish phase.");
+                Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Grey).ClassListContains("selected"), "Gandalf wears the crown.");
+                LayoutTests.Save(room.Fp.Viewport, "ui370-council-setup-" + (configuration.Council ? "council" : "lords") + ".png");
                 var revision = board.View.Revision;
                 var decision = board.View.Decision.Id;
                 var camera = board.Map.Camera.Pan;
@@ -65,12 +70,12 @@ namespace Wotr.PlayTests
                 }
                 foreach (var candidate in option.Targets)
                     Assert.AreEqual(DisplayStyle.Flex, board.Root.Q<Button>("starting-guide-" + candidate).resolvedStyle.display);
-                Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                Assert.IsTrue(board.Fellowship.Root.Q<Button>("confirm-decision").enabledInHierarchy);
                 Assert.AreEqual(revision, board.View.Revision);
                 Assert.AreEqual(camera, board.Map.Camera.Pan);
                 await Press(room, board, "fellowship-portrait-" + Grey);
                 await Press(room, board, "version-" + option.CompanionVersions.Single(g => g.FigureId == Grey).BaseId);
-                Assert.IsFalse(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                Assert.IsTrue(board.Fellowship.Root.Q<Button>("confirm-decision").enabledInHierarchy);
                 if (configuration.Council)
                 {
                     await Press(room, board, "fellowship-portrait-" + Gimli);
@@ -81,14 +86,14 @@ namespace Wotr.PlayTests
                     StringAssert.Contains("Alternate", Portrait(board, Gimli).tooltip, "The portrait shows the chosen version.");
                 }
                 await Press(room, board, "starting-guide-" + Strider);
-                await room.Until(() => board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+                await room.Until(() => board.Fellowship.Root.Q<Button>("confirm-decision").enabledInHierarchy);
                 Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
                 await CheckKeyboardControls(room, board, revision);
                 await KingsCardNetworkChecks.Reconnect(room, room.Fp);
                 Assert.AreEqual(decision, board.View.Decision.Id);
                 Assert.IsTrue(board.Fellowship.IsOpen, "The panel holds its decision across a reconnect.");
                 Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"), "The draft survives.");
-                var confirm = board.Tray.Q<Button>("confirm-decision");
+                var confirm = board.Fellowship.Root.Q<Button>("confirm-decision");
                 Assert.AreEqual("confirm", IconButton.Icon(confirm));
                 var confirmPoint = confirm.worldBound.center;
                 PointerGestureEvents.ClickAt(confirm);
@@ -129,7 +134,7 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual(revision, board.View.Revision, "Reading a focused ability cannot submit the whole setup.");
             Assert.IsTrue(board.Fellowship.IsOpen);
-            Assert.IsTrue(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+            Assert.IsTrue(board.Fellowship.Root.Q<Button>("confirm-decision").enabledInHierarchy);
         }
 
         private static void Key(VisualElement target, KeyCode key)

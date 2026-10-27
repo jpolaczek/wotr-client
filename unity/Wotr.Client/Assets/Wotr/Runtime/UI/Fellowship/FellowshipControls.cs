@@ -8,6 +8,8 @@ namespace Wotr.Client
     public sealed class FellowshipControls
     {
         public VisualElement Root { get; } = new VisualElement { name = "fellowship-controls" };
+        // UI-370: the row of Finish phase, which also hosts the Council setup's ✓.
+        public VisualElement Row { get; } = BoardScreen.Row("fellowship-actions");
         public event Action<CommandKind> Selected;
         // UI-98: some Fellowship action is legal now, so the top-bar plaque invites a look.
         public bool Offers { get; private set; }
@@ -26,9 +28,8 @@ namespace Wotr.Client
         {
             // UI-236: the figure on the map declares and the Mordor track's gate enters; no buttons here for them.
             // UI-249: a glowing portrait chooses the Guide; no Change guide button.
-            var row = BoardScreen.Row("fellowship-actions");
-            Add(row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
-            Root.Add(row);
+            Add(Row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
+            Root.Add(Row);
             Root.Add(hint);
         }
 

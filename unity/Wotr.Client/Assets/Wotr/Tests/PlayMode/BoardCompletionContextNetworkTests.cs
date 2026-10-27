@@ -129,7 +129,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(shadowBefore, JsonConvert.SerializeObject(room.Sh.Board.View));
             LayoutTests.Save(room.Sh.Viewport, "ui71-setup-public-guide.png");
             room.Sh.Board.Log.CloseCard();
-            var confirm = board.Tray.Q<Button>("confirm-decision");
+            var confirm = board.Fellowship.Root.Q<Button>("confirm-decision");
             await room.Until(() => confirm.enabledInHierarchy);
             PointerGestureEvents.ClickAt(confirm);
             await room.At(revision + 1);

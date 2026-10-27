@@ -534,7 +534,10 @@ namespace Wotr.Client
                 _ => (CommandKind?)null
             };
             if (mandatory.HasValue)
+            {
                 DraftGesture.Choose(draft, view, mandatory.Value);
+                CouncilDraft.Defaults(draft, DraftOptions.For(view, draft));
+            }
         }
 
         // UI-304: the playback gate. While held, the tray, console, rings, battle policy, keyboard, map, figure, die and card
@@ -873,6 +876,9 @@ namespace Wotr.Client
             tray.ContextualFellowship = FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft);
             tray.ContextualHunt = HuntActions.UsesPanel(view, draft);
             tray.ContextualCharacter = CharacterRosterActions.OwnsDecision(view, draft);
+            // UI-370: during the Council's setup the ✓ stands beside Finish phase.
+            tray.ConfirmHost = view.DecisionOwner == view.You &&
+                view.Decision?.Kind is DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands ? board.Fellowship.ActionRow : null;
             return directArmy;
         }
 

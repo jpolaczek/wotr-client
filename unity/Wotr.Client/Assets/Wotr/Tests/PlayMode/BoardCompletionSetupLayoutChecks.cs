@@ -41,7 +41,7 @@ namespace Wotr.PlayTests
             await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Grey));
             await Press(room, board.Root.Q<Button>("version-" + option.CompanionVersions.Single(group => group.FigureId == Grey).BaseId));
             await Press(room, board.Root.Q<Button>("starting-guide-" + Strider));
-            Assert.IsTrue(board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
+            Assert.IsTrue(board.Fellowship.Root.Q<Button>("confirm-decision").enabledInHierarchy);
             if (board.View.Configuration.Council)
                 await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Gimli));
             Assert.IsTrue(board.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));

@@ -756,3 +756,15 @@ The watching board shows the Fellowship's recorded changes on their own objects,
 In the opponent's presentation the panel opened read-only settles for 0.4 s. The plaque's state (Hidden, Revealed) lights
 up before it turns, and each track stage lights its row before the token moves, sounding its cue as it moves; each change
 then holds lit for 0.8 s ([OPPONENT_ACTIONS_UX §6.19](OPPONENT_ACTIONS_UX.md#wdrozone-315)).
+
+<a id="council-setup-defaults--ui-370-2026-10-27"></a>
+## The Council's setup starts complete — UI-370 (2026-10-27)
+
+Owner request: the default Guide is Gandalf, so Confirm can be clicked at once, and Confirm stands in the row of Finish
+phase. The setup's draft starts with Gandalf the Grey crowned as Guide (when he may be) and every required companion
+in its printed version (`CouncilDraft.Defaults`); the crowns and the version cards still change both, and nothing is
+sent until the click. During the Council's setup (versions and homelands) the console's ✓ stands in the Fellowship
+panel's action row beside Finish phase (`DecisionTray.ConfirmHost`, `FellowshipPanel.ActionRow`). Tests:
+`CompanionSetupPanelNetworkTests` (ready at once, the ✓'s place, `ui370-council-setup-*.png`),
+`CouncilHomelandPanelNetworkTests`.
+
