@@ -28,6 +28,9 @@ namespace Wotr.Client
         public Label Text { get; } = new Label { name = "character-ability-text", enableRichText = false };
         private readonly Button[] chips = new Button[PageSize];
         private readonly Button previous, next;
+        // The parchment under the chips: the text and, for a usable ability, Click to use below it. The label has no
+        // children, so it measures its text.
+        private readonly VisualElement sheet = new VisualElement { name = "character-ability-sheet" };
         private readonly VisualElement use = new VisualElement { name = "character-ability-use" };
         private readonly ChoicePulse pulse;
         private ILookup<string, ComponentAction> usable = Enumerable.Empty<ComponentAction>().ToLookup(ChipOf);
@@ -63,9 +66,12 @@ namespace Wotr.Client
             // Inside the chips' row, on a line of its own: a decision context hides both together.
             Text.AddToClassList("character-ability-text");
             Text.style.display = DisplayStyle.None;
+            sheet.AddToClassList("character-ability-sheet");
+            sheet.style.display = DisplayStyle.None;
             use.AddToClassList("character-ability-use");
-            Text.Add(use);
-            Root.Add(Text);
+            sheet.Add(Text);
+            sheet.Add(use);
+            Root.Add(sheet);
             pulse = new ChoicePulse(Root);
         }
 
@@ -148,6 +154,7 @@ namespace Wotr.Client
             var open = entries.FirstOrDefault(a => a.Id == opened);
             Text.text = open == null ? "" : open.Text + "\n" + open.Source;
             Text.style.display = open == null ? DisplayStyle.None : DisplayStyle.Flex;
+            sheet.style.display = Text.style.display;
             ShowUse(open == null ? new List<ComponentAction>() : usable[open.Id].ToList());
             pulse.Run(chips.Any(chip => chip.ClassListContains(ChoiceGlow.ClassName)));
             Pages.style.display = entries.Count > PageSize ? DisplayStyle.Flex : DisplayStyle.None;
@@ -158,7 +165,7 @@ namespace Wotr.Client
         // One Click to use per action of the unrolled ability (Saruman's Voice has two); rebuilt only when they change.
         private void ShowUse(IReadOnlyList<ComponentAction> actions)
         {
-            Text.EnableInClassList("usable", actions.Count > 0);
+            use.style.display = actions.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             var key = string.Join("|", actions.Select(action => action.Key + ":" + action.Enabled)) + "/" + editable;
             if (key == shownUse)
                 return;

@@ -299,7 +299,11 @@ namespace Wotr.PlayTests
             var use = inspector.Root.Q<Button>("character-ability-use-" + ability);
             Assert.IsNotNull(use, ability);
             Assert.IsTrue(use.enabledInHierarchy, ability);
-            Assert.IsTrue(use.worldBound.Overlaps(inspector.Root.Q("character-ability-text").worldBound), "Click to use stands on the unrolled text.");
+            var sheet = inspector.Root.Q("character-ability-sheet");
+            Assert.IsTrue(sheet.worldBound.Contains(use.worldBound.center), "Click to use stands on the parchment.");
+            Assert.IsFalse(use.worldBound.Overlaps(inspector.Root.Q("character-ability-text").worldBound), "It covers no text.");
+            Assert.IsTrue(inspector.Root.worldBound.Contains(new UnityEngine.Vector2(sheet.worldBound.center.x, sheet.worldBound.yMax - 1)),
+                "The window holds the whole parchment.");
             LayoutTests.Save(client.Viewport, "ui369-click-to-use.png");
             PointerGestureEvents.ClickAt(use);
             await room.Settle();

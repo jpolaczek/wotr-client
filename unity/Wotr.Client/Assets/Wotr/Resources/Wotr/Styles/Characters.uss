@@ -110,13 +110,11 @@
     color: rgb(241, 227, 181);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
-#board-screen .character-inspector .character-ability-text {
+/* UI-369: the parchment is the sheet; the text and Click to use stand on it. */
+#board-screen .character-inspector .character-ability-sheet {
     width: 100%;
     margin: 3px 0 4px 0;
     padding: 7px 10px 8px 10px;
-    font-size: 12px;
-    color: rgb(52, 36, 22);
-    white-space: normal;
     background-color: rgba(0, 0, 0, 0);
     background-image: resource("Wotr/Art/UI/cards/parchment");
     -unity-slice-top: 28;
@@ -125,10 +123,16 @@
     -unity-slice-left: 28;
     -unity-slice-scale: 0.5px;
 }
+#board-screen .character-inspector .character-ability-text {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(52, 36, 22);
+    white-space: normal;
+}
 #board-screen .character-inspector .character-ability-pages .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
-/* UI-369: a usable ability's unrolled text carries Click to use in its lower right corner, inside the parchment. */
-#board-screen .character-inspector .character-ability-text.usable { padding-bottom: 38px; }
-.character-ability-use { position: absolute; right: 8px; bottom: 7px; flex-direction: row; }
+/* UI-369: a usable ability's Click to use stands on the parchment, right under its text. */
+.character-ability-use { flex-direction: row; justify-content: flex-end; margin-top: 5px; }
 #board-screen .character-inspector .character-ability-use .action {
     flex-direction: row;
     align-items: center;
