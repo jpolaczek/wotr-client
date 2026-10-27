@@ -7,7 +7,7 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-306 (OPPONENT_ACTIONS_UX §5): the observed trace on the map — a force's figures glowing (UI-314, PresentationGlow;
-    // before it a ring), a 2 pt pale-blue ring around a settlement, a region's outline and a small delta badge. A set of them appears together (200 ms fade), follows the
+    // before it a ring), a 2 pt gold ring (UI-378) around a settlement, a region's outline and a small delta badge. A set of them appears together (200 ms fade), follows the
     // camera and the markers, and fades out together (400 ms); none takes the pointer, a tooltip or a cursor, so the objects
     // under it keep their own inspection. It is never a legal target, a choice glow, a selection or a ghost.
     public sealed class MapObservedTrace
@@ -329,7 +329,7 @@ namespace Wotr.Client
                 if (regions.Count == 0)
                     return;
                 var painter = context.painter2D;
-                painter.strokeColor = new Color(146 / 255f, 212 / 255f, 242 / 255f, .85f);
+                painter.strokeColor = new Color(255 / 255f, 214 / 255f, 112 / 255f, .85f);
                 painter.lineWidth = 2;
                 foreach (var id in regions)
                     foreach (var ring in owner.map.Data.Shapes[id].Rings)
