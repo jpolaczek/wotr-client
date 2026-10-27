@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -307,6 +308,15 @@ namespace Wotr.PlayTests
                     CoversWithMap(waiting.Root, content);
                     CreditsClear(waiting.Root, content, waitingWindow, waiting.Root.Q("waiting-actions"), waiting.Status);
                     LayoutTests.Save(target, $"menu09-waiting-{width}-{scale:0.00}.png");
+                    // UI-364: the host's Ready greys the three expansion checkboxes and the variants out, in place.
+                    waiting.Update(new RoomView { Id = "room", Name = "Table", Host = "Host", IsHost = true, Managed = true,
+                        Visibility = RoomVisibility.Public, FreePeoples = "Host", Shadow = "Guest", FreePeoplesAccepted = true,
+                        JoinCode = "ABCDEFGH", ObserverLimit = 16, Observers = Audience(), ExpansionsAvailable = true,
+                        Configuration = new MatchConfiguration { Fate = true, Kings = true, NewCities = true, VisibleCorruption = true } });
+                    yield return Settle();
+                    Assert.IsTrue(waiting.Rules.Root.Query<Button>().ToList().All(control => !control.enabledSelf));
+                    Assert.AreEqual(174, waiting.Root.Q("waiting-rules-modules").resolvedStyle.height, 0.5f);
+                    LayoutTests.Save(target, $"menu09-waiting-ready-{width}-{scale:0.00}.png");
                     client.Panel.targetTexture = null;
                     target.Release();
                     Object.Destroy(target);

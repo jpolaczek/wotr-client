@@ -19,7 +19,8 @@ namespace Wotr.Client
     // three expansions in release order (Fate, Lords, Kings) and the six variants, always in the same places. Only the
     // host of a waiting room changes them, and every change makes both players get ready again (the server resets
     // Ready). A module the server does not offer yet and a variant whose expansion is missing stay in place, disabled,
-    // with the reason in the tooltip; every enabled control's tooltip says what its click does.
+    // with the reason in the tooltip; every enabled control's tooltip says what its click does. UI-364 (owner request
+    // 2026-10-27): the host changes the rules only before their own Ready; Not ready opens them again.
     public static class RulesChoices
     {
         public const string NewCities = "new-cities";
@@ -65,7 +66,13 @@ namespace Wotr.Client
         };
 
         public static bool Editable(RoomView room) =>
-            room != null && room.IsHost && room.Status == RoomStatus.Waiting && string.IsNullOrEmpty(room.MatchId);
+            room != null && room.IsHost && room.Status == RoomStatus.Waiting && string.IsNullOrEmpty(room.MatchId) &&
+            !OwnReady(room);
+
+        // The viewer is a seated player who has accepted these rules.
+        public static bool OwnReady(RoomView room) =>
+            room != null && room.Role == RoomRole.Player &&
+            (room.You == Side.FreePeoples ? room.FreePeoplesAccepted : room.ShadowAccepted);
 
         // EXP-01: the modules the server releases; a server from before it names none but may offer every expansion.
         public static bool Offered(RoomView room, string module) =>
@@ -201,10 +208,12 @@ namespace Wotr.Client
             _ => "Lords of Middle-earth, Kings of Middle-earth and Dismay"
         };
 
-        private static string ReadOnlyReason(RoomView room) =>
-            room.Status != RoomStatus.Waiting || !string.IsNullOrEmpty(room.MatchId)
-                ? " The rules are fixed once the game starts."
-                : " Only the host chooses the rules.";
+        private static string ReadOnlyReason(RoomView room)
+        {
+            if (room.Status != RoomStatus.Waiting || !string.IsNullOrEmpty(room.MatchId))
+                return " The rules are fixed once the game starts.";
+            return room.IsHost ? " Press Not ready to change the rules." : " Only the host chooses the rules.";
+        }
 
         private static bool HasVariants(MatchConfiguration configuration, string module) =>
             VariantIds.Any(variant => IsOn(configuration, variant) && !Available(Without(configuration, module), variant));

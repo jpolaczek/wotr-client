@@ -167,3 +167,12 @@ difference in the rules (`Kings/KingsDismay.cs`).
   shared glow; hovering one only highlights its branch's regions; a click chooses the branch.
 - [ ] **D22 — Gimli's political abilities.** Try: `fate-gimli-renown`. Expect: they stay in the region panel and the
   Characters roster (one place per mechanic), not on the Dwarves' Politics row.
+
+### Waiting room — UI-364
+
+- [ ] **Expansion checkboxes.** Try: host a game, then in the waiting room tick and untick Fate, Lords and Kings under
+  their medallions. Expect: each click ticks or unticks the box and lights or dims the medallion once the server
+  answers; the guest sees the same boxes greyed out.
+- [ ] **Ready locks the rules.** Try: as the host, press Ready, then hover a checkbox. Expect: the three checkboxes and
+  the six variants are greyed out in place, the tooltip says "Press Not ready to change the rules."; Not ready makes
+  them clickable again. The guest's Ready alone does not lock them.

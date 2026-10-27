@@ -163,6 +163,32 @@ keep the code readable beside it; observers that do not fit the line are clipped
 The old `RoomScreen` and `ConfigurationEditor` (toggles, only used by tests) are gone; their tests moved to
 `WaitingRoomRulesTests` and `RulesChoicesTests`.
 
+<a id="expansion-checkboxes--ui-364-2026-10-27"></a>
+### Expansion checkboxes and the host's Ready — UI-364 (2026-10-27)
+
+Owner request 2026-10-27: when hosting, three checkboxes choose the expansions of the game, a ticked box meaning the
+expansion is in it; only the host changes them, and only before pressing Ready, after which they are greyed out.
+
+```
+ (⛰)      (◎◎)      (♛)
+ [✓] FATE  [ ] LORDS [✓] KINGS     ← one column in the waiting room, one row on the demo page
+```
+
+- Each expansion is one checkbox, its whole cell (`rules-module-<id>`, 60 x 58 px, no frame): the medallion with the
+  crest above a caption with the strip's tick ring (`rules/check-on`, `check-off`, as on the variant chips) and the
+  expansion's word. The medallion keeps its art for on, hover and pressed; the cell presses in as a whole (UI-113).
+  The column is 60 px wide (was 52) and the chips 170 px; the heights stay 174 px.
+  Greyed out (the guest, a ready host, a started game) the medallion, its crest and the word dim; a ticked box
+  stays at 75 % so the game's expansions remain readable, an unticked one at 45 %.
+- The host changes the rules only before their own Ready (`RulesChoices.Editable` also requires `!OwnReady`). After
+  it every control of the strip, the three checkboxes and the six variants, stays in place disabled, with "… · In this
+  game. Press Not ready to change the rules."; Not ready enables them again. Ready's tooltip tells the host "The rules
+  stay locked until Not ready."; Not ready's "Withdraw your acceptance of these rules to change them again.". A Start
+  blocked by an expansion the server no longer offers tells a ready host to press Not ready first.
+- The guest's Ready does not lock the host's rules (the host's change still resets it on the server), and a host
+  watching from the audience has no Ready of their own. The demo page has no Ready and is unchanged. The server
+  accepts a change from a ready host as before (resetting Ready); the lock is the client's (owner: client side).
+
 <a id="scenariusze"></a>
 ## Scenarios
 
@@ -175,3 +201,4 @@ The old `RoomScreen` and `ConfigurationEditor` (toggles, only used by tests) are
 | WR05 | Two players exchange messages via the server; Enter sends; text with tags is displayed literally. | MENU-26 |
 | OB03 | A viewer from a public poem and code, chat with role, simultaneous “Take seat” into one place (one sits, the other gets status), return to the audience, remove the viewer by the host. | OBS-04 |
 | WR06 | The host adds and removes expansions and variants by clicks; the guest sees them read-only; an unreleased module is greyed with its reason; every change resets Ready; all 93 legal configurations are reachable and fit the window in four layouts. | UI-263 |
+| WR07 | The three expansions are checkboxes with a tick; the host's Ready greys out every rule in place with "Press Not ready to change the rules.", Not ready enables them; the guest's Ready does not lock the host (`RulesChoicesTests`, `WaitingRoomRulesTests`, menu09-waiting-ready screenshots). | UI-364 |

@@ -13,7 +13,8 @@ namespace Wotr.Client
     // OBS-04: each seat takes a free place or removes its player, the audience line lists the observers, and a
     // player may move to the audience; the host may run the room from the audience.
     // UI-263: under the seats the window splits: the audience, the invitation and the chat on the left, the rules
-    // (the table's expansions and variants) on the right. Only the host changes the rules, and Ready accepts them.
+    // (the table's expansions and variants) on the right. Only the host changes the rules, and Ready accepts them;
+    // UI-364: the host's Ready also locks them until Not ready.
     public sealed class WaitingRoomScreen
     {
         public VisualElement Root { get; } = new VisualElement { name = "waiting-room" };
@@ -89,7 +90,7 @@ namespace Wotr.Client
 
         private bool Player => Room != null && Room.Role == RoomRole.Player;
 
-        private bool OwnReady => Player && (Room.You == Side.FreePeoples ? Room.FreePeoplesAccepted : Room.ShadowAccepted);
+        private bool OwnReady => RulesChoices.OwnReady(Room);
 
         private VisualElement Masthead()
         {
@@ -228,8 +229,7 @@ namespace Wotr.Client
             var waiting = Room.Status == RoomStatus.Waiting;
             ready.text = OwnReady ? "Not ready" : "Ready";
             ready.SetEnabled(!busy && waiting && Player);
-            ready.tooltip = !Player ? "Only the players get ready."
-                : OwnReady ? "Withdraw your acceptance of these rules." : "Accept these rules and get ready to play.";
+            ready.tooltip = ReadyTooltip();
             back.SetEnabled(!busy);
             demo.SetEnabled(!busy && waiting && Player);
             var audienceFull = Room.Observers.Count >= Limit(Room);
@@ -239,7 +239,8 @@ namespace Wotr.Client
             start.SetEnabled(!busy && waiting && Room.IsHost && Room.FreePeoplesAccepted && Room.ShadowAccepted && Room.StartUnavailableReason.Length == 0);
             start.tooltip = !Room.IsHost ? "Only the host starts the game."
                 : Room.StartUnavailableReason.Length == 0 ? "Both players must be ready."
-                : "This server no longer offers an expansion chosen here. Change the rules first.";
+                : "This server no longer offers an expansion chosen here. " +
+                  (OwnReady ? "Press Not ready and change the rules first." : "Change the rules first.");
             Rules.Show(Room, busy);
             freePeoples.Enable(Room, busy);
             shadow.Enable(Room, busy);
@@ -247,6 +248,18 @@ namespace Wotr.Client
             // OBS-04: the code also lets observers in, so the host shows it while the room is open.
             invite.SetEnabled(!busy && Room.IsHost && Room.Status != RoomStatus.Closed);
             copy.SetEnabled(!busy && Room.JoinCode.Length > 0);
+        }
+
+        // UI-364: the host's Ready locks the rules strip and Not ready opens it again.
+        private string ReadyTooltip()
+        {
+            if (!Player)
+                return "Only the players get ready.";
+            if (OwnReady)
+                return Room.IsHost ? "Withdraw your acceptance of these rules to change them again."
+                    : "Withdraw your acceptance of these rules.";
+            return Room.IsHost ? "Accept these rules and get ready to play. The rules stay locked until Not ready."
+                : "Accept these rules and get ready to play.";
         }
 
         private static int Limit(RoomView room) => room.ObserverLimit > 0 ? room.ObserverLimit : RoomLimits.Observers;

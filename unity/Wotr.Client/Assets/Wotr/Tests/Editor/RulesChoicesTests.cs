@@ -126,6 +126,32 @@ namespace Wotr.EditorTests
             StringAssert.EndsWith("The rules are fixed once the game starts.", RulesChoices.Modules(started)[1].Tooltip);
         }
 
+        // UI-364: the host's own Ready locks every rule until Not ready; the guest's Ready and a host watching from the
+        // audience do not.
+        [TestCase(Side.FreePeoples)]
+        [TestCase(Side.Shadow)]
+        public void AReadyHostSeesTheRulesLockedUntilNotReady(Side seat)
+        {
+            var room = Host(new MatchConfiguration { Fate = true, NewCities = true });
+            room.Role = RoomRole.Player;
+            room.You = seat;
+            room.FreePeoplesAccepted = seat == Side.FreePeoples;
+            room.ShadowAccepted = seat == Side.Shadow;
+            var choices = RulesChoices.Modules(room).Concat(RulesChoices.Variants(room)).ToList();
+            Assert.IsTrue(choices.All(c => !c.Enabled));
+            Assert.AreEqual("Fate of Erebor · In this game. Press Not ready to change the rules.", choices[0].Tooltip);
+            Assert.AreEqual("Lords of Middle-earth · Not in this game. Press Not ready to change the rules.", choices[1].Tooltip);
+            StringAssert.StartsWith("New Cities · In this game. Press Not ready to change the rules.", Variant(room, "new-cities").Tooltip);
+            room.FreePeoplesAccepted = seat == Side.Shadow;
+            room.ShadowAccepted = seat == Side.FreePeoples;
+            Assert.IsTrue(RulesChoices.Modules(room).All(c => c.Enabled), "The guest's Ready does not lock the host.");
+            Assert.IsTrue(Variant(room, "new-cities").Enabled);
+            room.Role = RoomRole.Observer;
+            room.FreePeoplesAccepted = true;
+            room.ShadowAccepted = true;
+            Assert.IsTrue(RulesChoices.Modules(room).All(c => c.Enabled), "A host in the audience has no Ready of their own.");
+        }
+
         // DEMO-06: the demo page has no Ready, so its tooltips do not promise one.
         [Test]
         public void TheDemoPagesRulesSayNothingAboutReady()

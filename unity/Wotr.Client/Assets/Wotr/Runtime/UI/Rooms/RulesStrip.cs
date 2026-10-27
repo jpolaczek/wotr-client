@@ -5,10 +5,11 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // UI-263: the waiting room's rules beside the chat: a column of three expansion medallions (rules/medallion with
-    // the module's crest, lit in its enamel when the game uses it) and a column of six variant chips (the button frame,
-    // red lacquer and a ticked ring when on), every one in a fixed place. A click asks to switch that rule; the strip itself changes only when the
-    // server's room comes back (RulesChoices).
+    // UI-263: the waiting room's rules beside the chat: a column of three expansion checkboxes and a column of six
+    // variant chips (the button frame, red lacquer and a ticked ring when on), every one in a fixed place. UI-364: an
+    // expansion's checkbox is its whole cell: the medallion (rules/medallion with the module's crest, lit in its enamel
+    // when the game uses it) above the strip's tick ring and the module's word. A click asks to switch that rule; the
+    // strip itself changes only when the server's room comes back (RulesChoices).
     public sealed class RulesStrip
     {
         public VisualElement Root { get; } = new VisualElement { name = "waiting-rules" };
@@ -55,21 +56,33 @@ namespace Wotr.Client
 
         private VisualElement MedallionCell(string module)
         {
-            var cell = new VisualElement { pickingMode = PickingMode.Ignore };
+            var cell = BoardScreen.Button("", () => Toggled?.Invoke(module));
+            cell.name = "rules-module-" + module;
             cell.AddToClassList("rules-module");
-            var button = BoardScreen.Button("", () => Toggled?.Invoke(module));
-            button.name = "rules-module-" + module;
-            button.AddToClassList("rules-medallion");
-            button.AddToClassList("module-" + module);
+            cell.AddToClassList("module-" + module);
+            var medallion = new VisualElement { pickingMode = PickingMode.Ignore };
+            medallion.AddToClassList("rules-medallion");
             var crest = ExpansionCrests.Crest(module);
             crest.AddToClassList("rules-medallion-crest");
-            button.Add(crest);
-            medallions[module] = button;
-            cell.Add(button);
+            medallion.Add(crest);
+            cell.Add(medallion);
+            cell.Add(Caption(module));
+            medallions[module] = cell;
+            return cell;
+        }
+
+        // The checkbox's tick ring and the expansion's word under its medallion.
+        private static VisualElement Caption(string module)
+        {
+            var caption = new VisualElement { pickingMode = PickingMode.Ignore };
+            caption.AddToClassList("rules-module-caption");
+            var check = new VisualElement { pickingMode = PickingMode.Ignore };
+            check.AddToClassList("rules-check");
+            caption.Add(check);
             var name = new Label(ShortName(module)) { pickingMode = PickingMode.Ignore };
             name.AddToClassList("rules-module-name");
-            cell.Add(name);
-            return cell;
+            caption.Add(name);
+            return caption;
         }
 
         private Button Chip(string variant)

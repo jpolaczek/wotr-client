@@ -567,40 +567,53 @@
 .main-menu .menu-row > .expansion-crests { margin: 0 8px 0 4px; }
 .main-menu .saved-match .expansion-crests { position: absolute; top: 8px; right: 12px; }
 
-/* UI-263: the rules' controls, shared by the waiting room (a column of medallions beside a column of chips) and the
-   demo page (DEMO-06, .rules-row): medallions (56 px art drawn at 44 px, the crest inside, a caption below) and the
-   variant chips (the button frame, red lacquer and a ticked ring when on). */
-.frontend .waiting-rules-modules { flex-direction: column; flex-shrink: 0; width: 52px; margin-right: 6px; }
-.frontend .rules-module { height: 58px; align-items: center; }
-.frontend .rules-medallion {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
+/* UI-263: the rules' controls, shared by the waiting room (a column of expansion checkboxes beside a column of chips)
+   and the demo page (DEMO-06, .rules-row). UI-364: an expansion's checkbox is its whole cell, without a frame: the
+   medallion (56 px art drawn at 44 px, the crest inside) above a caption with the strip's tick ring and the module's
+   word. The variant chips wear the button frame, red lacquer and a ticked ring when on. */
+.frontend .waiting-rules-modules { flex-direction: column; flex-shrink: 0; width: 60px; margin-right: 6px; }
+.frontend .rules-module {
+    height: 58px;
+    min-height: 58px;
+    min-width: 0;
     margin: 0;
     padding: 0;
     align-items: center;
+    justify-content: flex-start;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    border-width: 0;
+}
+.frontend .rules-module:hover { background-image: none; }
+.frontend .rules-medallion {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    align-items: center;
     justify-content: center;
     background-image: resource("Wotr/Art/UI/rules/medallion");
-    -unity-slice-top: 0;
-    -unity-slice-right: 0;
-    -unity-slice-bottom: 0;
-    -unity-slice-left: 0;
 }
-.frontend .rules-medallion:hover { background-image: resource("Wotr/Art/UI/rules/medallion-hover"); }
-.frontend .rules-medallion.pressed { background-image: resource("Wotr/Art/UI/rules/medallion-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
-.frontend .rules-medallion.module-fate.on { background-image: resource("Wotr/Art/UI/rules/medallion-fate-on"); }
-.frontend .rules-medallion.module-lords.on { background-image: resource("Wotr/Art/UI/rules/medallion-lords-on"); }
-.frontend .rules-medallion.module-kings.on { background-image: resource("Wotr/Art/UI/rules/medallion-kings-on"); }
-.frontend .rules-medallion:disabled { opacity: 0.45; -unity-background-image-tint-color: rgb(255, 255, 255); }
-.frontend .rules-medallion.on:disabled { opacity: 0.85; }
+.frontend .rules-module:hover > .rules-medallion { background-image: resource("Wotr/Art/UI/rules/medallion-hover"); }
+.frontend .rules-module.pressed > .rules-medallion { background-image: resource("Wotr/Art/UI/rules/medallion-pressed"); }
+.frontend .rules-module.module-fate.on > .rules-medallion { background-image: resource("Wotr/Art/UI/rules/medallion-fate-on"); }
+.frontend .rules-module.module-lords.on > .rules-medallion { background-image: resource("Wotr/Art/UI/rules/medallion-lords-on"); }
+.frontend .rules-module.module-kings.on > .rules-medallion { background-image: resource("Wotr/Art/UI/rules/medallion-kings-on"); }
+/* Greyed out while it cannot change (the guest, a ready host, a started game): the art and the word dim; a ticked box
+   stays readable. */
+.frontend .rules-module:disabled { opacity: 0.45; }
+.frontend .rules-module.on:disabled { opacity: 0.75; }
+.frontend .rules-module:disabled > .rules-medallion { -unity-background-image-tint-color: rgb(150, 150, 150); }
+.frontend .rules-module:disabled .rules-module-name { color: rgb(158, 150, 128); }
 .frontend .rules-medallion-crest { width: 28px; height: 28px; }
 /* An expansion that is not in the game shows its crest in grey. */
 .frontend .rules-medallion .expansion-crest { -unity-background-image-tint-color: rgb(120, 116, 108); }
-.frontend .rules-medallion.on .expansion-crest { -unity-background-image-tint-color: rgb(255, 255, 255); }
+.frontend .rules-module.on .expansion-crest { -unity-background-image-tint-color: rgb(255, 255, 255); }
+.frontend .rules-module.on:disabled .expansion-crest { -unity-background-image-tint-color: rgb(170, 170, 170); }
+.frontend .rules-module-caption { flex-direction: row; align-items: center; justify-content: center; height: 13px; margin-top: 1px; }
+.frontend .rules-module-caption > .rules-check { width: 12px; height: 12px; margin-right: 3px; }
+.frontend .rules-module.on .rules-check { background-image: resource("Wotr/Art/UI/rules/check-on"); }
 .frontend .rules-module-name {
     height: 13px;
-    margin-top: 1px;
     font-size: 11px;
     letter-spacing: 1px;
     color: rgb(214, 198, 160);
@@ -638,7 +651,7 @@
 /* DEMO-06: on the demo page the medallions stand in a row and the chips in two rows of three beside them. */
 .frontend .waiting-rules.rules-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; height: 62px; margin: 0 0 8px 0; }
 .frontend .rules-row .waiting-rules-modules { flex-direction: row; width: auto; margin-right: 10px; }
-.frontend .rules-row .rules-module { width: 52px; }
+.frontend .rules-row .rules-module { width: 60px; }
 .frontend .rules-row .waiting-rules-variants { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
 .frontend .rules-row .rules-chip { width: 32%; margin: 0 1% 4px 0; }
 .frontend .rules-row .rules-chip-name { font-size: 11px; }

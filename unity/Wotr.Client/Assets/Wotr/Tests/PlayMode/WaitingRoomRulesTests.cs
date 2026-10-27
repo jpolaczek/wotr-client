@@ -11,7 +11,8 @@ namespace Wotr.PlayTests
 {
     // UI-263: the rules strip in a mounted waiting room: a host's click asks the server for the next configuration and
     // the strip changes only with the room the server returns; a guest, an unreleased module and a started game keep
-    // their controls in place, disabled.
+    // their controls in place, disabled. UI-364: each expansion is one checkbox, and the host's Ready locks the strip
+    // until Not ready.
     public class WaitingRoomRulesTests
     {
         private MountedMatchClient client;
@@ -97,6 +98,45 @@ namespace Wotr.PlayTests
             CardNetworkTests.Click(screen.Rules.Medallion("lords"));
             Assert.AreEqual(0, sent);
             Assert.AreEqual("Accept these rules and get ready to play.", screen.Root.Q<Button>("room-ready").tooltip);
+        }
+
+        [UnityTest]
+        public IEnumerator TheHostsReadyLocksTheRulesUntilNotReady()
+        {
+            var screen = CreateScreen();
+            var room = Host(1, new MatchConfiguration { Fate = true });
+            screen.Update(room);
+            yield return Layout();
+            foreach (var module in RulesChoices.ModuleIds)
+                Assert.IsNotNull(screen.Rules.Medallion(module).Q(className: "rules-check"), "The checkbox of " + module);
+            var ready = screen.Root.Q<Button>("room-ready");
+            StringAssert.EndsWith("The rules stay locked until Not ready.", ready.tooltip);
+            bool? asked = null;
+            screen.Ready += value => asked = value;
+            CardNetworkTests.Click(ready);
+            Assert.IsTrue(asked.Value);
+            Assert.IsTrue(screen.Rules.Medallion("lords").enabledSelf, "The strip waits for the server's room.");
+            var accepted = Host(2, room.Configuration);
+            accepted.FreePeoplesAccepted = true;
+            screen.Update(accepted);
+            var sent = 0;
+            screen.Configure += _ => sent++;
+            foreach (var button in Controls(screen))
+            {
+                Assert.IsFalse(button.enabledSelf, button.name);
+                Assert.AreNotEqual(DisplayStyle.None, button.resolvedStyle.display, button.name);
+            }
+            Assert.IsTrue(screen.Rules.Medallion("fate").ClassListContains("on"), "A locked checkbox keeps its tick.");
+            StringAssert.EndsWith("Press Not ready to change the rules.", screen.Rules.Medallion("lords").tooltip);
+            CardNetworkTests.Click(screen.Rules.Medallion("lords"));
+            Assert.AreEqual(0, sent);
+            Assert.AreEqual("Not ready", ready.text);
+            Assert.AreEqual("Withdraw your acceptance of these rules to change them again.", ready.tooltip);
+            screen.Update(Host(3, room.Configuration));
+            yield return Layout();
+            Assert.IsTrue(Controls(screen).Where(button => button.name.StartsWith("rules-module-")).All(button => button.enabledSelf));
+            CardNetworkTests.Click(screen.Rules.Medallion("lords"));
+            Assert.AreEqual(1, sent);
         }
 
         [UnityTest]
