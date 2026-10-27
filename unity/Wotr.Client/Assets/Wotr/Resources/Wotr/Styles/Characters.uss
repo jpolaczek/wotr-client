@@ -126,6 +126,27 @@
     -unity-slice-scale: 0.5px;
 }
 #board-screen .character-inspector .character-ability-pages .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
+/* UI-369: a usable ability's unrolled text carries Click to use in its lower right corner, inside the parchment. */
+#board-screen .character-inspector .character-ability-text.usable { padding-bottom: 38px; }
+.character-ability-use { position: absolute; right: 8px; bottom: 7px; flex-direction: row; }
+#board-screen .character-inspector .character-ability-use .action {
+    flex-direction: row;
+    align-items: center;
+    height: 26px;
+    min-height: 26px;
+    margin: 0 0 0 4px;
+    padding: 0 9px 0 6px;
+}
+.character-ability-use-icon { width: 14px; height: 14px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: scale-to-fit;
+    background-image: resource("Wotr/Art/UI/actions/confirm"); }
+#board-screen .character-inspector .character-ability-use-title {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    color: rgb(241, 227, 181);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
 
 /* Limits: the "why" symbol and a short word; the word's tooltip explains the actions and limits. */
 .character-limits-row { flex-direction: row; align-items: center; margin: 2px 0; }

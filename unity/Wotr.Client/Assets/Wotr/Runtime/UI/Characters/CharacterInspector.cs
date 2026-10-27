@@ -12,6 +12,8 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "character-inspector" };
         public VisualElement Actions { get; } = new VisualElement { name = "character-actions" };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "character-decision-host" };
+        // UI-369: the chips light the abilities usable now and offer Click to use.
+        public CharacterAbilityChips Abilities => abilities;
         public string FigureId { get; private set; } = "";
         public string DefinitionId => version;
         public event Action Changed;

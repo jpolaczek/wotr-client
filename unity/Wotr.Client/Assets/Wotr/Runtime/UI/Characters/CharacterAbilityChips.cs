@@ -1,22 +1,38 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 
 namespace Wotr.Client
 {
     // UI-139: the abilities of a character card as chips: a scroll symbol and the ability's title, its full text
-    // in the tooltip. A click unrolls the full text under the chips and a second click rolls it up; nothing is
-    // unrolled by default. Three chips per page, as in UI-66.
+    // in the tooltip. A click unrolls the full text under the chips; nothing is unrolled by default. Three chips per
+    // page, as in UI-66. UI-369: a chip whose ability can be used now glows; selected, its unrolled text carries
+    // Click to use, whose click uses the ability. A second click on the selected chip changes nothing (owner, so the
+    // window never shrinks under the pointer); another chip or another page changes the selection.
     public sealed class CharacterAbilityChips
     {
         public const string ChipClass = "character-ability";
         public const string TitleClass = "character-ability-title";
+        public const string UseClass = "character-ability-use-action";
         private const int PageSize = 3;
+        // A command's ability id where it differs from the printed ability it uses.
+        private static readonly IReadOnlyDictionary<string, string> CommandChips = new Dictionary<string, string>
+        {
+            ["voice-recruit"] = "muster-each-isengard-settlement-or-upgrade-two",
+            ["voice-upgrade"] = "muster-each-isengard-settlement-or-upgrade-two"
+        };
+        public event Action<ComponentAction> Use;
         public VisualElement Root { get; } = new VisualElement { name = "character-abilities" };
         public VisualElement Pages { get; } = BoardScreen.Row("character-ability-pages");
         public Label Text { get; } = new Label { name = "character-ability-text", enableRichText = false };
         private readonly Button[] chips = new Button[PageSize];
         private readonly Button previous, next;
+        private readonly VisualElement use = new VisualElement { name = "character-ability-use" };
+        private readonly ChoicePulse pulse;
+        private ILookup<string, ComponentAction> usable = Enumerable.Empty<ComponentAction>().ToLookup(ChipOf);
+        private bool editable;
+        private string shownUse = "";
         private string version = "";
         private string opened = "";
         private int page;
@@ -27,7 +43,7 @@ namespace Wotr.Client
             for (var index = 0; index < chips.Length; index++)
             {
                 var slot = index;
-                chips[index] = BoardScreen.Button("", () => Toggle(slot));
+                chips[index] = BoardScreen.Button("", () => Open(slot));
                 chips[index].AddToClassList(ChipClass);
                 // Symbol and title are children: a button with children is not sized by its own text.
                 var icon = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -47,7 +63,10 @@ namespace Wotr.Client
             // Inside the chips' row, on a line of its own: a decision context hides both together.
             Text.AddToClassList("character-ability-text");
             Text.style.display = DisplayStyle.None;
+            use.AddToClassList("character-ability-use");
+            Text.Add(use);
             Root.Add(Text);
+            pulse = new ChoicePulse(Root);
         }
 
         public bool Paged => CharacterAbilityLibrary.For(version).Count > PageSize;
@@ -63,6 +82,32 @@ namespace Wotr.Client
             Refresh();
         }
 
+        // UI-369: the figure's actions that use a chip's ability light that chip; the others are returned, for their
+        // own buttons.
+        public IReadOnlyList<ComponentAction> Usable(IEnumerable<ComponentAction> actions, bool enabled)
+        {
+            var printed = CharacterAbilityLibrary.For(version).Select(ability => ability.Id).ToHashSet();
+            var all = actions.ToList();
+            usable = all.Where(action => printed.Contains(ChipOf(action))).ToLookup(ChipOf);
+            editable = enabled;
+            Refresh();
+            return all.Where(action => !printed.Contains(ChipOf(action))).ToList();
+        }
+
+        // The chip a character action uses; entries and other actions have none.
+        public static string ChipOf(ComponentAction action)
+        {
+            var ability = action.Character?.AbilityId ?? "";
+            return CommandChips.TryGetValue(ability, out var chip) ? chip : ability;
+        }
+
+        // Unrolls one chip's text, as its click does.
+        public void Select(string abilityId)
+        {
+            opened = abilityId ?? "";
+            Refresh();
+        }
+
         private void Turn(int step)
         {
             page += step;
@@ -70,10 +115,12 @@ namespace Wotr.Client
             Refresh();
         }
 
-        private void Toggle(int slot)
+        private void Open(int slot)
         {
             var id = chips[slot].userData as string ?? "";
-            opened = opened == id ? "" : id;
+            if (id == opened)
+                return;
+            opened = id;
             Refresh();
         }
 
@@ -92,15 +139,57 @@ namespace Wotr.Client
                 chip.name = "character-ability-" + ability.Id;
                 chip.userData = ability.Id;
                 chip.Q<Label>(className: TitleClass).text = ability.Title;
-                chip.tooltip = ability.Title + "\n" + ability.Text + "\n\n" + ability.Source;
+                var ready = editable && usable[ability.Id].Any(action => action.Enabled);
+                chip.tooltip = ability.Title + "\n" + ability.Text + "\n\n" + ability.Source +
+                    (ready ? "\n\nUsable now: click it, then Click to use." : "");
                 chip.EnableInClassList("selected", opened == ability.Id);
+                ChoiceGlow.Apply(chip, ready);
             }
             var open = entries.FirstOrDefault(a => a.Id == opened);
             Text.text = open == null ? "" : open.Text + "\n" + open.Source;
             Text.style.display = open == null ? DisplayStyle.None : DisplayStyle.Flex;
+            ShowUse(open == null ? new List<ComponentAction>() : usable[open.Id].ToList());
+            pulse.Run(chips.Any(chip => chip.ClassListContains(ChoiceGlow.ClassName)));
             Pages.style.display = entries.Count > PageSize ? DisplayStyle.Flex : DisplayStyle.None;
             previous.SetEnabled(page > 0);
             next.SetEnabled((page + 1) * PageSize < entries.Count);
+        }
+
+        // One Click to use per action of the unrolled ability (Saruman's Voice has two); rebuilt only when they change.
+        private void ShowUse(IReadOnlyList<ComponentAction> actions)
+        {
+            Text.EnableInClassList("usable", actions.Count > 0);
+            var key = string.Join("|", actions.Select(action => action.Key + ":" + action.Enabled)) + "/" + editable;
+            if (key == shownUse)
+                return;
+            shownUse = key;
+            use.Clear();
+            foreach (var action in actions)
+                use.Add(UseButton(action, actions.Count > 1));
+        }
+
+        private Button UseButton(ComponentAction action, bool named)
+        {
+            var button = BoardScreen.Button("", () => Use?.Invoke(action));
+            button.name = "character-ability-use-" + (action.Character?.AbilityId ?? action.Key);
+            button.AddToClassList(UseClass);
+            var icon = new VisualElement { pickingMode = PickingMode.Ignore };
+            icon.AddToClassList("character-ability-use-icon");
+            button.Add(icon);
+            var label = named ? "Click to use · " + (action.Character?.Title ?? action.Owner) : "Click to use";
+            var title = new Label(label) { pickingMode = PickingMode.Ignore };
+            title.AddToClassList("character-ability-use-title");
+            button.Add(title);
+            button.SetEnabled(editable && action.Enabled);
+            button.tooltip = UseTooltip(action);
+            return button;
+        }
+
+        private static string UseTooltip(ComponentAction action)
+        {
+            if (!action.Enabled)
+                return "Select an eligible die to use it.";
+            return action.Detail.Length > 0 ? action.Detail : "Use this ability.";
         }
     }
 }
