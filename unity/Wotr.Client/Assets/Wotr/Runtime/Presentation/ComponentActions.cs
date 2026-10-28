@@ -40,7 +40,7 @@ namespace Wotr.Client
             kind == CommandKind.EnterCharacter && item.Character?.CouncilTokens.Contains(token) == true;
 
         // UI-385 (owner): a king owns his ability by his name ("Dáin"), never by his id ("kings.sovereign.dain").
-        private static string OwnerName(PlayerView view, string id) =>
+        internal static string OwnerName(PlayerView view, string id) =>
             view.Sovereigns.FirstOrDefault(s => s.Id == id)?.Title.Split(' ')[0] ?? CharacterLibrary.ShortName(id);
 
         // UI-385: the printed ability an action uses ("Dwarvenking"), when it is not the action's own title; an expansion's

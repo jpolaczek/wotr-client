@@ -67,10 +67,11 @@ namespace Wotr.Client
                 }
                 else
                     draft.Choose(option.Kind, journey ? "" : context.DieId);
+                // UI-389: a Ruler token's travel (Thranduil's) carries the token's ability.
                 draft.Change(p =>
                 {
                     p.Stepwise = !journey;
-                    p.AbilityId = journey ? "" : context.AbilityId;
+                    p.AbilityId = journey ? "" : token.Length > 0 ? ExpansionDraft.TokenAbility(view, token, option.Kind) : context.AbilityId;
                     p.RulerTokenId = journey ? "" : token;
                 });
             }

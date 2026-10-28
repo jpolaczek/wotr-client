@@ -29,7 +29,7 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            board.ActionDie.Sync(view, ResourcePresentation.CouncilPending(draft) ? "" : draft.Payload.DieId);
+            board.ActionDie.Sync(view, ResourcePresentation.CouncilPending(draft) ? "" : draft.Payload.DieId, draft.Payload.RulerTokenId);
             board.ActionDie.BindCost(view, draft);
             var eligible = ArmyActive ? ContextArmySelection.Eligible(view, board.ActionDie) : new HashSet<string>();
             var current = ArmyActive ? ArmyDraft.Current(draft) : null;

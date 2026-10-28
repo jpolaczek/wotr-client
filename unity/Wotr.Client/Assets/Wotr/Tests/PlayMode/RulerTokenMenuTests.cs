@@ -99,6 +99,81 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(tab.ClassListContains("legal-target"), tab.name + " no longer glows.");
         }
 
+        // UI-389 (owner's report): Thranduil's token lights all its uses at once — the Fellowship's move (its plaque and its
+        // figure on the map) and his own row — and none of the Muster die's; a second click releases the token with its
+        // Ruler die and nothing stays lit; the Fellowship's move then carries Far-sighted, and the server takes it.
+        [UnityTest]
+        public IEnumerator ThranduilsTokenLightsAllItsUsesAndASecondClickReleasesIt() => MatchTestRoom.Wait(Thranduil());
+
+        private static async Task Thranduil()
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var token = timeout.Token;
+            var fixture = Load();
+            using var api = await fixture.Login(Side.FreePeoples, token);
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui389-" + Guid.NewGuid().ToString("N")));
+            await Open(client, "kings-ruler-token-thranduil", token);
+            await Task.Delay(500, token);
+            var board = client.Board;
+            var ruler = board.OwnDice.Q<Button>("ruler-token-kings.token.thranduil");
+            PointerGestureEvents.ClickAt(ruler);
+            await Task.Delay(600, token);
+            Assert.AreEqual("kings.die.fp.ruler", board.ActionDie.DieId);
+            Assert.IsTrue(board.Fellowship.Status.ClassListContains(DieOptionGlow.LitClass), "The Fellowship plaque glows for the token's move.");
+            Assert.IsTrue(board.Map.FellowshipMarker.MoveOffered, "The Fellowship's figure offers the token's move.");
+            Assert.IsTrue(board.Characters.Tab.ClassListContains("legal-target"), "Thranduil's own move lights the Characters tab.");
+            Assert.IsFalse(board.Nations.Root.ClassListContains(DieOptionGlow.LitClass), "The Muster die's Politics stays dark.");
+            Assert.IsFalse(board.Reinforcements.Tab.ClassListContains(DieOptionGlow.LitClass), "The Muster die's recruitment stays dark.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui389-thranduil-token.png");
+            PointerGestureEvents.ClickAt(ruler);
+            await Task.Delay(600, token);
+            Assert.AreEqual("", board.ActionDie.DieId, "The second click releases the token and its Ruler die.");
+            Assert.IsFalse(ruler.ClassListContains("selected"));
+            Assert.IsFalse(board.Fellowship.Status.ClassListContains(DieOptionGlow.LitClass));
+            Assert.IsFalse(board.Nations.Root.ClassListContains(DieOptionGlow.LitClass), "No other use lights in its place.");
+            Assert.IsFalse(board.Characters.Tab.ClassListContains("legal-target"));
+            PointerGestureEvents.ClickAt(ruler);
+            await Task.Delay(600, token);
+            var progress = board.View.Fellowship.Progress;
+            board.Map.FellowshipMarker.Activate();
+            await Until(() => board.View.Fellowship.Progress == progress + 1, token);
+            Assert.AreNotEqual("free-peoples", board.View.RulerTokens.Single(t => t.Id == "kings.token.thranduil").Location,
+                "The server took the token's move with Far-sighted.");
+        }
+
+        // UI-389: Denethor's token lights both its uses — the decks and the Event card its Event face pays for — and none
+        // of the Muster die's; a second click releases it with the Ruler die.
+        [UnityTest]
+        public IEnumerator DenethorsTokenLightsTheDecksAndTheCardButNoMusterUse() => MatchTestRoom.Wait(Denethor());
+
+        private static async Task Denethor()
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var token = timeout.Token;
+            var fixture = Load();
+            using var api = await fixture.Login(Side.FreePeoples, token);
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui389-" + Guid.NewGuid().ToString("N")));
+            await Open(client, "kings-fp-ruler-token", token);
+            await Task.Delay(500, token);
+            var board = client.Board;
+            var ruler = board.OwnDice.Q<Button>("ruler-token-kings.token.denethor");
+            var decks = board.Decks.Root.Query<Button>(className: "card-deck").ToList();
+            PointerGestureEvents.ClickAt(ruler);
+            await Task.Delay(600, token);
+            Assert.AreEqual("kings.die.fp.ruler", board.ActionDie.DieId);
+            foreach (var deck in decks)
+                Assert.IsTrue(deck.ClassListContains(DieOptionGlow.LitClass), deck.name + " glows for the token's draw.");
+            Assert.IsTrue(board.Hand.Q<VisualElement>("base.fp.character.07").ClassListContains("playable-card"), "Horn of Gondor glows.");
+            Assert.IsFalse(board.Nations.Root.ClassListContains(DieOptionGlow.LitClass), "The Muster die's Politics stays dark.");
+            Assert.IsFalse(board.Reinforcements.Tab.ClassListContains(DieOptionGlow.LitClass), "The Muster die's recruitment stays dark.");
+            PointerGestureEvents.ClickAt(ruler);
+            await Task.Delay(600, token);
+            Assert.AreEqual("", board.ActionDie.DieId, "The second click releases the token and its Ruler die.");
+            foreach (var deck in decks)
+                Assert.IsFalse(deck.ClassListContains(DieOptionGlow.LitClass));
+            Assert.IsFalse(board.Nations.Root.ClassListContains(DieOptionGlow.LitClass), "No other use lights in its place.");
+        }
+
         private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex &&
             element.worldBound.width > 0 && element.panel != null;
 

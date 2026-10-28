@@ -155,6 +155,9 @@ namespace Wotr.Client
                 return HuntAllocationText.Hint(draft, HuntActions.Allocation(view));
             if (draft.Kind == CommandKind.DiscardCards)
                 return "Click a card, then click it again to discard it face down.";
+            // UI-390: a deck choice names the glowing decks.
+            if (DeckChoice.Pending(view))
+                return DeckChoice.Hint(view);
             if (NazgulFlightDraft.Active(view, draft))
                 return NazgulFlightDraft.Hint(view, draft);
             if (CompanionJourneyDraft.Active(view, draft))

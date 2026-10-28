@@ -45,8 +45,10 @@ namespace Wotr.Client
         public static string Row(PlayerView view, ComponentAction item) => CharacterRosterVersions.RowKey(view,
             Figure(view, item.OwnerId), item.Kind == CommandKind.EnterCharacter ? item.Character?.CharacterId : "");
 
+        // UI-390: a deck choice from the character (Denethor's Palantír of Anárion) is made on the decks, not linked here.
         public static bool HasReaction(PlayerView view, string id) =>
             id.Length > 0 && view?.Decision != null && view.DecisionOwner == view.You && view.Decision.Kind != DecisionKind.Action &&
+            !DeckChoice.Pending(view) &&
             (Figure(view, view.Decision.SourceId) == id || view.Options.Any(option =>
                 option.EffectChoices.Any(choice => Figure(view, choice.SourceId) == id)));
     }

@@ -3,7 +3,7 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum DecisionContext { Resources, Battle, Fellowship, Sovereign, Region, Hunt }
+    public enum DecisionContext { Resources, Battle, Fellowship, Sovereign, Region, Hunt, Hand }
 
     // Navigation only. Candidates are never treated as a player's chosen destination.
     public sealed class DecisionAttention
@@ -29,6 +29,10 @@ namespace Wotr.Client
                 return At(DecisionContext.Hunt, "");
             if (FellowshipActions.UsesPanel(view, null) && !CompanionJourneyDraft.OnMap(view))
                 return At(DecisionContext.Fellowship, view.Fellowship.MordorStep.HasValue ? "" : view.Fellowship.RegionId);
+            // UI-390: a deck choice (the Palantír of Anárion's extra card) is made on the decks in the hand drawer, never in
+            // its source character's region.
+            if (DeckChoice.Pending(view))
+                return At(DecisionContext.Hand, "");
             var figures = FigureRegion(view);
             if (figures.Length > 0)
                 return At(DecisionContext.Region, figures);

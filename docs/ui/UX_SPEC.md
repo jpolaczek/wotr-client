@@ -1741,3 +1741,29 @@ Owner reports from the Kings test scenarios (Brand's Call to Arms, Dáin's Iron 
   (Politics opens with it). Tests: `ResourcePanelTests`, `ExpansionTokenNetworkTests` (both tokens),
   `CharacterRosterActionNetworkTests`, `CouncilTokenMenuTests` (UI-376 with `lords-council-token`).
 
+
+## Every use at one click, a deck choice on its decks — UI-389, UI-390 (2026-10-28)
+
+Owner reports from the Kings Ruler token scenarios:
+
+- UI-389 (owner's rule) — every die and token lights all of its available uses at its click, never one use per click.
+  A Ruler token's uses are the server's actions for that token (`RulerTokenActions`), judged by the token's face
+  rather than the face the Ruler die shows (`ActionDieContext.Sync` with the token): Thranduil's token lights the
+  Fellowship's move (its plaque and its figure on the map) beside his own row, where before only his row lit; Denethor's
+  token lights the decks and the Event cards its Event face pays for. None of the Ruler die's own uses light beside
+  them (before, the Muster die's Politics glowed under both tokens). A separation lights the Fellowship as its move
+  does. A second click on the chosen token releases it with the Ruler die it took, as a die's (UI-386); before, it
+  dropped only the token and the die's own uses (another king's ability, Politics) lit in its place. Every path that
+  starts a token's action — the Fellowship panel, the map, a chip — sends the token's ability (Far-sighted), which the
+  server requires (`ExpansionDraft.TokenAbility`). Tests: `RulerTokenUsesTests`, `RulerTokenMenuTests` (Thranduil's and
+  Denethor's tokens from the test menu; the Fellowship's move with Thranduil's token is taken by the server).
+- UI-390 — a deck choice is made on its decks. After Denethor's token (or Ruler die) pays for an Event, the Palantír of
+  Anárion's extra card asks for a deck, with no Skip while his token is spent. Before, the console said "Resolve the
+  played card" beside the played card's chip, the decks beside the hand kept only a thin rim (an expanded hand card
+  could cover it), the console's plaque and the notice opened the army window in Minas Tirith where Denethor stands,
+  and his window showed an Open decision that led back there. Now the decks wear the same halo as a die's draw, the
+  console and the notice read "Denethor · Choose a deck" and "Click a glowing deck beside your hand to draw its top
+  card" (with Pass named when the draw may be skipped), the notice leads to the hand (`DecisionContext.Hand`) — the
+  docked hand shows its decks already, so the plaque has nothing to open — a floating hand drawer opens once for the
+  step, and the character keeps no Open decision link (`DeckChoice`). Tests: `DeckChoiceTests`, `DeckChoiceMenuTests`
+  (Horn of Gondor with Denethor's token from the test menu).

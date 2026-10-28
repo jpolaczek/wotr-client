@@ -44,9 +44,12 @@ namespace Wotr.Client
             _ => "YOUR DECISION · " + DecisionTitle(view, draft)
         };
 
-        // UI-211: a card's decision names its card; other decisions name their step.
+        // UI-211: a card's decision names its card; other decisions name their step. UI-390: a deck choice names its source
+        // and the step ("Denethor · Choose a deck").
         private static string DecisionTitle(PlayerView view, TurnDraft draft)
         {
+            if (DeckChoice.Pending(view))
+                return DeckChoice.Title(view);
             var card = CardDecisions.CardTitle(view);
             return card.Length > 0 ? card : DecisionTray.Title(view.Decision.Kind, draft.Kind);
         }
@@ -58,7 +61,7 @@ namespace Wotr.Client
             foreach (var hint in new[]
                      {
                          ResourcePresentation.CouncilHint(view, draft), BalrogCardOrder.Hint(view), CouncilHomelandPresentation.Hint(view, draft),
-                         KingsCardChoices.Hint(view)
+                         KingsCardChoices.Hint(view), DeckChoice.Hint(view)
                      })
                 if (hint.Length > 0)
                     return hint;

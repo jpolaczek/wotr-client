@@ -33,7 +33,9 @@ namespace Wotr.Client
             if (option == null)
                 return false;
             var token = draft.Payload.RulerTokenId;
-            var ability = option.RulerTravel?.AbilityId == draft.Payload.AbilityId ? draft.Payload.AbilityId : "";
+            // UI-389: Thranduil's token lights the Fellowship's move, which carries his Far-sighted.
+            var ability = token.Length > 0 ? ExpansionDraft.TokenAbility(view, token, kind)
+                : option.RulerTravel?.AbilityId == draft.Payload.AbilityId ? draft.Payload.AbilityId : "";
             // UI-298: choosing the action is one undo step, so the first Back drops it.
             draft.Gesture(() =>
             {

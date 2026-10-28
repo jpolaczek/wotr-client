@@ -24,6 +24,7 @@ namespace Wotr.Client
                 DecisionKind.CorruptionTile => "Choose a Corruption tile",
                 DecisionKind.RemoveExcess => "Return " + choice.RequiredCount + " excess units",
                 DecisionKind.EffectChoice => choice.Presentation == "CorruptionRemoval" ? "Return a Corruption tile?"
+                    : choice.Presentation == DeckChoice.Presentation ? DeckChoice.Title(view)
                     : choice.SourceId.Length > 0 ? "Resolve " + ActionCardText.Source(choice.SourceId) : "Resolve the Event choice",
                 DecisionKind.FellowshipRoute => "Choose the Fellowship route",
                 DecisionKind.Guide => "Choose the next Guide",

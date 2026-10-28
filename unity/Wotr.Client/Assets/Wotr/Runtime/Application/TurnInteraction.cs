@@ -453,12 +453,18 @@ namespace Wotr.Client
 
         private void ChooseRulerToken(string id) => Edit(() =>
         {
+            // UI-389 (owner): a second click on the chosen token releases it with the Ruler die it took, as a die's second
+            // click does (UI-386), so the die's own uses never light in its place.
+            if (id.Length > 0 && draft.Payload.RulerTokenId == id)
+            {
+                draft.Clear();
+                return;
+            }
             var die = draft.Payload.DieId;
-            var token = draft.Payload.RulerTokenId == id ? "" : id;
-            DraftOptions.SelectToken(draft, view, token);
+            DraftOptions.SelectToken(draft, view, id);
             // UI-380 (owner): the token's actions pay with the Ruler die; when it is their only die, the click takes it,
             // so the king's ability lights at once.
-            var dice = DraftOptions.TokenDice(view, token);
+            var dice = DraftOptions.TokenDice(view, id);
             var kept = view.You == Side.FreePeoples && view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available) &&
                 (dice.Count == 0 || dice.Contains(die));
             if (kept)

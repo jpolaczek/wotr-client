@@ -14,7 +14,9 @@ namespace Wotr.Client
         private string ability = "";
         public string AbilityId => ability;
 
-        public void Sync(PlayerView view, string id)
+        // UI-389: a chosen Ruler token turns the Ruler die into the token's face for its actions (the server's
+        // RulerTokenView.Face), so what the die lights is judged by that face, not by the face the die shows.
+        public void Sync(PlayerView view, string id, string rulerToken = "")
         {
             if (view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence is { } sequence && sequence.Owner == view.You)
             {
@@ -34,9 +36,11 @@ namespace Wotr.Client
             }
             DieId = id;
             ability = "";
-            Choices = die.Face == DieFace.ArmyMuster ? Combined
-                : die.Face == DieFace.WillOfTheWest ? Wild : System.Array.Empty<DieFace>();
-            Face = die.Face;
+            var token = string.IsNullOrEmpty(rulerToken) || die.Source != "ruler" ? null : view.RulerTokens.FirstOrDefault(t => t.Id == rulerToken);
+            var face = token?.Face ?? die.Face;
+            Choices = face == DieFace.ArmyMuster ? Combined
+                : face == DieFace.WillOfTheWest ? Wild : System.Array.Empty<DieFace>();
+            Face = face;
         }
 
         public void BindCost(PlayerView view, TurnDraft draft)

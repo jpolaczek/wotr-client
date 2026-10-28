@@ -46,7 +46,7 @@ namespace Wotr.Client
             p.RulerTokenId = token;
             if (token.Length > 0)
             {
-                p.AbilityId = view.RulerTokenActions.First(o => o.TokenId == token && o.Action.Kind == draft.Kind).AbilityId;
+                p.AbilityId = TokenAbility(view, token, draft.Kind);
                 if (option.EligibleDice.Count == 1)
                     p.DieId = option.EligibleDice[0];
             }
@@ -55,6 +55,11 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.UseNarya && option.Targets.Count == 1)
                 p.NationId = option.Targets[0];
         }
+
+        // The ability a Ruler token's action names (Far-sighted for Thranduil's travel, a king's recruiting ability);
+        // empty without a token. UI-389: every place that starts a token's action sends it.
+        public static string TokenAbility(PlayerView view, string token, CommandKind? kind) => token.Length == 0 ? ""
+            : view.RulerTokenActions.FirstOrDefault(o => o.TokenId == token && o.Action.Kind == kind)?.AbilityId ?? "";
 
         public static void CouncilToken(TurnDraft draft, string id) => draft.Change(p =>
         {
