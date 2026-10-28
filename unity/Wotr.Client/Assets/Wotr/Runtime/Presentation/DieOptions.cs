@@ -31,7 +31,9 @@ namespace Wotr.Client
                 Characters = CharacterAction(view, die) || CharacterMove(view, die),
                 Politics = Allowed(view, die, CommandKind.AdvancePolitics) || Allowed(view, die, CommandKind.UseNarya) ||
                     Allowed(view, die, CommandKind.UseCouncilToken) || CharacterPolitics.Pays(view, die),
-                Fellowship = Allowed(view, die, CommandKind.MoveFellowship) || Allowed(view, die, CommandKind.HideFellowship),
+                // UI-389: a separation is made in the Fellowship panel, so it lights the Fellowship as its move does.
+                Fellowship = Allowed(view, die, CommandKind.MoveFellowship) || Allowed(view, die, CommandKind.HideFellowship) ||
+                    Allowed(view, die, CommandKind.SeparateCompanions),
                 Cards = view.Hand.Any(id => CardActions.CanPlay(view, draft, die, id)),
                 Draw = CardActions.CanDraw(view, draft, die, "character") || CardActions.CanDraw(view, draft, die, "strategy"),
                 Armies = Allowed(view, die, CommandKind.MoveArmies) || Allowed(view, die, CommandKind.AttackArmy),

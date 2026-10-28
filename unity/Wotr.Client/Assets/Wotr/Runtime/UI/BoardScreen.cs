@@ -109,8 +109,12 @@ namespace Wotr.Client
             // UI-181: the Reserve tab lights for a die that can recruit, like the other tabs.
             DieGlow.Light(Reinforcements.Tab, options => options.Recruit);
             DieGlow.Attach(Fellowship.Status, options => options.Fellowship);
+            // UI-390: a deck choice (the Palantír of Orthanc's draw) lights the decks with the same halo, without a die.
             foreach (var deck in Decks.Root.Query<Button>().ToList())
-                DieGlow.Attach(deck, options => options.Draw);
+            {
+                var id = ((DraftToken)deck.userData).Id;
+                DieGlow.Attach(deck, options => options.Draw || DeckChoice.Offers(View, id));
+            }
         }
 
         // UI-134: the Reinforcements panel presses hand cards through the hand's own selection.

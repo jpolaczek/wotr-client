@@ -1427,3 +1427,15 @@ Owner requests of 2026-10-28, first made on the expansions' build:
   version with a gold underline and gold text; each tab reads the version's name ("Grey", "White"), with its edition
   only where two names are alike. Test: `CharacterRosterPanelNetworkTests`.
 
+
+## A deck choice on its decks, a separation's glow — UI-389, UI-390 (2026-10-28)
+
+Base-game parts of the owner's reports on the Kings branch (Ruler tokens, the Palantír of Anárion):
+
+- UI-389 (owner's rule) — every die and token lights all of its available uses at its click; a second click releases
+  it (UI-386). In the base game a separation, made in the Fellowship panel, now lights the Fellowship as its move does.
+- UI-390 — a deck choice is made on its decks (`DeckChoice`): during the Palantír of Orthanc's draw the decks beside
+  the hand wear the same halo as a die's draw, the console and the notice read "The Palantír of Orthanc · Choose a
+  deck" and "Click a glowing deck beside your hand to draw its top card", the notice leads to the hand
+  (`DecisionContext.Hand`; the docked hand shows its decks already, so the plaque has nothing to open), a floating
+  hand drawer opens once for the step, and the source character keeps no Open decision link. Test: `DeckChoiceTests`.

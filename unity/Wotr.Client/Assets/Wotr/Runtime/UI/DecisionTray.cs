@@ -125,6 +125,8 @@ namespace Wotr.Client
                     : draft.Kind == CommandKind.AllocateHunt ? HuntAllocationText.Hint(draft, HuntActions.Allocation(view))
                     : draft.Kind == CommandKind.DiscardCards
                     ? "Click a card, then click it again to discard it face down."
+                    // UI-390: a deck choice names the glowing decks.
+                    : DeckChoice.Pending(view) ? DeckChoice.Hint(view)
                     : NazgulFlightDraft.Active(view, draft) ? NazgulFlightDraft.Hint(view, draft)
                     : CompanionJourneyDraft.Active(view, draft) ? CompanionJourneyDraft.Hint(view, draft)
                     : CardFigureDraft.Active(view, draft) ? CardFigureDraft.Hint(view, draft)

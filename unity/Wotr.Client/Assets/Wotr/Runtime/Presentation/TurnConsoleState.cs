@@ -44,9 +44,12 @@ namespace Wotr.Client
             _ => "YOUR DECISION · " + DecisionTitle(view, draft)
         };
 
-        // UI-211: a card's decision names its card; other decisions name their step.
+        // UI-211: a card's decision names its card; other decisions name their step. UI-390: a deck choice names its source
+        // and the step ("The Palantír of Orthanc · Choose a deck").
         private static string DecisionTitle(PlayerView view, TurnDraft draft)
         {
+            if (DeckChoice.Pending(view))
+                return DeckChoice.Title(view);
             var card = CardDecisions.CardTitle(view);
             return card.Length > 0 ? card : DecisionTray.Title(view.Decision.Kind, draft.Kind);
         }
@@ -58,6 +61,7 @@ namespace Wotr.Client
             DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
+            DecisionKind.EffectChoice when DeckChoice.Pending(view) => DeckChoice.Hint(view),
             DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
             DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
                 "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Pass to skip it.",
