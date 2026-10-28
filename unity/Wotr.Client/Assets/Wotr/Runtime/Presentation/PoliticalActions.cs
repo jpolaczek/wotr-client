@@ -11,6 +11,8 @@ namespace Wotr.Client
 
         public static string Hint(PlayerView view, TurnDraft draft, ActionDieContext die)
         {
+            if (ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics))
+                return ResourcePresentation.CouncilHint(view, draft);
             if (AdvanceOption(view, draft, die) != null)
                 return "Politics → click a nation’s arrow or token to move it one step toward war.";
             if (draft.Kind == CommandKind.UseCouncilToken)
@@ -22,7 +24,9 @@ namespace Wotr.Client
         {
             if (view?.DecisionOwner != view?.You || view?.Decision?.Kind != DecisionKind.Action)
                 return null;
-            if (draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilPolitics)
+            // UI-388: a marked token's printed use is lit beside its Chieftain's entry.
+            if (draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilPolitics ||
+                ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics))
                 return view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.UseCouncilToken &&
                     o.EligibleIds.Contains(ExpansionDraft.CouncilPolitics));
             return MusterActions.Active(view, draft, die) ? MusterActions.Option(view, die, CommandKind.AdvancePolitics) : null;

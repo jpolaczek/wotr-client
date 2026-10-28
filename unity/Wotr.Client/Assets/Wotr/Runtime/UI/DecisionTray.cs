@@ -163,6 +163,10 @@ namespace Wotr.Client
                 return CardFigureDraft.Hint(view, draft);
             if (CardArmyEvent.Active(view, draft))
                 return CardArmyEvent.Hint(view, draft);
+            // UI-388: a marked Council token names both its lit uses.
+            var marked = ResourcePresentation.CouncilHint(view, draft);
+            if (marked.Length > 0)
+                return marked;
             var objectHint = ObjectHint(view, draft);
             if (objectHint.Length > 0)
                 return objectHint;

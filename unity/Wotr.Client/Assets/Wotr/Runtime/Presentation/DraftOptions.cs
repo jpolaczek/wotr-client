@@ -43,7 +43,7 @@ namespace Wotr.Client
             Maximum = choices[0].Maximum
         };
 
-        private static ActionOption Council(ActionOption source) => new ActionOption
+        internal static ActionOption Council(ActionOption source) => new ActionOption
         {
             Kind = source.Kind,
             Enabled = source.Enabled,

@@ -139,18 +139,20 @@ namespace Wotr.EditorTests
         }
 
         // UI-347 (EXP-15 D13): a medallion's click starts its printed use at once; when a Chieftain can enter with the token,
-        // the first click marks it (his row lights) and a click on the marked token starts the printed use; during his
-        // entry the token is its cost. No Dice & tokens panel step remains.
+        // UI-388: its first click marks it and lights both uses (his row and the printed use's objects), and a second
+        // click releases it; during his entry the token is its cost. No Dice & tokens panel step remains.
         [Test]
         public void ACouncilMedallionStartsItsUseOrMarksItForAChieftain()
         {
             var view = CouncilView(true);
             Assert.AreEqual(CouncilClick.Mark, ResourcePresentation.Clicked(view, new TurnDraft(), ExpansionDraft.CouncilPolitics));
             var draft = CouncilDraft();
-            Assert.AreEqual(CouncilClick.Use, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
+            Assert.AreEqual(CouncilClick.Release, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));
+            Assert.IsTrue(ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics));
             var hint = ResourcePresentation.CouncilHint(view, draft);
             StringAssert.StartsWith("Click a lit Chieftain's row", hint);
-            StringAssert.Contains("click the token again for its printed use (Council · Politics)", hint);
+            StringAssert.Contains("or a glowing Shadow nation's step in Politics for its printed use", hint);
+            Assert.IsNotNull(PoliticalActions.AdvanceOption(view, draft, new ActionDieContext()), "Its printed use is lit beside the entry.");
             var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));
             Assert.AreEqual(CouncilClick.EntryCost, ResourcePresentation.Clicked(view, draft, ExpansionDraft.CouncilPolitics));

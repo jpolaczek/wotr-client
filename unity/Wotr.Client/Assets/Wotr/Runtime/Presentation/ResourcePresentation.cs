@@ -13,7 +13,9 @@ namespace Wotr.Client
         // A Chieftain can enter with the token: it is marked and his Characters row lights.
         Mark,
         // The token's printed use starts.
-        Use
+        Use,
+        // UI-388: a second click on the marked token releases it.
+        Release
     }
 
     // UI-264 to UI-276: every resource decision is made on its objects — the special-die pick and the Ruler discard on
@@ -23,6 +25,9 @@ namespace Wotr.Client
     public static class ResourcePresentation
     {
         public static bool CouncilPending(TurnDraft draft) => draft != null && draft.Kind == null && draft.Payload.CouncilTokenId.Length > 0;
+
+        // UI-388: this token is marked: its Chieftain's entry and its printed use are both lit.
+        public static bool CouncilMarked(TurnDraft draft, string token) => CouncilPending(draft) && draft.Payload.CouncilTokenId == token;
 
         public static bool CanSelectCouncil(PlayerView view, string token) => view?.Decision?.Kind == DecisionKind.Action &&
             !view.Winner.HasValue && view.DecisionOwner == view.You && view.Options.Any(o => o.Enabled &&
@@ -41,8 +46,11 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.EnterCharacter &&
                 CharacterDraft.Selected(draft, DraftOptions.For(view, draft))?.CouncilTokens.Contains(token) == true)
                 return CouncilClick.EntryCost;
-            var marked = CouncilPending(draft) && draft.Payload.CouncilTokenId == token;
-            if (CouncilEntry(view, token) && !marked)
+            // UI-388 (owner): a token with several uses lights them all at its first click (its Chieftain's row, its
+            // printed use's objects) and opens no panel; a second click releases it.
+            if (CouncilMarked(draft, token))
+                return CouncilClick.Release;
+            if (CouncilEntry(view, token))
                 return CouncilClick.Mark;
             return CouncilUse(view, draft, token) != null ? CouncilClick.Use : CouncilClick.None;
         }
@@ -51,15 +59,17 @@ namespace Wotr.Client
         public static ComponentAction CouncilUse(PlayerView view, TurnDraft draft, string token) => ComponentActions.For(view, draft)
             .FirstOrDefault(c => c.Kind == CommandKind.UseCouncilToken && c.AbilityId == token && c.Enabled);
 
-        // The console's hint while a marked token waits for a Chieftain's entry or its second click.
+        // The console's hint while a marked token waits for one of its lit uses (UI-388).
         public static string CouncilHint(PlayerView view, TurnDraft draft)
         {
             if (!CouncilPending(draft) || view?.Decision?.Kind != DecisionKind.Action)
                 return "";
             var token = draft.Payload.CouncilTokenId;
-            return "Click a lit Chieftain's row in the Characters panel to enter him with this token" +
-                (CouncilUse(view, draft, token) != null ? ", or click the token again for its printed use (" + ExpansionLabels.CouncilToken(token) + ")" : "") +
-                ". An entry also spends the die you select.";
+            var use = CouncilUse(view, draft, token) == null ? ""
+                : token == ExpansionDraft.CouncilPolitics ? ", or a glowing Shadow nation's step in Politics for its printed use"
+                : ", or the Nazgûl above the token and their destination for its printed use";
+            return "Click a lit Chieftain's row in the Characters panel to enter him with this token" + use +
+                ". An entry also spends the die you select; a click on the token releases it.";
         }
 
         public static IEnumerable<string> CouncilDice(PlayerView view, TurnDraft draft)

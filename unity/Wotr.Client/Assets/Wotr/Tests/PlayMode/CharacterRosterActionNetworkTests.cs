@@ -183,10 +183,8 @@ namespace Wotr.PlayTests
             var board = room.Sh.Board;
             const string token = ExpansionDraft.CouncilTravel;
             var dice = board.View.Dice.Count(d => d.Location == DieLocation.Available);
-            // UI-347 (D13): the Black Serpent can enter with the token, so the first click marks it and the second
-            // starts Travel.
-            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
-            await room.Settle();
+            // UI-347 (D13): the Black Serpent can enter with the token. UI-388: its one click lights his entry and the
+            // Nazgûl of its Travel; choosing a figure starts the Travel.
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("pool-" + token));
             await room.Settle();
             await Pick(room, room.Sh, "base.character.witch-king");

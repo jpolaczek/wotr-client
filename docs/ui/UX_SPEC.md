@@ -1733,4 +1733,11 @@ Owner reports from the Kings test scenarios (Brand's Call to Arms, Dáin's Iron 
   abilities: a low strip on a thin gilt line, the shown version with a gold underline and gold text, the others muted
   until hovered; each tab reads the version's name ("Strider", "Aragorn"), with its edition only where two names are
   alike ("Base · Boromir", "Lords · Boromir"); the tooltip names the card and its edition.
+- UI-388 (owner) — a token with several uses opens no panel and lights them all. A Council token a Kings Chieftain can
+  enter with (UI-347 D13) lights, at its one click, the Chieftain's row (and the Characters tab) for the entry and its
+  printed use's objects: the glowing Shadow nations' steps (and the Politics tab) for Politics, the Nazgûl above the
+  token for Travel; a click on any lit option uses the token that way (a step sends Politics at once, a Nazgûl starts
+  Travel), and a second click on the token releases it. The console names both ways. A token with one use keeps UI-376
+  (Politics opens with it). Tests: `ResourcePanelTests`, `ExpansionTokenNetworkTests` (both tokens),
+  `CharacterRosterActionNetworkTests`, `CouncilTokenMenuTests` (UI-376 with `lords-council-token`).
 

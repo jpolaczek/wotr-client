@@ -188,6 +188,9 @@ namespace Wotr.Client
                 case CouncilClick.Use:
                     select(ResourcePresentation.CouncilUse(view, draft, id));
                     break;
+                case CouncilClick.Release:
+                    edit(() => draft.Clear(), false);
+                    break;
             }
         }
 

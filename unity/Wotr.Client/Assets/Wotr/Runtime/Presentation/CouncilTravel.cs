@@ -19,12 +19,19 @@ namespace Wotr.Client
         // The token's own travel in the player's action: its option once the token's printed use is chosen.
         public static ActionOption Option(PlayerView view, TurnDraft draft)
         {
-            if (view?.Decision?.Kind != DecisionKind.Action || view.DecisionOwner != view.You ||
-                draft?.Kind != CommandKind.UseCouncilToken || draft.Payload.AbilityId != ExpansionDraft.CouncilTravel)
+            if (view?.Decision?.Kind != DecisionKind.Action || view.DecisionOwner != view.You || draft == null)
                 return null;
-            var option = DraftOptions.For(view, draft);
+            var option = Marked(draft) ? MarkedOption(view)
+                : draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilTravel ? DraftOptions.For(view, draft) : null;
             return option?.Enabled == true && option.Travel.Count > 0 ? option : null;
         }
+
+        // UI-388: the marked token (a Chieftain may also enter with it) lights its Nazgûl; choosing one starts its travel.
+        private static bool Marked(TurnDraft draft) => ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilTravel);
+
+        private static ActionOption MarkedOption(PlayerView view) => view.Options
+            .Where(o => o.Enabled && o.Kind == CommandKind.UseCouncilToken && o.EligibleIds.Contains(ExpansionDraft.CouncilTravel))
+            .Select(DraftOptions.Council).FirstOrDefault();
 
         public static bool Active(PlayerView view, TurnDraft draft) => Option(view, draft) != null;
 
@@ -56,6 +63,11 @@ namespace Wotr.Client
                 return false;
             draft.Gesture(() =>
             {
+                if (Marked(draft))
+                {
+                    draft.Choose(CommandKind.UseCouncilToken);
+                    ExpansionDraft.CouncilToken(draft, ExpansionDraft.CouncilTravel);
+                }
                 var chosen = Chosen(draft).ToList();
                 if (Planned(draft, id))
                 {
@@ -112,7 +124,8 @@ namespace Wotr.Client
         // The console's hint while the token's travel is planned; empty for any other step.
         public static string Hint(PlayerView view, TurnDraft draft)
         {
-            if (Option(view, draft) == null)
+            // UI-388: a marked token's hint names both its uses (ResourcePresentation.CouncilHint).
+            if (Option(view, draft) == null || Marked(draft))
                 return "";
             var chosen = Chosen(draft);
             if (chosen.Count > 0)
