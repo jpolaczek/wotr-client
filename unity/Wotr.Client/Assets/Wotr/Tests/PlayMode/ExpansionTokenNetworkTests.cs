@@ -160,17 +160,26 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
                 Assert.AreEqual(initialRevision, room.Sh.Board.View.Revision, "Its use still waits for its nation or figures.");
                 string figure = "";
+                string partner = "";
                 var politics = room.Sh.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar;
                 // UI-376/UI-377 (owner): the token's use opens no decision window.
                 Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen, "The Council token's use stands on its objects.");
                 if (travel)
                 {
-                    figure = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.First().Id;
+                    var movable = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.Select(t => t.Id).ToList();
+                    figure = movable[0];
+                    partner = movable[1];
                     var picker = await CouncilPicker(room);
                     Assert.IsFalse(room.Sh.Board.Nations.IsOpen);
-                    PointerGestureEvents.ClickAt(picker.Root.Q<Button>("council-travel-" + figure));
-                    await room.Settle();
+                    // UI-379: a group of several Nazgûl is chosen, and a second click releases one of them.
+                    foreach (var id in new[] { figure, partner, movable[2], movable[2] })
+                    {
+                        PointerGestureEvents.ClickAt(picker.Root.Q<Button>("council-travel-" + id));
+                        await room.Settle();
+                    }
                     Assert.IsTrue(picker.Root.Q<Button>("council-travel-" + figure).ClassListContains("selected"));
+                    Assert.IsTrue(picker.Root.Q<Button>("council-travel-" + partner).ClassListContains("selected"));
+                    Assert.IsFalse(picker.Root.Q<Button>("council-travel-" + movable[2]).ClassListContains("selected"));
                     Assert.IsTrue(room.Sh.Board.Map.DraftOverlay.Targets.Contains("hollin"));
                     StringAssert.Contains("Click a highlighted region to move there", room.Sh.Board.Console.Status.Hint.text);
                 }
@@ -180,9 +189,17 @@ namespace Wotr.PlayTests
                 await Reconnect(room, room.Sh);
                 if (travel)
                 {
-                    // UI-105: the destination click flies the Nazgûl at once.
+                    // UI-379: the destination click plans the group there, faintly with its count; Finish sends it.
                     var revision = room.Sh.Board.View.Revision;
                     FellowshipGestures.FinishRoute(room.Sh, "hollin");
+                    await room.Settle();
+                    Assert.AreEqual(revision, room.Sh.Board.View.Revision, "Planning a group does not end the action.");
+                    Assert.IsTrue(room.Sh.Board.Map.PlannedFlights.Regions.Contains("hollin"));
+                    StringAssert.Contains("Finish above the token", room.Sh.Board.Console.Status.Hint.text);
+                    await Layout(room, room.Sh, "council-travel-planned", "ui379");
+                    var finish = room.Sh.Board.CouncilPicker.Confirm;
+                    await room.Until(() => finish.enabledInHierarchy);
+                    PointerGestureEvents.ClickAt(finish);
                     await room.At(revision + 1);
                 }
                 else
@@ -201,7 +218,10 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(room.Fp.Board.View.CouncilTokens.Single(t => t.Id == token).Spent);
                 Assert.AreEqual(dice, room.Fp.Board.View.Dice.Count(d => d.Location == DieLocation.Available));
                 if (travel)
+                {
                     Assert.AreEqual("hollin", room.Fp.Board.View.Units.Single(u => u.Id == figure).Location);
+                    Assert.AreEqual("hollin", room.Fp.Board.View.Units.Single(u => u.Id == partner).Location);
+                }
                 else
                     Assert.AreEqual(politics - 1, room.Fp.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar);
             }

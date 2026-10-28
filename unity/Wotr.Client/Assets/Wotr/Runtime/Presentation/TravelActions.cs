@@ -9,14 +9,9 @@ namespace Wotr.Client
         public static bool IsStep(TurnDraft draft) => draft.Payload.Stepwise &&
             draft.Kind is CommandKind.MoveCompanions or CommandKind.MoveShadowCharacters;
 
+        // UI-379: a Council token's travel has its own groups and destinations (CouncilTravel), not this path.
         public static ActionOption Option(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
-            if (view?.Decision?.Kind == DecisionKind.Action && view.DecisionOwner == view.You &&
-                draft.Kind == CommandKind.UseCouncilToken && draft.Payload.AbilityId == ExpansionDraft.CouncilTravel)
-            {
-                var council = DraftOptions.For(view, draft);
-                return council?.Enabled == true && council.Travel.Count > 0 ? council : null;
-            }
             if (view?.Decision?.Kind == DecisionKind.CompanionSeparation && view.DecisionOwner == view.You)
                 return view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.MoveCompanions);
             if (view?.Decision == null || view.DecisionOwner != view.You ||
@@ -47,7 +42,7 @@ namespace Wotr.Client
             var option = Option(view, draft, context);
             if (option?.EligibleIds.Contains(id) != true)
                 return false;
-            if (view.Decision.Kind != DecisionKind.CompanionSeparation && draft.Kind != CommandKind.UseCouncilToken || draft.Kind != option.Kind)
+            if (view.Decision.Kind != DecisionKind.CompanionSeparation || draft.Kind != option.Kind)
                 return true;
             return !draft.Payload.CompanionMoves.Where((_, index) => index != draft.CompanionFocus).Any(g => g.Ids.Contains(id)) &&
                 (TravelDraft.Group(draft) != null || option.MaximumGroups == 0 || draft.Payload.CompanionMoves.Count < option.MaximumGroups);
@@ -59,27 +54,25 @@ namespace Wotr.Client
                 return false;
             var option = Option(view, draft, context);
             var journey = view.Decision.Kind == DecisionKind.CompanionSeparation;
-            var council = draft.Kind == CommandKind.UseCouncilToken;
             // UI-250: in a journey a figure that cannot join the current group starts the next one (TravelDraft); an
             // ordinary move picked on the map starts over from the new source.
             var joins = journey ? TravelDraft.Selectable(draft, view, option, id) : TravelDraft.CanToggle(draft, view, option, id);
             if (draft.Kind != option.Kind || !joins)
             {
                 var token = draft.Payload.RulerTokenId;
-                if ((journey || council) && draft.Kind == option.Kind)
+                if (journey && draft.Kind == option.Kind)
                 {
                     TravelDraft.RemoveGroup(draft);
                     TravelDraft.NewGroup(draft);
                 }
                 else
                     draft.Choose(option.Kind, journey ? "" : context.DieId);
-                if (!council)
-                    draft.Change(p =>
-                    {
-                        p.Stepwise = !journey;
-                        p.AbilityId = journey ? "" : context.AbilityId;
-                        p.RulerTokenId = journey ? "" : token;
-                    });
+                draft.Change(p =>
+                {
+                    p.Stepwise = !journey;
+                    p.AbilityId = journey ? "" : context.AbilityId;
+                    p.RulerTokenId = journey ? "" : token;
+                });
             }
             TravelDraft.ToggleCompanion(draft, view, option, id);
             return true;

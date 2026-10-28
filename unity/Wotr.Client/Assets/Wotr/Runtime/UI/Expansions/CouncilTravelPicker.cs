@@ -7,8 +7,9 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-377 (owner's request): the Council token's travel in a small popover just above the token pool, pointing at the
-    // token, as the Ring's faces are (RingFacePicker): only the icons of the Nazgûl it may move and the ✓ that ends the
-    // choice. A lit icon adds its Nazgûl to the group being planned; a chosen one shows its selection, a planned one dims.
+    // token, as the Ring's faces are (RingFacePicker): only the icons of the Nazgûl it may move and Finish, which ends the
+    // choice (UI-379). A lit icon adds its Nazgûl to the group being chosen; a chosen one shows its selection, a planned
+    // one dims and its click chooses it again.
     public sealed class CouncilTravelPicker
     {
         private const float Gap = 10f;
@@ -34,7 +35,7 @@ namespace Wotr.Client
             Root.AddToClassList("council-travel-picker");
             row.AddToClassList("council-travel-figures");
             tail.AddToClassList("ring-face-tail");
-            Confirm = IconButton.Create("confirm", "Use the Council token", () => Confirmed?.Invoke());
+            Confirm = BoardScreen.Button("Finish", () => Confirmed?.Invoke());
             Confirm.name = "council-travel-confirm";
             Confirm.AddToClassList("council-travel-confirm");
             Root.Add(row);
@@ -86,12 +87,13 @@ namespace Wotr.Client
                 var id = pair.Key;
                 var button = pair.Value;
                 var isChosen = chosen(id);
+                var isPlanned = planned(id);
                 var canChoose = enabled && selectable(id);
                 button.EnableInClassList("selected", isChosen);
-                button.EnableInClassList("planned-group", planned(id));
+                button.EnableInClassList("planned-group", isPlanned);
                 button.SetEnabled(canChoose || isChosen);
-                ChoiceGlow.Apply(button, canChoose && !isChosen);
-                lit |= canChoose && !isChosen;
+                ChoiceGlow.Apply(button, canChoose && !isChosen && !isPlanned);
+                lit |= canChoose && !isChosen && !isPlanned;
             }
             pulse.Run(lit);
         }

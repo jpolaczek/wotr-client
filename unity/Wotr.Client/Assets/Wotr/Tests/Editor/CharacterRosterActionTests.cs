@@ -77,7 +77,7 @@ namespace Wotr.EditorTests
             view.Options.Clear();
             view.Options.Add(new ActionOption
             {
-                Kind = CommandKind.UseCouncilToken, EligibleIds = { ExpansionDraft.CouncilTravel },
+                Kind = CommandKind.UseCouncilToken, Enabled = true, EligibleIds = { ExpansionDraft.CouncilTravel },
                 Travel =
                 {
                     new TravelOption { Id = "first", Origin = "moria", Range = 2, Targets = { "moria", "hollin" } },
@@ -87,12 +87,13 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             draft.Choose(CommandKind.UseCouncilToken);
             draft.Change(p => p.AbilityId = ExpansionDraft.CouncilTravel);
-            var context = new ActionDieContext();
-            Assert.IsTrue(TravelActions.Select(view, draft, context, "first"));
-            Assert.IsTrue(TravelDraft.Step(draft, view, BoardPresentation.Load(), "hollin"));
-            Assert.IsTrue(TravelActions.Select(view, draft, context, "second"));
-            CollectionAssert.AreEqual(new[] { "second" }, TravelActions.Selected(draft));
-            Assert.IsEmpty(TravelDraft.Route(draft));
+            // UI-379: the token's travel plans its groups through CouncilTravel; the general travel path stays out of it.
+            Assert.IsNull(TravelActions.Option(view, draft, new ActionDieContext()));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, "first"));
+            Assert.IsTrue(CouncilTravel.Move(view, draft, "hollin", BoardPresentation.Load()));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, "second"));
+            CollectionAssert.AreEqual(new[] { "second" }, CouncilTravel.Chosen(draft));
+            Assert.AreEqual("hollin", draft.Payload.CompanionMoves.Single().Route.Last());
             Assert.IsEmpty(draft.Payload.DieId);
             Assert.AreEqual(ExpansionDraft.CouncilTravel, draft.Payload.AbilityId);
             Assert.IsFalse(draft.Payload.Stepwise);

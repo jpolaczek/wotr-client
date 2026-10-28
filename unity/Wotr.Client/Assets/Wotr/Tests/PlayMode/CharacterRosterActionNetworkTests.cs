@@ -190,6 +190,13 @@ namespace Wotr.PlayTests
             await Pick(room, room.Sh, "base.character.witch-king");
             var revision = board.View.Revision;
             FellowshipGestures.FinishRoute(room.Sh, "hollin");
+            await room.Settle();
+            // UI-379: the planned move waits for Finish unless it was the token's last movable figure.
+            if (board.View.Revision == revision)
+            {
+                await room.Until(() => board.CouncilPicker.Confirm.enabledInHierarchy);
+                PointerGestureEvents.ClickAt(board.CouncilPicker.Confirm);
+            }
             await room.At(revision + 1);
             Assert.IsTrue(room.Fp.Board.View.CouncilTokens.Single(t => t.Id == token).Spent);
             Assert.AreEqual(dice, board.View.Dice.Count(d => d.Location == DieLocation.Available));

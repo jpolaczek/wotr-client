@@ -139,7 +139,7 @@ namespace Wotr.Client
             .ToList();
 
         // One group per origin, garrison and destination, as the server groups a flight; a walker moves alone.
-        private static void Add(CommandPayload payload, PlayerView view, TravelOption travel, List<string> route, ISet<string> flying)
+        internal static void Add(CommandPayload payload, PlayerView view, TravelOption travel, List<string> route, ISet<string> flying)
         {
             var garrison = Garrison(view, travel.Id);
             var group = travel.Flight ? payload.CompanionMoves.FirstOrDefault(g => g.Route.SequenceEqual(route) &&

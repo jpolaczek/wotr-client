@@ -54,6 +54,8 @@ namespace Wotr.Client
                         ? o.EffectChoices.Select(c => view.Decision.Presentation == "Region" ? c.TargetId : EffectChoiceDraft.FigureRegion(c)) : Enumerable.Empty<string>())).Where(map.Data.Regions.ContainsKey));
             if (NazgulFlightDraft.Active(view, draft))
                 Targets.UnionWith(NazgulFlightDraft.Targets(view, draft));
+            else if (CouncilTravel.Active(view, draft))
+                Targets.UnionWith(CouncilTravel.Targets(view, draft));
             else if (TravelDraft.TargetRoute(draft.Kind))
                 Targets.UnionWith(TravelDraft.Reachable(draft, view, map.Data));
             else if (FellowshipDraft.UsesRoute(draft.Kind))

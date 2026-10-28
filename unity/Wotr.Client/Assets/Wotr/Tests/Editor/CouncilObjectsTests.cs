@@ -128,10 +128,10 @@ namespace Wotr.EditorTests
             view.Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action };
             var option = new ActionOption { Kind = CommandKind.UseCouncilToken, Enabled = true,
                 EligibleIds = { ExpansionDraft.CouncilPolitics, ExpansionDraft.CouncilTravel }, Targets = { "sauron" } };
-            foreach (var id in new[] { first, second })
+            foreach (var (id, origin) in new[] { (first, "dol-guldur"), (second, "minas-morgul") })
             {
-                option.Travel.Add(new TravelOption { Id = id, Origin = "dol-guldur", Range = 99, Flight = true, Targets = { "hollin" } });
-                view.Units.Add(new UnitView { Id = id, Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "dol-guldur" });
+                option.Travel.Add(new TravelOption { Id = id, Origin = origin, Range = 99, Flight = true, Targets = { "hollin", "moria" } });
+                view.Units.Add(new UnitView { Id = id, Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = origin });
             }
             view.Options.Add(option);
             var draft = new TurnDraft();
@@ -144,12 +144,56 @@ namespace Wotr.EditorTests
             ExpansionDraft.CouncilToken(draft, ExpansionDraft.CouncilTravel);
             Assert.IsTrue(CouncilTravel.Active(view, draft));
             CollectionAssert.AreEqual(new[] { first, second }, CouncilTravel.Figures(view, draft));
-            Assert.AreEqual("Council token · Click the Nazgûl above the token, then their destination on the map.",
-                CouncilTravel.Hint(view, draft));
-            TravelDraft.ToggleCompanion(draft, view, DraftOptions.For(view, draft), first);
-            Assert.IsTrue(CouncilTravel.Chosen(draft, first));
-            Assert.IsFalse(CouncilTravel.Planned(draft, first), "The chosen group is not another planned one.");
-            StringAssert.EndsWith(" · Click a highlighted region to move there.", CouncilTravel.Hint(view, draft));
+            StringAssert.StartsWith("Council token · Click the Nazgûl to move", CouncilTravel.Hint(view, draft));
+        }
+
+        // UI-379 (owner; T26: any or all Nazgûl, each to its own destination, in one action): a group of Nazgûl from two
+        // regions is chosen and released by clicks, planned to one destination as one group per origin, nothing is sent
+        // until the last figure is planned, and a planned Nazgûl clicked again is chosen again.
+        [Test]
+        public void TheCouncilTokensTravelPlansGroupsUntilFinish()
+        {
+            const string first = "base.sauron.nazgul.01";
+            const string second = "base.sauron.nazgul.02";
+            const string third = "base.sauron.nazgul.03";
+            var view = Shadow();
+            view.Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action };
+            var option = new ActionOption { Kind = CommandKind.UseCouncilToken, Enabled = true, EligibleIds = { ExpansionDraft.CouncilTravel } };
+            foreach (var (id, origin) in new[] { (first, "dol-guldur"), (second, "minas-morgul"), (third, "dol-guldur") })
+            {
+                option.Travel.Add(new TravelOption { Id = id, Origin = origin, Range = 99, Flight = true, Targets = { "hollin", "moria", "dol-guldur" } });
+                view.Units.Add(new UnitView { Id = id, Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = origin, Nation = "sauron" });
+            }
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.UseCouncilToken);
+            ExpansionDraft.CouncilToken(draft, ExpansionDraft.CouncilTravel);
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, first));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, second));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, third));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, third), "A second click releases a chosen Nazgûl.");
+            CollectionAssert.AreEqual(new[] { first, second }, CouncilTravel.Chosen(draft));
+            Assert.IsEmpty(draft.Payload.CompanionMoves, "A chosen group is local, never part of the command.");
+            StringAssert.StartsWith("Nazgûl ×2 · Click a highlighted region to move there", CouncilTravel.Hint(view, draft));
+            CollectionAssert.AreEquivalent(new[] { "hollin", "moria" }, CouncilTravel.Targets(view, draft),
+                "Neither Nazgûl's own region is a destination of the group.");
+            Assert.IsTrue(CouncilTravel.Move(view, draft, "hollin", BoardPresentation.Load()));
+            Assert.IsEmpty(CouncilTravel.Chosen(draft));
+            Assert.AreEqual(2, draft.Payload.CompanionMoves.Count, "One planned group per origin.");
+            CollectionAssert.AreEquivalent(new[] { "dol-guldur", "minas-morgul" }, draft.Payload.CompanionMoves.Select(m => m.Route[0]));
+            Assert.IsTrue(draft.Payload.CompanionMoves.All(m => m.Route.Count == 2 && m.Route[1] == "hollin"));
+            Assert.AreEqual(2, NazgulFlightDraft.Planned(view, draft).Count(p => p.RegionId == "hollin"), "Their ghost stands there with its count.");
+            Assert.IsFalse(CouncilTravel.Complete(view, draft), "A third Nazgûl may still move.");
+            Assert.IsTrue(draft.Ready(DraftOptions.For(view, draft)), "Finish may send the planned moves.");
+            StringAssert.Contains("Finish above the token", CouncilTravel.Hint(view, draft));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, second));
+            Assert.IsFalse(CouncilTravel.Planned(draft, second), "A planned Nazgûl clicked again gives up its destination.");
+            CollectionAssert.AreEqual(new[] { second }, CouncilTravel.Chosen(draft));
+            Assert.IsTrue(CouncilTravel.Choose(view, draft, third));
+            Assert.IsFalse(CouncilTravel.Move(view, draft, "minas-morgul", BoardPresentation.Load()), "Not a lit destination.");
+            Assert.IsTrue(CouncilTravel.Move(view, draft, "moria", BoardPresentation.Load()));
+            Assert.IsTrue(CouncilTravel.Complete(view, draft), "Every Nazgûl planned: the move goes at once.");
+            StringAssert.Contains("Nazgûl ×3", CouncilTravel.ConfirmTooltip(view, draft));
             view.DecisionOwner = Side.FreePeoples;
             Assert.IsFalse(CouncilTravel.Active(view, draft), "Only the player's own action.");
             Assert.AreEqual("", CouncilTravel.Hint(view, draft));

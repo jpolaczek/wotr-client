@@ -116,8 +116,9 @@ namespace Wotr.Client
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
             figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry);
             councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy, Confirm, () => tray.Legal);
-            context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id) ||
-                figureAbilities.Figure(id);
+            tray.LegalChanged += _ => councilTravel.RefreshFinish();
+            context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
+                cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
             input = new DraftInput(board.Root, Confirm, Back, Drop,
                 () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch);
@@ -192,6 +193,9 @@ namespace Wotr.Client
                 return;
             // UI-374: so does A Balrog is Come!'s region, whose figures order him.
             if (figureAbilities.Region(region))
+                return;
+            // UI-379: a Council token's travel chooses its figures and plans their destinations on the map.
+            if (councilTravel.Region(region))
                 return;
             // UI-216: a lit army of a card's army event starts its move and opens its panel.
             if (cardArmies.Region(region))

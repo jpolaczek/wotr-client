@@ -1675,12 +1675,22 @@ neither use opens the decision window any longer (`ExpansionChoices` lists nothi
   step's own presentation keeps the panel (`PoliticalContextInteraction.FollowCouncil`).
 - UI-377 — the token that moves Nazgûl shows a small popover just above the token pool, pointing at the token on the
   Ring picker's frame (`CouncilTravelPicker`): only the icons of the Nazgûl it may move and the ✓ that ends the
-  choice. A lit icon (ChoiceGlow) adds its Nazgûl to the group being planned, as its figure on the map does; the
-  destination's click on the map moves the chosen Nazgûl at once (UI-105), and the ✓ (like the console's) sends a
-  plan that is ready but not yet sent, such as one restored after a reconnect; a planned icon dims. The console says
-  "Council token · Click the Nazgûl above the token, then their destination on the map." and, once chosen,
-  "<Nazgûl> · Click a highlighted region to move there." (`CouncilTravel.Hint`).
+  choice (Finish since UI-379). Its planning is UI-379's, below.
+- UI-379 (owner, 2026-10-28) — the token's Nazgûl move group by group. Rules: the token is the Character die's Move
+  Nazgûl and Minions (T26, LORDS p. 30–31): any or all of them, each to its own destination, in one action; the
+  server's `ShadowTravel.Plan` accepts any subset, grouped by origin. A click on a lit icon, on the figure in its
+  region's panel, or on a region holding only that figure chooses it for the group, and a second click releases it;
+  the group is local and never sent. A click on a lit destination (a region every chosen figure reaches, not one's own)
+  plans the group there: one planned group per origin, garrison and destination, drawn faintly with its count at the
+  destination (`PlannedFlights`), and the next group can be chosen; a planned icon dims, and its click gives up its
+  destination and chooses it again. Finish above the token (or the console's ✓) sends every planned move as one
+  command; planning every figure the token may move sends them at once. The console says "Council token · Click the
+  Nazgûl to move (above the token or on the map), then their destination.", "<Nazgûl ×2> · Click a highlighted region
+  to move there; click a chosen one to release it." and "… planned · Choose more and their destination, or Finish
+  above the token." (`CouncilTravel`, `CouncilTravelInteraction`; the general travel path, `TravelActions`, no longer
+  handles the token).
 - Tests: `ExpansionTokenNetworkTests.CouncilPoliticsSpendsTheTokenWithoutADie` (opening, closing on a die's click,
   staying closed with a glowing tab, the step), `ExpansionTokenNetworkTests.CouncilTravelMovesTheChosenNazgulWithoutADie`
-  (no decision window, the popover above the pool with only the Nazgûl and ✓, the icon's selection, the move).
+  (no decision window, the popover above the pool with only the Nazgûl and Finish, a group of two chosen and a third
+  released, the planned ghost without a command, Finish's move of both), `CouncilObjectsTests.TheCouncilTokensTravelPlansGroupsUntilFinish`.
 
