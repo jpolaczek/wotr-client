@@ -91,6 +91,12 @@ namespace Wotr.PlayTests
                 Assert.That(Vector4.Distance(tab.resolvedStyle.borderTopColor, tabs[0].resolvedStyle.borderTopColor), Is.LessThan(0.08f),
                     tab.name + " shares the lit tabs' rim.");
             }
+            // UI-386 (owner): a second click on the chosen die releases it, and the tabs it lit go dark.
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("kings.die.fp.ruler"));
+            await Task.Delay(600, token);
+            Assert.AreEqual("", board.ActionDie.DieId, "The second click releases the die.");
+            foreach (var tab in tabs)
+                Assert.IsFalse(tab.ClassListContains("legal-target"), tab.name + " no longer glows.");
         }
 
         private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex &&

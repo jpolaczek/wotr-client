@@ -94,7 +94,9 @@ namespace Wotr.PlayTests
                 var cards = room.Fp.Board.View.Hand.Count;
                 Token(room.Fp, "denethor");
                 var ruler = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
-                CardNetworkTests.Click(room.Fp.Board.OwnDice.Q<Button>(ruler.Id));
+                // UI-380: the token's click takes the Ruler die; UI-386: a click on the chosen die would release it.
+                if (room.Fp.Board.ActionDie.DieId != ruler.Id)
+                    CardNetworkTests.Click(room.Fp.Board.OwnDice.Q<Button>(ruler.Id));
                 await Layout(room, room.Fp, play ? "ruler-event" : "ruler-draw", "ui09");
                 await Reconnect(room, room.Fp);
                 if (play)

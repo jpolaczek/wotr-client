@@ -1725,4 +1725,12 @@ Owner reports from the Kings test scenarios (Brand's Call to Arms, Dáin's Iron 
 - UI-385 — a king's ability names him and the printed ability: its owner is his name from his title ("Dáin"), never
   his id ("kings.sovereign.dain"), and an ability's picture reads "Dáin · Dwarvenking · Upgrade a Regular · …"
   (`ComponentActions.AbilityTitle`). Test: `ComponentActionTests.AKingsAbilityNamesTheKingAndThePrintedAbility`.
+- UI-386 (owner) — a second click on the chosen action die releases it, and with it the unsent step it began (the
+  draft clears, as Back to the start); before, it chose the same die again. The Hunt's allocation, a reroll and the
+  special dice's choices keep their own die clicks. Test: `RulerTokenMenuTests.EveryLitTabGlowsAlike` (the tabs the
+  die lit go dark).
+- UI-387 (owner) — a character's versions are tabs right under the window's title, not large framed buttons below its
+  abilities: a low strip on a thin gilt line, the shown version with a gold underline and gold text, the others muted
+  until hovered; each tab reads the version's name ("Strider", "Aragorn"), with its edition only where two names are
+  alike ("Base · Boromir", "Lords · Boromir"); the tooltip names the card and its edition.
 

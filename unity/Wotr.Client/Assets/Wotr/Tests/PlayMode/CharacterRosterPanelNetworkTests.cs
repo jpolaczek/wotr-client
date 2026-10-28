@@ -40,7 +40,15 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.IsTrue(board.Characters.InspectorPinned);
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Button>("locate-character").resolvedStyle.display);
-            board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white").Focus();
+            // UI-387 (owner): the versions are tabs right under the title, low and named by the version.
+            var white = board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white");
+            var tabs = white.parent;
+            Assert.IsTrue(tabs.ClassListContains("character-version-tabs"));
+            Assert.AreEqual(1, board.Characters.Inspector.Root.IndexOf(tabs), "The tabs follow the title.");
+            Assert.LessOrEqual(white.resolvedStyle.height, 30.5f, "A tab, not a large button.");
+            Assert.AreEqual("White", white.text);
+            LayoutTests.Save(room.Fp.Viewport, "ui387-version-tabs.png");
+            white.Focus();
             var choice = before.Options.Single(o => o.Kind == CommandKind.EnterCharacter).CharacterActions
                 .Single(c => c.CharacterId == "base.character.gandalf-white");
             var command = T22NetworkActions.Command(before, CommandKind.EnterCharacter,
