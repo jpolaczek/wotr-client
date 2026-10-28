@@ -91,9 +91,11 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.resolvedStyle.display, "The entering row opens no window.");
         }
 
+        // The die becomes the cost: a click chooses it unless it is chosen already (UI-386: a second click releases it).
         public static async Task Cost(MatchTestRoom room, MountedMatchClient client, string id)
         {
-            T22NetworkActions.Die(client, id);
+            if (client.Board.ActionDie.DieId != id)
+                T22NetworkActions.Die(client, id);
             await room.Settle();
         }
     }

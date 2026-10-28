@@ -1412,3 +1412,18 @@ Owner requests of 2026-10-27:
   reads it) and Click to use read "Use your Muster die: <the server preview's summary>" (`DieUse`); before the
   preview the action's name stands for the effect, and without a die the effect stands alone.
 
+<a id="tabs-dice-and-portraits--ui-382-ui-384-ui-386-ui-387-2026-10-28"></a>
+## Tabs, dice and portraits — UI-382, UI-384, UI-386, UI-387 (2026-10-28)
+
+Owner requests of 2026-10-28, first made on the expansions' build:
+
+- UI-382 — a separation's (or journey's) portraits in the Fellowship panel take the size of its companion icons
+  (54 × 44, 46 × 34 compact) instead of the tray's 66 × 48.
+- UI-384 — every rail tab glows alike: Politics and Reserve are framed buttons (`.action`), whose UI-372 choice plate
+  repainted them lighter than the Characters tab; every tab keeps the tabs' warm plate and gold rim (UI-223).
+- UI-386 — a second click on the chosen action die releases it, and with it the unsent step it began (the draft
+  clears); the Hunt's allocation, a reroll and the special dice's choices keep their own die clicks.
+- UI-387 — a character's versions are tabs right under the window's title: a low strip on a thin gilt line, the shown
+  version with a gold underline and gold text; each tab reads the version's name ("Grey", "White"), with its edition
+  only where two names are alike. Test: `CharacterRosterPanelNetworkTests`.
+

@@ -622,6 +622,12 @@ namespace Wotr.Client
                 return;
             if (view.Decision.Kind == DecisionKind.ActionSequence)
                 return;
+            // UI-386 (owner): a second click on the chosen action die releases it, and with it the unsent step it began.
+            if (view.Decision.Kind == DecisionKind.Action && id.Length > 0 && draft.Payload.DieId == id)
+            {
+                Edit(() => draft.Clear());
+                return;
+            }
             if (huntContext.Die(id))
                 return;
             if (resources.Die(id))
