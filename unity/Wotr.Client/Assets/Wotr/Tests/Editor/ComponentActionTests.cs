@@ -8,6 +8,31 @@ namespace Wotr.EditorTests
 {
     public sealed class ComponentActionTests
     {
+        // UI-385 (owner): a king's ability names him and the printed ability it uses, never his id.
+        [Test]
+        public void AKingsAbilityNamesTheKingAndThePrintedAbility()
+        {
+            var view = new PlayerView
+            {
+                MatchId = "m", You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action }
+            };
+            view.Sovereigns.Add(new SovereignView { Id = "kings.sovereign.dain", Title = "Dáin II Ironfoot", Status = SovereignStatus.Awakened });
+            view.Dice.Add(new DieView { Id = "muster", Owner = Side.FreePeoples, Face = DieFace.Muster, Location = DieLocation.Available });
+            var option = new ActionOption { Kind = CommandKind.UseCharacterAbility, Enabled = true, EligibleDice = { "muster" } };
+            option.CharacterActions.Add(new CharacterActionOption
+            {
+                CharacterId = "kings.sovereign.dain", AbilityId = "kings.dwarvenking", Title = "Upgrade a Regular",
+                Detail = "Return one Regular from this army to the reserves and recruit an Elite.", Dice = { "muster" }
+            });
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var action = ComponentActions.For(view, draft).Single(a => a.OwnerId == "kings.sovereign.dain");
+            Assert.AreEqual("Dáin", action.Owner);
+            Assert.AreEqual("Dwarvenking", ComponentActions.AbilityTitle(action.Character));
+        }
+
         [Test]
         public void AbilityIsAnchoredAtItsOwnerAndCannotSubstituteAnUnselectedCost()
         {

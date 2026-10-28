@@ -72,6 +72,12 @@ namespace Wotr.Client
         // UI-276 (D20): a Dismay token is picked by the Ruler die's click, so only the Free Peoples' Ruler tokens select.
         public static bool CanSelectToken(PlayerView view, string id) => view.RulerTokenActions.Any(o => o.TokenId == id);
 
+        // The own dice a Ruler token's actions can be paid with (its Ruler die).
+        public static IReadOnlyList<string> TokenDice(PlayerView view, string id) => id.Length == 0 ? new List<string>()
+            : view.RulerTokenActions.Where(o => o.TokenId == id && o.Action.Enabled).SelectMany(o => o.Action.EligibleDice)
+                .Where(die => view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available))
+                .Distinct().ToList();
+
         public static void SelectToken(TurnDraft draft, PlayerView view, string id)
         {
             if (id.Length > 0 && !CanSelectToken(view, id))

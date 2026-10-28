@@ -70,7 +70,9 @@ namespace Wotr.Client
             location.SetEnabled(definition != null);
             Set(state, SovereignPresentation.Corruption(sovereign) + (sovereign.Garrison ? " · Garrison" : "") +
                 (sovereign.AttemptedThisTurn ? " · Attempt used" : ""), same);
-            state.tooltip = "Resistance " + sovereign.Resistance + (sovereign.Corruption.HasValue ? "" : " · Attached tile values are not public.");
+            // UI-383: a corrupted or removed king has no resistance left to show.
+            state.tooltip = sovereign.Status is SovereignStatus.Corrupted or SovereignStatus.Removed ? "" :
+                "Resistance " + sovereign.Resistance + (sovereign.Corruption.HasValue ? "" : " · Attached tile values are not public.");
             Tiles(sovereign, same);
             var abilityTitle = sovereign.Status == SovereignStatus.Initial ? "After awakening · Abilities" :
                 sovereign.Status == SovereignStatus.Corrupted ? "Weaknesses · Hover" : "Abilities · Hover";

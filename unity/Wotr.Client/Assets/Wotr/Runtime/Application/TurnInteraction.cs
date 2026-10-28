@@ -101,7 +101,7 @@ namespace Wotr.Client
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
             reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.BacksReserve,
-                id => muster.RecruitAtOnly(id), Confirm, FinishSequence, ChooseComponent, CompleteChoice, branchCarry);
+                id => muster.RecruitAtOnly(id), ChooseComponent, CompleteChoice, branchCarry);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);
@@ -115,8 +115,7 @@ namespace Wotr.Client
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
             figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry);
-            councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy, Confirm, () => tray.Legal);
-            tray.LegalChanged += _ => councilTravel.RefreshFinish();
+            councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy);
             context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
                 cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
@@ -457,8 +456,15 @@ namespace Wotr.Client
             var die = draft.Payload.DieId;
             var token = draft.Payload.RulerTokenId == id ? "" : id;
             DraftOptions.SelectToken(draft, view, token);
-            if (view.You == Side.FreePeoples && view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available))
+            // UI-380 (owner): the token's actions pay with the Ruler die; when it is their only die, the click takes it,
+            // so the king's ability lights at once.
+            var dice = DraftOptions.TokenDice(view, token);
+            var kept = view.You == Side.FreePeoples && view.Dice.Any(d => d.Id == die && d.Owner == view.You && d.Location == DieLocation.Available) &&
+                (dice.Count == 0 || dice.Contains(die));
+            if (kept)
                 draft.Change(p => p.DieId = die);
+            else if (dice.Count == 1)
+                draft.Change(p => p.DieId = dice[0]);
         });
 
         public void Update(PlayerView latest)
@@ -892,6 +898,8 @@ namespace Wotr.Client
             tray.ContextualFellowship = FellowshipActions.UsesPanel(view, draft) || HuntActions.UsesPanel(view, draft);
             tray.ContextualHunt = HuntActions.UsesPanel(view, draft);
             tray.ContextualCharacter = CharacterRosterActions.OwnsDecision(view, draft);
+            // UI-381: a choice planned on the board's objects is confirmed with the console's ✓.
+            tray.ConfirmInConsole = ConsoleConfirm.Owns(view, draft, reinforcements.Planning);
             // UI-370: during the Council's setup the ✓ stands beside Finish phase.
             tray.ConfirmHost = view.DecisionOwner == view.You &&
                 view.Decision?.Kind is DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands ? board.Fellowship.ActionRow : null;

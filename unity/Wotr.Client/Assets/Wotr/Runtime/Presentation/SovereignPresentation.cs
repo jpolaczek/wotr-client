@@ -83,8 +83,14 @@ namespace Wotr.Client
             _ => "× Removed"
         };
 
-        public static string Corruption(SovereignView sovereign) => "Corruption " +
-            (sovereign.Corruption.HasValue ? sovereign.Corruption.Value.ToString() : "?") + " / " + sovereign.Resistance;
+        // UI-383 (owner): a corrupted king's tiles are resolved and a removed one is out of play (T28, KINGS p. 12–13), so
+        // neither shows a Corruption count.
+        public static string Corruption(SovereignView sovereign) => sovereign.Status switch
+        {
+            SovereignStatus.Corrupted => "Corrupted · His tiles are resolved; he now serves the Shadow",
+            SovereignStatus.Removed => "Removed from play",
+            _ => "Corruption " + (sovereign.Corruption.HasValue ? sovereign.Corruption.Value.ToString() : "?") + " / " + sovereign.Resistance
+        };
 
         public static string Consequence(PlayerView view, TurnDraft draft)
         {

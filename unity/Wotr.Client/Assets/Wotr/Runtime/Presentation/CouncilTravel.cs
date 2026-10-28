@@ -8,8 +8,8 @@ namespace Wotr.Client
     // UI-379 (owner, 2026-10-28; T26, LORDS p. 30–31: the token is the Character die's Move Nazgûl and Minions — any or
     // all of them, each to its own destination, in one action): the player chooses a group — one or more lit figures,
     // above the token or on the map, a second click releasing one — then clicks its destination, where the group stands
-    // faintly with its count, and chooses the next group. Finish above the token (or the console's ✓) sends every planned
-    // move; planning every figure the token may move sends them at once. Only planned groups are in the command, one per
+    // faintly with its count, and chooses the next group. The console's ✓ sends every planned move (UI-381); planning every
+    // figure the token may move sends them at once. Only planned groups are in the command, one per
     // origin, garrison and destination as the server groups a flight; the chosen group is kept locally
     // (TurnDraft.ArmedSource, comma-separated figure ids) and never sent.
     public static class CouncilTravel
@@ -120,10 +120,10 @@ namespace Wotr.Client
             if (PlannedCount(draft) == 0)
                 return "Council token · Click the Nazgûl to move (above the token or on the map), then their destination.";
             return "Council token · " + Describe(view, draft.Payload.CompanionMoves.SelectMany(g => g.Ids).ToList()) +
-                " planned · Choose more and their destination, or Finish above the token.";
+                " planned · Choose more and their destination, or click ✓ to finish.";
         }
 
-        // What Finish above the token does.
+        // What the console's ✓ does.
         public static string ConfirmTooltip(PlayerView view, TurnDraft draft)
         {
             var planned = draft.Payload.CompanionMoves.SelectMany(g => g.Ids).ToList();

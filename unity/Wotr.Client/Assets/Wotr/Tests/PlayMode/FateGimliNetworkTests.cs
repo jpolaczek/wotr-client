@@ -64,6 +64,11 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(3, room.Fp.Board.View.Options.Single().Travel.Single().Range);
                 // UI-105: South Dunland lies two regions away; one click on it sends Gimli there.
                 Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.Targets.Contains("south-dunland"));
+                // UI-382 (owner): the separation's portrait in the Fellowship panel is no larger than its companion icons.
+                var portrait = room.Fp.Board.Tray.Q<Button>("companion-" + Figure);
+                Assert.IsNotNull(portrait, "Gimli's portrait stands in the separation");
+                Assert.LessOrEqual(portrait.resolvedStyle.width, 54.5f);
+                Assert.LessOrEqual(portrait.resolvedStyle.height, 44.5f);
                 // UI-375 (owner's report): the console asks for his region, not for highlighted characters.
                 StringAssert.EndsWith("· Click a highlighted region to move there.", room.Fp.Board.Console.Status.Hint.text);
                 StringAssert.StartsWith("Gimli", room.Fp.Board.Console.Status.Hint.text);

@@ -105,10 +105,10 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(placed[first].worldBound.Overlaps(placed[second].worldBound));
             }
             Assert.AreEqual(option.Maximum, panel.Q("reinforcement-budget").Children().Count(slot => slot.ClassListContains("filled")));
-            var confirm = panel.Q<Button>("reinforcements-confirm");
-            Assert.AreEqual(DisplayStyle.Flex, confirm.resolvedStyle.display, "A card plan shows its ✓.");
-            Assert.AreEqual(client.Board.Tray.Q<Button>("confirm-decision")?.enabledSelf ?? false, confirm.enabledSelf,
-                "✓ follows the tray's confirmation, which needs the server's preview.");
+            // UI-381: the console's ✓ confirms the plan; the panel has none of its own.
+            Assert.IsNull(panel.Q<Button>("reinforcements-confirm"), "A card plan is confirmed with the console's ✓.");
+            Assert.AreEqual(client.Board.Tray.Q<Button>("confirm-decision")?.enabledSelf ?? false, client.Board.Console.Actions.Confirm.enabledSelf,
+                "The console's ✓ follows the tray's confirmation, which needs the server's preview.");
         }
     }
 }

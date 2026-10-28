@@ -7,17 +7,15 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-377 (owner's request): the Council token's travel in a small popover just above the token pool, pointing at the
-    // token, as the Ring's faces are (RingFacePicker): only the icons of the Nazgûl it may move and Finish, which ends the
-    // choice (UI-379). A lit icon adds its Nazgûl to the group being chosen; a chosen one shows its selection, a planned
+    // token, as the Ring's faces are (RingFacePicker): only the icons of the Nazgûl it may move; the console's ✓ ends the
+    // choice (UI-381). A lit icon adds its Nazgûl to the group being chosen; a chosen one shows its selection, a planned
     // one dims and its click chooses it again.
     public sealed class CouncilTravelPicker
     {
         private const float Gap = 10f;
         private const float Margin = 4f;
         public VisualElement Root { get; } = new VisualElement { name = "council-travel-picker" };
-        public Button Confirm { get; }
         public event Action<string> FigureChosen;
-        public event Action Confirmed;
         public bool IsOpen => Root.style.display.value == DisplayStyle.Flex;
         // The icons' tooltips name the figure's region.
         public Func<string, string> RegionName { get; set; } = id => id;
@@ -35,11 +33,7 @@ namespace Wotr.Client
             Root.AddToClassList("council-travel-picker");
             row.AddToClassList("council-travel-figures");
             tail.AddToClassList("ring-face-tail");
-            Confirm = BoardScreen.Button("Finish", () => Confirmed?.Invoke());
-            Confirm.name = "council-travel-confirm";
-            Confirm.AddToClassList("council-travel-confirm");
             Root.Add(row);
-            Root.Add(Confirm);
             Root.Add(tail);
             Root.style.display = DisplayStyle.None;
             // Moving the popover at a fractional scale must not start another placement (PopoverPlacement.SizeChanged).
@@ -96,13 +90,6 @@ namespace Wotr.Client
                 lit |= canChoose && !isChosen && !isPlanned;
             }
             pulse.Run(lit);
-        }
-
-        public void SetConfirm(bool enabled, string tooltip)
-        {
-            Confirm.SetEnabled(enabled);
-            Confirm.tooltip = tooltip;
-            ChoiceGlow.Apply(Confirm, enabled);
         }
 
         // Centred on the token above its pool, kept inside the board; the tail points at the token.

@@ -1489,6 +1489,8 @@
 .board-dropdowns .fellowship-track-lane, .board-dropdowns .fellowship-panel .fellowship-track-cell { height: 32px; }
 .board-dropdowns .fellowship-track-marker { height: 21px; }
 .board-dropdowns .fellowship-panel .companion-token { width: 54px; min-width: 44px; margin-right: 3px; }
+/* UI-382 (owner): a separation's or journey's portraits in the Fellowship panel are the Fellowship's icons' size. */
+.board-dropdowns .fellowship-panel .tray .companion-portrait { width: 54px; min-width: 54px; height: 44px; min-height: 44px; }
 .board-dropdowns .fellowship-panel .fellowship-action-hint { font-size: 12px; }
 .edge-cards {
     margin-top: auto; flex-shrink: 0; border-width: 1px;
@@ -1517,6 +1519,7 @@
 .compact-edge-board .board-dropdowns .fellowship-track-marker { height: 18px; }
 .compact-edge-board .board-dropdowns .fellowship-track-tick { height: 12px; font-size: 8px; }
 .compact-edge-board .board-dropdowns .fellowship-panel .companion-token { width: 46px; min-width: 40px; height: 34px; min-height: 34px; margin-right: 1px; }
+.compact-edge-board .board-dropdowns .fellowship-panel .tray .companion-portrait { width: 46px; min-width: 46px; height: 34px; min-height: 34px; }
 .compact-edge-board .board-dropdowns .illustrated-companion #portrait-name { height: 12px; font-size: 9px; }
 .compact-edge-board .board-dropdowns .illustrated-companion > .figure-art-image { bottom: 11px; }
 .compact-edge-board .edge-cards .card-decks { height: 28px; margin-bottom: 2px; }

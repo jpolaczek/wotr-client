@@ -40,6 +40,7 @@ namespace Wotr.Client
         private readonly ChoicePulse pulse;
         private bool rosterOffered;
         private bool sovereignsOffered;
+        private bool rosterAvailable;
         private PlayerView view;
         private VisualElement source;
         private bool visible;
@@ -157,25 +158,34 @@ namespace Wotr.Client
         public void RefreshSelection()
         {
             var offered = false;
+            var available = false;
             foreach (var row in rows)
             {
                 var chosen = row.Key == Actions.EnteringFigure;
                 var entry = Enterable(row.Key) && !chosen;
                 offered |= entry;
+                available |= Actions.Available(row.Key);
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry);
                 row.Value.Choose(chosen);
             }
             rosterOffered = offered;
+            rosterAvailable = available;
             pulse.Run(rosterOffered || sovereignsOffered);
+            RefreshTab();
         }
+
+        // UI-380 (owner): the Characters tab glows while the roster offers something — an entry, an action on a row, a
+        // king's decision — so the way to it is lit before the panel opens.
+        private void RefreshTab() => Tab.EnableInClassList("legal-target", rosterOffered || rosterAvailable || sovereignsOffered);
 
         // UI-345: a lit sovereign's portrait, attempt or tile pulses with the roster, in its one rhythm.
         public void OfferSovereigns(bool any)
         {
             sovereignsOffered = any;
             pulse.Run(rosterOffered || sovereignsOffered);
+            RefreshTab();
         }
 
         public void Attach(VisualElement tray, VisualElement dock) => Actions.Attach(tray, dock);

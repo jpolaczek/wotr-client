@@ -185,7 +185,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(2, NazgulFlightDraft.Planned(view, draft).Count(p => p.RegionId == "hollin"), "Their ghost stands there with its count.");
             Assert.IsFalse(CouncilTravel.Complete(view, draft), "A third Nazgûl may still move.");
             Assert.IsTrue(draft.Ready(DraftOptions.For(view, draft)), "Finish may send the planned moves.");
-            StringAssert.Contains("Finish above the token", CouncilTravel.Hint(view, draft));
+            StringAssert.Contains("click ✓ to finish", CouncilTravel.Hint(view, draft));
             Assert.IsTrue(CouncilTravel.Choose(view, draft, second));
             Assert.IsFalse(CouncilTravel.Planned(draft, second), "A planned Nazgûl clicked again gives up its destination.");
             CollectionAssert.AreEqual(new[] { second }, CouncilTravel.Chosen(draft));

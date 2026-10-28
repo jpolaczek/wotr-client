@@ -195,9 +195,10 @@ namespace Wotr.PlayTests
                     await room.Settle();
                     Assert.AreEqual(revision, room.Sh.Board.View.Revision, "Planning a group does not end the action.");
                     Assert.IsTrue(room.Sh.Board.Map.PlannedFlights.Regions.Contains("hollin"));
-                    StringAssert.Contains("Finish above the token", room.Sh.Board.Console.Status.Hint.text);
+                    StringAssert.Contains("click ✓ to finish", room.Sh.Board.Console.Status.Hint.text);
                     await Layout(room, room.Sh, "council-travel-planned", "ui379");
-                    var finish = room.Sh.Board.CouncilPicker.Confirm;
+                    // UI-381: the console's ✓ finishes; the popover has none of its own.
+                    var finish = room.Sh.Board.Console.Actions.Confirm;
                     await room.Until(() => finish.enabledInHierarchy);
                     PointerGestureEvents.ClickAt(finish);
                     await room.At(revision + 1);
@@ -240,7 +241,7 @@ namespace Wotr.PlayTests
             var figures = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.UseCouncilToken).Travel.Select(t => t.Id).ToList();
             CollectionAssert.AreEquivalent(figures.Select(id => "council-travel-" + id),
                 picker.Root.Query<Button>(className: "council-travel-figure").ToList().Select(b => b.name));
-            Assert.AreEqual(figures.Count + 1, picker.Root.Query<Button>().ToList().Count, "Only the Nazgûl and the ✓.");
+            Assert.AreEqual(figures.Count, picker.Root.Query<Button>().ToList().Count, "Only the Nazgûl (UI-381: the console's ✓ finishes).");
             return picker;
         }
 

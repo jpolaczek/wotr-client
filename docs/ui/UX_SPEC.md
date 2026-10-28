@@ -1675,7 +1675,7 @@ neither use opens the decision window any longer (`ExpansionChoices` lists nothi
   step's own presentation keeps the panel (`PoliticalContextInteraction.FollowCouncil`).
 - UI-377 — the token that moves Nazgûl shows a small popover just above the token pool, pointing at the token on the
   Ring picker's frame (`CouncilTravelPicker`): only the icons of the Nazgûl it may move and the ✓ that ends the
-  choice (Finish since UI-379). Its planning is UI-379's, below.
+  choice (UI-379's Finish; since UI-381 the console's ✓). Its planning is UI-379's, below.
 - UI-379 (owner, 2026-10-28) — the token's Nazgûl move group by group. Rules: the token is the Character die's Move
   Nazgûl and Minions (T26, LORDS p. 30–31): any or all of them, each to its own destination, in one action; the
   server's `ShadowTravel.Plan` accepts any subset, grouped by origin. A click on a lit icon, on the figure in its
@@ -1683,14 +1683,46 @@ neither use opens the decision window any longer (`ExpansionChoices` lists nothi
   the group is local and never sent. A click on a lit destination (a region every chosen figure reaches, not one's own)
   plans the group there: one planned group per origin, garrison and destination, drawn faintly with its count at the
   destination (`PlannedFlights`), and the next group can be chosen; a planned icon dims, and its click gives up its
-  destination and chooses it again. Finish above the token (or the console's ✓) sends every planned move as one
-  command; planning every figure the token may move sends them at once. The console says "Council token · Click the
+  destination and chooses it again. The console's ✓ (UI-381; UI-379's Finish above the token is gone) sends every
+  planned move as one command; planning every figure the token may move sends them at once. The console says "Council token · Click the
   Nazgûl to move (above the token or on the map), then their destination.", "<Nazgûl ×2> · Click a highlighted region
-  to move there; click a chosen one to release it." and "… planned · Choose more and their destination, or Finish
-  above the token." (`CouncilTravel`, `CouncilTravelInteraction`; the general travel path, `TravelActions`, no longer
-  handles the token).
+  to move there; click a chosen one to release it." and "… planned · Choose more and their destination, or click ✓ to
+  finish." (`CouncilTravel`, `CouncilTravelInteraction`; the general travel path, `TravelActions`, no longer handles the
+  token).
 - Tests: `ExpansionTokenNetworkTests.CouncilPoliticsSpendsTheTokenWithoutADie` (opening, closing on a die's click,
   staying closed with a glowing tab, the step), `ExpansionTokenNetworkTests.CouncilTravelMovesTheChosenNazgulWithoutADie`
   (no decision window, the popover above the pool with only the Nazgûl and Finish, a group of two chosen and a third
   released, the planned ghost without a command, Finish's move of both), `CouncilObjectsTests.TheCouncilTokensTravelPlansGroupsUntilFinish`.
+
+<a id="ruler-token-way-console-confirm--ui-380-ui-383-2026-10-28"></a>
+## A Ruler token's way, the console's ✓ for board choices — UI-380 to UI-383 (2026-10-28)
+
+Owner reports from the Kings test scenarios (Brand's Call to Arms, Dáin's Iron Guard):
+
+- UI-380 — a Ruler token's click takes the Ruler die when it is the only die the token's actions use (the token's
+  actions pay with it; before, the click selected nothing usable). The Characters tab glows while the roster offers
+  something — an entry, an action on a row, a king's decision — so the way is lit before the panel opens; then the
+  king's row glows and, in his window, the usable ability's chip. An expansion's command names its ability with a
+  prefix ("kings.call-to-arms") while the chip has the printed id ("call-to-arms"): the action now belongs to its chip
+  (UI-369), so Click to use appears only while that chip is open, and the other ability (Heir of Bard) shows no button
+  under Limits. Test: `RulerTokenMenuTests` (Brand and Dáin from the test menu).
+- UI-381 — the owner's rule: "in this and every analogous case the button in the bottom panel confirms, not an extra
+  button in the window". A choice planned on the board's objects — a card's or ability's recruitment plan in
+  Reinforcements, a Council token's Nazgûl (UI-379's Finish above the token is gone), an ability's decision in the
+  Characters window — is confirmed with the console's ✓ once the server's preview allows (`ConsoleConfirm`); the
+  Reserve has no ✓ or Finish of its own (the console's ✓ also finishes a recruitment sequence, as for every action of
+  several steps), and the tray keeps its confirmation hidden there. The decision window, the battle and Hunt windows
+  and the Council setup's ✓ beside Finish phase (UI-370) are unchanged. Tests: `ShadowStrategy04NetworkTests`,
+  `ShadowStrategy04LayoutTests`, `BoardInteractionTests`, `ExpansionTokenNetworkTests`, `ExpansionAbilityNetworkTests`.
+- UI-382 — a separation's (or journey's) portraits in the Fellowship panel take the size of its companion icons
+  (54 × 44, 46 × 34 compact) instead of the tray's 66 × 48. Test: `FateGimliNetworkTests`.
+- UI-383 — a corrupted king's tooltip and inspector say "Corrupted · His tiles are resolved; he now serves the Shadow"
+  (T28, KINGS p. 12–13) and a removed one "Removed from play", instead of "Corruption 0 / 4". Test:
+  `SovereignPanelTests.ACorruptedOrRemovedKingShowsNoCorruptionCount`.
+- UI-384 — every rail tab glows alike: Politics and Reserve are framed buttons (`.action`), whose UI-372 choice plate
+  repainted them lighter than the Characters tab; every tab keeps the tabs' warm plate and gold rim (UI-223), the look
+  the owner named as the reference, and pulses the same way.
+- UI-385 — a king's ability names him and the printed ability: its owner is his name from his title ("Dáin"), never
+  his id ("kings.sovereign.dain"), and an ability's picture reads "Dáin · Dwarvenking · Upgrade a Regular · …"
+  (`ComponentActions.AbilityTitle`). Test: `ComponentActionTests.AKingsAbilityNamesTheKingAndThePrintedAbility`.
 

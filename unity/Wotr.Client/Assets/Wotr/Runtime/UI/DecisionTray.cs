@@ -77,6 +77,8 @@ namespace Wotr.Client
         public bool ContextualFellowship { get; set; }
         public bool ContextualHunt { get; set; }
         public bool ContextualCharacter { get; set; }
+        // UI-381: the console's ✓ confirms this choice; the tray keeps its confirmation hidden (its tooltip still names it).
+        public bool ConfirmInConsole { get; set; }
         private readonly List<Action> refreshChoices = new List<Action>();
         // UI-327: the battle's ribbon outlasts the tray's redraws, so its marker glides from stage to stage. UI-335: it is the
         // battle window's own ribbon, the one its presented round shows, so a stage reached in the presentation is not glided
@@ -299,6 +301,8 @@ namespace Wotr.Client
                 : BoardScreen.Button(text, () => Confirm?.Invoke());
             confirm.name = "confirm-decision";
             confirm.tooltip = DieUse.Tooltip(view, draft, Label(option.Kind) + ".");
+            if (ConfirmInConsole)
+                confirm.style.display = DisplayStyle.None;
             confirm.SetEnabled(false);
             ConfirmChanged?.Invoke(false);
             (ConfirmHost ?? footer).Add(confirm);

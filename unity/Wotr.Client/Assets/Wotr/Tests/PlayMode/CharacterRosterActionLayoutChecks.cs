@@ -54,7 +54,8 @@ namespace Wotr.PlayTests
                 if (board.Characters.DecisionHost.Contains(button))
                     Assert.GreaterOrEqual(button.resolvedStyle.height, 32f, button.name);
                 var picked = button.panel.Pick(button.worldBound.center);
-                Assert.IsTrue(picked == button || button.Contains(picked), button.name + " covered by " + picked?.name);
+                Assert.IsTrue(picked == button || button.Contains(picked), button.name + " " + button.worldBound + " covered by " +
+                    picked?.name + " " + picked?.worldBound + " in " + picked?.parent?.name);
             }
             foreach (var label in inspector.Query<Label>().ToList().Where(Visible))
             {

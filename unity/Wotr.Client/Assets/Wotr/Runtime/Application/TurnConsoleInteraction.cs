@@ -106,8 +106,8 @@ namespace Wotr.Client
             ConsoleActions.Set(actions.Back, idle && (onBoard || FellowshipBack()) && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
                 "Back · Undo the last unsent step");
             var finishing = Finishing();
-            var card = CardChoice(onBoard);
-            ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || card && tray.Legal),
+            var card = CardChoice(onBoard) || PlacedChoice();
+            ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || card && ChoiceReady()),
                 uncertain ? "Check result · Recover the interrupted response"
                 : finishing ? "Finish · End this action; saved steps stay"
                 : card ? ConfirmChoiceTooltip()
@@ -180,9 +180,18 @@ namespace Wotr.Client
         // UI-211: a card's decision whose choices are on the board or in the console is confirmed with the console's ✓.
         private bool CardChoice(bool onBoard) => onBoard && CardDecisions.Owns(view, draft);
 
+        // UI-381: so is a choice planned on the board's objects (ConsoleConfirm).
+        private bool PlacedChoice() => ConsoleConfirm.Owns(view, draft, reinforcing());
+
+        // A recruitment plan is ready once Reinforcements finds it complete and the server's preview legal; any other
+        // choice once the preview is legal.
+        private bool ChoiceReady() => reinforcing() ? board.Reinforcements.ConfirmReady : tray.Legal;
+
         private string ConfirmChoiceTooltip()
         {
-            if (tray.Legal)
+            if (CouncilTravel.Active(view, draft))
+                return CouncilTravel.ConfirmTooltip(view, draft);
+            if (ChoiceReady())
                 return "Confirm choice" + (tray.ConfirmTitle.Length > 0 ? " · " + tray.ConfirmTitle : "");
             return "Confirm choice · " + (tray.Problem.Length > 0 ? tray.Problem : "Complete the choice first");
         }
@@ -199,7 +208,7 @@ namespace Wotr.Client
                 confirm();
             else if (idle && Finishing())
                 finish();
-            else if (idle && tray.Legal && CardChoice(OnBoard()))
+            else if (idle && (CardChoice(OnBoard()) || PlacedChoice()) && ChoiceReady())
                 confirm();
         }
 

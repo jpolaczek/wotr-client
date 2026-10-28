@@ -9,6 +9,20 @@ namespace Wotr.EditorTests
 {
     public sealed class SovereignPanelTests
     {
+        // UI-383 (owner): a corrupted king's tiles are resolved and a removed one is out of play, so neither shows a
+        // Corruption count.
+        [Test]
+        public void ACorruptedOrRemovedKingShowsNoCorruptionCount()
+        {
+            var king = new SovereignView { Id = "king", Resistance = 4, Corruption = 0, Status = SovereignStatus.Corrupted };
+            StringAssert.StartsWith("Corrupted", SovereignPresentation.Corruption(king));
+            StringAssert.DoesNotContain("/ 4", SovereignPresentation.Corruption(king));
+            king.Status = SovereignStatus.Removed;
+            Assert.AreEqual("Removed from play", SovereignPresentation.Corruption(king));
+            king.Status = SovereignStatus.Initial;
+            Assert.AreEqual("Corruption 0 / 4", SovereignPresentation.Corruption(king));
+        }
+
         [Test]
         public void PlacementKeepsFixedControlsClearEvenWhenAFloatingWindowFillsTheRemainingMap()
         {

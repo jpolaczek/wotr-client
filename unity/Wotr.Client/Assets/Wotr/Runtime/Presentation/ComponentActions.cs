@@ -39,6 +39,19 @@ namespace Wotr.Client
             kind == CommandKind.UseCouncilToken && item.AbilityId == token ||
             kind == CommandKind.EnterCharacter && item.Character?.CouncilTokens.Contains(token) == true;
 
+        // UI-385 (owner): a king owns his ability by his name ("Dáin"), never by his id ("kings.sovereign.dain").
+        private static string OwnerName(PlayerView view, string id) =>
+            view.Sovereigns.FirstOrDefault(s => s.Id == id)?.Title.Split(' ')[0] ?? CharacterLibrary.ShortName(id);
+
+        // UI-385: the printed ability an action uses ("Dwarvenking"), when it is not the action's own title; an expansion's
+        // command names it with its prefix ("kings.dwarvenking").
+        public static string AbilityTitle(CharacterActionOption character)
+        {
+            var id = character?.AbilityId ?? "";
+            var printed = CharacterAbilityLibrary.Title(id) ?? CharacterAbilityLibrary.Title(id.Substring(id.IndexOf('.') + 1));
+            return printed == null || printed == character.Title ? "" : printed;
+        }
+
         private static IEnumerable<ComponentAction> Owners(PlayerView view, TurnDraft draft, ActionOption option)
         {
             var die = draft.Payload.DieId;
@@ -47,7 +60,7 @@ namespace Wotr.Client
                     yield return new ComponentAction
                     {
                         Key = "character-" + character.CharacterId + "-" + character.AbilityId,
-                        Owner = CharacterLibrary.ShortName(character.CharacterId),
+                        Owner = OwnerName(view, character.CharacterId),
                         OwnerId = character.CharacterId,
                         Symbol = CharacterSymbol(option.Kind, character.AbilityId),
                         Picture = AbilityPictures.For(option.Kind, character.AbilityId),

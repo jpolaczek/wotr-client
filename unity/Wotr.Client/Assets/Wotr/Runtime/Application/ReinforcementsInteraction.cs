@@ -16,8 +16,6 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private readonly Func<bool> muster;
         private readonly Func<string, bool> recruitAtOnly;
-        private readonly Action confirm;
-        private readonly Action finish;
         private readonly Action<ComponentAction> ability;
         private readonly Action<Action> complete;
         private readonly BranchCarry carry;
@@ -28,22 +26,18 @@ namespace Wotr.Client
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
         public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster, Func<string, bool> recruitAtOnly,
-            Action confirm, Action finish, Action<ComponentAction> ability, Action<Action> complete, BranchCarry carry)
+            Action<ComponentAction> ability, Action<Action> complete, BranchCarry carry)
         {
             this.board = board;
             this.edit = edit;
             this.busy = busy;
             this.muster = muster;
             this.recruitAtOnly = recruitAtOnly;
-            this.confirm = confirm;
-            this.finish = finish;
             this.ability = ability;
             this.complete = complete;
             this.carry = carry;
             board.Reinforcements.FigureChosen += Choose;
             board.Reinforcements.PlacementRemoved += Remove;
-            board.Reinforcements.Finish += Finish;
-            board.Reinforcements.Confirm += Confirm;
             board.Hover.Panel.SettlementInspected += Inspect;
             board.Map.PlannedRecruits.Removed += RemoveRegion;
         }
@@ -148,24 +142,10 @@ namespace Wotr.Client
                 edit(() => ReinforcementPlans.RemoveRegion(draft, view, board.Presentation, region));
         }
 
-        private void Finish()
-        {
-            if (!Planning && !busy())
-                finish();
-        }
-
-        private void Confirm()
-        {
-            if (Planning && !busy())
-                confirm();
-        }
-
         public void Dispose()
         {
             board.Reinforcements.FigureChosen -= Choose;
             board.Reinforcements.PlacementRemoved -= Remove;
-            board.Reinforcements.Finish -= Finish;
-            board.Reinforcements.Confirm -= Confirm;
             board.Hover.Panel.SettlementInspected -= Inspect;
             board.Map.PlannedRecruits.Removed -= RemoveRegion;
             board.Reinforcements.Apply(ReinforcementsState.Closed);

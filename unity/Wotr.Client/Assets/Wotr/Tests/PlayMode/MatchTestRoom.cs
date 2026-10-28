@@ -361,25 +361,15 @@ namespace Wotr.PlayTests
                 await At(revision + 1);
                 return;
             }
-            // UI-160: a card or ability recruitment plan keeps the decision window closed and is confirmed with the
-            // Reinforcements panel's own ✓.
+            // UI-211: a card's decision whose choices are on the board is confirmed with the console's ✓; UI-381: so is a
+            // recruitment plan, a Council token's Nazgûl or an ability decided in the Characters window, whose tray keeps
+            // its confirmation hidden.
             await Settle();
             var board = client.Board;
-            var planned = board.Reinforcements.Root.Q<Button>("reinforcements-confirm");
-            if (board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen &&
-                board.Tray.Q<Button>("confirm-decision") != null && planned?.style.display.value == DisplayStyle.Flex)
-            {
-                if (board.Reinforcements.Root.style.display.value == DisplayStyle.None)
-                    CardNetworkTests.Click(board.Console.Status.Plaque);
-                await Until(() => planned.enabledInHierarchy && planned.worldBound.width > 0);
-                await Settle();
-                CardNetworkTests.Click(planned);
-                await At(revision + 1);
-                return;
-            }
-            // UI-211: a card's decision whose choices are on the board is confirmed with the console's ✓.
             var console = board.Console.Actions.Confirm;
-            if (board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen && board.Tray.Q<Button>("confirm-decision") != null)
+            var trayConfirm = board.Tray.Q<Button>("confirm-decision");
+            if (trayConfirm != null && (trayConfirm.style.display.value == DisplayStyle.None ||
+                board.Tray.parent == board.DecisionWindow.Dock && !board.DecisionWindow.IsOpen))
             {
                 await Until(() => console.enabledSelf);
                 await Settle();

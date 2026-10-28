@@ -8,29 +8,21 @@ namespace Wotr.Client
     // UI-377/UI-379: the Council token's travel in its popover above the token pool (CouncilTravelPicker) and on the map.
     // A figure's icon, its figure in the region panel or a region holding only it chooses it for the group, a second click
     // releases it; a click on a lit destination plans the group there (a faint marker with its count) and the next group
-    // can be chosen. Finish above the token sends the planned moves as the console's ✓ does; planning every figure sends
-    // them at once.
+    // can be chosen. The console's ✓ sends the planned moves (UI-381); planning every figure sends them at once.
     public sealed class CouncilTravelInteraction : IDisposable
     {
         private readonly BoardScreen board;
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
-        private readonly Action confirm;
-        private readonly Func<bool> legal;
         private PlayerView view;
         private TurnDraft draft;
-        private bool enabled;
 
-        // legal: the server's preview accepts the planned moves.
-        public CouncilTravelInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy, Action confirm, Func<bool> legal)
+        public CouncilTravelInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
             this.board = board;
             this.edit = edit;
             this.busy = busy;
-            this.confirm = confirm;
-            this.legal = legal;
             board.CouncilPicker.FigureChosen += Choose;
-            board.CouncilPicker.Confirmed += Confirm;
             board.Root.RegisterCallback<GeometryChangedEvent>(Follow);
         }
 
@@ -41,11 +33,10 @@ namespace Wotr.Client
         // The board's new size or scale moves the token; the popover follows it.
         private void Follow(GeometryChangedEvent _) => Picker.Position();
 
-        public void Refresh(PlayerView latest, TurnDraft selection, bool online)
+        public void Refresh(PlayerView latest, TurnDraft selection, bool enabled)
         {
             view = latest;
             draft = selection;
-            enabled = online;
             var token = Active ? board.OwnDice.Q<Button>("pool-" + ExpansionDraft.CouncilTravel) : null;
             if (token == null)
             {
@@ -55,17 +46,7 @@ namespace Wotr.Client
             var ready = enabled && !busy();
             Picker.Show(token, board.OwnDice, view, CouncilTravel.Figures(view, draft));
             Picker.Apply(id => CouncilTravel.IsChosen(draft, id), id => CouncilTravel.Planned(draft, id), _ => true, ready);
-            RefreshFinish();
             ShowOnMap();
-        }
-
-        // Finish follows the server's preview of the planned moves, which answers after the board was drawn.
-        public void RefreshFinish()
-        {
-            if (!Active || !Picker.IsOpen)
-                return;
-            Picker.SetConfirm(enabled && !busy() && legal() && CouncilTravel.PlannedCount(draft) > 0,
-                CouncilTravel.ConfirmTooltip(view, draft));
         }
 
         // The unmoved figures glow where they stand and in the region panel; the planned groups stand faintly at their
@@ -119,12 +100,6 @@ namespace Wotr.Client
             edit(() => CouncilTravel.Choose(view, draft, id), false);
         }
 
-        private void Confirm()
-        {
-            if (Active && !busy() && legal() && CouncilTravel.PlannedCount(draft) > 0)
-                confirm();
-        }
-
         private string Location(string id) => view.Units.FirstOrDefault(u => u.Id == id)?.Location ??
             view.Characters.FirstOrDefault(c => c.Id == id)?.Location ?? "";
 
@@ -134,7 +109,6 @@ namespace Wotr.Client
         public void Dispose()
         {
             board.CouncilPicker.FigureChosen -= Choose;
-            board.CouncilPicker.Confirmed -= Confirm;
             board.Root.UnregisterCallback<GeometryChangedEvent>(Follow);
             Picker.Hide();
         }

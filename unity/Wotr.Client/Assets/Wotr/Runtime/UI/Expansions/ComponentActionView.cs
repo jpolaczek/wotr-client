@@ -73,7 +73,8 @@ namespace Wotr.Client
         {
             if (item.Picture.Length == 0)
                 return item.Detail + (item.Enabled ? "" : " · Select an eligible die");
-            var detail = (item.Owner.Length > 0 ? item.Owner + " · " : "") + item.Detail;
+            var ability = ComponentActions.AbilityTitle(item.Character);
+            var detail = (item.Owner.Length > 0 ? item.Owner + " · " : "") + (ability.Length > 0 ? ability + " · " : "") + item.Detail;
             return detail + (item.Enabled ? "\nClick to use" : "\nSelect an eligible die to use it");
         }
     }

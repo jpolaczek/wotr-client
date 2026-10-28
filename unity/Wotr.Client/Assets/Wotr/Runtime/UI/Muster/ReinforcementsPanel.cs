@@ -22,19 +22,15 @@ namespace Wotr.Client
         public event Action Opening;
         public event Action<string> FigureChosen;
         public event Action<string> PlacementRemoved;
-        public event Action Finish;
-        public event Action Confirm;
         private readonly Label title;
         private readonly Label optional = new Label("Optional") { name = "reinforcements-optional" };
         private readonly VisualElement budget = new VisualElement { name = "reinforcement-budget" };
-        private readonly Button finish;
-        private readonly Button confirm;
         private readonly VisualElement rows = new VisualElement { name = "reinforcement-rows" };
         private readonly PlannedReinforcementsView planned;
         private readonly Dictionary<string, ReinforcementRowView> views = new Dictionary<string, ReinforcementRowView>();
         private string focused = "";
         private bool confirmable;
-        // The tray's server preview found the plan legal; ✓ commits only then, like the tray's confirmation.
+        // The tray's server preview found the plan legal; the console's ✓ commits only then (UI-381).
         private bool legal;
         private bool active;
         private bool engaged;
@@ -54,10 +50,7 @@ namespace Wotr.Client
             budget.AddToClassList("reinforcement-budget");
             budget.tooltip = "Recruitment points · An Elite takes both";
             header.Add(budget);
-            finish = HeaderButton("confirm", "reinforcements-finish", "Finish this action · Saved reinforcements stay", () => Finish?.Invoke());
-            header.Add(finish);
-            confirm = HeaderButton("confirm", "reinforcements-confirm", "Recruit every planned figure", () => Confirm?.Invoke());
-            header.Add(confirm);
+            // UI-381 (owner): the console's ✓ recruits the plan and finishes a sequence; the panel has no ✓ of its own.
             header.Add(HeaderButton("close", "reinforcements-close", "Close · Keep the chosen die; reopen from the tab or the turn console", Close));
             Root.Add(header);
             rows.AddToClassList("reinforcement-rows");
@@ -78,11 +71,7 @@ namespace Wotr.Client
             optional.style.display = state.Optional ? DisplayStyle.Flex : DisplayStyle.None;
             budget.style.display = state.Open ? DisplayStyle.Flex : DisplayStyle.None;
             ShowBudget(state.Points, state.Planning);
-            finish.style.display = state.Finishable ? DisplayStyle.Flex : DisplayStyle.None;
-            finish.SetEnabled(state.Interactive);
-            confirm.style.display = state.Planning ? DisplayStyle.Flex : DisplayStyle.None;
-            confirmable = state.Interactive && state.Confirmable;
-            confirm.SetEnabled(confirmable && legal);
+            confirmable = state.Planning && state.Interactive && state.Confirmable;
             Sync(state.Rows);
             foreach (var row in state.Rows)
                 views[row.Id].Apply(row, state);
@@ -160,11 +149,10 @@ namespace Wotr.Client
             Tab.EnableInClassList("selected", false);
         }
 
-        public void ConfirmLegal(bool value)
-        {
-            legal = value;
-            confirm.SetEnabled(confirmable && legal);
-        }
+        public void ConfirmLegal(bool value) => legal = value;
+
+        // UI-381: the plan may be recruited with the console's ✓.
+        public bool ConfirmReady => confirmable && legal;
 
         // A settlement inspected on the map marks the row of its nation; any other region clears the mark.
         public void Focus(string nation)

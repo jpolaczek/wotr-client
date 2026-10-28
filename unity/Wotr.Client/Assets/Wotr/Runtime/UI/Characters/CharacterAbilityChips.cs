@@ -98,10 +98,19 @@ namespace Wotr.Client
             dieName = dieNames;
             var printed = CharacterAbilityLibrary.For(version).Select(ability => ability.Id).ToHashSet();
             var all = actions.ToList();
-            usable = all.Where(action => printed.Contains(ChipOf(action))).ToLookup(ChipOf);
+            usable = all.Where(action => printed.Contains(ChipOf(action, printed))).ToLookup(action => ChipOf(action, printed));
             editable = enabled;
             Refresh();
-            return all.Where(action => !printed.Contains(ChipOf(action))).ToList();
+            return all.Where(action => !printed.Contains(ChipOf(action, printed))).ToList();
+        }
+
+        // UI-380: an expansion's command names the ability with its prefix ("kings.call-to-arms"); its chip has the
+        // printed id ("call-to-arms").
+        private static string ChipOf(ComponentAction action, ISet<string> printed)
+        {
+            var chip = ChipOf(action);
+            var bare = chip.Substring(chip.IndexOf('.') + 1);
+            return printed.Contains(chip) || !printed.Contains(bare) ? chip : bare;
         }
 
         // The chip a character action uses; entries and other actions have none.

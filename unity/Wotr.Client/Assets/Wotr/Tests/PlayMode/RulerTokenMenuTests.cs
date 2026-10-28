@@ -1,0 +1,108 @@
+using System;
+using System.Collections;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+using UnityEngine.UIElements;
+using Wotr.Client;
+using Wotr.Contracts;
+using static Wotr.PlayTests.ReturnTestFixture;
+
+namespace Wotr.PlayTests
+{
+    // UI-380 (owner's report, 2026-10-28): Brand's and Dáin's Ruler token from the test menu, as the owner plays it. The
+    // token's click takes the Ruler die; the Characters tab, the king's row and his ability's chip glow; the ability's
+    // action belongs to its chip (Click to use only while it is open), and the other ability shows no button.
+    public sealed class RulerTokenMenuTests
+    {
+        [UnityTest]
+        public IEnumerator BrandsTokenLightsTheCharactersTabHisRowAndCallToArms() =>
+            MatchTestRoom.Wait(Token("kings-ruler-token-brand", "brand", "call-to-arms", "heir-of-bard"));
+
+        [UnityTest]
+        public IEnumerator DainsTokenLightsTheCharactersTabHisRowAndIronGuard() =>
+            MatchTestRoom.Wait(Token("kings-ruler-token-dain", "dain", "iron-guard", "dwarvenking"));
+
+        private static async Task Token(string scenario, string king, string ability, string other)
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var token = timeout.Token;
+            var fixture = Load();
+            using var api = await fixture.Login(Side.FreePeoples, token);
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui380-" + Guid.NewGuid().ToString("N")));
+            await Open(client, scenario, token);
+            await Task.Delay(500, token);
+            var board = client.Board;
+            var ruler = board.OwnDice.Q<Button>("ruler-token-kings.token." + king);
+            Assert.IsNotNull(ruler, king + "'s token stands in the pool");
+            PointerGestureEvents.ClickAt(ruler);
+            await Task.Delay(600, token);
+            Assert.AreEqual("kings.die.fp.ruler", board.ActionDie.DieId, "The token's click takes its only die, the Ruler die.");
+            Assert.IsTrue(board.Characters.Tab.ClassListContains("legal-target"), "The Characters tab glows.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui380-" + king + "-token.png");
+            board.Characters.Open();
+            await Task.Delay(400, token);
+            var id = "kings.sovereign." + king;
+            Assert.IsTrue(board.Characters.Root.Q<Button>("character-roster-" + id).ClassListContains("legal-target"), "His row glows.");
+            board.Characters.Show(id, true);
+            await Task.Delay(500, token);
+            var inspector = board.Characters.Inspector.Root;
+            Assert.IsNull(inspector.Q<Button>("component-character-" + id + "-kings." + ability),
+                "The ability's action stands on its chip, not as a separate button.");
+            var chip = inspector.Q<Button>("character-ability-" + ability);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "The usable ability's chip glows.");
+            PointerGestureEvents.ClickAt(inspector.Q<Button>("character-ability-" + other));
+            await Task.Delay(400, token);
+            Assert.IsFalse(Shown(inspector.Q<Button>("character-ability-use-kings." + ability)), "The other ability shows no button.");
+            PointerGestureEvents.ClickAt(chip);
+            await Task.Delay(400, token);
+            Assert.IsTrue(Shown(inspector.Q<Button>("character-ability-use-kings." + ability)), "The open ability offers Click to use.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui380-" + king + "-ability.png");
+        }
+
+        // UI-384 (owner): the Ruler die's Muster lights Politics, Reserve and Characters, and every lit tab glows alike.
+        [UnityTest]
+        public IEnumerator EveryLitTabGlowsAlike() => MatchTestRoom.Wait(Tabs());
+
+        private static async Task Tabs()
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var token = timeout.Token;
+            var fixture = Load();
+            using var api = await fixture.Login(Side.FreePeoples, token);
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui384-" + Guid.NewGuid().ToString("N")));
+            await Open(client, "kings-brand-call-to-arms", token);
+            await Task.Delay(500, token);
+            var board = client.Board;
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("kings.die.fp.ruler"));
+            await Task.Delay(1200, token);
+            var tabs = new VisualElement[] { board.Nations.Root, board.Reinforcements.Tab, board.Characters.Tab };
+            foreach (var tab in tabs)
+                Assert.IsTrue(tab.ClassListContains("legal-target"), tab.name + " glows for the Muster die.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui384-tabs.png");
+            foreach (var tab in tabs.Skip(1))
+            {
+                Assert.That(Vector4.Distance(tab.resolvedStyle.backgroundColor, tabs[0].resolvedStyle.backgroundColor), Is.LessThan(0.08f),
+                    tab.name + " shares the lit tabs' plate.");
+                Assert.That(Vector4.Distance(tab.resolvedStyle.borderTopColor, tabs[0].resolvedStyle.borderTopColor), Is.LessThan(0.08f),
+                    tab.name + " shares the lit tabs' rim.");
+            }
+        }
+
+        private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex &&
+            element.worldBound.width > 0 && element.panel != null;
+
+        private static async Task Open(MountedFlowClient client, string scenario, CancellationToken token)
+        {
+            await ClickReady(client.Root, "open-test-scenarios", token);
+            client.Root.Q<TextField>("test-scenario-search").value = scenario;
+            await Task.Delay(150, token);
+            await ClickReady(client.Root, "test-scenario-" + scenario, token);
+            await Until(() => client.Board?.View != null && client.Board.Connection.text == "Live", token);
+        }
+    }
+}

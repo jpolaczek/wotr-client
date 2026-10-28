@@ -181,8 +181,7 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(rohan.Q<Button>("reserve-token-rohan-Regular").enabledSelf);
                 var token = panel.Q<Button>("reserve-token-gondor-Regular");
                 Assert.IsTrue(token.enabledSelf);
-                Assert.AreEqual(DisplayStyle.None, panel.Q<Button>("reinforcements-finish").resolvedStyle.display,
-                    "✓ appears only once a recruitment sequence is open.");
+                Assert.IsNull(panel.Q<Button>("reinforcements-finish"), "UI-381: the console's ✓ finishes a sequence; the panel has none.");
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");
                 yield return Settle();
                 Assert.IsTrue(rohan.ClassListContains("reinforcement-focused"), "A clicked settlement marks its nation's row.");
@@ -225,8 +224,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display, "The sequence keeps Reinforcements open.");
                 Assert.IsTrue(panel.Q("reinforcement-budget").Children().First().ClassListContains("filled"));
                 Assert.IsFalse(panel.Q("reinforcement-budget").Children().Last().ClassListContains("filled"));
-                var finish = panel.Q<Button>("reinforcements-finish");
-                Assert.AreEqual(DisplayStyle.Flex, finish.resolvedStyle.display);
+                var finish = test.Board.Console.Actions.Confirm;
+                Assert.IsTrue(finish.enabledSelf, "UI-381: the console's ✓ finishes the sequence.");
                 LayoutTests.Save(test.Viewport, "ui130-sequence.png");
                 PointerGestureEvents.ClickAt(finish);
                 yield return new WaitForSecondsRealtime(.2f);
