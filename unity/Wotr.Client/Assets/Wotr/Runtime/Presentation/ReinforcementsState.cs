@@ -20,7 +20,8 @@ namespace Wotr.Client
         // UI-181: the tab and its header read Reserve.
         public string Title = "Reserve";
         public string TokenPrefix = "reserve-token-";
-        public string TokenHint = "Click, then click a highlighted settlement · With one legal settlement the click recruits there · Or drag to it";
+        // UI-420 (owner): one sentence for the second line of the token's tooltip.
+        public string TokenHint = "Click, then click a highlighted settlement, or drag it there; with one legal settlement the click recruits at once";
         public string PlacementPrefix = "";
         public Side Side = Side.FreePeoples;
         public string Selected = "";

@@ -24,10 +24,13 @@ namespace Wotr.Client
             Root.AddToClassList("console-actions");
             pulse = new ChoicePulse(Root);
             Back = Add("back", "console-back", "Back · Undo the last unsent step", () => BackClicked?.Invoke());
-            Confirm = Add("confirm", "console-confirm", "Finish · End this action", () => ConfirmClicked?.Invoke());
-            Pass = Add("pass", "console-pass", "Pass", () => PassClicked?.Invoke());
+            Confirm = Add("confirm", "console-confirm", "Finish · Available during an action of several steps", () => ConfirmClicked?.Invoke());
+            Pass = Add("pass", "console-pass", "Pass · " + PassDetail, () => PassClicked?.Invoke());
             Discard = Add("discard", "console-discard", "Discard the selected die without effect", () => DiscardClicked?.Invoke());
         }
+
+        // UI-420 (owner): Pass says what passing does.
+        public const string PassDetail = "Take no action now; the opponent acts next";
 
         public static void Set(Button button, bool enabled, string tooltip)
         {

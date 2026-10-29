@@ -204,8 +204,7 @@ namespace Wotr.Client
                 if (pair.Key == HuntResponse.Guide)
                     ShowGuide(view);
                 button.Q<Label>("hunt-response-consequence").text = HuntResponseActions.Consequence(view, pair.Key);
-                button.tooltip = HuntResponseActions.Describe(view, pair.Key) +
-                    "\nClick to choose · Or drag onto the tile.";
+                button.tooltip = HuntResponseActions.Describe(view, pair.Key) + "\nClick to choose, or drag it onto the tile.";
             }
         }
     }

@@ -42,30 +42,29 @@ namespace Wotr.Client
         };
 
         // One short line of state; nothing for an available, unremarkable die.
-        public static string State(DieView die)
-        {
-            var parts = new List<string>();
-            var location = Location(die);
-            if (location.Length > 0)
-                parts.Add(location);
-            if (die.SpecialDieChosen)
-                parts.Add("Chosen");
-            if (die.RemoveSymbol)
-                parts.Add("Remove rune");
-            if (die.PermanentlyRemoved)
-                parts.Add("Removed for the game");
-            return string.Join(" · ", parts);
-        }
+        public static string State(DieView die) => TooltipText.Parts(Location(die), Marks(die));
+
+        private static string Marks(DieView die) => TooltipText.Parts(
+            die.SpecialDieChosen ? "Chosen" : "",
+            die.RemoveSymbol ? "Remove rune" : "",
+            die.PermanentlyRemoved ? "Removed for the game" : "");
 
         public static string Title(DieView die) =>
             (ExpansionLabels.Special(die) ? ExpansionLabels.DieSource(die) + " · " : "") + Face(die.Face);
 
         // A single line for lists such as the Spent pool.
-        public static string Summary(DieView die)
+        public static string Summary(DieView die) => TooltipText.Parts(Title(die), State(die));
+
+        // UI-420 (owner): one die in its location's list ("In the Hunt Box · 2"). The list's title names the location, so
+        // the line keeps only what tells the dice apart: a Hunt die's origin, an opponent's die, the marks.
+        public static string Entry(DieView die) => TooltipText.Parts(Title(die), Detail(die), Marks(die));
+
+        private static string Detail(DieView die) => die.Location switch
         {
-            var state = State(die);
-            return state.Length == 0 ? Title(die) : Title(die) + " · " + state;
-        }
+            DieLocation.Hunt => HuntOrigin(die.HuntOrigin),
+            DieLocation.Spent => die.SpentWith.HasValue && die.SpentWith != die.Owner ? BoardScreen.SideName(die.Owner) + " die" : "",
+            _ => ""
+        };
 
         public static string Tooltip(DieView die, IReadOnlyCollection<string> usesNow = null)
         {
@@ -75,10 +74,8 @@ namespace Wotr.Client
                 lines.AddRange(Options(die.Face, die.Owner).Select(option => "• " + option));
             if (usesNow != null && usesNow.Count > 0)
                 lines.Add("Now · " + string.Join(" · ", usesNow));
-            var state = State(die);
-            if (state.Length > 0)
-                lines.Add(state);
-            return string.Join("\n", lines);
+            lines.Add(State(die));
+            return TooltipText.Lines(lines.ToArray());
         }
 
         private static string Location(DieView die) => die.Location switch
@@ -86,12 +83,28 @@ namespace Wotr.Client
             DieLocation.Resolving => "Paying for this action",
             DieLocation.Spent => die.SpentWith.HasValue && die.SpentWith != die.Owner
                 ? "Spent by " + BoardScreen.SideName(die.SpentWith.Value) : "Spent",
-            DieLocation.Hunt => die.HuntOrigin.Length > 0 ? "In the Hunt Box · " + FigureGrid.Name(die.HuntOrigin) : "In the Hunt Box",
+            DieLocation.Hunt => TooltipText.Parts("In the Hunt Box", HuntOrigin(die.HuntOrigin)),
             DieLocation.Discarded => "Set aside",
             DieLocation.Removed => "Removed from play",
-            DieLocation.FellowshipBox => "In the Fellowship box",
+            DieLocation.FellowshipBox => "In the Fellowship Box",
             DieLocation.AwaitingChoice => "Waiting for the special-die choice",
             _ => ""
+        };
+
+        // UI-420 (owner): how a die came to the Hunt Box, in words rather than the server's origin id.
+        public static string HuntOrigin(string origin) => origin switch
+        {
+            null or "" => "",
+            "rolled-eye" => "rolled",
+            "allocated" => "allocated by the Shadow",
+            "elven-ring" => "from an Elven Ring",
+            "lidless-eye" => "from the Lidless Eye",
+            "captain-of-despair" => "from the Captain of Despair",
+            "lore-eye" => "from Lore of the Rings",
+            "keeper-eye" => "rolled on a Keeper die",
+            "lesser-eye" => "rolled on a Lesser Minion die",
+            "fellowship-move" => "moved the Fellowship",
+            _ => FigureGrid.Name(origin)
         };
     }
 }

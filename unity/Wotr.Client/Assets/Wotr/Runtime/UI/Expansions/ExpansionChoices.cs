@@ -82,7 +82,8 @@ namespace Wotr.Client
                         p.CharacterId = sovereign.Id;
                         p.Route.Clear();
                     }));
-                button.tooltip = sovereign.Status + " · Resistance " + sovereign.Resistance;
+                // UI-420 (owner): the king's state in words (no raw status).
+                button.tooltip = TooltipText.Parts(SovereignPresentation.Status(sovereign.Status), SovereignPresentation.Corruption(sovereign));
                 row.Add(button);
             }
         }

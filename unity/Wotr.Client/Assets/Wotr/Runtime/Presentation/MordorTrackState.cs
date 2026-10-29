@@ -48,8 +48,11 @@ namespace Wotr.Client
             };
         }
 
-        public static string GateTooltip(string region) => (region == "morannon" ? "Morannon" : "Minas Morgul") +
-            " · Entrance of the Mordor track\n" + EntryHint;
+        // UI-420 (owner): the gate is named once; the second line names the other gate only.
+        public static string GateTooltip(string region) => GateName(region) + " · Entrance of the Mordor track\n" +
+            "The Fellowship enters Mordor here or at " + GateName(region == "morannon" ? "minas-morgul" : "morannon") + ".";
+
+        private static string GateName(string region) => region == "morannon" ? "Morannon" : "Minas Morgul";
 
         public string FigureTooltip => "Fellowship · " + (Hidden ? "Hidden" : "Revealed") + " · Mordor step " + Step +
             " of " + MordorTrackGeometry.LastStep + "\nCorruption " + Corruption + "/12" + (Attempted == false

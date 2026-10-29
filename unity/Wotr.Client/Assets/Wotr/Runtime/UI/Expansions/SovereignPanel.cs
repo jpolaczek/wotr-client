@@ -101,7 +101,8 @@ namespace Wotr.Client
             }
             button.text = sovereign.Title.Split(' ')[0] + "\n" + SovereignPresentation.Status(sovereign.Status);
             var region = data.Regions.TryGetValue(sovereign.RegionId, out var definition) ? definition.Name : "Out of play";
-            button.tooltip = sovereign.Title + " · " + sovereign.Status + " · " + region;
+            // UI-420 (owner): the portrait reads "Dáin Ironfoot · ◉ Corrupted · Erebor", then his corruption.
+            button.tooltip = SovereignPresentation.Describe(sovereign, region);
             button.EnableInClassList("corrupted-sovereign", sovereign.Status == SovereignStatus.Corrupted);
             var listed = sovereign.Status == SovereignStatus.Awakened && ListedAsCharacter?.Invoke(sovereign.Id) == true;
             button.style.display = listed ? DisplayStyle.None : DisplayStyle.Flex;

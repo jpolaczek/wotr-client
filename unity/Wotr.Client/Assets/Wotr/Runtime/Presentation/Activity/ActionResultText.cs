@@ -151,7 +151,7 @@ namespace Wotr.Client
         public static string Figures(IEnumerable<ActionParticipant> participants)
         {
             var list = participants.ToList();
-            var units = list.Where(p => p.UnitKind.HasValue).GroupBy(p => p.UnitKind.Value).Select(g => g.Count() + " " + g.Key);
+            var units = list.Where(p => p.UnitKind.HasValue).GroupBy(p => p.UnitKind.Value).Select(g => g.Count() + " " + TooltipText.Kind(g.Key));
             var characters = list.Where(p => !p.UnitKind.HasValue && p.DefinitionId.Length > 0)
                 .Select(p => CharacterLibrary.Name(p.DefinitionId)).Distinct();
             return string.Join(" + ", units.Concat(characters));

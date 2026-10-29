@@ -71,9 +71,10 @@ namespace Wotr.Client
             state.tooltip = "Resistance " + sovereign.Resistance + (sovereign.Corruption.HasValue ? "" : " · Attached tile values are not public.");
             Tiles(sovereign);
             var abilityTitle = sovereign.Status == SovereignStatus.Initial ? "After awakening · Abilities" :
-                sovereign.Status == SovereignStatus.Corrupted ? "Weaknesses · Hover" : "Abilities · Hover";
+                sovereign.Status == SovereignStatus.Corrupted ? "Weaknesses" : "Abilities";
             Show(ability, sovereign.DefinitionId.Length > 0 ? abilityTitle : "");
-            ability.tooltip = sovereign.DefinitionId.Length > 0 ? CharacterLibrary.Description(sovereign.DefinitionId) : "";
+            // UI-420 (owner): one line per printed ability ("Palantír of Anárion · <its gist>"); the window's title names him.
+            ability.tooltip = sovereign.DefinitionId.Length > 0 ? CharacterLibrary.Abilities(sovereign.DefinitionId) : "";
             var explanation = ResourcePresentation.Explain(view, sovereign.Id);
             availability.style.display = explanation.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             availability.tooltip = explanation;

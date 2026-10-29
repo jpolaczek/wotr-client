@@ -16,7 +16,7 @@ namespace Wotr.Client
             var title = CardLibrary.Cards[view.Decision.SourceId].CombatTitle;
             var benefit = title == "The Battle Is Vain" ? "Reduce opposing Leadership by " + draft.Payload.Ids.Count
                 : title == "Dread and Despair" ? "Fewer opposing Combat dice · Minimum one"
-                : title == "They Are Terrible" ? "+1 Leader re-roll" : "+1 Combat roll";
+                : title == "They Are Terrible" ? "+1 Leader reroll" : "+1 Combat roll";
             return "Forfeit " + draft.Payload.Ids.Count + " Leadership · " + benefit + ".";
         }
     }

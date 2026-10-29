@@ -73,7 +73,8 @@ namespace Wotr.Client
         {
             var entry = new VisualElement { name = name, focusable = true };
             entry.AddToClassList("hunt-pool-tile");
-            entry.tooltip = HuntTileText.Tooltip(face) + "\nIn this list · " + face.Count;
+            // UI-420 (owner): the entry's own "×4" counts the tiles; the tooltip only explains the face.
+            entry.tooltip = HuntTileText.Tooltip(face);
             var art = new HuntTileFace("small");
             art.Apply(face);
             entry.Add(art.Root);

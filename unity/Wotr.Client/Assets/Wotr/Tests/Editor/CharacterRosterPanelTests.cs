@@ -61,8 +61,10 @@ namespace Wotr.EditorTests
             var text = inspector.Root.Q("character-statistics").tooltip;
             StringAssert.Contains("Level 1", text);
             StringAssert.Contains("Move 2", text);
-            StringAssert.Contains("Combat level 1", text);
             Assert.IsFalse(text.Contains("Level 2"));
+            // UI-420: in words a level equal to Level is not repeated; its symbol still names it.
+            StringAssert.DoesNotContain("Combat level", text);
+            StringAssert.StartsWith("Combat level 1", inspector.Root.Q("character-fact-combat").tooltip);
         }
 
         [Test]
@@ -75,9 +77,15 @@ namespace Wotr.EditorTests
             Assert.AreEqual("∞", facts.Single(f => f.Key == "flight").Value);
             Assert.AreEqual("sauron", facts.Single(f => f.Key == "nation").Nation);
             Assert.IsTrue(facts.All(f => f.Tooltip.Length > 0));
-            StringAssert.Contains("Move Flight", CharacterCardFacts.Summary(facts));
+            Assert.AreEqual("Flight · Unlimited movement", facts.Single(f => f.Key == "flight").Tooltip);
+            // UI-420: Combat level equal to Level is not repeated in words; the nation is named plainly.
+            Assert.AreEqual("Level 3 · Flight · Leadership 2 · Sauron", CharacterCardFacts.Summary(facts));
             var white = CharacterCardFacts.For(new CharacterRosterView(), "base.character.gandalf-white", false);
-            Assert.AreEqual("Nation All Free Peoples", white.Single(f => f.Key == "nation").Label);
+            Assert.AreEqual("All Free Peoples", white.Single(f => f.Key == "nation").Label);
+            var serpent = new CharacterRosterView { Level = 2, MovementLevel = 2, CombatLevel = 3, Leadership = 2, NationIcon = "southrons",
+                CurrentDefinitionId = "kings.character.black-serpent" };
+            Assert.AreEqual("Level 2 · Combat level 3 · Leadership 2 · Southrons & Easterlings",
+                CharacterCardFacts.Summary(CharacterCardFacts.For(serpent, serpent.CurrentDefinitionId, true)));
             Assert.AreEqual("removed", CharacterCardFacts.Status(new CharacterRosterView { Lifecycle = CharacterRosterLifecycle.Eliminated }, "").Key);
             var onBoard = CharacterCardFacts.Status(new CharacterRosterView { Lifecycle = CharacterRosterLifecycle.OnBoard, Garrison = true }, "Erebor");
             Assert.AreEqual(("on-board", "Erebor · Garrison", "Erebor"), (onBoard.Key, onBoard.Text, onBoard.Short));
@@ -120,7 +128,11 @@ namespace Wotr.EditorTests
             var chips = inspector.Root.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
                 .Where(chip => chip.style.display.value != DisplayStyle.None).ToList();
             Assert.IsNotEmpty(chips);
-            Assert.IsTrue(chips.All(chip => chip.tooltip.StartsWith(chip.Q<Label>(className: CharacterAbilityChips.TitleClass).text + "\n")));
+            // UI-420: the chip shows its title, so its tooltip starts with the text and has no blank line.
+            var printed = CharacterAbilityLibrary.For(inspector.DefinitionId);
+            Assert.IsTrue(chips.All(chip => chip.tooltip.Length > 0 && !chip.tooltip.Contains("\n\n") &&
+                !chip.tooltip.StartsWith(chip.Q<Label>(className: CharacterAbilityChips.TitleClass).text + "\n")));
+            Assert.IsTrue(chips.All(chip => printed.Any(ability => chip.tooltip == ability.Text + "\n" + ability.Source)));
             Assert.AreEqual(DisplayStyle.None, inspector.Root.Q<Label>("character-ability-text").style.display.value,
                 "The full ability text unrolls only after a click.");
         }
@@ -262,6 +274,27 @@ namespace Wotr.EditorTests
             StringAssert.Contains(future.Entry.Source, CharacterRosterPresentation.Conditions(future.Entry));
             StringAssert.Contains(future.Entry.Cost, CharacterRosterPresentation.Conditions(future.Entry));
             Assert.IsTrue(future.CouncilEntry.CanAct);
+            // UI-420: the inspector reads "Cost: X" as the row does; its tooltip neither repeats that cost nor has a blank line.
+            var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
+            Assert.IsTrue(inspector.Apply(view, "kings.character.black-serpent"));
+            var entry = inspector.Root.Q<Label>("character-entry");
+            Assert.AreEqual("Cost: " + future.Entry.Cost, entry.text);
+            StringAssert.StartsWith(future.Entry.Title + "\n", entry.tooltip);
+            StringAssert.DoesNotContain("\n\n", entry.tooltip);
+            StringAssert.DoesNotContain("Cost: " + future.Entry.Cost + "\n", entry.tooltip);
+            StringAssert.Contains("\nOr with a Council token · Cost: " + future.CouncilEntry.Cost, entry.tooltip);
+        }
+
+        // UI-420: a character action's button says what its click chooses and whose ability it is, without a title line.
+        [Test]
+        public void ACharacterActionButtonNamesItsChoiceAndCharacter()
+        {
+            const string gimli = "base.character.gimli";
+            var ability = new CharacterActionOption { CharacterId = gimli, Title = "Dwarf of Erebor", Detail = "Move the Dwarves one step toward war." };
+            Assert.AreEqual("Click to choose Dwarf of Erebor · " + CharacterLibrary.Name(gimli) + "\nMove the Dwarves one step toward war.",
+                CharacterChoices.Tooltip(ability));
+            var entry = new CharacterActionOption { CharacterId = gimli, Title = CharacterLibrary.Name(gimli) };
+            Assert.AreEqual("Click to choose " + CharacterLibrary.Name(gimli), CharacterChoices.Tooltip(entry));
         }
 
         [Test]

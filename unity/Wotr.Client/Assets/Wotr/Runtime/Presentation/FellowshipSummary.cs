@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Wotr.Contracts;
 
@@ -11,8 +12,9 @@ namespace Wotr.Client
             switch (draft.Kind)
             {
                 case CommandKind.MoveFellowship:
-                    return view.Fellowship.MordorStep.HasValue ? "Spend this die · Draw and resolve a Hunt tile before advancing."
-                        : "Spend this die · Progress +1" + (preview.HasUnknownResult ? " · Hunt result unknown." : " · No Hunt dice.");
+                    return view.Fellowship.MordorStep.HasValue ? "Spend this die · Move the Fellowship · Draw and resolve a Hunt tile before advancing."
+                        : "Spend this die · Move the Fellowship · " + FellowshipActions.MoveEffect +
+                            (preview.HasUnknownResult ? " · Hunt result unknown." : " · No Hunt dice.");
                 case CommandKind.HideFellowship:
                     return "Spend this die · Hide the Fellowship at its current position.";
                 case CommandKind.EnterMordor:
@@ -36,16 +38,16 @@ namespace Wotr.Client
                     if (view.Decision?.Kind == DecisionKind.CompanionSeparation)
                         return draft.Payload.CompanionMoves.Count == 0 ? "Keep all companions in place · Resolve the card’s remaining effects."
                             : "Move the selected groups · Resolve the card’s remaining effects.";
-                    return "One die moves all selected groups along their own routes.";
+                    return Groups(draft, data, ids => Join(ids.Select(id => CharacterLibrary.Name(view, id)).ToList()));
                 case CommandKind.MoveShadowCharacters:
                     // UI-416 (owner): the figures by name, never "Nazgûl" for the Balrog.
                     if (view.Decision?.Kind == DecisionKind.CharacterEvent)
                         return (draft.Payload.CompanionMoves.Count == 0 ? "Keep " + Kept(view, draft) + " in place"
                             : "Move " + NazgulFlightDraft.Figures(view, draft.Payload.CompanionMoves.SelectMany(g => g.Ids))) +
                             " · Resolve the card’s remaining effects.";
-                    return "One die moves all selected groups along their own routes.";
+                    return Groups(draft, data, ids => NazgulFlightDraft.Figures(view, ids));
                 case CommandKind.RerollHunt:
-                    return draft.Payload.Ids.Count > 0 ? "Reroll selected failures · Result unknown." : "Keep this roll" + (preview.HasUnknownResult ? " · Next tile unknown." : ".");
+                    return Reroll(view, draft);
                 case CommandKind.ResolveHuntDamage:
                     return draft.HuntChoice.HasValue ? HuntResponseActions.Describe(view, draft.HuntChoice.Value) : "Choose a response.";
                 default:
@@ -55,6 +57,35 @@ namespace Wotr.Client
 
         private static string Kept(PlayerView view, TurnDraft draft) =>
             NazgulFlightDraft.Figures(view, NazgulFlightDraft.Offered(view, draft)) is { Length: > 0 } names ? names : "every figure";
+
+        // UI-420 (owner): one die's groups by name and where each one goes —
+        // "Move Strider → Fangorn, Gimli and Legolas → Erebor".
+        private static string Groups(TurnDraft draft, BoardPresentation data, Func<IReadOnlyList<string>, string> names)
+        {
+            var groups = draft.Payload.CompanionMoves.Where(group => group.Ids.Count > 0)
+                .Select(group => Destination(names(group.Ids), group.Route, data)).ToList();
+            return groups.Count == 0 ? "Move the selected groups along their own routes." : "Move " + string.Join(", ", groups) + ".";
+        }
+
+        private static string Destination(string names, IReadOnlyList<string> route, BoardPresentation data) =>
+            route.Count > 0 && data != null && data.Regions.TryGetValue(route[route.Count - 1], out var region)
+                ? names + " → " + region.Name : names;
+
+        // "Gimli", "Gimli and Legolas", "Gimli, Legolas and Boromir".
+        private static string Join(IReadOnlyList<string> names) => names.Count <= 1 ? names.FirstOrDefault() ?? ""
+            : string.Join(", ", names.Take(names.Count - 1)) + " and " + names[names.Count - 1];
+
+        // UI-420 (owner): Keep roll and Reroll selected name the roll and the dice, as the tray's button says them.
+        private static string Reroll(PlayerView view, TurnDraft draft)
+        {
+            var selected = draft.Payload.Ids.Count;
+            if (selected > 0)
+                return "Reroll selected · Roll " + (selected == 1 ? "the selected failed die" : "the " + selected + " selected failed dice") + " again";
+            var hits = view.Hunt?.Dice.Count(die => die.Success) ?? 0;
+            var rerolls = DraftOptions.For(view, draft)?.Maximum ?? 0;
+            return "Keep roll · Accept the Hunt roll (" + TooltipText.Count(hits, "hit") + ")" +
+                (rerolls > 1 ? "; use none of your " + rerolls + " rerolls" : rerolls == 1 ? "; do not use your reroll" : "");
+        }
 
         public static string Victory(VictoryCondition? reason) => reason switch
         {

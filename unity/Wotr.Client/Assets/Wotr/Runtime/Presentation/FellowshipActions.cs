@@ -110,7 +110,15 @@ namespace Wotr.Client
 
         public static bool Immediate(CommandKind? kind) => kind == CommandKind.SelectGuide;
 
-        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or its glowing marker on the Fellowship track · No progress or extra Hunt die.";
+        // UI-420 (owner): one wording of the hide and the move wherever they are offered — the figure on the map, the
+        // marker and the symbol on the track, and the console's hint.
+        public const string HideEffect = "No progress; this die does not enter the Hunt";
+        public const string MoveEffect = "Progress +1, then the Hunt; its last known position stays";
+        public const string HideTooltip = "Click to hide the Fellowship · " + HideEffect;
+        public const string MoveTooltip = "Click to move the Fellowship · " + MoveEffect;
+
+        public const string HideHint = "Hide: click the glowing Fellowship figure on the map or its glowing marker on the Fellowship track · " +
+            HideEffect + ".";
 
         public static string ActionHint(PlayerView view, TurnDraft draft, ActionDieContext context)
         {
@@ -132,6 +140,6 @@ namespace Wotr.Client
         }
 
         public const string MoveHint = "Move: click the glowing Fellowship figure on the map or the glowing track symbol · " +
-            "Progress +1 and resolve the Hunt; the map position stays unchanged.";
+            MoveEffect + ".";
     }
 }

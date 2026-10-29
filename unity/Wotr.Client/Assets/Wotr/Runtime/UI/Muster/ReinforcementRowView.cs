@@ -131,10 +131,22 @@ namespace Wotr.Client
                 // settlement in focus cannot take stays choosable but unlit.
                 Button.EnableInClassList(EligibleClass, state.Open && state.Interactive && figure.ReserveId != null && !selected &&
                     !figure.Elsewhere);
-                Button.tooltip = figure.Kind + " · " + figure.Reserve + " in reserve" + (!state.Open ? "" : " · " + (figure.ReserveId == null
-                    ? figure.Reason.Length > 0 ? figure.Reason : "Not available now"
-                    : figure.Hint.Length > 0 ? figure.Hint : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");
+                Button.tooltip = TokenTooltip(figure, state, nation);
                 Button.EnableInClassList("token-warning", figure.Warning.Length > 0);
+            }
+
+            // UI-420 (owner): the figure as printed and its reserve on the first line, what a click does (or why it
+            // cannot) on the second: "Rohan Elite · 2 in reserve\nClick, then click a highlighted settlement, or drag it there".
+            private static string TokenTooltip(ReinforcementFigure figure, ReinforcementsState state, string nation) => TooltipText.Lines(
+                TooltipText.Parts(TooltipText.Unit(nation, figure.Kind), figure.Reserve + " in reserve"),
+                state.Open ? Use(figure, state) : "",
+                figure.Warning.Length > 0 ? "⚠ " + figure.Warning : "");
+
+            private static string Use(ReinforcementFigure figure, ReinforcementsState state)
+            {
+                if (figure.ReserveId == null)
+                    return figure.Reason.Length > 0 ? figure.Reason : "Not available now";
+                return figure.Hint.Length > 0 ? figure.Hint : state.TokenHint;
             }
         }
     }

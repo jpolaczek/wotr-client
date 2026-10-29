@@ -40,9 +40,15 @@ namespace Wotr.Client
                 entry.Value.EnableInClassList("empty-deck", count == 0);
                 ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
-                entry.Value.tooltip = FigureGrid.Name(entry.Key) + " · " + count + " cards" +
-                    (count == 0 ? " · Empty" : available ? " · Draw" : " · Choose an Event die to draw");
+                entry.Value.tooltip = DeckTooltip(entry.Key, count, available);
             }
         }
+
+        // UI-420 (owner): "Character deck · 12 cards · Click to draw", "Character deck · Empty".
+        private static string DeckTooltip(string deck, int count, bool available) =>
+            count == 0 ? DeckState(deck, count) : DeckState(deck, count) + (available ? " · Click to draw" : " · Choose an Event die to draw");
+
+        private static string DeckState(string deck, int count) =>
+            FigureGrid.Name(deck) + " deck · " + (count == 0 ? "Empty" : TooltipText.Count(count, "card"));
     }
 }

@@ -152,14 +152,13 @@ namespace Wotr.Client
             {
                 var dice = view.Dice.Where(d => location == DieLocation.Spent
                     ? d.Location == location && (d.SpentWith ?? d.Owner) == side : d.Location == location && d.Owner == side).ToList();
-                var label = location == DieLocation.Discarded ? "Out" : location.ToString();
                 // UI-97: icon and count, as in the top bar; the name leads the description. UI-230: the count is
                 // information only; a die there that a decision may choose stands in the pool's row instead.
                 var button = BoardScreen.Button(dice.Count.ToString(), null);
                 button.focusable = false;
                 ReadOnlyControl.Apply(button, false);
                 button.name = "pool-" + location;
-                button.tooltip = dice.Count == 0 ? label + " · none" : label + "\n" + string.Join("\n", dice.Select(DieDescriptions.Summary));
+                button.tooltip = LocationTooltip(location, dice);
                 button.AddToClassList("pool-count-" + location.ToString().ToLowerInvariant());
                 button.Add(new VisualElement { name = "pool-count-icon", pickingMode = PickingMode.Ignore });
                 row.Add(button);
@@ -169,6 +168,22 @@ namespace Wotr.Client
                 shownCounts[key] = dice.Count;
             }
         }
+
+        // UI-420 (owner): "In the Hunt Box · 2", then one line per die without repeating the location ("Eye · rolled").
+        private static string LocationTooltip(DieLocation location, IReadOnlyList<DieView> dice)
+        {
+            var title = TooltipText.Parts(LocationName(location), dice.Count == 0 ? "none" : dice.Count.ToString());
+            return TooltipText.Lines(new[] { title }.Concat(dice.Select(DieDescriptions.Entry)).ToArray());
+        }
+
+        private static string LocationName(DieLocation location) => location switch
+        {
+            DieLocation.Spent => "Spent",
+            DieLocation.Hunt => "In the Hunt Box",
+            DieLocation.Discarded => "Out",
+            DieLocation.FellowshipBox => "Fellowship Box",
+            _ => location.ToString()
+        };
 
         private void Tokens(VisualElement root, PlayerView view, Side side)
         {

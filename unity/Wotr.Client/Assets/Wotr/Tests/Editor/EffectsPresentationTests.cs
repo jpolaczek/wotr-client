@@ -221,7 +221,7 @@ namespace Wotr.Tests
             action.DieId = "will";
             StringAssert.Contains("No Ring", EffectsPresentation.RemovalCost(view, action));
             action.DieId = "army";
-            StringAssert.Contains("one chosen Elven Ring", EffectsPresentation.RemovalCost(view, action));
+            StringAssert.Contains("give one Elven Ring to the Shadow", EffectsPresentation.RemovalCost(view, action));
             StringAssert.DoesNotContain("Will of the West", EffectsPresentation.RemovalCost(view, action));
         }
 

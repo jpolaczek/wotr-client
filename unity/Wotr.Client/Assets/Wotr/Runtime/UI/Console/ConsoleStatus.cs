@@ -130,7 +130,7 @@ namespace Wotr.Client
             presented.name = "console-presented-source";
             presented.AddToClassList("committed-choice");
             presented.AddToClassList("presented-source");
-            presented.tooltip = "Played card · Inspect";
+            presented.tooltip = "Played card · Click to inspect";
             Trail.Add(presented);
             Trail.style.display = DisplayStyle.Flex;
             return presented;

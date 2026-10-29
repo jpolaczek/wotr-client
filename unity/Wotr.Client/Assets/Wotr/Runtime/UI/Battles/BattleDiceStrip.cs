@@ -39,7 +39,7 @@ namespace Wotr.Client
                 var page = pages[selected];
                 switcher.tooltip = page.Title + " · Show next roll (" + (selected + 1) + "/" + pages.Count + ")";
                 source.text = page.Title + " · Hits " + page.Hits;
-                source.tooltip = page.Title + "\n" + BattleForceText.Modifiers(force, battle, view);
+                source.tooltip = RollTooltip(page, force);
                 var option = view.Options.FirstOrDefault(o => o.Kind == CommandKind.RerollBattle);
                 foreach (var die in page.Dice)
                     AddDie(content, die, page.Title, force, battle, view, draft, option, edit);
@@ -74,8 +74,16 @@ namespace Wotr.Client
                     target && (targetChosen || BattleObjectChoices.CanChoose(view, draft, die.Id)));
                 button.EnableInClassList("selected", chosen || targetChosen || force.OwnRerollSelection.Contains(die.Id));
                 ChoiceGlow.Apply(button, target && !targetChosen);
-                button.tooltip = target ? BattleObjectChoices.Detail(view, die.Id) + "\n" + tooltip : tooltip;
+                button.tooltip = target ? TooltipText.Lines(BattleObjectChoices.Detail(view, die.Id), tooltip) : tooltip;
             });
+        }
+
+        // UI-420 (owner): the roll's heading explains only what changed the Combat roll's hits (non-zero modifiers, hits
+        // spent on a card); without such a fact it has no tooltip, as its text says the rest.
+        private static string RollTooltip(RollPage page, BattleForceView force)
+        {
+            var details = page.Source.Length == 0 ? BattleForceText.Roll(force) : "";
+            return details.Length == 0 ? "" : TooltipText.Lines(page.Title, details);
         }
 
         // UI-246: Heroic Death cancels the opponent's hits on their own indicator: one button per amount it may cancel

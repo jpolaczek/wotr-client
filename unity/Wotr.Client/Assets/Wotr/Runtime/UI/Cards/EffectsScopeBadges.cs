@@ -46,7 +46,7 @@ namespace Wotr.Client
                     host.Add(badge);
                 }
                 badge.text = "◇" + (scope.Value.Count > 1 ? " " + scope.Value.Count : "");
-                badge.tooltip = string.Join("\n", scope.Value.Select(id => view.Effects.First(e => e.SourceId == id).Title)) + "\nInspect active effects";
+                badge.tooltip = TooltipText.Lines(scope.Value.Select(id => EffectTitle(view, id)).Append("Click to inspect active effects").ToArray());
             }
         }
 
@@ -62,6 +62,13 @@ namespace Wotr.Client
                 scopes.Add(key, ids);
             }
             ids.Add(id);
+        }
+
+        // UI-420: a source without a title is named by its card, as on the map (MapEffectsOverlay).
+        private static string EffectTitle(PlayerView view, string sourceId)
+        {
+            var effect = view.Effects.First(e => e.SourceId == sourceId);
+            return effect.Title.Length > 0 ? effect.Title : CardLibrary.Title(sourceId);
         }
     }
 }

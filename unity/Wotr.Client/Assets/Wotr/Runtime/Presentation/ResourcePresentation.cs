@@ -52,15 +52,17 @@ namespace Wotr.Client
             _ => "Choose the exact die and its new face. Changing the face does not use the die."
         };
 
+        // UI-420 (owner): each explanation starts with its title, so they follow one another without a blank line.
         public static string Explain(PlayerView view, string subject)
         {
             var descriptions = view.Availability.Where(a => a.SubjectId == subject).Select(Describe);
-            return string.Join("\n\n", descriptions);
+            return TooltipText.Lines(descriptions.ToArray());
         }
 
         private static string Describe(ActionAvailabilityView availability)
         {
-            var lines = new List<string> { availability.Title, "Cost · " + availability.Cost };
+            var cost = availability.Cost.Length > 0 ? "Cost: " + availability.Cost : "";
+            var lines = new List<string> { availability.Title, cost };
             lines.AddRange(availability.Conditions.Where(c => !c.Met).Select(c => c.Description));
             if (!availability.WindowOpen)
                 lines.Add(availability.Timing);

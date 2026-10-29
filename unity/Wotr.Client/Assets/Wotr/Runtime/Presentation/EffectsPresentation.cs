@@ -96,10 +96,10 @@ namespace Wotr.Client
             if (action.Kind is CommandKind.DiscardPalantir or CommandKind.DiscardBaradPalantir or CommandKind.DiscardLore)
             {
                 if (action.DieId.Length == 0 && option?.DiceWithoutRing.Count > 0)
-                    return "Spend a Will of the West, or another eligible die and one chosen Elven Ring transferred to Shadow.";
+                    return "Spend a Will of the West, or another eligible die and give one Elven Ring to the Shadow.";
                 return option?.DiceWithoutRing.Contains(action.DieId) == true
                     ? "Spend this Will of the West. No Ring is required."
-                    : "Spend this die and transfer one chosen Elven Ring to Shadow.";
+                    : "Spend this die and give one Elven Ring to the Shadow.";
             }
             return "Spend the selected eligible die.";
         }

@@ -53,9 +53,9 @@ namespace Wotr.Client
             {
                 var row = BoardScreen.Row("information-unit-row");
                 row.name = "inspected-nation-" + nation.Key;
-                row.Add(Text(FigureGrid.Name(nation.Key)));
+                row.Add(Text(TooltipText.Nation(nation.Key)));
                 row.Add(Text(string.Join("   ", nation.GroupBy(u => u.Kind).OrderBy(g => g.Key)
-                    .Select(g => FigureGrid.Symbol(g.Key) + " " + g.Count() + " " + g.Key))));
+                    .Select(g => FigureGrid.Symbol(g.Key) + " " + g.Count() + " " + TooltipText.Kind(g.Key)))));
                 rows.Add(row);
             }
             if (units.Count == 0)
@@ -71,8 +71,9 @@ namespace Wotr.Client
                 var title = CharacterLibrary.Name(character.DefinitionId.Length > 0 ? character.DefinitionId : character.Id);
                 var label = Text(title);
                 label.name = "inspected-character-" + character.Id;
-                label.tooltip = title + " · " + ForceName(character.Side, character.Garrison) +
-                    " · Leadership " + character.Leadership + " · Level " + character.Level;
+                // UI-420 (owner): the character's one form ("Strider · Level 3 · Leadership 1"), then its side in full.
+                label.tooltip = TooltipText.Parts(title, "Level " + character.Level, "Leadership " + character.Leadership,
+                    BoardScreen.SideName(character.Side), character.Garrison ? "Garrison" : "");
                 portraits.Add(label);
             }
         }

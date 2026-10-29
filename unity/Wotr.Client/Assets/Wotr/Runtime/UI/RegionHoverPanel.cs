@@ -174,10 +174,12 @@ namespace Wotr.Client
             foreach (var nation in units.GroupBy(u => u.Nation))
             {
                 var name = FigureGrid.Name(nation.Key);
-                row.Add(new Label(name.Substring(0, Math.Min(2, name.Length))) { tooltip = name });
+                // UI-420 (owner): the nation's figures as on its army marker, each figure as printed ("Rohan Elite", "Nazgûl").
+                var composition = ArmyMarkerText.Composition(nation.Key, nation.Select(u => u.Kind).ToList());
+                row.Add(new Label(name.Substring(0, Math.Min(2, name.Length))) { tooltip = composition });
                 foreach (var unit in nation.OrderBy(u => u.Kind))
                 {
-                    AddFigure(row, unit.Id, FigureGrid.Symbol(unit.Kind), FigureGrid.Name(unit.Nation) + " · " + unit.Kind, false);
+                    AddFigure(row, unit.Id, FigureGrid.Symbol(unit.Kind), TooltipText.Unit(unit.Nation, unit.Kind), false);
                     FigureArtwork.Apply(figures[unit.Id], unit);
                 }
             }

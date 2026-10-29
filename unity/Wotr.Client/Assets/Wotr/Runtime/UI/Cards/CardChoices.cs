@@ -197,17 +197,17 @@ namespace Wotr.Client
                 button.tooltip = ExpansionLabels.DieDetail(die);
             if (leadership)
             {
-                button.tooltip = choice.Title + " · " + choice.Detail;
+                button.tooltip = TooltipText.Parts(choice.Title, choice.Detail);
                 button.AddToClassList("effect-companion");
             }
             if (compactCharacter)
             {
-                button.tooltip = CharacterLibrary.Name(view, id) + " · " + choice.Detail;
+                button.tooltip = TooltipText.Parts(CharacterLibrary.Name(view, id), choice.Detail);
                 button.AddToClassList("effect-companion");
             }
             if (compactUnit != null)
             {
-                button.tooltip = FigureGrid.Name(compactUnit.Nation) + " " + compactUnit.Kind + " · " + choice.Detail;
+                button.tooltip = TooltipText.Parts(TooltipText.Unit(compactUnit.Nation, compactUnit.Kind), choice.Detail);
                 button.AddToClassList("effect-companion");
             }
             if (reaction || view.Decision?.Presentation is "NazgulStrike" or "CharacterCardDiscard" or "InspectedHand" or "TableCards" or "SmeagolCorruption")
@@ -223,9 +223,16 @@ namespace Wotr.Client
             return button;
         }
 
+        // UI-420 (owner): a response without the server's detail still names its card.
+        private static string ResponseTooltip(EffectChoiceView choice)
+        {
+            var card = CardLibrary.Title(choice.SourceId);
+            return choice.Cost == "DiscardTableCard" ? "Discard " + card + " to respond" : "Use " + card + "'s response";
+        }
+
         private void InspectSource(Button button, EffectChoiceView choice)
         {
-            button.tooltip = choice.Detail.Length > 0 ? choice.Detail : choice.Cost == "DiscardTableCard" ? "Discard this table card to respond" : "Use this response";
+            button.tooltip = choice.Detail.Length > 0 ? choice.Detail : ResponseTooltip(choice);
             // UI-285: a Hunt response sends with its click, so it pins no card that would read as a confirmation still
             // waiting; its tooltip says what it does and the Effects panel shows the card.
             if (!CardLibrary.Cards.ContainsKey(choice.SourceId) || view.Hunt != null && draft.Kind == CommandKind.RespondEffect)

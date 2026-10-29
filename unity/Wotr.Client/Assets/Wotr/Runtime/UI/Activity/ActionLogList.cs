@@ -169,7 +169,9 @@ namespace Wotr.Client
                 cost.text = string.Join(" · ", (next.Step == null ? group.Action.Costs : ActionCardText.ExtraCosts(group.Action, next.Step))
                     .Select(ActionCardText.Cost));
                 cost.style.display = cost.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-                open.tooltip = heading.text + "\n" + content.text + "\n" + string.Join(" · ", group.Action.Costs.Select(ActionCardText.Cost));
+                // UI-420 (owner): the row's clipped lines in full, its own costs, and what the click does; no blank line
+                // where an entry has no cost.
+                open.tooltip = TooltipText.Lines(heading.text, content.text, cost.text, "Click to open its action card");
                 Root.EnableInClassList("action-log-child", next.Step != null);
                 expand.style.display = next.Step == null && group.Action.StepCount > 1 ? DisplayStyle.Flex : DisplayStyle.None;
                 IconButton.SetIcon(expand, expanded ? "collapse" : "expand");

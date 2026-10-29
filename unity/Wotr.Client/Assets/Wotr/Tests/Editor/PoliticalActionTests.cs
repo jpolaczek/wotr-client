@@ -84,5 +84,21 @@ namespace Wotr.EditorTests
             view.DecisionOwner = Side.Shadow;
             Assert.IsFalse(PoliticalActions.CanActivate(view, draft, nation.Id));
         }
+
+        // UI-420: "At war" as the track's caption, "1 step", the Southrons & Easterlings in full, and an arrow that says
+        // what pays for its step.
+        [Test]
+        public void NationTextsReadAsTheTrackAndNameWhatPaysForAStep()
+        {
+            Assert.AreEqual("At war", PoliticalActions.Distance(0));
+            Assert.AreEqual("1 step to war", PoliticalActions.Distance(1));
+            Assert.AreEqual("3 steps to war", PoliticalActions.Distance(3));
+            Assert.AreEqual("Southrons & Easterlings · Passive · 1 step to war",
+                PoliticalActions.Describe(new NationView { Id = "southrons", Active = false, StepsToWar = 1 }));
+            Assert.AreEqual("Click to move the Dwarves one step toward war with the selected die",
+                PoliticalActions.AdvanceTooltip(new ActionOption { Kind = CommandKind.AdvancePolitics }, "dwarves"));
+            Assert.AreEqual("Click to move Rohan one step toward war with the Council token",
+                PoliticalActions.AdvanceTooltip(new ActionOption { Kind = CommandKind.UseCouncilToken }, "rohan"));
+        }
     }
 }

@@ -77,7 +77,7 @@ namespace Wotr.Client
                 " · Event " + (position + 1) + "/" + count;
             if (item.Kind is HuntReportKind.Rolled or HuntReportKind.Rerolled && item.Hunt != null)
                 entry.tooltip += "\n" + string.Join(", ", item.Hunt.Dice.Select(d => d.Rerolled ? d.First + " → " + d.Result : d.Result.ToString())) +
-                    " · Bonus +" + item.Hunt.Bonus + " · Reroll bonus +" + item.Hunt.RerollBonus;
+                    " · " + HuntDiceStrip.Bonuses(item.Hunt);
         }
 
         private static string Symbol(HuntReportKind kind) => kind switch

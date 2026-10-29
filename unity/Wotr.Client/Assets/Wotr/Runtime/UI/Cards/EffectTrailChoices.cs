@@ -84,7 +84,7 @@ namespace Wotr.Client
             });
             step.AddToClassList("committed-choice");
             step.userData = sourceId;
-            step.tooltip = cardSource ? "Committed · Inspect source" : "Committed";
+            step.tooltip = cardSource ? "Played card · Click to inspect" : "Committed choice";
             trail.Add(step);
             return step;
         }

@@ -29,9 +29,39 @@ namespace Wotr.Client.Tests
                 statistics.Children().Select(c => c.name).ToArray());
             Assert.AreEqual(view.Battle.Attacker.Strength.ToString(), statistics.Q("battle-stat-strength").Q<Label>("battle-stat-value").text);
             Assert.AreEqual(view.Battle.Attacker.HitTarget + "+", statistics.Q("battle-stat-hit").Q<Label>("battle-stat-value").text);
-            StringAssert.Contains("Combat modifier", statistics.Q("battle-stat-dice").tooltip, "The modifiers stay in the tooltip.");
+            // UI-420 (owner): each medallion explains its own number; a modifier of zero is left out.
+            Assert.AreEqual("Strength " + view.Battle.Attacker.Strength, statistics.Q("battle-stat-strength").tooltip);
+            Assert.AreEqual("Leadership 2", statistics.Q("battle-stat-leadership").tooltip);
+            Assert.AreEqual("Combat dice 5", statistics.Q("battle-stat-dice").tooltip);
+            Assert.AreEqual("Hits on 5+", statistics.Q("battle-stat-hit").tooltip);
+            Assert.IsTrue(string.IsNullOrEmpty(statistics.tooltip), "The row between the medallions has no tooltip of its own.");
+            StringAssert.StartsWith("Sauron · " + view.Battle.Defender.Units.Count(u => u.Nation == "sauron" && u.Kind == UnitKind.Regular) + " Regular",
+                sauron.tooltip, "UI-420 (owner): one line per nation, as on the map's army marker.");
             Assert.IsNull(root.Q("battle-garrison-shelf"), "No ledge without figures outside the fight.");
             Assert.IsEmpty(root.Query<ScrollView>().ToList());
+        }
+
+        // UI-420 (owner): a non-zero modifier stands on the medallion it changes, signed; the card slot names the card
+        // and its click instead of repeating the force's modifiers.
+        [Test]
+        public void MedallionsShowOnlyTheirOwnNonZeroModifiers()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
+            var force = view.Battle.Attacker;
+            force.CombatModifier = 1;
+            force.RerollModifier = -1;
+            force.CaptainBonus = 1;
+            var root = new VisualElement();
+            new BattleContext(root, view.Battle, view, new TurnDraft(), _ => { }, _ => { });
+            var attacker = root.Q("battle-attacker");
+            Assert.AreEqual("Hits on 5+\nCombat modifier +1 · Leader reroll modifier -1", attacker.Q("battle-stat-hit").tooltip);
+            Assert.AreEqual("Combat dice 5\nCaptain bonus +1", attacker.Q("battle-stat-dice").tooltip);
+            Assert.AreEqual("Leadership 2", attacker.Q("battle-stat-leadership").tooltip);
+            var card = attacker.Q<Button>("battle-card-attacker");
+            StringAssert.EndsWith("\nClick to inspect", card.tooltip);
+            StringAssert.DoesNotContain("modifier", card.tooltip);
+            Assert.IsTrue(string.IsNullOrEmpty(attacker.Q<Label>("attacker-strength").tooltip), "The heading has no notes to add.");
+            StringAssert.DoesNotContain("+0", root.Q("battle-defender").Q("battle-stat-hit").tooltip);
         }
 
         [Test]
@@ -71,6 +101,8 @@ namespace Wotr.Client.Tests
             var shelf = root.Q("battle-attacker").Q("battle-garrison-shelf");
             Assert.IsNotNull(shelf);
             StringAssert.Contains("Rear guard", shelf.Q<Label>("battle-nonparticipants").text);
+            // UI-420 (owner): the ledge's tooltip spells out its symbols rather than repeating its text.
+            StringAssert.Contains("Rear guard · Rohan · 1 Regular", shelf.Q<Label>("battle-nonparticipants").tooltip);
             Assert.IsNotNull(shelf.Q(className: "battle-garrison-icon"));
             var stages = BattleStages.Create(view.Battle);
             Assert.AreEqual(5, stages.Query(className: "battle-stage").ToList().Count);
@@ -169,11 +201,49 @@ namespace Wotr.Client.Tests
             Assert.IsTrue(stop.ClassListContains("battle-direct"));
             Assert.IsTrue(stop.Q("battle-direct-icon").ClassListContains("battle-direct-icon-stop"));
             Assert.AreEqual("Stop battle", stop.text, "The text stays the control; the icon only decorates it.");
+            // UI-420 (owner): a direct choice says what its click does and names the battle's region.
+            Assert.AreEqual("Stop battle · End the attack on Lossarnach; your army stays in Minas Tirith", stop.tooltip);
 
             var report = new BattleReport(null, BoardPresentation.Load());
             Assert.IsTrue(report.Root.ClassListContains("battle-chronicle"));
             Assert.IsTrue(report.Root.Q<Label>("battle-report-round").ClassListContains("battle-round-tab"));
             Assert.IsNotNull(report.Root.Q<Button>("close-battle-report"));
+        }
+
+        // UI-420 (owner): every direct battle choice says what its click does and names the battle's region; Keep all and
+        // the card setting say what they keep or skip.
+        [Test]
+        public void DirectBattleChoicesNameWhatTheyDoAndWhere()
+        {
+            var data = BoardPresentation.Load();
+            var view = BattleScreenFixture.Create(CommandKind.RetreatBattle);
+            Assert.AreEqual("Continue battle · Fight another Combat round in Lossarnach", BattleChoices.DirectTooltip(view, CommandKind.ContinueBattle, data));
+            Assert.AreEqual("Hold position · Do not retreat; fight on in Lossarnach", BattleChoices.DirectTooltip(view, CommandKind.HoldBattle, data));
+            Assert.AreEqual("Fight in field · Defend Lossarnach outside the stronghold", BattleChoices.DirectTooltip(view, CommandKind.FightFieldBattle, data));
+            Assert.AreEqual("Retreat inside · Withdraw into the Lossarnach stronghold", BattleChoices.DirectTooltip(view, CommandKind.RetreatIntoSiege, data));
+            Assert.AreEqual("Stay · No figure advances into Lossarnach", BattleChoices.DirectTooltip(view, CommandKind.AdvanceBattle, data));
+            view.Battle.Attacker.RegionId = view.Battle.RegionId;
+            Assert.AreEqual("Stop battle · End the attack; your army stays in Lossarnach", BattleChoices.DirectTooltip(view, CommandKind.StopBattle, data));
+
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RetreatBattle);
+            var footer = new VisualElement();
+            new BattleChoices(new VisualElement(), footer, view, draft, action => action(), action => action(), _ => { }, data);
+            Assert.AreEqual("Hold position · Do not retreat; fight on in Lossarnach", footer.Q<Button>("action-HoldBattle").tooltip);
+
+            var losses = BattleScreenFixture.Create(CommandKind.TakeBattleLosses);
+            losses.Battle.VoluntaryLosses = true;
+            losses.Options[0].Minimum = 0;
+            var sacrifice = new TurnDraft();
+            sacrifice.Choose(CommandKind.TakeBattleLosses);
+            footer = new VisualElement();
+            new BattleChoices(new VisualElement(), footer, losses, sacrifice, action => action(), action => action(), _ => { }, data);
+            Assert.AreEqual("Keep all · Take no voluntary losses", footer.Q<Button>("battle-keep-all").tooltip);
+
+            var skip = BattlePolicyControl.ToggleTooltip(false, false);
+            var ask = BattlePolicyControl.ToggleTooltip(false, true);
+            StringAssert.StartsWith("Skip cards this battle · ", skip);
+            StringAssert.StartsWith("Ask for cards · ", ask);
         }
     }
 }

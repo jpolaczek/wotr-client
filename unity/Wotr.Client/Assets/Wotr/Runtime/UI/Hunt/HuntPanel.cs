@@ -171,7 +171,8 @@ namespace Wotr.Client
                 : HuntReportText.Source(hunt.SourceId, data) + " · Pool " + hunt.PoolCount + " · Corruption " + view.Fellowship.Corruption + "/12";
             if (hunt?.Mordor == true)
                 source.text += "\nMordor · No Hunt roll · Eye " + hunt.EyeDamage;
-            source.tooltip = hunt?.PoolCount == 0 ? "Eligible standard discards refill an empty pool on the next draw." : source.text;
+            // UI-420 (owner): the line is its own text; a tooltip only adds what it cannot say (an empty pool's refill).
+            source.tooltip = hunt?.PoolCount == 0 ? "Eligible standard discards refill an empty pool on the next draw." : "";
             Dice.Apply(hunt);
             Tile.Apply(hunt);
             Guides.Apply(view);

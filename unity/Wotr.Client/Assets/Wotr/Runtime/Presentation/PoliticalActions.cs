@@ -79,15 +79,27 @@ namespace Wotr.Client
             if (!ActivationOffered(view, draft, nation))
                 return "";
             return (CanActivate(view, draft, nation) ? "Use Narya with the selected die." : "Select an available action die to use Narya.") +
-                "\nSpend the die and transfer Narya to the Shadow. Activate this nation and place it At War.";
+                "\nSpend the die and transfer Narya to the Shadow. Activate this nation and place it at war.";
         }
 
         public const string ActivationSources =
             "Activation follows an eligible Fellowship declaration, companion arrival, enemy incursion or attack, or a card effect." +
             "\nMuster advances the track; it does not activate a nation. Card restrictions still apply.";
 
-        public static string Describe(NationView nation) => FigureGrid.Name(nation.Id) + " · " +
-            (nation.Active ? "Active" : "Passive") + " · " +
-            (nation.StepsToWar == 0 ? "At war" : nation.StepsToWar + (nation.StepsToWar == 1 ? " step" : " steps") + " to war");
+        // UI-420 (owner): "Southrons & Easterlings · Passive · 1 step to war"; "At war" as the track's caption reads.
+        public static string Describe(NationView nation) =>
+            TooltipText.Parts(TooltipText.Nation(nation.Id), nation.Active ? "Active" : "Passive", Distance(nation.StepsToWar));
+
+        // "At war", "1 step to war", "3 steps to war".
+        public static string Distance(int stepsToWar) => stepsToWar == 0 ? "At war" : TooltipText.Count(stepsToWar, "step") + " to war";
+
+        // UI-420 (owner): the arrow says what its click does and with what — the selected die, or the Council token.
+        public static string AdvanceTooltip(ActionOption option, string nation) =>
+            "Click to move " + NationPhrase(nation) + " one step toward war with " +
+            (option?.Kind == CommandKind.UseCouncilToken ? "the Council token" : "the selected die");
+
+        // "the Dwarves", "the Southrons & Easterlings", but "Gondor", "Rohan", "Isengard" and "Sauron".
+        public static string NationPhrase(string nation) =>
+            nation is "dwarves" or "elves" or "north" or "southrons" ? "the " + TooltipText.Nation(nation) : TooltipText.Nation(nation);
     }
 }

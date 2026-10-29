@@ -25,11 +25,12 @@ namespace Wotr.Client
             title.AddToClassList("setup-version-title");
             Root.Add(title);
             Root.Add(Statistics(definitionId));
+            // UI-420 (owner): the label shows the ability's title, so its tooltip holds only the text and source.
             foreach (var ability in CharacterAbilityLibrary.For(definitionId))
             {
                 var label = new Label("◇ " + ability.Title) { focusable = true, enableRichText = false,
                     name = "setup-ability-" + ability.Id,
-                    tooltip = ability.Title + "\n" + ability.Text + "\n\n" + ability.Source };
+                    tooltip = TooltipText.Lines(ability.Text, ability.Source) };
                 label.AddToClassList("setup-version-ability");
                 Root.Add(label);
             }

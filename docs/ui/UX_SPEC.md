@@ -1530,3 +1530,13 @@ Base-game parts of the owner's requests on the Kings branch:
   is lit too.
 - UI-419 (owner) — the battle window's clickable pips (Heroic Death's amounts) glow brighter and pulse in the shared
   rhythm. (The Skip effect button stands on the expansions branch, with their optional declines.)
+
+## Tooltips say what they confirm or pass, once and cleanly — UI-420 (2026-10-29)
+
+- UI-420 (owner) — an audit of every tooltip of the base game and the expansions ([TOOLTIP_AUDIT](TOOLTIP_AUDIT.md)). An
+  action's tooltip names what it confirms or passes: the console's ✓ reads `Confirm · <card>: <chosen options>` or names
+  the armies, routes, recruits and nation of the step; Pass names the card or ability it skips; Finish the action it ends;
+  the battle window's direct steps and Apply losses name the region and the figures; Keep roll and Reroll selected the roll.
+  Informational tooltips drop repeated facts (a Hunt tile's value, a king's state, equal Level/Move/Combat level, a status
+  equal to its label), blank lines and dangling separators, raw ids and enum names; a force, a character, a deck and a
+  played card read the same everywhere. Tests: `TooltipTextTests` and the tests listed in the audit document.

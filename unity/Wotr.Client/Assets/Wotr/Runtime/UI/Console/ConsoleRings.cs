@@ -96,7 +96,7 @@ namespace Wotr.Client
         {
             CommandKind.UseRing => "Click, then a die to change its result",
             CommandKind.UseVilya => "Click to use it on the kept die",
-            _ => "Click to pay the card's cost with this ring"
+            _ => "Click to give this Ring to the Shadow as the card's removal cost"
         };
 
         private static string Name(RingView ring) =>

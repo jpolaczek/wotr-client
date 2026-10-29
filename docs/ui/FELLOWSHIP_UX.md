@@ -580,7 +580,8 @@ Test: `FellowshipPanelNetworkTests` (both cases).
 
 The owner changed the Ring's concept (after UI-232): the control is the icon on the track — the Fellowship's marker on
 the progress track, or on the Mordor track in Mordor. While hiding is legal with the chosen die it glows and pulses
-(ChoiceGlow), presses in, says "Click the Fellowship's marker on its track to hide it…", and a click hides
+(ChoiceGlow), presses in, says "Click to hide the Fellowship · No progress; this die does not enter the Hunt" (UI-420: one wording for the marker,
+the map figure and the console), and a click hides
 (`FellowshipTrackRow.OfferMarker`); otherwise it is a picture that takes no pointer. The Ring on the plaque and in the
 panel's header is purely informational now: a picture of the condition whose click reaches its host (the plaque
 opens the panel, the header row locates the Fellowship); the plaque's click no longer hides. The figure on the map still

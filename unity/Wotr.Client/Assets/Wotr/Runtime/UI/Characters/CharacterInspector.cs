@@ -117,14 +117,27 @@ namespace Wotr.Client
             limits.tooltip = explanation;
             ShowLimits(explanation.Length > 0);
             RefreshVersions();
-            entry.text = future == null ? "" : "Cost · " + future.Entry.Cost +
-                (future.ExtraDiceNextRecovery > 0 ? "\n+" + future.ExtraDiceNextRecovery + " action die at Recover" : "");
-            entry.tooltip = future == null ? "" : CharacterRosterPresentation.Conditions(future.Entry) +
-                (future.CouncilEntry == null ? "" : "\n\n" + CharacterRosterPresentation.Conditions(future.CouncilEntry));
+            entry.text = future == null ? "" : EntryText(future);
+            entry.tooltip = future == null ? "" : EntryTooltip(future);
             entry.EnableInClassList("legal-target", future?.Entry.CanAct == true || future?.CouncilEntry?.CanAct == true);
             entry.style.display = future == null ? DisplayStyle.None : DisplayStyle.Flex;
             Changed?.Invoke();
         }
+
+        // UI-420 (owner): the label reads "Cost: X", as the roster row does; its tooltip adds what the label leaves out,
+        // without repeating the cost, then the entry with a Council token under its own heading (no blank line).
+        private static string EntryText(CharacterEntryVersionView future) => TooltipText.Lines(
+            CharacterRosterPresentation.Cost(future.Entry),
+            future.ExtraDiceNextRecovery > 0 ? "+" + future.ExtraDiceNextRecovery + " action die at Recover" : "");
+
+        private static string EntryTooltip(CharacterEntryVersionView future) => TooltipText.Lines(
+            future.Entry.Title,
+            CharacterRosterPresentation.Requirements(future.Entry),
+            CouncilTerms(future.CouncilEntry));
+
+        private static string CouncilTerms(ActionAvailabilityView council) => council == null ? "" : TooltipText.Lines(
+            TooltipText.Parts("Or with a Council token", CharacterRosterPresentation.Cost(council)),
+            CharacterRosterPresentation.Requirements(council));
 
         public void SelectVersion(string id)
         {
@@ -153,9 +166,11 @@ namespace Wotr.Client
             statusIcon.RemoveFromClassList("character-status-" + status);
             statusIcon.AddToClassList("character-status-" + next.Key);
             status = next.Key;
-            statusIcon.tooltip = next.Tooltip;
+            // UI-420 (owner): a state whose tooltip only repeats its words ("Not entered") has none.
+            var tooltip = next.Tooltip == next.Text ? "" : next.Tooltip;
+            statusIcon.tooltip = tooltip;
             state.text = next.Text;
-            state.tooltip = next.Tooltip;
+            state.tooltip = tooltip;
         }
 
         private void RefreshVersions()

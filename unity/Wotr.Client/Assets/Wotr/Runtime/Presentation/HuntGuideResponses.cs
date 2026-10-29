@@ -30,9 +30,13 @@ namespace Wotr.Client
 
         public static string Consequence(EffectChoiceView choice) => choice.Title.Length > 0 ? choice.Title : "Guide response";
 
-        public static string Tooltip(PlayerView view, EffectChoiceView choice) =>
-            "Click to use " + Owner(view, choice) + "'s response · " + Consequence(choice) +
-            (choice.Detail.Length > 0 ? "\n" + choice.Detail : "") + "\nOr Pass to skip it.";
+        // UI-420 (owner): "Click to use Merry's response · Separate · Reduce damage"; an untitled one is "Merry's Guide
+        // response", never "response · Guide response".
+        public static string Tooltip(PlayerView view, EffectChoiceView choice) => TooltipText.Lines(
+            TooltipText.Parts("Click to use " + Owner(view, choice) + (choice.Title.Length > 0 ? "'s response" : "'s Guide response"),
+                choice.Title),
+            choice.Detail == choice.Title ? "" : choice.Detail,
+            "Or Pass to skip it.");
 
         // The console's hint while the row offers the player's own Guide responses.
         public static string Guidance(PlayerView view, IReadOnlyList<EffectChoiceView> offered)

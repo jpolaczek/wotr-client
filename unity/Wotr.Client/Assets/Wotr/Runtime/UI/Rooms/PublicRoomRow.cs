@@ -51,7 +51,8 @@ namespace Wotr.Client
             emblem.EnableInClassList("side-shadow", !free);
             name.text = room.Name;
             detail.text = Detail(room);
-            Root.tooltip = room.Name + " · " + detail.text;
+            // UI-262: the row's lines end in an ellipsis, so its tooltip holds them in full. UI-420 (owner): one per line.
+            Root.tooltip = TooltipText.Lines(room.Name, detail.text);
             play.SetEnabled(room.CanPlay);
             play.tooltip = room.CanPlay ? "Join as " + BoardScreen.SideName(room.OpenSide) + "."
                 : room.Status == RoomStatus.Started ? "The game has started." : "Both seats are taken.";

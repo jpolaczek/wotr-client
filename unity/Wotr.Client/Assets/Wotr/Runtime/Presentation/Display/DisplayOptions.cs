@@ -73,7 +73,10 @@ namespace Wotr.Client
                 return "Full screen uses this screen's resolution (" + screen.Native + ") · Choose Windowed to pick a size";
             if (preset.IsNative)
                 return "This screen's resolution · " + screen.Native;
-            return preset.Fits(screen.Native) ? preset.ToString() : preset + " · Larger than this screen (" + screen.Native + ")";
+            // UI-420 (owner): the label already names the size; the tooltip says how it relates to this screen.
+            return preset.Fits(screen.Native)
+                ? "Windowed · Fits this screen (" + screen.Native + ")"
+                : "Larger than this screen (" + screen.Native + ")";
         }
     }
 }

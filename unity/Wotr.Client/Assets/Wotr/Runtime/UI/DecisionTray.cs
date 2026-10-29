@@ -115,7 +115,7 @@ namespace Wotr.Client
             if (confirm != null && !uncertain && draft.Kind is CommandKind.RerollHunt or CommandKind.RerollBattle)
             {
                 confirm.text = draft.Payload.Ids.Count == 0 ? "Keep roll" : "Reroll selected";
-                confirm.tooltip = draft.Payload.Ids.Count == 0 ? "Keep this result without using optional rerolls" : "Roll only the selected failed dice";
+                confirm.tooltip = RerollTooltip(draft);
             }
             if (uncertain && root.Q<Label>("pending-command-message") is { } message)
                 message.text = PendingMessage(pendingProblem);
@@ -123,8 +123,7 @@ namespace Wotr.Client
             {
                 status.text = busy ? "Waiting for the server…" : draft.Kind == CommandKind.UseRing ? RingChoice.Hint(draft)
                     : draft.Kind == CommandKind.AllocateHunt ? HuntAllocationText.Hint(draft, HuntActions.Allocation(view))
-                    : draft.Kind == CommandKind.DiscardCards
-                    ? "Click a card, then click it again to discard it face down."
+                    : draft.Kind == CommandKind.DiscardCards ? DiscardHint
                     // UI-390: a deck choice names the glowing decks.
                     : DeckChoice.Pending(view) ? DeckChoice.Hint(view)
                     : NazgulFlightDraft.Active(view, draft) ? NazgulFlightDraft.Hint(view, draft)
@@ -218,7 +217,7 @@ namespace Wotr.Client
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
                 view.Decision.Presentation is "DieAndResult" or "Region" || option.EventRecruitment != null || ExpansionDraft.Handles(draft.Kind) || FellowshipDraft.UsesFellowship(draft.Kind)))
             {
-                var back = IconButton.Create("back", "Back", () => Cancel?.Invoke());
+                var back = IconButton.Create("back", "Back · Undo the last unsent step", () => Cancel?.Invoke());
                 back.name = "decision-back";
                 var route = draft.Kind == CommandKind.AwakenSovereign && SovereignPresentation.OwnsDecision(view, draft)
                     ? root.Q<Button>("travel-stay")?.parent : null;
@@ -231,6 +230,7 @@ namespace Wotr.Client
                     var button = BoardScreen.Button(Label(alternative.Kind), () => ActionChosen?.Invoke(alternative.Kind));
                     button.name = "action-" + alternative.Kind;
                     button.SetEnabled(alternative.Enabled);
+                    button.tooltip = CardArmyEvent.Tooltip(view, alternative);
                     footer.Add(button);
                 }
             foreach (var alternative in ExpansionDecision.Alternatives(view, draft))
@@ -506,7 +506,9 @@ namespace Wotr.Client
                 button.SetEnabled(option.Enabled);
                 button.name = "action-" + option.Kind;
                 button.userData = new DraftToken(DraftObject.Action, action: option.Kind);
-                button.tooltip = option.Reason;
+                // UI-420 (owner): a battle step sent by its click says what it does and where.
+                button.tooltip = option.Enabled && BattleDraft.IsImmediate(option.Kind)
+                    ? BattleChoices.DirectTooltip(view, option.Kind, data) : option.Reason;
                 row.Add(button);
             }
         }
@@ -612,6 +614,17 @@ namespace Wotr.Client
             : kind == DecisionKind.EffectChoice ? "Resolve the played card · Choose the next step"
             : kind == DecisionKind.Reaction ? "Response window"
             : "Your action";
+
+        // UI-142/UI-222: a hand card is discarded with one click on its red mark.
+        public const string DiscardHint = "Click a red-marked card to discard it face down.";
+
+        // UI-420 (owner): Keep roll and Reroll selected say which dice they roll.
+        private static string RerollTooltip(TurnDraft draft)
+        {
+            var count = draft.Payload.Ids.Count;
+            return count == 0 ? "Keep roll · Accept this roll without using your optional rerolls"
+                : "Reroll selected · Roll " + (count == 1 ? "the selected failed die" : "the " + count + " selected failed dice") + " again";
+        }
 
         public static string Label(CommandKind kind) => ExpansionDecision.Label(kind).Length > 0 ? ExpansionDecision.Label(kind) : kind switch
         {

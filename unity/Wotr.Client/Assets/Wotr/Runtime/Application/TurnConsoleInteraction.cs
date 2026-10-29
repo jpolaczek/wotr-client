@@ -93,17 +93,18 @@ namespace Wotr.Client
             // UI-291: in the player's own reaction window Pass declines it and names what it skips.
             var skip = ReactionSkip.Option(view) != null;
             var passable = idle && (skip || pass?.Enabled == true);
-            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view) : Tooltip("Pass", CommandKind.Pass, pass));
+            ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view)
+                : Tooltip("Pass", ConsoleActions.PassDetail, CommandKind.Pass, pass));
             actions.Invite(actions.Pass, passable);
             ConsoleActions.Set(actions.Discard, idle && discard?.Enabled == true,
-                Tooltip("Discard the selected die without effect", CommandKind.DiscardDie, discard));
+                Tooltip("Discard", DiscardDetail(), CommandKind.DiscardDie, discard));
             ConsoleActions.Set(actions.Back, idle && (onBoard || FellowshipBack()) && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
                 "Back · Undo the last unsent step");
             var finishing = Finishing();
             var card = CardChoice(onBoard);
             ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || card && tray.Legal),
                 uncertain ? "Check result · Recover the interrupted response"
-                : finishing ? "Finish · End this action; saved steps stay"
+                : finishing ? FinishTooltip()
                 : card ? ConfirmChoiceTooltip()
                 : "Finish · Available during an action of several steps");
             // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it.
@@ -136,14 +137,26 @@ namespace Wotr.Client
                 RefreshActions(OnBoard());
         }
 
-        // An unavailable action keeps its place and says why (the server's reason when it gave one).
-        private string Tooltip(string label, CommandKind kind, ComponentAction item)
+        // An available action says what it does; an unavailable one keeps its place and says why (the server's reason
+        // when it gave one).
+        private string Tooltip(string label, string detail, CommandKind kind, ComponentAction item)
         {
             if (item?.Enabled == true)
-                return label;
+                return TooltipText.Parts(label, detail);
             var reason = view.Options.FirstOrDefault(o => o.Kind == kind)?.Reason ?? "";
             return label + " · " + (reason.Length > 0 ? reason : kind == CommandKind.DiscardDie ? "Select one of your dice first" : "Not available now");
         }
+
+        // UI-420 (owner): Discard names the die it discards.
+        private string DiscardDetail()
+        {
+            var die = DieUse.Name(view, draft?.Payload.DieId);
+            return "Discard " + (die.Length > 0 ? "your " + die : "the selected die") + " without effect";
+        }
+
+        // UI-420 (owner): Finish names the action it ends.
+        private string FinishTooltip() =>
+            "Finish · End " + DecisionTray.Label(view.ActionSequence.Kind) + " now; the steps already made stay";
 
         private void Hint(string text, string detail)
         {
@@ -170,8 +183,8 @@ namespace Wotr.Client
         private string ConfirmChoiceTooltip()
         {
             if (tray.Legal)
-                return "Confirm choice" + (tray.ConfirmTitle.Length > 0 ? " · " + tray.ConfirmTitle : "");
-            return "Confirm choice · " + (tray.Problem.Length > 0 ? tray.Problem : "Complete the choice first");
+                return ConfirmSummary.Tooltip(view, draft, tray.ConfirmTitle);
+            return "Confirm · " + (tray.Problem.Length > 0 ? tray.Problem : "Complete the choice first");
         }
 
         private void Back()

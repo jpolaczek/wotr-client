@@ -32,7 +32,7 @@ namespace Wotr.Client
         // UI-155, UI-280: a revealed Fellowship hides with one click on its figure when the server allows it.
         public event System.Action HideRequested;
         public const string HideClass = "fellowship-hide-target";
-        public const string HideHint = "Click to hide the Fellowship.";
+        public const string HideHint = FellowshipActions.HideTooltip;
         public bool HideOffered { get; private set; }
         // UI-236: in the Fellowship phase a click on the figure declares its position; the panel has no button for it.
         public event System.Action DeclareRequested;
@@ -43,10 +43,13 @@ namespace Wotr.Client
         // move it, as with the track symbol in its panel.
         public event System.Action MoveRequested;
         public const string MoveClass = "fellowship-move-target";
-        public const string MoveHint = "Click to move the Fellowship: progress +1, then the Hunt; its last known position stays.";
+        // UI-420 (owner): the same hide and move wording as the track and the console (FellowshipActions).
+        public const string MoveHint = FellowshipActions.MoveTooltip;
         public bool MoveOffered { get; private set; }
         private readonly ChoicePulse pulse;
         private string regionId = "";
+        private bool hidden;
+        private int corruptionLevel;
         private MordorTrackState mordor = MordorTrackState.Outside;
         private bool tileShown;
         private float shownStep = -1;
@@ -105,7 +108,9 @@ namespace Wotr.Client
         {
             mordor = MordorTrackState.For(fellowship);
             regionId = fellowship?.MordorStep.HasValue == false ? fellowship.RegionId : "";
-            marker.text = fellowship?.Hidden == true ? "◇" : "◆";
+            hidden = fellowship?.Hidden == true;
+            corruptionLevel = fellowship?.Corruption ?? 0;
+            marker.text = hidden ? "◇" : "◆";
             MoveOnTrack(mordor.Step);
             corruption.text = mordor.Corruption + "/12";
             idle.style.display = mordor.Attempted == false ? DisplayStyle.Flex : DisplayStyle.None;
@@ -186,9 +191,15 @@ namespace Wotr.Client
             if (!visible)
                 return;
             Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
-            marker.tooltip = map.Data.Regions[regionId].Name + " · Last known position" + (DeclareOffered ? "\n" + DeclareHint : "") +
-                (MoveOffered ? "\n" + MoveHint : "") + (HideOffered ? "\n" + HideHint : "");
+            marker.tooltip = TooltipText.Lines(RegionTooltip(hidden, corruptionLevel, map.Data.Regions[regionId].Name),
+                DeclareOffered ? DeclareHint : "", MoveOffered ? MoveHint : "", HideOffered ? HideHint : "");
         }
+
+        // UI-420 (owner): the figure's tooltip is the Fellowship's, titled as on the Mordor track (MordorTrackState), with
+        // the region as its last known position: "Fellowship · Hidden · Rivendell (last known position)\nCorruption 3/12".
+        public static string RegionTooltip(bool hidden, int corruption, string region) => TooltipText.Lines(
+            TooltipText.Parts("Fellowship", hidden ? "Hidden" : "Revealed", region + " (last known position)"),
+            "Corruption " + corruption + "/12");
 
         // The first place whose figure stands with its feet inside the region at the current zoom; a region too small
         // for every place keeps the figure above its forces.

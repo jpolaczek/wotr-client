@@ -23,7 +23,8 @@ namespace Wotr.EditorTests
             {
                 var icon = strip.Root.Q<Button>("roster-ability-" + Gimli + "-" + ability.Id);
                 Assert.IsNotNull(icon, ability.Id);
-                StringAssert.StartsWith(ability.Title + "\n" + ability.Text, icon.tooltip);
+                StringAssert.StartsWith(ability.Title + "\n" + ability.Text + "\n", icon.tooltip);
+                StringAssert.DoesNotContain("\n\n", icon.tooltip);
                 Assert.IsFalse(icon.ClassListContains(ChoiceGlow.ClassName), "Nothing can be used yet.");
             }
             Assert.AreEqual("Wotr/Art/UI/actions/battle", AbilityIcons.For("combat-strength-plus-one"), "Captain of the West is a battle.");
@@ -62,7 +63,9 @@ namespace Wotr.EditorTests
             var icon = strip.Root.Q<Button>("roster-ability-" + Gimli + "-" + politics);
             Assert.IsTrue(icon.ClassListContains(ChoiceGlow.ClassName), "A usable ability's icon glows.");
             Assert.IsTrue(strip.Offered);
-            StringAssert.EndsWith("Click to use · Use your Muster die: Move the Dwarves one step toward war.", icon.tooltip);
+            // UI-420: one line says the click, the die and the effect, without a blank line before it.
+            StringAssert.EndsWith("\nClick to use your Muster die: Move the Dwarves one step toward war.", icon.tooltip);
+            StringAssert.DoesNotContain("\n\n", icon.tooltip);
             strip.Choose(politics);
             CollectionAssert.AreEqual(new[] { action }, used, "Its click starts the ability.");
             var captain = CharacterAbilityLibrary.For(Gimli)[0].Id;

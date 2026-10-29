@@ -58,14 +58,24 @@ namespace Wotr.Client
                 item.Value.Q<Label>("portrait-name").text = CharacterLibrary.ShortName(version.Length > 0 ? version : item.Key);
                 item.Value.EnableInClassList("current-guide", guide);
                 item.Value.Q<Label>("guide-badge").style.display = guide ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = descriptions[item.Key] = CharacterLibrary.Name(version.Length > 0 ? version : item.Key) +
-                    (character == null ? "" : $" · Level {character.Level} · Leadership {character.Leadership} · {FigureGrid.Name(character.NationIcon)}") +
-                    (version.Length > 0 ? "\n" + Abilities(version) : view.Configuration.Lords ? "\nVersion unrevealed" : "");
+                item.Value.tooltip = descriptions[item.Key] = TooltipText.Lines(
+                    Heading(CharacterLibrary.Name(version.Length > 0 ? version : item.Key), character),
+                    version.Length > 0 ? Abilities(version) : view.Configuration.Lords ? "Version unrevealed" : "");
             }
         }
 
         // UI-187: every ability of the companion in its short form, the Guide's among them; a card without short forms
         // keeps its Guide ability text.
+        // UI-420 (owner): "Strider · Level 3 · Leadership 1 · North"; a companion without a nation ends after its
+        // Leadership, with no dangling separator, and the opponent sees the name alone.
+        private static string Heading(string name, CharacterView character)
+        {
+            if (character == null)
+                return name;
+            var nation = string.IsNullOrEmpty(character.NationIcon) ? "" : TooltipText.Nation(character.NationIcon);
+            return TooltipText.Parts(name, "Level " + character.Level, "Leadership " + character.Leadership, nation);
+        }
+
         private static string Abilities(string version)
         {
             var lines = CharacterAbilitySummaries.Lines(version);

@@ -9,6 +9,21 @@ namespace Wotr.EditorTests
 {
     public sealed class SovereignPanelTests
     {
+        // UI-420 (owner): a king's portrait reads without a raw status name or a dangling part, a removed king in one line,
+        // and the corruption count as the Fellowship's ("Corruption 0/4").
+        [Test]
+        public void AKingsDescriptionNamesHisStatusOnceAndARemovedKingInOneLine()
+        {
+            var king = new SovereignView { Id = "king", Title = "Dáin", Resistance = 4, Corruption = 0, Status = SovereignStatus.Initial };
+            Assert.AreEqual("Corruption 0/4", SovereignPresentation.Corruption(king));
+            king.Status = SovereignStatus.Removed;
+            Assert.AreEqual("Dáin · × Removed from play", SovereignPresentation.Describe(king, "Out of play"));
+            king.Status = SovereignStatus.Initial;
+            king.Corruption = null;
+            king.Garrison = true;
+            Assert.AreEqual("Dáin · ♙ Initial · Erebor · Garrison\nCorruption ?/4", SovereignPresentation.Describe(king, "Erebor"));
+        }
+
         [Test]
         public void PlacementKeepsFixedControlsClearEvenWhenAFloatingWindowFillsTheRemainingMap()
         {
@@ -83,7 +98,7 @@ namespace Wotr.EditorTests
             Assert.IsFalse(panel.IsOpen);
             panel.Show("king");
             Assert.AreSame(dock, tray.parent);
-            StringAssert.Contains("Corruption ? / 4", panel.Inspector.Q<Label>("sovereign-state").text);
+            StringAssert.Contains("Corruption ?/4", panel.Inspector.Q<Label>("sovereign-state").text);
             Assert.AreEqual("▧", panel.Inspector.Q<Label>("attached-tile-back-0").text);
             Assert.IsEmpty(panel.DecisionHost.Children());
             var labels = string.Join(" ", panel.Inspector.Query<Label>().ToList().Select(l => l.text + l.tooltip + l.name));

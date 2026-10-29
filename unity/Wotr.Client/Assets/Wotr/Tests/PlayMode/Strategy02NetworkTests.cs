@@ -72,7 +72,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(BattleMode.Relief, room.Sh.Board.View.Battle.Mode);
                 Assert.AreEqual(3, room.Sh.Board.View.Battle.Defender.CombatDice);
                 Assert.AreEqual(2, room.Sh.Board.View.Battle.Defender.CombatDiceReduction);
-                Assert.That(room.Fp.Board.Tray.Q<Button>("battle-card-defender").tooltip, Does.Contain("Help Unlooked For"));
+                // UI-420 (owner): the reduction stands on the Combat dice medallion, not on the card slot.
+                Assert.That(room.Fp.Board.Tray.Q("battle-defender").Q("battle-stat-dice").tooltip, Does.Contain("Help Unlooked For"));
                 Assert.AreEqual(1, room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Resolving));
                 await Reconnect(room);
                 Assert.AreEqual(3, room.Fp.Board.View.Battle.Defender.CombatDice);

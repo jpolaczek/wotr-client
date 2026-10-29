@@ -31,12 +31,22 @@ namespace Wotr.Client
         };
 
         public static string Corruption(SovereignView sovereign) => "Corruption " +
-            (sovereign.Corruption.HasValue ? sovereign.Corruption.Value.ToString() : "?") + " / " + sovereign.Resistance;
+            (sovereign.Corruption.HasValue ? sovereign.Corruption.Value.ToString() : "?") + "/" + sovereign.Resistance;
+
+        // UI-420 (owner): a king's portrait and map marker read alike: "Dáin Ironfoot · ◉ Corrupted · Erebor", then his
+        // corruption; a removed king is one line.
+        public static string Describe(SovereignView king, string region)
+        {
+            if (king.Status == SovereignStatus.Removed)
+                return TooltipText.Parts(king.Title, "× Removed from play");
+            var heading = TooltipText.Parts(king.Title, Status(king.Status), region, king.Garrison ? "Garrison" : "");
+            return TooltipText.Lines(heading, Corruption(king));
+        }
 
         public static string Consequence(PlayerView view, TurnDraft draft)
         {
             if (view.Decision?.Presentation == "CorruptionRemoval")
-                return "Return one random non-Kings tile to the Hunt Pool, or keep the tiles. No extra die.";
+                return "Return one random non-Kings tile to the Hunt pool, or keep the tiles. No extra die.";
             if (draft?.Kind == CommandKind.AwakenSovereign)
                 return "Return all attached tiles · " + (view.Configuration.RemovingRulerTokens
                     ? "Ruler tokens are not used."
@@ -54,7 +64,7 @@ namespace Wotr.Client
             var id = view.CorruptionAttempt?.SovereignId == target ? view.CorruptionAttempt.DieId :
                 DecisionTarget(view, draft) == target ? draft?.Payload.DieId ?? "" : "";
             var die = view.Dice.FirstOrDefault(d => d.Id == id);
-            return die == null ? "" : "Cost · " + ExpansionLabels.DieFace(die) +
+            return die == null ? "" : "Cost: " + ExpansionLabels.DieFace(die) +
                 (ExpansionLabels.Special(die) ? " · " + ExpansionLabels.DieSource(die) : "") +
                 (view.CorruptionAttempt?.SovereignId == target ? " · Committed" : "");
         }

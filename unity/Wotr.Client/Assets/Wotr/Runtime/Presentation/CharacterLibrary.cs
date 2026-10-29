@@ -31,9 +31,20 @@ namespace Wotr.Client
         public static CharacterText Find(string id) => Characters.TryGetValue(id, out var item) ? item : null;
         public static string Edition(string id) => string.IsNullOrEmpty(id) ? "" : FigureGrid.Name(id.Split('.')[0]);
         public static string Name(string id) => Characters.TryGetValue(id, out var item) ? item.Title : FigureGrid.Name(id);
+        // UI-420 (owner): the abilities by their printed titles ("Palantír of Anárion"), never names made from their ids.
         public static string Description(string id) => Characters.TryGetValue(id, out var item)
-            ? item.Title + (item.Level.HasValue ? " · Level " + item.Level : "") + (item.Leadership.HasValue ? " · Leadership " + item.Leadership : "") +
-                "\n" + string.Join(" · ", item.Abilities.Select(FigureGrid.Name)) : Name(id);
+            ? TooltipText.Lines(item.Title + (item.Level.HasValue ? " · Level " + item.Level : "") +
+                (item.Leadership.HasValue ? " · Leadership " + item.Leadership : ""), AbilityTitles(id)) : Name(id);
+
+        private static string AbilityTitles(string id) => TooltipText.Parts(CharacterAbilityLibrary.For(id).Select(a => a.Title).ToArray());
+
+        // UI-420 (owner): one line per printed ability, its title and gist ("Stewardship · With Denethor in Minas Tirith,
+        // …"); only the titles where the card has no summaries.
+        public static string Abilities(string id)
+        {
+            var lines = CharacterAbilitySummaries.Lines(id);
+            return lines.Count > 0 ? TooltipText.Lines(lines.ToArray()) : AbilityTitles(id);
+        }
         public static string ShortName(string id) => id switch
         {
             "base.character.merry" => "Merry",

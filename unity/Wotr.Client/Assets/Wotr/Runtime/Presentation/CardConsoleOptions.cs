@@ -67,7 +67,7 @@ namespace Wotr.Client
             if (option == null || view.Decision.Presentation != "NazgulStrike")
                 return NoTableCards;
             return option.EffectChoices.Where(TableCard).ToDictionary(c => c.Id,
-                c => "Discard " + CardLibrary.Title(c.SourceId) + " · " + c.Detail);
+                c => TooltipText.Parts("Discard " + CardLibrary.Title(c.SourceId), c.Detail));
         }
 
         private static bool Card(PlayerView view, TurnDraft draft) =>
@@ -131,7 +131,7 @@ namespace Wotr.Client
             Id = choice.Id,
             Name = "effect-choice-" + choice.Id,
             Label = EffectLabel(view, choice),
-            Tooltip = choice.Detail.Length > 0 ? choice.Detail : choice.Title,
+            Tooltip = choice.Detail.Length > 0 ? choice.Detail : TooltipText.Parts(ConfirmSummary.Source(view), choice.Title),
             Kind = ConsoleOptionKind.Effect,
             Enabled = EffectChoiceDraft.CanChoose(draft, option, choice.Id)
         };
@@ -153,7 +153,7 @@ namespace Wotr.Client
                 return NoTableCards;
             return respond.EffectChoices.Where(c => respond.EligibleIds.Contains(c.Id) && view.Effects.Any(e => e.SourceId == c.SourceId))
                 .GroupBy(c => c.SourceId).Where(g => g.Count() == 1)
-                .ToDictionary(g => g.Key, g => "Discard " + CardLibrary.Title(g.Key) + " to use it · " + g.First().Detail);
+                .ToDictionary(g => g.Key, g => TooltipText.Parts("Discard " + CardLibrary.Title(g.Key) + " to use it", g.First().Detail));
         }
 
         // The reaction a table card's × uses, or "".
@@ -202,7 +202,7 @@ namespace Wotr.Client
                 Id = choice.Id,
                 Name = "effect-choice-" + choice.Id,
                 Label = choice.Title.Length > 0 ? choice.Title : name,
-                Tooltip = choice.Detail.Length > 0 ? choice.Detail : "Use this response",
+                Tooltip = choice.Detail.Length > 0 ? choice.Detail : "Use " + name + "'s response",
                 Kind = ConsoleOptionKind.Reaction
             };
         }

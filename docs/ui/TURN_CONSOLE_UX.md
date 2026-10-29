@@ -304,7 +304,7 @@ The user request from 2026-10-14: "confirm the allocation of dice to the hunt we
   - Nothing waits for an answer.
 
   Ready sign lights up (`hunt-confirm-ready`) and in tooltipie says
-  „Allocate & roll · n dice · Click the plaque to allocate and roll”.
+  „Allocate & roll · Put n dice in the Hunt Box, then roll the rest” (UI-420).
 - The non-ready plaque stands at the same place, decorated (`hunt-confirm-waiting`). Its tooltip
   tells how much dice is missing. The click does not send anything and does not open the Hunt window
   at the time of the assignment.
@@ -478,8 +478,8 @@ shared rhythm; the console and the decision window do not repeat them.
 The owner's decision: the console's Pass also declines the player's own reaction window — a Guide's or character's
 skill (Gandalf the Grey's draw, the White Rider, Merry's or Pippin's separation, Gollum's reveal), a table card's or a
 hand card's response, the Ents' free Event. It lights with the shared ChoiceGlow whenever a click can use it (a legal
-Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Gandalf the Grey · Draw matching
-card"; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
+Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Gandalf the Grey's Draw matching
+card" since UI-420; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
 "Decline"/"Skip" buttons are gone, so the console keeps its hint ("… · or Pass to skip it."), and three object-less
 responses now fit the console. The opponent's window never enables it. Tests: `CardConsoleOptionsTests`,
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,

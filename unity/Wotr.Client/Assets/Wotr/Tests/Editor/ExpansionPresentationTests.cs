@@ -26,6 +26,20 @@ namespace Wotr.EditorTests
             StringAssert.Contains(name, CharacterLibrary.Description(id));
         }
 
+        // UI-420: a king's abilities read by their printed titles, without his name. (This line has no gists for the
+        // Kings abilities, so their titles share one line.)
+        [Test]
+        public void ASovereignsAbilitiesReadByTheirPrintedTitles()
+        {
+            const string denethor = "kings.character.denethor.awakened";
+            var abilities = CharacterLibrary.Abilities(denethor);
+            Assert.AreEqual("Stewardship · Palantír of Anárion", abilities);
+            StringAssert.DoesNotContain("Denethor —", abilities);
+            StringAssert.Contains("Palantír of Anárion", CharacterLibrary.Description(denethor), "The printed title, not one made from its id.");
+            StringAssert.DoesNotContain("Palantir Of Anarion", CharacterLibrary.Description(denethor));
+            StringAssert.StartsWith("Corrupted ruler · ", CharacterLibrary.Abilities("kings.character.denethor.corrupted"));
+        }
+
         [Test]
         public void SovereignInspectionDoesNotInferTheValueOrIdentityOfAHiddenTile()
         {
@@ -82,7 +96,8 @@ namespace Wotr.EditorTests
             Assert.AreEqual("×", root.Q<Button>("gothmog").Q<Label>(className: "die-badge").text);
             pool.Apply(root, view, Side.FreePeoples, true);
             Assert.AreEqual("1", root.Q<Button>("pool-Hunt").text, "UI-97: icon and count; the name leads the description.");
-            StringAssert.StartsWith("Hunt\n", root.Q<Button>("pool-Hunt").tooltip);
+            // UI-420: the title names the location and count; each die's line keeps only what tells it apart.
+            Assert.AreEqual("In the Hunt Box · 1\nNenya · Eye · rolled on a Keeper die · Remove rune", root.Q<Button>("pool-Hunt").tooltip);
             StringAssert.Contains("keeper", root.Q<Button>("pool-Hunt").tooltip.ToLowerInvariant());
             Assert.IsTrue(root.Q<Button>("pool-Hunt").ClassListContains(ReadOnlyControl.ClassName), "UI-230: the count is information only.");
             Assert.AreEqual("CHOOSE A DIE", root.Q<Label>("dice-ring-prompt").text, "UI-238: the band's prompt for an armed Ring.");

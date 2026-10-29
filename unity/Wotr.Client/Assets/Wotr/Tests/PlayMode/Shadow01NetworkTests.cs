@@ -88,7 +88,8 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision);
                 Assert.AreEqual(3, room.Fp.Board.View.Battle.Defender.Leadership);
                 Assert.AreEqual(2, room.Fp.Board.View.Battle.Defender.ForfeitedLeadership["base.character.witch-king"]);
-                Assert.That(room.Fp.Board.Tray.Q<Button>("battle-card-defender").tooltip, Does.Contain("2 Leadership forfeited"));
+                // UI-420 (owner): the forfeit stands on the Leadership medallion, not on the card slot.
+                Assert.That(room.Fp.Board.Tray.Q("battle-defender").Q("battle-stat-leadership").tooltip, Does.Contain("2 Leadership forfeited"));
                 Assert.IsTrue(room.Fp.Board.View.Battle.Defender.Dice.All(d => d.Modifier == 1));
             }
         }

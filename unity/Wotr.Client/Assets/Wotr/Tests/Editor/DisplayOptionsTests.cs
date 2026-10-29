@@ -24,6 +24,8 @@ namespace Wotr.Tests
             CollectionAssert.AreEqual(new[] { true, true, true, true, true, false, false }, choices.Select(choice => choice.Supported));
             StringAssert.Contains("1920×1080", choices[0].Tooltip);
             StringAssert.Contains("Larger than this screen", choices[5].Tooltip);
+            // UI-420: a fitting size's tooltip does not repeat its label.
+            Assert.AreEqual("Windowed · Fits this screen (1920×1080)", choices[3].Tooltip);
             Assert.AreEqual(new DisplaySize(1600, 900), DisplayOptions.Resolve(new DisplaySize(1600, 900), screen, WindowMode.Windowed));
         }
 

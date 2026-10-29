@@ -72,7 +72,7 @@ namespace Wotr.Client
                 Id = o.Kind.ToString(),
                 Name = "action-" + o.Kind,
                 Label = Label(o.Kind),
-                Tooltip = o.Enabled ? Label(o.Kind) : o.Reason,
+                Tooltip = Tooltip(view, o),
                 Kind = ConsoleOptionKind.Action,
                 Command = o.Kind,
                 Enabled = o.Enabled
@@ -84,8 +84,24 @@ namespace Wotr.Client
             CommandKind.MoveArmies => "Move armies",
             CommandKind.AttackArmy => "Attack",
             CommandKind.FinishArmyEvent => "Skip maneuver",
-            _ => kind.ToString()
+            _ => DecisionTray.Label(kind)
         };
+
+        // UI-420 (owner): an army event's other step says what it does with the card's army step.
+        public static string Tooltip(PlayerView view, ActionOption option)
+        {
+            if (!option.Enabled)
+                return TooltipText.Parts(Label(option.Kind), option.Reason);
+            var card = ConfirmSummary.Source(view);
+            var step = card.Length > 0 ? card + "'s army step" : "the army step";
+            return Label(option.Kind) + " · " + option.Kind switch
+            {
+                CommandKind.FinishArmyEvent => "End " + step + " without moving or attacking",
+                CommandKind.AttackArmy => "Use " + step + " to attack instead",
+                CommandKind.MoveArmies => "Use " + step + " to move instead",
+                _ => "Use " + step + " this way"
+            };
+        }
 
         public static string Hint(PlayerView view, TurnDraft draft)
         {

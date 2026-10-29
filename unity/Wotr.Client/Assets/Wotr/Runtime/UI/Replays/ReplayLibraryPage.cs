@@ -93,7 +93,8 @@ namespace Wotr.Client
             text.Add(title);
             text.Add(detail);
             row.Add(text);
-            row.tooltip = title.text + "\n" + detail.text;
+            // UI-262: the row's lines end in an ellipsis, so its tooltip holds them in full. UI-420 (owner): one per line.
+            row.tooltip = TooltipText.Lines(title.text, detail.text);
             row.Add(Action("replay-play-" + key, "Play", () => Play?.Invoke(entry), entry.Usable));
             row.Add(Action("replay-export-" + key, "Export", () => Export?.Invoke(entry), entry.Usable));
             var delete = Action("replay-delete-" + key, "Delete", () => Delete?.Invoke(entry), true);

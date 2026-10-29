@@ -1,3 +1,5 @@
+using Wotr.Contracts;
+
 namespace Wotr.Client
 {
     // UI-144: what one nation's row offers for the chosen die, read from the server's options.
@@ -12,5 +14,7 @@ namespace Wotr.Client
         public string ActivationHint = "";
         // UI-366: a character's political ability moves this nation: its token, arrow and station say whose and how.
         public string AdvanceHint = "";
+        // UI-420: the die's or the Council token's step the arrow offers, so its tooltip names what pays for it.
+        public ActionOption Advancement;
     }
 }
