@@ -39,6 +39,8 @@
 #board-screen .character-inspector .character-header .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
 #board-screen .character-inspector .character-edition {
     flex-shrink: 0;
+    /* The short edition name ("Kings") never wraps at fractional scales (125 %). */
+    white-space: nowrap;
     margin: 0 6px 0 4px;
     padding: 0 5px;
     font-size: 11px;

@@ -117,13 +117,43 @@ namespace Wotr.Client
             root.CapturePointer(pointer);
             var local = root.WorldToLocal(evt.position);
             if (!Lift(local))
-            {
-                ghost.style.display = DisplayStyle.Flex;
-                ghost.text = source.Object == DraftObject.FellowshipPortrait ? "Companion" : source.Object.ToString();
-                ghost.style.left = local.x + 12;
-                ghost.style.top = local.y + 12;
-            }
+                ShowGhost(local);
             evt.StopImmediatePropagation();
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-393): a dragged object without its own art travels under its own name,
+        // never its kind's code ("Nation", "RulerToken"); an object with no name shows no label.
+        private void ShowGhost(Vector2 local)
+        {
+            var name = DragName(source);
+            ghost.text = name;
+            ghost.style.display = name.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            ghost.style.left = local.x + 12;
+            ghost.style.top = local.y + 12;
+        }
+
+        // What a dragged object is called: "Rohan", "Gwaihir the Windlord", "Dáin Ironfoot's Ruler token", "Hunt tile".
+        public static string DragName(DraftToken token) => token?.Object switch
+        {
+            DraftObject.Nation or DraftObject.PoliticalSlot => TooltipText.Nation(token.Id),
+            DraftObject.Card => CardLibrary.Title(token.Id),
+            DraftObject.RulerToken => ExpansionLabels.RulerToken(token.Id),
+            DraftObject.Sovereign => ActionCardText.Source(token.Id),
+            DraftObject.CouncilPortrait or DraftObject.FellowshipPortrait => CharacterLibrary.Name(token.Id),
+            DraftObject.Ring => ExpansionLabels.Ring(token.Id),
+            DraftObject.HuntResponse => HuntResponseName(token),
+            DraftObject.HuntTile => "Hunt tile",
+            DraftObject.HuntEye => "Hunt Box",
+            DraftObject.Reserve => "Reserve figure",
+            _ => ""
+        };
+
+        // The Hunt row's own names (HuntResponsesView): "Ring", "Guide", "Random companion".
+        private static string HuntResponseName(DraftToken token)
+        {
+            if (!HuntResponseActions.Read(token, out var response))
+                return "";
+            return response == Wotr.Contracts.HuntResponse.RandomCompanion ? "Random companion" : response.ToString();
         }
 
         private void Up(PointerUpEvent evt)

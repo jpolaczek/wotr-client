@@ -223,9 +223,12 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(arrow.ClassListContains("legal-target"), arrow.name);
                 var advance = panel.Drawer.Q<Button>("nation-advance-" + arrow.name.Split('-')[2]);
                 Assert.IsTrue(advance.enabledInHierarchy && advance.ClassListContains("legal-target"), advance.name);
+                // UI-423 (owner's playtest pattern, like UI-411): the token the step moves wears the shared ChoiceGlow.
+                Assert.IsTrue(Token(panel, arrow.name.Split('-')[2]).ClassListContains(ChoiceGlow.ClassName), arrow.name);
             }
             Assert.IsEmpty(panel.Drawer.Query<Button>(className: "destination-selected").ToList());
             Assert.IsFalse(Token(panel, "isengard").ClassListContains("legal-target"));
+            Assert.IsFalse(Token(panel, "isengard").ClassListContains(ChoiceGlow.ClassName), "An opponent's token never glows.");
             foreach (var id in new[] { "north", "dwarves" })
             {
                 var activate = panel.Drawer.Q<Button>("nation-activate-" + id);

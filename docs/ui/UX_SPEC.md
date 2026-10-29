@@ -1540,3 +1540,35 @@ Base-game parts of the owner's requests on the Kings branch:
   Informational tooltips drop repeated facts (a Hunt tile's value, a king's state, equal Level/Move/Combat level, a status
   equal to its label), blank lines and dangling separators, raw ids and enum names; a force, a character, a deck and a
   played card read the same everywhere. Tests: `TooltipTextTests` and the tests listed in the audit document.
+
+## The owner's playtest fixes where the same defects remained — UI-423, base parts (2026-10-29)
+
+UI-423 (owner) — the expansion playtests (UI-296 … UI-419) were read as patterns of defects, and the base game's
+places with the same defects were fixed the way the first fix did:
+- **A window has its own skip (as UI-419).** Skip effect stands in the Hunt window (`hunt-skip-effect`, closing its
+  footer on the right) for the player's own reaction windows (table-card and Guide responses) and in the battle
+  window (`battle-skip-effect`) for reactions (the White Rider). It sends the console's Pass, which still declines
+  (UI-291); its tooltip lists "Skip <skill> (<owner>)" per response, and a response's tooltip ends "Or click Skip
+  effect (or Pass) to skip it." A reaction no window hosts keeps the console's Pass alone.
+- **A live choice glows and pulses (as UI-411, UI-419).** Battle and Hunt reroll dice while the reroll budget is not
+  full; the Hunt's Ring, Guide and Random companion responses beside the glowing card and Guide rows; the Elven Ring
+  picker's faces (the current result stays dim); a Politics token a click can move (a gold rim and the shared
+  pulse; no station glows, UI-410).
+- **Texts name the real subject (as UI-374, UI-375, UI-420).** The Politics hint names the nation's token and its →
+  arrow; a card's journey (Gwaihir the Windlord, Book of Mazarbul) names the companions and destinations ("Move
+  Gimli → Erebor") or those who stay ("Keep Gimli and Legolas in place"); a choice of several figures names those
+  chosen and what is left ("Sauron Regular ×2 · ✓ confirms").
+- **A drag shows the object (as UI-393).** A dragged Politics token, card, companion portrait, Ruler token or Hunt
+  tile reads as its name, never as a code word ("Nation", "RulerToken"); an object without a name shows no label.
+- The character window's edition label never wraps at 125 %.
+
+The expansions' parts stay on their branch: Skip effect for optional declines (with `OptionalDecline`), the Lore of
+the Elven Rings picker, the corruption attempt's lone Draw, a king's region-first recruitment (UI-392 is not on the
+base), the Council token's hints, the Balrog's and two Chieftains' texts, and Open decision for Nenya's and the
+Chief's responses. Tests: `HuntGuideResponsesTests` (Skip effect in the Hunt window, none outside it),
+`ReactionSourcesTests.TheBattleWindowSkipsTheWhiteRiderWithItsSkipEffect`, `CardConsoleOptionsTests`,
+`BattleResolutionTests.RerollableDiceGlowUntilTheBudgetIsFull`,
+`HuntInteractionTests.RerollableHuntDiceGlowUntilTheBudgetIsFull`,
+`HuntResponseTests.DamageResponsesGlowLikeTheResponsesBesideThem`, `RingChoiceTests.TheResultsAClickMayChooseGlow`,
+`CardJourneyDraftTests`, `CardFigureDraftTests`, `ReadableTextTests.ADraggedObjectReadsAsItsName`, PlayMode
+`PoliticalPanelTests`, `HuntLayoutTests`, `MultiUseDiceNetworkTests` and `ReactionGestures`.

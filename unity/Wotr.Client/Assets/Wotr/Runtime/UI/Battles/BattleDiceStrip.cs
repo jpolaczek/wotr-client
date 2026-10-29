@@ -70,10 +70,13 @@ namespace Wotr.Client
                 var targetChosen = target && draft.Kind == CommandKind.ChooseEffect && draft.Payload.Ids.Contains(die.Id);
                 var selectable = draft?.Kind == CommandKind.RerollBattle && force.Side == viewer && option?.Enabled == true && option.EligibleIds.Contains(die.Id);
                 var chosen = selectable && draft.Payload.Ids.Contains(die.Id);
-                button.SetEnabled(selectable && (chosen || draft.Payload.Ids.Count < option.Maximum) ||
+                var open = selectable && !chosen && draft.Payload.Ids.Count < option.Maximum;
+                button.SetEnabled(open || chosen ||
                     target && (targetChosen || BattleObjectChoices.CanChoose(view, draft, die.Id)));
                 button.EnableInClassList("selected", chosen || targetChosen || force.OwnRerollSelection.Contains(die.Id));
-                ChoiceGlow.Apply(button, target && !targetChosen);
+                // UI-423 (owner's playtest pattern, like UI-419): a failed die a click may still add to the rerolls glows
+                // until the budget is full, as a combat card's target die does; BattleContext pulses every glowing die.
+                ChoiceGlow.Apply(button, target && !targetChosen || open);
                 button.tooltip = target ? TooltipText.Lines(BattleObjectChoices.Detail(view, die.Id), tooltip) : tooltip;
             });
         }

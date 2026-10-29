@@ -30,6 +30,8 @@ namespace Wotr.Client
         // UI-97: one short line (source, face and state); recovery rules stay in the Why? and help panels.
         public static string DieDetail(DieView die) => DieDescriptions.Summary(die);
         public static string Ring(string id) => id.StartsWith("lords.") ? FigureGrid.Name(id.Split('.').Last()) : "Elven Ring";
+        // UI-423: a dragged Ruler token reads as its king's ("Dáin Ironfoot's Ruler token").
+        public static string RulerToken(string id) => ActionCardText.Source("kings.sovereign." + id.Split('.').Last()) + "'s Ruler token";
         public static string CouncilToken(string id) => id == ExpansionDraft.CouncilPolitics ? "Council · Politics" : "Council · Travel";
         public static string Token(PlayerView view, string id) => view.Sovereigns.FirstOrDefault(s =>
             view.RulerTokens.Any(t => t.Id == id && t.SovereignId == s.Id))?.Title ?? FigureGrid.Name(id.Split('.').Last());

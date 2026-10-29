@@ -18,10 +18,12 @@ namespace Wotr.Client
         private readonly Label sources = new Label { name = "hunt-reroll-sources" };
         private readonly Label rerollBonus = new Label { name = "hunt-reroll-bonus" };
         private readonly Label budget = new Label { name = "hunt-reroll-budget" };
+        private readonly ChoicePulse pulse;
         private string roster = "";
 
         public HuntDiceStrip()
         {
+            pulse = new ChoicePulse(results);
             var overview = BoardScreen.Row("hunt-roll-overview");
             overview.Add(results);
             var totals = BoardScreen.Row("hunt-roll-totals");
@@ -106,6 +108,7 @@ namespace Wotr.Client
             budget.style.display = option == null ? DisplayStyle.None : DisplayStyle.Flex;
             if (option != null)
                 budget.text = "Rerolls " + draft.Payload.Ids.Count + "/" + option.Maximum;
+            var lit = false;
             foreach (var pair in dice)
             {
                 var selected = option != null && draft.Payload.Ids.Contains(pair.Key);
@@ -115,7 +118,12 @@ namespace Wotr.Client
                 pair.Value.EnableInClassList("selected", selected);
                 ReadOnlyControl.Apply(pair.Value, legal || selected);
                 // Keep public results inspectable for either player; the controller guards choices.
+                // UI-423 (owner's playtest pattern, like UI-419): a die a click may still add to the reroll glows and
+                // pulses until the budget is full; a chosen one shows its gilt die instead.
+                ChoiceGlow.Apply(pair.Value, legal && !selected);
+                lit |= legal && !selected;
             }
+            pulse.Run(lit);
         }
 
         // UI-420 (owner): the die's roll and its result first ("First 2 → Reroll 4 · Hit"), then the bonuses by the names

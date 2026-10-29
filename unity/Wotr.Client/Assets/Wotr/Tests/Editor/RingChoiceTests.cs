@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using UnityEngine.UIElements;
 using Wotr.Client;
 using Wotr.Contracts;
 
@@ -64,6 +65,25 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { true, false, true }, faces.Select(f => f.Enabled), "The current Army result is disabled.");
             StringAssert.StartsWith("Choose the new result", RingChoice.Hint(draft));
         }
+
+        // UI-423 (owner's playtest pattern, like UI-419): the results a click may give the die are live choices, so they glow
+        // (and their row pulses); the current result stays dark.
+        [Test]
+        public void TheResultsAClickMayChooseGlow()
+        {
+            var view = View();
+            var draft = Armed();
+            draft.Change(p => p.DieId = "fp-1");
+            var picker = new RingFacePicker();
+            new VisualElement().Add(picker.Root);
+            picker.Show(new VisualElement(), new VisualElement(), Side.FreePeoples, RingChoice.Faces(view, draft), "fp-1");
+            Assert.IsTrue(Face(picker, "character").ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(Face(picker, "muster").ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsFalse(Face(picker, "army").ClassListContains(ChoiceGlow.ClassName), "The current result is no choice.");
+            Assert.IsFalse(Face(picker, "army").enabledSelf);
+        }
+
+        private static Button Face(RingFacePicker picker, string key) => picker.Root.Q<Button>("ring-face-" + key);
 
         [Test]
         public void ClearingTheDraftEndsTheGesture()

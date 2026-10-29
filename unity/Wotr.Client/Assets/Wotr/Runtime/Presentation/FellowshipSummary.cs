@@ -36,9 +36,8 @@ namespace Wotr.Client
                             string.Join(", ", preview.RemovedIds.Select(id => CharacterLibrary.Name(view, id))) + ".");
                 case CommandKind.MoveCompanions:
                     if (view.Decision?.Kind == DecisionKind.CompanionSeparation)
-                        return draft.Payload.CompanionMoves.Count == 0 ? "Keep all companions in place · Resolve the card’s remaining effects."
-                            : "Move the selected groups · Resolve the card’s remaining effects.";
-                    return Groups(draft, data, ids => Join(ids.Select(id => CharacterLibrary.Name(view, id)).ToList()));
+                        return CardJourney(view, draft, data) + " · Resolve the card’s remaining effects.";
+                    return Groups(draft, data, ids => Companions(view, ids));
                 case CommandKind.MoveShadowCharacters:
                     // UI-416 (owner): the figures by name, never "Nazgûl" for the Balrog.
                     if (view.Decision?.Kind == DecisionKind.CharacterEvent)
@@ -62,10 +61,28 @@ namespace Wotr.Client
         // "Move Strider → Fangorn, Gimli and Legolas → Erebor".
         private static string Groups(TurnDraft draft, BoardPresentation data, Func<IReadOnlyList<string>, string> names)
         {
-            var groups = draft.Payload.CompanionMoves.Where(group => group.Ids.Count > 0)
-                .Select(group => Destination(names(group.Ids), group.Route, data)).ToList();
+            var groups = Moves(draft, data, names);
             return groups.Count == 0 ? "Move the selected groups along their own routes." : "Move " + string.Join(", ", groups) + ".";
         }
+
+        private static List<string> Moves(TurnDraft draft, BoardPresentation data, Func<IReadOnlyList<string>, string> names) =>
+            draft.Payload.CompanionMoves.Where(group => group.Ids.Count > 0)
+                .Select(group => Destination(names(group.Ids), group.Route, data)).ToList();
+
+        // UI-423 (owner's playtest pattern, like UI-420): a card's journey (Gwaihir, Book of Mazarbul, Kings' Aid) names its
+        // companions and destinations as a die's does — "Move Gimli → Erebor" — or those who stay — "Keep Gimli and
+        // Legolas in place".
+        private static string CardJourney(PlayerView view, TurnDraft draft, BoardPresentation data)
+        {
+            var moves = Moves(draft, data, ids => Companions(view, ids));
+            if (moves.Count > 0)
+                return "Move " + string.Join(", ", moves);
+            var offered = DraftOptions.For(view, draft)?.Travel.Select(travel => travel.Id).ToList() ?? new List<string>();
+            return offered.Count == 0 ? "Keep every companion in place" : "Keep " + Companions(view, offered) + " in place";
+        }
+
+        private static string Companions(PlayerView view, IEnumerable<string> ids) =>
+            Join(ids.Select(id => CharacterLibrary.Name(view, id)).Distinct().ToList());
 
         private static string Destination(string names, IReadOnlyList<string> route, BoardPresentation data) =>
             route.Count > 0 && data != null && data.Regions.TryGetValue(route[route.Count - 1], out var region)

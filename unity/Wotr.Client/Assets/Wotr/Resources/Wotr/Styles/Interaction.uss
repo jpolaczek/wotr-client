@@ -82,10 +82,12 @@
 }
 /* UI-284: a journey's portraits fill their row edge to edge, so their pulse changes the rim and plate only (they are
    .action buttons too, so the scale of the rule above is undone here). UI-285: so do the Hunt's table-card responses;
-   UI-291: and the console's actions, whose column keeps its fixed size; UI-360: and the Guides' Hunt responses. */
+   UI-291: and the console's actions, whose column keeps its fixed size; UI-360: and the Guides' Hunt responses; UI-423:
+   and the Hunt's damage responses (the Ring, the Guide, a random companion), which fill their row the same way. */
 .motion-enabled #board-screen .choice-glow-pulse .companion-portrait.choice-glow,
 .motion-enabled #board-screen .choice-glow-pulse .hunt-card-response.choice-glow,
 .motion-enabled #board-screen .choice-glow-pulse .hunt-guide-response.choice-glow,
+.motion-enabled #board-screen .choice-glow-pulse .hunt-response-object.choice-glow,
 .motion-enabled #board-screen .choice-glow-pulse .console-action.choice-glow {
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
@@ -252,6 +254,22 @@
     border-color: rgb(255, 236, 170);
     background-color: rgb(214, 170, 70);
     color: rgb(30, 20, 10);
+}
+
+/* UI-423 (owner's playtest pattern, like UI-419): a result the Elven Ring (or the Lore of the Elven Rings) may give the
+   die is a live choice: its medallion wears the gold rim on a warm plate and pulses with its row (RingFacePicker); the
+   current result stays dim. The rim sits inside the fixed medallion, and the glyph keeps its size within it. */
+#board-screen .ring-face.choice-glow {
+    border-width: 3px;
+    border-radius: 17px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+#board-screen .ring-face.choice-glow > .die-face { left: 2px; top: 2px; right: 2px; bottom: 2px; }
+.motion-enabled #board-screen .choice-glow-pulse .ring-face.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
 }
 
 /* UI-251: a force section of the region panel that a card may choose (Dreadful Spells' field army or garrison). */

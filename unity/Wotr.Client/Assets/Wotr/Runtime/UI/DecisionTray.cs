@@ -36,6 +36,8 @@ namespace Wotr.Client
         public event Action<bool> LegalChanged;
         public bool Legal { get; private set; }
         public event Action Cancel;
+        // UI-423: the battle and Hunt windows' Skip effect, the console's Pass.
+        public event Action Skip;
         private Button confirm;
         private Label status;
         private string layoutKey;
@@ -212,6 +214,10 @@ namespace Wotr.Client
                 footer.AddToClassList("battle-choice-footer");
                 PlayerSide(footer, view);
             }
+            // UI-423 (owner's playtest pattern, like UI-419): the battle and Hunt windows skip the player's own reaction
+            // window (a table card's or a Guide's Hunt response, the White Rider) with Skip effect; Pass still declines.
+            if (SkipHost(view) && ReactionSkip.Option(view) != null)
+                footer.Add(SkipEffect(view));
             if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
@@ -223,7 +229,8 @@ namespace Wotr.Client
                     ? root.Q<Button>("travel-stay")?.parent : null;
                 (route ?? footer).Add(back);
             }
-            // UI-291: a reaction window is declined with the console's Pass, not a Decline or Skip button here.
+            // UI-291: a reaction window is declined with the console's Pass, not a Decline button here (UI-423: the battle
+            // and Hunt windows' Skip effect sends that Pass).
             if (view.Decision.Kind == DecisionKind.ArmyEvent && !CardArmyEvent.Active(view, draft))
                 foreach (var alternative in view.Options.Where(o => o.Kind != draft.Kind))
                 {
@@ -260,6 +267,20 @@ namespace Wotr.Client
             footer.Add(confirm);
             root.Add(footer);
         }
+
+        // UI-423 (owner's playtest pattern, like UI-419): the window's Skip effect sends the console's Pass; its tooltip
+        // names each response it skips.
+        private Button SkipEffect(PlayerView view)
+        {
+            var button = BoardScreen.Button("Skip effect", () => Skip?.Invoke());
+            button.name = view.Battle != null ? "battle-skip-effect" : "hunt-skip-effect";
+            button.tooltip = ReactionSkip.SkipTooltip(view);
+            return button;
+        }
+
+        // UI-423: the windows whose footer offers Skip effect — the battle window and the Hunt window. A reaction the
+        // console hosts alone keeps the console's Pass.
+        private bool SkipHost(PlayerView view) => view.Battle != null || ContextualHunt;
 
         // UI-208: a battle's decision buttons stand on the player's side: the attacker's on the left, the defender's on the right.
         private static void PlayerSide(VisualElement footer, PlayerView view) =>

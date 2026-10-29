@@ -131,6 +131,7 @@ namespace Wotr.Client
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
                 ChooseComponent, ChooseRing, () => reinforcements.Planning);
+            tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
             board.Characters.EntryRequested += RequestEntry;
@@ -777,7 +778,7 @@ namespace Wotr.Client
             }
             if (muster.CanRecruit && draft.Kind is null or CommandKind.Recruit or CommandKind.AdvancePolitics)
                 tray.Preview(false, notice.Length > 0 ? notice : draft.Kind == CommandKind.AdvancePolitics
-                    ? "Choose the highlighted space on this nation’s track."
+                    ? "Click this nation’s token or its → arrow to move it one step toward war."
                     : draft.ReserveId.Length > 0 ? "Choose a highlighted settlement."
                     : view.Decision?.Kind == DecisionKind.ActionSequence ? "Choose a reserve figure, then a highlighted settlement · ✓ ends early."
                     : "Choose a reserve figure in Reinforcements, or a nation’s arrow in Politics.");
