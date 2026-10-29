@@ -105,8 +105,8 @@ namespace Wotr.Client
         }
 
         // UI-380: an expansion's command names the ability with its prefix ("kings.call-to-arms"); its chip has the
-        // printed id ("call-to-arms").
-        private static string ChipOf(ComponentAction action, ISet<string> printed)
+        // printed id ("call-to-arms"). UI-391: the roster's icons map their actions the same way.
+        internal static string ChipOf(ComponentAction action, ISet<string> printed)
         {
             var chip = ChipOf(action);
             var bare = chip.Substring(chip.IndexOf('.') + 1);

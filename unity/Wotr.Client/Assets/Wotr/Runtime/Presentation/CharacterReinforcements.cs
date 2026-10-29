@@ -19,8 +19,11 @@ namespace Wotr.Client
                 Slots = choice.RulerRecruitment == null ? 1 : choice.TargetCount,
                 Optional = choice.RulerRecruitment == null,
                 Ready = CharacterRecruitDraft.Ready(draft, choice),
+                RegionFirst = choice.RulerRecruitment != null,
                 Placements = ReinforcementPlans.Placements(view, data, draft.Payload.Placements)
             };
+            if (plan.RegionFirst)
+                plan.Hint = "Click to place it in the chosen settlement · Or drag it to a highlighted settlement";
             foreach (var nation in ReinforcementRows.InOrder(choice.Recruitment.Select(g => g.Nation)))
             {
                 var groups = choice.Recruitment.Where(g => g.Nation == nation).ToList();

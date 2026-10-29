@@ -170,6 +170,10 @@ namespace Wotr.Client
             var marked = ResourcePresentation.CouncilHint(view, draft);
             if (marked.Length > 0)
                 return marked;
+            // UI-396: a Combat card's replacement names its chip and the skip.
+            var replacement = CombatReplacementChoice.Hint(view);
+            if (replacement.Length > 0)
+                return replacement;
             var objectHint = ObjectHint(view, draft);
             if (objectHint.Length > 0)
                 return objectHint;
@@ -276,6 +280,9 @@ namespace Wotr.Client
                 footer.AddToClassList("battle-choice-footer");
                 PlayerSide(footer, view);
             }
+            // UI-396 (owner): a Combat card's replacement is skipped in the battle window too, as with the console's Pass.
+            if (CombatReplacementChoice.Skippable(view))
+                footer.Add(KeepCardEffects(draft, option));
             if (!ContextualHunt && !CompanionSetupPresentation.Setup(view) && !ResourcePresentation.PoolDecision(view) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
@@ -314,6 +321,15 @@ namespace Wotr.Client
             ConfirmChanged?.Invoke(false);
             (ConfirmHost ?? footer).Add(confirm);
             root.Add(footer);
+        }
+
+        private Button KeepCardEffects(TurnDraft draft, ActionOption option)
+        {
+            var button = BoardScreen.Button("Keep card effects",
+                () => ChoiceCompleted?.Invoke(() => CardDraft.Choose(draft, option, CombatReplacementChoice.Keep)));
+            button.name = "battle-keep-card-effects";
+            button.tooltip = "Fight on as usual: your Combat card keeps its effects and the ability stays unused this round.";
+            return button;
         }
 
         // UI-208: a battle's decision buttons stand on the player's side: the attacker's on the left, the defender's on the right.

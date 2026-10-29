@@ -406,10 +406,9 @@
 /* UI-208: the attacker's buttons on the left under its column, the status beside them; the defender keeps them right. */
 .regional-battle .tray .battle-choice-footer.battle-footer-attacker { flex-direction: row-reverse; }
 .regional-battle .tray .battle-choice-footer.battle-footer-attacker .draft-status { margin-right: 0; margin-left: 6px; -unity-text-align: middle-right; }
-/* UI-208: a figure choice (losses, advance, siege extension) stands in its side's column, in place of the composition;
-   the column is wider meanwhile, so a full army stays in one row on a short viewport. */
+/* UI-208: a figure choice (losses, advance, siege extension) stands in its side's column, in place of the composition.
+   UI-394 (owner): both columns keep one width in every step; a long choice wraps inside its column (.loss-figures). */
 .battle-force.battle-force-choosing .battle-composition { display: none; }
-.battle-force.battle-force-choosing { flex-grow: 1.8; }
 .regional-battle .tray .battle-force .battle-loss-heading { flex-wrap: wrap; }
 /* 33px for the same rounding as the footer's direct choices (below). */
 .regional-battle #confirm-decision { width: auto; min-width: 110px; height: 33px; min-height: 33px; padding: 0 8px; font-size: 12px; }
@@ -439,6 +438,12 @@
 .short-viewport .battle-stages { height: 20px; min-height: 20px; margin-bottom: 3px; }
 .short-viewport .battle-stage { height: 20px; }
 .short-viewport .battle-force { padding: 3px 6px 3px 6px; }
+/* UI-394: on a short viewport a choosing column of the same width as the other keeps a full army's two rows of loss
+   figures above the console: smaller tokens, and the names under its portraits give way (the portraits and their
+   tooltips keep them). */
+.short-viewport .regional-battle .tray .battle-force-choosing .action.loss-figure { width: 42px; min-width: 42px; height: 46px; min-height: 46px; margin: 0 2px 1px 0; }
+.short-viewport .regional-battle .tray .battle-force-choosing .loss-figure > .figure-art-image { bottom: 13px; }
+.short-viewport .regional-battle .tray .battle-force-choosing > .battle-characters { display: none; }
 .short-viewport .portrait-medallion { width: 26px; height: 26px; margin: 0 2px 1px 0; }
 .short-viewport .portrait-medallion > .portrait-figure { left: 5px; right: 5px; top: 4px; bottom: 5px; }
 .short-viewport .portrait-medallion > .portrait-initial { font-size: 8px; }

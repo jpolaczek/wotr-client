@@ -161,3 +161,9 @@
 }
 .planned-reinforcement-figure { width: 24px; height: 26px; margin-right: 4px; -unity-background-scale-mode: scale-to-fit; }
 .planned-reinforcement-region { margin: 0; padding: 0; color: rgb(241, 223, 166); }
+
+/* UI-393 (owner): a dragged reserve figure is its own icon under the pointer; its slot keeps a faint trace while it is
+   lifted, so the player sees which figure travels. */
+.drag-figure { position: absolute; opacity: 0.95; }
+.reserve-token.drag-lifted > .reserve-token-figure { opacity: 0.25; }
+.reserve-token.drag-lifted > .reserve-token-glow { opacity: 0; }

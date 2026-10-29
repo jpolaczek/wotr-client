@@ -114,6 +114,7 @@ namespace Wotr.EditorTests
             Assert.IsTrue(plan.Optional);
             Assert.AreEqual(1, plan.Slots);
             Assert.IsTrue(plan.Ready, "Entering without a companion is legal.");
+            Assert.IsFalse(plan.RegionFirst, "UI-392: the Balrog's one figure keeps its panel.");
             Assert.IsTrue(ReinforcementPlans.Choose(draft, view, elites[0]));
             Assert.AreEqual("moria", ReinforcementPlans.For(view, draft, Data).Placements.Single().RegionId,
                 "The only target takes the figure at once.");
@@ -136,6 +137,13 @@ namespace Wotr.EditorTests
             Assert.AreEqual(2, plan.Slots);
             StringAssert.Contains("Edoras", plan.Rows.Single().Status);
             Assert.IsFalse(plan.Ready);
+            // UI-392 (owner): a king's recruitment starts on the map; the settlement clicked first takes the next figure.
+            Assert.IsTrue(plan.RegionFirst);
+            Assert.IsTrue(ReinforcementsState.For(view, plan, "", true).RegionFirst, "Its panel waits for the settlement's click.");
+            Assert.IsTrue(CharacterRecruitDraft.Region(draft, ruler, "helms-deep"));
+            Assert.AreEqual("helms-deep", draft.Payload.RegionId);
+            Assert.IsTrue(ReinforcementPlans.Choose(draft, view, rohan[0]));
+            Assert.AreEqual("helms-deep", ReinforcementPlans.For(view, draft, Data).Placements.Single().RegionId);
         }
 
         // UI-135: a Muster paid with a ruler token or an ability is planned in the panel, not in a tray palette.

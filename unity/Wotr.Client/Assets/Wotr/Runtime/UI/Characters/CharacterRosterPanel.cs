@@ -40,6 +40,8 @@ namespace Wotr.Client
         private readonly ChoicePulse pulse;
         private bool rosterOffered;
         private bool sovereignsOffered;
+        // UI-391: a row's ability icon glows.
+        private bool abilitiesOffered;
         private bool rosterAvailable;
         private PlayerView view;
         private VisualElement source;
@@ -143,6 +145,7 @@ namespace Wotr.Client
                 row = new CharacterRosterRow(id);
                 rows.Add(id, row);
                 ObserveRow(row.Root, id);
+                ObserveAbilities(row, id);
             }
             var grid = sections[CharacterRosterPresentation.Section(entry)];
             if (row.Root.parent != grid)
@@ -159,6 +162,7 @@ namespace Wotr.Client
         {
             var offered = false;
             var available = false;
+            var abilities = false;
             foreach (var row in rows)
             {
                 var chosen = row.Key == Actions.EnteringFigure;
@@ -166,13 +170,16 @@ namespace Wotr.Client
                 offered |= entry;
                 available |= Actions.Available(row.Key);
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
+                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
+                abilities |= row.Value.Abilities.Offered;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry);
                 row.Value.Choose(chosen);
             }
             rosterOffered = offered;
             rosterAvailable = available;
-            pulse.Run(rosterOffered || sovereignsOffered);
+            abilitiesOffered = abilities;
+            pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered);
             RefreshTab();
         }
 
@@ -184,7 +191,7 @@ namespace Wotr.Client
         public void OfferSovereigns(bool any)
         {
             sovereignsOffered = any;
-            pulse.Run(rosterOffered || sovereignsOffered);
+            pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered);
             RefreshTab();
         }
 
@@ -286,6 +293,17 @@ namespace Wotr.Client
                 Inspector.Root.style.left = left;
             if (Mathf.Abs(Inspector.Root.layout.y - top) > .25f)
                 Inspector.Root.style.top = top;
+        }
+
+        // UI-391: a usable ability's icon starts it, as Click to use does; another opens the window with that ability unrolled.
+        private void ObserveAbilities(CharacterRosterRow row, string id)
+        {
+            row.Abilities.Used += item => Actions.Use(item);
+            row.Abilities.Opened += ability =>
+            {
+                Show(id, true, row.Root);
+                Inspector.Abilities.Select(ability);
+            };
         }
 
         // A single click inspects, except when the row can be entered: its double-click must not flash the window.

@@ -86,6 +86,9 @@ namespace Wotr.PlayTests
             Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-" + NamedRings.NenyaReaction), "Nenya is answered on its ring.");
             Assert.IsNotNull(client.Board.Tray.Q<Label>("nenya-socket-hint"));
             Assert.IsFalse(client.Board.Console.Rings.For(NamedRings.Vilya).ClassListContains(ConsoleRings.KeeperReadyClass));
+            // UI-395 (owner): only the Ring and Pass glow; the Hunt plaque does not, and the console's banner opens nothing.
+            Assert.IsFalse(client.Board.Hunt.Tab.ClassListContains("legal-target"), "The Hunt plaque does not glow.");
+            Assert.IsFalse(client.Board.Notice.Opens, "The banner has no window to open.");
         }
 
         private static async Task Lore(bool hunt)

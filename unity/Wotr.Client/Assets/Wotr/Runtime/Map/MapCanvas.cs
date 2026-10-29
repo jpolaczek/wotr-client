@@ -52,6 +52,8 @@ namespace Wotr.Client
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         // UI-305: the player moved the camera (wheel zoom or a right/middle-drag pan), never a programmatic move.
         public event Action Steered;
+        // UI-392: the camera's glide to a chosen region.
+        private IVisualElementScheduledItem glide;
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
         public const string SovereignTargetClass = "sovereign-target";
         private Func<string, string> sovereignHint = _ => null;
@@ -135,6 +137,7 @@ namespace Wotr.Client
             RegisterCallback<WheelEvent>(e =>
             {
                 Camera.ZoomAt(e.localMousePosition, Mathf.Exp(-e.delta.y * .06f));
+                glide?.Pause();
                 Refresh();
                 Steered?.Invoke();
                 e.StopPropagation();
@@ -239,6 +242,7 @@ namespace Wotr.Client
             panMoved |= Vector2.Distance(panStart, now) >= ClickTolerance;
             Camera.Pan += now - previous;
             previous = now;
+            glide?.Pause();
             Refresh();
             Steered?.Invoke();
         }
@@ -369,6 +373,34 @@ namespace Wotr.Client
             Selected = id;
             Refresh();
         }
+
+        // UI-392 (owner): the camera glides to a region, centring it without a zoom change (CameraTravel, 450-750 ms, eased).
+        // Under Reduced motion it moves at once; the player's own pan or zoom stops the glide.
+        public void Glide(string id, bool reducedMotion)
+        {
+            if (!Data.Shapes.TryGetValue(id, out var shape))
+                return;
+            glide?.Pause();
+            var target = contentRect.center - new Vector2(shape.Anchor[0], shape.Anchor[1]) * Camera.Zoom;
+            if (reducedMotion)
+            {
+                Camera.Pan = target;
+                Refresh();
+                return;
+            }
+            var travel = new CameraTravel(Camera.Zoom, Camera.Pan, Camera.Zoom, target, contentRect.center);
+            var started = Time.realtimeSinceStartupAsDouble;
+            glide = schedule.Execute(() =>
+            {
+                var fraction = (Time.realtimeSinceStartupAsDouble - started) / travel.Duration;
+                Camera.Pan = travel.At(fraction).Pan;
+                Refresh();
+                if (fraction >= 1)
+                    glide.Pause();
+            }).Every(16);
+        }
+
+        public bool Gliding => glide?.isActive == true;
 
         // UI-155: centres the map on a board point at least at the zoom where the track shows its numbers.
         public void FocusOn(Vector2 point, float zoom)

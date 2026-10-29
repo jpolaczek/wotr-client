@@ -64,8 +64,9 @@ namespace Wotr.Client
         // UI-181: a use lights the tab; a use that ends rolls the panel back. Outside a use the rows show the reserves.
         public void Apply(ReinforcementsState state)
         {
-            // A card or ability plan, and the next figure of a Muster the player has begun, keep the tab open.
-            Follow(state.Open, state.Planning || state.Finishable);
+            // A card or ability plan, and the next figure of a Muster the player has begun, keep the tab open. UI-392: a plan
+            // that starts on the map (an ability's recruitment) lights the tab and opens with its settlement's click.
+            Follow(state.Open, state.Planning && !state.RegionFirst || state.Finishable);
             Tab.EnableInClassList("legal-target", state.Open && state.Interactive);
             title.text = state.Title;
             optional.style.display = state.Optional ? DisplayStyle.Flex : DisplayStyle.None;

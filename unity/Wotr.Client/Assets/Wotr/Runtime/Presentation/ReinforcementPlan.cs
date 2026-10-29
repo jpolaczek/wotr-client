@@ -27,6 +27,8 @@ namespace Wotr.Client
         public int Slots;
         public bool Optional;
         public bool Ready;
+        // UI-392 (owner): an ability's recruitment starts on the map: the panel opens when a lit settlement is clicked.
+        public bool RegionFirst;
         public List<ReinforcementRow> Rows = new List<ReinforcementRow>();
         public List<PlannedReinforcement> Placements = new List<PlannedReinforcement>();
     }

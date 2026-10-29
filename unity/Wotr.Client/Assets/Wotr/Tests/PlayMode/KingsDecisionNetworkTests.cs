@@ -65,7 +65,13 @@ namespace Wotr.PlayTests
                 var client = room.Fp;
                 await room.Settle();
                 StringAssert.Contains("Pass to keep your card's effects", client.Board.Console.Status.Hint.text);
-                await room.Pass(client, KeepTheCard);
+                // UI-396 (owner): the battle window skips the replacement too, from its footer.
+                StringAssert.Contains("or Keep card effects to fight on as usual", client.Board.Console.Status.Hint.text);
+                var skip = client.Board.Tray.Q<Button>("battle-keep-card-effects");
+                Assert.IsNotNull(skip, "Keep card effects stands in the battle window's footer.");
+                var revision = client.Board.View.Revision;
+                CardNetworkTests.Click(skip);
+                await room.At(revision + 1);
                 Assert.AreNotEqual(CombatReplacementChoice.Presentation, client.Board.View.Decision?.Presentation ?? "");
                 Assert.IsFalse(room.Fp.Board.View.Battle.Defender.CardCancelled);
                 watch.NeverOpened();

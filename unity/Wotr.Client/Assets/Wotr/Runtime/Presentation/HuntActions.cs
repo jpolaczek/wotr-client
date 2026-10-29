@@ -9,7 +9,15 @@ namespace Wotr.Client
         public static bool UsesPanel(PlayerView view, TurnDraft draft = null) => view != null &&
             view.Battle == null && view.EventLoss == null && view.Hunt != null &&
             view.Decision?.Kind is not (DecisionKind.FellowshipRoute or DecisionKind.CompanionSeparation) &&
-            !FellowshipDraft.UsesRoute(draft?.Kind);
+            !FellowshipDraft.UsesRoute(draft?.Kind) && !ConsoleReaction(view);
+
+        // UI-395 (owner): a Hunt reaction answered only in the console — Nenya's socket and Pass — holds nothing in the
+        // Hunt window, so it is not the window's decision: the Hunt plaque does not glow and the console's banner opens
+        // nothing. A table card's or a Guide's response beside it keeps the window.
+        public static bool ConsoleReaction(PlayerView view) => view?.Decision?.Kind == DecisionKind.Reaction &&
+            view.DecisionOwner == view.You && NamedRings.NenyaResponse(view) != null && view.Options
+                .Where(o => o.Enabled && o.Kind == CommandKind.RespondEffect).SelectMany(o => o.EligibleIds)
+                .All(id => NamedRings.OnSocket(view, id));
 
         public static ActionOption Allocation(PlayerView view) => view?.DecisionOwner == view?.You &&
             view?.Decision?.Kind == DecisionKind.AllocateHunt

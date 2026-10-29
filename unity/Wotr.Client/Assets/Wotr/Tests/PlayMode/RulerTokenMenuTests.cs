@@ -174,6 +174,83 @@ namespace Wotr.PlayTests
             Assert.IsFalse(board.Nations.Root.ClassListContains(DieOptionGlow.LitClass), "No other use lights in its place.");
         }
 
+        // UI-391 (owner): an ability is used straight from the Characters tab. After Dáin's token, his row's Iron Guard icon
+        // glows beside the Dwarvenking icon, which does not; the icon's click starts Iron Guard (its target settlements
+        // glow on the map) without the character's window.
+        [UnityTest]
+        public IEnumerator DainsIronGuardStartsFromItsIconInTheCharactersTab() => MatchTestRoom.Wait(Icons());
+
+        private static async Task Icons()
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var token = timeout.Token;
+            var fixture = Load();
+            using var api = await fixture.Login(Side.FreePeoples, token);
+            using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui391-" + Guid.NewGuid().ToString("N")));
+            await Open(client, "kings-ruler-token-dain", token);
+            await Task.Delay(500, token);
+            var board = client.Board;
+            PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("ruler-token-kings.token.dain"));
+            await Task.Delay(600, token);
+            board.Characters.Open();
+            await Task.Delay(500, token);
+            var dain = "kings.sovereign.dain";
+            var guard = board.Characters.Root.Q<Button>("roster-ability-" + dain + "-iron-guard");
+            var king = board.Characters.Root.Q<Button>("roster-ability-" + dain + "-dwarvenking");
+            Assert.IsNotNull(guard, "Iron Guard is an icon on Dáin's row.");
+            Assert.IsNotNull(king, "Dwarvenking is an icon on Dáin's row.");
+            Assert.IsTrue(guard.ClassListContains(ChoiceGlow.ClassName), "The usable Iron Guard glows.");
+            Assert.IsFalse(king.ClassListContains(ChoiceGlow.ClassName), "Dwarvenking cannot be used now.");
+            StringAssert.StartsWith("Iron Guard\n", guard.tooltip);
+            StringAssert.Contains("Click to use", guard.tooltip);
+            var row = board.Characters.Root.Q<Button>("character-roster-" + dain);
+            Assert.IsTrue(row.Contains(guard), "The icons stand on Dáin's row.");
+            Assert.That(guard.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
+            Assert.That(guard.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui391-roster-icons.png");
+            PointerGestureEvents.ClickAt(guard);
+            await Task.Delay(800, token);
+            Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Iron Guard started: its settlements glow on the map.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui391-iron-guard-started.png");
+            // UI-392 (owner): the Reserve does not open by itself; its tab glows and a lit settlement's click opens it, the
+            // camera gliding there at the same zoom, and that settlement is marked as the chosen one until its figure.
+            Assert.IsFalse(board.Reinforcements.IsOpen, "No panel opens with the ability.");
+            Assert.IsTrue(board.Reinforcements.Tab.ClassListContains("legal-target"), "The Reserve tab glows.");
+            var region = board.Map.DraftOverlay.Targets.Contains("erebor") ? "erebor" : board.Map.DraftOverlay.Targets.First();
+            var zoom = board.Map.Camera.Zoom;
+            board.Map.Select(region);
+            await Task.Delay(1000, token);
+            Assert.IsTrue(board.Reinforcements.IsOpen, "The settlement's click opens the Reserve.");
+            Assert.That(board.Map.Camera.Zoom, Is.EqualTo(zoom).Within(0.001f), "The camera keeps its zoom.");
+            Assert.IsFalse(board.Map.Gliding, "The glide has ended.");
+            CollectionAssert.Contains(board.Map.DraftOverlay.ChosenRegions, region, "The clicked settlement is the chosen one.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui392-chosen-settlement.png");
+            var figure = board.Reinforcements.Root.Query<Button>(className: "reserve-token").ToList()
+                .First(button => button.name.StartsWith("character-reserve-dwarves-") && button.enabledInHierarchy && button.userData != null);
+            PointerGestureEvents.ClickAt(figure);
+            await Task.Delay(800, token);
+            CollectionAssert.Contains(board.Map.DraftOverlay.PlannedRegions, region, "The figure's click places it in the chosen settlement.");
+            CollectionAssert.DoesNotContain(board.Map.DraftOverlay.ChosenRegions, region, "A full settlement no longer waits.");
+            // UI-393 (owner): the next figure is dragged to another lit settlement as its own icon; its slot shows that it
+            // was lifted, and the drop places it there.
+            var second = board.Map.DraftOverlay.Targets.First(target => target != region);
+            var next = board.Reinforcements.Root.Query<Button>(className: "reserve-token").ToList()
+                .First(button => button.name.StartsWith("character-reserve-dwarves-") && button.enabledInHierarchy && button.userData != null);
+            var destination = MapContourProbe.ReachRegion(board.Map, second);
+            MapContourProbe.BeginDrag(board, next);
+            await Task.Delay(100, token);
+            var lifted = board.Root.Q<Image>("drag-figure");
+            Assert.AreEqual(DisplayStyle.Flex, lifted.style.display.value, "The figure's icon follows the pointer.");
+            Assert.AreSame(next.Q<Image>(className: "reserve-token-figure").sprite, lifted.sprite, "It is the pressed figure's own art.");
+            Assert.IsTrue(next.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
+            LayoutTests.Save(client.Panel.targetTexture, "ui393-lifted-figure.png");
+            MapContourProbe.Drop(board, destination);
+            await Task.Delay(800, token);
+            Assert.AreEqual(DisplayStyle.None, lifted.style.display.value);
+            Assert.IsFalse(next.ClassListContains(DraftInput.LiftedClass));
+            CollectionAssert.Contains(board.Map.DraftOverlay.PlannedRegions, second, "The drop places the figure there.");
+        }
+
         private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex &&
             element.worldBound.width > 0 && element.panel != null;
 

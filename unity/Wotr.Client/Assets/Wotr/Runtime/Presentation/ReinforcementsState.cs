@@ -18,6 +18,8 @@ namespace Wotr.Client
         public bool Planning;
         public bool Confirmable;
         public bool Optional;
+        // UI-392: the plan's settlement is chosen first, on the map, and that click opens the panel.
+        public bool RegionFirst;
         // UI-181: the tab and its header read Reserve.
         public string Title = "Reserve";
         public string TokenPrefix = "reserve-token-";
@@ -79,6 +81,7 @@ namespace Wotr.Client
                 Planning = true,
                 Confirmable = plan.Ready,
                 Optional = plan.Optional,
+                RegionFirst = plan.RegionFirst,
                 Title = plan.Title.Length > 0 ? "Reserve · " + plan.Title : "Reserve",
                 TokenPrefix = plan.Prefix + "-reserve-",
                 TokenHint = plan.Hint,

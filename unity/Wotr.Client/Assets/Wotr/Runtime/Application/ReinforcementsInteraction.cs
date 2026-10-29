@@ -122,6 +122,17 @@ namespace Wotr.Client
             complete(() => EffectChoiceSelection.Choose(view, draft, option, KingsCardChoices.Recruit));
         }
 
+        // UI-392 (owner): the lit settlement chosen for an ability's recruitment opens the panel for it, and the camera
+        // glides there without a zoom change.
+        public void RegionChosen(string region)
+        {
+            var plan = view == null ? null : ReinforcementPlans.For(view, draft, board.Presentation);
+            if (plan?.RegionFirst != true || draft.Payload.RegionId != region)
+                return;
+            board.Reinforcements.Show();
+            board.Map.Glide(region, board.ReducedMotion());
+        }
+
         // UI-135: a settlement clicked during a recruitment brings the panel back and marks its nation's row.
         private void Inspect(string nation)
         {

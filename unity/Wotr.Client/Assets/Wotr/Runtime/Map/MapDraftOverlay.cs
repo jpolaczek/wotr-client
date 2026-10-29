@@ -12,6 +12,8 @@ namespace Wotr.Client
         public HashSet<string> PlannedRegions { get; } = new HashSet<string>();
         // UI-323: the regions the current draft moves from (MapSourceGlow).
         public HashSet<string> SourceRegions { get; } = new HashSet<string>();
+        // UI-392: the settlement chosen for an ability's recruitment while it waits for its figure (a pulsing gold edge).
+        public HashSet<string> ChosenRegions { get; } = new HashSet<string>();
         private string endpoint = "";
 
         public MapDraftOverlay(MapCanvas map) => this.map = map;
@@ -24,6 +26,7 @@ namespace Wotr.Client
         {
             Targets.Clear();
             AttackTargets.Clear();
+            ChosenRegions.Clear();
             endpoint = "";
             RouteSteps = -1;
             if (context != null)
@@ -80,6 +83,8 @@ namespace Wotr.Client
                 var character = CharacterDraft.Selected(draft, DraftOptions.For(view, draft));
                 Targets.UnionWith(character?.RulerRecruitment != null ? CharacterRecruitDraft.Targets(draft, character)
                     : character?.Targets ?? new List<string>());
+                if (character?.RulerRecruitment != null && Targets.Contains(draft.Payload.RegionId))
+                    ChosenRegions.Add(draft.Payload.RegionId);
             }
             if (draft.Kind == CommandKind.ChooseCouncilHomelands)
                 Targets.UnionWith(DraftOptions.For(view, draft).CharacterActions

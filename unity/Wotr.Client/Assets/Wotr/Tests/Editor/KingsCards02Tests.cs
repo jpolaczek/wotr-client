@@ -151,7 +151,8 @@ namespace Wotr.EditorTests
                     Attacker = new BattleForceView { Side = Side.Shadow, CardId = "" },
                     Defender = new BattleForceView { Side = Side.FreePeoples, CardId = "" }
                 },
-                Sovereigns = { new SovereignView { Id = "kings.sovereign.brand", Nation = "north", Status = SovereignStatus.Awakened } },
+                Sovereigns = { new SovereignView { Id = "kings.sovereign.brand", Title = "Brand", Nation = "north", Status = SovereignStatus.Awakened,
+                    DefinitionId = "kings.character.brand.awakened" } },
                 Options =
                 {
                     new ActionOption
@@ -171,6 +172,13 @@ namespace Wotr.EditorTests
             Assert.IsFalse(CombatReplacementChoice.OnChip(view, "keep"));
             Assert.AreEqual("north", CombatReplacementChoice.Nation(view, chip));
             StringAssert.StartsWith("Click to use Heir of Bard · Cancels no card at initiative 0", CombatReplacementChoice.Tooltip(view, chip));
+            // UI-397 (owner): the chip ends with the ability's printed text.
+            StringAssert.EndsWith("\nHeir of Bard: Once per battle, when Brand and a North Army unit take part, you may replace your Combat " +
+                "card’s effect after the reveal: cancel the Shadow Combat card at initiative 0.", CombatReplacementChoice.Tooltip(view, chip));
+            // UI-396 (owner): the battle window names the chip and its skip.
+            Assert.IsTrue(CombatReplacementChoice.Skippable(view));
+            Assert.AreEqual("Click Brand's arms beside your Combat card's place to use the ability, or Keep card effects to fight on as usual.",
+                CombatReplacementChoice.Hint(view));
             var pass = OptionalDecline.Option(view, new TurnDraft());
             Assert.AreEqual("keep", pass.Id);
             Assert.AreEqual("Pass · Keep your card's effects", pass.Tooltip);
@@ -205,7 +213,9 @@ namespace Wotr.EditorTests
                 var marker = root.Q("battle-defender").Q("battle-replacement-applied");
                 Assert.IsNotNull(marker, side + " sees the replacement beside the Free Peoples' card.");
                 Assert.IsTrue(marker.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
-                Assert.AreEqual("replaces the Combat card's effects this round", marker.tooltip.Substring(marker.tooltip.IndexOf("replaces")));
+                // UI-397 (owner): the marker names the ability and gives its printed text.
+                StringAssert.StartsWith("Brand · Heir of Bard\nOnce per battle", marker.tooltip);
+                StringAssert.EndsWith("\nThis round it replaces the Combat card's effects.", marker.tooltip);
                 Assert.IsNull(root.Q("battle-attacker").Q("battle-replacement-applied"));
             }
         }
@@ -243,6 +253,10 @@ namespace Wotr.EditorTests
             Assert.AreEqual("southrons", CombatReplacementChoice.Nation(view, chip));
             StringAssert.StartsWith("Click to use The Black Serpent instead of ", CombatReplacementChoice.Tooltip(view, chip));
             StringAssert.Contains("Take one hit before reveal", CombatReplacementChoice.Tooltip(view, chip));
+            // UI-397 (owner): the Black Serpent's chip and marker name Red Wrath and give its printed text.
+            StringAssert.Contains("\nRed Wrath: When the Black Serpent is in a battle", CombatReplacementChoice.Tooltip(view, chip));
+            var applied = new CombatReplacementView { Side = Side.Shadow, SourceId = "kings.character.black-serpent" };
+            StringAssert.Contains(" · Red Wrath\nWhen the Black Serpent is in a battle, before the reveal", CombatReplacementChoice.AppliedTooltip(view, applied));
             Assert.AreEqual("keep", OptionalDecline.Option(view, new TurnDraft()).Id);
             var root = new VisualElement();
             new BattleContext(root, view.Battle, view, new TurnDraft(), edit => edit(), _ => { }, complete: action => action()).Refresh();

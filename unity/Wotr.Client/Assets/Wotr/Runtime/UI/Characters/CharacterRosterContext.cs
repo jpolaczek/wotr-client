@@ -84,6 +84,16 @@ namespace Wotr.Client
 
         public bool Available(string id) => components.Any(item => item.Enabled && CharacterRosterActions.Row(view, item) == id);
 
+        // UI-391: the actions of one roster row's version, for its ability icons; none while another action is drafted, as
+        // in the window (RefreshInspector).
+        public IEnumerable<ComponentAction> RowActions(string id, string definition) => view == null || draft?.Kind != null
+            ? Enumerable.Empty<ComponentAction>() : CharacterRosterActions.For(view, id, definition, components);
+
+        public bool Editable => enabled;
+
+        // UI-391: a row's ability icon starts its action, as the window's Click to use does.
+        public void Use(ComponentAction item) => Selected?.Invoke(item);
+
         // UI-108: the one entry the chosen cost allows for this figure. Several versions or entries stay an explicit
         // choice in the inspector.
         public ComponentAction Entry(string id)

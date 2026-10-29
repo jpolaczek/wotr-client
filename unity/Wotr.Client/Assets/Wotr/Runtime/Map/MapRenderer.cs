@@ -33,6 +33,7 @@ namespace Wotr.Client
         private MapTargetGlow targetGlow;
         private readonly List<string> enterable = new List<string>();
         private readonly List<string> attackable = new List<string>();
+        private readonly List<string> chosen = new List<string>();
         // UI-323: the steady gold edge of the regions the player's own draft moves from, and its reused buffer.
         private MapSourceGlow sourceGlow;
         private readonly List<string> sourceable = new List<string>();
@@ -147,18 +148,21 @@ namespace Wotr.Client
             enterable.Clear();
             attackable.Clear();
             sourceable.Clear();
+            chosen.Clear();
             foreach (var entry in regions)
             {
                 var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed);
                 entry.Value.Update(emphasis);
                 if (draft?.AttackTargets.Contains(entry.Key) == true)
                     attackable.Add(entry.Key);
+                else if (draft?.ChosenRegions.Contains(entry.Key) == true)
+                    chosen.Add(entry.Key);
                 else if (draft?.Targets.Contains(entry.Key) == true)
                     enterable.Add(entry.Key);
                 if (draft?.SourceRegions.Contains(entry.Key) == true)
                     sourceable.Add(entry.Key);
             }
-            targetGlow.Update(enterable, attackable);
+            targetGlow.Update(enterable, attackable, chosen);
             sourceGlow.Update(sourceable);
             LastUpdateMilliseconds = (Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency;
         }
@@ -173,7 +177,7 @@ namespace Wotr.Client
                 return MapRegionEmphasis.Pressed;
             if (draft?.AttackTargets.Contains(id) == true)
                 return MapRegionEmphasis.Attack;
-            if (draft?.PlannedRegions.Contains(id) == true)
+            if (draft?.PlannedRegions.Contains(id) == true || draft?.ChosenRegions.Contains(id) == true)
                 return MapRegionEmphasis.Selected;
             if (draft?.Targets.Contains(id) == true)
                 return MapRegionEmphasis.Target;

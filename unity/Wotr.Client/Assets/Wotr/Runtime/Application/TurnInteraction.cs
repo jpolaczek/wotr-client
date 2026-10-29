@@ -207,6 +207,7 @@ namespace Wotr.Client
             if (CharacterDraft.UsesCharacters(draft.Kind) && view?.Decision != null)
             {
                 EditChoice(() => CharacterDraft.Region(draft, DraftOptions.For(view, draft), region));
+                reinforcements.RegionChosen(region);
                 return;
             }
             if (draft.Kind == CommandKind.RetreatBattle && view.Options.Any(o => o.Kind == draft.Kind && o.Targets.Contains(region)))

@@ -1767,3 +1767,47 @@ Owner reports from the Kings Ruler token scenarios:
   docked hand shows its decks already, so the plaque has nothing to open — a floating hand drawer opens once for the
   step, and the character keeps no Open decision link (`DeckChoice`). Tests: `DeckChoiceTests`, `DeckChoiceMenuTests`
   (Horn of Gondor with Denethor's token from the test menu).
+
+## Abilities on their rows, recruitment from the map, a lifted figure — UI-391 to UI-397 (2026-10-29)
+
+Owner requests and reports from the Kings and Lords test scenarios:
+
+- UI-391 (owner) — a character's abilities are used straight from the Characters tab. The third line of each roster
+  row holds a 15-point line of small thematic icons, one per printed ability, right-aligned away from the portrait's
+  level star (`AbilityIcons`: a battle for a combat bonus, the Guide's crown, the Politics track for a political step or
+  a messenger, a muster, a move, a card draw, the Hunt's eye or die, a Ring, the Balrog, Gollum, a plus for an upgrade,
+  a level, a change of version, a bond to a place; the scroll otherwise). The line keeps its height whether a character
+  prints two abilities or four, so every row keeps its size; on a short viewport the icons take the status line's
+  place and the row's tooltip keeps the state and region (a strip under the rows made a full roster too tall for the
+  panel). An icon's tooltip names the ability and its text. An ability usable now glows with the shared gold rim and
+  pulses with the roster; its click starts it as the chip's Click to use does (UI-369), with the same die or token, so
+  Dáin's Iron Guard starts from his row after his token. Two usable actions of one ability (Saruman's Voice), or an
+  ability not usable now, open the character's window with that ability unrolled. The window keeps its chips
+  (`CharacterAbilityStrip`). Tests: `CharacterAbilityStripTests`,
+  `RulerTokenMenuTests.DainsIronGuardStartsFromItsIconInTheCharactersTab`.
+- UI-392 (owner) — a king's recruitment (Iron Guard, Call to Arms, Mustering of the Mark) starts on the map: the
+  Reserve does not open by itself; its tab glows and can be opened by hand, and the target settlements glow green. A
+  click on a lit settlement remembers it, opens the Reserve for it and glides the camera there at the same zoom
+  (`MapCanvas.Glide` over `CameraTravel`, 450–750 ms eased; at once under Reduced motion; the player's own pan or zoom
+  stops it). The chosen settlement wears a wider gold edge that pulses with the green targets and its fill turns to the
+  planned colour, until its figure is placed (`MapDraftOverlay.ChosenRegions`). The next figure's click places it
+  there. The Balrog's optional figure keeps its panel. Tests: `ReinforcementPlansTests`, `RulerTokenMenuTests`.
+- UI-393 (owner) — a reserve figure is dragged onto a lit settlement as its own icon: the pressed figure's art follows
+  the pointer, centred and a little larger, and its slot keeps only a faint trace while it is lifted; a drop on a legal
+  settlement (or on the army standing there) places it, a drop elsewhere returns it with no action (UI-113). Other drag
+  sources keep their label. Test: `RulerTokenMenuTests` (the second Iron Guard figure).
+- UI-395 (owner) — a response made only in the console lights only its choices. Lady Galadriel's Nenya after a Hunt
+  Eye is its Ring socket and Pass: the Hunt window holds nothing then, so the Hunt plaque no longer glows, the decision
+  belongs to no window or region, and the console's banner neither pulses nor opens the Hunt window
+  (`HuntActions.ConsoleReaction`). A table card's or a Guide's response beside Nenya keeps the Hunt window. Tests:
+  `DecisionAttentionTests.ANenyaResponseLeadsToNoWindow`, `ExpansionWindowNetworkTests` (t34-nenya).
+- UI-394 (owner) — the battle window's two sides keep one width in every step; a long figure choice wraps inside its
+  column (`docs/ui/BATTLE_WINDOW_UX.md`, UI-208). Test: `BattleLayoutTests.LossesAndRerollsStandOnTheDecidingPlayersSide`.
+- UI-396 (owner) — a Combat card's replacement (Heir of Bard, Shadows in the North, a Dark Chieftain's) can be skipped
+  from the battle window: Keep card effects stands in its footer on the deciding player's side and sends the decline at
+  once, as the console's Pass still does; the footer's hint names the chip's click and the skip. Tests:
+  `KingsCards02Tests`, `KingsDecisionNetworkTests.KeepingTheCardsEffectsIsThePass`.
+- UI-397 (owner) — an ability shown as a marker or chip in the battle window is described: a made replacement's marker
+  reads its source, the ability (Red Wrath, Lord of the Bats, I Command, Heir of Bard, Shadows in the North), its printed
+  text and what it replaces this round; an offered chip ends with the same text (`CombatReplacementChoice.Ability`).
+  Test: `KingsCards02Tests`.

@@ -27,6 +27,9 @@ namespace Wotr.Client
                 return At(DecisionContext.Battle, view.EventLoss?.RegionId ?? view.Battle.RegionId);
             if (HuntActions.UsesPanel(view))
                 return At(DecisionContext.Hunt, "");
+            // UI-395: Nenya's socket and Pass stand in the console; no window or region holds this reaction.
+            if (HuntActions.ConsoleReaction(view))
+                return At(DecisionContext.Resources, "");
             if (FellowshipActions.UsesPanel(view, null) && !CompanionJourneyDraft.OnMap(view))
                 return At(DecisionContext.Fellowship, view.Fellowship.MordorStep.HasValue ? "" : view.Fellowship.RegionId);
             // UI-390: a deck choice (the Palantír of Anárion's extra card) is made on the decks in the hand drawer, never in
