@@ -61,6 +61,8 @@ namespace Wotr.Client
         // UI-278 (D15): the object a Kings card branch's click carries into the card's next step.
         private readonly BranchCarry branchCarry = new BranchCarry();
         private bool held;
+        // UI-399: a standard corruption attempt's draws follow the first Draw tiles click.
+        private readonly CorruptionDrawChain corruptionDraws = new CorruptionDrawChain();
         private bool online;
         private bool previewLegal;
         private int generation;
@@ -493,6 +495,21 @@ namespace Wotr.Client
             // QUAL-09: recorded only once rendered, so a failed render can be repeated with the same view.
             version.Commit(latest);
             RecoverPending();
+            // UI-399: a standard corruption attempt draws its next tile by itself, a short pause after this one shows.
+            if (corruptionDraws.Due(view))
+                board.Root.schedule.Execute(DrawNextTile).StartingIn(CorruptionDrawChain.PauseMilliseconds);
+        }
+
+        private void DrawNextTile()
+        {
+            if (view == null || !corruptionDraws.Running(view))
+                return;
+            if (CommandBusy)
+            {
+                board.Root.schedule.Execute(DrawNextTile).StartingIn(CorruptionDrawChain.PauseMilliseconds);
+                return;
+            }
+            Choose(CommandKind.DrawCorruptionTile);
         }
 
         // UI-167: the ribbon (or the console's flash) when this view passes the action to the player.
@@ -658,6 +675,8 @@ namespace Wotr.Client
             if (!CanChoose(kind))
                 return;
             notice = "";
+            if (kind == CommandKind.DrawCorruptionTile)
+                corruptionDraws.Start(view);
             DraftGesture.Choose(draft, view, kind);
             session.Edited(view);
             PersistDraft();

@@ -1817,3 +1817,10 @@ Owner requests and reports from the Kings and Lords test scenarios:
   attempt buttons and the Characters tab, and the attempt's click sends it with that Eye. Until then the buttons stay
   dark and say "Click an Eye that pays in your dice row first". Tests: `SovereignPanelTests`,
   `ExpansionCorruptionNetworkTests`.
+- UI-399 (owner's question) — a standard corruption attempt's Draw tiles is one click. Under T28 it draws min(3,
+  remaining Eyes) tiles, an Eye or special tile is revealed, set aside and replaced, and a Kings tile ends the draw: no
+  choice falls between the draws, so after the click the client sends each next draw by itself, about half a second
+  after the previous tile shows, until the limit or a Kings tile; then the choice of a tile waits (`CorruptionDrawChain`).
+  Each draw stays the server's own command, and opening the game still draws nothing (UI-12). The Sequential variant
+  keeps one click per draw, as each is a choice. Tests: `ExpansionCorruptionNetworkTests`, `KingsCards02NetworkTests`
+  (`KingsCardNetworkChecks.DrawTiles` clicks once), `SovereignPanelNetworkTests`.

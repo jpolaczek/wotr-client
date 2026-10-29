@@ -108,7 +108,7 @@ namespace Wotr.Client
                 Id = "draw", Name = "action-DrawCorruptionTile", Label = sequential ? "Draw again" : "Draw tiles",
                 Kind = ConsoleOptionKind.Action, Command = CommandKind.DrawCorruptionTile, Enabled = draw.Enabled,
                 Tooltip = sequential ? "Draw another tile · Or click the latest tile beside the king to keep it"
-                    : "Click to draw the Corruption tiles for this attempt"
+                    : "Click to draw this attempt's Corruption tiles, one after another, until the limit or a Kings tile"
             });
             return options;
         }

@@ -31,21 +31,21 @@ namespace Wotr.PlayTests
 
         // UI-274: an inspected king's tile stands face up beside his portrait; its click returns it.
         // UI-279: each draw is the console's Draw tiles, even when it is the only legal step; nothing is drawn by itself.
+        // UI-399 (owner): one Draw tiles click draws every tile of a standard attempt; the choice then waits.
         internal static async Task DrawTiles(MatchTestRoom room, MountedMatchClient client)
         {
             var board = client.Board;
-            while (!board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile))
-            {
-                Button draw = null;
-                await room.Until(() => (draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile")) != null &&
-                    draw.enabledInHierarchy && draw.worldBound.height > 0);
-                await room.Settle();
-                draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
-                Assert.AreEqual("Draw tiles", draw.text);
-                var revision = board.View.Revision;
-                PointerGestureEvents.ClickAt(draw);
-                await room.At(revision + 1);
-            }
+            if (board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile))
+                return;
+            Button draw = null;
+            await room.Until(() => (draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile")) != null &&
+                draw.enabledInHierarchy && draw.worldBound.height > 0);
+            await room.Settle();
+            draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
+            Assert.AreEqual("Draw tiles", draw.text);
+            PointerGestureEvents.ClickAt(draw);
+            await room.Until(() => board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile) ||
+                board.View.CorruptionAttempt == null);
         }
 
         internal static async Task<Button> InspectedTile(MatchTestRoom room, MountedMatchClient client, string king, string tile)
