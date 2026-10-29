@@ -398,6 +398,7 @@ namespace Wotr.Client
             bottom.Add(Console.Root);
             Root.Add(bottom);
             Root.Add(RingPicker.Root);
+            Root.Add(Console.Status.RaisedOptions);
             Root.Add(GameEnd.Root);
             var mapOcclusions = overlays.Concat(new[] { top, Notifications.Root, bottom }).ToArray();
             Map.Occlusions = () => mapOcclusions.Where(element => !Appearance.Closed(element) && element.resolvedStyle.display != DisplayStyle.None &&

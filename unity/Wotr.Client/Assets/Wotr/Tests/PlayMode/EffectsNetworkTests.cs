@@ -106,7 +106,7 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Palantir));
             await room.Settle();
             Assert.AreSame(actor.Board.TableEffects.DecisionHost, actor.Board.Tray.parent);
-            StringAssert.Contains("chosen Elven Ring", actor.Board.TableEffects.Root.Q<Label>("effect-removal-cost").text);
+            StringAssert.Contains("give one Elven Ring to the Shadow", actor.Board.TableEffects.Root.Q<Label>("effect-removal-cost").text);
             Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
             Assert.AreEqual(before.Revision, actor.Board.View.Revision);
             PointerGestureEvents.ClickAt(actor.Board.Console.Rings.For(ring));

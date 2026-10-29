@@ -37,6 +37,7 @@ namespace Wotr.Client
         private readonly VisualElement glow = new VisualElement { name = "console-status-glow", pickingMode = PickingMode.Ignore };
         private IVisualElementScheduledItem flash;
         private string optionsKey = "";
+        private readonly ConsoleOptionsFit fit;
 
         public ConsoleStatus()
         {
@@ -62,7 +63,11 @@ namespace Wotr.Client
             optionsPulse = new ChoicePulse(Options);
             Options.style.display = DisplayStyle.None;
             line.Add(Options);
+            fit = new ConsoleOptionsFit(line, Trail, Options);
         }
+
+        // TEST-15: options too wide for the line stand above the console; the board hosts that strip.
+        public VisualElement RaisedOptions => fit.Strip;
 
         public void Apply(TurnConsoleState state, string opens)
         {
@@ -171,7 +176,10 @@ namespace Wotr.Client
             HideMerged();
             var shown = options.Count > 0;
             Options.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
+            // The hint gives its place to the options wherever they stand, so the line's content — and the console's
+            // width — never depends on where they stand (ConsoleOptionsFit measures that width).
             Hint.style.display = shown ? DisplayStyle.None : DisplayStyle.Flex;
+            fit.Refit();
         }
 
         private Button OptionButton(ConsoleOption option)
