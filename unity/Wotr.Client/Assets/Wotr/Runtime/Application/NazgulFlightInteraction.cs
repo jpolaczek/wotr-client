@@ -71,7 +71,9 @@ namespace Wotr.Client
             }
             if (NazgulFlightDraft.Targets(view, draft).Contains(region))
             {
-                edit(() => NazgulFlightDraft.Fly(view, draft, region), false);
+                // UI-417 (owner): a card that moves one figure sends the move with its destination; with several, ✓ sends
+                // them once every one is planned.
+                edit(() => NazgulFlightDraft.Fly(view, draft, region), NazgulFlightDraft.Offered(view, draft).Count() == 1);
                 return true;
             }
             if (!NazgulFlightDraft.IsSource(view, draft, region))

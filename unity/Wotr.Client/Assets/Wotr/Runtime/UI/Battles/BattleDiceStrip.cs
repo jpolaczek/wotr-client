@@ -89,6 +89,8 @@ namespace Wotr.Client
                 return;
             var row = BoardScreen.Row("battle-hit-cancels");
             row.name = "battle-hit-cancels";
+            // UI-419 (owner): a pip a click may choose pulses, as the board's choices do.
+            var pulse = new ChoicePulse(row);
             foreach (var (id, amount) in amounts)
             {
                 var pip = BattleChoicePip.Create("battle-hit-cancel-" + amount, "−" + amount, () => edit(() => BattleObjectChoices.Choose(view, draft, id)));
@@ -96,6 +98,8 @@ namespace Wotr.Client
                 headingRefresh.Add(() => BattleChoicePip.Show(pip, BattleObjectChoices.CanChoose(view, draft, id),
                     BattleObjectChoices.ChosenHits(view, draft) == amount, BattleObjectChoices.Detail(view, id)));
             }
+            headingRefresh.Add(() => pulse.Run(amounts.Any(choice => BattleObjectChoices.CanChoose(view, draft, choice.Item1) &&
+                BattleObjectChoices.ChosenHits(view, draft) != choice.Item2)));
             heading.Add(row);
         }
 

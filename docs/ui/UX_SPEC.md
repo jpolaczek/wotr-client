@@ -1515,3 +1515,18 @@ Base-game parts of the owner's requests on the Kings branch:
   control keeps its place; no information was added or removed (`Frontend.uss`, `WaitingRoom.uss`, Settings in
   `Wotr.uss`). Tests: `MainMenuLayoutTests` (four layouts, the audience line now 48 points), `TestScenarioNetworkTests`,
   `MainMenuNetworkTests`, `InterfaceSettingsTests`.
+
+## Moves show their own figure, one card button, pulsing battle pips — UI-416 to UI-419, base parts (2026-10-29)
+
+- UI-416 (owner) — a planned move shows and names the figure that moves: the map's planned-figure ghosts keep a
+  character's own figure (`MapPlannedRecruits` used only nation and kind), and a card's character move names its
+  figures in the console ("Move the Witch-king and a Nazgûl", "Keep the Witch-king and 3 Nazgûl in place"). Test:
+  `NazgulFlightDraftTests.TheSummaryAndTheGhostShowTheFiguresThatMove`.
+- UI-417 (owner) — a card's move of one figure sends with its destination's click (no ✓), as any complete final click
+  does; an option of a card's effect joins the card's committed button in the console's trail (two buttons opened the
+  same card); a chosen region, figure or die keeps its own.
+- UI-418 (owner) — a card decision with one option shows one button, named after the card, lit and pulsing, whose
+  tooltip says what it does; the console's trail leaves out that card's committed button. A single reaction response
+  is lit too.
+- UI-419 (owner) — the battle window's clickable pips (Heroic Death's amounts) glow brighter and pulse in the shared
+  rhythm. (The Skip effect button stands on the expansions branch, with their optional declines.)

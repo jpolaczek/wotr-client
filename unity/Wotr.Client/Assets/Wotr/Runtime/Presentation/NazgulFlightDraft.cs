@@ -104,17 +104,34 @@ namespace Wotr.Client
                 : "Every Nazgûl has flown · ✓ confirms.";
         }
 
+        // UI-416 (owner): figures by what they are: characters by name ("the Balrog"), other Nazgûl counted.
+        public static string Figures(PlayerView view, IEnumerable<string> ids)
+        {
+            var list = ids.ToList();
+            var names = list.Where(id => Character(view, id)).Select(id => "the " + CharacterLibrary.ShortName(view, id)).ToList();
+            var nazgul = list.Count(id => !Character(view, id));
+            if (nazgul > 0)
+                names.Add(nazgul == 1 ? "a Nazgûl" : nazgul + " Nazgûl");
+            return names.Count <= 1 ? names.FirstOrDefault() ?? "" : string.Join(", ", names.Take(names.Count - 1)) + " and " + names.Last();
+        }
+
+        // Every figure the card's move may move, moved or not.
+        public static IEnumerable<string> Offered(PlayerView view, TurnDraft draft) =>
+            (DraftOptions.For(view, draft)?.Travel ?? new List<TravelOption>()).Select(t => t.Id);
+
         // The marker of the Nazgûl the next destination click flies, for the map's armed highlight.
         public static ArmyOption Armed(PlayerView view, TurnDraft draft) =>
             Next(view, draft) is { } next ? new ArmyOption { RegionId = next.Origin, Garrison = Garrison(view, next.Id) } : null;
 
         // Every flown Nazgûl at its destination, for the map's ghosts.
+        // Every moved figure at its destination, for the map's ghosts; a character keeps its own figure (UI-416).
         public static List<PlannedReinforcement> Planned(PlayerView view, TurnDraft draft) => draft.Payload.CompanionMoves
             .SelectMany(group => group.Ids.Select(id => new PlannedReinforcement
             {
                 UnitId = id,
                 Nation = view.Units.FirstOrDefault(u => u.Id == id)?.Nation ?? "sauron",
                 Kind = UnitKind.Nazgul,
+                CharacterId = view.Characters.FirstOrDefault(c => c.Id == id)?.DefinitionId ?? "",
                 RegionId = group.Route.LastOrDefault() ?? ""
             }))
             .ToList();

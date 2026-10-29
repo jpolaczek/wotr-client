@@ -257,8 +257,16 @@ namespace Wotr.Client
             if (view.Characters.Any(c => c.Id == id))
                 return CharacterLibrary.Name(view, id);
             var die = view.Battle?.Attacker.Dice.Concat(view.Battle.Defender.Dice).FirstOrDefault(d => d.Id == id);
-            return die != null ? die.Result + (die.ConvertedHit ? " → Hit" : "") : CardLibrary.Title(id);
+            if (die != null)
+                return die.Result + (die.ConvertedHit ? " → Hit" : "");
+            return CardLibrary.Title(id);
         }
+
+        // UI-417: a choice of a region, a figure, a king, a die or a card; otherwise an option of the effect itself.
+        public static bool NamesObject(PlayerView view, BoardPresentation data, string id) =>
+            data.Regions.ContainsKey(id) || view.Sovereigns.Any(s => s.Id == id) || view.Units.Any(u => u.Id == id) ||
+            view.Characters.Any(c => c.Id == id) || CardLibrary.Cards.ContainsKey(id) ||
+            view.Battle != null && view.Battle.Attacker.Dice.Concat(view.Battle.Defender.Dice).Any(d => d.Id == id);
 
         public void Refresh()
         {
