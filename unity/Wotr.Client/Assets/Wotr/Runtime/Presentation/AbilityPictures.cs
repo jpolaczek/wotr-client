@@ -14,6 +14,7 @@ namespace Wotr.Client
         public const string Attack = "Wotr/Art/UI/actions/battle";
         public const string Entry = "Wotr/Art/UI/characters/on-board";
         public const string Ability = "Wotr/Art/UI/characters/ability";
+        public const string Draw = "Wotr/Art/UI/dice/faces/card-draw";
 
         public static string For(CommandKind kind, string ability)
         {

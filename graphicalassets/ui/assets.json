@@ -215,6 +215,18 @@
       "--card-rim": "#7a2a1c",
       "--card-glow": "#e0574a",
       "--card-glow-opacity": "1"
+    },
+    "crown-on": {
+      "--crown-light": "#fff2b8",
+      "--crown-dark": "#c18d2c",
+      "--crown-stone": "#d8342a",
+      "--glow-opacity": "1"
+    },
+    "crown-hover": {
+      "--crown-light": "#f2e3b6",
+      "--crown-dark": "#9a7a3c",
+      "--crown-stone": "#9a3a2c",
+      "--glow-opacity": "0.45"
     }
   },
   "assets": [
@@ -1003,6 +1015,22 @@
     {
       "source": "characters/may-return.svg",
       "role": "Character status (UI-139): A new version may come into play."
+    },
+    {
+      "source": "kings/status-corrupted.svg",
+      "role": "UI-274: status badge of a Corrupted king."
+    },
+    {
+      "source": "fellowship/versions.svg",
+      "role": "UI-269: a companion with two versions to choose from: two faces in profile on a gilt disc at the portrait's corner."
+    },
+    {
+      "source": "fellowship/guide-crown.svg",
+      "role": "UI-269: the starting Guide's crown on a candidate's portrait: dim to click, lit gold on the chosen Guide (on), brighter while hovered.",
+      "variants": [
+        "crown-on",
+        "crown-hover"
+      ]
     },
     {
       "source": "hunt/tile-standard.svg",

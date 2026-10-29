@@ -25,6 +25,10 @@ namespace Wotr.Client
         // An Action option chooses this command (UI-216: an army event's alternatives).
         public CommandKind? Command;
         public bool Enabled = true;
+        // UI-418: the decision's only option, lit and pulsing; on its card's button (SourceId), whose committed button
+        // then leaves the trail.
+        public bool Lit;
+        public string SourceId = "";
     }
 
     // UI-214 (CARD_CHOICES_UX rule 4): a card's modes and options, and the object-less responses of a reaction outside
@@ -94,7 +98,23 @@ namespace Wotr.Client
                     Tooltip = "Choose a lit table card in the Effects panel",
                     Kind = ConsoleOptionKind.OpenEffects
                 });
+            if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Effect)
+                Single(options[0], view.Decision.SourceId);
             return options;
+        }
+
+        // UI-418 (owner): a card decision with one option besides its decline (the console's Pass) is one lit, pulsing
+        // button named after the card, whose tooltip says what it does (Wind from the West · Inspect Shadow hand); two
+        // buttons, the committed card and its option, said the same.
+        private static void Single(ConsoleOption option, string source)
+        {
+            option.Lit = true;
+            if (!CardLibrary.Cards.ContainsKey(source))
+                return;
+            var does = option.Tooltip.Length > 0 && option.Tooltip != option.Label ? option.Label + " · " + option.Tooltip : option.Label;
+            option.Label = CardLibrary.Title(source);
+            option.Tooltip = does;
+            option.SourceId = source;
         }
 
         // Dreadful Spells: a field army and a garrison in the chosen region are two buttons.
@@ -165,7 +185,10 @@ namespace Wotr.Client
                     Tooltip = "Click the lit table card's × in the Effects panel",
                     Kind = ConsoleOptionKind.OpenEffects
                 });
-            // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place.
+            // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place. UI-418: a single
+            // response is lit.
+            if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Reaction)
+                options[0].Lit = true;
             return options;
         }
 

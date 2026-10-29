@@ -44,8 +44,9 @@ namespace Wotr.Client
             var scopes = new VisualElement();
             scopes.AddToClassList("effect-scopes");
             Root.Add(scopes);
+            var located = new HashSet<string>();
             foreach (var group in source.Effects.GroupBy(e => (e.Description, e.Modifier, Expiry: EffectsPresentation.Expiry(e))))
-                scopes.Add(Scope(source, group.ToList(), group.Key.Expiry, text != null));
+                scopes.Add(Scope(source, group.ToList(), group.Key.Expiry, text != null, located));
             // UI-94: a card source shows its complete Event and Combat text here instead of in a card window.
             if (text != null)
             {
@@ -77,7 +78,8 @@ namespace Wotr.Client
 
         // UI-94: above a card's complete text a scope drops its summary, which the card states, and keeps
         // its targets and expiry on one wrapping row.
-        private VisualElement Scope(EffectSource source, IReadOnlyList<ActiveEffectView> effects, string expiry, bool card)
+        private VisualElement Scope(EffectSource source, IReadOnlyList<ActiveEffectView> effects, string expiry, bool card,
+            HashSet<string> located)
         {
             var block = new VisualElement();
             block.AddToClassList("effect-scope");
@@ -86,7 +88,7 @@ namespace Wotr.Client
             var description = card ? "" : source.Kind == "Ability" ? first.Description : Modifier(first.Modifier);
             if (description.Length > 0)
                 block.Add(new Label(description) { name = "effect-description-" + first.Id });
-            var targets = Targets(effects);
+            var targets = Targets(effects, description, located);
             block.Add(targets);
             var ending = new Label(expiry) { name = "effect-expiry-" + first.Id };
             ending.AddToClassList("effect-expiry");
@@ -94,13 +96,16 @@ namespace Wotr.Client
             return block;
         }
 
-        private VisualElement Targets(IEnumerable<ActiveEffectView> effects)
+        private VisualElement Targets(IEnumerable<ActiveEffectView> effects, string description, HashSet<string> located)
         {
             var targets = BoardScreen.Row("effect-targets");
             foreach (var target in effects.SelectMany(e => e.Targets).GroupBy(t => (t.Kind, t.Id, t.Label)).Select(g => g.First()))
             {
                 if (target.Kind == "Region")
                 {
+                    // UI-414 (owner): a place has its button once in a source, and none where the text already names it.
+                    if (Names(description, target.Label) || !located.Add(target.Id))
+                        continue;
                     var button = BoardScreen.Button("⌖ " + target.Label, () => locate(target.Id));
                     button.name = "effect-locate-" + target.Id;
                     button.tooltip = "Locate " + target.Label + " on the map";
@@ -111,6 +116,9 @@ namespace Wotr.Client
             }
             return targets;
         }
+
+        private static bool Names(string description, string place) =>
+            place.Length > 0 && description.IndexOf(place, StringComparison.OrdinalIgnoreCase) >= 0;
 
         private static string State(EffectSource source, bool ended, bool card)
         {

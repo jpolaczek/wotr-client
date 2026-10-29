@@ -19,7 +19,8 @@ namespace Wotr.Client
         public event Action<string> EffectInspected;
         public event Action<string> CharacterInspected;
         // UI-130/UI-135: the nation of an inspected settlement, or "" for any other region; marks its Reinforcements row.
-        public event Action<string> SettlementInspected;
+        // The shown settlement's region and nation, or two empty strings for a region without a settlement (UI-412).
+        public event Action<string, string> SettlementInspected;
         // UI-140: select or leave behind every figure of a force that can move (region, garrison).
         public event Action<string, bool> SelectAllRequested;
         // UI-251: the card choice a force section makes now ("" when none), and its click.
@@ -101,7 +102,8 @@ namespace Wotr.Client
                 Build(region, control, contents);
             }
             RefreshSelection();
-            SettlementInspected?.Invoke(region.Settlement != null ? region.Nation ?? "" : "");
+            var settlement = region.Settlement != null;
+            SettlementInspected?.Invoke(settlement ? region.Id : "", settlement ? region.Nation ?? "" : "");
             RefreshActions();
             Root.style.display = DisplayStyle.Flex;
         }

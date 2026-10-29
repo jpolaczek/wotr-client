@@ -12,9 +12,14 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "character-inspector" };
         public VisualElement Actions { get; } = new VisualElement { name = "character-actions" };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "character-decision-host" };
+        // UI-369: the chips light the abilities usable now and offer Click to use.
+        public CharacterAbilityChips Abilities => abilities;
         public string FigureId { get; private set; } = "";
         public string DefinitionId => version;
         public event Action Changed;
+        // UI-371: the player is about to change the window's content (an ability's text, a page). A version the decision
+        // selects is not such a change: the window still moves clear of the panels the decision opens.
+        public event Action ContentChanging;
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
         private readonly Label edition = Text("character-edition");
@@ -50,6 +55,9 @@ namespace Wotr.Client
             dismiss.name = "close-character";
             header.Add(dismiss);
             Root.Add(header);
+            // UI-387 (owner): the versions are tabs right under the title, switching the card the window shows.
+            versions.AddToClassList("character-version-tabs");
+            Root.Add(versions);
             var location = BoardScreen.Row("character-status");
             statusIcon.AddToClassList("character-status-icon");
             location.Add(statusIcon);
@@ -59,6 +67,7 @@ namespace Wotr.Client
             location.Add(locate);
             Root.Add(location);
             Root.Add(stats.Root);
+            abilities.Changing += () => ContentChanging?.Invoke();
             Root.Add(abilities.Root);
             Root.Add(abilities.Pages);
             limits.AddToClassList("character-limits");
@@ -67,7 +76,6 @@ namespace Wotr.Client
             limitsRow.Add(limitsIcon);
             limitsRow.Add(limits);
             Root.Add(limitsRow);
-            Root.Add(versions);
             Root.Add(entry);
             Root.Add(Actions);
             Root.Add(DecisionHost);
@@ -160,16 +168,21 @@ namespace Wotr.Client
             if (!buttons.Select(b => b.userData as string).SequenceEqual(ids))
             {
                 versions.Clear();
-                foreach (var id in ids)
+                var names = ids.Select(CharacterLibrary.ShortName).ToList();
+                var alike = names.Distinct().Count() < names.Count;
+                for (var index = 0; index < ids.Count; index++)
                 {
-                    var button = BoardScreen.Button(CharacterLibrary.Edition(id) + " · " + CharacterLibrary.ShortName(id), () =>
+                    var id = ids[index];
+                    // A tab reads the version's name; the edition is added only where two names are alike.
+                    var button = BoardScreen.Button(alike ? CharacterLibrary.Edition(id) + " · " + names[index] : names[index], () =>
                     {
                         version = id;
                         Refresh();
                     });
                     button.name = "character-version-" + id;
                     button.userData = id;
-                    button.tooltip = CharacterLibrary.Name(id);
+                    button.tooltip = CharacterLibrary.Name(id) + " · " + CharacterLibrary.Edition(id);
+                    button.AddToClassList("character-version-tab");
                     versions.Add(button);
                 }
             }

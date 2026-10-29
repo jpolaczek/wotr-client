@@ -1390,3 +1390,143 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
   rendered Log and its opened card.
 - Server follow-up QUAL-21: the server records its texts with names, so an installed client without UI-331 reads well too.
 
+<a id="one-window-one-glow-named-dice--ui-371-ui-373-2026-10-27"></a>
+## One window, one glow, named dice — UI-371, UI-372, UI-373 (2026-10-27)
+
+Owner requests of 2026-10-27:
+
+- UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
+  the roster moves; switching an ability's text or a page keeps its top-left and only pulls it back inside the board
+  (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`). A version a decision selects is not the player's
+  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve.
+- UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
+  the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
+  the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
+  are gold, a framed button adds the warm plate, and inside a pulsing host it breathes with the other choices. A
+  usable Click to use (UI-369) wears the ChoiceGlow. UI-378 (owner, 2026-10-27): the opponent's presentation and history
+  marks (the observed trace, rings and light, a revealed card's used half, a presented die, the map's observed
+  outlines, a planned group's portrait, the recorded map label and the history host) turn gold as well; they are not
+  choices, so they never wear the plate or the pulse. Side colours (the Free Peoples' blue against the Shadow's red)
+  stay.
+- UI-373 — a button that spends a die names the die and what it does: the decision tray's ✓ (and the console's, which
+  reads it) and Click to use read "Use your Muster die: <the server preview's summary>" (`DieUse`); before the
+  preview the action's name stands for the effect, and without a die the effect stands alone.
+
+<a id="tabs-dice-and-portraits--ui-382-ui-384-ui-386-ui-387-2026-10-28"></a>
+## Tabs, dice and portraits — UI-382, UI-384, UI-386, UI-387 (2026-10-28)
+
+Owner requests of 2026-10-28, first made on the expansions' build:
+
+- UI-382 — a separation's (or journey's) portraits in the Fellowship panel take the size of its companion icons
+  (54 × 44, 46 × 34 compact) instead of the tray's 66 × 48.
+- UI-384 — every rail tab glows alike: Politics and Reserve are framed buttons (`.action`), whose UI-372 choice plate
+  repainted them lighter than the Characters tab; every tab keeps the tabs' warm plate and gold rim (UI-223).
+- UI-386 — a second click on the chosen action die releases it, and with it the unsent step it began (the draft
+  clears); the Hunt's allocation, a reroll and the special dice's choices keep their own die clicks.
+- UI-387 — a character's versions are tabs right under the window's title: a low strip on a thin gilt line, the shown
+  version with a gold underline and gold text; each tab reads the version's name ("Grey", "White"), with its edition
+  only where two names are alike. Test: `CharacterRosterPanelNetworkTests`.
+
+
+## A deck choice on its decks, a separation's glow — UI-389, UI-390 (2026-10-28)
+
+Base-game parts of the owner's reports on the Kings branch (Ruler tokens, the Palantír of Anárion):
+
+- UI-389 (owner's rule) — every die and token lights all of its available uses at its click; a second click releases
+  it (UI-386). In the base game a separation, made in the Fellowship panel, now lights the Fellowship as its move does.
+- UI-390 — a deck choice is made on its decks (`DeckChoice`): during the Palantír of Orthanc's draw the decks beside
+  the hand wear the same halo as a die's draw, the console and the notice read "The Palantír of Orthanc · Choose a
+  deck" and "Click a glowing deck beside your hand to draw its top card", the notice leads to the hand
+  (`DecisionContext.Hand`; the docked hand shows its decks already, so the plaque has nothing to open), a floating
+  hand drawer opens once for the step, and the source character keeps no Open decision link. Test: `DeckChoiceTests`.
+
+## Abilities on their rows, a lifted figure, equal battle sides — UI-391, UI-393, UI-394 (2026-10-29)
+
+Base-game parts of the owner's requests on the Kings branch:
+
+- UI-391 (owner) — a character's abilities are used straight from the Characters tab. The third line of each roster
+  row holds a 15-point line of small thematic icons, one per printed ability, right-aligned away from the portrait's
+  level star (`AbilityIcons`: a battle for a combat bonus, the Guide's crown, the Politics track, a muster, a move, a
+  card draw, the Hunt's eye or die, a Ring, the Balrog, Gollum, a level, a change of version, a bond to a place; the
+  scroll otherwise). The line keeps its height, so every row keeps its size; on a short viewport the icons take the
+  status line's place and the row's tooltip keeps the state and region. An icon's tooltip names the ability and its
+  text; an ability usable now glows and its click starts it as the chip's Click to use does (UI-369); two usable
+  actions (Saruman's Voice), or an ability not usable now, open the character's window with that ability unrolled
+  (`CharacterAbilityStrip`). Test: `CharacterAbilityStripTests`.
+- UI-393 (owner) — a reserve figure is dragged onto a lit settlement as its own icon: the pressed figure's art follows
+  the pointer, centred and a little larger, and its slot keeps only a faint trace while it is lifted; a drop on a
+  legal settlement (or on the army standing there) places it, a drop elsewhere returns it with no action (UI-113).
+  Test: `BoardInteractionTests` (every reserve drag).
+- UI-394 (owner) — the battle window's two sides keep one width in every step; a long figure choice wraps inside its
+  column (`docs/ui/BATTLE_WINDOW_UX.md`, UI-208). Test: `BattleLayoutTests.LossesAndRerollsStandOnTheDecidingPlayersSide`.
+
+## Two characters a line, clear character tooltips, a dark Politics station — UI-408 to UI-410 (2026-10-29)
+
+- UI-408 (owner) — each character in the Characters tab has more room: two rows a line, each about twice as wide,
+  with the portrait, the name and region, and beside them a 2x2 block of 19-point ability icons (17 on a short
+  viewport; UI-391's were 15 points on the text's third line). A roster that two a line would make taller than the
+  board area — the full Kings roster on a 1366 x 768 screen — keeps three a line with UI-391's icons
+  (`roster-compact`); the panel tries two a line again only when the roster or the room for it changes, so the form
+  never flips back and forth. (First registered as UI-400, a number another session's registration took over.)
+  The block holds two lines of two icons one above the other and never wraps, so its form does not depend on the UI
+  scale; every icon stays inside its row (`CharacterRosterLayoutTests`).
+  The base-game branch also gains the Guide's crown, the version and the corrupted ruler's art that UI-391's icons
+  named without the files (empty frames on Gandalf's or the Balrog's row).
+  Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists`.
+- UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
+  offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
+  with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
+  each ability with its name in bold; two thin gaps part identity, entry and abilities, and the merged entry line keeps
+  the height. Only a source with `RuntimeTooltip.FormattedClass` shows rich text; every other tooltip stays plain.
+  Tests: `CharacterRowTooltipTests`, the roster tests reading `CharacterRowTooltip.Plain`.
+- UI-410 (owner) — no station on a Politics track glows: the lit green circle on the next station misled. The
+  nation's token and its arrow show the step; the next station stays the drop target of a dragged token and shows a
+  white rim only while the drag points at it. Tests: `PoliticalGestureTests`, `PoliticalPanelTests`,
+  `PoliticalRecoveryTests`, `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `T22TurnNetworkTests`.
+
+## A settlement's own recruits, clear Politics names — UI-412 and UI-413 (2026-10-29)
+
+- UI-412 (owner) — with a Muster die chosen, a clicked settlement lights in the Reserve only the figures it can take:
+  the kinds whose recruitment targets (the server's `RecruitmentOption.Targets`) hold that settlement stay lit, and so
+  do their nations' rows. The others lose their light but stay choosable, as before, for another settlement; their
+  tooltip says why ("Cannot be recruited in Edoras now", or the server's words for a closed settlement) and that their
+  click lights the settlements that take them. The header reads "Reserve · Edoras". Another settlement moves the focus,
+  a region without a settlement clears it, and a committed recruit clears it too, so the next figure sees every
+  settlement again. The click flow is unchanged. Test: `BoardInteractionTests` (UI-130's recruitment).
+- UI-413 (owner) — the Politics rows carry no effect badges: the small diamond a nation-wide effect (Wormtongue on Rohan,
+  a Corrupted Brand or Théoden) placed at the start of a row covered the nation's name. The Effects tab still lists
+  every effect; the Fellowship's and the global badges keep their places (`EffectsScopeBadges`). Test:
+  `EffectsNetworkTests` (no badge on the Politics rows while Wormtongue is in play).
+- UI-414 (owner) — the Effects tab lists passive effects and what is happening now; an ability a player uses is
+  described and offered only in the Characters tab. Each titled ability of a source has its own button; a card's
+  effects keep one. A place shows its locate button once per source, and none where the effect's text already names
+  it (`EffectsPresentation`, `EffectSourceDetails`). Test: `EffectsPresentationTests`.
+
+## A compact menu before the game — UI-415 (2026-10-29)
+
+- UI-415 (owner) — every screen before the game (the sign-in card, the main menu's pages: Open games with the lobby, My
+  games, Replays, Host a game, Demo, Test scenarios, Join by code; the waiting room; Settings) is compact: buttons of 32
+  points (the project's click target) instead of 36–42, rows of 46 (Open games 40) instead of 60 with 3 points between
+  them, text fields with 2 points of padding, and almost no empty space between frames, header plates, tabs and rows.
+  The masthead (title 30 points, the sign-in line under it) gives its height to the window (600 points tall, shrinking
+  on a smaller screen); the action column ends under Sign out and Quit game instead of stretching an empty frame. In
+  Test scenarios, Back stands beside the hint and the page's second title is gone (the window's header names it). Every
+  control keeps its place; no information was added or removed (`Frontend.uss`, `WaitingRoom.uss`, Settings in
+  `Wotr.uss`). Tests: `MainMenuLayoutTests` (four layouts, the audience line now 48 points), `TestScenarioNetworkTests`,
+  `MainMenuNetworkTests`, `InterfaceSettingsTests`.
+
+## Moves show their own figure, one card button, pulsing battle pips — UI-416 to UI-419, base parts (2026-10-29)
+
+- UI-416 (owner) — a planned move shows and names the figure that moves: the map's planned-figure ghosts keep a
+  character's own figure (`MapPlannedRecruits` used only nation and kind), and a card's character move names its
+  figures in the console ("Move the Witch-king and a Nazgûl", "Keep the Witch-king and 3 Nazgûl in place"). Test:
+  `NazgulFlightDraftTests.TheSummaryAndTheGhostShowTheFiguresThatMove`.
+- UI-417 (owner) — a card's move of one figure sends with its destination's click (no ✓), as any complete final click
+  does; an option of a card's effect joins the card's committed button in the console's trail (two buttons opened the
+  same card); a chosen region, figure or die keeps its own.
+- UI-418 (owner) — a card decision with one option shows one button, named after the card, lit and pulsing, whose
+  tooltip says what it does; the console's trail leaves out that card's committed button. A single reaction response
+  is lit too.
+- UI-419 (owner) — the battle window's clickable pips (Heroic Death's amounts) glow brighter and pulse in the shared
+  rhythm. (The Skip effect button stands on the expansions branch, with their optional declines.)

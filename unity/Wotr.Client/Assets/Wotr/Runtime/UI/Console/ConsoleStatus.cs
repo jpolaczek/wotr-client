@@ -29,6 +29,9 @@ namespace Wotr.Client
         public const string MustActClass = "must-act";
         public bool MustAct => Plaque.ClassListContains(MustActClass);
         private readonly ChoicePulse pulse;
+        // UI-418: the lit option's pulse, and the source whose committed button its card button replaces.
+        private readonly ChoicePulse optionsPulse;
+        private string merged = "";
         public int Flashes { get; private set; }
         private readonly VisualElement emblem = new VisualElement { name = "console-emblem", pickingMode = PickingMode.Ignore };
         private readonly VisualElement glow = new VisualElement { name = "console-status-glow", pickingMode = PickingMode.Ignore };
@@ -56,6 +59,7 @@ namespace Wotr.Client
             Hint.AddToClassList("console-hint");
             line.Add(Hint);
             Options.AddToClassList("console-options");
+            optionsPulse = new ChoicePulse(Options);
             Options.style.display = DisplayStyle.None;
             line.Add(Options);
         }
@@ -101,7 +105,20 @@ namespace Wotr.Client
                 EffectTrailChoices.Render(Trail, view, data, inspect);
             if (presented != null)
                 Trail.Add(presented);
-            Trail.style.display = Trail.childCount == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            HideMerged();
+        }
+
+        // UI-418: a card's committed button leaves the trail while its one option stands on the card's own button.
+        private void HideMerged()
+        {
+            var shown = 0;
+            foreach (var step in Trail.Query<Button>(className: "committed-choice").ToList())
+            {
+                var hidden = merged.Length > 0 && step.userData as string == merged;
+                step.style.display = hidden ? DisplayStyle.None : DisplayStyle.Flex;
+                shown += hidden ? 0 : 1;
+            }
+            Trail.style.display = shown == 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
         // UI-308: the opponent's card a presentation docked here ("✓ Orcs Multiplying Again"): the compact source of the
@@ -147,7 +164,11 @@ namespace Wotr.Client
                 button.userData = options[i];
                 button.tooltip = options[i].Tooltip;
                 button.SetEnabled(enabled && options[i].Enabled);
+                ChoiceGlow.Apply(button, enabled && options[i].Enabled && options[i].Lit);
             }
+            optionsPulse.Run(enabled && options.Any(o => o.Lit && o.Enabled));
+            merged = options.FirstOrDefault(o => o.Lit && o.SourceId.Length > 0)?.SourceId ?? "";
+            HideMerged();
             var shown = options.Count > 0;
             Options.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
             Hint.style.display = shown ? DisplayStyle.None : DisplayStyle.Flex;

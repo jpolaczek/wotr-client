@@ -53,7 +53,7 @@ namespace Wotr.Client
         {
             name.text = row.Name;
             Root.tooltip = Tooltip(row);
-            Root.EnableInClassList("recruitable", state.Open && state.Interactive && row.CanRecruit);
+            Root.EnableInClassList("recruitable", state.Open && state.Interactive && row.CanRecruit && !row.Elsewhere);
             Root.EnableInClassList("reinforcement-closed", state.Open && !row.CanRecruit);
             shown.Clear();
             foreach (var figure in row.Figures)
@@ -127,11 +127,13 @@ namespace Wotr.Client
                 Button.EnableInClassList("reserve-readonly", !state.Open);
                 var selected = figure.ReserveId != null && figure.ReserveId == state.Selected;
                 Button.EnableInClassList("selected", selected);
-                // UI-213: a token the player may choose now is lit, as figures are in the region panel.
-                Button.EnableInClassList(EligibleClass, state.Open && state.Interactive && figure.ReserveId != null && !selected);
+                // UI-213: a token the player may choose now is lit, as figures are in the region panel. UI-412: one the
+                // settlement in focus cannot take stays choosable but unlit.
+                Button.EnableInClassList(EligibleClass, state.Open && state.Interactive && figure.ReserveId != null && !selected &&
+                    !figure.Elsewhere);
                 Button.tooltip = figure.Kind + " · " + figure.Reserve + " in reserve" + (!state.Open ? "" : " · " + (figure.ReserveId == null
                     ? figure.Reason.Length > 0 ? figure.Reason : "Not available now"
-                    : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");
+                    : figure.Hint.Length > 0 ? figure.Hint : state.TokenHint)) + (figure.Warning.Length > 0 ? "\n⚠ " + figure.Warning : "");
                 Button.EnableInClassList("token-warning", figure.Warning.Length > 0);
             }
         }

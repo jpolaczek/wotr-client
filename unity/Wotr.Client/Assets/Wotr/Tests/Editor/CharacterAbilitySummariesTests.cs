@@ -43,7 +43,7 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[]
             {
                 "Captain of the West · +1 Combat Strength in battle (max 5 dice)",
-                "Dwarf of Erebor · Any die in Erebor moves the Dwarves a step toward war"
+                "Dwarf of Erebor · With Gimli in Erebor, any die advances the Dwarves a step toward war"
             }, CharacterAbilitySummaries.Lines("base.character.gimli"));
             Assert.AreEqual("Gollum\nGuide · Joins the Fellowship when no Companions remain\nGuide · Unseen path · Ignores Reveal on standard numbered tiles\n" +
                 "Guide · Reveal · Reveals the Fellowship to reduce Hunt damage by 1",

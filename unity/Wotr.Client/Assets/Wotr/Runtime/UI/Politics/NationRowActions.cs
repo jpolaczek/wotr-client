@@ -10,5 +10,7 @@ namespace Wotr.Client
         public bool ActivationOffered;
         public bool CanActivate;
         public string ActivationHint = "";
+        // UI-366: a character's political ability moves this nation: its token, arrow and station say whose and how.
+        public string AdvanceHint = "";
     }
 }

@@ -46,7 +46,7 @@ namespace Wotr.Client
             if (attention == null)
                 return;
             board.CloseInformation();
-            if (attention.Context is not (DecisionContext.Fellowship or DecisionContext.Hunt or DecisionContext.Sovereign))
+            if (attention.Context is not (DecisionContext.Fellowship or DecisionContext.Hunt or DecisionContext.Sovereign or DecisionContext.Hand))
                 board.Map.Focus(attention.Region);
             if (!DecisionHostNavigation.TryOpen(board))
                 OpenContext(attention);
@@ -63,6 +63,9 @@ namespace Wotr.Client
                 var attention = DecisionAttention.For(board.View);
                 if (attention == null)
                     return false;
+                // UI-390: the docked hand shows its decks already, so a deck choice has nothing to open.
+                if (attention.Context == DecisionContext.Hand)
+                    return !board.HandDrawer.Docked;
                 if (DecisionHostNavigation.Hosted(board) || UsesHand(board.View) || attention.Region.Length > 0)
                     return true;
                 return attention.Context is DecisionContext.Hunt or DecisionContext.Battle or DecisionContext.Fellowship or
@@ -110,6 +113,10 @@ namespace Wotr.Client
                     break;
                 case DecisionContext.Sovereign:
                     board.Sovereigns.Show(attention.Subject);
+                    break;
+                // UI-390: a deck choice is made on the decks beside the hand.
+                case DecisionContext.Hand:
+                    board.HandDrawer.Open();
                     break;
                 case DecisionContext.Region:
                     if (board.Presentation.Regions.ContainsKey(attention.Region))

@@ -322,9 +322,12 @@ The user's application from 2026-10-16: the reroll and hit chapter is to be on t
   dice, and replaces the force composition there (`battle-force-choosing`): these are the same
   units, now to choose. This includes the loss block (legend, hit seals, budget and figure) in the
   column of the page with `BattleView.LossOwner` and the progress grid and extension grid siege in
-  the player column. This column is then wider (`flex-grow: 1.8`) so that the entire army will be
-  located in one row on the low screen. The block header of the loss block will be wrapped in the
-  column width. The losses of the event remain in the tray.
+  the player column. Since UI-394 (owner, 2026-10-28) this column keeps the other column's width:
+  its figures wrap into a second row inside it rather than widening it (`.loss-figures`); on a short
+  viewport its loss figures take the compact size (42 × 46) and the names under its portraits give
+  way (the portraits and their tooltips keep them), so two rows stay above the console. The block
+  header of the loss block will be wrapped in the column width. The losses of the event remain in
+  the tray.
 - dice to the reroll are in the player column (so far).
 - The battle decision-button foot (transmittance, loss, "Keep all", card) stands on the player side:
   with the attacking buttons on the left, and description next to them (`battle-footer-attacker`,

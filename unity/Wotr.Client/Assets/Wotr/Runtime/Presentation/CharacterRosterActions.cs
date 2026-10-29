@@ -39,8 +39,10 @@ namespace Wotr.Client
             draft.Kind == CommandKind.EnterCharacter && draft.Payload.RegionId.Length == 0 && view.DecisionOwner == view.You
                 ? Figure(view, draft.Payload.CharacterId) : "";
 
+        // UI-390: a deck choice is made on the decks, not linked from its source character.
         public static bool HasReaction(PlayerView view, string id) =>
             id.Length > 0 && view?.Decision != null && view.DecisionOwner == view.You && view.Decision.Kind != DecisionKind.Action &&
+            !DeckChoice.Pending(view) &&
             (Figure(view, view.Decision.SourceId) == id || view.Options.Any(option =>
                 option.EffectChoices.Any(choice => Figure(view, choice.SourceId) == id)));
     }

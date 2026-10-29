@@ -26,6 +26,7 @@ namespace Wotr.Client
         private readonly Button[] slots = new Button[4];
         private readonly Action<string> advance;
         private bool highlighted;
+        private string advanceHint = "";
         private bool advancing;
         private bool activating;
 
@@ -157,6 +158,7 @@ namespace Wotr.Client
         {
             highlighted = actions.Highlighted;
             advancing = actions.CanAdvance;
+            advanceHint = actions.AdvanceHint;
             activating = actions.CanActivate;
             Token.EnableInClassList("selected", highlighted);
             Token.EnableInClassList("legal-target", advancing || actions.CardTarget);
@@ -176,7 +178,8 @@ namespace Wotr.Client
             Advance.style.visibility = actions.ActivationOffered ? Visibility.Hidden : Visibility.Visible;
             Advance.SetEnabled(advancing);
             Advance.EnableInClassList("legal-target", advancing);
-            Advance.tooltip = advancing ? "Move " + FigureGrid.Name(Nation.Id) + " one step toward war" : ArrowHint();
+            Advance.tooltip = !advancing ? ArrowHint() : advanceHint.Length > 0 ? advanceHint
+                : "Move " + FigureGrid.Name(Nation.Id) + " one step toward war";
             Activation.style.visibility = actions.ActivationOffered ? Visibility.Visible : Visibility.Hidden;
             Activation.SetEnabled(activating);
             Activation.EnableInClassList("legal-target", activating);
@@ -191,15 +194,17 @@ namespace Wotr.Client
 
         private string TokenHint(bool cardTarget) =>
             cardTarget ? "Choose this nation for the card." :
-            advancing ? "Click this token, its arrow or the lit station to move it one step toward war. Dragging also moves it." :
+            advancing && advanceHint.Length > 0 ? advanceHint :
+            advancing ? "Click this token or its arrow to move it one step toward war. Dragging it one station on also moves it." :
             ArrowHint();
 
+        // UI-410 (owner): no station glows — a lit circle on the track misled; the nation's token (and its arrow) shows the
+        // step. The next station stays the drop target of a dragged token, marked only while the drag points at it.
         private void RefreshSlot(int step)
         {
             var next = advancing && step == Nation.StepsToWar - 1;
             var current = step == Nation.StepsToWar;
             var slot = slots[step];
-            slot.EnableInClassList("legal-target", next);
             slot.EnableInClassList("destination-selected", next && highlighted);
             slot.EnableInClassList("passed-station", step > Nation.StepsToWar);
             slot.SetEnabled(next);

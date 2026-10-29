@@ -27,14 +27,14 @@ namespace Wotr.Client
         {
             Root.AddToClassList("frontend-form");
             Root.AddToClassList("test-scenario-list");
-            var header = BoardScreen.Row();
-            header.Add(BoardScreen.Title("Test scenarios"));
+            // UI-415 (owner): Back stands beside the hint; the menu window's header already names the page.
+            var header = BoardScreen.Row("test-scenario-header");
             var back = IconButton.Create("back", "Back", () => Back?.Invoke());
             back.name = "close-test-scenarios";
             header.Add(back);
-            Root.Add(header);
-            Root.Add(Text("A prepared situation to test a die or an action. Play both sides with Switch side; nothing is saved.",
+            header.Add(Text("A prepared situation to test a die or an action. Play both sides with Switch side; nothing is saved.",
                 "test-scenario-hint"));
+            Root.Add(header);
             tabs.AddToClassList("test-scenario-tabs");
             Root.Add(tabs);
             var search = BoardScreen.Row("test-scenario-search-row");

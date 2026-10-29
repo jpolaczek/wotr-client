@@ -20,6 +20,11 @@ namespace Wotr.Client
         private readonly Action finish;
         private PlayerView view;
         private TurnDraft draft;
+        // UI-412: the settlement whose click narrowed the Muster's Reserve, the last one the region panel showed, and the
+        // view revision of that click (a committed recruit clears the narrowing).
+        private string focus = "";
+        private string inspected = "";
+        private long focusRevision;
 
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
@@ -45,6 +50,8 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
+            if (!MusterRecruiting() || view.Revision != focusRevision)
+                focus = "";
             var plan = ReinforcementPlans.For(view, draft, board.Presentation);
             board.Reinforcements.Apply(State(plan));
             board.Map.PlannedRecruits.Apply(plan?.Placements ?? Nothing, view.You, !busy());
@@ -57,7 +64,7 @@ namespace Wotr.Client
             if (!muster() || draft.Kind is not (null or CommandKind.Recruit))
                 return ReinforcementsState.Browse(view);
             var recruitment = MusterActions.Option(view, board.ActionDie, CommandKind.Recruit);
-            return ReinforcementsState.For(view, recruitment, draft.ReserveId, !busy());
+            return ReinforcementsState.For(view, recruitment, draft.ReserveId, !busy(), Focus());
         }
 
         // A card or ability plans the figure; a Muster reserve lights the settlements it can take.
@@ -78,12 +85,36 @@ namespace Wotr.Client
             board.Map.Reveal(board.Map.DraftOverlay.Targets);
         }
 
+        private RecruitFocus Focus() => focus.Length > 0 && board.Presentation.Regions.TryGetValue(focus, out var region)
+            ? new RecruitFocus(focus, region.Name) : RecruitFocus.None;
+
+        // A Muster die's own recruitment: no card or ability plan.
+        private bool MusterRecruiting() => view != null && muster() && draft.Kind is (null or CommandKind.Recruit) &&
+            !ReinforcementPlans.Active(view, draft);
+
         // UI-135: a settlement clicked during a recruitment brings the panel back and marks its nation's row.
-        private void Inspect(string nation)
+        private void Inspect(string region, string nation)
         {
             board.Reinforcements.Focus(nation);
             if (nation.Length > 0 && view?.Units.Any(u => u.Side == view.You && u.Nation == nation) == true)
                 board.Reinforcements.Reopen();
+            Narrow(region);
+        }
+
+        // UI-412 (owner): a settlement clicked during a Muster recruitment lights in the Reserve only the figures it can
+        // take (the others stay choosable); another settlement moves the focus and a region without one clears it. The
+        // region panel's refresh of the same region changes nothing, so a recruit that ends the focus does not bring it back.
+        private void Narrow(string region)
+        {
+            if (region == inspected)
+                return;
+            inspected = region;
+            var next = MusterRecruiting() ? region : "";
+            if (next == focus)
+                return;
+            focus = next;
+            focusRevision = view.Revision;
+            board.Reinforcements.Apply(State(ReinforcementPlans.For(view, draft, board.Presentation)));
         }
 
         private void Remove(string id)

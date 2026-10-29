@@ -9,6 +9,8 @@ namespace Wotr.Client
         public string UnitId = "";
         public string Nation = "";
         public UnitKind Kind;
+        // UI-416: a moved character (the Witch-king's flight) keeps its own figure on the map.
+        public string CharacterId = "";
         public string RegionId = "";
         public string RegionName = "";
     }

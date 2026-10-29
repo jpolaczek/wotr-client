@@ -23,6 +23,7 @@ namespace Wotr.Client
         private string match = "";
         private Side? side;
         private string openedDiscard;
+        private string openedDeck;
 
         public HandDrawer(VisualElement surface, VisualElement hand, CardInspector inspector)
         {
@@ -61,6 +62,7 @@ namespace Wotr.Client
             {
                 Close();
                 openedDiscard = null;
+                openedDeck = null;
             }
             match = view.MatchId;
             side = view.You;
@@ -70,6 +72,12 @@ namespace Wotr.Client
             if (excess > 0 && openedDiscard != view.Decision.Id)
             {
                 openedDiscard = view.Decision.Id;
+                Open();
+            }
+            // UI-390: a deck choice opens the drawer once, where its decks glow.
+            if (DeckChoice.Pending(view) && openedDeck != view.Decision.Id)
+            {
+                openedDeck = view.Decision.Id;
                 Open();
             }
             Refresh();

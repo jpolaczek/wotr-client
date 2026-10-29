@@ -186,6 +186,12 @@ namespace Wotr.PlayTests
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");
                 yield return Settle();
                 Assert.IsTrue(rohan.ClassListContains("reinforcement-focused"), "A clicked settlement marks its nation's row.");
+                // UI-412 (owner): Edoras takes no figure now (Rohan is not at war), so nothing is lit; Gondor's Regular stays
+                // choosable for another settlement.
+                Assert.AreEqual("Reserve · Edoras", panel.Q<Label>(className: "title").text);
+                Assert.IsFalse(token.ClassListContains("eligible-token"), "Edoras lights no Gondor figure.");
+                Assert.IsTrue(token.enabledSelf, "Gondor's Regular stays choosable.");
+                Assert.IsFalse(panel.Q("reinforcement-gondor").ClassListContains("recruitable"), "Gondor's row is not lit for Edoras.");
                 Assert.AreEqual(0, test.Backend.Commands, "Inspecting a settlement sends nothing.");
                 LayoutTests.Save(test.Viewport, "ui130-reinforcements.png");
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");
@@ -877,6 +883,14 @@ namespace Wotr.PlayTests
         {
             BeginDrag(board, source);
             yield return null;
+            // UI-393 (owner): a reserve figure travels as its own icon, and its slot shows that it was lifted.
+            if (source.ClassListContains("reserve-token"))
+            {
+                var lifted = board.Root.Q<Image>("drag-figure");
+                Assert.AreEqual(DisplayStyle.Flex, lifted.style.display.value, "The figure's icon follows the pointer.");
+                Assert.AreSame(source.Q<Image>(className: "reserve-token-figure").sprite, lifted.sprite, "It is the pressed figure's own art.");
+                Assert.IsTrue(source.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
+            }
             var destination = MapContourProbe.Terrain(board.Map, region);
             Assert.AreSame(board.Map, board.Map.panel.Pick(destination));
             MapContourProbe.Drop(board, destination);

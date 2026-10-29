@@ -125,6 +125,93 @@ namespace Wotr.EditorTests
                 "The full ability text unrolls only after a click.");
         }
 
+        // UI-369: a usable ability's chip glows; selected, it offers Click to use; an action without a chip keeps its button.
+        [Test]
+        public void AUsableAbilityGlowsAndOffersClickToUseOnlyOnceSelected()
+        {
+            var view = Read("CharacterRosterWire.json");
+            var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
+            Assert.IsTrue(inspector.Apply(view, "base.character.gimli"));
+            var ability = CharacterAbilityLibrary.For(inspector.DefinitionId).First().Id;
+            var politics = new ComponentAction
+            {
+                Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility, Enabled = true, Detail = "Move the Dwarves one step toward war.",
+                Character = new CharacterActionOption { CharacterId = "base.character.gimli", AbilityId = ability, Title = "Dwarf of Erebor" }
+            };
+            var entry = new ComponentAction { Key = "entry", Kind = CommandKind.EnterCharacter, Enabled = true, Character = new CharacterActionOption() };
+            var buttons = inspector.Abilities.Usable(new[] { politics, entry }, true);
+            CollectionAssert.AreEqual(new[] { entry }, buttons, "Only an action without a chip keeps its own button.");
+            var chip = inspector.Root.Q<Button>("character-ability-" + ability);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "A usable ability's chip glows.");
+            Assert.IsNull(inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass), "Click to use waits for the chip to be selected.");
+            Assert.AreEqual(DisplayStyle.None, inspector.Root.Q<Label>("character-ability-text").style.display.value);
+            inspector.Abilities.Select(ability);
+            Assert.AreEqual(DisplayStyle.Flex, inspector.Root.Q<Label>("character-ability-text").style.display.value);
+            inspector.Abilities.Select(ability);
+            Assert.AreEqual(DisplayStyle.Flex, inspector.Root.Q<Label>("character-ability-text").style.display.value,
+                "Selecting the selected chip again keeps its text unrolled.");
+            var use = inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass);
+            Assert.IsNotNull(use, "The selected usable chip offers Click to use.");
+            Assert.AreEqual("Click to use", use.Q<Label>().text);
+            Assert.IsTrue(use.enabledSelf);
+            inspector.Abilities.Usable(new[] { new ComponentAction { Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility,
+                Character = politics.Character } }, true);
+            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "A disabled action does not light its chip.");
+            Assert.IsFalse(inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass).enabledSelf,
+                "Its Click to use stays in place, disabled.");
+            Assert.AreEqual("muster-each-isengard-settlement-or-upgrade-two", CharacterAbilityChips.ChipOf(new ComponentAction
+            {
+                Character = new CharacterActionOption { AbilityId = "voice-upgrade" }
+            }), "Saruman's two Voice commands use his printed ability's chip.");
+        }
+
+        // UI-366: a die that pays for a character's political ability lights Politics (not Characters), names the nation,
+        // and the nation's click becomes the ability's command with that die and the character's region.
+        [Test]
+        public void APoliticalAbilityIsOfferedOnItsNationsTrack()
+        {
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples,
+                DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action },
+                Dice = { new DieView { Id = "fp-die-1", Owner = Side.FreePeoples, Face = DieFace.Army, Location = DieLocation.Available } },
+                Nations = { new NationView { Id = "dwarves", Active = true, StepsToWar = 2 } },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.UseCharacterAbility, Enabled = true,
+                        CharacterActions =
+                        {
+                            new CharacterActionOption
+                            {
+                                CharacterId = "base.character.gimli", AbilityId = "politics-dwarves-at-erebor", Title = "Advance dwarves",
+                                Dice = { "fp-die-1" }, Targets = { "erebor" }
+                            }
+                        }
+                    }
+                }
+            };
+            var die = new ActionDieContext();
+            die.Sync(view, "fp-die-1");
+            var offers = CharacterPolitics.For(view, die);
+            CollectionAssert.AreEquivalent(new[] { "dwarves" }, offers.Keys);
+            var options = DieOptions.For(view, new TurnDraft(), die);
+            Assert.IsTrue(options.Politics, "The die lights Politics.");
+            Assert.IsFalse(options.Characters, "A political ability is used on its track, not from Characters.");
+            Assert.AreEqual("Gimli in Erebor · Dwarf of Erebor: click to spend this die to move the Dwarves one step toward war.",
+                CharacterPolitics.Hint(view, offers["dwarves"], id => id == "erebor" ? "Erebor" : id));
+            var draft = new TurnDraft();
+            Assert.IsTrue(CharacterPolitics.Use(draft, view, die, "dwarves"));
+            Assert.AreEqual(CommandKind.UseCharacterAbility, draft.Kind);
+            Assert.AreEqual("base.character.gimli", draft.Payload.CharacterId);
+            Assert.AreEqual("politics-dwarves-at-erebor", draft.Payload.AbilityId);
+            Assert.AreEqual("fp-die-1", draft.Payload.DieId);
+            CollectionAssert.AreEqual(new[] { "erebor" }, draft.Payload.Ids);
+            Assert.IsFalse(CharacterPolitics.Use(new TurnDraft(), view, die, "elves"), "Another nation is not this ability's.");
+        }
+
         [Test]
         public void RosterRowCarriesTheLevelAndAStatusSymbol()
         {

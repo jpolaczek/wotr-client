@@ -216,7 +216,7 @@ User application from 2026-10-15: "Let's add descriptions in the tooltip of what
   ```
   Gimli · Level 2 · Leadership 1
   Captain of the West · +1 Combat Strength in battle (max 5 dice)
-  Dwarf of Erebor · Any die in Erebor moves the Dwarves a step toward war
+  Dwarf of Erebor · With Gimli in Erebor, any die advances the Dwarves a step toward war
   ```
 
 The abbreviation does not repeat the title (e.g. Gollum: ‘Guide · Joins the Fellowship when no Companions remain’).
@@ -256,3 +256,43 @@ The watching board names the opponent's characters while it presents their actio
 
 None of these is a control. The opponent's public figures stay inspectable by a click on the map, and a presentation
 never opens the Characters panel.
+
+<a id="usable-ability-chips--ui-369-2026-10-27"></a>
+## A usable ability's chip glows and offers Click to use — UI-369 (2026-10-27)
+
+Owner request: in a character's window the chip of an ability that can be used now glows; only when it is selected
+(clicked) does "Click to use" appear, and its click uses the ability; the same rule applies to the whole UI.
+
+- A chip glows (the shared choice glow and pulse) while the server offers its ability to this figure now, payable by
+  the selected die when one is chosen; the chip's tooltip adds "Usable now: click it, then Click to use."
+- A click selects the chip and unrolls its text as before; a second click on the selected chip changes nothing (the
+  window never shrinks under the pointer; another chip or page changes the selection). A usable ability's text carries
+  Click to use (a ✓ and the words) in the parchment's lower right corner, inside the text, so nothing else moves.
+- The ability lines name who must stand where (UI-365): "With Gimli in Erebor, any die advances the Dwarves a step
+  toward war", "With Legolas in an Elven Stronghold, …", "With Boromir in a Gondor City or Stronghold, …". Saruman's Voice has two uses
+  (recruit, upgrade): each has its own Click to use with its name. An action the selected die cannot pay keeps its
+  Click to use in place, disabled ("Select an eligible die to use it.").
+- The inspector no longer repeats an ability with a chip as a separate button; actions without a chip (entries,
+  movement costs such as the Balrog's) keep their buttons. A server command whose id differs from the printed ability
+  (Saruman's `voice-recruit`, `voice-upgrade`) is mapped to its chip in `CharacterAbilityChips.ChipOf`.
+- Tests: `CharacterRosterPanelTests.AUsableAbilityGlowsAndOffersClickToUseOnlyOnceSelected`,
+  `CharacterRosterActionNetworkTests` (Gimli's Messenger of Elrond through its chip, `ui369-click-to-use.png`).
+
+<a id="political-abilities-on-their-track--ui-366-2026-10-27"></a>
+## A character's political ability acts on its nation's track — UI-366 (2026-10-27)
+
+Owner request: a political ability (base game: Gimli in Erebor, Legolas in an Elven Stronghold, Boromir in a Gondor
+City or Stronghold; on the expansions line also Gimli's Dwarf of Renown, the Council's Messengers and Prince of
+Mirkwood) is used on its nation's track, not through Characters.
+
+- A die that pays for it lights the Politics tab (not Characters, `DieOptions`); open, the panel lights only that
+  nation's token, arrow and next station, whose tooltip names who, where and what: "Gimli in Erebor · Dwarf of Erebor:
+  click to spend this die to move the Dwarves one step toward war." (`CharacterPolitics`). A click on any of them sends
+  the ability with the die and the character's region. The console's hint is not taken over.
+- When the same die could also make the Muster step on that nation, the click makes the Muster step (the ability's
+  explanation then stands aside); an ability that also activates a passive nation is preferred.
+- Using it, from the track or from the chip's Click to use (UI-369), opens Politics if it is closed and the token
+  travels to its new station as in the opponent's political beat (`PoliticalPanel.PresentOwnStep`); every own step from
+  the track travels the same way.
+- Test: `CharacterRosterPanelTests.APoliticalAbilityIsOfferedOnItsNationsTrack`.
+

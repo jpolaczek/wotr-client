@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
@@ -6,7 +5,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // A nation-wide or parameter-wide influence gets one badge at that object, not at every region.
+    // A parameter-wide influence gets one badge at that object, not at every region. UI-413 (owner): a nation-wide one gets
+    // none on the Politics row, where the badge covered the nation's name; the Effects tab still lists it.
     internal sealed class EffectsScopeBadges
     {
         private readonly BoardScreen board;
@@ -20,14 +20,7 @@ namespace Wotr.Client
             foreach (var effect in view.Effects)
                 foreach (var target in effect.Targets)
                 {
-                    if (target.Kind == "Politics")
-                    {
-                        foreach (var nation in board.Presentation.Board.Nations.Where(n => n.Side == Side.FreePeoples))
-                            Add(scopes, "nation:" + nation.Id, effect.SourceId);
-                    }
-                    else if (target.Kind is "Nation" or "NationRegions")
-                        Add(scopes, "nation:" + target.Id, effect.SourceId);
-                    else if (target.Kind == "Fellowship")
+                    if (target.Kind == "Fellowship")
                         Add(scopes, "fellowship", effect.SourceId);
                     else if (target.Kind == "Global")
                         Add(scopes, "global", effect.SourceId);
@@ -57,9 +50,8 @@ namespace Wotr.Client
             }
         }
 
-        private VisualElement Host(string key) => key.StartsWith("nation:", StringComparison.Ordinal)
-            ? board.Nations.Drawer.Q("nation-track-" + key.Substring(7))
-            : key == "fellowship" ? board.Fellowship.Status
+        private VisualElement Host(string key) => key == "fellowship"
+            ? board.Fellowship.Status
             : board.TableEffects.Root.Q(className: "window-header");
 
         private static void Add(Dictionary<string, HashSet<string>> scopes, string key, string id)

@@ -233,7 +233,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual("Gimli", board.Characters.Inspector.Root.Q<Label>(className: "title").text);
             Assert.AreEqual("Fate", board.Characters.Inspector.Root.Q<Label>("character-edition").text);
             var revision = board.View.Revision;
-            await Ability(room, room.Fp, ComponentGestures.Character(choice));
+            await UseChip(room, room.Fp, choice.AbilityId, ComponentGestures.Character(choice));
             await room.At(revision + 1);
             var nation = room.Sh.Board.View.Nations.Single(n => n.Id == "dwarves");
             Assert.IsTrue(nation.Active);
@@ -281,6 +281,30 @@ namespace Wotr.PlayTests
             Assert.IsNotNull(button, key);
             Assert.IsTrue(button.enabledInHierarchy, key);
             PointerGestureEvents.ClickAt(button);
+            await room.Settle();
+        }
+
+        // UI-369: an ability with a chip has no separate button: its chip glows, and once selected its Click to use uses it.
+        private static async Task UseChip(MatchTestRoom room, MountedMatchClient client, string ability, string key)
+        {
+            await room.Settle();
+            var inspector = client.Board.Characters.Inspector;
+            Assert.IsNull(inspector.Actions.Q<Button>("component-" + key), "An ability with a chip has no separate button.");
+            var chip = inspector.Root.Q<Button>("character-ability-" + ability);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), ability + " glows while it can be used.");
+            Assert.IsNull(inspector.Root.Q<Button>("character-ability-use-" + ability), "Click to use waits for the chip to be selected.");
+            PointerGestureEvents.ClickAt(chip);
+            await room.Settle();
+            var use = inspector.Root.Q<Button>("character-ability-use-" + ability);
+            Assert.IsNotNull(use, ability);
+            Assert.IsTrue(use.enabledInHierarchy, ability);
+            var sheet = inspector.Root.Q("character-ability-sheet");
+            Assert.IsTrue(sheet.worldBound.Contains(use.worldBound.center), "Click to use stands on the parchment.");
+            Assert.IsFalse(use.worldBound.Overlaps(inspector.Root.Q("character-ability-text").worldBound), "It covers no text.");
+            Assert.IsTrue(inspector.Root.worldBound.Contains(new UnityEngine.Vector2(sheet.worldBound.center.x, sheet.worldBound.yMax - 1)),
+                "The window holds the whole parchment.");
+            LayoutTests.Save(client.Viewport, "ui369-click-to-use.png");
+            PointerGestureEvents.ClickAt(use);
             await room.Settle();
         }
 

@@ -80,6 +80,16 @@
     border-color: rgba(255, 214, 112, 0.45);
     background-color: rgba(46, 36, 16, 0.88);
 }
+/* UI-384 (owner): every tab glows alike. Politics and Reserve are framed buttons (.action), whose choice plate
+   (UI-372, #board-screen .action.legal-target) must not repaint a tab: the tabs keep this warm plate and gold rim, as the
+   Characters tab always had. */
+#board-screen .board-left-tabs .edge-tab.legal-target,
+#board-screen .board-left-tabs .edge-tab.die-option { background-color: rgba(70, 52, 18, 0.92); border-color: rgb(255, 214, 112); }
+.motion-enabled #board-screen .board-left-tabs.edge-tabs-pulse .edge-tab.legal-target,
+.motion-enabled #board-screen .board-left-tabs.edge-tabs-pulse .edge-tab.die-option {
+    border-color: rgba(255, 214, 112, 0.45);
+    background-color: rgba(46, 36, 16, 0.88);
+}
 .board-left-tabs .edge-tab.selected { border-color: rgb(196, 70, 52); }
 /* UI-261: the icon is placed from the tab's inner edge, which moves with the border (1 px, 3 px on an available tab),
    while the medallion art keeps its centre (47, 22) on the tab; each state places the 24 px icon on that centre. */
@@ -263,7 +273,7 @@
 #board-screen .edge-left-panel .effect-entry.shadow-effect:hover { background-image: resource("Wotr/Art/UI/frames/entry-shadow-hover"); }
 #board-screen .edge-left-panel .effect-entry.selected-effect { border-width: 2px; border-color: rgb(228, 197, 127); }
 #board-screen .edge-left-panel .character-roster-grid .action.selected { border-width: 2px; border-color: rgb(245, 212, 133); }
-#board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(144, 203, 172); }
+#board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
 /* UI-101: the sovereign portraits sit in one compact row under the characters, keeping their marks. */
 #board-screen .edge-left-panel .sovereign-strip.character-roster-grid { flex-wrap: nowrap; }
 #board-screen .edge-left-panel .sovereign-strip.character-roster-grid .action {

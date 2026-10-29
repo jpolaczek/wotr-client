@@ -38,9 +38,11 @@ namespace Wotr.Client
                             : "Move the selected groups · Resolve the card’s remaining effects.";
                     return "One die moves all selected groups along their own routes.";
                 case CommandKind.MoveShadowCharacters:
+                    // UI-416 (owner): the figures by name, never "Nazgûl" for the Balrog.
                     if (view.Decision?.Kind == DecisionKind.CharacterEvent)
-                        return draft.Payload.CompanionMoves.Count == 0 ? "Keep all Nazgûl in place · Resolve the card’s remaining effects."
-                            : "Move the selected Nazgûl · Resolve the card’s remaining effects.";
+                        return (draft.Payload.CompanionMoves.Count == 0 ? "Keep " + Kept(view, draft) + " in place"
+                            : "Move " + NazgulFlightDraft.Figures(view, draft.Payload.CompanionMoves.SelectMany(g => g.Ids))) +
+                            " · Resolve the card’s remaining effects.";
                     return "One die moves all selected groups along their own routes.";
                 case CommandKind.RerollHunt:
                     return draft.Payload.Ids.Count > 0 ? "Reroll selected failures · Result unknown." : "Keep this roll" + (preview.HasUnknownResult ? " · Next tile unknown." : ".");
@@ -50,6 +52,9 @@ namespace Wotr.Client
                     return "Ready.";
             }
         }
+
+        private static string Kept(PlayerView view, TurnDraft draft) =>
+            NazgulFlightDraft.Figures(view, NazgulFlightDraft.Offered(view, draft)) is { Length: > 0 } names ? names : "every figure";
 
         public static string Victory(VictoryCondition? reason) => reason switch
         {

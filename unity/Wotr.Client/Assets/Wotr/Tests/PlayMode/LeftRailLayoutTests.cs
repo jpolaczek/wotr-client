@@ -154,7 +154,8 @@ namespace Wotr.PlayTests
         {
             foreach (var entry in board.TableEffects.Root.Query(className: "effect-entry").ToList())
                 Assert.AreEqual(entry.ClassListContains("shadow-effect") ? "entry-shadow" : "entry", Texture(entry), entry.name + " · " + label);
-            foreach (var entry in board.Characters.Root.Query(className: "character-roster-grid").Children<Button>().ToList())
+            // UI-391: rows carry their ability icons, which are buttons too.
+            foreach (var entry in board.Characters.Root.Query<Button>(className: "character-roster-row").ToList())
                 Assert.That(Texture(entry), Does.StartWith("entry"), entry.name + " · " + label);
         }
 

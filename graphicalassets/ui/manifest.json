@@ -2,9 +2,9 @@
   "task": "UI-86",
   "renderer": "headless Google Chrome",
   "shared_sha256": {
-    "palette.css": "d8392dc7a8f5195562bb6bee9cc2ece02d8e558d6c6fac2963de12f9e22b98ec",
+    "palette.css": "4c3f3ef1dd16c4b55ebc32bb2b38604f5f22b5c63d918e37fd26b25dda534a80",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "0ddb64c5ddb3b346e311bb099c57dc8439e62c97e2835ce0d182183d0a53d465"
+    "assets.json": "f0e568cc754e2ac3cfd1842afd089187301139bbe5783d73e4ec6276158fcf1d"
   },
   "assets": [
     {
@@ -3638,6 +3638,86 @@
       "alpha": true,
       "source_sha256": "1f9348e346005c9a922eb2e0b2ca009999054f944a7eb33fb935dcd1803a4bc4",
       "png_sha256": "f0ef630fe8e501a3c7c4a718a4c2f91bba8f068c124b3c0ba71c091a313e831a"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/status-corrupted.png",
+      "source": "src/kings/status-corrupted.svg",
+      "variant": null,
+      "logical": [
+        12,
+        12
+      ],
+      "pixels": [
+        24,
+        24
+      ],
+      "alpha": true,
+      "source_sha256": "4409eb6a2721ec072893c5500e08997660b308878c0b7c6c24ada9a21249bfc4",
+      "png_sha256": "4963633b5191de2f011086c11f396f70ca9114e969190fe30ca6b9b741b689b4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/versions.png",
+      "source": "src/fellowship/versions.svg",
+      "variant": null,
+      "logical": [
+        18,
+        18
+      ],
+      "pixels": [
+        36,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "56efa7f95cb9efa65153f2eba82d51aef25b82257e5b43c764764ac7775a2621",
+      "png_sha256": "eb6b50e5d01542f1f17d1ff9183197b80a96a127ad9919f51892d91889c90da8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/guide-crown.png",
+      "source": "src/fellowship/guide-crown.svg",
+      "variant": null,
+      "logical": [
+        20,
+        18
+      ],
+      "pixels": [
+        40,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
+      "png_sha256": "cf661e659e7a0d785d0c2ea8c959ef0cd606d84a263429907afb312abf3b0aa0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/guide-crown-crown-on.png",
+      "source": "src/fellowship/guide-crown.svg",
+      "variant": "crown-on",
+      "logical": [
+        20,
+        18
+      ],
+      "pixels": [
+        40,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
+      "png_sha256": "3038d749ccc78733d42a0f42b33edc0b77d8ea0634ef99013a7e706356ee5c62"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/fellowship/guide-crown-crown-hover.png",
+      "source": "src/fellowship/guide-crown.svg",
+      "variant": "crown-hover",
+      "logical": [
+        20,
+        18
+      ],
+      "pixels": [
+        40,
+        36
+      ],
+      "alpha": true,
+      "source_sha256": "19dfff8037b5c1cde937e298000b7aa0da5840e9b9f5f423fb7fd1a9d0827c02",
+      "png_sha256": "d2664d29b0d6c0f3504ace1c596cb10dcefa2f7d225a6e9d2402638a2ced594d"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/hunt/tile-standard.png",

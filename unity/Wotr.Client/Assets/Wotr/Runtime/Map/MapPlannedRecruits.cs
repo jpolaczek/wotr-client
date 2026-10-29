@@ -29,9 +29,10 @@ namespace Wotr.Client
 
         public IEnumerable<string> Regions => ghosts.Keys;
 
+        // UI-416 (owner): a planned character keeps its own figure (Marker); by nation and kind alone the Balrog's planned move
+        // showed a Nazgûl.
         public void Apply(IReadOnlyList<PlannedReinforcement> placements, Side side, bool interactive) =>
-            Apply(placements.GroupBy(p => p.RegionId).ToDictionary(g => g.Key,
-                g => ArmyMarker.From(g.Key, side, false, g.Select(p => (p.Nation, p.Kind)))), interactive);
+            Apply(placements.GroupBy(p => p.RegionId).ToDictionary(g => g.Key, g => Marker(g.Key, side, g.ToList())), interactive);
 
         // UI-294: ghosts of other figures, such as the companions a card's journey moves: one marker per region.
         public void Apply(IReadOnlyDictionary<string, ArmyMarker> markers, bool interactive)
@@ -54,6 +55,20 @@ namespace Wotr.Client
                 ghost.Apply(pair.Value, interactive);
             }
             Layout();
+        }
+
+        // Planned units by nation and kind; a moved character shows its own figure.
+        private static ArmyMarker Marker(string region, Side side, List<PlannedReinforcement> placements)
+        {
+            var units = placements.Where(p => p.CharacterId.Length == 0).Select(p => (p.Nation, p.Kind));
+            var marker = ArmyMarker.From(region, side, false, units);
+            var characters = placements.Where(p => p.CharacterId.Length > 0).ToList();
+            if (characters.Count == 0)
+                return marker;
+            marker.Characters = characters.Count;
+            marker.CharacterAppearance = FigureAppearances.Character(characters[0].CharacterId, side);
+            marker.CharacterNames.AddRange(characters.Select(c => CharacterLibrary.ShortName(c.CharacterId)));
+            return marker;
         }
 
         public void Layout()

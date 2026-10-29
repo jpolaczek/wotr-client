@@ -78,7 +78,7 @@ namespace Wotr.PlayTests
                 // UI-148: the card waits for a nation, so Politics opens by itself with the nations highlighted.
                 Assert.AreEqual(DisplayStyle.Flex, board.Nations.Drawer.resolvedStyle.display, "Politics opens for the card's nation.");
                 Assert.IsTrue(board.Nations.Drawer.Q<Button>("nation-status-north").ClassListContains("legal-target"));
-                Assert.IsFalse(board.Nations.Drawer.Query<Button>(className: "nation-slot").ToList().Any(slot => slot.ClassListContains("legal-target")),
+                Assert.IsFalse(board.Nations.Drawer.Query<Button>(className: "nation-slot").ToList().Any(slot => slot.enabledSelf),
                     "While the card picks its nation, the die's own political steps step aside.");
                 LayoutTests.Save(client.Viewport, "ui148-politics-card-" + face + "-" + use + ".png");
                 PointerGestureEvents.ClickAt(board.Nations.Drawer.Q<Button>("nation-status-north"));

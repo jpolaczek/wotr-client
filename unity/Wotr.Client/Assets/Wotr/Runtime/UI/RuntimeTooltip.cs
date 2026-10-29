@@ -8,6 +8,8 @@ namespace Wotr.Client
     public sealed class RuntimeTooltip : IDisposable
     {
         public const string RichHoverClass = "rich-hover";
+        // UI-409: a source whose tooltip is styled text (a roster row's parts); others stay plain.
+        public const string FormattedClass = "formatted-tooltip";
         private readonly VisualElement root;
         private readonly Label label = new Label { name = "runtime-tooltip", pickingMode = PickingMode.Ignore };
         private readonly IVisualElementScheduledItem opening;
@@ -147,6 +149,7 @@ namespace Wotr.Client
                 Dismiss();
                 return;
             }
+            label.enableRichText = source.ClassListContains(FormattedClass);
             label.text = source.tooltip;
             label.style.maxWidth = Mathf.Max(32, Mathf.Min(360, root.contentRect.width - 16));
             label.style.display = DisplayStyle.Flex;

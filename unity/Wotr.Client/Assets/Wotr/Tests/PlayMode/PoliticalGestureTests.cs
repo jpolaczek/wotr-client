@@ -83,12 +83,19 @@ namespace Wotr.PlayTests
             return fixture;
         }
 
+        // UI-410 (owner): no station on the track glows; the next station stays a drop target and the nation's token glows.
         private static void AssertArrows(BoardScreen board, params string[] expected)
         {
-            var arrows = board.Nations.Drawer.Query<Button>(className: "nation-slot").ToList()
-                .Where(b => b.ClassListContains("legal-target")).ToList();
-            CollectionAssert.AreEquivalent(expected, arrows.Select(b => b.name));
-            Assert.IsTrue(arrows.All(b => b.enabledInHierarchy));
+            var slots = board.Nations.Drawer.Query<Button>(className: "nation-slot").ToList();
+            Assert.IsFalse(slots.Any(b => b.ClassListContains("legal-target")), "No station on the track glows.");
+            var targets = slots.Where(b => b.enabledSelf).ToList();
+            CollectionAssert.AreEquivalent(expected, targets.Select(b => b.name));
+            Assert.IsTrue(targets.All(b => b.enabledInHierarchy));
+            foreach (var name in expected)
+            {
+                var nation = name.Split('-')[2];
+                Assert.IsTrue(board.Nations.Drawer.Q<Button>("nation-status-" + nation).ClassListContains("legal-target"), nation + "'s token glows.");
+            }
         }
 
         private static void AssertDestination(BoardScreen board, string expected)

@@ -113,9 +113,10 @@ namespace Wotr.PlayTests
             room.Fp.Board.Nations.Open();
             await room.Settle();
             Assert.IsEmpty(room.Fp.Board.Nations.Drawer.Query<Button>(className: "destination-selected").ToList());
-            // UI-144/UI-178: the lit station and the row's arrow are there without selecting the nation; one click on
-            // the arrow moves it, while the other rows keep a greyed arrow in place.
-            Assert.IsTrue(room.Fp.Board.Nations.Drawer.Q<Button>("political-slot-elves-1").ClassListContains("legal-target"));
+            // UI-144/UI-178: the glowing token and the row's arrow are there without selecting the nation; one click on
+            // the arrow moves it, while the other rows keep a greyed arrow in place. UI-410: no station glows.
+            Assert.IsTrue(room.Fp.Board.Nations.Drawer.Q<Button>("nation-status-elves").ClassListContains("legal-target"));
+            Assert.IsFalse(room.Fp.Board.Nations.Drawer.Q<Button>("political-slot-elves-1").ClassListContains("legal-target"));
             var arrow = room.Fp.Board.Nations.Drawer.Q<Button>("nation-advance-elves");
             Assert.IsTrue(arrow.ClassListContains("legal-target"));
             Assert.IsTrue(arrow.enabledInHierarchy);

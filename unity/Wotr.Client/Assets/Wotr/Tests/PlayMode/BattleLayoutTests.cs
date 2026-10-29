@@ -197,6 +197,8 @@ namespace Wotr.PlayTests
                         var own = tray.Q(defender ? "battle-defender" : "battle-attacker");
                         var other = tray.Q(defender ? "battle-attacker" : "battle-defender");
                         var label = kind + (defender ? " defender" : " attacker");
+                        // UI-394 (owner): the choosing side's column is as wide as the other one.
+                        Assert.That(own.worldBound.width, Is.EqualTo(other.worldBound.width).Within(1.5f), label + ": columns of one width");
                         var confirm = tray.Q<Button>("confirm-decision");
                         Assert.IsNotNull(confirm, label);
                         if (defender)

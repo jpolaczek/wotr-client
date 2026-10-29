@@ -3,9 +3,9 @@
   "scope": "UI-187: short tooltip forms of the base game's character abilities, by ability id. Each summarises the printed text of character-ability-text.json and adds no rule; the card keeps the full text.",
   "summaries": {
     "combat-strength-plus-one": "+1 Combat Strength in battle (max 5 dice)",
-    "politics-dwarves-at-erebor": "Any die in Erebor moves the Dwarves a step toward war",
-    "politics-gondor-at-city-or-stronghold": "Any die in a Gondor City or Stronghold moves Gondor a step toward war",
-    "politics-elves-at-stronghold": "Any die in an Elven Stronghold moves the Elves a step toward war",
+    "politics-dwarves-at-erebor": "With Gimli in Erebor, any die advances the Dwarves a step toward war",
+    "politics-gondor-at-city-or-stronghold": "With Boromir in a Gondor City or Stronghold, any die advances Gondor",
+    "politics-elves-at-stronghold": "With Legolas in an Elven Stronghold, any die advances the Elves",
     "guide-draw-after-event-die-card": "Draws a card after an Event played with an Event die",
     "may-transform-to-white": "Becomes Gandalf the White with a Will die once a Minion is in play",
     "guide-hide-with-any-action-die": "Any die hides a revealed Fellowship",

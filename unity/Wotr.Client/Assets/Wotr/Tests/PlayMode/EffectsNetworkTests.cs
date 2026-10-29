@@ -127,7 +127,8 @@ namespace Wotr.PlayTests
             await room.Settle();
             AssertCardInPanel(observer.Board, Wormtongue);
             Assert.AreEqual("Shadow · In play", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
-            Assert.IsNotNull(observer.Board.Nations.Drawer.Q("effect-scope-nation:rohan"));
+            // UI-413 (owner): the Politics row keeps its name clear; the Effects tab lists Rohan's effect.
+            Assert.IsNull(observer.Board.Nations.Drawer.Q(className: "effect-scope-badge"), "No effect badge covers a nation's name.");
             Assert.IsNull(observer.Board.Map.Q("map-effects-orthanc"), "Saruman is an expiry condition, not the effect's region.");
             FellowshipGestures.Die(room.Fp);
             await room.Settle();
@@ -135,7 +136,6 @@ namespace Wotr.PlayTests
             FellowshipGestures.Figure(room.Fp, origin, "base.character.gandalf-grey");
             await room.MoveTo(room.Fp, "helms-deep");
             Assert.IsFalse(observer.Board.View.Effects.Any(e => e.SourceId == Wormtongue));
-            Assert.IsNull(observer.Board.Nations.Drawer.Q("effect-scope-nation:rohan"));
             Assert.AreEqual("Effect ended", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
             Assert.IsNull(observer.Board.TableEffects.Root.Q<Button>("effect-source-" + Wormtongue));
             AssertCardInPanel(observer.Board, Wormtongue);

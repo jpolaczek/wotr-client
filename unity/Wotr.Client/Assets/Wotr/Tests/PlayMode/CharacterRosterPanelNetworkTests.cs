@@ -35,12 +35,27 @@ namespace Wotr.PlayTests
             var row = board.Characters.Root.Q<Button>("character-roster-" + id);
             StringAssert.Contains("White", row.Q<Label>("character-roster-title").text);
             // UI-187: the row's tooltip ends with the short abilities of the card it shows.
-            StringAssert.EndsWith("\n" + string.Join("\n", CharacterAbilitySummaries.Lines("base.character.gandalf-white")), row.tooltip);
+            StringAssert.EndsWith("\n" + string.Join("\n", CharacterAbilitySummaries.Lines("base.character.gandalf-white")), CharacterRowTooltip.Plain(row.tooltip));
+            // UI-408 (owner): the base roster stands two a line, its ability icons larger, beside the text and inside the row.
+            Assert.IsTrue(board.Characters.Wide, "Two characters a line fit this roster.");
+            var icon = row.Query<Button>(className: CharacterAbilityStrip.IconClass).Where(b => b.resolvedStyle.display == DisplayStyle.Flex).First();
+            Assert.IsNotNull(icon, "Gandalf's row shows an ability icon.");
+            Assert.That(icon.worldBound.width, Is.GreaterThanOrEqualTo(17f), "The icons are larger two a line.");
+            Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
+            Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.IsTrue(board.Characters.InspectorPinned);
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Button>("locate-character").resolvedStyle.display);
-            board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white").Focus();
+            // UI-387 (owner): the versions are tabs right under the title, low and named by the version.
+            var white = board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white");
+            var tabs = white.parent;
+            Assert.IsTrue(tabs.ClassListContains("character-version-tabs"));
+            Assert.AreEqual(1, board.Characters.Inspector.Root.IndexOf(tabs), "The tabs follow the title.");
+            Assert.LessOrEqual(white.resolvedStyle.height, 30.5f, "A tab, not a large button.");
+            Assert.AreEqual("White", white.text);
+            LayoutTests.Save(room.Fp.Viewport, "ui387-version-tabs.png");
+            white.Focus();
             var choice = before.Options.Single(o => o.Kind == CommandKind.EnterCharacter).CharacterActions
                 .Single(c => c.CharacterId == "base.character.gandalf-white");
             var command = T22NetworkActions.Command(before, CommandKind.EnterCharacter,
@@ -124,7 +139,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(ability.tooltip, tooltip.text);
             Assert.AreEqual(DisplayStyle.Flex, tooltip.resolvedStyle.display);
             StringAssert.Contains("5 combat dice", tooltip.text.ToLowerInvariant());
-            // UI-139: a click unrolls the ability's full text under the chips; a second click rolls it up.
+            // UI-139: a click unrolls the ability's full text under the chips; UI-369: a second click keeps it unrolled.
             var text = board.Characters.Inspector.Root.Q<Label>("character-ability-text");
             Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
             PointerGestureEvents.ClickAt(ability);
@@ -132,9 +147,20 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display);
             StringAssert.Contains("5 combat dice", text.text.ToLowerInvariant());
             Assert.IsTrue(ability.ClassListContains("selected"));
+            Assert.Greater(text.resolvedStyle.height, 20, "The unrolled label measures its text.");
             PointerGestureEvents.ClickAt(ability);
             await room.Settle();
-            Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
+            Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display, "A second click on the selected chip changes nothing.");
+            // UI-371: another ability's text changes the window's content, not its place.
+            var placed = board.Characters.Inspector.Root.worldBound.position;
+            PointerGestureEvents.ClickAt(board.Characters.Inspector.Root.Q<Button>("character-ability-politics-dwarves-at-erebor"));
+            await room.Settle();
+            Assert.That(Vector2.Distance(placed, board.Characters.Inspector.Root.worldBound.position), Is.LessThan(1f),
+                "The window stays where it stood.");
+            // UI-372: no choice highlight is the old pale blue.
+            var mint = new Color(144 / 255f, 203 / 255f, 172 / 255f);
+            foreach (var target in board.Root.Query(className: "legal-target").ToList())
+                Assert.Greater(Vector4.Distance(target.resolvedStyle.borderTopColor, mint), 0.05f, target.name + " is still pale blue.");
             Assert.AreEqual(pan, board.Map.Camera.Pan);
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("selected"));
             await ComponentGestures.Hover(board.Phase);
