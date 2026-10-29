@@ -23,6 +23,34 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Roll the selected failed die again · 1 of 2 rerolls", BattleSummary.Describe(draft, view, preview));
         }
 
+        // UI-423 (owner's playtest pattern, like UI-419): a failed die a click may still add to the rerolls glows (and the
+        // battle's forces pulse it) until the budget is full; a chosen die is selected instead, and the others stay plain.
+        [Test]
+        public void RerollableDiceGlowUntilTheBudgetIsFull()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.RerollBattle);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RerollBattle);
+            var root = new VisualElement();
+            var context = new BattleContext(root, view.Battle, view, draft, change => change(), _ => { });
+            context.Refresh();
+            var eligible = view.Options[0].EligibleIds;
+            Assert.AreEqual(3, eligible.Count, "The fixture's failed dice without a reroll.");
+            Assert.IsTrue(eligible.All(id => Die(root, id).ClassListContains(ChoiceGlow.ClassName)), "Every failed die glows.");
+            Assert.IsFalse(Die(root, "FreePeoples-roll-5").ClassListContains(ChoiceGlow.ClassName), "A hit is no choice.");
+            Assert.IsFalse(Die(root, "Shadow-roll-1").ClassListContains(ChoiceGlow.ClassName), "The opponent's dice are no choice.");
+
+            draft.Toggle(eligible[0]);
+            draft.Toggle(eligible[1]);
+            context.Refresh();
+            Assert.IsTrue(Die(root, eligible[0]).ClassListContains("selected"));
+            Assert.IsFalse(Die(root, eligible[0]).ClassListContains(ChoiceGlow.ClassName), "A chosen die is selected, not lit.");
+            Assert.IsFalse(Die(root, eligible[2]).ClassListContains(ChoiceGlow.ClassName), "A full budget lights no other die.");
+            Assert.IsFalse(Die(root, eligible[2]).enabledSelf);
+        }
+
+        private static Button Die(VisualElement root, string id) => root.Q<Button>("battle-die-" + id);
+
         [Test]
         public void NaturalResultsAndDifferentRerollBonusKeepServerHitFlags()
         {

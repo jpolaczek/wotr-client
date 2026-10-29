@@ -131,8 +131,10 @@ namespace Wotr.Client
         private static string Name(PlayerView view, string id) => Character(view, id) ? CharacterLibrary.ShortName(view, id) : "Nazgûl";
 
         // A card that moves only Nazgûl (the Witch-king among them) speaks of Nazgûl; one that moves other Minions, of figures.
-        public static bool OnlyNazgul(PlayerView view, TurnDraft draft) =>
-            (DraftOptions.For(view, draft)?.Travel ?? new List<TravelOption>()).All(t => Nazgul(view, t.Id));
+        public static bool OnlyNazgul(PlayerView view, TurnDraft draft) => OnlyNazgul(view, Offered(view, draft));
+
+        // UI-423: the same test for any figures offered (the Council token's travel).
+        public static bool OnlyNazgul(PlayerView view, IEnumerable<string> ids) => ids.All(id => Nazgul(view, id));
 
         private static bool Nazgul(PlayerView view, string id) =>
             view.Characters.FirstOrDefault(c => c.Id == id) is not { } character || CharacterLibrary.Identity(character.DefinitionId) == "witch-king";

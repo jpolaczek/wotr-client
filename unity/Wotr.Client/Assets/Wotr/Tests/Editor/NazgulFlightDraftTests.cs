@@ -45,6 +45,23 @@ namespace Wotr.EditorTests
 
         // UI-416 (owner): the console names the figures that move by what they are, and a planned character keeps its own
         // figure on the map; the Balrog's move was named and drawn as a Nazgûl's.
+        // UI-423 (owner's playtest pattern, like UI-416): the empty move's hint names the figures a card moves — the Balrog
+        // for A Balrog is Come! — and speaks of Nazgûl only while it moves nothing else.
+        [Test]
+        public void TheEmptyMovesHintNamesTheFiguresTheCardMoves()
+        {
+            var view = View();
+            var draft = Draft();
+            Assert.AreEqual("Move any Nazgûl or confirm without moving.", FellowshipDraft.Hint(draft, view), "The Witch-king is a Nazgûl.");
+            view.Characters.Add(new CharacterView { Id = "balrog", DefinitionId = "lords.character.balrog", Side = Side.Shadow, Location = "moria" });
+            var option = view.Options.Single();
+            option.EligibleIds = new System.Collections.Generic.List<string> { "balrog" };
+            option.Travel = new System.Collections.Generic.List<TravelOption> { new TravelOption { Id = "balrog", Origin = "moria", Range = 3, Targets = Targets.ToList() } };
+            Assert.AreEqual("Move the Balrog or confirm without moving.", FellowshipDraft.Hint(draft, view));
+            option.Travel.Add(Flight("nazgul-3", "moria"));
+            Assert.AreEqual("Move any of the Balrog and a Nazgûl or confirm without moving.", FellowshipDraft.Hint(draft, view));
+        }
+
         [Test]
         public void TheSummaryAndTheGhostShowTheFiguresThatMove()
         {

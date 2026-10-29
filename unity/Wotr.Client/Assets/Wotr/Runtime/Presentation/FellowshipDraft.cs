@@ -129,7 +129,7 @@ namespace Wotr.Client
                     return "Selected companions leave play.";
                 var option = DraftOptions.For(view, draft);
                 if (option.AllowEmptySelection && draft.Payload.CompanionMoves.Count == 0)
-                    return draft.Kind == CommandKind.MoveShadowCharacters ? "Move any Nazgûl or confirm without moving."
+                    return draft.Kind == CommandKind.MoveShadowCharacters ? ShadowFigures(view, draft) + " or confirm without moving."
                         : "Move any companions or confirm without moving.";
                 var route = TravelDraft.Route(draft);
                 var travel = TravelDraft.Travel(draft, option);
@@ -147,6 +147,16 @@ namespace Wotr.Client
             }
             return draft.Payload.DieId.Length == 0 && view.Options.Any(o => o.Kind == draft.Kind && o.EligibleDice.Count > 0)
                 ? "Choose an action die from your pool." : "";
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-416): a card's move names its figures — "Move the Balrog" for A Balrog is
+        // Come! — and speaks of Nazgûl only when it moves nothing else.
+        private static string ShadowFigures(PlayerView view, TurnDraft draft)
+        {
+            if (NazgulFlightDraft.OnlyNazgul(view, draft))
+                return "Move any Nazgûl";
+            var offered = NazgulFlightDraft.Offered(view, draft).ToList();
+            return (offered.Count == 1 ? "Move " : "Move any of ") + NazgulFlightDraft.Figures(view, offered);
         }
     }
 }

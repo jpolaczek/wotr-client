@@ -54,7 +54,8 @@ namespace Wotr.PlayTests
             Assert.IsNotNull(response, "The Guide's response stands in the Hunt window's response row.");
             Assert.IsTrue(response.ClassListContains(ChoiceGlow.ClassName), "The Guide's response glows.");
             Assert.IsNull(board.Tray.Q<Button>("effect-choice-" + reactionId), "The tray lists no Guide response.");
-            StringAssert.EndsWith("Or Pass to skip it.", response.tooltip);
+            // UI-423: the Hunt window's Skip effect, beside the console's Pass.
+            StringAssert.EndsWith("Or click Skip effect (or Pass) to skip it.", response.tooltip);
             PointerGestureEvents.ClickAt(response);
         }
 

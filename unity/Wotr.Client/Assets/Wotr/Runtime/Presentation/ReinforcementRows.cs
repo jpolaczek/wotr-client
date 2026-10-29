@@ -141,7 +141,7 @@ namespace Wotr.Client
                 : row.Reason;
             figure.Elsewhere = figure.ReserveId != null && here.All(g => g.Kind != kind);
             if (figure.Elsewhere)
-                figure.Hint = Elsewhere(view, nation, focus) + " · Click it to light the settlements that take it";
+                figure.Hint = ElsewhereHint(Elsewhere(view, nation, focus));
             if (figure.ReserveId != null && groups.Where(g => g.Kind == kind).SelectMany(g => g.Targets)
                     .Any(region => MusterActions.OrphanLeader(view, kind, region)))
                 figure.Warning = OrphanWarning;
@@ -153,8 +153,14 @@ namespace Wotr.Client
         private static string Elsewhere(PlayerView view, string nation, RecruitFocus focus)
         {
             var reason = SettlementReason(view, nation, focus.Region);
-            return reason.Length > 0 ? reason : "Cannot be recruited in " + focus.Name + " now";
+            return reason.Length > 0 ? reason : NotIn(focus);
         }
+
+        // UI-412: why an unlit figure or nation cannot go to the settlement in focus, and what its click still does.
+        // UI-423: a king's recruitment narrowed by its chosen settlement says the same (CharacterReinforcements).
+        public static string NotIn(RecruitFocus focus) => "Cannot be recruited in " + focus.Name + " now";
+
+        public static string ElsewhereHint(string reason) => reason + " · Click it to light the settlements that take it";
 
         public static string NationReason(PlayerView view, string nation) => Reason(Entry(view, nation));
 

@@ -155,7 +155,7 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 var hint = room.Sh.Board.Console.Status.Hint.text;
                 StringAssert.StartsWith("Click a lit Chieftain's row", hint);
-                StringAssert.Contains(travel ? "the Nazgûl above the token" : "a glowing Shadow nation's step in Politics", hint);
+                StringAssert.Contains(travel ? "the Nazgûl above the token" : "a glowing Shadow nation's token or its → arrow in Politics", hint);
                 Assert.IsTrue(room.Sh.Board.OwnDice.Q<Button>("pool-" + token).ClassListContains("selected"));
                 Assert.IsTrue(room.Sh.Board.Characters.Tab.ClassListContains("legal-target"), "The Chieftain's entry is lit.");
                 Assert.IsFalse(room.Sh.Board.Nations.IsOpen, "A token of several uses opens no panel.");

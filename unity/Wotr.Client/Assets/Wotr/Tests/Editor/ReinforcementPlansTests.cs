@@ -146,6 +146,55 @@ namespace Wotr.EditorTests
             Assert.AreEqual("helms-deep", ReinforcementPlans.For(view, draft, Data).Placements.Single().RegionId);
         }
 
+        // UI-423 (owner's playtest pattern, like UI-412): after a king's recruitment's first settlement is clicked (Dáin's Iron
+        // Guard, UI-392), the Reserve lights only the figures that settlement takes; the others stay choosable, unlit, and say
+        // why and what their click does. A settlement given its figure narrows nothing.
+        [Test]
+        public void AKingsChosenSettlementLightsOnlyTheFiguresItTakes()
+        {
+            var view = new BoardFixture().View;
+            view.You = Side.FreePeoples;
+            var dwarves = ReserveIds(view, "dwarves");
+            var north = ReserveIds(view, "north");
+            var guard = new CharacterActionOption
+            {
+                CharacterId = "kings.sovereign.dain", AbilityId = "iron-guard", Title = "Iron Guard", TargetCount = 2,
+                RulerRecruitment = new RulerRecruitmentOption { LocalRegion = "erebor", SettlementCount = 2, Settlements = { "erebor", "dale", "iron-hills" } },
+                Recruitment =
+                {
+                    new RecruitmentOption { Nation = "dwarves", Kind = UnitKind.Regular, ReserveIds = dwarves, Targets = { "erebor", "iron-hills" } },
+                    new RecruitmentOption { Nation = "north", Kind = UnitKind.Regular, ReserveIds = north, Targets = { "dale" } }
+                }
+            };
+            view.Options = new List<ActionOption> { new ActionOption { Kind = CommandKind.UseCharacterAbility, CharacterActions = { guard } } };
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.UseCharacterAbility);
+            CharacterDraft.Select(draft, view, guard);
+            var plan = ReinforcementPlans.For(view, draft, Data);
+            Assert.IsFalse(plan.Rows.Any(r => r.Elsewhere || r.Figures.Any(f => f.Elsewhere)), "Before a settlement is chosen every figure is lit.");
+            StringAssert.StartsWith("Click, then click a highlighted settlement", plan.Hint);
+
+            Assert.IsTrue(CharacterRecruitDraft.Region(draft, guard, "dale"));
+            plan = ReinforcementPlans.For(view, draft, Data);
+            var dale = plan.Rows.Single(r => r.Nation == "north");
+            var dwarf = plan.Rows.Single(r => r.Nation == "dwarves");
+            Assert.IsFalse(dale.Elsewhere || dale.Figures.Single().Elsewhere, "Dale takes the North's figure.");
+            Assert.IsTrue(dwarf.Elsewhere, "No Dwarf goes to Dale: his nation's row is not lit.");
+            Assert.AreEqual("Cannot be recruited in Dale now", dwarf.Reason);
+            Assert.IsTrue(dwarf.Figures.Single().Elsewhere);
+            Assert.IsNotNull(dwarf.Figures.Single().ReserveId, "The Dwarf stays choosable for another settlement.");
+            Assert.AreEqual("Cannot be recruited in Dale now · Click it to light the settlements that take it", dwarf.Figures.Single().Hint);
+            StringAssert.StartsWith("Click to place it in Dale", plan.Hint);
+
+            Assert.IsTrue(ReinforcementPlans.Choose(draft, view, dale.Figures.Single().ReserveId));
+            plan = ReinforcementPlans.For(view, draft, Data);
+            Assert.AreEqual("dale", plan.Placements.Single().RegionId, "The lit figure's click places it in the chosen settlement.");
+            Assert.IsFalse(plan.Rows.Any(r => r.Elsewhere || r.Figures.Any(f => f.Elsewhere)), "A settlement given its figure narrows nothing.");
+        }
+
+        private static List<string> ReserveIds(PlayerView view, string nation) => view.Units
+            .Where(u => u.Nation == nation && u.Kind == UnitKind.Regular && u.Location == "reserve").Select(u => u.Id).ToList();
+
         // UI-135: a Muster paid with a ruler token or an ability is planned in the panel, not in a tray palette.
         [Test]
         public void ARulerOrAbilityMusterIsPlannedWithTwoPointsAndOneElite()

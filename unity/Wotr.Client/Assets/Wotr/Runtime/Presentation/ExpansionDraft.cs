@@ -7,8 +7,10 @@ namespace Wotr.Client
     {
         public const string CouncilPolitics = "council.advance-politics";
         public const string CouncilTravel = "council.move-shadow-characters";
-        // UI-376: the console's hint while the political token waits for its nation on the open Politics panel.
-        public const string CouncilPoliticsHint = "Council token · Click a glowing step of a Shadow nation on the Politics track.";
+        // UI-376: the console's hint while the political token waits for its nation on the open Politics panel. UI-423
+        // (owner's playtest pattern, like UI-374): it names what glows — the nation's token and its arrow — since no
+        // station glows (UI-410).
+        public const string CouncilPoliticsHint = "Council token · Click a glowing Shadow nation's token or its → arrow in Politics.";
 
         public static bool CouncilPoliticsPending(TurnDraft draft) => draft?.Kind == CommandKind.UseCouncilToken &&
             draft.Payload.AbilityId == CouncilPolitics && draft.Payload.NationId.Length == 0;

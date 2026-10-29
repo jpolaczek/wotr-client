@@ -232,6 +232,24 @@
 #board-screen .politics-panel .shadow-nation .nation-token { background-image: resource("Wotr/Art/UI/tokens/politics-token-shadow"); }
 #board-screen .politics-panel .nation-token.legal-target { border-width: 2px; border-color: rgb(247, 213, 120); }
 #board-screen .politics-panel .nation-token.selected { border-width: 3px; border-color: rgb(255, 255, 255); }
+/* UI-423 (owner's playtest pattern, like UI-411): the token a click moves or chooses wears the shared ChoiceGlow — a thick
+   gold rim on a warm plate — and breathes with the panel's ticker, growing a little as the Corruption tiles do. Reduced
+   motion keeps it lit and still. During a political beat its slide keeps its own transition. */
+#board-screen .politics-panel .nation-token.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .politics-panel .choice-glow-pulse .nation-token.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.12 1.12;
+}
+.motion-enabled #board-screen .presenting-politics .nation-token.choice-glow {
+    transition-property: left, scale, border-color, background-color;
+    transition-duration: 0.7s, 0.35s, 750ms, 750ms;
+    transition-timing-function: ease-in-out, ease-out-sine, ease-in-out-sine, ease-in-out-sine;
+}
 .politics-panel .nation-token > .nation-emblem,
 .politics-legend-token > .nation-emblem { left: 4px; right: 4px; top: 4px; bottom: 4px; width: auto; }
 .politics-panel .nation-token.passive-nation > .nation-emblem,

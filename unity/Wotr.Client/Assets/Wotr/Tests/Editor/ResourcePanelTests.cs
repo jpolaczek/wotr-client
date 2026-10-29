@@ -151,7 +151,7 @@ namespace Wotr.EditorTests
             Assert.IsTrue(ResourcePresentation.CouncilMarked(draft, ExpansionDraft.CouncilPolitics));
             var hint = ResourcePresentation.CouncilHint(view, draft);
             StringAssert.StartsWith("Click a lit Chieftain's row", hint);
-            StringAssert.Contains("or a glowing Shadow nation's step in Politics for its printed use", hint);
+            StringAssert.Contains("or a glowing Shadow nation's token or its → arrow in Politics for its printed use", hint);
             Assert.IsNotNull(PoliticalActions.AdvanceOption(view, draft, new ActionDieContext()), "Its printed use is lit beside the entry.");
             var entry = ComponentActions.For(view, draft).Single(c => c.Kind == CommandKind.EnterCharacter);
             Assert.IsTrue(ComponentActions.Select(view, draft, entry));

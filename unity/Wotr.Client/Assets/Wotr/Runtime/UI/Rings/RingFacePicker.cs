@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -10,7 +11,7 @@ namespace Wotr.Client
     // console/picker and console/picker-tail). It stands above the whole dice panel, so it covers neither the die
     // nor the panel's header and help links; the tail points at the die. A click on a result completes the gesture.
     // UI-272: the Lore of the Elven Rings uses a second picker whose results name their choice and may carry the
-    // special die's Remove star.
+    // special die's Remove star. UI-423: the results a click may choose glow and pulse in the shared rhythm.
     public sealed class RingFacePicker
     {
         private const float Gap = 10f;
@@ -21,6 +22,7 @@ namespace Wotr.Client
         public bool IsOpen => Root.style.display.value == DisplayStyle.Flex;
         private readonly VisualElement row = new VisualElement { name = "ring-face-row" };
         private readonly VisualElement tail = new VisualElement { name = "ring-face-tail", pickingMode = PickingMode.Ignore };
+        private readonly ChoicePulse pulse;
         private VisualElement anchor;
         private VisualElement ceiling;
         private string shown = "";
@@ -35,6 +37,7 @@ namespace Wotr.Client
             Root.Add(tail);
             Root.style.display = DisplayStyle.None;
             Root.RegisterCallback<GeometryChangedEvent>(_ => Position());
+            pulse = new ChoicePulse(row);
         }
 
         // key names the die and its results: the same key keeps the buttons and only follows the die. The popover
@@ -48,6 +51,7 @@ namespace Wotr.Client
                 shown = key;
                 Build(side, faces);
             }
+            pulse.Run(faces.Any(face => face.Enabled));
             if (!IsOpen)
             {
                 Root.style.display = DisplayStyle.Flex;
@@ -61,6 +65,7 @@ namespace Wotr.Client
             anchor = null;
             ceiling = null;
             shown = "";
+            pulse.Run(false);
             Root.style.display = DisplayStyle.None;
         }
 
@@ -103,6 +108,9 @@ namespace Wotr.Client
                 button.Add(RemoveStar());
             button.tooltip = Tooltip(option);
             button.SetEnabled(option.Enabled);
+            // UI-423 (owner's playtest pattern, like UI-419): a result the click may give the die is a live choice, so it
+            // glows and pulses as the Council token's travel icons do; the current result stays dim.
+            ChoiceGlow.Apply(button, option.Enabled);
             return button;
         }
 

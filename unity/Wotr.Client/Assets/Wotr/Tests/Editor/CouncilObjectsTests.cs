@@ -199,6 +199,30 @@ namespace Wotr.EditorTests
             Assert.AreEqual("", CouncilTravel.Hint(view, draft));
         }
 
+        // UI-423 (owner's playtest pattern, like UI-416): the token moves Nazgûl and Minions, so its hints speak of Nazgûl only
+        // while every figure it offers is one (the Witch-king among them) and of figures once a Minion is offered.
+        [Test]
+        public void TheCouncilTokensTravelSpeaksOfFiguresWhenItOffersAMinion()
+        {
+            const string nazgul = "base.sauron.nazgul.01";
+            var view = Shadow();
+            view.Decision = new DecisionView { Id = "action", Kind = DecisionKind.Action };
+            var option = new ActionOption { Kind = CommandKind.UseCouncilToken, Enabled = true, EligibleIds = { ExpansionDraft.CouncilTravel } };
+            option.Travel.Add(new TravelOption { Id = nazgul, Origin = "dol-guldur", Range = 99, Flight = true, Targets = { "moria" } });
+            option.Travel.Add(new TravelOption { Id = "witch-king", Origin = "angmar", Range = 99, Flight = true, Targets = { "moria" } });
+            view.Units.Add(new UnitView { Id = nazgul, Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "dol-guldur" });
+            view.Characters.Add(new CharacterView { Id = "witch-king", DefinitionId = "lords.character.witch-king", Side = Side.Shadow, Location = "angmar" });
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.UseCouncilToken);
+            ExpansionDraft.CouncilToken(draft, ExpansionDraft.CouncilTravel);
+            StringAssert.StartsWith("Council token · Click the Nazgûl to move", CouncilTravel.Hint(view, draft), "The Witch-king is a Nazgûl.");
+            option.Travel.Add(new TravelOption { Id = "mouth", Origin = "barad-dur", Range = 3, Targets = { "moria" } });
+            view.Characters.Add(new CharacterView { Id = "mouth", DefinitionId = "lords.character.mouth-of-sauron", Side = Side.Shadow, Location = "barad-dur" });
+            Assert.AreEqual("figures", CouncilTravel.Subject(view, draft));
+            StringAssert.StartsWith("Council token · Click the figures to move", CouncilTravel.Hint(view, draft));
+        }
+
         private static PlayerView Shadow() => new PlayerView
         {
             You = Side.Shadow, DecisionOwner = Side.Shadow,

@@ -195,6 +195,9 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { ConsoleOptionKind.Reaction }, options.Select(o => o.Kind));
             StringAssert.StartsWith("Pass · Skip these responses:", ReactionSkip.Tooltip(view));
             StringAssert.Contains("Draw · 0 (Gandalf the Grey)", ReactionSkip.Tooltip(view));
+            // UI-423: a window's Skip effect names each response it skips, one a line.
+            Assert.AreEqual("Skip " + CardLibrary.Title("base.fp.character.01") + "\nSkip Draw · 0 (Gandalf the Grey)",
+                ReactionSkip.SkipTooltip(view));
             Assert.IsFalse(WindowChoices(view, draft), "The card in hand answers with its preview's Use.");
         }
 
@@ -215,6 +218,10 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(CardConsoleOptions.For(view, draft), "No option hides the console's hint.");
             Assert.IsNotNull(ReactionSkip.Option(view));
             Assert.AreEqual("Pass · Skip the free Character Event of " + CardLibrary.Title("base.fp.character.20"), ReactionSkip.Tooltip(view));
+            Assert.AreEqual("Skip the free Character Event of " + CardLibrary.Title("base.fp.character.20"), ReactionSkip.SkipTooltip(view));
+            view.Decision.Window = "";
+            Assert.AreEqual("Skip this response", ReactionSkip.SkipTooltip(view), "A window without named responses still reads.");
+            view.Decision.Window = "ents.follow-up";
             Assert.IsFalse(WindowChoices(view, draft));
         }
 

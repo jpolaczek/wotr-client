@@ -15,17 +15,8 @@ namespace Wotr.EditorTests
         [Test]
         public void WhiteRiderIsUsedOnGandalfsPortraitInTheBattleWindow()
         {
-            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
-            var force = view.Battle.Attacker;
-            var gandalf = new CharacterView { Id = "gandalf", DefinitionId = "base.character.gandalf-white", Side = Side.FreePeoples, Location = force.RegionId };
-            view.Characters.Add(gandalf);
-            force.Characters.Add(gandalf);
-            view.You = Side.FreePeoples;
-            view.DecisionOwner = Side.FreePeoples;
-            view.Decision = new DecisionView { Id = "white-rider", Kind = DecisionKind.Reaction, Window = "battle.start" };
-            view.Options.Clear();
-            view.Options.Add(Respond("character.white-rider", "base.character.gandalf-white", "White Rider"));
-            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true });
+            var view = WhiteRiderWindow();
+            var gandalf = view.Battle.Attacker.Characters.Single(c => c.Id == "gandalf");
 
             Assert.AreEqual("character.white-rider", BattleReactions.Of(view, gandalf)?.Id);
             Assert.IsTrue(BattleReactions.OnPortrait(view, "character.white-rider"));
@@ -45,6 +36,40 @@ namespace Wotr.EditorTests
 
             view.Decision.Kind = DecisionKind.BattleContinue;
             Assert.IsNull(BattleReactions.Of(view, gandalf), "Outside a reaction window the portrait is only a portrait.");
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-419): the battle window skips a reaction with its own Skip effect, which
+        // sends the console's Pass and names the response it skips.
+        [Test]
+        public void TheBattleWindowSkipsTheWhiteRiderWithItsSkipEffect()
+        {
+            var view = WhiteRiderWindow();
+            view.Battle.Stage = "BeforeReveal";
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RespondEffect);
+            var root = new VisualElement();
+            new DecisionTray(root).Render(view, draft, false, false);
+            var skip = root.Q<Button>("battle-skip-effect");
+            Assert.IsNotNull(skip, "Skip effect stands in the battle window's footer.");
+            Assert.AreEqual("Skip effect", skip.text);
+            Assert.AreEqual("Skip White Rider (" + CharacterLibrary.Name("base.character.gandalf-white") + ")", skip.tooltip);
+            Assert.AreEqual("Pass · " + skip.tooltip, ReactionSkip.Tooltip(view), "Skip effect and Pass skip the same response.");
+        }
+
+        private static PlayerView WhiteRiderWindow()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.ContinueBattle);
+            var force = view.Battle.Attacker;
+            var gandalf = new CharacterView { Id = "gandalf", DefinitionId = "base.character.gandalf-white", Side = Side.FreePeoples, Location = force.RegionId };
+            view.Characters.Add(gandalf);
+            force.Characters.Add(gandalf);
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Decision = new DecisionView { Id = "white-rider", Kind = DecisionKind.Reaction, Window = "battle.start" };
+            view.Options.Clear();
+            view.Options.Add(Respond("character.white-rider", "base.character.gandalf-white", "White Rider"));
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true });
+            return view;
         }
 
         [Test]

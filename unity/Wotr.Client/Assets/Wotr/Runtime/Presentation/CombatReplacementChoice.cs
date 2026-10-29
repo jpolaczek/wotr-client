@@ -37,19 +37,36 @@ namespace Wotr.Client
         // UI-396: the battle window offers the skip beside the chip.
         public static bool Skippable(PlayerView view) => Option(view)?.EligibleIds.Contains(Keep) == true;
 
-        // UI-396: what the battle window's footer says: the chip's click or the skip.
+        // UI-396: what the battle window's footer says: the chip's click or the skip. UI-423 (owner's playtest pattern, like
+        // UI-416): with several chips (two Dark Chieftains) it names every source — "Click The Black Serpent's or The Shadow
+        // of Mirkwood's arms" — not only the first.
         public static string Hint(PlayerView view)
         {
-            var chip = Chips(view).FirstOrDefault();
-            if (chip == null)
+            var chips = Chips(view);
+            if (chips.Count == 0)
                 return "";
-            var name = Short(view.Sovereigns.FirstOrDefault(s => s.Id == chip.SourceId)?.Title ??
-                CharacterLibrary.Name(Definition(view, chip.SourceId)));
+            var names = Either(chips.Select(chip => SourceName(view, chip.SourceId)).Distinct().Select(name => name + "'s").ToList());
             var card = CardTitle(view, view.You);
             var place = card == NoCard ? "your Combat card's place" : card;
-            return "Click " + name + "'s arms beside " + place + " to use the ability" +
+            return "Click " + names + " arms beside " + place + " to use " + (chips.Count == 1 ? "the ability" : "an ability") +
                 (Skippable(view) ? ", or Skip effect to fight on as usual." : ".");
         }
+
+        // UI-423: the printed abilities of every chip offered now — "Red Wrath or Lord of the Bats" — or null when none is
+        // named, for the skip's and Pass's tooltips (OptionalDecline).
+        public static string AbilityNames(PlayerView view)
+        {
+            var titles = Chips(view).Select(chip => Ability(view, chip.SourceId)?.Title).Where(title => !string.IsNullOrEmpty(title))
+                .Distinct().ToList();
+            return titles.Count == 0 ? null : Either(titles);
+        }
+
+        // "A", "A or B", "A, B or C".
+        private static string Either(IReadOnlyList<string> names) => names.Count <= 1 ? names.FirstOrDefault() ?? ""
+            : string.Join(", ", names.Take(names.Count - 1)) + " or " + names[names.Count - 1];
+
+        private static string SourceName(PlayerView view, string source) =>
+            Short(view.Sovereigns.FirstOrDefault(s => s.Id == source)?.Title ?? CharacterLibrary.Name(Definition(view, source)));
 
         // The choice is a chip, so the decision's lists leave it out.
         public static bool OnChip(PlayerView view, string id) => Chips(view).Any(c => c.Id == id);
@@ -72,8 +89,7 @@ namespace Wotr.Client
         // UI-397 (owner): the marker names the ability, gives its printed text and says what it replaces this round.
         public static string AppliedTooltip(PlayerView view, CombatReplacementView applied)
         {
-            var name = Short(view.Sovereigns.FirstOrDefault(s => s.Id == applied.SourceId)?.Title ??
-                CharacterLibrary.Name(Definition(view, applied.SourceId)));
+            var name = SourceName(view, applied.SourceId);
             var card = CardTitle(view, applied.Side);
             var ability = Ability(view, applied.SourceId);
             var replaced = "This round it replaces " + (card == NoCard ? "the Combat card" : card) + "'s effects.";

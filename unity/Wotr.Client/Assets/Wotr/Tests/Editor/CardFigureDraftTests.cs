@@ -110,9 +110,28 @@ namespace Wotr.EditorTests
             var draft = Draft(CommandKind.ChooseEffect);
             CollectionAssert.AreEquivalent(new[] { "gimli", "legolas" }, CardFigureDraft.Offered(view, draft));
             Assert.IsFalse(CardFigureDraft.CompletesOnClick(view, draft), "The journey still needs its destination.");
+            Assert.AreEqual("Click the lit companions who travel, then a lit destination · ✓ confirms.", CardFigureDraft.Hint(view, draft));
             Assert.IsTrue(CardFigureDraft.Toggle(view, draft, "gimli"));
             Assert.AreEqual("", draft.Payload.RegionId, "A companion is no region choice.");
             Assert.IsFalse(WindowChoices(view, draft));
+            // UI-423 (owner's playtest pattern, like UI-375): the chosen companions are named and the destination is asked for.
+            Assert.IsTrue(CardFigureDraft.Toggle(view, draft, "legolas"));
+            Assert.AreEqual("Gimli and Legolas · Click a lit destination.", CardFigureDraft.Hint(view, draft));
+            EffectChoiceDraft.Choose(draft, view.Options[0], "erech");
+            Assert.AreEqual("Gimli and Legolas · ✓ confirms, or click another lit destination.", CardFigureDraft.Hint(view, draft));
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-375): a choice of several figures names those chosen and what is left.
+        [Test]
+        public void ChosenFiguresAreNamedWithWhatIsLeft()
+        {
+            var view = Card("ArmyFigures", 2, 2, Replacement("moria-1", "moria"), Replacement("orthanc-1", "orthanc"), Replacement("orthanc-2", "orthanc"));
+            var draft = Draft(CommandKind.ChooseEffect);
+            Assert.AreEqual("Click a lit region, then its lit figures · ✓ confirms.", CardFigureDraft.Hint(view, draft));
+            Assert.IsTrue(CardFigureDraft.Toggle(view, draft, "orthanc-1"));
+            Assert.AreEqual("Sauron Regular · Click another lit figure.", CardFigureDraft.Hint(view, draft));
+            Assert.IsTrue(CardFigureDraft.Toggle(view, draft, "orthanc-2"));
+            Assert.AreEqual("Sauron Regular ×2 · ✓ confirms.", CardFigureDraft.Hint(view, draft));
         }
     }
 }

@@ -51,6 +51,23 @@ namespace Wotr.EditorTests
                 SovereignAttempt.ConsoleOptions(view).Single().Tooltip);
         }
 
+        // UI-423 (owner's playtest pattern, like UI-418): the draw lights and pulses while it is the attempt's only step; once
+        // a drawn tile may be kept instead, or while the draw is closed, it is a plain button.
+        [Test]
+        public void TheDrawLightsWhileItIsTheOnlyStep()
+        {
+            var view = View();
+            view.Options.Add(new ActionOption { Kind = CommandKind.DrawCorruptionTile, Enabled = true });
+            Assert.IsTrue(SovereignAttempt.ConsoleOptions(view).Single().Lit, "Draw tiles is the only step.");
+            view.CorruptionAttempt.Sequential = true;
+            Assert.IsTrue(SovereignAttempt.ConsoleOptions(view).Single().Lit, "So is the first Draw again.");
+            view.Options.Add(new ActionOption { Kind = CommandKind.ChooseCorruptionTile, Enabled = true, EligibleIds = { "tile" } });
+            Assert.IsFalse(SovereignAttempt.ConsoleOptions(view).Single().Lit, "The latest tile may be kept instead.");
+            view.Options.RemoveAt(1);
+            view.Options[0].Enabled = false;
+            Assert.IsFalse(SovereignAttempt.ConsoleOptions(view).Single().Lit, "A closed draw is not lit.");
+        }
+
         [Test]
         public void PlacementKeepsFixedControlsClearEvenWhenAFloatingWindowFillsTheRemainingMap()
         {

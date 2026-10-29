@@ -1671,7 +1671,8 @@ Owner requests of 2026-10-27; the token's printed use still starts on its medall
 neither use opens the decision window any longer (`ExpansionChoices` lists nothing for `UseCouncilToken`).
 
 - UI-376 — the token that advances a Shadow nation opens the Politics panel as its use starts; the console says
-  "Council token · Click a glowing step of a Shadow nation on the Politics track." If the player chooses anything
+  "Council token · Click a glowing step of a Shadow nation on the Politics track." (since UI-423: "Click a glowing
+  Shadow nation's token or its → arrow in Politics", as UI-410 removed the glowing station). If the player chooses anything
   else (another token, Back, or one of the own action dice, whose click now leaves the token's use for that die
   instead of being ignored), the panel the token opened closes at once; a panel that was already
   open stays as it was; if the player closes it, it stays closed and its tab keeps glowing until the use ends. The
@@ -1940,3 +1941,29 @@ Owner requests and reports from the Kings and Lords test scenarios:
 - Console options that do not fit the console's line at their full text stand in a strip just above the console — with
   the played card's committed button when that does not fit the line either — instead of being cut to "…"; the bottom
   row keeps its height (UI-160) and wide layouts keep the options in the line (`ConsoleOptionsFit`).
+
+## The owner's playtest fixes where the same defects remained — UI-423 (2026-10-29)
+
+UI-423 (owner) — the expansion playtests of the last days (UI-296 … UI-419) were read as patterns of defects, and the
+other places with the same defects fixed the way the first fix did:
+- **A window has its own skip (as UI-419).** Skip effect also stands in the Hunt window (`hunt-skip-effect`) for its
+  optional effects (We Won't Go Back's No Corruption) and reaction windows (table-card and Guide responses), and in the
+  battle window for reactions (the White Rider, the Witch-king's Sorcerer); a reaction's tooltip lists "Skip <skill>
+  (<owner>)" per response. The console's Pass still declines (D7); Nenya alone stays console-only (UI-395).
+- **A live choice glows and pulses (as UI-411, UI-419).** Battle and Hunt reroll dice while the budget is not full; the
+  Hunt's Ring, Guide and Random companion responses beside the glowing card and Guide rows; the Ring and Lore pickers'
+  faces; a Politics token a click can move (a gold rim and the shared pulse, no glowing station, UI-410); a corruption
+  attempt's lone Draw tiles / Draw again.
+- **A highlight follows the legal context (as UI-412).** A king's region-first recruitment (Dáin's Iron Guard) lights only
+  the figures the chosen settlement can take; the others stay choosable, unlit, and say why.
+- **Texts name the real subject (as UI-416, UI-374, UI-375).** Politics hints name the token and its → arrow; the
+  Council token's travel says "figures" when it offers Minions; A Balrog is Come!'s hint names the Balrog; card journeys
+  name the companions and destinations; with two Chieftains the battle footer, Pass and Skip effect name every chip; the
+  Dead Men of Dunharrow and several-figure choices name what is chosen and what is left.
+- **A link leads somewhere (as UI-390).** A character's window offers no Open decision for a response made on its own
+  object (Nenya at its socket, Spear of Terror at the deck, He Sees, He Knows at the Chief).
+- **A drag shows the object (as UI-393).** A dragged Politics token, Council portrait, Ruler token, card or Hunt tile reads
+  as its name, not as a code word.
+Not changed: a single-figure card choice ("Click a lit region, then its lit figure") sends with the figure's click, so its
+hint cannot advance; the corruption attempt lit on the king's portrait and his attempt button at once is an owner
+question (one lit control, as UI-418?).

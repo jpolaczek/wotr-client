@@ -65,9 +65,11 @@ namespace Wotr.Client
             if (!CouncilPending(draft) || view?.Decision?.Kind != DecisionKind.Action)
                 return "";
             var token = draft.Payload.CouncilTokenId;
+            // UI-423 (owner's playtest pattern, like UI-374): the hint names what glows — a Shadow nation's token and its
+            // arrow (no station glows, UI-410) — and the figures the travel offers, Minions among them (UI-416).
             var use = CouncilUse(view, draft, token) == null ? ""
-                : token == ExpansionDraft.CouncilPolitics ? ", or a glowing Shadow nation's step in Politics for its printed use"
-                : ", or the Nazgûl above the token and their destination for its printed use";
+                : token == ExpansionDraft.CouncilPolitics ? ", or a glowing Shadow nation's token or its → arrow in Politics for its printed use"
+                : ", or the " + CouncilTravel.Subject(view, draft) + " above the token and their destination for its printed use";
             return "Click a lit Chieftain's row in the Characters panel to enter him with this token" + use +
                 ". An entry also spends the die you select; a click on the token releases it.";
         }

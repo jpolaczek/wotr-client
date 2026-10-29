@@ -30,6 +30,30 @@ namespace Wotr.EditorTests
             Assert.IsFalse(draft.Ready(option));
         }
 
+        // UI-423 (owner's playtest pattern, like UI-420): a card's journey names its companions and where they go, or those
+        // who stay, instead of "the selected groups" and "all companions".
+        [Test]
+        public void ACardJourneyNamesItsCompanionsAndDestinations()
+        {
+            var view = new PlayerView { Decision = new DecisionView { Kind = DecisionKind.CompanionSeparation } };
+            var option = new ActionOption { Kind = CommandKind.MoveCompanions, AllowEmptySelection = true, EligibleIds = { "gimli", "legolas" } };
+            foreach (var id in option.EligibleIds)
+            {
+                option.Travel.Add(new TravelOption { Id = id, Origin = "dimrill-dale", Range = 4, Targets = { "dimrill-dale", "lorien" } });
+                view.Characters.Add(new CharacterView { Id = id, DefinitionId = "base.character." + id, Location = "dimrill-dale" });
+            }
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            DraftGesture.Choose(draft, view, option.Kind);
+            var data = BoardPresentation.Load();
+            Assert.AreEqual("Keep Gimli and Legolas in place · Resolve the card’s remaining effects.",
+                FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            TravelDraft.ToggleCompanion(draft, view, option, "gimli");
+            Assert.IsTrue(TravelDraft.Step(draft, view, data, "lorien"));
+            Assert.AreEqual("Move Gimli → " + data.Regions["lorien"].Name + " · Resolve the card’s remaining effects.",
+                FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+        }
+
         [Test]
         public void MirrorDieDragUsesChoiceIdsWithoutRepayingTheEvent()
         {

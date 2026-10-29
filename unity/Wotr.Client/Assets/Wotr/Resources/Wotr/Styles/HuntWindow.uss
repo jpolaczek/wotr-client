@@ -82,6 +82,19 @@
 #board-screen .hunt-panel .hunt-roll-die.pressed { translate: 0 1px; }
 /* A die the player may choose for the reroll keeps the legal ring around its die (Wotr.uss .legal-target). */
 #board-screen .hunt-panel .hunt-roll-die.legal-target { border-width: 2px; border-radius: 6px; }
+/* UI-423 (owner's playtest pattern, like UI-419): a die a click may still add to the reroll wears the shared ChoiceGlow
+   (a thick gold rim on a warm plate) and pulses with its row (HuntDiceStrip); a chosen die keeps its gilt variant. */
+#board-screen .hunt-panel .hunt-roll-die.choice-glow {
+    border-width: 3px;
+    border-radius: 6px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .hunt-panel .choice-glow-pulse .hunt-roll-die.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
 .hunt-roll-die.hunt-hit .hunt-die-face,
 .hunt-archive-die.hunt-hit .hunt-die-face {
     filter: drop-shadow(0px 0px 2px rgb(214, 255, 204)) drop-shadow(0px 0px 6px rgb(98, 214, 112))
@@ -90,6 +103,10 @@
 .hunt-roll-die #hunt-hit { color: rgb(158, 150, 138); }
 .hunt-roll-die.hunt-hit #hunt-hit { color: rgb(132, 226, 126); -unity-font-style: bold; }
 .hunt-archive-die.hunt-hit > .unity-label { color: rgb(132, 226, 126); }
+
+/* UI-423 (owner's playtest pattern, like UI-419): the Hunt window's Skip effect (the console's Pass) closes its footer on
+   the right, after the status line when one shows. */
+#board-screen .hunt-panel .tray #hunt-skip-effect { margin-left: auto; margin-right: 0; flex-shrink: 0; }
 
 /* At rest the window is the Hunt Box (UI-109); a Hunt's result stays until the window is closed. */
 .hunt-window.hunt-idle #hunt-main,

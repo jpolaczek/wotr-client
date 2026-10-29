@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using UnityEngine.UIElements;
 using Wotr.Client;
 using Wotr.Contracts;
 
@@ -61,6 +62,10 @@ namespace Wotr.EditorTests
             Assert.IsTrue(reaction.Reaction);
             Assert.AreEqual("Replace the tile", reaction.Consequence);
             StringAssert.StartsWith("Click to discard", reaction.Tooltip);
+            StringAssert.DoesNotContain("Skip effect", reaction.Tooltip, "Without a decline nothing skips it.");
+            // UI-423: with a decline the card's tooltip names the Hunt window's Skip effect beside the console's Pass.
+            view.Options.Add(new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true });
+            StringAssert.EndsWith("\nOr click Skip effect (or Pass) to skip it.", HuntCardResponses.Offered(view).Single().Tooltip);
             view.Hunt = null;
             Assert.IsEmpty(HuntCardResponses.Offered(view), "Outside the Hunt the Effects panel's × answers.");
 
@@ -73,6 +78,29 @@ namespace Wotr.EditorTests
             Assert.IsFalse(HuntCardResponses.Offered(cost).Any(r => r.Reaction));
             Assert.AreEqual(HuntCardResponses.NoCorruption, OptionalDecline.Option(cost, new TurnDraft()).Id);
             Assert.AreEqual("Pass · Take no Corruption and keep your cards", OptionalDecline.Option(cost, new TurnDraft()).Tooltip);
+        }
+
+        // UI-423 (owner's playtest pattern, like UI-419): We Won't Go Back's No Corruption is skipped in the Hunt window too,
+        // with its Skip effect, which sends the console's Pass and names the card and what skipping does.
+        [Test]
+        public void WeWontGoBacksDeclineIsTheHuntWindowsSkipEffect()
+        {
+            var cost = Decision(Side.Shadow, DecisionKind.EffectChoice, HuntCardResponses.Smeagol, CommandKind.ChooseEffect,
+                new EffectChoiceView { Id = HuntCardResponses.WeWontGoBack },
+                new EffectChoiceView { Id = HuntCardResponses.NoCorruption },
+                new EffectChoiceView { Id = "base.sh.character.01" });
+            cost.Hunt = new HuntView();
+            cost.Hand.Add("base.sh.character.01");
+            cost.Decision.SourceId = HuntCardResponses.WeWontGoBack;
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.ChooseEffect);
+            var root = new VisualElement();
+            new DecisionTray(root) { ContextualHunt = true }.Render(cost, draft, false, false);
+            var skip = root.Q<Button>("hunt-skip-effect");
+            Assert.IsNotNull(skip, "Skip effect stands in the Hunt window.");
+            Assert.AreEqual("Skip " + CardLibrary.Title(HuntCardResponses.WeWontGoBack) + " · Take no Corruption and keep your cards",
+                skip.tooltip);
+            Assert.IsNull(root.Q<Button>("effect-choice-" + HuntCardResponses.NoCorruption), "No second decline button.");
         }
 
         // Wind from the West: the Shadow table cards at their ×, the inspected hand in the drawer.

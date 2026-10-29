@@ -269,6 +269,49 @@ namespace Wotr.EditorTests
             Assert.IsNotNull(root.Q("battle-defender").Q<Button>("battle-replacement-kings.character.black-serpent"));
         }
 
+        // UI-423 (owner's playtest pattern, like UI-416): with two Chieftains in one battle the footer, the skip and Pass name
+        // both chips, not only the first.
+        [Test]
+        public void TwoChieftainsChipsAreBothNamed()
+        {
+            const string serpent = "kings.character.black-serpent";
+            const string bats = "kings.character.shadow-of-mirkwood";
+            var view = new PlayerView
+            {
+                You = Side.Shadow, DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "chieftains", Kind = DecisionKind.EffectChoice, Presentation = CombatReplacementChoice.Presentation },
+                Battle = new BattleView
+                {
+                    Attacker = new BattleForceView { Side = Side.FreePeoples },
+                    Defender = new BattleForceView { Side = Side.Shadow, CardId = "" }
+                },
+                Characters =
+                {
+                    new CharacterView { Id = serpent, DefinitionId = serpent, Side = Side.Shadow },
+                    new CharacterView { Id = bats, DefinitionId = bats, Side = Side.Shadow }
+                },
+                Options =
+                {
+                    new ActionOption
+                    {
+                        Kind = CommandKind.ChooseEffect, Enabled = true, Minimum = 1, Maximum = 1, EligibleIds = { serpent, bats, "keep" },
+                        EffectChoices =
+                        {
+                            new EffectChoiceView { Id = serpent, SourceId = serpent, Title = "The Black Serpent" },
+                            new EffectChoiceView { Id = bats, SourceId = bats, Title = "The Shadow of Mirkwood" },
+                            new EffectChoiceView { Id = "keep", Title = "Keep card effects" }
+                        }
+                    }
+                }
+            };
+            Assert.AreEqual(2, CombatReplacementChoice.Chips(view).Count);
+            Assert.AreEqual("Click The Black Serpent's or The Shadow of Mirkwood's arms beside your Combat card's place to use an ability, " +
+                "or Skip effect to fight on as usual.", CombatReplacementChoice.Hint(view));
+            Assert.AreEqual("Red Wrath or Lord of the Bats", CombatReplacementChoice.AbilityNames(view));
+            Assert.AreEqual("Skip Red Wrath or Lord of the Bats · Keep your card's effects", OptionalDecline.SkipTooltip(view, new TurnDraft()));
+            Assert.AreEqual("Pass · Skip Red Wrath or Lord of the Bats · Keep your card's effects", OptionalDecline.Option(view, new TurnDraft()).Tooltip);
+        }
+
         // UI-348 (D7): Palantír of Anárion's Skip extra card is the console's Pass; the decks are the draw.
         [Test]
         public void AnarionsSkipIsThePass()

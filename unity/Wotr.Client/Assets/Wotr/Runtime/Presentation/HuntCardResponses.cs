@@ -20,7 +20,8 @@ namespace Wotr.Client
     // UI-285 (owner's decision after the object controls audit): the table cards that answer in the Hunt — Axe and Bow,
     // Mithril Coat and Sting, Horn of Gondor, Wizard's Staff, Crebain… — stand as card objects in the Hunt window's
     // response row, beside the Ring, Guide and random-companion responses; one click uses the card (discarding it when
-    // that is its cost), and the console's Pass declines (UI-291). They no longer fall to the generic choice list.
+    // that is its cost), and the console's Pass declines (UI-291), as does the window's Skip effect (UI-423). They no
+    // longer fall to the generic choice list.
     // UI-272: the Lords Shadow table cards answer the same way — We Shall Get It! (replace the drawn tile) and The Gates
     // are Closed (an extra tile after a reveal) — and We Won't Go Back's cost offers the table card as an object, while the
     // Character cards it accepts glow in the hand; No Corruption is the console's Pass (UI-347, D7).
@@ -49,11 +50,14 @@ namespace Wotr.Client
             var option = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect);
             if (option == null)
                 return None;
+            var skip = ReactionSkip.SkipLine(view);
             return option.EffectChoices.Where(c => option.EligibleIds.Contains(c.Id) && OnTable(view, c.SourceId))
-                .Select(Response).ToList();
+                .Select(c => Response(c, skip)).ToList();
         }
 
-        private static HuntCardResponse Response(EffectChoiceView choice)
+        // UI-423 (owner's playtest pattern, like UI-419): the last line names the Hunt window's Skip effect beside the
+        // console's Pass.
+        private static HuntCardResponse Response(EffectChoiceView choice, string skip)
         {
             var title = CardLibrary.Title(choice.SourceId);
             var consequence = choice.Title.Length > 0 ? choice.Title : "Use this card";
@@ -61,8 +65,7 @@ namespace Wotr.Client
             return new HuntCardResponse
             {
                 Id = choice.Id, CardId = choice.SourceId, Name = title, Consequence = consequence, Reaction = true,
-                Tooltip = cost + " · " + consequence + (choice.Detail.Length > 0 ? "\n" + choice.Detail : "") +
-                    "\nOr Pass to skip it."
+                Tooltip = TooltipText.Lines(cost + " · " + consequence, choice.Detail, skip)
             };
         }
 

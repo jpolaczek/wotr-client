@@ -29,6 +29,8 @@ namespace Wotr.Client
         private readonly Dictionary<string, NationTrackRow> rows = new Dictionary<string, NationTrackRow>();
         private readonly VisualElement tracks = new VisualElement { name = "politics-tracks" };
         private readonly PoliticalHover hover;
+        // UI-423: the glowing tokens pulse in the shared rhythm, one ticker for every row.
+        private readonly ChoicePulse pulse;
         private readonly Dictionary<string, Side> sides;
         // A card's nation targets and what each click does ("" for the general hint).
         private IReadOnlyDictionary<string, string> cardTargets = new Dictionary<string, string>();
@@ -65,6 +67,7 @@ namespace Wotr.Client
             AddAxis();
             tracks.AddToClassList("politics-tracks");
             Drawer.Add(tracks);
+            pulse = new ChoicePulse(tracks);
             ShowOpponent.RegisterValueChangedCallback(_ => Filter());
             hover = new PoliticalHover(surface, Drawer);
             hover.Changed += RefreshVisibility;
@@ -178,6 +181,7 @@ namespace Wotr.Client
                 activationAvailable |= actions.CanActivate;
                 row.Refresh(actions);
             }
+            pulse.Run(rows.Values.Any(row => row.Glowing));
             Root.EnableInClassList("legal-target", cardTargets.Count > 0 || advancement?.Targets.Count > 0 || activationAvailable ||
                 interactive && Abilities.Count > 0);
         }

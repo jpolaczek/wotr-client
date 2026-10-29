@@ -131,10 +131,15 @@ namespace Wotr.Client
             if (chosen.Count > 0)
                 return Describe(view, chosen) + " · Click a highlighted region to move there; click a chosen one to release it.";
             if (PlannedCount(draft) == 0)
-                return "Council token · Click the Nazgûl to move (above the token or on the map), then their destination.";
+                return "Council token · Click the " + Subject(view, draft) + " to move (above the token or on the map), then their destination.";
             return "Council token · " + Describe(view, draft.Payload.CompanionMoves.SelectMany(g => g.Ids).ToList()) +
                 " planned · Choose more and their destination, or click ✓ to finish.";
         }
+
+        // UI-423 (owner's playtest pattern, like UI-416): the token moves Nazgûl and Minions, so a hint speaks of Nazgûl only
+        // while every figure it offers is one (the Witch-king among them), and of figures otherwise.
+        public static string Subject(PlayerView view, TurnDraft draft) =>
+            NazgulFlightDraft.OnlyNazgul(view, Figures(view, draft)) ? "Nazgûl" : "figures";
 
         // What the console's ✓ does.
         public static string ConfirmTooltip(PlayerView view, TurnDraft draft)

@@ -20,6 +20,8 @@ namespace Wotr.Client
         public Button Activation { get; private set; }
         public NationView Nation { get; private set; }
         public bool Own { get; private set; }
+        // UI-423: the token wears the shared ChoiceGlow, so the panel's ticker pulses it.
+        public bool Glowing => Token.ClassListContains(ChoiceGlow.ClassName);
         private const float GlowScale = 1.45f;
         private readonly Label label = new Label();
         private readonly VisualElement glow;
@@ -161,7 +163,11 @@ namespace Wotr.Client
             advanceHint = actions.AdvanceHint;
             activating = actions.CanActivate;
             Token.EnableInClassList("selected", highlighted);
-            Token.EnableInClassList("legal-target", advancing || actions.CardTarget);
+            var offered = advancing || actions.CardTarget;
+            Token.EnableInClassList("legal-target", offered);
+            // UI-423 (owner's playtest pattern, like UI-411): the token a click moves or chooses glows and pulses with the
+            // panel's other choices, as the hints say; no station glows (UI-410).
+            ChoiceGlow.Apply(Token, offered && !highlighted);
             Root.EnableInClassList("selected-nation", highlighted);
             Token.tooltip = PoliticalActions.Describe(Nation) + "\n" + TokenHint(actions);
             if (Own && !Nation.Active)

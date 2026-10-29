@@ -61,6 +61,26 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("a-plain-word stays.", ReadableText.Of("a-plain-word stays.", Data), "Only a known ability id is renamed.");
         }
 
+        // UI-423 (owner's playtest pattern, like UI-393): a dragged object travels under its own name, never its kind's code.
+        [Test]
+        public void ADraggedObjectReadsAsItsName()
+        {
+            Assert.AreEqual("Rohan", DraftInput.DragName(new DraftToken(DraftObject.Nation, "rohan")));
+            Assert.AreEqual("Southrons & Easterlings", DraftInput.DragName(new DraftToken(DraftObject.PoliticalSlot, "southrons")));
+            Assert.AreEqual(CardLibrary.Title("base.fp.strategy.20"), DraftInput.DragName(new DraftToken(DraftObject.Card, "base.fp.strategy.20")));
+            Assert.AreEqual(ActionCardText.Source("kings.sovereign.dain") + "'s Ruler token",
+                DraftInput.DragName(new DraftToken(DraftObject.RulerToken, "kings.token.dain")));
+            Assert.AreEqual(ActionCardText.Source("kings.sovereign.dain"), DraftInput.DragName(new DraftToken(DraftObject.Sovereign, "kings.sovereign.dain")));
+            Assert.AreEqual(CharacterLibrary.Name("base.character.gimli"),
+                DraftInput.DragName(new DraftToken(DraftObject.CouncilPortrait, "base.character.gimli")));
+            Assert.AreEqual("Random companion", DraftInput.DragName(new DraftToken(DraftObject.HuntResponse, "RandomCompanion")));
+            Assert.AreEqual("Hunt tile", DraftInput.DragName(new DraftToken(DraftObject.HuntTile)));
+            foreach (var kind in new[] { DraftObject.Nation, DraftObject.Card, DraftObject.RulerToken, DraftObject.Sovereign,
+                         DraftObject.CouncilPortrait, DraftObject.HuntEye, DraftObject.HuntTile, DraftObject.HuntResponse })
+                Assert.AreNotEqual(kind.ToString(), DraftInput.DragName(new DraftToken(kind, "kings.sovereign.dain")), kind.ToString());
+            Assert.AreEqual("", DraftInput.DragName(null));
+        }
+
         [Test]
         public void ASovereignAndUnknownIdentifiersReadAsWords()
         {

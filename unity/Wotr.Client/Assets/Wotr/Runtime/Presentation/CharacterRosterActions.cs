@@ -46,10 +46,23 @@ namespace Wotr.Client
             Figure(view, item.OwnerId), item.Kind == CommandKind.EnterCharacter ? item.Character?.CharacterId : "");
 
         // UI-390: a deck choice from the character (Denethor's Palantír of Anárion) is made on the decks, not linked here.
+        // UI-423 (owner's playtest pattern, like UI-390): nor is a response made on its own object — Galadriel's Nenya at its
+        // socket after a Hunt Eye, the Chief's Spear of Terror at the Character deck and He Sees, He Knows at his figure —
+        // since no window holds it for Open decision to lead to.
         public static bool HasReaction(PlayerView view, string id) =>
             id.Length > 0 && view?.Decision != null && view.DecisionOwner == view.You && view.Decision.Kind != DecisionKind.Action &&
-            !DeckChoice.Pending(view) &&
+            !DeckChoice.Pending(view) && !ObjectReaction(view) &&
             (Figure(view, view.Decision.SourceId) == id || view.Options.Any(option =>
-                option.EffectChoices.Any(choice => Figure(view, choice.SourceId) == id)));
+                option.EffectChoices.Any(choice => Figure(view, choice.SourceId) == id && !OnObject(view, choice.Id))));
+
+        // Every response offered now is made on its own object.
+        private static bool ObjectReaction(PlayerView view)
+        {
+            var responses = view.Options.Where(o => o.Enabled && o.Kind == CommandKind.RespondEffect).SelectMany(o => o.EligibleIds).ToList();
+            return responses.Count > 0 && responses.All(response => OnObject(view, response));
+        }
+
+        private static bool OnObject(PlayerView view, string response) =>
+            ChiefReactionObjects.OnObject(response) || NamedRings.OnSocket(view, response);
     }
 }

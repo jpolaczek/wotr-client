@@ -98,7 +98,7 @@ namespace Wotr.PlayTests
                     var pass = board.Console.Actions.Pass;
                     Assert.IsTrue(pass.enabledInHierarchy);
                     Assert.IsTrue(pass.ClassListContains(ChoiceGlow.ClassName));
-                    StringAssert.Contains("Skip Gandalf the Grey", pass.tooltip);
+                    StringAssert.Contains("Skip Draw matching card (Gandalf the Grey)", pass.tooltip);
                     LayoutTests.Save(client.Viewport, "ui291-gandalf-draw-pass.png");
                     Assert.AreEqual("Click the Guide's glowing portrait in the Fellowship panel to use Draw matching card · or Pass to skip it.",
                         board.Console.Status.Hint.text, "The console's hint says where the draw is and that Pass skips it.");

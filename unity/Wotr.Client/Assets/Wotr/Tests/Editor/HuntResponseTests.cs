@@ -96,6 +96,35 @@ namespace Wotr.Tests
             Assert.IsFalse(random.enabledSelf);
         }
 
+        // UI-423 (owner's playtest pattern, like UI-419): the damage responses glow and pulse as the Guide's and the table
+        // cards' responses do; a chosen one is selected instead, and a locked window lights none.
+        [Test]
+        public void DamageResponsesGlowLikeTheResponsesBesideThem()
+        {
+            var view = View();
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.ResolveHuntDamage);
+            var responses = new HuntResponsesView();
+            responses.Context(view, draft, true);
+            var ring = responses.Root.Q<Button>("hunt-response-Ring");
+            var guide = responses.Root.Q<Button>("hunt-response-Guide");
+            Assert.IsTrue(ring.ClassListContains(ChoiceGlow.ClassName), "A usable response glows.");
+            Assert.IsTrue(guide.ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(ring.ClassListContains("legal-target"), "It keeps its legal rim.");
+
+            HuntResponseActions.Select(view, draft, HuntResponse.Ring);
+            responses.Context(view, draft, true);
+            Assert.IsTrue(ring.ClassListContains("selected"));
+            Assert.IsFalse(ring.ClassListContains(ChoiceGlow.ClassName), "A chosen response is selected, not lit.");
+            Assert.IsTrue(guide.ClassListContains(ChoiceGlow.ClassName));
+
+            responses.Context(view, draft, false);
+            Assert.IsFalse(guide.ClassListContains(ChoiceGlow.ClassName), "Nothing glows while the player cannot act.");
+            view.Options[0].HuntResponses.Remove(HuntResponse.Guide);
+            responses.Context(view, draft, true);
+            Assert.IsFalse(guide.ClassListContains(ChoiceGlow.ClassName), "A response the server does not offer stays dark.");
+        }
+
         private static PlayerView View() => new PlayerView
         {
             You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,

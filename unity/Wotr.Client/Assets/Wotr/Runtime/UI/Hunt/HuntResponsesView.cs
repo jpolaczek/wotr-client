@@ -22,6 +22,7 @@ namespace Wotr.Client
         private readonly ChoicePulse cardPulse;
         private string cardKey = "";
         private readonly Dictionary<HuntResponse, Button> choices = new Dictionary<HuntResponse, Button>();
+        private readonly ChoicePulse responsePulse;
         // UI-288: the current Guide's figure on its response; Context keeps it on the Guide of the moment.
         private readonly Image guideArt = FigureArtwork.Image(FigureAppearances.Character("", Side.FreePeoples));
         private string guideShown;
@@ -42,6 +43,7 @@ namespace Wotr.Client
                 row.Add(button);
                 choices.Add(response, button);
             }
+            responsePulse = new ChoicePulse(row);
             Root.Add(row);
             guideRow.name = "hunt-guide-responses";
             guidePulse = new ChoicePulse(guideRow);
@@ -196,23 +198,40 @@ namespace Wotr.Client
             Root.style.display = option == null && guides.Count == 0 && cards.Count == 0 ? DisplayStyle.None : DisplayStyle.Flex;
             guideOrder.style.display = option?.HuntResponses.Contains(HuntResponse.Guide) == true ||
                 option?.HuntResponses.Contains(HuntResponse.RandomCompanion) == true ? DisplayStyle.Flex : DisplayStyle.None;
+            var lit = false;
             foreach (var pair in choices)
-            {
-                var legal = option?.HuntResponses.Contains(pair.Key) == true;
-                var button = pair.Value;
-                button.style.display = legal ? DisplayStyle.Flex : DisplayStyle.None;
-                button.SetEnabled(enabled && legal);
-                button.EnableInClassList("legal-target", enabled && legal);
-                button.EnableInClassList("selected", legal && draft.HuntChoice == pair.Key);
-                if (!legal)
-                    continue;
-                button.Q<Label>("hunt-response-name").text = pair.Key == HuntResponse.Ring ? "Ring" :
-                    pair.Key == HuntResponse.Guide ? CharacterLibrary.ShortName(view, view.Fellowship.Guide) : "Random companion";
-                if (pair.Key == HuntResponse.Guide)
-                    ShowGuide(view);
-                button.Q<Label>("hunt-response-consequence").text = HuntResponseActions.Consequence(view, pair.Key);
-                button.tooltip = HuntResponseActions.Describe(view, pair.Key) + "\nClick to choose, or drag it onto the tile.";
-            }
+                lit |= ShowResponse(view, draft, option, pair.Key, pair.Value, enabled);
+            responsePulse.Run(lit);
+        }
+
+        // One damage response: shown while the server offers it, usable while the player may act. UI-423 (owner's playtest
+        // pattern, like UI-419): a response a click may choose glows and pulses as the Guide's and the table cards'
+        // responses do; a chosen one is selected instead. Returns whether it glows.
+        private bool ShowResponse(PlayerView view, TurnDraft draft, ActionOption option, HuntResponse response, Button button,
+            bool enabled)
+        {
+            var legal = option?.HuntResponses.Contains(response) == true;
+            var chosen = legal && draft.HuntChoice == response;
+            var lit = enabled && legal && !chosen;
+            button.style.display = legal ? DisplayStyle.Flex : DisplayStyle.None;
+            button.SetEnabled(enabled && legal);
+            button.EnableInClassList("legal-target", enabled && legal);
+            button.EnableInClassList("selected", chosen);
+            ChoiceGlow.Apply(button, lit);
+            if (legal)
+                ShowDetails(view, response, button);
+            return lit;
+        }
+
+        // The response's name, picture, consequence and tooltip for the current Hunt.
+        private void ShowDetails(PlayerView view, HuntResponse response, Button button)
+        {
+            button.Q<Label>("hunt-response-name").text = response == HuntResponse.Ring ? "Ring" :
+                response == HuntResponse.Guide ? CharacterLibrary.ShortName(view, view.Fellowship.Guide) : "Random companion";
+            if (response == HuntResponse.Guide)
+                ShowGuide(view);
+            button.Q<Label>("hunt-response-consequence").text = HuntResponseActions.Consequence(view, response);
+            button.tooltip = HuntResponseActions.Describe(view, response) + "\nClick to choose, or drag it onto the tile.";
         }
     }
 }

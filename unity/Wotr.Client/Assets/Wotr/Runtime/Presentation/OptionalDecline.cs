@@ -80,12 +80,12 @@ namespace Wotr.Client
             return "Skip " + (EffectName(view) ?? "this effect") + " · " + TooltipText.Capital(What(view, decline));
         }
 
-        // The ability or card a decline skips, or null when its source has no name.
+        // The ability or card a decline skips, or null when its source has no name. UI-423 (owner's playtest pattern, like
+        // UI-416): every Combat replacement offered is named — "Red Wrath or Lord of the Bats" with two Chieftains.
         private static string EffectName(PlayerView view)
         {
-            if (CombatReplacementChoice.Chips(view).FirstOrDefault() is { } chip &&
-                CombatReplacementChoice.Ability(view, chip.SourceId) is { } ability)
-                return ability.Title;
+            if (CombatReplacementChoice.AbilityNames(view) is { } abilities)
+                return abilities;
             var source = view?.Decision?.SourceId ?? "";
             if (CardLibrary.Cards.TryGetValue(source, out var card))
                 return view.Battle != null && card.CombatTitle.Length > 0 ? card.CombatTitle : card.Title;

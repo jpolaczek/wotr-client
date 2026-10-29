@@ -20,7 +20,7 @@ namespace Wotr.Client
     // the Shadow's dice row (UI-230), and only the one clicked lights the kings and their attempt buttons; before that the
     // buttons stay dark and nothing glows for them. The tiles drawn for the attempt stand beside the king: the Shadow sees their values, the Free
     // Peoples their backs; a click on one attaches it. Every draw is the console's button, even when it is the only legal
-    // step (UI-279).
+    // step (UI-279); then it is lit (UI-423).
     public static class SovereignAttempt
     {
         public const string ActionId = "attempt-corruption";
@@ -107,10 +107,15 @@ namespace Wotr.Client
             {
                 Id = "draw", Name = "action-DrawCorruptionTile", Label = sequential ? "Draw again" : "Draw tiles",
                 Kind = ConsoleOptionKind.Action, Command = CommandKind.DrawCorruptionTile, Enabled = draw.Enabled,
-                Tooltip = DrawTooltip(view, sequential)
+                Tooltip = DrawTooltip(view, sequential), Lit = OnlyStep(view, draw)
             });
             return options;
         }
+
+        // UI-423 (owner's playtest pattern, like UI-418's single option): the draw lights and pulses while it is the
+        // attempt's only enabled step; once a drawn tile may be kept instead, the glowing tile shares the choice.
+        private static bool OnlyStep(PlayerView view, ActionOption draw) =>
+            draw.Enabled && view.Options.All(option => option == draw || !option.Enabled);
 
         // UI-420 (owner): the draw names its king and how many tiles it may draw.
         private static string DrawTooltip(PlayerView view, bool sequential)

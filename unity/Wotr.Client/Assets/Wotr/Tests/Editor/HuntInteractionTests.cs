@@ -180,6 +180,44 @@ namespace Wotr.Tests
             Assert.AreEqual(1, hunt.Dice.First().Result);
         }
 
+        // UI-423 (owner's playtest pattern, like UI-419): a Hunt die a click may still add to the reroll glows and pulses
+        // until the budget is full; a chosen die is selected instead, and a hit or a locked window lights nothing.
+        [Test]
+        public void RerollableHuntDiceGlowUntilTheBudgetIsFull()
+        {
+            var view = new PlayerView
+            {
+                You = Side.Shadow, DecisionOwner = Side.Shadow,
+                Decision = new DecisionView { Id = "reroll", Kind = DecisionKind.HuntReroll },
+                Hunt = new HuntView { Dice =
+                {
+                    new HuntDieView { Id = "miss-a", First = 2, Result = 2 }, new HuntDieView { Id = "miss-b", First = 3, Result = 3 },
+                    new HuntDieView { Id = "hit", First = 6, Result = 6, Success = true }
+                } },
+                Options = { new ActionOption { Kind = CommandKind.RerollHunt, Maximum = 1, EligibleIds = { "miss-a", "miss-b" } } }
+            };
+            var strip = new HuntDiceStrip();
+            strip.Apply(view.Hunt);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.RerollHunt);
+            strip.Context(view, draft, true);
+            Assert.IsTrue(Glows(strip, "miss-a") && Glows(strip, "miss-b"), "Every die the reroll may take glows.");
+            Assert.IsFalse(Glows(strip, "hit"));
+
+            draft.Toggle("miss-a");
+            strip.Context(view, draft, true);
+            Assert.IsTrue(strip.Root.Q<Button>("hunt-die-miss-a").ClassListContains("selected"));
+            Assert.IsFalse(Glows(strip, "miss-a"), "A chosen die is selected, not lit.");
+            Assert.IsFalse(Glows(strip, "miss-b"), "A full budget lights no other die.");
+
+            draft.Toggle("miss-a");
+            strip.Context(view, draft, false);
+            Assert.IsFalse(Glows(strip, "miss-a") || Glows(strip, "miss-b"), "Nothing glows while the player cannot act.");
+        }
+
+        private static bool Glows(HuntDiceStrip strip, string id) =>
+            strip.Root.Q<Button>("hunt-die-" + id).ClassListContains(ChoiceGlow.ClassName);
+
         [Test]
         public void RerollBonusDoesNotOfferAChoiceAndPublicDiceKeepTheirIdentity()
         {
