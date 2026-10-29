@@ -205,3 +205,41 @@
     width: 236px;
     margin: 0 4px 0 6px;
 }
+/* UI-415 (owner): the waiting room as compact as the menu: lower seats, audience, invitation and chat; 32-point
+   buttons; every control keeps its place. */
+.waiting-room .waiting-seats { height: 100px; margin-bottom: 4px; }
+.waiting-room .waiting-seat { padding: 6px 12px; }
+.waiting-room .waiting-seat-heading { margin-bottom: 2px; }
+.waiting-room .waiting-seat-heading .menu-row-emblem { width: 26px; height: 26px; }
+.waiting-room .waiting-seat-side,
+.waiting-room .waiting-seat-player,
+.waiting-room .waiting-seat-tags,
+.waiting-room .waiting-seat-state { margin: 0; padding: 0; }
+.waiting-room .waiting-seat-side { font-size: 14px; }
+.waiting-room .waiting-seat-player { font-size: 18px; }
+.waiting-room .waiting-seat-tags { font-size: 13px; height: 16px; }
+.waiting-room .waiting-seat-state { font-size: 14px; height: 18px; }
+.waiting-room .waiting-remove { right: 10px; bottom: 6px; width: 90px; height: 28px; min-height: 28px; font-size: 14px; }
+.waiting-room .waiting-take { right: 106px; bottom: 6px; width: 98px; height: 28px; min-height: 28px; font-size: 14px; }
+/* The audience line clips its names to two rows of chips (the count stands in its title). */
+.waiting-room .waiting-observers { align-items: stretch; height: 48px; margin-bottom: 3px; }
+.waiting-room .waiting-observers-title { align-self: flex-start; margin-top: 3px; font-size: 13px; }
+.waiting-room .waiting-observers-empty { margin-top: 3px; font-size: 13px; }
+.waiting-room .waiting-observer { height: 21px; margin: 0 4px 3px 0; padding: 0 2px 0 8px; border-radius: 10px; }
+.waiting-room .waiting-observer-name { margin: 0; padding: 0; font-size: 13px; -unity-text-align: middle-left; }
+.waiting-room .waiting-observer-remove { width: 17px; min-width: 17px; height: 17px; min-height: 17px; margin: 0 0 0 4px;
+    padding: 0; border-radius: 9px; font-size: 11px; }
+.waiting-room .waiting-invitation { height: 34px; margin-bottom: 3px; }
+.waiting-room .waiting-invitation-title { font-size: 13px; }
+.waiting-room .waiting-invitation-code { height: 32px; }
+/* UI-263 keeps the invitation's buttons 92 points wide beside the rules. */
+.waiting-room .waiting-invite-action { height: 32px; min-height: 32px; font-size: 14px; }
+.waiting-room .room-chat-title { margin: 0 0 2px 2px; font-size: 13px; }
+.waiting-room .room-chat-log { padding: 4px 8px; }
+.waiting-room .room-chat-message { margin-bottom: 1px; }
+.waiting-room .room-chat-author,
+.waiting-room .room-chat-text { margin: 0 6px 0 0; padding: 0; font-size: 14px; }
+.waiting-room .room-chat-text { margin-right: 0; }
+.waiting-room .room-chat-line { height: 34px; margin-top: 3px; }
+.waiting-room .room-chat-input { height: 32px; }
+.waiting-room .room-chat-send { width: 96px; height: 32px; min-height: 32px; font-size: 14px; }

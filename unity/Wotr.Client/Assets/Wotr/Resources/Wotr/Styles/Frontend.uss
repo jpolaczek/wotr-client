@@ -656,3 +656,96 @@
 .frontend .rules-row .rules-chip { width: 32%; margin: 0 1% 4px 0; }
 .frontend .rules-row .rules-chip-name { font-size: 11px; }
 
+/* UI-415 (owner): a compact menu before the game. Smaller buttons (32 points, the project's click target) and almost no
+   empty space between frames, header plates, tabs and rows, so every screen shows more of what it already lists; every
+   control keeps its place. The masthead gives its height to the window, and the action column ends under its last row
+   instead of stretching an empty frame. Covers the sign-in card, the main menu's pages, the waiting room
+   (WaitingRoom.uss) and Settings (Wotr.uss). */
+.main-menu .menu-page { padding: 6px 12px 18px 12px; }
+.main-menu .menu-masthead { margin-bottom: 2px; }
+.main-menu .menu-title { font-size: 30px; letter-spacing: 6px; margin: 0; padding: 0; }
+.main-menu .menu-player { font-size: 13px; margin: 0; padding: 0; }
+.main-menu .menu-body { height: 600px; }
+.main-menu .menu-window { margin-right: 8px; padding: 8px 12px 12px 12px; }
+.main-menu .menu-window-header { height: 32px; margin-bottom: 4px; }
+.main-menu .menu-window-title { font-size: 16px; }
+.main-menu .menu-empty,
+.main-menu #public-games-empty { margin: 6px 6px; font-size: 15px; }
+/* Text fields: a line of type with a little air, not 8 points of padding round it. */
+.main-menu .unity-base-text-field__input { padding: 2px 8px; font-size: 15px; }
+
+/* Rows: 46 points instead of 60, 3 between them. */
+.main-menu .menu-row { height: 46px; min-height: 46px; margin: 0 4px 3px 0; padding: 0 12px 0 8px; }
+.main-menu .menu-row-emblem { width: 28px; height: 28px; margin-right: 8px; }
+.main-menu .menu-row-text { height: 38px; }
+.main-menu .menu-row-title { height: 20px; font-size: 15px; }
+.main-menu .menu-row-detail { height: 16px; margin-top: 1px; font-size: 13px; }
+.main-menu .menu-row-action { margin-left: 8px; font-size: 14px; }
+.main-menu .public-room-row { height: 40px; min-height: 40px; margin-bottom: 3px; }
+.main-menu .public-room-row .menu-row-emblem { width: 24px; height: 24px; margin-right: 8px; }
+.main-menu .public-room-row .menu-row-text { height: 34px; }
+.main-menu .public-room-row .menu-row-title { height: 18px; font-size: 14px; }
+.main-menu .public-room-row .public-room-action { width: 76px; height: 32px; min-height: 32px; font-size: 13px; }
+.main-menu .saved-match { min-height: 0; margin: 0 4px 3px 0; }
+.main-menu .saved-match .resume-match { padding: 4px 12px; }
+.main-menu .saved-match-heading { margin: 0; padding: 0; font-size: 15px; }
+.main-menu .saved-match-detail { margin: 0; padding: 0; font-size: 13px; }
+.main-menu .lobby-panel { margin-top: 4px; padding: 4px 6px 4px 8px; }
+
+/* The test scenarios: Back beside the hint (the window's header already names the page), lower tabs, field and rows. */
+.main-menu .menu-window > .frontend-form { padding: 2px 2px 0 2px; }
+.main-menu .menu-window > .frontend-form .row { margin-top: 0; }
+.frontend .test-scenario-header { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 0 4px 0; }
+.frontend .test-scenario-header > .test-scenario-hint { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0 0 0 6px; padding: 0; font-size: 13px; }
+.frontend .test-scenario-tabs { margin: 0 0 4px 0; }
+.frontend .test-scenario-tab { height: 32px; min-height: 32px; margin-right: 4px; font-size: 14px; }
+.frontend .test-scenario-search-row { margin: 0 0 4px 0; }
+.frontend .test-scenario-list .test-scenario-search { height: 30px; min-height: 30px; margin: 0 4px 0 0; }
+.frontend .test-scenario-list .test-scenario-search > .unity-base-text-field__input { height: 30px; min-height: 30px; margin: 0; }
+.frontend .test-scenario-group { margin: 6px 0 2px 0; font-size: 13px; }
+.frontend .test-scenario { min-height: 0; margin: 0 2px 3px 0; padding: 5px 10px; }
+.frontend .test-scenario-title { margin: 0; padding: 0; font-size: 15px; }
+.frontend .test-scenario-description { margin: 1px 0 0 0; padding: 0; font-size: 13px; }
+
+/* Host a game, Demo and Replays: the same controls, lower and closer. */
+.main-menu .host-form { padding: 2px 4px 0 4px; }
+.main-menu .host-field { height: 34px; margin-bottom: 6px; }
+.main-menu #room-name.host-control { height: 32px; }
+.main-menu .host-segments > .host-segment { height: 32px; min-height: 32px; font-size: 15px; }
+.main-menu .host-footer { height: 36px; }
+.main-menu .host-footer > .host-back,
+.main-menu .host-footer > .host-submit { height: 32px; min-height: 32px; font-size: 15px; }
+.main-menu .side-choice { height: 96px; margin-bottom: 8px; }
+.main-menu .side-choice > .side-card { padding: 8px 12px; }
+.main-menu .demo-note { margin-bottom: 6px; font-size: 14px; }
+.main-menu .replay-library { padding: 2px 4px 0 4px; }
+.main-menu .replay-action { height: 32px; min-height: 32px; font-size: 14px; }
+.main-menu .replay-footer { height: 36px; }
+.main-menu .replay-footer-action { height: 32px; min-height: 32px; }
+
+/* The action column: 32-point rows 3 apart; Join by code tighter; Sign out and Quit game follow Settings. */
+.main-menu .menu-actions { align-self: flex-start; padding: 12px; }
+.main-menu .menu-action { height: 32px; min-height: 32px; margin-bottom: 3px; padding-left: 14px; font-size: 15px; }
+.main-menu .menu-action-badge { top: 6px; width: 20px; height: 20px; border-radius: 10px; font-size: 12px; }
+.main-menu .menu-join { margin: 1px 0 4px 0; padding: 4px 0 5px 0; }
+.main-menu .menu-join-title { margin: 0 0 3px 2px; font-size: 12px; }
+.main-menu .menu-join-code { height: 32px; }
+.main-menu .menu-join-submit { height: 32px; min-height: 32px; font-size: 14px; }
+.main-menu .menu-actions-spacer { flex-grow: 0; height: 6px; }
+.main-menu .menu-status { height: 24px; margin-top: 2px; font-size: 14px; }
+
+/* The sign-in card: the same column, closer. */
+/* The bottom padding keeps room for an update note under Settings (DIST-17). */
+.frontend .login-card { padding: 12px 28px 18px 28px; }
+.frontend .login-card .gateway-heading { margin-bottom: 0; }
+.frontend .login-card .gateway-tagline { margin: 0 0 2px 0; font-size: 14px; }
+.frontend .login-card .unity-text-field { margin: 4px 0 0 0; }
+.frontend .login-card .unity-text-field > .unity-base-field__label { margin: 0 0 2px 2px; font-size: 14px; }
+.frontend .login-card .unity-text-field > .unity-base-text-field__input { height: 32px; min-height: 32px; padding: 2px 8px; font-size: 16px; }
+.frontend .login-card .status-message { margin: 4px 0 0 0; font-size: 14px; }
+.frontend .login-card .auth-actions { margin-top: 8px; }
+.frontend .login-card .auth-actions .action,
+.frontend .login-card .auth-secondary .action { height: 32px; min-height: 32px; margin: 0 0 4px 0; font-size: 16px; }
+.frontend .login-card .auth-secondary { margin-top: 4px; padding-top: 6px; }
+.frontend .login-card .auth-secondary .action { margin: 0; }
+.frontend .login-card .auth-hint { font-size: 13px; }

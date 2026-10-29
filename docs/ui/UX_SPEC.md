@@ -1874,3 +1874,20 @@ Owner requests and reports from the Kings and Lords test scenarios:
   ban naming its place and Théoden's Mark of the White Hand; Brand's Shadows in the North and the Fate abilities are
   the Shadow's optional uses, offered in battle, and are no longer effects. Tests: `EffectsPresentationTests`, server
   `InGameProjectionTests.CorruptedSovereignsProjectOnlyTheirPassiveEffectsTitledByAbility`.
+- UI-414 (owner) — the Effects tab lists passive effects and what is happening now; an ability a player uses is
+  described and offered only in the Characters tab. Each titled ability of a source has its own button; a card's
+  effects keep one. A place shows its locate button once per source, and none where the effect's text already names
+  it (`EffectsPresentation`, `EffectSourceDetails`). Test: `EffectsPresentationTests`.
+
+## A compact menu before the game — UI-415 (2026-10-29)
+
+- UI-415 (owner) — every screen before the game (the sign-in card, the main menu's pages: Open games with the lobby, My
+  games, Replays, Host a game, Demo, Test scenarios, Join by code; the waiting room; Settings) is compact: buttons of 32
+  points (the project's click target) instead of 36–42, rows of 46 (Open games 40) instead of 60 with 3 points between
+  them, text fields with 2 points of padding, and almost no empty space between frames, header plates, tabs and rows.
+  The masthead (title 30 points, the sign-in line under it) gives its height to the window (600 points tall, shrinking
+  on a smaller screen); the action column ends under Sign out and Quit game instead of stretching an empty frame. In
+  Test scenarios, Back stands beside the hint and the page's second title is gone (the window's header names it). Every
+  control keeps its place; no information was added or removed (`Frontend.uss`, `WaitingRoom.uss`, Settings in
+  `Wotr.uss`). Tests: `MainMenuLayoutTests` (four layouts, the audience line now 48 points), `TestScenarioNetworkTests`,
+  `MainMenuNetworkTests`, `InterfaceSettingsTests`.

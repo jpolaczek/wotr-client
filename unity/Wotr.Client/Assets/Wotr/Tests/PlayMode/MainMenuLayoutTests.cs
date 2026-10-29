@@ -298,9 +298,12 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(9, waiting.Rules.Root.Query<Button>().ToList().Count);
                     Assert.AreEqual(174, waiting.Root.Q("waiting-rules-modules").resolvedStyle.height, 0.5f);
                     Fits(waiting.Root.Q("waiting-rules"), waitingWindow);
-                    Assert.AreEqual(52, waiting.Root.Q("waiting-observers").resolvedStyle.height, 0.5f);
-                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.width, waiting.Root.Q("seat-shadow").worldBound.width, 0.5f, "Two equal seats.");
-                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.height, waiting.Root.Q("seat-shadow").worldBound.height, 0.5f, "Two equal seats.");
+                    // UI-415 (owner): the audience line keeps a fixed, compact height.
+                    Assert.AreEqual(48, waiting.Root.Q("waiting-observers").resolvedStyle.height, 0.5f);
+                    // UI-415: the panel scales from 1366 x 768, so at 1920 and 125% a point is 1.76 pixels; two equal seats may
+                    // round one physical pixel apart (up to 0.57 points), never more.
+                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.width, waiting.Root.Q("seat-shadow").worldBound.width, 1f, "Two equal seats.");
+                    Assert.AreEqual(waiting.Root.Q("seat-free").worldBound.height, waiting.Root.Q("seat-shadow").worldBound.height, 1f, "Two equal seats.");
                     Assert.AreEqual("Back", waiting.Root.Q<Button>("waiting-back").text);
                     Assert.AreEqual(markup, waiting.Root.Q("room-chat-message-12").Q<Label>(className: "room-chat-text").text);
                     Assert.IsFalse(waiting.Root.Q("room-chat-message-12").Q<Label>(className: "room-chat-text").enableRichText);
