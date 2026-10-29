@@ -35,6 +35,14 @@ namespace Wotr.EditorTests
             Assert.AreEqual(2, slots.Count(slot => slot.style.display.value == DisplayStyle.Flex));
         }
 
+        // UI-408: an icon whose art is missing shows an empty frame on the row.
+        [Test]
+        public void EveryAbilityIconsArtExists()
+        {
+            foreach (var picture in AbilityIcons.Pictures)
+                Assert.IsNotNull(UnityEngine.Resources.Load<UnityEngine.Texture2D>(picture), picture);
+        }
+
         [Test]
         public void AUsableAbilityGlowsAndItsClickStartsIt()
         {

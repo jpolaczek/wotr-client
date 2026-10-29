@@ -198,10 +198,11 @@
    viewport (40-point rows) the icons take the status line's place; the row's tooltip keeps the state and region. The
    selectors outrank the rows' (.character-roster-grid .action), so the icons keep their own size and frame. */
 .roster-abilities { flex-direction: row; justify-content: flex-end; height: 15px; min-height: 15px; margin: 0; }
+.roster-ability-line { flex-direction: row; justify-content: flex-end; flex-shrink: 0; }
 .short-viewport .roster-compact .character-roster-text > .character-roster-line { display: none; }
-#board-screen .character-roster-grid .roster-abilities > .action.roster-ability,
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability,
-#board-screen.short-viewport .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability {
+#board-screen .character-roster-grid .roster-abilities .action.roster-ability,
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability,
+#board-screen.short-viewport .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability {
     width: 15px;
     min-width: 15px;
     height: 15px;
@@ -221,44 +222,44 @@
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability:hover,
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability:focus {
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability:hover,
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability:focus {
     background-image: resource("Wotr/Art/UI/frames/button-square-hover");
 }
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability.choice-glow {
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability.choice-glow {
     border-width: 1px;
     border-color: rgb(255, 214, 112);
     background-color: rgba(120, 88, 24, 0.75);
 }
-.roster-abilities > .roster-ability > .icon-glyph { width: 12px; height: 12px; max-width: 12px; max-height: 12px; }
+.roster-abilities .roster-ability > .icon-glyph { width: 12px; height: 12px; max-width: 12px; max-height: 12px; }
 
 /* UI-408 (owner): two characters a line, each row about twice as wide: the portrait, the name and region, and beside them a
    2x2 block of 19-point ability icons (17 on a short viewport). A roster too tall for the board in this form keeps three
-   a line (.roster-compact, UI-391's third line). */
+   a line (.roster-compact, UI-391's third line). The block's two lines of two icons (CharacterAbilityStrip.LineClass)
+   stand one above the other, centred on the row; nothing wraps, so the form does not depend on the UI scale. */
 .characters-panel.roster-wide .character-roster-grid .action.character-roster-row,
 #board-screen .edge-left-panel.roster-wide .character-roster-grid .action.character-roster-row { width: 49%; min-width: 0; }
 .characters-panel.roster-wide .character-roster-row > .roster-abilities {
-    width: 42px;
-    min-width: 42px;
+    width: 44px;
+    min-width: 44px;
     height: 42px;
     min-height: 42px;
-    margin: 0 0 0 4px;
+    margin: 0 0 0 2px;
     flex-shrink: 0;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-content: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
 }
-#board-screen .edge-left-panel.roster-wide .character-roster-grid .roster-abilities > .action.roster-ability {
+#board-screen .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .action.roster-ability {
     width: 19px;
     min-width: 19px;
     height: 19px;
     min-height: 19px;
     margin: 1px 0 1px 2px;
 }
-.characters-panel.roster-wide .roster-abilities > .roster-ability > .icon-glyph { width: 15px; height: 15px; max-width: 15px; max-height: 15px; }
-#board-screen.short-viewport .characters-panel.roster-wide .character-roster-row > .roster-abilities { width: 38px; min-width: 38px; height: 36px; min-height: 36px; }
-#board-screen.short-viewport .edge-left-panel.roster-wide .character-roster-grid .roster-abilities > .action.roster-ability {
+.characters-panel.roster-wide .roster-abilities .roster-ability > .icon-glyph { width: 15px; height: 15px; max-width: 15px; max-height: 15px; }
+#board-screen.short-viewport .characters-panel.roster-wide .character-roster-row > .roster-abilities { width: 40px; min-width: 40px; height: 36px; min-height: 36px; }
+#board-screen.short-viewport .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .action.roster-ability {
     width: 17px;
     min-width: 17px;
     height: 17px;

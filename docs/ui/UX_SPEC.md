@@ -1833,8 +1833,10 @@ Owner requests and reports from the Kings and Lords test scenarios:
   board area — the full Kings roster on a 1366 x 768 screen — keeps three a line with UI-391's icons
   (`roster-compact`); the panel tries two a line again only when the roster or the room for it changes, so the form
   never flips back and forth. (First registered as UI-400, a number another session's registration took over.)
+  The block holds two lines of two icons one above the other and never wraps, so its form does not depend on the UI
+  scale; every icon stays inside its row (`CharacterRosterLayoutTests`).
   Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
-  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`.
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists`.
 - UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
   offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
   with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
