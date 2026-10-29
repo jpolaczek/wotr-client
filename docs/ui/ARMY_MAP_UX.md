@@ -742,3 +742,19 @@ Owner: "a unit that disappears from the map should also fade out slowly and smoo
 - The first view, a quiet view, Reduced motion and Skip animations remove the marker at once; Skip of a presentation ends
   every fade (`MapCanvas.EndEmerging`). The map's slice of UI-322's "a figure leaving a stack fades out".
 
+## Miniatures on the table — UI-400 (2026-10-29)
+
+UI-400 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md)): at the figures level an army is a miniature. Its figures stand
+on a painted stand in their side's enamel — an oval one (`stand-field-*`, 112 × 44 points) or a crenellated one for a
+garrison (`stand-garrison-*`, 112 × 48) — over a contact shadow a little down and right on the table; the marker is
+116 × 92 points (garrison 116 × 96). Each figure's box is its painted cell's shape, so its feet are the box's bottom edge
+and stand on the stand's top face: one figure in the middle, two staggered, three with the first farther back (8 points
+higher, 90 %) and two in front. The painted atlases carry each figure's stature (a regular about .78 of an elite, a
+hobbit about .62), so they are shown at one height (54 points for an elite); the Balrog stands 1.1 tall and the UI-76
+fallback silhouettes take their kind's share (`FigureStature`). The state is a rim round the stand instead of the eight
+plinth pictures: eligible and a king's target (legal green), ability owner (amber), selected and armed (gold), pressed
+(dim gold), moved (a veil); ChoiceGlow stays, as a capsule round the stand. The nation emblems and the count are a
+code-drawn plaque on the stand's front. Only the stand's ellipse and the figures' boxes take a press (`MiniatureButton`),
+so the headroom above a figure passes it to whatever lies behind. No filter is used on a map army. The far-zoom token
+keeps its UI-125 pictures until UI-406. Tests: `MapArmyArtworkTests`, `UiArtKitTests`.
+

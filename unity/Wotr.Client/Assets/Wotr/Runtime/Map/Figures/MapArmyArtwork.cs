@@ -9,9 +9,11 @@ namespace Wotr.Client
 {
     // UI-126: an army on the map is a token on the whole map, or up to three figures standing on a base when
     // zoomed in. The base or token picture follows the side, garrison, level and state classes of the button
-    // (Styles/Armies.uss); this class only places the silhouettes, emblems and the count. UI-185: everything is
-    // about 30% larger than in UI-126, and a dark copy behind each silhouette sets it off light terrain. UI-192: about
-    // 15% larger again.
+    // (Styles/Armies.uss); this class places the figures, emblems and the count. UI-185/UI-192: about 50% larger than
+    // UI-126. UI-400 (TABLETOP_FIGURES_UX): the figures are miniatures — they stand on a painted oval base (a crenellated
+    // one for a garrison) with a contact shadow on the table, their feet on one line, two or three staggered in depth
+    // with the farther one behind, each as tall as its painted stature; the state is a rim round the base, the nation
+    // emblems and the count a plaque on its front, and only the base and the figures take a click (MiniatureButton).
     public sealed class MapArmyArtwork
     {
         public const string FiguresClass = "army-figures";
@@ -31,15 +33,27 @@ namespace Wotr.Client
         // Unused parts are hidden by class, so the level rules of Styles/Armies.uss can still hide the rest.
         public const string UnusedClass = "army-part-unused";
         public const int MaximumEmblems = 2;
-        private const float FigureWidth = 50;
-        private const float FigureStep = 26;
         private const float BaseWidth = 116;
-        private const float ShadowOffset = 1.5f;
-        private static readonly Color ShadowTint = new Color(.07f, .05f, .03f, .6f);
+        private const float FieldHeight = 92;
+        private const float GarrisonHeight = 96;
+        // An elite's height; the painted cells carry each figure's own stature (FigureStature).
+        private const float FigureHeight = 54;
+        // The stand's art (Armies.uss): its bottom above the marker's, its height, and the feet line on its top face.
+        private const float StandBottom = 3;
+        private const float FieldStand = 44;
+        private const float GarrisonStand = 48;
+        private const float FeetOnTopFace = .46f;
+        // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front.
+        private static readonly Slot[][] Slots =
+        {
+            new[] { new Slot(0, 0, 1) },
+            new[] { new Slot(-15, -6, .94f), new Slot(15, 0, 1) },
+            new[] { new Slot(0, -8, .9f), new Slot(-27, 0, 1), new Slot(27, 0, 1) }
+        };
 
         public VisualElement Root { get; } = Ignored("army-artwork");
         private readonly Image[] silhouettes = new Image[3];
-        private readonly Image[] shadows = new Image[3];
+        private readonly float[] statures = new float[3];
         private readonly VisualElement[] emblems = new VisualElement[MaximumEmblems];
         private readonly Label more = new Label("+") { name = "army-more-nations", pickingMode = PickingMode.Ignore };
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
@@ -65,20 +79,17 @@ namespace Wotr.Client
             // UI-301: the ChoiceGlow halo of an army a click may choose, behind the artwork (Armies.uss).
             button.Add(Ignored("army-choice-glow"));
             Root.Add(Ignored("army-plinth"));
-            // Every shadow goes first, so no shadow falls on the figure beside it.
-            for (var i = 0; i < shadows.Length; i++)
-            {
-                shadows[i] = FigureArtwork.Image(FigureAppearance.FreeRegular);
-                shadows[i].AddToClassList("army-silhouette-shadow");
-                shadows[i].tintColor = ShadowTint;
-                Root.Add(shadows[i]);
-            }
+            // UI-400: the table under the miniature — its contact shadow, the painted stand and the state rim round it.
+            Root.Add(Ignored("army-contact-shadow"));
+            Root.Add(Ignored("army-stand"));
+            Root.Add(Ignored("army-rim"));
             for (var i = 0; i < silhouettes.Length; i++)
             {
                 silhouettes[i] = FigureArtwork.Image(FigureAppearance.FreeRegular);
                 silhouettes[i].AddToClassList("army-silhouette");
                 Root.Add(silhouettes[i]);
             }
+            Root.Add(Ignored("army-plaque"));
             var row = Ignored("army-emblems");
             for (var i = 0; i < emblems.Length; i++)
             {
@@ -94,10 +105,12 @@ namespace Wotr.Client
             Root.Add(crown);
             Root.Add(Ignored("army-moved"));
             button.Add(Root);
+            if (button is MiniatureButton miniature)
+                miniature.Shape = Contains;
         }
 
         public static Vector2 Size(bool garrison, bool figures) => figures
-            ? new Vector2(BaseWidth, garrison ? 90 : 84)
+            ? new Vector2(BaseWidth, garrison ? GarrisonHeight : FieldHeight)
             : new Vector2(44, garrison ? 48 : 44);
 
         public void Apply(ArmyMarker army)
@@ -107,14 +120,11 @@ namespace Wotr.Client
             for (var i = 0; i < shown; i++)
             {
                 silhouettes[i].sprite = FigureArtwork.Sprite(appearances[i]);
-                shadows[i].sprite = silhouettes[i].sprite;
+                statures[i] = FigureStature.Of(appearances[i]);
             }
             for (var i = 0; i < silhouettes.Length; i++)
-            {
                 silhouettes[i].EnableInClassList(UnusedClass, i >= shown);
-                shadows[i].EnableInClassList(UnusedClass, i >= shown);
-            }
-            PlaceSilhouettes();
+            PlaceSilhouettes(army.Garrison);
             for (var i = 0; i < emblems.Length; i++)
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
@@ -194,16 +204,61 @@ namespace Wotr.Client
             button.EnableInClassList(TokenClass, !figures);
         }
 
-        // Up to three silhouettes overlap and stand centred on the base.
-        private void PlaceSilhouettes()
+        // UI-400: each figure's box is its painted cell's shape, so its feet are the box's bottom edge; they stand on the
+        // base's top face, the farther figure higher and a little smaller, drawn behind the nearer ones.
+        private void PlaceSilhouettes(bool garrison)
         {
-            var width = FigureWidth + Math.Max(0, shown - 1) * FigureStep;
-            var left = (BaseWidth - width) / 2;
+            if (shown == 0)
+                return;
+            var feet = FeetLine(garrison);
+            var slots = Slots[shown - 1];
             for (var i = 0; i < shown; i++)
             {
-                silhouettes[i].style.left = left + i * FigureStep;
-                shadows[i].style.left = left + i * FigureStep + ShadowOffset;
+                var height = FigureHeight * statures[i] * slots[i].Scale;
+                var width = height * Aspect(silhouettes[i].sprite);
+                silhouettes[i].style.width = width;
+                silhouettes[i].style.height = height;
+                silhouettes[i].style.left = BaseWidth / 2 + slots[i].X - width / 2;
+                silhouettes[i].style.top = feet + slots[i].Feet - height;
             }
+        }
+
+        private static float FeetLine(bool garrison)
+        {
+            var stand = garrison ? GarrisonStand : FieldStand;
+            return (garrison ? GarrisonHeight : FieldHeight) - StandBottom - stand * (1 - FeetOnTopFace);
+        }
+
+        private static float Aspect(Sprite sprite) =>
+            sprite == null || sprite.rect.height <= 0 ? .8f : sprite.rect.width / sprite.rect.height;
+
+        // UI-400: only the miniature takes a press — the stand's ellipse and the figures' boxes; a token takes its disc.
+        private bool Contains(Vector2 local)
+        {
+            if (!button.ClassListContains(FiguresClass))
+                return true;
+            for (var i = 0; i < shown; i++)
+                if (silhouettes[i].layout.Contains(local))
+                    return true;
+            var garrison = button.ClassListContains("garrison");
+            var stand = garrison ? GarrisonStand : FieldStand;
+            var centre = new Vector2(BaseWidth / 2, (garrison ? GarrisonHeight : FieldHeight) - StandBottom - stand / 2);
+            var offset = new Vector2((local.x - centre.x) / (BaseWidth / 2), (local.y - centre.y) / (stand / 2));
+            return offset.sqrMagnitude <= 1;
+        }
+
+        private readonly struct Slot
+        {
+            public Slot(float x, float feet, float scale)
+            {
+                X = x;
+                Feet = feet;
+                Scale = scale;
+            }
+
+            public float X { get; }
+            public float Feet { get; }
+            public float Scale { get; }
         }
 
         private static void ShowEmblem(VisualElement emblem, string nation)

@@ -10,13 +10,16 @@ using Wotr.Contracts;
 
 namespace Wotr.PlayTests
 {
-    // UI-126: tokens and figures on a base, with emblems, counts and the base picture of every state.
+    // UI-126: tokens and figures on a base, with emblems, counts and the picture of every state. UI-400: the figures are
+    // miniatures — a painted stand with a contact shadow, the state as a rim, the feet on one line, and only the miniature
+    // takes a click.
     public sealed class MapArmyArtworkTests
     {
-        private static readonly (string Class, string Suffix)[] States =
+        private static readonly (string Class, string Suffix, string Rim)[] States =
         {
-            ("", ""), ("moved", "-moved"), ("eligible-army", ""), ("ability-owner", "-selected"),
-            ("selected-force", "-selected"), ("pressed", "-pressed")
+            ("", "", ""), ("moved", "-moved", "rim-moved"), ("eligible-army", "", "rim-eligible"),
+            ("ability-owner", "-selected", "rim-ability"), ("selected-force", "-selected", "rim-selected"),
+            ("pressed", "-pressed", "rim-pressed")
         };
 
         [UnityTest]
@@ -26,9 +29,9 @@ namespace Wotr.PlayTests
             var gallery = new VisualElement { name = "army-artwork-gallery" };
             gallery.style.position = Position.Absolute;
             gallery.style.left = 120;
-            gallery.style.top = 120;
+            gallery.style.top = 40;
             gallery.style.width = 900;
-            gallery.style.height = 460;
+            gallery.style.height = 520;
             client.Board.Root.Add(gallery);
             var cases = AddCases(gallery);
             foreach (var scale in new[] { 1f, 1.25f })
@@ -64,7 +67,7 @@ namespace Wotr.PlayTests
                 var sample = cases[index];
                 // UI-192: seven larger markers a row, still inside the picture at 125%.
                 sample.Button.style.left = index % 7 * 124;
-                sample.Button.style.top = index / 7 * 96;
+                sample.Button.style.top = index / 7 * 100;
                 gallery.Add(sample.Button);
             }
             return cases;
@@ -79,9 +82,11 @@ namespace Wotr.PlayTests
             var size = MapArmyArtwork.Size(sample.Marker.Garrison, sample.Figures);
             Assert.That(button.resolvedStyle.width, Is.EqualTo(size.x).Within(.5f), button.name);
             Assert.That(button.resolvedStyle.height, Is.EqualTo(size.y).Within(.5f), button.name);
-            var plinth = button.Q("army-plinth");
-            Assert.AreEqual(Picture(sample), plinth.resolvedStyle.backgroundImage.texture?.name,
-                "The base picture follows the level, side, garrison and state: " + button.name);
+            if (sample.Figures)
+                CheckMiniature(sample);
+            else
+                Assert.AreEqual(Picture(sample), button.Q("army-plinth").resolvedStyle.backgroundImage.texture?.name,
+                    "The token picture follows the side, garrison and state: " + button.name);
             // UI-301: an army a click may choose keeps its picture and wears the ChoiceGlow halo behind it, larger than
             // the marker; UI-374: so does the army of a figure whose ability a click uses; no other state shows the halo.
             var halo = button.Q("army-choice-glow");
@@ -95,17 +100,12 @@ namespace Wotr.PlayTests
             }
             var images = Shown(button, "army-silhouette");
             Assert.AreEqual(sample.Figures ? Expected(sample.Marker) : 0, images.Length, button.name);
-            // UI-185: each shown figure has its shadow, and neither leaves the marker.
-            var shadows = Shown(button, "army-silhouette-shadow");
-            Assert.AreEqual(images.Length, shadows.Length, button.name);
-            foreach (var shadow in shadows)
-                AssertInside(shadow, button);
             foreach (var image in images)
             {
                 AssertInside(image, button);
-                Assert.GreaterOrEqual(image.layout.height, 59.5f, "UI-192: a figure stands 60 points tall · " + button.name);
+                Assert.GreaterOrEqual(image.layout.height, 48f, "UI-400: a figure stands about 54 points tall · " + button.name);
                 Assert.IsNotNull(image.sprite, button.name);
-                Click(sample, new Vector2(image.worldBound.center.x, image.worldBound.yMin + 3));
+                Click(sample, image.worldBound.center);
             }
             var emblem = button.Q("army-emblem-0");
             Assert.IsTrue(emblem.ClassListContains("nation-emblem-" + sample.Marker.Nations[0].Nation), button.name);
@@ -123,6 +123,38 @@ namespace Wotr.PlayTests
             Assert.AreEqual(sample.State == "moved" ? DisplayStyle.Flex : DisplayStyle.None, moved.resolvedStyle.display, button.name);
         }
 
+        // UI-400: the stand of the side and kind, its contact shadow under it, the state's rim, every figure's feet on the
+        // stand's top face (the nearer ones on one line), and the empty space above the figures passing the press on.
+        private static void CheckMiniature(Sample sample)
+        {
+            var button = sample.Button;
+            var stand = button.Q("army-stand");
+            Assert.AreEqual(Stand(sample), stand.resolvedStyle.backgroundImage.texture?.name, button.name);
+            Assert.AreEqual(DisplayStyle.None, button.Q("army-plinth").resolvedStyle.display, button.name);
+            var shadow = button.Q("army-contact-shadow");
+            Assert.AreEqual(DisplayStyle.Flex, shadow.resolvedStyle.display, button.name);
+            AssertInside(shadow, button);
+            Assert.GreaterOrEqual(shadow.worldBound.yMax, stand.worldBound.yMax - .5f, "The shadow lies under the stand: " + button.name);
+            var rim = States.First(s => s.Class == sample.State).Rim;
+            var rimElement = button.Q("army-rim");
+            Assert.AreEqual(rim.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None, rimElement.resolvedStyle.display, button.name);
+            if (rim.Length > 0)
+                Assert.AreEqual("rim-field-" + rim, rimElement.resolvedStyle.backgroundImage.texture?.name, button.name);
+            var images = Shown(button, "army-silhouette");
+            var front = images.Max(image => image.worldBound.yMax);
+            foreach (var image in images)
+            {
+                Assert.That(image.worldBound.yMax, Is.InRange(stand.worldBound.yMin, stand.worldBound.yMax),
+                    "Feet on the stand: " + button.name);
+                Assert.That(image.worldBound.yMax, Is.InRange(front - 9f, front + .5f), "One feet line, in depth: " + button.name);
+            }
+            var above = new Vector2(button.worldBound.xMin + 3, button.worldBound.yMin + 3);
+            Assert.AreNotSame(button, button.panel.Pick(above), "The headroom above the figures takes no press: " + button.name);
+        }
+
+        private static string Stand(Sample sample) => "stand-" + (sample.Marker.Garrison ? "garrison-" : "field-") +
+            (sample.Marker.Side == Side.FreePeoples ? "free" : "shadow");
+
         private static Image[] Shown(Button button, string className) => button.Query<Image>(className: className).ToList()
             .Where(image => image.resolvedStyle.display != DisplayStyle.None).ToArray();
 
@@ -131,7 +163,7 @@ namespace Wotr.PlayTests
         private static string Picture(Sample sample)
         {
             var suffix = States.First(s => s.Class == sample.State).Suffix;
-            return (sample.Figures ? "base-" : "token-") + (sample.Marker.Garrison ? "garrison-" : "field-") +
+            return "token-" + (sample.Marker.Garrison ? "garrison-" : "field-") +
                 (sample.Marker.Side == Side.FreePeoples ? "free" : "shadow") + suffix;
         }
 
@@ -174,7 +206,7 @@ namespace Wotr.PlayTests
                 Marker = marker;
                 Figures = figures;
                 State = state;
-                Button = new Button(() => Clicks++)
+                Button = new MiniatureButton(() => Clicks++)
                     { name = $"artwork-{name}-{marker.Side}-{(figures ? "figures" : "token")}{(state.Length > 0 ? "-" + state : "")}" };
                 Button.AddToClassList("army");
                 Button.AddToClassList(marker.Side == Side.FreePeoples ? "fp" : "sh");

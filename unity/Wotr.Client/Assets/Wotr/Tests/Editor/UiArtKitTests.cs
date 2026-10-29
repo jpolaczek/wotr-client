@@ -10,6 +10,10 @@ namespace Wotr.EditorTests
     public sealed class UiArtKitTests
     {
         private const string ArtRoot = "Wotr/Art/UI/";
+        private static readonly string[] Translucent =
+        {
+            "surfaces/cast-shadow", "armies/contact-shadow", "armies/rim-field-rim-moved", "armies/rim-character-rim-moved"
+        };
 
         // Logical sizes in points from the SVG sources; textures are rendered at twice that size.
         private static readonly (string Key, int Width, int Height, bool Alpha)[] Artwork =
@@ -148,6 +152,13 @@ namespace Wotr.EditorTests
             ("battle/die-6", 22, 22, true), ("battle/die-6-hit", 22, 22, true), ("battle/die-6-rerolled", 22, 22, true),
             ("battle/die-6-die-selected", 22, 22, true), ("battle/die-6-die-pressed", 22, 22, true),
             // UI-125: army bases and tokens on the map, reserve slots and budget points of the Reinforcements panel.
+            // UI-400/UI-403: the miniatures' painted stands and pucks, contact shadow, state rims and landing mark.
+            ("armies/stand-field-free", 112, 44, true), ("armies/stand-field-shadow", 112, 44, true),
+            ("armies/stand-garrison-free", 112, 48, true), ("armies/stand-garrison-shadow", 112, 48, true),
+            ("armies/stand-character-free", 40, 28, true), ("armies/stand-character-shadow", 40, 28, true),
+            ("armies/token-puck-free", 40, 32, true), ("armies/token-puck-shadow", 40, 32, true),
+            ("armies/contact-shadow", 112, 20, true), ("armies/rim-field-rim-eligible", 116, 50, true), ("armies/rim-field-rim-selected", 116, 50, true), ("armies/rim-field-rim-pressed", 116, 50, true), ("armies/rim-field-rim-ability", 116, 50, true), ("armies/rim-field-rim-moved", 116, 50, true), ("armies/rim-character-rim-eligible", 44, 34, true), ("armies/rim-character-rim-selected", 44, 34, true), ("armies/rim-character-rim-pressed", 44, 34, true), ("armies/rim-character-rim-ability", 44, 34, true), ("armies/rim-character-rim-moved", 44, 34, true),
+            ("armies/landing-mark-landing-move", 112, 36, true), ("armies/landing-mark-landing-attack", 112, 36, true),
             ("armies/base-field-free", 76, 22, true), ("armies/base-field-shadow", 76, 22, true),
             ("armies/base-field-free-selected", 76, 22, true), ("armies/base-field-shadow-selected", 76, 22, true),
             ("armies/base-field-free-eligible", 76, 22, true), ("armies/base-field-shadow-eligible", 76, 22, true),
@@ -196,8 +207,8 @@ namespace Wotr.EditorTests
                 Assert.AreEqual(Repeating.Contains(art.Key) ? TextureWrapMode.Repeat : TextureWrapMode.Clamp,
                     importer.wrapModeU, art.Key);
                 Assert.AreEqual(art.Alpha, importer.DoesSourceTextureHaveAlpha(), art.Key);
-                // The cast shadow is a translucent gradient without opaque or fully clear texels.
-                if (art.Alpha && art.Key != "surfaces/cast-shadow")
+                // The cast and contact shadows are translucent gradients, and a moved rim only veils its base.
+                if (art.Alpha && !Translucent.Contains(art.Key))
                     CheckTransparentEdgeAndVisibleArt(path, art.Key);
             }
         }

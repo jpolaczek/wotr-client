@@ -2,9 +2,9 @@
   "task": "UI-86",
   "renderer": "headless Google Chrome",
   "shared_sha256": {
-    "palette.css": "9aea7e16874b4359739aff722bab168370a70dd8c6d691455eb512aec4337342",
+    "palette.css": "aa7d5f0681bda906adca851beb8d2166683fdfdbab60ada410cccdd50b5ebfd5",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "5ff5dbe3fdd02f3acd0a57055fff3c1507c2ec1478134f7acccc4e88278a076c"
+    "assets.json": "552732f28b6a5e3d5e546f359d688c5ff4688152b905920a086e4b035d5b696c"
   },
   "assets": [
     {
@@ -3974,6 +3974,214 @@
       "alpha": true,
       "source_sha256": "3db35fe696229f56858cfb687eb396facedb46be15ec9a0a564b9ba9a82c367b",
       "png_sha256": "26f7499ea00c99b660956654f7c8c45f64374cdd8014d95c7d1c965cc1bfcd4c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/contact-shadow.png",
+      "source": "src/armies/contact-shadow.svg",
+      "variant": null,
+      "logical": [
+        112,
+        20
+      ],
+      "pixels": [
+        224,
+        40
+      ],
+      "alpha": true,
+      "source_sha256": "bef1c9122dd329b65a82f77131fc8730cca9e813ee639ad267be506280c775f5",
+      "png_sha256": "9f8a6c46705bb7c46483413bea3d00e37b84cfaaefe12b014c2dd42562fc1a5b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-field-rim-eligible.png",
+      "source": "src/armies/rim-field.svg",
+      "variant": "rim-eligible",
+      "logical": [
+        116,
+        50
+      ],
+      "pixels": [
+        232,
+        100
+      ],
+      "alpha": true,
+      "source_sha256": "a238edc724604971c8e7e507ef7b0801d49c55f4779722b961d93bf6cf97152c",
+      "png_sha256": "459ffc601e62a8f44d27b9dae963d07cd8d9b0b1eb5787bb79aee7f25e6b9d88"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-field-rim-selected.png",
+      "source": "src/armies/rim-field.svg",
+      "variant": "rim-selected",
+      "logical": [
+        116,
+        50
+      ],
+      "pixels": [
+        232,
+        100
+      ],
+      "alpha": true,
+      "source_sha256": "a238edc724604971c8e7e507ef7b0801d49c55f4779722b961d93bf6cf97152c",
+      "png_sha256": "903971406ebd36ce3eee8b08acad3fddb53440c9eac1edc7c0d499faec445b2d"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-field-rim-pressed.png",
+      "source": "src/armies/rim-field.svg",
+      "variant": "rim-pressed",
+      "logical": [
+        116,
+        50
+      ],
+      "pixels": [
+        232,
+        100
+      ],
+      "alpha": true,
+      "source_sha256": "a238edc724604971c8e7e507ef7b0801d49c55f4779722b961d93bf6cf97152c",
+      "png_sha256": "2a760ef70dbd1c13d65b7fb2b222238c400c2ae46ea8789d181f6352e6a2e969"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-field-rim-ability.png",
+      "source": "src/armies/rim-field.svg",
+      "variant": "rim-ability",
+      "logical": [
+        116,
+        50
+      ],
+      "pixels": [
+        232,
+        100
+      ],
+      "alpha": true,
+      "source_sha256": "a238edc724604971c8e7e507ef7b0801d49c55f4779722b961d93bf6cf97152c",
+      "png_sha256": "2d6d0540982a4fc2d4ef602aab6a74aa2bd1809342e3a6cf4a02457d2b209a62"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-field-rim-moved.png",
+      "source": "src/armies/rim-field.svg",
+      "variant": "rim-moved",
+      "logical": [
+        116,
+        50
+      ],
+      "pixels": [
+        232,
+        100
+      ],
+      "alpha": true,
+      "source_sha256": "a238edc724604971c8e7e507ef7b0801d49c55f4779722b961d93bf6cf97152c",
+      "png_sha256": "b9764571613ada735d048e9698740bc9c08aab49e1d6918f18a376f87812a9fa"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-character-rim-eligible.png",
+      "source": "src/armies/rim-character.svg",
+      "variant": "rim-eligible",
+      "logical": [
+        44,
+        34
+      ],
+      "pixels": [
+        88,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "077e25bea3cd77f898deed1991a0a2ba4b87c4e6f8deb658dd5eaab6c0b4c8fb",
+      "png_sha256": "b7a196aff92f9a3c01a6e55199534a5fdfdae8c565153407da0db24ebd4ca4b1"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-character-rim-selected.png",
+      "source": "src/armies/rim-character.svg",
+      "variant": "rim-selected",
+      "logical": [
+        44,
+        34
+      ],
+      "pixels": [
+        88,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "077e25bea3cd77f898deed1991a0a2ba4b87c4e6f8deb658dd5eaab6c0b4c8fb",
+      "png_sha256": "78071ec93d519232d320d20fc2ec3c553fba4ea8715eee4b5a3d084b7609c6c7"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-character-rim-pressed.png",
+      "source": "src/armies/rim-character.svg",
+      "variant": "rim-pressed",
+      "logical": [
+        44,
+        34
+      ],
+      "pixels": [
+        88,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "077e25bea3cd77f898deed1991a0a2ba4b87c4e6f8deb658dd5eaab6c0b4c8fb",
+      "png_sha256": "82e4ec7aa03f5e2a6170afce12ce8fc7e43a56dae60690f0d54f52fd9b520945"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-character-rim-ability.png",
+      "source": "src/armies/rim-character.svg",
+      "variant": "rim-ability",
+      "logical": [
+        44,
+        34
+      ],
+      "pixels": [
+        88,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "077e25bea3cd77f898deed1991a0a2ba4b87c4e6f8deb658dd5eaab6c0b4c8fb",
+      "png_sha256": "10ea55574f71645d5cc9f4b374086fbe8065b815d9976fe5e6b791f75c909776"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-character-rim-moved.png",
+      "source": "src/armies/rim-character.svg",
+      "variant": "rim-moved",
+      "logical": [
+        44,
+        34
+      ],
+      "pixels": [
+        88,
+        68
+      ],
+      "alpha": true,
+      "source_sha256": "077e25bea3cd77f898deed1991a0a2ba4b87c4e6f8deb658dd5eaab6c0b4c8fb",
+      "png_sha256": "0cfb20f3efc86a2bec99609eea777a25ff0c68ce5468d99ad4a0a15627e11060"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/landing-mark-landing-move.png",
+      "source": "src/armies/landing-mark.svg",
+      "variant": "landing-move",
+      "logical": [
+        112,
+        36
+      ],
+      "pixels": [
+        224,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "fc70940d9efb884e86064fd4c0535c8de56e3cf8dced7afe2c4c2cd1c753c58c",
+      "png_sha256": "025e0cd3fc4eecce52f2d0e3d3762a0bc4e447134ba3dc63a0ee025a12562db8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/landing-mark-landing-attack.png",
+      "source": "src/armies/landing-mark.svg",
+      "variant": "landing-attack",
+      "logical": [
+        112,
+        36
+      ],
+      "pixels": [
+        224,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "fc70940d9efb884e86064fd4c0535c8de56e3cf8dced7afe2c4c2cd1c753c58c",
+      "png_sha256": "6f62f429c7e6db72df1e29180d958c704b6b4a8c057edb571516df1abb5d2fa4"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/actions/back.png",

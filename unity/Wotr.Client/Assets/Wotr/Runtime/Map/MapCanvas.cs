@@ -769,7 +769,7 @@ namespace Wotr.Client
         private Marker CreateMarker(ArmyMarker army)
         {
             var regionId = army.RegionId;
-            var button = new Button(() => ArmySelected?.Invoke(MarkerToken(army)));
+            var button = new MiniatureButton(() => ArmySelected?.Invoke(MarkerToken(army)));
             button.name = "army-" + regionId + "-" + army.Side + (army.Garrison ? "-garrison" : "");
             button.userData = MarkerToken(army);
             button.AddToClassList("army");

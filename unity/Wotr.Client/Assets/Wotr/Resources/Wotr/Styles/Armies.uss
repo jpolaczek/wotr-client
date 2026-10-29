@@ -15,8 +15,8 @@
 }
 /* UI-185: about 30% larger than UI-126, UI-192: about 15% larger again; MapArmyArtwork.Size gives the same sizes to
    the map's placement. */
-.army.army-figures { width: 116px; height: 84px; }
-.army.army-figures.garrison { height: 90px; }
+.army.army-figures { width: 116px; height: 92px; }
+.army.army-figures.garrison { height: 96px; }
 .army.army-token { width: 44px; height: 44px; }
 .army.army-token.garrison { height: 48px; }
 .army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
@@ -51,23 +51,58 @@
 .motion-enabled .army.army-shrinking .army-artwork { transition-duration: 0.25s; }
 .army-artwork .army-part-unused { display: none; }
 .army-plinth { position: absolute; left: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
-.army-figures .army-plinth { height: 32px; }
-.army-figures.garrison .army-plinth { height: 42px; }
+.army-figures .army-plinth { display: none; }
 .army-token .army-plinth { top: 0; height: auto; }
 
-.army-silhouette { position: absolute; top: 6px; width: 50px; height: 60px; }
-.army-figures.garrison .army-silhouette { top: 5px; }
+/* UI-400 (TABLETOP_FIGURES_UX): the miniature's table — a contact shadow a little down and right (light from the upper
+   left), the painted stand (Codex art, graphicalassets/stands) and the state rim round it. Figures stand on the stand's
+   top face; MapArmyArtwork sizes and places them (their boxes are their painted cells, so the feet are the bottom edge). */
+.army-contact-shadow, .army-stand, .army-rim, .army-plaque { position: absolute; display: none; }
+.army-figures .army-contact-shadow, .army-figures .army-stand, .army-figures .army-plaque { display: flex; }
+.army-contact-shadow {
+    left: 8px;
+    right: 0;
+    bottom: 0;
+    height: 18px;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.army-stand { left: 2px; right: 2px; bottom: 3px; height: 44px; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures.garrison .army-stand { height: 48px; }
+.army-figures.field-force.fp .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-field-free"); }
+.army-figures.field-force.sh .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-field-shadow"); }
+.army-figures.garrison.fp .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-garrison-free"); }
+.army-figures.garrison.sh .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-garrison-shadow"); }
+.army.illustrated-army:hover .army-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
+/* The state is a rim round the stand; later states win: moved, owner, eligible, selected, pressed. */
+.army-rim { left: 0; right: 0; bottom: 0; height: 50px; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures.garrison .army-rim { height: 54px; }
+.army.army-figures.moved .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-moved"); }
+.army.army-figures.ability-owner .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-ability"); }
+.army.army-figures.eligible-army .army-rim,
+.army.army-figures.sovereign-target .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-eligible"); }
+.army.army-figures.selected-force .army-rim,
+.army.army-figures.armed-force .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-selected"); }
+.army.army-figures.pressed .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-pressed"); }
+/* The nation emblems and the count are a code-drawn plaque on the stand's front. */
+.army-plaque {
+    left: 24px;
+    right: 24px;
+    bottom: 5px;
+    height: 19px;
+    border-width: 1px;
+    border-radius: 9px;
+    border-color: rgb(196, 154, 69);
+    background-color: rgba(22, 16, 10, 0.86);
+}
+
+.army-silhouette { position: absolute; }
 .army-token .army-silhouette { display: none; }
-.army-silhouette-shadow { position: absolute; top: 7.5px; width: 50px; height: 60px; }
-.army-figures.garrison .army-silhouette-shadow { top: 6.5px; }
-.army-token .army-silhouette-shadow { display: none; }
 
 .army-emblems { position: absolute; flex-direction: row; align-items: center; }
 .army-emblem { width: 15px; height: 15px; margin: 0 2px 0 0; -unity-background-scale-mode: scale-to-fit; }
 .army-more-nations { margin: 0; padding: 0; font-size: 12px; -unity-font-style: bold; color: rgb(247, 236, 209); }
-.army-figures .army-emblems { left: 12px; bottom: 5px; height: 15px; }
-.army-figures.garrison .army-emblems { bottom: 8px; height: 17px; }
-.army-figures.garrison .army-emblem { width: 17px; height: 17px; }
+.army-figures .army-emblems { left: 29px; bottom: 7px; height: 15px; }
 .army-token .army-emblems { left: 7px; top: 8px; }
 .army-token.garrison .army-emblems { top: 11px; }
 .army-token .army-emblem { width: 16px; height: 16px; margin: 0; }
@@ -87,7 +122,7 @@
     color: rgb(247, 236, 209);
     background-color: rgba(25, 23, 22, 0.94);
 }
-.army-figures.garrison .army-count { bottom: 8px; }
+.army-figures .army-count { right: 27px; bottom: 6px; min-width: 18px; height: 17px; padding: 0 4px; font-size: 13px; border-radius: 8px; }
 .army-token .army-count { right: 0; bottom: 0; min-width: 17px; height: 19px; padding: 0 3px; font-size: 14px; border-radius: 9px; }
 /* TYPO-01's Alegreya sets a taller line: the token's count has a fixed height, so it stays clear of the emblem. */
 
@@ -132,6 +167,8 @@
     background-color: rgba(120, 88, 24, 0.55);
 }
 .army-token > .army-choice-glow { border-radius: 27px; }
+/* UI-400: round a miniature the halo is a capsule round its stand, so the figures stand above it, not on a plate. */
+.army-figures > .army-choice-glow { top: 40px; bottom: -4px; left: -6px; right: -6px; border-radius: 30px; }
 .army.eligible-army > .army-choice-glow,
 .army.ability-owner > .army-choice-glow { display: flex; }
 .army.eligible-army.selected-force > .army-choice-glow,

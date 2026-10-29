@@ -116,6 +116,12 @@
   --crown-dark: #5e4d2c;
   --crown-stone: #5a2a22;
 
+  /* UI-400: a miniature base's state rim (rim-eligible, rim-selected, rim-pressed, rim-ability) and the veil of a base
+     that already moved (rim-moved); UI-403: the landing mark of a lifted figure (landing-move, landing-attack). */
+  --rim-color: #ffd06a;
+  --rim-opacity: 0;
+  --rim-veil-opacity: 0;
+
   /* Hover glow, hidden unless a variant enables it. */
   --glow-opacity: 0;
 }

@@ -620,6 +620,31 @@
       "--gilt-mid": "#c49a45",
       "--gilt-shadow": "#83601f",
       "--glow-opacity": "1"
+    },
+    "rim-eligible": {
+      "--rim-color": "#90cbac",
+      "--rim-opacity": "1"
+    },
+    "rim-selected": {
+      "--rim-color": "#ffd06a",
+      "--rim-opacity": "1"
+    },
+    "rim-pressed": {
+      "--rim-color": "#a5853f",
+      "--rim-opacity": "0.85"
+    },
+    "rim-ability": {
+      "--rim-color": "#f0a640",
+      "--rim-opacity": "1"
+    },
+    "rim-moved": {
+      "--rim-veil-opacity": "0.45"
+    },
+    "landing-move": {
+      "--rim-color": "#90cbac"
+    },
+    "landing-attack": {
+      "--rim-color": "#e0573f"
     }
   },
   "assets": [
@@ -1403,6 +1428,43 @@
       "variants": [
         "filled"
       ]
+    },
+    {
+      "source": "armies/contact-shadow.svg",
+      "role": "UI-400: the contact shadow under a miniature's base; it stays on the table when the figure lifts."
+    },
+    {
+      "source": "armies/rim-field.svg",
+      "role": "UI-400: the state rim round a field or garrison base (eligible, selected, pressed, ability) and the veil of a moved one.",
+      "variants": [
+        "rim-eligible",
+        "rim-selected",
+        "rim-pressed",
+        "rim-ability",
+        "rim-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/rim-character.svg",
+      "role": "UI-400: the state rim round a character's round base, as rim-field.",
+      "variants": [
+        "rim-eligible",
+        "rim-selected",
+        "rim-pressed",
+        "rim-ability",
+        "rim-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/landing-mark.svg",
+      "role": "UI-403: where a lifted figure would land on a hovered legal target: green for a move, red for an attack.",
+      "variants": [
+        "landing-move",
+        "landing-attack"
+      ],
+      "base": false
     },
     {
       "source": "actions/back.svg",
