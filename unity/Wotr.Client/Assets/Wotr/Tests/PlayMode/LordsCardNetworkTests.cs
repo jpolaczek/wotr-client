@@ -97,6 +97,15 @@ namespace Wotr.PlayTests
                 // UI-347 (D7): Finish is the console's Pass, not a button.
                 Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.finish"));
                 Assert.AreEqual("Pass · Finish without inspecting the Shadow hand", client.Board.Console.Actions.Pass.tooltip);
+                // UI-418 (owner): one lit button named after the card, saying what it does; no committed card beside it.
+                var option = client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.inspect-hand");
+                Assert.AreEqual("Wind from the West", option.text);
+                Assert.IsTrue(option.ClassListContains(ChoiceGlow.ClassName), "It glows.");
+                StringAssert.StartsWith("Inspect Shadow hand", option.tooltip);
+                var shown = client.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList()
+                    .Where(button => button.resolvedStyle.display == DisplayStyle.Flex).ToList();
+                Assert.IsEmpty(shown, "The card's committed button leaves the trail: " +
+                    string.Join(", ", shown.Select(button => button.text + " (" + button.userData + ")")) + " · decision " + client.Board.View.Decision.SourceId);
                 await room.Direct(client, "effect-choice-wind.inspect-hand");
                 Assert.AreEqual(InspectedHand.Presentation, client.Board.View.Decision.Presentation);
                 await CardGestures.Open(client);

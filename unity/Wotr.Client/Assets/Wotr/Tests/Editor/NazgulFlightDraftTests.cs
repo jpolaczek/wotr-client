@@ -43,6 +43,29 @@ namespace Wotr.EditorTests
             return draft;
         }
 
+        // UI-416 (owner): the console names the figures that move by what they are, and a planned character keeps its own
+        // figure on the map; the Balrog's move was named and drawn as a Nazgûl's.
+        [Test]
+        public void TheSummaryAndTheGhostShowTheFiguresThatMove()
+        {
+            var view = View();
+            var draft = Draft();
+            var data = BoardPresentation.Load();
+            StringAssert.StartsWith("Keep the Witch-king and 3 Nazgûl in place ·", FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "mordor"));
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "moria"));
+            StringAssert.StartsWith("Move a Nazgûl ·", FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "witch-king"));
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "angmar"));
+            StringAssert.StartsWith("Move the Witch-king and a Nazgûl ·", FellowshipSummary.Describe(draft, view, new ActionPreview(), data));
+            var map = new MapCanvas(data);
+            map.PlannedFlights.Apply(NazgulFlightDraft.Planned(view, draft), Side.Shadow, false);
+            var witchKing = map.Q<Button>("planned-flight-angmar").Query<Image>().ToList().First(image => image.sprite != null);
+            StringAssert.Contains("witch-king", witchKing.sprite.name, "The Witch-king's planned move shows his own figure.");
+            var nazgul = map.Q<Button>("planned-flight-moria").Query<Image>().ToList().First(image => image.sprite != null);
+            StringAssert.Contains("nazgul", nazgul.sprite.name);
+        }
+
         [Test]
         public void OneArmedStackFliesItsNazgulOneByOneAndTheWitchKingOnlyWhenArmedHimself()
         {

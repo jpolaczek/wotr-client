@@ -35,6 +35,8 @@ namespace Wotr.Client
         public event Action<bool> LegalChanged;
         public bool Legal { get; private set; }
         public event Action Cancel;
+        // UI-419: the battle window's Skip effect, the console's Pass.
+        public event Action Skip;
         private Button confirm;
         private Label status;
         private string layoutKey;
@@ -281,8 +283,9 @@ namespace Wotr.Client
                 PlayerSide(footer, view);
             }
             // UI-396 (owner): a Combat card's replacement is skipped in the battle window too, as with the console's Pass.
-            if (CombatReplacementChoice.Skippable(view))
-                footer.Add(KeepCardEffects(draft, option));
+            // UI-419 (owner): so is every optional effect of a battle (Orderly Withdrawal's −1): one Skip effect.
+            if (view.Battle != null && OptionalDecline.Option(view, draft) is { Enabled: true })
+                footer.Add(SkipEffect(view, draft));
             if (!ContextualHunt && !CompanionSetupPresentation.Setup(view) && !ResourcePresentation.PoolDecision(view) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
@@ -323,12 +326,12 @@ namespace Wotr.Client
             root.Add(footer);
         }
 
-        private Button KeepCardEffects(TurnDraft draft, ActionOption option)
+        // UI-419 (owner): the battle window's Pass reads as a skip; its tooltip names the effect it skips.
+        private Button SkipEffect(PlayerView view, TurnDraft draft)
         {
-            var button = BoardScreen.Button("Keep card effects",
-                () => ChoiceCompleted?.Invoke(() => CardDraft.Choose(draft, option, CombatReplacementChoice.Keep)));
-            button.name = "battle-keep-card-effects";
-            button.tooltip = "Fight on as usual: your Combat card keeps its effects and the ability stays unused this round.";
+            var button = BoardScreen.Button("Skip effect", () => Skip?.Invoke());
+            button.name = "battle-skip-effect";
+            button.tooltip = OptionalDecline.SkipTooltip(view, draft);
             return button;
         }
 

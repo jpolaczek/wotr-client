@@ -17,6 +17,7 @@ namespace Wotr.Client
             var groups = view.EffectTrail.Where(item => units.ContainsKey(item.ChoiceId) && data.Regions.ContainsKey(item.TargetId))
                 .GroupBy(item => (item.SourceId, item.TargetId)).ToDictionary(group => group.Key, group => group.ToList());
             var displayed = new HashSet<(string SourceId, string TargetId)>();
+            var sources = new Dictionary<string, Button>();
             var trail = BoardScreen.Row("effect-trail");
             root.Add(trail);
             foreach (var item in view.EffectTrail)
@@ -28,7 +29,7 @@ namespace Wotr.Client
                         AddFigures(trail, group, units, data, inspect);
                 }
                 else
-                    AddChoice(trail, item, view, data, inspect);
+                    AddChoice(trail, sources, item, view, data, inspect);
             }
         }
 
@@ -47,15 +48,31 @@ namespace Wotr.Client
             step.tooltip = details + "\n" + step.tooltip;
         }
 
-        private static void AddChoice(VisualElement trail, EffectTrailView item, PlayerView view,
+        // UI-417 (owner): an option of the card's effect (A Balrog is Come!'s "alone") names no object, so it joins its card's
+        // button ("✓ A Balrog is Come! · Balrog alone"); two buttons opened the same card. A chosen region, figure or die
+        // keeps its own button.
+        private static void AddChoice(VisualElement trail, Dictionary<string, Button> sources, EffectTrailView item, PlayerView view,
             BoardPresentation data, Action<string> inspect)
         {
-            var label = item.ChoiceId.Length > 0 ? CardChoices.ChoiceName(view, data, item.ChoiceId)
-                : CardLibrary.Cards.ContainsKey(item.SourceId) ? CardLibrary.Title(item.SourceId) : CharacterLibrary.Name(view, item.SourceId);
+            var source = Source(view, item.SourceId);
+            var label = item.ChoiceId.Length > 0 ? CardChoices.ChoiceName(view, data, item.ChoiceId) : source;
             if (item.ChoiceId != item.TargetId && data.Regions.TryGetValue(item.TargetId, out var region))
                 label += " → " + region.Name;
-            Add(trail, item.SourceId, label, inspect);
+            var option = item.ChoiceId.Length > 0 && !CardChoices.NamesObject(view, data, item.ChoiceId);
+            if (option && sources.TryGetValue(item.SourceId, out var button))
+            {
+                button.text += " · " + label;
+                button.tooltip = button.text.Substring(2) + "\n" + button.tooltip.Split('\n').Last();
+                return;
+            }
+            var text = option ? source + " · " + label : label;
+            var added = Add(trail, item.SourceId, text, inspect);
+            if (item.ChoiceId.Length == 0 || option)
+                sources[item.SourceId] = added;
         }
+
+        private static string Source(PlayerView view, string id) =>
+            CardLibrary.Cards.ContainsKey(id) ? CardLibrary.Title(id) : CharacterLibrary.Name(view, id);
 
         private static Button Add(VisualElement trail, string sourceId, string label, Action<string> inspect)
         {
@@ -66,6 +83,7 @@ namespace Wotr.Client
                     inspect(sourceId);
             });
             step.AddToClassList("committed-choice");
+            step.userData = sourceId;
             step.tooltip = cardSource ? "Committed · Inspect source" : "Committed";
             trail.Add(step);
             return step;

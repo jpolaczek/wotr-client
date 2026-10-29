@@ -38,15 +38,21 @@ namespace Wotr.PlayTests
                 Assert.IsNotNull(pip, "The −1 stands on the Shadow's hits.");
                 Assert.IsTrue(pip.ClassListContains(ChoiceGlow.ClassName));
                 StringAssert.StartsWith("Cancel hit · withdraw", pip.tooltip);
+                // UI-419 (owner): the −1 pulses, and Skip effect in the battle window names what it skips.
+                await room.Until(() => pip.parent.ClassListContains(ChoiceGlow.PulseClass));
+                var skip = client.Board.Tray.Q<Button>("battle-skip-effect");
+                Assert.IsNotNull(skip, "Skip effect stands in the battle window.");
+                Assert.AreEqual("Skip effect", skip.text);
+                Assert.AreEqual("Skip Orderly Withdrawal · Keep the hit and fight on", skip.tooltip);
+                var revision = client.Board.View.Revision;
                 if (cancel)
                 {
                     await Layout(room, client, "orderly-withdrawal", "ui347");
-                    var revision = client.Board.View.Revision;
                     CardNetworkTests.Click(client.Board.Tray.Q<Button>("battle-hit-cancel-1"));
-                    await room.At(revision + 1);
                 }
                 else
-                    await room.Pass(client, KeepTheHit);
+                    CardNetworkTests.Click(skip);
+                await room.At(revision + 1);
                 Assert.AreNotEqual("CombatEffect", client.Board.View.Decision?.Presentation ?? "");
                 watch.NeverOpened();
             }

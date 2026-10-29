@@ -48,7 +48,7 @@ namespace Wotr.Client
             var card = CardTitle(view, view.You);
             var place = card == NoCard ? "your Combat card's place" : card;
             return "Click " + name + "'s arms beside " + place + " to use the ability" +
-                (Skippable(view) ? ", or Keep card effects to fight on as usual." : ".");
+                (Skippable(view) ? ", or Skip effect to fight on as usual." : ".");
         }
 
         // The choice is a chip, so the decision's lists leave it out.

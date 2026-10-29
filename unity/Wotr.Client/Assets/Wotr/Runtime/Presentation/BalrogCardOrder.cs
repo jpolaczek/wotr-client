@@ -17,6 +17,15 @@ namespace Wotr.Client
 
         public static bool Active(PlayerView view) => Option(view) != null;
 
+        // UI-417: the order's options as the console's trail names them.
+        public static string ChoiceName(string id) => id switch
+        {
+            Alone => "Balrog alone",
+            Army => "Balrog with his army",
+            OptionalDecline.BalrogFinish => "Finished without moving",
+            _ => null
+        };
+
         // Each lit figure and the choice its click makes.
         public static IReadOnlyDictionary<string, string> Figures(PlayerView view)
         {
@@ -49,8 +58,11 @@ namespace Wotr.Client
             var army = option.EligibleIds.Contains(Army);
             if (!alone && !army)
                 return "";
-            return "Click the Balrog's glowing region, then " + (alone ? "his figure to move him alone" : "") +
-                (alone && army ? " or " : "") + (army ? "a figure of his army to move it with him" : "") + ".";
+            // UI-417: the army's marker moves it with him; his figure in his region's panel moves him alone.
+            if (!army)
+                return "Click the Balrog's glowing army, then where he moves.";
+            return "Click the Balrog's glowing army to move it with him" +
+                (alone ? ", or his region and then his figure to move him alone" : "") + ".";
         }
 
         private static CharacterView Figure(PlayerView view) =>

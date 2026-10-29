@@ -70,6 +70,28 @@ namespace Wotr.Client
             };
         }
 
+        // UI-419 (owner): the battle window's Skip effect names the effect it skips and what skipping does: a Combat card
+        // replacement's ability (Red Wrath), a card's combat side in a battle (Orderly Withdrawal), otherwise its card.
+        public static string SkipTooltip(PlayerView view, TurnDraft draft)
+        {
+            var decline = Option(view, draft);
+            if (decline == null)
+                return "";
+            var skip = Skip(view, decline.Id);
+            return "Skip " + EffectName(view) + " · " + (skip.Length > 0 ? char.ToUpperInvariant(skip[0]) + skip.Substring(1) : decline.Tooltip);
+        }
+
+        private static string EffectName(PlayerView view)
+        {
+            if (CombatReplacementChoice.Chips(view).FirstOrDefault() is { } chip &&
+                CombatReplacementChoice.Ability(view, chip.SourceId) is { } ability)
+                return ability.Title;
+            var source = view?.Decision?.SourceId ?? "";
+            if (CardLibrary.Cards.TryGetValue(source, out var card))
+                return view.Battle != null && card.CombatTitle.Length > 0 ? card.CombatTitle : card.Title;
+            return "this effect";
+        }
+
         // The console's hint ends with what Pass does whenever it sends a decline.
         public static string Hint(PlayerView view, TurnDraft draft)
         {

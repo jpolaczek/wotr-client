@@ -116,7 +116,8 @@ namespace Wotr.Client
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
-            figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry);
+            figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry,
+                flights.Region);
             councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy);
             context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
                 cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
@@ -142,6 +143,7 @@ namespace Wotr.Client
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption, UsePalantir);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
                 ChooseDecline, ChooseComponent, ChooseRing, () => reinforcements.Planning);
+            tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             lore = new LoreInteraction(board, EditSelection, () => SelectionBusy);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
@@ -280,6 +282,9 @@ namespace Wotr.Client
                 board.Sovereigns.Click(king);
                 return;
             }
+            // UI-417: the Balrog's lit army moves with him on A Balrog is Come!.
+            if (figureAbilities.Army(army))
+                return;
             if (context.ArmyActive || view?.Decision?.Kind == DecisionKind.Action && !draft.Kind.HasValue)
             {
                 if (army.Side != view.You)

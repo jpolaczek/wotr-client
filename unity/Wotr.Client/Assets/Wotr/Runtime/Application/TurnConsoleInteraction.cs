@@ -221,7 +221,8 @@ namespace Wotr.Client
         private bool Allocating() => HuntActions.Allocation(view) is { } option && draft.Kind == CommandKind.AllocateHunt &&
             draft.Ready(option);
 
-        private void Pass()
+        // The console's Pass; UI-419: also the battle window's Skip effect.
+        public void Pass()
         {
             if (view == null || !idle)
                 return;

@@ -29,9 +29,10 @@ namespace Wotr.Client
 
         public IEnumerable<string> Regions => ghosts.Keys;
 
+        // UI-416 (owner): a planned character keeps its own figure (Marker); by nation and kind alone the Balrog's planned move
+        // showed a Nazgûl.
         public void Apply(IReadOnlyList<PlannedReinforcement> placements, Side side, bool interactive) =>
-            Apply(placements.GroupBy(p => p.RegionId).ToDictionary(g => g.Key,
-                g => ArmyMarker.From(g.Key, side, false, g.Select(p => (p.Nation, p.Kind)))), interactive);
+            Apply(placements.GroupBy(p => p.RegionId).ToDictionary(g => g.Key, g => Marker(g.Key, side, g.ToList())), interactive);
 
         // UI-294: ghosts of other figures, such as the companions a card's journey moves: one marker per region.
         public void Apply(IReadOnlyDictionary<string, ArmyMarker> markers, bool interactive)

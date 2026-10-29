@@ -159,7 +159,8 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 foreach (var choice in new[] { BalrogCardOrder.Alone, BalrogCardOrder.Army, OptionalDecline.BalrogFinish })
                     Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-" + choice), choice);
-                StringAssert.StartsWith("Click the Balrog's glowing region, then his figure", client.Board.Console.Status.Hint.text);
+                StringAssert.StartsWith("Click the Balrog's glowing army to move it with him, or his region and then his figure",
+                    client.Board.Console.Status.Hint.text);
                 StringAssert.EndsWith("Or Pass to finish without moving the Balrog.", client.Board.Console.Status.Hint.text);
                 var figure = await MapFigure(room, client, "moria", Balrog);
                 StringAssert.Contains(BalrogCardOrder.Offer(BalrogCardOrder.Alone), figure.tooltip);
@@ -172,20 +173,16 @@ namespace Wotr.PlayTests
                 var travel = client.Board.View.Options.Single(o => o.Kind == CommandKind.MoveShadowCharacters).Travel.Single();
                 var near = client.Board.Presentation.Regions["moria"].Neighbors;
                 var far = travel.Targets.First(r => r != "moria" && !near.Contains(r));
-                FellowshipGestures.Region(client, "moria");
-                await room.Settle();
+                // UI-417 (owner): his figure's click armed him: his destinations are lit without another click.
+                await room.Until(() => client.Board.Map.DraftOverlay.Targets.Contains(far));
                 Assert.That(client.Board.Console.Status.Hint.text, Does.Contain("move the armed Balrog"));
-                Assert.IsTrue(client.Board.Map.DraftOverlay.Targets.Contains(far));
+                var committed = client.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList();
+                Assert.AreEqual(1, committed.Count, "One committed button for the card.");
+                Assert.AreEqual("✓ A Balrog is Come! · Balrog alone", committed[0].text);
                 await Layout(room, client, "balrog-alone", "ui271");
-                FellowshipGestures.Destination(client, far);
-                await room.Settle();
-                Assert.IsTrue(client.Board.Map.PlannedFlights.Regions.Contains(far));
-                Assert.That(client.Board.Console.Status.Hint.text, Does.StartWith("Figures moved 1"));
-                // The console's ✓ sends the move; another click on the destination would only re-arm nothing.
-                var confirm = client.Board.Console.Actions.Confirm;
-                Assert.IsTrue(confirm.enabledSelf);
+                // His one destination's click sends the move: no ✓.
                 var revision = client.Board.View.Revision;
-                CardNetworkTests.Click(confirm);
+                FellowshipGestures.Destination(client, far);
                 await room.At(revision + 1);
                 Assert.AreEqual(far, room.Fp.Board.View.Characters.Single(c => c.Id == Balrog).Location);
                 watch.NeverOpened();
@@ -193,7 +190,8 @@ namespace Wotr.PlayTests
         }
 
         // UI-347 (D11): a figure of the army the Balrog stands with moves that army with him: the card's army step opens
-        // with that army's move already started and its panel open.
+        // with that army's move already started and its panel open. UI-417 (owner): the army's lit marker on the map does
+        // the same with one click.
         private static async Task BalrogArmy()
         {
             using (var room = await Connect("ui347-balrog", ScenarioKind.CardPack))
@@ -204,8 +202,10 @@ namespace Wotr.PlayTests
                 var unit = client.Board.View.Units.First(u => u.Location == "moria" && u.Side == Side.Shadow);
                 var figure = await PanelFigure(room, client, "moria", unit.Id);
                 StringAssert.Contains(BalrogCardOrder.Offer(BalrogCardOrder.Army), figure.tooltip);
+                client.Board.Hover.Close();
+                var marker = client.Board.Map.Q<Button>("army-moria-Shadow");
                 var revision = client.Board.View.Revision;
-                CardNetworkTests.Click(figure);
+                CardNetworkTests.Click(marker);
                 await room.At(revision + 1);
                 Assert.AreEqual(DecisionKind.ArmyEvent, client.Board.View.Decision.Kind);
                 await room.Until(() => client.Board.Hover.Panel.Root.Q<Button>("hover-figure-" + unit.Id)?.ClassListContains("selected") == true);

@@ -66,9 +66,12 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 StringAssert.Contains("Pass to keep your card's effects", client.Board.Console.Status.Hint.text);
                 // UI-396 (owner): the battle window skips the replacement too, from its footer.
-                StringAssert.Contains("or Keep card effects to fight on as usual", client.Board.Console.Status.Hint.text);
-                var skip = client.Board.Tray.Q<Button>("battle-keep-card-effects");
-                Assert.IsNotNull(skip, "Keep card effects stands in the battle window's footer.");
+                StringAssert.Contains("or Skip effect to fight on as usual", client.Board.Console.Status.Hint.text);
+                // UI-419 (owner): Skip effect stands in the battle window's footer and names what it skips.
+                var skip = client.Board.Tray.Q<Button>("battle-skip-effect");
+                Assert.IsNotNull(skip, "Skip effect stands in the battle window's footer.");
+                Assert.AreEqual("Skip effect", skip.text);
+                StringAssert.StartsWith("Skip Heir of Bard · Keep your card's effects", skip.tooltip);
                 var revision = client.Board.View.Revision;
                 CardNetworkTests.Click(skip);
                 await room.At(revision + 1);

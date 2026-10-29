@@ -1891,3 +1891,28 @@ Owner requests and reports from the Kings and Lords test scenarios:
   control keeps its place; no information was added or removed (`Frontend.uss`, `WaitingRoom.uss`, Settings in
   `Wotr.uss`). Tests: `MainMenuLayoutTests` (four layouts, the audience line now 48 points), `TestScenarioNetworkTests`,
   `MainMenuNetworkTests`, `InterfaceSettingsTests`.
+
+## A move shows its own figure; A Balrog is Come! in fewer clicks — UI-416 and UI-417 (2026-10-29)
+
+- UI-416 (owner) — a planned move shows and names the figure that moves: the map's planned-figure ghosts keep a
+  character's own figure (`MapPlannedRecruits` used only nation and kind, so the Balrog's planned move showed a
+  Nazgûl), and a card's character move names its figures in the console ("Move the Balrog", "Keep the Witch-king and
+  3 Nazgûl in place") instead of "Nazgûl". Test: `NazgulFlightDraftTests.TheSummaryAndTheGhostShowTheFiguresThatMove`.
+- UI-417 (owner) — A Balrog is Come! in fewer clicks: a click on the Balrog's glowing army moves that army with him at
+  once (the card's army step opens with it chosen, UI-347); his figure in his region's panel moves him alone with him
+  already armed, so the next click is his destination; a card's move of one figure sends with its destination's click
+  (no ✓), as any complete final click does. Pass still finishes the card. The console's trail shows one committed
+  button per card: an option of its effect joins the card's button ("✓ A Balrog is Come! · Balrog alone"); a chosen
+  region, figure or die keeps its own. Tests: `LordsCharacterNetworkTests`, `EffectTrailTests`.
+
+## One button for a card's one option; the battle window's choices pulse and skip — UI-418 and UI-419 (2026-10-29)
+
+- UI-418 (owner) — a card decision with one option besides its decline (the console's Pass) shows one button, named
+  after the card (Wind from the West), lit and pulsing, whose tooltip says what it does ("Inspect Shadow hand · …"); the
+  console's trail leaves out that card's committed button, which said the same. A single reaction response is lit too.
+  Tests: `CardConsoleOptionsTests`, the Lords Wind from the West scenario.
+- UI-419 (owner) — the battle window's clickable pips (the −1 that cancels a hit, Heroic Death's amounts) glow brighter
+  and pulse in the shared rhythm. Every optional effect of a battle can be skipped in the battle window: Skip effect
+  stands in its footer whenever the console's Pass sends a decline, and its tooltip names the effect it skips and what
+  that does ("Skip Orderly Withdrawal · Keep the hit and fight on", "Skip Heir of Bard · Keep your card's effects"). It
+  replaces UI-396's Keep card effects. Tests: `KingsDecisionNetworkTests`, `KingsCards02Tests`.

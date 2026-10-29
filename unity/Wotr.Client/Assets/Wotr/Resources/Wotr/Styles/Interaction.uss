@@ -238,12 +238,19 @@
     -unity-text-align: middle-center;
 }
 #board-screen .battle-choice-pip:disabled { opacity: 0.45; }
+/* UI-419 (owner): a pip a click may choose glows brighter (a thick gold rim on a warm plate, light text) and pulses: it
+   grows a little and its rim fades in the shared rhythm (BattleDiceStrip runs the pulse on its row). */
 #board-screen .battle-choice-pip.choice-glow {
-    border-width: 2px;
-    border-color: rgb(255, 214, 112);
-    background-color: rgba(120, 88, 24, 0.9);
+    border-width: 3px;
+    border-color: rgb(255, 222, 128);
+    background-color: rgb(150, 110, 32);
+    color: rgb(255, 244, 214);
 }
-.motion-enabled #board-screen .choice-glow-pulse .battle-choice-pip.choice-glow { border-color: rgba(255, 214, 112, 0.45); }
+.motion-enabled #board-screen .choice-glow-pulse .battle-choice-pip.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(96, 70, 22, 0.9);
+    scale: 1.1 1.1;
+}
 #board-screen .battle-choice-pip.selected {
     border-color: rgb(255, 236, 170);
     background-color: rgb(214, 170, 70);

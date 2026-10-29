@@ -97,6 +97,13 @@ namespace Wotr.EditorTests
                 new EffectChoiceView { Id = "wind.inspect-hand", Title = "Inspect Shadow hand" },
                 new EffectChoiceView { Id = OptionalDecline.WindFinish, Title = "Finish" });
             CollectionAssert.AreEqual(new[] { "effect-choice-wind.inspect-hand" }, CardConsoleOptions.For(empty, draft).Select(o => o.Name));
+            // UI-418 (owner): the one option is the card's own lit button, its tooltip saying what it does.
+            empty.Decision.SourceId = "lords.fp.character.27";
+            var single = CardConsoleOptions.For(empty, draft).Single();
+            Assert.IsTrue(single.Lit);
+            Assert.AreEqual("Wind from the West", single.Label);
+            StringAssert.StartsWith("Inspect Shadow hand", single.Tooltip);
+            Assert.AreEqual("lords.fp.character.27", single.SourceId);
             Assert.AreEqual(OptionalDecline.WindFinish, OptionalDecline.Option(empty, draft).Id);
             Assert.IsNull(OptionalDecline.Option(table, draft), "With table cards Wind offers no Finish.");
         }

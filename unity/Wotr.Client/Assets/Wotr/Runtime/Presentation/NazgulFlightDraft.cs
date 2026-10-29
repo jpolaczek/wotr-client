@@ -113,6 +113,21 @@ namespace Wotr.Client
             return nazgul ? "Every Nazgûl has flown · ✓ confirms." : "Every figure has moved · ✓ confirms.";
         }
 
+        // UI-416 (owner): figures by what they are: characters by name ("the Balrog"), other Nazgûl counted.
+        public static string Figures(PlayerView view, IEnumerable<string> ids)
+        {
+            var list = ids.ToList();
+            var names = list.Where(id => Character(view, id)).Select(id => "the " + CharacterLibrary.ShortName(view, id)).ToList();
+            var nazgul = list.Count(id => !Character(view, id));
+            if (nazgul > 0)
+                names.Add(nazgul == 1 ? "a Nazgûl" : nazgul + " Nazgûl");
+            return names.Count <= 1 ? names.FirstOrDefault() ?? "" : string.Join(", ", names.Take(names.Count - 1)) + " and " + names.Last();
+        }
+
+        // Every figure the card's move may move, moved or not.
+        public static IEnumerable<string> Offered(PlayerView view, TurnDraft draft) =>
+            (DraftOptions.For(view, draft)?.Travel ?? new List<TravelOption>()).Select(t => t.Id);
+
         private static string Name(PlayerView view, string id) => Character(view, id) ? CharacterLibrary.ShortName(view, id) : "Nazgûl";
 
         // A card that moves only Nazgûl (the Witch-king among them) speaks of Nazgûl; one that moves other Minions, of figures.

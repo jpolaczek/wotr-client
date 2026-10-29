@@ -75,7 +75,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(BalrogCardOrder.Army, figures["orc-1"]);
             Assert.IsFalse(figures.ContainsKey("orc-2"), "Only the army he stands with.");
             Assert.AreEqual("moria", BalrogCardOrder.Region(view));
-            Assert.AreEqual("Click the Balrog's glowing region, then his figure to move him alone or a figure of his army to move it with him.",
+            Assert.AreEqual("Click the Balrog's glowing army to move it with him, or his region and then his figure to move him alone.",
                 BalrogCardOrder.Hint(view));
             Assert.AreEqual(OptionalDecline.BalrogFinish, OptionalDecline.Option(view, draft).Id);
             view.Options[0].EligibleIds.Remove(BalrogCardOrder.Army);
