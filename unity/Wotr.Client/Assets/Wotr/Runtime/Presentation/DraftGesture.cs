@@ -62,6 +62,9 @@ namespace Wotr.Client
         {
             if (source == null || target == null || view.Decision == null)
                 return false;
+            // UI-393: a reserve figure dropped on a settlement's army marker is dropped on that settlement.
+            if (source.Object == DraftObject.Reserve && target.Object == DraftObject.Army)
+                target = new DraftToken(DraftObject.Region, target.Id);
             if (source.Object == DraftObject.CouncilPortrait && target.Object == DraftObject.Region && draft.Kind == CommandKind.ChooseCouncilHomelands)
             {
                 var choice = DraftOptions.For(view, draft)?.CharacterActions.FirstOrDefault(c => c.CharacterId == source.Id);

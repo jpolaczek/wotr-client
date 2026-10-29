@@ -178,3 +178,44 @@
 .character-roster-line { flex-direction: row; align-items: center; height: 12px; }
 .character-roster-line > .character-status-icon { width: 11px; height: 11px; margin-right: 2px; }
 .character-roster-line > .character-roster-detail { flex-shrink: 1; min-width: 0; }
+
+/* UI-391 (owner): the third line of a roster row holds up to four 15-point ability icons, right-aligned away from the
+   portrait's level star, on a line of fixed height: the ability's picture on the small gilt frame, its text in the
+   tooltip; one usable now wears the shared gold rim and pulses with the roster. Title (17) + status line (12) + icons
+   (15) fill the row's 44 inner points. On a short
+   viewport (40-point rows) the icons take the status line's place; the row's tooltip keeps the state and region. The
+   selectors outrank the rows' (.character-roster-grid .action), so the icons keep their own size and frame. */
+.roster-abilities { flex-direction: row; justify-content: flex-end; height: 15px; min-height: 15px; margin: 0; }
+.short-viewport .character-roster-text > .character-roster-line { display: none; }
+#board-screen .character-roster-grid .roster-abilities > .action.roster-ability,
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability,
+#board-screen.short-viewport .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability {
+    width: 15px;
+    min-width: 15px;
+    height: 15px;
+    min-height: 15px;
+    padding: 0;
+    margin: 0 0 0 2px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frames/button-square");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
+    -unity-slice-scale: 0.25px;
+    border-width: 0;
+    border-radius: 0;
+}
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability:hover,
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability:focus {
+    background-image: resource("Wotr/Art/UI/frames/button-square-hover");
+}
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities > .action.roster-ability.choice-glow {
+    border-width: 1px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.75);
+}
+.roster-abilities > .roster-ability > .icon-glyph { width: 12px; height: 12px; max-width: 12px; max-height: 12px; }

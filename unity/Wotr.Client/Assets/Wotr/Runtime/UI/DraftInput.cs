@@ -14,6 +14,11 @@ namespace Wotr.Client
         public VisualElement DragSource => dragging ? sourceElement : null;
         private readonly VisualElement root;
         private readonly Label ghost = new Label { pickingMode = PickingMode.Ignore };
+        // UI-393 (owner): a dragged reserve figure travels as its own icon, centred under the pointer, and its slot shows
+        // that it was lifted; other sources keep the label.
+        private readonly Image lifted = new Image { name = "drag-figure", pickingMode = PickingMode.Ignore, scaleMode = ScaleMode.ScaleToFit };
+        public const string LiftedClass = "drag-lifted";
+        private Vector2 liftedSize;
         private readonly Action confirm;
         private readonly Action back;
         private readonly Func<DraftToken, DraftToken, bool> drop;
@@ -42,6 +47,9 @@ namespace Wotr.Client
             ghost.AddToClassList("drag-ghost");
             ghost.style.display = DisplayStyle.None;
             root.Add(ghost);
+            lifted.AddToClassList("drag-figure");
+            lifted.style.display = DisplayStyle.None;
+            root.Add(lifted);
             root.RegisterCallback<PointerDownEvent>(Down, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerMoveEvent>(Move, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerUpEvent>(Up, TrickleDown.TrickleDown);
@@ -107,11 +115,14 @@ namespace Wotr.Client
                 DragChanged?.Invoke(source);
             }
             root.CapturePointer(pointer);
-            ghost.style.display = DisplayStyle.Flex;
-            ghost.text = source.Object == DraftObject.FellowshipPortrait ? "Companion" : source.Object.ToString();
             var local = root.WorldToLocal(evt.position);
-            ghost.style.left = local.x + 12;
-            ghost.style.top = local.y + 12;
+            if (!Lift(local))
+            {
+                ghost.style.display = DisplayStyle.Flex;
+                ghost.text = source.Object == DraftObject.FellowshipPortrait ? "Companion" : source.Object.ToString();
+                ghost.style.left = local.x + 12;
+                ghost.style.top = local.y + 12;
+            }
             evt.StopImmediatePropagation();
         }
 
@@ -157,6 +168,27 @@ namespace Wotr.Client
                 clicks.Complete();
                 ResetDrag();
             }
+        }
+
+        // UI-393: the figure's own art follows the pointer, a little larger, and its slot dims while it is away.
+        private bool Lift(Vector2 local)
+        {
+            var art = source.Object == DraftObject.Reserve ? sourceElement?.Q<Image>(className: "reserve-token-figure") : null;
+            if (art?.sprite == null)
+                return false;
+            if (lifted.style.display.value != DisplayStyle.Flex)
+            {
+                lifted.sprite = art.sprite;
+                liftedSize = art.worldBound.size * 1.15f;
+                lifted.style.width = liftedSize.x;
+                lifted.style.height = liftedSize.y;
+                lifted.style.display = DisplayStyle.Flex;
+                lifted.BringToFront();
+                sourceElement.AddToClassList(LiftedClass);
+            }
+            lifted.style.left = local.x - liftedSize.x / 2;
+            lifted.style.top = local.y - liftedSize.y / 2;
+            return true;
         }
 
         private static DraftToken Token(VisualElement element, Vector2? position = null)
@@ -263,6 +295,9 @@ namespace Wotr.Client
             pointer = -1;
             dragging = false;
             ghost.style.display = DisplayStyle.None;
+            lifted.style.display = DisplayStyle.None;
+            lifted.sprite = null;
+            pressed?.RemoveFromClassList(LiftedClass);
             // Releasing capture alone can defer Clickable's active-state reset until a
             // later event. Cancel the original press before another controller mounts.
             if (cancelPress && pressed?.panel != null && cancellation != null)

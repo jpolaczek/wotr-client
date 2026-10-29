@@ -1439,3 +1439,23 @@ Base-game parts of the owner's reports on the Kings branch (Ruler tokens, the Pa
   deck" and "Click a glowing deck beside your hand to draw its top card", the notice leads to the hand
   (`DecisionContext.Hand`; the docked hand shows its decks already, so the plaque has nothing to open), a floating
   hand drawer opens once for the step, and the source character keeps no Open decision link. Test: `DeckChoiceTests`.
+
+## Abilities on their rows, a lifted figure, equal battle sides — UI-391, UI-393, UI-394 (2026-10-29)
+
+Base-game parts of the owner's requests on the Kings branch:
+
+- UI-391 (owner) — a character's abilities are used straight from the Characters tab. The third line of each roster
+  row holds a 15-point line of small thematic icons, one per printed ability, right-aligned away from the portrait's
+  level star (`AbilityIcons`: a battle for a combat bonus, the Guide's crown, the Politics track, a muster, a move, a
+  card draw, the Hunt's eye or die, a Ring, the Balrog, Gollum, a level, a change of version, a bond to a place; the
+  scroll otherwise). The line keeps its height, so every row keeps its size; on a short viewport the icons take the
+  status line's place and the row's tooltip keeps the state and region. An icon's tooltip names the ability and its
+  text; an ability usable now glows and its click starts it as the chip's Click to use does (UI-369); two usable
+  actions (Saruman's Voice), or an ability not usable now, open the character's window with that ability unrolled
+  (`CharacterAbilityStrip`). Test: `CharacterAbilityStripTests`.
+- UI-393 (owner) — a reserve figure is dragged onto a lit settlement as its own icon: the pressed figure's art follows
+  the pointer, centred and a little larger, and its slot keeps only a faint trace while it is lifted; a drop on a
+  legal settlement (or on the army standing there) places it, a drop elsewhere returns it with no action (UI-113).
+  Test: `BoardInteractionTests` (every reserve drag).
+- UI-394 (owner) — the battle window's two sides keep one width in every step; a long figure choice wraps inside its
+  column (`docs/ui/BATTLE_WINDOW_UX.md`, UI-208). Test: `BattleLayoutTests.LossesAndRerollsStandOnTheDecidingPlayersSide`.

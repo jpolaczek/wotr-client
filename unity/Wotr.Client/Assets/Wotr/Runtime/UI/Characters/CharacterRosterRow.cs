@@ -6,9 +6,14 @@ namespace Wotr.Client
 {
     // UI-139: a roster row speaks in symbols: the portrait carries the level, the second line a status symbol and
     // the region or a short state; the row's tooltip reads the full state and statistics.
+    // UI-391: a third line holds the character's ability icons, inside the row, so every row keeps its size.
     internal sealed class CharacterRosterRow
     {
         public Button Root { get; }
+        public CharacterAbilityStrip Abilities { get; }
+        // The version the row shows: the next one for a character not in play, the current one otherwise.
+        public string Definition { get; private set; } = "";
+        public const string RowClass = "character-roster-row";
         private readonly Image portrait = new Image { pickingMode = PickingMode.Ignore, scaleMode = UnityEngine.ScaleMode.ScaleToFit };
         private readonly Label level = new Label { name = "character-roster-level", pickingMode = PickingMode.Ignore, enableRichText = false };
         private readonly Label title = new Label { name = "character-roster-title" };
@@ -28,6 +33,7 @@ namespace Wotr.Client
         {
             Root = BoardScreen.Button("", null);
             Root.name = "character-roster-" + id;
+            Root.AddToClassList(RowClass);
             // UI-108: a row of the Characters list, distinct from a figure on the map; its double-click enters it.
             Root.userData = new DraftToken(DraftObject.Character, id);
             portrait.AddToClassList("character-roster-portrait");
@@ -44,6 +50,8 @@ namespace Wotr.Client
             text.AddToClassList("character-roster-text");
             text.Add(title);
             text.Add(line);
+            Abilities = new CharacterAbilityStrip(id);
+            text.Add(Abilities.Root);
             Root.Add(portrait);
             Root.Add(text);
         }
@@ -53,6 +61,8 @@ namespace Wotr.Client
             var candidate = CharacterRosterPresentation.Section(entry) == CharacterRosterSection.NotInPlay
                 ? entry.FutureVersions.FirstOrDefault() : null;
             var definition = candidate?.DefinitionId ?? entry.CurrentDefinitionId;
+            Definition = definition;
+            Abilities.Apply(definition);
             title.text = CharacterLibrary.ShortName(definition);
             portrait.sprite = FigureArtwork.Sprite(FigureAppearances.Character(definition, entry.Side));
             portrait.EnableInClassList("free-peoples", entry.Side == Side.FreePeoples);

@@ -30,6 +30,14 @@ namespace Wotr.Client
             return button;
         }
 
+        // UI-391: the picture of an icon made by Picture changes without rebuilding the button.
+        public static void SetPicture(Button button, string resource)
+        {
+            var glyph = button.Q("icon-glyph");
+            if (glyph != null)
+                glyph.style.backgroundImage = Background(resource);
+        }
+
         public static void SetIcon(Button button, string icon)
         {
             var glyph = button.Q("icon-glyph");

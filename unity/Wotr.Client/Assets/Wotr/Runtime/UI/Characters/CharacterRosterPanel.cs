@@ -140,6 +140,7 @@ namespace Wotr.Client
                 row = new CharacterRosterRow(id);
                 rows.Add(id, row);
                 ObserveRow(row.Root, id);
+                ObserveAbilities(row, id);
             }
             var grid = sections[CharacterRosterPresentation.Section(entry)];
             if (row.Root.parent != grid)
@@ -155,17 +156,21 @@ namespace Wotr.Client
         public void RefreshSelection()
         {
             var offered = false;
+            var abilities = false;
             foreach (var row in rows)
             {
                 var chosen = row.Key == Actions.EnteringFigure;
                 var entry = Enterable(row.Key) && !chosen;
                 offered |= entry;
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
+                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
+                abilities |= row.Value.Abilities.Offered;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry);
                 row.Value.Choose(chosen);
             }
-            pulse.Run(offered);
+            // UI-391: a row's usable ability icon pulses with the roster.
+            pulse.Run(offered || abilities);
         }
 
         public void Attach(VisualElement tray, VisualElement dock) => Actions.Attach(tray, dock);
@@ -266,6 +271,17 @@ namespace Wotr.Client
                 Inspector.Root.style.left = left;
             if (Mathf.Abs(Inspector.Root.layout.y - top) > .25f)
                 Inspector.Root.style.top = top;
+        }
+
+        // UI-391: a usable ability's icon starts it, as Click to use does; another opens the window with that ability unrolled.
+        private void ObserveAbilities(CharacterRosterRow row, string id)
+        {
+            row.Abilities.Used += item => Actions.Use(item);
+            row.Abilities.Opened += ability =>
+            {
+                Show(id, true, row.Root);
+                Inspector.Abilities.Select(ability);
+            };
         }
 
         // A single click inspects, except when the row can be entered: its double-click must not flash the window.

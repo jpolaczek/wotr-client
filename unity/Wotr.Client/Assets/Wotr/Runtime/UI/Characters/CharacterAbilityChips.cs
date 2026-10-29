@@ -104,6 +104,15 @@ namespace Wotr.Client
             return all.Where(action => !printed.Contains(ChipOf(action))).ToList();
         }
 
+        // An expansion's command names the ability with its prefix ("kings.call-to-arms"); its chip has the printed id
+        // ("call-to-arms"). UI-391: the roster's icons map their actions the same way.
+        internal static string ChipOf(ComponentAction action, ISet<string> printed)
+        {
+            var chip = ChipOf(action);
+            var bare = chip.Substring(chip.IndexOf('.') + 1);
+            return printed.Contains(chip) || !printed.Contains(bare) ? chip : bare;
+        }
+
         // The chip a character action uses; entries and other actions have none.
         public static string ChipOf(ComponentAction action)
         {

@@ -877,6 +877,14 @@ namespace Wotr.PlayTests
         {
             BeginDrag(board, source);
             yield return null;
+            // UI-393 (owner): a reserve figure travels as its own icon, and its slot shows that it was lifted.
+            if (source.ClassListContains("reserve-token"))
+            {
+                var lifted = board.Root.Q<Image>("drag-figure");
+                Assert.AreEqual(DisplayStyle.Flex, lifted.style.display.value, "The figure's icon follows the pointer.");
+                Assert.AreSame(source.Q<Image>(className: "reserve-token-figure").sprite, lifted.sprite, "It is the pressed figure's own art.");
+                Assert.IsTrue(source.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
+            }
             var destination = MapContourProbe.Terrain(board.Map, region);
             Assert.AreSame(board.Map, board.Map.panel.Pick(destination));
             MapContourProbe.Drop(board, destination);
