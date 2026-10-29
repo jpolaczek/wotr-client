@@ -278,6 +278,8 @@ Camera and map area.
 <a id="ruch-kliknięciami-na-mapie--ui-105"></a>
 ## Move clicks on the map — UI-105
 
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
+
 Enter.
 - `DraftInput.Move` does not start drag for `DraftObject.Army`, `Figure` or `FellowshipPortrait`.
   Pressing and moving the indicator does not capture it and show no spirit.
@@ -492,6 +494,8 @@ User decisions with 2026-10-13 save [ARMY_MAP_UX](ARMY_MAP_UX.md) : armies alway
 
 <a id="jeden-przepływ-ruchu--ui-128"></a>
 ## One movement flow — UI-128
+
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
 
 The path inventory and justification of exceptions (the ruler's token, card with routes and rescues) is in [ARMY_MAP_UX](ARMY_MAP_UX.md), ‘implementation UI-128’. `DraftGesture.Drop` rejects armies, and `BoardDraft.Drop` only supports reserves; the dead army drag branch with UI-105 disappeared.
 

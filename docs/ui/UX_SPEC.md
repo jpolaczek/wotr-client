@@ -49,7 +49,8 @@ The output, focus change, object nullification or focus loss of the application 
 <a id="u04--armie-i-atak"></a>
 ## U04 — armies and attack
 
-Army → click your own army → illuminated targets → click the illuminated terrain; traffic is done immediately ( UI-105 : no drag figures and the army, no choice on the Characters list). From UI-127 click on your own army, which is a legal source, mark all of its figure can move and open the region panel; click figure in the panel it shows (dividing), another click of the same army retains division, and the two clicks again mark the whole. figures another region before the target replaces an unfinished selection. From UI-140 the power header in the region panel has a switch select/unselect all figure The following is the non-interactive spirit of the selected target. figures with the signature “Move n figures” or “Attack · mode” from the server option. The first Esc in the open region panel removes all unsent selection ( die stays), another one closes the panel. Click on the highlighted area selects the target, also with a busy friendly region.
+Army → click your own army → illuminated targets → click the illuminated terrain; traffic is done immediately ( UI-105 : no drag figures and the army, no choice on the Characters list; the drag part
+is superseded for units and characters by UI-421, see [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md)). From UI-127 click on your own army, which is a legal source, mark all of its figure can move and open the region panel; click figure in the panel it shows (dividing), another click of the same army retains division, and the two clicks again mark the whole. figures another region before the target replaces an unfinished selection. From UI-140 the power header in the region panel has a switch select/unselect all figure The following is the non-interactive spirit of the selected target. figures with the signature “Move n figures” or “Attack · mode” from the server option. The first Esc in the open region panel removes all unsent selection ( die stays), another one closes the panel. Click on the highlighted area selects the target, also with a busy friendly region.
 
 Two symbols of the march at dice show the budget. The first move executed is permanent on the server and irreversible locally. Then the second army and the second goal; the second march ends action automatically. ✓ with dice lets you finish one. figure it cannot move again, even after the merger. We only settle the transitional surplus and the political effects in the right final window of rules.
 
@@ -882,6 +883,8 @@ The 2026-10-15 application: each character has its own, nice graphics matching t
 
 <a id="ruch-wyłącznie-na-mapie--ui-105"></a>
 ## Movement exclusively on the map — UI-105
+
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
 
 The 2026-10-12 application: "Moving is only to be done on the map, click on the region, select selected units, characters, nudges etc. and select only by clicking the selected region, move is done immediately". Elections from the conversation: die first; the character's route with a range greater than 1 arranges the game.
 

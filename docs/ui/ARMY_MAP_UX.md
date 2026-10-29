@@ -38,7 +38,9 @@ The decisions of the user from this conversation:
   test server package in GitHub releases for client tests;
 - documentation, tasks and implementation in turn; no push.
 
-The REQUIREMENTS R08, R09, R15–R20, R22, R23, UX_SPEC U01, U04, U05, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) and the rule of pressing with [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md). Without changing the rules of the game, commands and Contracts. Army movement remains only clicks (UI-105); drag remains only for reserves (R16). The graphics do not contain text, digits or rules; numbers, legality and hitboxes belong to the code (R08).
+The REQUIREMENTS R08, R09, R15–R20, R22, R23, UX_SPEC U01, U04, U05, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) and the rule of pressing with [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md). Without changing the rules of the game, commands and Contracts. Army movement remains only clicks (UI-105); drag remains only for reserves (R16) — for units and characters superseded
+by UI-421 (2026-10-28), [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md): they are picked up and carried, a drop sending
+what the target click sends. The graphics do not contain text, digits or rules; numbers, legality and hitboxes belong to the code (R08).
 
 <a id="znaczniki-armii"></a>
 ## Army markers
