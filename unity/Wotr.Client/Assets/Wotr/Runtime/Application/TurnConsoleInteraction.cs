@@ -156,7 +156,7 @@ namespace Wotr.Client
 
         // UI-420 (owner): Finish names the action it ends.
         private string FinishTooltip() =>
-            "Finish · End " + DecisionTray.Label(view.ActionSequence.Kind) + " now; the steps already made stay";
+            "Finish · End the action now (" + DecisionTray.Label(view.ActionSequence.Kind) + "); the steps already made stay";
 
         private void Hint(string text, string detail)
         {

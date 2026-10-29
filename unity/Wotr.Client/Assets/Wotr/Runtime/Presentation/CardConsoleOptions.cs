@@ -194,9 +194,7 @@ namespace Wotr.Client
 
         private static ConsoleOption Response(EffectChoiceView choice)
         {
-            var source = choice.SourceId.Length > 0 ? choice.SourceId : choice.Id;
-            var name = source.Contains(".character.") && !CardLibrary.Cards.ContainsKey(source)
-                ? CharacterLibrary.Name(source) : CardLibrary.Title(source);
+            var name = ReactionSkip.Owner(choice);
             return new ConsoleOption
             {
                 Id = choice.Id,

@@ -128,7 +128,7 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "effect-choice-ability-0" }, options.Select(o => o.Name));
             CollectionAssert.AreEqual(new[] { ConsoleOptionKind.Reaction }, options.Select(o => o.Kind));
             StringAssert.StartsWith("Pass · Skip these responses:", ReactionSkip.Tooltip(view));
-            StringAssert.Contains("Gandalf the Grey's Draw · 0", ReactionSkip.Tooltip(view));
+            StringAssert.Contains("Draw · 0 (Gandalf the Grey)", ReactionSkip.Tooltip(view));
             Assert.IsFalse(WindowChoices(view, draft), "The card in hand answers with its preview's Use.");
         }
 

@@ -32,8 +32,7 @@ namespace Wotr.Client
             var chosen = ChosenLosses(draft, view);
             var hits = preview.Losses?.AppliedHits ?? BattleDraft.Damage(draft, view);
             return TooltipText.Parts(
-                "Apply losses" + LossRegion(draft, view, board),
-                chosen.Length == 0 ? "" : chosen + " (" + TooltipText.Count(hits, "hit") + ")",
+                (chosen.Length == 0 ? "Losses" : chosen) + LossRegion(draft, view, board) + " (" + TooltipText.Count(hits, "hit") + ")",
                 Replacement(draft, preview),
                 LostCommanders(view, preview));
         }
@@ -43,7 +42,7 @@ namespace Wotr.Client
             var id = draft.Kind == CommandKind.TakeEventLosses ? view.EventLoss?.RegionId : view.Battle?.RegionId;
             if (string.IsNullOrEmpty(id))
                 return "";
-            return " in " + (board == null ? FigureGrid.Name(id) : ActionCardText.Region(id, board));
+            return " in " + ActionCardText.Region(id, board);
         }
 
         // "Remove 1 Rohan Regular, downgrade 1 Rohan Elite", in the order of the choices.
@@ -55,8 +54,7 @@ namespace Wotr.Client
                 .GroupBy(pair => (Operation: pair.Loss.Kind, Nation: pair.Unit.Nation, Figure: pair.Unit.Kind))
                 .Select(group => Operation(group.Key.Operation) + " " + group.Count() + " " + TooltipText.Unit(group.Key.Nation, group.Key.Figure))
                 .ToList();
-            var text = string.Join(", ", groups);
-            return text.Length == 0 ? "" : char.ToUpperInvariant(text[0]) + text.Substring(1);
+            return TooltipText.Capital(string.Join(", ", groups));
         }
 
         private static string Operation(BattleLossKind kind) => kind == BattleLossKind.Downgrade ? "downgrade" : "remove";
@@ -85,13 +83,8 @@ namespace Wotr.Client
         {
             var allowed = view.Options.First(o => o.Kind == draft.Kind).Maximum;
             var chosen = draft.Payload.Ids.Count;
-            if (chosen == 0)
-                return "Keep roll · Accept your Combat roll (" + TooltipText.Count(OwnForce(view).Hits, "hit") + "); " + Unused(allowed);
-            var dice = chosen == 1 ? "1 failed die" : chosen + " failed dice";
-            return "Reroll selected · Roll " + dice + " again · " + chosen + " of " + allowed + " rerolls";
+            return chosen == 0 ? RerollChoiceText.Keep("Combat", OwnForce(view).Hits, allowed) : RerollChoiceText.Reroll(chosen, allowed);
         }
-
-        private static string Unused(int allowed) => allowed == 1 ? "do not use your reroll" : "use none of your " + allowed + " rerolls";
 
         private static BattleForceView OwnForce(PlayerView view) =>
             view.Battle.Attacker.Side == view.You ? view.Battle.Attacker : view.Battle.Defender;

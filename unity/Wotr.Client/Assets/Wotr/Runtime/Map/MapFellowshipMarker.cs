@@ -33,6 +33,7 @@ namespace Wotr.Client
         public event System.Action HideRequested;
         public const string HideClass = "fellowship-hide-target";
         public const string HideHint = FellowshipActions.HideTooltip;
+        private (string Region, bool Hidden, int Corruption, bool Declare, bool Move, bool Hide) shownTooltip;
         public bool HideOffered { get; private set; }
         // UI-236: in the Fellowship phase a click on the figure declares its position; the panel has no button for it.
         public event System.Action DeclareRequested;
@@ -191,6 +192,15 @@ namespace Wotr.Client
             if (!visible)
                 return;
             Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
+            RefreshRegionTooltip();
+        }
+
+        private void RefreshRegionTooltip()
+        {
+            var state = (regionId, hidden, corruptionLevel, DeclareOffered, MoveOffered, HideOffered);
+            if (shownTooltip == state)
+                return;
+            shownTooltip = state;
             marker.tooltip = TooltipText.Lines(RegionTooltip(hidden, corruptionLevel, map.Data.Regions[regionId].Name),
                 DeclareOffered ? DeclareHint : "", MoveOffered ? MoveHint : "", HideOffered ? HideHint : "");
         }

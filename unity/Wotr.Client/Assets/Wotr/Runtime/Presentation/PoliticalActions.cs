@@ -95,11 +95,7 @@ namespace Wotr.Client
 
         // UI-420 (owner): the arrow says what its click does and with what — the selected die, or the Council token.
         public static string AdvanceTooltip(ActionOption option, string nation) =>
-            "Click to move " + NationPhrase(nation) + " one step toward war with " +
+            "Click to move " + TooltipText.NationPhrase(nation) + " one step toward war with " +
             (option?.Kind == CommandKind.UseCouncilToken ? "the Council token" : "the selected die");
-
-        // "the Dwarves", "the Southrons & Easterlings", but "Gondor", "Rohan", "Isengard" and "Sauron".
-        public static string NationPhrase(string nation) =>
-            nation is "dwarves" or "elves" or "north" or "southrons" ? "the " + TooltipText.Nation(nation) : TooltipText.Nation(nation);
     }
 }

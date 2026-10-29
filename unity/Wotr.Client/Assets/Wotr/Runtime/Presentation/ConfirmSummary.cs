@@ -22,7 +22,7 @@ namespace Wotr.Client
         // "Rohan Elite → Edoras, 2 Gondor Regular → Minas Tirith".
         public static string Recruits(PlayerView view, TurnDraft draft, BoardPresentation board) =>
             string.Join(", ", draft.Payload.Placements.GroupBy(p => p.RegionId)
-                .Select(group => Units(view, group.Select(p => p.UnitId)) + " → " + Region(group.Key, board)));
+                .Select(group => Figures(view, group.Select(p => p.UnitId)) + " → " + ActionCardText.Region(group.Key, board)));
 
         // "Wind from the West: Inspect Shadow hand"; the source alone before anything is chosen.
         public static string Choices(PlayerView view, TurnDraft draft)
@@ -58,16 +58,20 @@ namespace Wotr.Client
         private static string Move(ArmyMoveChoice move, BoardPresentation board)
         {
             var figures = move.UnitIds.Count + move.CharacterIds.Count;
-            return Region(move.From, board) + " → " + Region(move.To, board) + " (" + TooltipText.Count(figures, "figure") + ")";
+            return ActionCardText.Region(move.From, board) + " → " + ActionCardText.Region(move.To, board) + " (" +
+                TooltipText.Count(figures, "figure") + ")";
         }
 
-        private static string Units(PlayerView view, IEnumerable<string> ids) => string.Join(", ", ids
-            .Select(id => view.Units.FirstOrDefault(u => u.Id == id))
-            .Where(unit => unit != null)
-            .GroupBy(unit => TooltipText.Unit(unit.Nation, unit.Kind))
+        // Units by nation and kind, a placed character by name.
+        private static string Figures(PlayerView view, IEnumerable<string> ids) => string.Join(", ", ids
+            .Select(id => Figure(view, id))
+            .GroupBy(name => name)
             .Select(group => group.Count() > 1 ? group.Count() + " " + group.Key : group.Key));
 
-        private static string Region(string id, BoardPresentation board) =>
-            board != null ? ActionCardText.Region(id, board) : FigureGrid.Name(id);
+        private static string Figure(PlayerView view, string id)
+        {
+            var unit = view.Units.FirstOrDefault(u => u.Id == id);
+            return unit != null ? TooltipText.Unit(unit.Nation, unit.Kind) : CharacterLibrary.Name(view, id);
+        }
     }
 }

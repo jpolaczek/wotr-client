@@ -13,8 +13,8 @@ namespace Wotr.Client
             {
                 case CommandKind.MoveFellowship:
                     return view.Fellowship.MordorStep.HasValue ? "Spend this die · Move the Fellowship · Draw and resolve a Hunt tile before advancing."
-                        : "Spend this die · Move the Fellowship · " + FellowshipActions.MoveEffect +
-                            (preview.HasUnknownResult ? " · Hunt result unknown." : " · No Hunt dice.");
+                        : "Spend this die · Move the Fellowship · Progress +1; its last known position stays · " +
+                            (preview.HasUnknownResult ? "Then the Hunt; its result is unknown." : "No Hunt roll: the Hunt Box is empty.");
                 case CommandKind.HideFellowship:
                     return "Spend this die · Hide the Fellowship at its current position.";
                 case CommandKind.EnterMordor:
@@ -75,16 +75,14 @@ namespace Wotr.Client
         private static string Join(IReadOnlyList<string> names) => names.Count <= 1 ? names.FirstOrDefault() ?? ""
             : string.Join(", ", names.Take(names.Count - 1)) + " and " + names[names.Count - 1];
 
-        // UI-420 (owner): Keep roll and Reroll selected name the roll and the dice, as the tray's button says them.
+        // UI-420 (owner): Keep roll and Reroll selected name the roll and the dice, in the battle's words.
         private static string Reroll(PlayerView view, TurnDraft draft)
         {
             var selected = draft.Payload.Ids.Count;
-            if (selected > 0)
-                return "Reroll selected · Roll " + (selected == 1 ? "the selected failed die" : "the " + selected + " selected failed dice") + " again";
-            var hits = view.Hunt?.Dice.Count(die => die.Success) ?? 0;
             var rerolls = DraftOptions.For(view, draft)?.Maximum ?? 0;
-            return "Keep roll · Accept the Hunt roll (" + TooltipText.Count(hits, "hit") + ")" +
-                (rerolls > 1 ? "; use none of your " + rerolls + " rerolls" : rerolls == 1 ? "; do not use your reroll" : "");
+            if (selected > 0)
+                return RerollChoiceText.Reroll(selected, rerolls);
+            return RerollChoiceText.Keep("Hunt", view.Hunt?.Dice.Count(die => die.Success) ?? 0, rerolls);
         }
 
         public static string Victory(VictoryCondition? reason) => reason switch

@@ -16,7 +16,7 @@ namespace Wotr.Client
             Action<string[]> choose, IEnumerable<CharacterView> characters = null, Action<string[]> chooseCharacters = null,
             bool allowGroupSelection = true, ICollection<string> requiredAnyIds = null)
         {
-            var pieces = units.Select(u => new Piece(u.Id, u.Nation, Symbol(u.Kind), Name(u.Nation) + " " + u.Kind,
+            var pieces = units.Select(u => new Piece(u.Id, u.Nation, Symbol(u.Kind), TooltipText.Unit(u.Nation, u.Kind),
                 FigureAppearances.Art(u), u.Side)).ToList();
             if (characters != null)
                 pieces.AddRange(characters.Select(c => new Piece(c.Id, "characters", CharacterLibrary.Symbol(c.DefinitionId),

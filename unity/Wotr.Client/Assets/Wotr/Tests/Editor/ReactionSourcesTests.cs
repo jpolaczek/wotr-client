@@ -83,7 +83,7 @@ namespace Wotr.EditorTests
             var guidance = TurnConsoleState.For(view, new TurnDraft(), context, id => id).Guidance;
             StringAssert.StartsWith("Click the Guide's glowing portrait", guidance);
             StringAssert.EndsWith("or Pass to skip it.", guidance);
-            Assert.AreEqual("Pass · Skip Gandalf the Grey's Draw matching card", ReactionSkip.Tooltip(view));
+            Assert.AreEqual("Pass · Skip Draw matching card (Gandalf the Grey)", ReactionSkip.Tooltip(view));
             var draft = new TurnDraft();
             Assert.IsTrue(FellowshipActions.Portrait(view, draft, context, "base.character.gandalf-grey"));
             Assert.AreEqual(CommandKind.RespondEffect, draft.Kind);

@@ -30,6 +30,13 @@ namespace Wotr.Client
             _ => FigureGrid.Name(id)
         };
 
+        // "the Dwarves", "the Southrons & Easterlings", but "Gondor", "Rohan", "Isengard" and "Sauron".
+        public static string NationPhrase(string id) =>
+            id is "dwarves" or "elves" or "north" or "southrons" ? "the " + Nation(id) : Nation(id);
+
+        public static string Capital(string text) =>
+            string.IsNullOrEmpty(text) ? "" : char.ToUpperInvariant(text[0]) + text.Substring(1);
+
         // "1 card", "3 cards".
         public static string Count(int count, string noun) => count + " " + noun + (count == 1 ? "" : "s");
 

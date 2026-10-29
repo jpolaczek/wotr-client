@@ -18,9 +18,9 @@ namespace Wotr.EditorTests
             var preview = new ActionPreview { Legal = true };
             view.Battle.Attacker.Hits = 2;
             // UI-420 (owner): Keep roll names the roll it keeps; Reroll selected the dice it rolls again.
-            Assert.AreEqual("Keep roll · Accept your Combat roll (2 hits); use none of your 2 rerolls", BattleSummary.Describe(draft, view, preview));
+            Assert.AreEqual("Accept the Combat roll (2 hits); use none of your 2 rerolls", BattleSummary.Describe(draft, view, preview));
             draft.Toggle(view.Options[0].EligibleIds[0]);
-            Assert.AreEqual("Reroll selected · Roll 1 failed die again · 1 of 2 rerolls", BattleSummary.Describe(draft, view, preview));
+            Assert.AreEqual("Roll the selected failed die again · 1 of 2 rerolls", BattleSummary.Describe(draft, view, preview));
         }
 
         [Test]
@@ -64,9 +64,9 @@ namespace Wotr.EditorTests
                 Operation = BattleLossKind.Downgrade, Hits = 1, ReplacementId = regular.Id, ReplacementFrom = "casualties" });
             Assert.IsEmpty(preview.Placements);
             StringAssert.Contains("Elite replaced by a regular", BattleSummary.Describe(draft, view, preview));
-            // UI-420 (owner): Apply losses names the region, the chosen losses and their hits.
-            StringAssert.StartsWith("Apply losses in Lossarnach · Remove 1 ", BattleSummary.Describe(draft, view, preview));
-            StringAssert.Contains(", downgrade 1 Gondor Elite (2 hits) · ", BattleSummary.Describe(draft, view, preview));
+            // UI-420 (owner): Apply losses names the chosen losses, the region and their hits, without the button's label.
+            StringAssert.StartsWith("Remove 1 ", BattleSummary.Describe(draft, view, preview));
+            StringAssert.Contains(", downgrade 1 Gondor Elite in Lossarnach (2 hits) · ", BattleSummary.Describe(draft, view, preview));
             StringAssert.Contains("Regular from casualties", BattleSummary.LossDetails(view, preview));
             Assert.AreEqual("Assigned 2 / 2 · Remaining 0", BattleLossText.Budget(view, draft, preview.Losses));
             var root = new VisualElement();
