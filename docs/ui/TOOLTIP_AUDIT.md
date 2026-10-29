@@ -14,16 +14,19 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
      with the die in front (`Confirm · Use your Muster die: Recruit Rohan Elite → Edoras.`);
    - an army move or a recruitment names routes and figures: `Move Rohan → Fangorn (3 figures)`,
      `Recruit Rohan Elite → Edoras, 2 Gondor Regular → Minas Tirith`, `Advance the Dwarves one step on the Political Track`;
+     a choice with nothing named reads `Confirm the chosen options`;
    - Pass: `Pass · Take no action now; the opponent acts next`; an optional decline names the card or ability it skips
-     (`Pass · Skip Wind from the West: finish without inspecting the Shadow hand`); a reaction window names its responses
-     as one phrase (`Pass · Skip Gandalf the Grey's Draw matching card`); the battle window's Skip effect keeps
-     `Skip <effect> · <what skipping does>`;
-   - Finish names the action it ends (`Finish · End Move armies now; the steps already made stay`), Discard the die;
+     (`Pass · Skip Wind from the West · Finish without inspecting the Shadow hand`); a reaction window names each
+     response skill first, then its owner (`Pass · Skip Draw matching card (Gandalf the Grey)`); the battle window's Skip
+     effect reads the same without Pass (`Skip Orderly Withdrawal · Keep the hit and fight on`);
+   - Finish names the action it ends (`Finish · End the action now (Move armies); the steps already made stay`), Discard
+     the die;
    - the battle window's direct steps name the region (`Continue battle · Fight another Combat round in Osgiliath`,
      `Retreat inside · Withdraw into the Minas Tirith stronghold`, `Stay · No figure advances into Osgiliath`), and Apply
-     losses lists them (`Apply losses in Lossarnach · Remove 1 Gondor Regular, downgrade 1 Gondor Elite (2 hits)`);
-   - Keep roll / Reroll selected say which roll and how many dice (`Keep roll · Accept the Hunt roll (1 hit); use none of
-     your 2 rerolls`, `Reroll selected · Roll the 2 selected failed dice again`);
+     losses lists them (`Remove 1 Gondor Regular, downgrade 1 Gondor Elite in Lossarnach (2 hits)`);
+   - Keep roll / Reroll selected say which roll and how many dice (`Accept the Hunt roll (1 hit); use none of your 2
+     rerolls`, `Roll the 2 selected failed dice again · 2 of 3 rerolls`, `RerollChoiceText`). A summary that also stands
+     as the battle footer's status line never repeats its button's label;
    - the Fellowship's hide and move read the same on the track marker, the map figure and the console
      (`Click to hide the Fellowship · No progress; this die does not enter the Hunt`, `Click to move the Fellowship ·
      Progress +1, then the Hunt; its last known position stays`).
@@ -44,7 +47,9 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
 
 ## Where the rules live
 
-- `Presentation/TooltipText.cs` — `Parts`, `Lines`, `Kind`, `Unit`, `Nation`, `Count`.
+- `Presentation/TooltipText.cs` — `Parts`, `Lines`, `Kind`, `Unit`, `Nation`, `NationPhrase`, `Capital`, `Count`;
+  `Presentation/RerollChoiceText.cs`; `ArmyMarkerText.Composition` is the one force composition; `ActionCardText.Region`
+  names a region with or without a board.
 - `Presentation/ConfirmSummary.cs` — the ✓'s object: card choices, army moves, recruits.
 - `Presentation/TurnSummary.cs`, `BattleSummary.cs`, `FellowshipSummary.cs` — the server preview's summaries without
   "Ready" fillers.

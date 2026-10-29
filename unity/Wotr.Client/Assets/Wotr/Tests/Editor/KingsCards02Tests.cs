@@ -186,7 +186,7 @@ namespace Wotr.EditorTests
                 CombatReplacementChoice.Hint(view));
             var pass = OptionalDecline.Option(view, new TurnDraft());
             Assert.AreEqual("keep", pass.Id);
-            Assert.AreEqual("Pass · Skip Heir of Bard: keep your card's effects", pass.Tooltip);
+            Assert.AreEqual("Pass · Skip Heir of Bard · Keep your card's effects", pass.Tooltip);
             Assert.AreEqual("Skip Heir of Bard · Keep your card's effects", OptionalDecline.SkipTooltip(view, new TurnDraft()));
 
             var root = new VisualElement();

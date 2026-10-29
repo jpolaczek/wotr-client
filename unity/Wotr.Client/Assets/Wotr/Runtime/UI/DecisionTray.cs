@@ -603,7 +603,7 @@ namespace Wotr.Client
                 var die = view.Dice.Single(d => d.Id == id);
                 var conversion = option.DrawCosts.Any(c => c.DieId == id && c.AbilityId == CardDrawDraft.Palantir);
                 var label = ExpansionLabels.DieCost(view, draft, die) + (conversion ? " → E" : "");
-                var detail = conversion ? "Palantír of Barad-dûr · Muster as Event · Once this turn" : die.Face.ToString();
+                var detail = conversion ? "Palantír of Barad-dûr · Muster as Event · Once this turn" : DieDescriptions.Face(die.Face);
                 var button = Choice(label, () => draft.Payload.DieId == id, () => DieChosen?.Invoke(id), detail);
                 button.name = "cost-" + id;
                 button.userData = new DraftToken(DraftObject.Die, id);
@@ -685,12 +685,11 @@ namespace Wotr.Client
         // UI-142/UI-222: a hand card is discarded with one click on its red mark.
         public const string DiscardHint = "Click a red-marked card to discard it face down.";
 
-        // UI-420 (owner): Keep roll and Reroll selected say which dice they roll.
+        // UI-420 (owner): Keep roll and Reroll selected say which dice they roll, until the server's preview names the roll.
         private static string RerollTooltip(TurnDraft draft)
         {
             var count = draft.Payload.Ids.Count;
-            return count == 0 ? "Keep roll · Accept this roll without using your optional rerolls"
-                : "Reroll selected · Roll " + (count == 1 ? "the selected failed die" : "the " + count + " selected failed dice") + " again";
+            return count == 0 ? "Accept this roll without using your rerolls" : RerollChoiceText.Reroll(count, 0);
         }
 
         public static string Label(CommandKind kind) => ExpansionDecision.Label(kind).Length > 0 ? ExpansionDecision.Label(kind) : kind switch

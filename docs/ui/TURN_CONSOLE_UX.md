@@ -555,8 +555,8 @@ candidates, crown, dimmed slot, step hints, four layouts).
 The owner's decision: the console's Pass also declines the player's own reaction window — a Guide's or character's
 skill (Gandalf the Grey's draw, the White Rider, Merry's or Pippin's separation, Gollum's reveal), a table card's or a
 hand card's response, the Ents' free Event. It lights with the shared ChoiceGlow whenever a click can use it (a legal
-Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Gandalf the Grey's Draw matching
-card" since UI-420; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
+Pass or a decline), keeps its size, and its tooltip names what it skips ("Pass · Skip Draw matching card (Gandalf the
+Grey)" since UI-420; several responses are listed) (`ReactionSkip`). The separate wide "Decline" console option and the tray's
 "Decline"/"Skip" buttons are gone, so the console keeps its hint ("… · or Pass to skip it."), and three object-less
 responses now fit the console. The opponent's window never enables it. Tests: `CardConsoleOptionsTests`,
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,

@@ -34,14 +34,14 @@ namespace Wotr.Client
                 CommandKind.DiscardPalantir => RingCost(draft) + "Remove Palantír.",
                 CommandKind.DiscardCards => "Discard selected cards face down.",
                 CommandKind.AllocateHunt => HuntAllocationText.Confirm(draft) + ".",
-                CommandKind.UseRing => (view.You == Side.FreePeoples ? "Give " + ExpansionLabels.Ring(draft.Payload.RingId) + " to the Shadow"
-                    : "Remove " + ExpansionLabels.Ring(draft.Payload.RingId)) + " · Then choose your action.",
+                CommandKind.UseRing => (view.You == Side.FreePeoples ? "Give " + Ring(draft) + " to the Shadow"
+                    : "Remove " + Ring(draft)) + " · Then choose your action.",
                 CommandKind.MoveArmies => view.Decision?.SourceId == "base.sh.strategy.10" ? EventArmySummary.DescribeLanding(preview, board)
                     : DraftOptions.For(view, draft).ArmyEvent != null ? EventArmySummary.Describe(preview, board)
                     : preview.Excess.Count > 0 ? "After moving: choose " + preview.Excess.Sum(e => e.Count) + " excess units to return to reserve."
                     : MoveArmies(draft, board),
                 CommandKind.Recruit => preview.RemovedIds.Count > 0 ? "This leader has no army and will be removed." : Recruit(view, draft, board),
-                CommandKind.AdvancePolitics => "Advance " + TooltipText.Nation(draft.Payload.NationId) + " one step on the Political Track.",
+                CommandKind.AdvancePolitics => "Advance " + TooltipText.NationPhrase(draft.Payload.NationId) + " one step on the Political Track.",
                 CommandKind.RemoveExcess => "Return the selected units to reserve.",
                 CommandKind.PlayEvent => (draft.Payload.DieId.Length == 0 ? "No action die · Play " : "Spend the selected die · Play ") + CardLibrary.Title(draft.Payload.CardId) + ".",
                 CommandKind.ChooseEffect when view.Decision?.Presentation is "ReserveFigures" or "RecruitmentPlan" => Recruit(view, draft, board),
@@ -51,7 +51,7 @@ namespace Wotr.Client
                 CommandKind.ChooseEffect when view.Decision?.SourceId == "base.sh.character.10" => "Move the Fellowship figure · Progress and visibility stay unchanged.",
                 CommandKind.ChooseEffect when view.Decision?.Presentation == "NazgulStrike" => DraftOptions.For(view, draft)
                     .EffectChoices.First(c => c.Id == draft.Payload.Ids.Single()).Detail,
-                CommandKind.ChooseEffect => ConfirmSummary.Choices(view, draft) + ".",
+                CommandKind.ChooseEffect => ConfirmSummary.Choices(view, draft) is { Length: > 0 } chosen ? chosen + "." : "Confirm the chosen options.",
                 CommandKind.RespondEffect => "Use this response · Then resume the interrupted effect.",
                 CommandKind.EnterCharacter => CharacterLibrary.Name(draft.Payload.CharacterId) + " enters play · Additional die next turn.",
                 CommandKind.UseCharacterAbility => draft.Payload.Placements.Count > 0 ? Recruit(view, draft, board)
@@ -75,7 +75,11 @@ namespace Wotr.Client
 
         // A Will of the West pays alone; another die gives an Elven Ring to the Shadow with it.
         private static string RingCost(TurnDraft draft) => draft.Payload.RingId.Length == 0 ? "Spend this Will of the West · "
-            : "Spend this die and give " + ExpansionLabels.Ring(draft.Payload.RingId) + " to the Shadow · ";
+            : "Spend this die and give " + Ring(draft) + " to the Shadow · ";
+
+        // A named Lords ring ("Narya"), otherwise "an Elven Ring".
+        private static string Ring(TurnDraft draft) =>
+            draft.Payload.RingId.StartsWith("lords.", System.StringComparison.Ordinal) ? ExpansionLabels.Ring(draft.Payload.RingId) : "an Elven Ring";
 
     }
 }

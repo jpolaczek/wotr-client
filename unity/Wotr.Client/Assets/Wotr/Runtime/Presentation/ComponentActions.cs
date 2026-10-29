@@ -115,7 +115,7 @@ namespace Wotr.Client
                 yield return new ComponentAction
                 {
                     Key = "remove-" + id, Owner = CardLibrary.Title(id), Symbol = "×", CardId = id,
-                    Detail = "Remove " + CardLibrary.Title(id) + " · Pay its removal cost with the selected die",
+                    Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any Ring or cards its removal needs",
                     Enabled = option.EligibleDice.Contains(die)
                 };
         }

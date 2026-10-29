@@ -78,19 +78,12 @@ namespace Wotr.Client
                 ?? choice.CharacterId;
             var title = CharacterAbilityLibrary.For(definition).FirstOrDefault(a => a.Id == choice.AbilityId)?.Title ?? choice.Title;
             var region = choice.Targets.Count > 0 && regionName != null ? regionName(choice.Targets[0]) : "";
-            var nation = NationPhrase(offer.Nation);
+            var nation = TooltipText.NationPhrase(offer.Nation);
             var atWar = view.Nations.Any(n => n.Id == offer.Nation && n.StepsToWar == 0);
             var effect = offer.Activates && atWar ? "activate " + nation
                 : offer.Activates ? "activate " + nation + " and move it one step toward war" : "move " + nation + " one step toward war";
             return CharacterLibrary.Name(definition) + (region.Length > 0 ? " in " + region : "") + " · " + title +
                 ": click to spend this die to " + effect + ".";
-        }
-
-        // "the Dwarves", "the Elves", "the North", but "Gondor" and "Rohan".
-        public static string NationPhrase(string nation)
-        {
-            var name = FigureGrid.Name(nation);
-            return nation is "gondor" or "rohan" ? name : "the " + name;
         }
 
         private static IEnumerable<CharacterActionOption> Choices(PlayerView view) => view.Options

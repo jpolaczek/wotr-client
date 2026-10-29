@@ -17,7 +17,7 @@ namespace Wotr.PlayTests
     public class KingsDecisionNetworkTests
     {
         // UI-420: Pass names the ability whose replacement it declines.
-        private static string KeepTheCard(string ability) => "Pass · Skip " + ability + ": keep your card's effects";
+        private static string KeepTheCard(string ability) => "Pass · Skip " + ability + " · Keep your card's effects";
 
         [UnityTest] public IEnumerator HeirOfBardCancelsTheShadowCardFromItsChip() => Wait(Replacement("ui348-brand-heir", Side.FreePeoples, "Heir of Bard"));
         [UnityTest] public IEnumerator ShadowsInTheNorthCancelsTheFreePeoplesCardFromItsChip() => Wait(Replacement("ui348-brand-shadows", Side.Shadow, "Shadows in the North"));

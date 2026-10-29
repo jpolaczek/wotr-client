@@ -220,7 +220,7 @@ namespace Wotr.Client
                 button.AddToClassList("effect-companion");
             }
             if (reaction || view.Decision?.Presentation is "NazgulStrike" or "CharacterCardDiscard" or "InspectedHand" or "TableCards" or "SmeagolCorruption")
-                InspectSource(button, choice);
+                InspectSource(button, choice, reaction);
             if (reaction && view.Hunt != null)
             {
                 button.AddToClassList("legal-target");
@@ -232,16 +232,18 @@ namespace Wotr.Client
             return button;
         }
 
-        // UI-420 (owner): a response without the server's detail still names its card.
-        private static string ResponseTooltip(EffectChoiceView choice)
+        // UI-420 (owner): a choice without the server's detail still names its owner, and a response says how it is used.
+        private static string FallbackTooltip(EffectChoiceView choice, bool reaction)
         {
-            var card = CardLibrary.Title(choice.SourceId);
-            return choice.Cost == "DiscardTableCard" ? "Discard " + card + " to respond" : "Use " + card + "'s response";
+            var owner = ReactionSkip.Owner(choice);
+            if (!reaction)
+                return TooltipText.Parts(owner, choice.Title);
+            return choice.Cost == "DiscardTableCard" ? "Discard " + owner + " to respond" : "Use " + owner + "'s response";
         }
 
-        private void InspectSource(Button button, EffectChoiceView choice)
+        private void InspectSource(Button button, EffectChoiceView choice, bool reaction)
         {
-            button.tooltip = choice.Detail.Length > 0 ? choice.Detail : ResponseTooltip(choice);
+            button.tooltip = choice.Detail.Length > 0 ? choice.Detail : FallbackTooltip(choice, reaction);
             // UI-285: a Hunt response sends with its click, so it pins no card that would read as a confirmation still
             // waiting; its tooltip says what it does and the Effects panel shows the card.
             if (!CardLibrary.Cards.ContainsKey(choice.SourceId) || view.Hunt != null && draft.Kind == CommandKind.RespondEffect)

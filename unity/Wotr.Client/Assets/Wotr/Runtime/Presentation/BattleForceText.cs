@@ -37,10 +37,7 @@ namespace Wotr.Client
             force.RerollModifier != 0 ? "Leader reroll modifier " + Signed(force.RerollModifier) : "");
 
         // UI-420 (owner): one nation's figures in a force read "Gondor · 3 Regular · 1 Elite · 1 Leader".
-        public static string Composition(string nation, IEnumerable<UnitKind> kinds) =>
-            TooltipText.Parts(new[] { TooltipText.Nation(nation) }
-                .Concat(kinds.GroupBy(kind => kind).OrderBy(group => group.Key).Select(group => group.Count() + " " + TooltipText.Kind(group.Key)))
-                .ToArray());
+        public static string Composition(string nation, IEnumerable<UnitKind> kinds) => ArmyMarkerText.Composition(nation, kinds.ToList());
 
         public static string Nonparticipants(BattleForceView force, BattleView battle, PlayerView view)
         {

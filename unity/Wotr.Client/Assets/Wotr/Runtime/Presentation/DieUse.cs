@@ -32,7 +32,7 @@ namespace Wotr.Client
             var rest = WithoutGenericSpend(effect ?? "");
             if (die.Length == 0)
                 return rest;
-            return rest.Length == 0 ? "Use your " + die + "." : "Use your " + die + ": " + Capital(rest);
+            return rest.Length == 0 ? "Use your " + die + "." : "Use your " + die + ": " + TooltipText.Capital(rest);
         }
 
         private static string WithoutGenericSpend(string effect)
@@ -43,6 +43,5 @@ namespace Wotr.Client
             return effect;
         }
 
-        private static string Capital(string text) => text.Length == 0 ? text : char.ToUpperInvariant(text[0]) + text.Substring(1);
     }
 }

@@ -77,7 +77,7 @@ namespace Wotr.Client
             var decline = Option(view, draft);
             if (decline == null)
                 return "";
-            return "Skip " + (EffectName(view) ?? "this effect") + " · " + Capital(What(view, decline));
+            return "Skip " + (EffectName(view) ?? "this effect") + " · " + TooltipText.Capital(What(view, decline));
         }
 
         // The ability or card a decline skips, or null when its source has no name.
@@ -133,17 +133,15 @@ namespace Wotr.Client
             };
         }
 
-        private static string Tooltip(string skip) => "Pass · " + Capital(skip);
+        private static string Tooltip(string skip) => "Pass · " + TooltipText.Capital(skip);
 
-        // UI-420 (owner): Pass names what it skips — "Pass · Skip Wind from the West: finish without inspecting the Shadow
+        // UI-420 (owner): Pass names what it skips — "Pass · Skip Wind from the West · Finish without inspecting the Shadow
         // hand".
         private static string PassTooltip(PlayerView view, string skip)
         {
             var name = EffectName(view);
-            return name == null ? Tooltip(skip) : "Pass · Skip " + name + ": " + skip;
+            return name == null ? Tooltip(skip) : TooltipText.Parts("Pass", "Skip " + name, TooltipText.Capital(skip));
         }
-
-        private static string Capital(string text) => text.Length == 0 ? text : char.ToUpperInvariant(text[0]) + text.Substring(1);
 
         private static ActionOption Choice(PlayerView view) =>
             view?.Decision?.Kind is DecisionKind.EffectChoice or DecisionKind.CharacterEvent && view.DecisionOwner == view.You &&

@@ -33,7 +33,7 @@ namespace Wotr.Client
                 return NoNations;
             // Under Kings each Free Peoples nation has its king, so the kings name the nations the Nation step offers.
             return view.Sovereigns.Select(s => s.Nation).Where(n => view.Nations.Any(nation => nation.Id == n)).Distinct()
-                .ToDictionary(n => n, n => "Click to activate and advance " + CharacterPolitics.NationPhrase(n) + " · " + Card(view));
+                .ToDictionary(n => n, n => "Click to activate and advance " + TooltipText.NationPhrase(n) + " · " + Card(view));
         }
 
         // The effect a nation token's click sends now, or "".

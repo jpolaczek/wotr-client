@@ -222,7 +222,7 @@ namespace Wotr.PlayTests
             {
                 var client = room.Sh;
                 await room.Settle();
-                await room.Pass(client, "Pass · Skip A Balrog is Come!: finish without moving the Balrog");
+                await room.Pass(client, "Pass · Skip A Balrog is Come! · Finish without moving the Balrog");
                 Assert.AreEqual("moria", room.Fp.Board.View.Characters.Single(c => c.Id == Balrog).Location);
                 Assert.AreNotEqual(BalrogCardOrder.Presentation, client.Board.View.Decision?.Presentation ?? "");
                 watch.NeverOpened();

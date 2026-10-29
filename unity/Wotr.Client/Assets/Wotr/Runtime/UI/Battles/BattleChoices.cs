@@ -170,7 +170,7 @@ namespace Wotr.Client
             var battle = view?.Battle;
             if (battle == null)
                 return DirectTooltip(kind);
-            var region = RegionName(battle.RegionId, data);
+            var region = ActionCardText.Region(battle.RegionId, data);
             return kind switch
             {
                 CommandKind.ContinueBattle => "Continue battle · Fight another Combat round in " + region,
@@ -188,11 +188,8 @@ namespace Wotr.Client
             var home = battle.Attacker.RegionId;
             if (home.Length == 0 || home == battle.RegionId)
                 return "Stop battle · End the attack; your army stays in " + region;
-            return "Stop battle · End the attack on " + region + "; your army stays in " + RegionName(home, data);
+            return "Stop battle · End the attack on " + region + "; your army stays in " + ActionCardText.Region(home, data);
         }
-
-        private static string RegionName(string id, BoardPresentation data) =>
-            data == null ? FigureGrid.Name(id) : ActionCardText.Region(id, data);
 
         public static string IconFor(CommandKind kind) => kind switch
         {
