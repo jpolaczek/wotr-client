@@ -1926,3 +1926,14 @@ Owner requests and reports from the Kings and Lords test scenarios:
   Informational tooltips drop repeated facts (a Hunt tile's value, a king's state, equal Level/Move/Combat level, a status
   equal to its label), blank lines and dangling separators, raw ids and enum names; a force, a character, a deck and a
   played card read the same everywhere. Tests: `TooltipTextTests` and the tests listed in the audit document.
+
+## Layout stress scenarios; console options above the console — TEST-15 (2026-10-29)
+
+- TEST-15 (owner) — nine Testing-catalog scenarios fill the windows at once (the full roster with Fate and with the five
+  kings, three Chieftains in one battle, a Hunt answered at every window, the Council token's twelve figures, the White
+  Rider, every pool resource, the Effects panel with 22 entries, The Nazgûl Strike!'s three options), listed in
+  [LAYOUT_STRESS_SCENARIOS](LAYOUT_STRESS_SCENARIOS.md) with the audit behind them. `LayoutStressScenarioTests` opens each
+  in the four layouts with a screenshot.
+- Console options that do not fit the console's line at their full text stand in a strip just above the console — with
+  the played card's committed button when that does not fit the line either — instead of being cut to "…"; the bottom
+  row keeps its height (UI-160) and wide layouts keep the options in the line (`ConsoleOptionsFit`).

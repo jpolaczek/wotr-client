@@ -631,3 +631,11 @@ While the opponent's action plays ([OPPONENT_ACTIONS_UX §6.16](OPPONENT_ACTIONS
 - **The console's status** keeps the presented view's state, and the newest decision appears once, at the release
   (UI-304).
 - **Nothing to click.** The marks take no pointer, and no console control is added.
+
+## Options above the console — TEST-15 (2026-10-29)
+
+A card's options without objects stand in the status line beside its committed button. When they do not fit there at
+their full text (The Nazgûl Strike!'s three options, or any options in a Lords or Kings game at 1366×768 and 125 %, where
+the wider dice panel leaves the status a narrow column), they stand in a strip just above the console, on the bottom row's
+fixed top edge and aligned with the status column, with the committed button when that does not fit the line either. The
+choice is measured outside layout callbacks with a small hysteresis, so it never flips back and forth (`ConsoleOptionsFit`).
