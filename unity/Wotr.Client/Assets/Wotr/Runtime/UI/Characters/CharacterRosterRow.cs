@@ -19,8 +19,10 @@ namespace Wotr.Client
         private readonly Label title = new Label { name = "character-roster-title" };
         private readonly VisualElement statusIcon = new VisualElement { name = "character-roster-status", pickingMode = PickingMode.Ignore };
         private readonly Label detail = new Label { name = "character-roster-detail" };
+        private readonly VisualElement text = new VisualElement();
         private string status = "";
-        private string description = "";
+        // UI-409: the tooltip's parts; the offer is added when the click enters.
+        private CharacterRowTooltip.Parts description = new CharacterRowTooltip.Parts();
         private CharacterRosterView shown;
         private bool offered;
         private bool chosen;
@@ -34,6 +36,7 @@ namespace Wotr.Client
             Root = BoardScreen.Button("", null);
             Root.name = "character-roster-" + id;
             Root.AddToClassList(RowClass);
+            Root.AddToClassList(RuntimeTooltip.FormattedClass);
             // UI-108: a row of the Characters list, distinct from a figure on the map; its double-click enters it.
             Root.userData = new DraftToken(DraftObject.Character, id);
             portrait.AddToClassList("character-roster-portrait");
@@ -46,7 +49,6 @@ namespace Wotr.Client
             line.AddToClassList("character-roster-line");
             line.Add(statusIcon);
             line.Add(detail);
-            var text = new VisualElement();
             text.AddToClassList("character-roster-text");
             text.Add(title);
             text.Add(line);
@@ -82,11 +84,23 @@ namespace Wotr.Client
                 ? location + (entry.Garrison ? " · Garrison" : "") : CharacterRosterPresentation.State(entry);
             // UI-187: the card's abilities follow in their short form.
             shown = entry;
-            description = CharacterAbilitySummaries.Append(CharacterRosterPresentation.Title(entry) + (edition.Length > 0 ? " · " + edition : "") +
-                "\n" + fullLocation + "\n" + CharacterCardFacts.Summary(facts) +
-                (candidate == null ? "" : "\n" + CharacterRosterPresentation.Conditions(candidate.Entry)), definition);
+            description = new CharacterRowTooltip.Parts
+            {
+                Name = CharacterRosterPresentation.Title(entry), Edition = edition, State = fullLocation,
+                Stats = CharacterCardFacts.Summary(facts), Entry = candidate?.Entry,
+                Abilities = CharacterAbilitySummaries.Lines(definition)
+            };
             ShowOffer();
             Root.EnableInClassList("legal-target", entry.FutureVersions.Any(v => v.Entry.CanAct || v.CouncilEntry?.CanAct == true));
+        }
+
+        // UI-408 (owner): two rows a line hold the ability icons beside the text, as a 2x2 block; three a line keep them as
+        // the text's third line (UI-391).
+        public void Wide(bool wide)
+        {
+            VisualElement host = wide ? Root : text;
+            if (Abilities.Root.parent != host)
+                host.Add(Abilities.Root);
         }
 
         // UI-240: a row whose click enters a character, or changes one into its next version, glows and pulses
@@ -108,7 +122,7 @@ namespace Wotr.Client
         private void ShowOffer()
         {
             ChoiceGlow.Apply(Root, offered);
-            Root.tooltip = offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) + "\n" + description : description;
+            Root.tooltip = CharacterRowTooltip.Format(offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) : "", description);
         }
     }
 }

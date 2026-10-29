@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Wotr.Client
 {
@@ -105,6 +106,9 @@ namespace Wotr.Client
             ["corrupted-ruler"] = Corrupted,
             ["return-after-fellowship-elimination-except-mordor"] = Return
         };
+
+        // Every picture the map can name, the scroll included (a test loads each one's art).
+        public static IEnumerable<string> Pictures => Icons.Values.Append(AbilityPictures.Ability).Distinct();
 
         // The icon of a printed ability (its id without an expansion's prefix).
         public static string For(string abilityId)

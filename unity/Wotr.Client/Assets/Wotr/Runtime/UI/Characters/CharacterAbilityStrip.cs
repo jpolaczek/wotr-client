@@ -10,12 +10,16 @@ namespace Wotr.Client
     // the row's button: its press stops at the icon, so the row's own click (its window, an entry) does not follow. An
     // icon's tooltip names the ability and its text. An ability usable now glows, and its click starts it as the chip's
     // Click to use does (UI-369); another icon's click opens the character's window with that ability unrolled. The
-    // window keeps its chips.
+    // window keeps its chips. UI-408: the four slots stand in two lines of two (LineClass): side by side they make the
+    // text's third line, one above the other the 2x2 block beside the text when two characters stand a line. The block
+    // never wraps, so its form does not depend on the UI scale.
     public sealed class CharacterAbilityStrip
     {
         public const string ClassName = "roster-abilities";
         public const string IconClass = "roster-ability";
+        public const string LineClass = "roster-ability-line";
         private const int Slots = 4;
+        private const int SlotsPerLine = 2;
         public VisualElement Root { get; } = new VisualElement();
         public event Action<ComponentAction> Used;
         public event Action<string> Opened;
@@ -39,8 +43,18 @@ namespace Wotr.Client
                 var slot = index;
                 icons[index] = IconButton.Picture(AbilityPictures.Ability, "Ability", () => Click(slot));
                 icons[index].AddToClassList(IconClass);
-                Root.Add(icons[index]);
             }
+            for (var first = 0; first < Slots; first += SlotsPerLine)
+                Root.Add(Line(first));
+        }
+
+        private VisualElement Line(int first)
+        {
+            var line = new VisualElement { pickingMode = PickingMode.Ignore };
+            line.AddToClassList(LineClass);
+            for (var index = first; index < first + SlotsPerLine; index++)
+                line.Add(icons[index]);
+            return line;
         }
 
         public bool Offered => icons.Any(icon => icon.ClassListContains(ChoiceGlow.ClassName));

@@ -1459,3 +1459,28 @@ Base-game parts of the owner's requests on the Kings branch:
   Test: `BoardInteractionTests` (every reserve drag).
 - UI-394 (owner) — the battle window's two sides keep one width in every step; a long figure choice wraps inside its
   column (`docs/ui/BATTLE_WINDOW_UX.md`, UI-208). Test: `BattleLayoutTests.LossesAndRerollsStandOnTheDecidingPlayersSide`.
+
+## Two characters a line, clear character tooltips, a dark Politics station — UI-408 to UI-410 (2026-10-29)
+
+- UI-408 (owner) — each character in the Characters tab has more room: two rows a line, each about twice as wide,
+  with the portrait, the name and region, and beside them a 2x2 block of 19-point ability icons (17 on a short
+  viewport; UI-391's were 15 points on the text's third line). A roster that two a line would make taller than the
+  board area — the full Kings roster on a 1366 x 768 screen — keeps three a line with UI-391's icons
+  (`roster-compact`); the panel tries two a line again only when the roster or the room for it changes, so the form
+  never flips back and forth. (First registered as UI-400, a number another session's registration took over.)
+  The block holds two lines of two icons one above the other and never wraps, so its form does not depend on the UI
+  scale; every icon stays inside its row (`CharacterRosterLayoutTests`).
+  The base-game branch also gains the Guide's crown, the version and the corrupted ruler's art that UI-391's icons
+  named without the files (empty frames on Gandalf's or the Balrog's row).
+  Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists`.
+- UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
+  offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
+  with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
+  each ability with its name in bold; two thin gaps part identity, entry and abilities, and the merged entry line keeps
+  the height. Only a source with `RuntimeTooltip.FormattedClass` shows rich text; every other tooltip stays plain.
+  Tests: `CharacterRowTooltipTests`, the roster tests reading `CharacterRowTooltip.Plain`.
+- UI-410 (owner) — no station on a Politics track glows: the lit green circle on the next station misled. The
+  nation's token and its arrow show the step; the next station stays the drop target of a dragged token and shows a
+  white rim only while the drag points at it. Tests: `PoliticalGestureTests`, `PoliticalPanelTests`,
+  `PoliticalRecoveryTests`, `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `T22TurnNetworkTests`.
