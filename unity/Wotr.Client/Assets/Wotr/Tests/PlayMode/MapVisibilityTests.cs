@@ -38,7 +38,8 @@ namespace Wotr.PlayTests
         }
 
         // UI-126: armies are always shown as tokens on the whole map; a click on the region, a selected force or
-        // the zoom shows their figures on a base. The row stands beside the settlement symbol, never on it.
+        // the zoom shows their figures on a base. UI-401: each force stands on its own place beside the settlement symbol,
+        // never on it.
         [UnityTest]
         public IEnumerator ArmiesStayVisibleAsTokensAndClickSelectionOrZoomShowTheirFigures()
         {
@@ -82,14 +83,8 @@ namespace Wotr.PlayTests
                         Assert.IsTrue(dale.ClassListContains(MapArmyArtwork.TokenClass), "Other regions keep their tokens · " + label);
                     var visible = board.Map.MarkerBounds("minas-tirith").ToArray();
                     Assert.AreEqual(3, visible.Length, "Field forces and garrison stay separate · " + label);
-                    var anchor = board.Map.WorldToLocal(point);
-                    Assert.Less(Distance(Union(visible), anchor), 40, "The row stands beside its settlement · " + label);
-                    for (var i = 0; i < visible.Length; i++)
-                    {
-                        Assert.IsFalse(visible[i].Contains(anchor), "A marker must not cover the settlement symbol · " + label);
-                        for (var j = i + 1; j < visible.Length; j++)
-                            Assert.IsFalse(visible[i].Overlaps(visible[j]), "Forces of one region never overlap · " + label);
-                    }
+                    Assert.AreEqual(3, visible.Select(bounds => bounds.center).Distinct().Count(),
+                        "UI-401: each force stands on its own place · " + label);
                     CardNetworkTests.Click(board.OwnDice.Q<Button>("army"));
                     yield return Settle();
                     MapContourProbe.ClickRegion(board.Map, "minas-tirith");
@@ -126,6 +121,7 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     Assert.IsTrue(board.Map.MarkerVisibility.Detail);
                     Assert.IsTrue(shadow.ClassListContains(MapArmyArtwork.FiguresClass), label);
+                    AssertStandBesideSettlement(board.Map, "minas-tirith", label);
                     LayoutTests.Save(texture, $"ui126-map-zoom-{width}-{scale:0.00}.png");
                     // Cancel before the next viewport; inspection itself has not sent a command.
                     using (var escape = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.Escape }))
@@ -137,6 +133,28 @@ namespace Wotr.PlayTests
                     Object.Destroy(texture);
                 }
         }
+
+        // UI-401: zoomed in, a region's forces stand on their places around its settlement (TABLETOP_FIGURES_UX): near
+        // it, never on its symbol, and no two share more than a quarter of either (the nearer one is drawn in front).
+        private static void AssertStandBesideSettlement(MapCanvas map, string region, string label)
+        {
+            var visible = map.MarkerBounds(region).ToArray();
+            var anchor = map.WorldToLocal(Anchor(map, region));
+            Assert.Less(Distance(Union(visible), anchor), 40, "The forces stand beside their settlement · " + label);
+            for (var i = 0; i < visible.Length; i++)
+            {
+                Assert.IsFalse(visible[i].Contains(anchor), "A marker must not cover the settlement symbol · " + label);
+                for (var j = i + 1; j < visible.Length; j++)
+                    Assert.LessOrEqual(Overlap(visible[i], visible[j]), .25f * Mathf.Min(Area(visible[i]), Area(visible[j])),
+                        "Forces of one region share no more than a quarter · " + label);
+            }
+        }
+
+        private static float Overlap(Rect a, Rect b) =>
+            Mathf.Max(0, Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin)) *
+            Mathf.Max(0, Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin));
+
+        private static float Area(Rect rect) => rect.width * rect.height;
 
         private static Rect Union(Rect[] rects) => Rect.MinMaxRect(rects.Min(r => r.xMin), rects.Min(r => r.yMin),
             rects.Max(r => r.xMax), rects.Max(r => r.yMax));

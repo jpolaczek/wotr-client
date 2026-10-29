@@ -14,6 +14,9 @@ namespace Wotr.Client
     // one for a garrison) with a contact shadow on the table, their feet on one line, two or three staggered in depth
     // with the farther one behind, each as tall as its painted stature; the state is a rim round the base, the nation
     // emblems and the count a plaque on its front, and only the base and the figures take a click (MiniatureButton).
+    // UI-401 (TABLETOP_FIGURES_UX, "Scale"): the miniature is designed in board units (StandFootprint.Army) — its stand is
+    // the 40 × 16 unit base and an elite stands 40 units tall, as tall as the base is wide — at DesignUnit points per
+    // unit; the map stands its feet on the region's place and scales it (MapStand, MapStandScale).
     public sealed class MapArmyArtwork
     {
         public const string FiguresClass = "army-figures";
@@ -33,22 +36,35 @@ namespace Wotr.Client
         // Unused parts are hidden by class, so the level rules of Styles/Armies.uss can still hide the rest.
         public const string UnusedClass = "army-part-unused";
         public const int MaximumEmblems = 2;
-        private const float BaseWidth = 116;
-        private const float FieldHeight = 92;
-        private const float GarrisonHeight = 96;
-        // An elite's height; the painted cells carry each figure's own stature (FigureStature).
-        private const float FigureHeight = 54;
-        // The stand's art (Armies.uss): its bottom above the marker's, its height, and the feet line on its top face.
-        private const float StandBottom = 3;
-        private const float FieldStand = 44;
-        private const float GarrisonStand = 48;
+        // Design points per board unit: an elite stands 54 points tall at the design size, as since UI-192.
+        public const float DesignUnit = 1.35f;
+        // The army's base (40 units) and the room beside it for the state rim and the halo.
+        private const float BaseWidth = 54;
+        private const float Room = 6;
+        private const float BoxWidth = BaseWidth + 2 * Room;
+        private const float BoxHeight = 86;
+        // The point under the feet, the place: the middle of the stand's top face.
+        private static readonly Vector2 StandFeet = new Vector2(BoxWidth / 2, 64);
+        // The painted stands at this width (112 × 44 and 112 × 48 pictures); the feet line lies on their top face.
+        private const float FieldStand = 21;
+        private const float GarrisonStand = 23;
         private const float FeetOnTopFace = .46f;
+        // The nearer figures stand a little in front of the middle of the top face.
+        private const float FrontFeet = 2;
+        // An elite's height (40 units); the painted cells carry each figure's own stature (FigureStature).
+        private const float FigureHeight = 54;
+        // A figure may overhang the stand's rim this much; a wider cell is drawn smaller, its feet on the line.
+        private const float Overhang = 4;
+        private static readonly Vector2 TokenSize = new Vector2(44, 44);
+        private static readonly Vector2 GarrisonTokenSize = new Vector2(44, 48);
+        // The holder a marker stands in (MapStand): room for either level.
+        public static readonly Vector2 HolderSize = new Vector2(BoxWidth, BoxHeight);
         // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front.
         private static readonly Slot[][] Slots =
         {
             new[] { new Slot(0, 0, 1) },
-            new[] { new Slot(-15, -6, .94f), new Slot(15, 0, 1) },
-            new[] { new Slot(0, -8, .9f), new Slot(-27, 0, 1), new Slot(27, 0, 1) }
+            new[] { new Slot(-9, -4, .94f), new Slot(9, 0, 1) },
+            new[] { new Slot(0, -6, .9f), new Slot(-13, 0, 1), new Slot(13, 0, 1) }
         };
 
         public VisualElement Root { get; } = Ignored("army-artwork");
@@ -59,6 +75,8 @@ namespace Wotr.Client
         private readonly Label count = new Label { name = "army-count", pickingMode = PickingMode.Ignore };
         // UI-274: the crown over a force led by an Initial king.
         private readonly VisualElement crown = Ignored("army-crown");
+        // UI-400: the nation emblems and the count on the stand's front; UI-401: it hangs below the stand's rim.
+        private readonly VisualElement plaque = Ignored("army-plaque");
         private readonly Button button;
         // UI-322: the flare joins the marker only while it shows and leaves once it has faded, so a resting marker carries
         // nothing of it.
@@ -89,7 +107,7 @@ namespace Wotr.Client
                 silhouettes[i].AddToClassList("army-silhouette");
                 Root.Add(silhouettes[i]);
             }
-            Root.Add(Ignored("army-plaque"));
+            Root.Add(plaque);
             var row = Ignored("army-emblems");
             for (var i = 0; i < emblems.Length; i++)
             {
@@ -109,9 +127,16 @@ namespace Wotr.Client
                 miniature.Shape = Contains;
         }
 
-        public static Vector2 Size(bool garrison, bool figures) => figures
-            ? new Vector2(BaseWidth, garrison ? GarrisonHeight : FieldHeight)
-            : new Vector2(44, garrison ? 48 : 44);
+        public static Vector2 Size(bool garrison, bool figures) =>
+            figures ? HolderSize : garrison ? GarrisonTokenSize : TokenSize;
+
+        // UI-401: the design point a level stands on its place: the stand's top face, or the token's middle.
+        public static Vector2 Feet(bool garrison, bool figures) => figures ? StandFeet : Size(garrison, false) / 2;
+
+        // UI-401: what a level shows, in design points: the stand with its figures and plaque, or the whole token.
+        public static Rect Visible(bool garrison, bool figures) => figures
+            ? Rect.MinMaxRect(Room, StandFeet.y + FrontFeet - FigureHeight - 2, BoxWidth - Room, BoxHeight - 1)
+            : new Rect(Vector2.zero, Size(garrison, false));
 
         public void Apply(ArmyMarker army)
         {
@@ -124,7 +149,7 @@ namespace Wotr.Client
             }
             for (var i = 0; i < silhouettes.Length; i++)
                 silhouettes[i].EnableInClassList(UnusedClass, i >= shown);
-            PlaceSilhouettes(army.Garrison);
+            PlaceSilhouettes();
             for (var i = 0; i < emblems.Length; i++)
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
@@ -205,44 +230,51 @@ namespace Wotr.Client
         }
 
         // UI-400: each figure's box is its painted cell's shape, so its feet are the box's bottom edge; they stand on the
-        // base's top face, the farther figure higher and a little smaller, drawn behind the nearer ones.
-        private void PlaceSilhouettes(bool garrison)
+        // base's top face, the farther figure higher and a little smaller, drawn behind the nearer ones. UI-401: the group
+        // keeps within the stand and a little overhang, so it stays on the army's footprint.
+        private void PlaceSilhouettes()
         {
             if (shown == 0)
                 return;
-            var feet = FeetLine(garrison);
             var slots = Slots[shown - 1];
             for (var i = 0; i < shown; i++)
             {
-                var height = FigureHeight * statures[i] * slots[i].Scale;
-                var width = height * Aspect(silhouettes[i].sprite);
-                silhouettes[i].style.width = width;
-                silhouettes[i].style.height = height;
-                silhouettes[i].style.left = BaseWidth / 2 + slots[i].X - width / 2;
-                silhouettes[i].style.top = feet + slots[i].Feet - height;
+                var size = FigureSize(statures[i] * slots[i].Scale, Aspect(silhouettes[i].sprite));
+                var x = Mathf.Clamp(slots[i].X, -Reach(size.x), Reach(size.x));
+                silhouettes[i].style.width = size.x;
+                silhouettes[i].style.height = size.y;
+                silhouettes[i].style.left = StandFeet.x + x - size.x / 2;
+                silhouettes[i].style.top = StandFeet.y + FrontFeet + slots[i].Feet - size.y;
             }
         }
 
-        private static float FeetLine(bool garrison)
+        // A figure's box at its stature; a cell wider than the stand and its overhang is drawn smaller.
+        private static Vector2 FigureSize(float stature, float aspect)
         {
-            var stand = garrison ? GarrisonStand : FieldStand;
-            return (garrison ? GarrisonHeight : FieldHeight) - StandBottom - stand * (1 - FeetOnTopFace);
+            var height = FigureHeight * stature;
+            var width = Mathf.Min(height * aspect, BaseWidth + 2 * Overhang);
+            return new Vector2(width, width / aspect);
         }
+
+        // How far from the middle a figure of this width may stand and keep within the stand and its overhang.
+        private static float Reach(float width) => Mathf.Max(0, BaseWidth / 2 + Overhang - width / 2);
 
         private static float Aspect(Sprite sprite) =>
             sprite == null || sprite.rect.height <= 0 ? .8f : sprite.rect.width / sprite.rect.height;
 
-        // UI-400: only the miniature takes a press — the stand's ellipse and the figures' boxes; a token takes its disc.
+        // UI-400: only the miniature takes a press — the stand's ellipse, the figures' boxes and the plaque; a token takes
+        // its disc.
         private bool Contains(Vector2 local)
         {
             if (!button.ClassListContains(FiguresClass))
                 return true;
+            if (plaque.layout.Contains(local))
+                return true;
             for (var i = 0; i < shown; i++)
                 if (silhouettes[i].layout.Contains(local))
                     return true;
-            var garrison = button.ClassListContains("garrison");
-            var stand = garrison ? GarrisonStand : FieldStand;
-            var centre = new Vector2(BaseWidth / 2, (garrison ? GarrisonHeight : FieldHeight) - StandBottom - stand / 2);
+            var stand = button.ClassListContains("garrison") ? GarrisonStand : FieldStand;
+            var centre = new Vector2(StandFeet.x, StandFeet.y - stand * FeetOnTopFace + stand / 2);
             var offset = new Vector2((local.x - centre.x) / (BaseWidth / 2), (local.y - centre.y) / (stand / 2));
             return offset.sqrMagnitude <= 1;
         }

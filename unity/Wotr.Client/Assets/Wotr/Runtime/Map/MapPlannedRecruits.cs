@@ -54,6 +54,7 @@ namespace Wotr.Client
                 }
                 ghost.Apply(pair.Value, interactive);
             }
+            map.Stands.Sort();
             Layout();
         }
 
@@ -77,10 +78,12 @@ namespace Wotr.Client
                 pair.Value.Layout(map);
         }
 
+        // UI-401: a ghost stands on its region's planned place (UI-422) in the stand layer, scaled as the armies are.
         private sealed class Ghost
         {
             private readonly Button marker;
             private readonly MapArmyArtwork artwork;
+            private readonly MapStand stand;
             private readonly Button remove;
             private readonly string region;
 
@@ -92,12 +95,17 @@ namespace Wotr.Client
                 marker.AddToClassList("army-ghost");
                 marker.AddToClassList("planned-recruit");
                 artwork = new MapArmyArtwork(marker);
-                map.Add(marker);
+                stand = new MapStand(marker, MapArmyArtwork.HolderSize);
+                stand.Design(MapArmyArtwork.Feet(false, true), MapArmyArtwork.Visible(false, true));
+                map.Stands.Add(stand);
+                map.Stands.Stand(stand, map.Stands.Stands(region).Planned);
                 if (removed == null)
                     return;
                 remove = IconButton.Create("close", "Return the figures planned here to the reserve", removed);
                 remove.name = prefix + "-remove-" + region;
                 remove.AddToClassList("planned-recruit-remove");
+                remove.style.left = 0;
+                remove.style.top = 0;
                 // A press on the remove icon belongs to the button, not to the map's region click or pan.
                 remove.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
                 map.Add(remove);
@@ -114,29 +122,21 @@ namespace Wotr.Client
 
             public void Layout(MapCanvas map)
             {
-                var shape = map.Data.Shapes[region];
-                var anchor = map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-                var visible = map.NearView(anchor);
+                var visible = map.Stands.Place(stand, stand.Feet, map.Stands.FigureScale);
                 marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
                 if (remove != null)
                     remove.style.display = marker.style.display;
                 if (!visible)
                     return;
-                var rect = map.GhostRect(region);
+                var rect = stand.Bounds;
                 map.ReserveMarker(rect);
-                marker.style.left = rect.x;
-                marker.style.top = rect.y;
-                marker.BringToFront();
-                if (remove == null)
-                    return;
-                remove.style.left = rect.xMax - 10;
-                remove.style.top = rect.y - 6;
-                remove.BringToFront();
+                if (remove != null)
+                    remove.style.translate = new Translate(rect.xMax - 10, rect.y - 6);
             }
 
             public void Remove()
             {
-                marker.RemoveFromHierarchy();
+                stand.Remove();
                 remove?.RemoveFromHierarchy();
             }
         }

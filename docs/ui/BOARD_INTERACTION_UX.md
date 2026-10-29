@@ -469,6 +469,15 @@ User decisions with 2026-10-13 save [ARMY_MAP_UX](ARMY_MAP_UX.md) : armies alway
 
 `MapMarkerVisibility` selects only the level: `Detail` ed 1,3 × to drop below 1,2 × match. `MapCanvas` puts the forces of the region in one row (garnison, then field forces) over the symbol settlement and in the region without settlement on an anchor. A government that would be on a set marker (from UI-199 Not on panel anymore HUD or open panel of the region), tries to turn to the right, left and bottom sides; the government shown with figures only because of zoom then returns to chips, and the government of the region open by clicking, with the chosen force or upon arrival becomes figures. The government of the region opened in the panel does not bypass this panel; it is a panel ( `RegionHover` ed `MapPanelPlacement.Near` ) avoids `MarkerBounds` So the cursor mark doesn't run away when you open it.
 
+UI-401 (2026-10-30) replaces the row: `MapStandLayout` stands every force on its region's fixed place (UI-422) — a
+garrison at the gate, the main field force on the field, a second one on the planned place — sized in board units and
+moved and scaled by a transform only (`MapStand`), so it keeps its place at every zoom and while the map pans. A region
+shows figures at `Detail` when its group fits its capacity at the current size, or when it is inspected, holds a
+selected force or was just reached by a flight; nothing turns to tokens because of crowding any more. One stand layer,
+sorted by the feet on the board when the board changes, draws nearer forces in front. The region panel still avoids
+`MarkerBounds`, which are now the stands' visible parts. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md), "Figures on their
+places, sized with the map — UI-401", and [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md).
+
 <a id="wdrożenie-ruchu--ui-127"></a>
 <a id="implementation-z-moj--ui-127"></a>
 ## implementation with my — UI-127
@@ -707,6 +716,10 @@ Gorgoroth's point lies just under the Barad-dûr border, so its figure used to s
 the forces. A region too small for every place keeps the figure above its forces, as before. On the Mordor track the
 figure stays on its step, which lies inside Gorgoroth (the Crack of Doom is drawn at Barad-dûr's foot). Test:
 `MapContourDataTests.FellowshipFigureStandsInsideGorgoroth`.
+
+UI-401 (2026-10-30): the figure stands on its region's Fellowship place (UI-422), which lies inside the region at every
+zoom, Gorgoroth included, and is sized with the map like the armies (`MapStand`); `RegionCentre` and its four tries are
+gone. Test: `MapContourDataTests.FellowshipFigureStandsInsideItsRegion`.
 
 ## Fortress drawings on the terrain — UI-234 (2026-10-17)
 

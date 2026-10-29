@@ -9,7 +9,8 @@ using Wotr.Fixtures;
 namespace Wotr.PlayTests
 {
     // UI-199 (user report): scrolled to the view's edge, a force keeps its place beside its region and the map's edge
-    // cuts it; it never moves inward or vanishes while its region is within reach, and far away it is hidden.
+    // cuts it; it never moves inward or vanishes while its place is within reach, and far away it is hidden. UI-401: the
+    // place is the region's field place (TABLETOP_FIGURES_UX).
     public sealed class MapMarkerEdgeTests
     {
         [UnityTest]
@@ -20,8 +21,7 @@ namespace Wotr.PlayTests
             yield return Settle();
             var map = client.Board.Map;
             client.Board.Hover.Close();
-            var shape = map.Data.Shapes["minas-tirith"];
-            var point = new Vector2(shape.Anchor[0], shape.Anchor[1]);
+            var point = map.Stands.Stands("minas-tirith").Field;
             map.FocusOn(point, map.FitZoom * 2);
             map.Refresh();
             yield return Settle();
@@ -29,7 +29,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.Flex, army.resolvedStyle.display);
             var offset = Offset(map, army, point);
 
-            // The region's point 20 points below the top edge: the row above the settlement reaches past the edge.
+            // The force's feet 20 points below the top edge: its figures reach past the edge.
             map.Camera.Pan += new Vector2(0, map.contentRect.yMin + 20 - map.Camera.ToScreen(point).y);
             map.Refresh();
             yield return Settle();

@@ -14,9 +14,9 @@
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 /* UI-185: about 30% larger than UI-126, UI-192: about 15% larger again; MapArmyArtwork.Size gives the same sizes to
-   the map's placement. */
-.army.army-figures { width: 116px; height: 92px; }
-.army.army-figures.garrison { height: 96px; }
+   the map's placement. UI-401: the miniature is designed in board units (1.35 points per unit): a 54-point stand (the
+   army's 40-unit base) under figures up to 54 points tall, its feet at (33, 64); the map scales it (MapStand). */
+.army.army-figures { width: 66px; height: 86px; }
 .army.army-token { width: 44px; height: 44px; }
 .army.army-token.garrison { height: 48px; }
 .army.illustrated-army:hover .army-plinth { -unity-background-image-tint-color: rgb(255, 246, 222); }
@@ -60,23 +60,23 @@
 .army-contact-shadow, .army-stand, .army-rim, .army-plaque { position: absolute; display: none; }
 .army-figures .army-contact-shadow, .army-figures .army-stand, .army-figures .army-plaque { display: flex; }
 .army-contact-shadow {
-    left: 8px;
-    right: 0;
-    bottom: 0;
-    height: 18px;
+    left: 10px;
+    right: 2px;
+    top: 68px;
+    height: 9px;
     background-image: resource("Wotr/Art/UI/armies/contact-shadow");
     -unity-background-scale-mode: stretch-to-fill;
 }
-.army-stand { left: 2px; right: 2px; bottom: 3px; height: 44px; -unity-background-scale-mode: stretch-to-fill; }
-.army-figures.garrison .army-stand { height: 48px; }
+.army-stand { left: 6px; right: 6px; top: 54px; height: 21px; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures.garrison .army-stand { top: 53px; height: 23px; }
 .army-figures.field-force.fp .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-field-free"); }
 .army-figures.field-force.sh .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-field-shadow"); }
 .army-figures.garrison.fp .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-garrison-free"); }
 .army-figures.garrison.sh .army-stand { background-image: resource("Wotr/Art/UI/armies/stand-garrison-shadow"); }
 .army.illustrated-army:hover .army-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
 /* The state is a rim round the stand; later states win: moved, owner, eligible, selected, pressed. */
-.army-rim { left: 0; right: 0; bottom: 0; height: 50px; -unity-background-scale-mode: stretch-to-fill; }
-.army-figures.garrison .army-rim { height: 54px; }
+.army-rim { left: 5px; right: 5px; top: 52px; height: 25px; -unity-background-scale-mode: stretch-to-fill; }
+.army-figures.garrison .army-rim { top: 51px; height: 27px; }
 .army.army-figures.moved .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-moved"); }
 .army.army-figures.ability-owner .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-ability"); }
 .army.army-figures.eligible-army .army-rim,
@@ -86,12 +86,12 @@
 .army.army-figures.pressed .army-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-field-rim-pressed"); }
 /* The nation emblems and the count are a code-drawn plaque on the stand's front. */
 .army-plaque {
-    left: 24px;
-    right: 24px;
-    bottom: 5px;
-    height: 19px;
+    left: 6px;
+    right: 6px;
+    bottom: 2px;
+    height: 17px;
     border-width: 1px;
-    border-radius: 9px;
+    border-radius: 8px;
     border-color: rgb(196, 154, 69);
     background-color: rgba(22, 16, 10, 0.86);
 }
@@ -102,7 +102,9 @@
 .army-emblems { position: absolute; flex-direction: row; align-items: center; }
 .army-emblem { width: 15px; height: 15px; margin: 0 2px 0 0; -unity-background-scale-mode: scale-to-fit; }
 .army-more-nations { margin: 0; padding: 0; font-size: 12px; -unity-font-style: bold; color: rgb(247, 236, 209); }
-.army-figures .army-emblems { left: 29px; bottom: 7px; height: 15px; }
+.army-figures .army-emblems { left: 10px; bottom: 4px; height: 13px; }
+.army-figures .army-emblem { width: 13px; height: 13px; margin: 0 1px 0 0; }
+.army-figures .army-more-nations { font-size: 11px; }
 .army-token .army-emblems { left: 7px; top: 8px; }
 .army-token.garrison .army-emblems { top: 11px; }
 .army-token .army-emblem { width: 16px; height: 16px; margin: 0; }
@@ -122,11 +124,12 @@
     color: rgb(247, 236, 209);
     background-color: rgba(25, 23, 22, 0.94);
 }
-.army-figures .army-count { right: 27px; bottom: 6px; min-width: 18px; height: 17px; padding: 0 4px; font-size: 13px; border-radius: 8px; }
+.army-figures .army-count { right: 9px; bottom: 3px; min-width: 16px; height: 15px; padding: 0 3px; font-size: 12px; border-radius: 7px; }
 .army-token .army-count { right: 0; bottom: 0; min-width: 17px; height: 19px; padding: 0 3px; font-size: 14px; border-radius: 9px; }
 /* TYPO-01's Alegreya sets a taller line: the token's count has a fixed height, so it stays clear of the emblem. */
 
 .army-moved { position: absolute; right: 2px; top: 2px; width: 20px; height: 20px; display: none; background-image: resource("Wotr/Art/UI/armies/moved-check"); }
+.army-figures .army-moved { right: 4px; top: 8px; width: 16px; height: 16px; }
 .army-token .army-moved { right: 0; top: 0; width: 17px; height: 17px; }
 .army.moved .army-moved { display: flex; }
 
@@ -168,7 +171,7 @@
 }
 .army-token > .army-choice-glow { border-radius: 27px; }
 /* UI-400: round a miniature the halo is a capsule round its stand, so the figures stand above it, not on a plate. */
-.army-figures > .army-choice-glow { top: 40px; bottom: -4px; left: -6px; right: -6px; border-radius: 30px; }
+.army-figures > .army-choice-glow { top: 48px; bottom: 0; left: -2px; right: -2px; border-radius: 18px; }
 .army.eligible-army > .army-choice-glow,
 .army.ability-owner > .army-choice-glow { display: flex; }
 .army.eligible-army.selected-force > .army-choice-glow,
@@ -227,7 +230,7 @@
     background-image: resource("Wotr/Art/UI/dice/ruler-crown");
     -unity-background-scale-mode: scale-to-fit;
 }
-.army-figures .army-crown { left: 46px; top: -8px; }
+.army-figures .army-crown { left: 23px; top: 0; width: 20px; height: 12px; }
 .army-token .army-crown { left: 13px; top: -9px; width: 18px; height: 11px; }
 .army.army-figures.field-force.fp.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-free-eligible"); }
 .army.army-figures.field-force.sh.sovereign-target .army-plinth { background-image: resource("Wotr/Art/UI/armies/base-field-shadow-eligible"); }

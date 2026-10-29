@@ -61,30 +61,35 @@ namespace Wotr.Client
         private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
-        private readonly Dictionary<(string, Side, bool), Marker> markers = new Dictionary<(string, Side, bool), Marker>();
+        private readonly Dictionary<(string, Side, bool), MapArmyStand> markers = new Dictionary<(string, Side, bool), MapArmyStand>();
         private readonly List<(string, Side, bool)> obsolete = new List<(string, Side, bool)>();
         // UI-334: armies that appeared or grew in the last sync; they flare and emerge on the next frame unless a flight
         // brings them (it has its own arrival). The first sync with armies only sets the state; a quiet update too.
-        private readonly List<(Marker Marker, int? Before)> emerging = new List<(Marker, int?)>();
+        private readonly List<(MapArmyStand Marker, int? Before)> emerging = new List<(MapArmyStand, int?)>();
         // UI-338: markers whose figures all left (they count as gone at once: no lookup, no pointer) and armies that
         // shrank; on the next frame a flight that carries their figures away spares them the fade.
-        private readonly List<Marker> departing = new List<Marker>();
-        private readonly List<Marker> shrinking = new List<Marker>();
-        private readonly List<LeavingMarker> leaving = new List<LeavingMarker>();
+        private readonly List<MapArmyStand> departing = new List<MapArmyStand>();
+        private readonly List<MapArmyStand> shrinking = new List<MapArmyStand>();
+        private readonly List<MapArmyStand> leaving = new List<MapArmyStand>();
         private bool changesScheduled;
         private bool armiesShown;
         public bool Quiet { get; set; }
         private readonly List<Rect> used = new List<Rect>();
         private readonly List<Rect> covered = new List<Rect>();
-        // UI-126: the forces of a region in row order (garrison first, then field forces by side).
-        private readonly Dictionary<string, List<Marker>> regionMarkers = new Dictionary<string, List<Marker>>();
+        // UI-126: the forces of each region.
+        private readonly Dictionary<string, List<MapArmyStand>> regionMarkers = new Dictionary<string, List<MapArmyStand>>();
         private readonly HashSet<(string, Side, bool)> marched = new HashSet<(string, Side, bool)>();
         private Vector2? attentionPoint;
         // UI-127: the planned army drawn faintly at a hovered legal target, with its caption; never interactive.
         private ArmyGhost ghost;
         private Button ghostMarker;
+        private MapStand ghostStand;
+        private ArmyMarker ghostArmy;
         private MapArmyArtwork ghostArtwork;
         private Label ghostCaption;
+        // UI-401: the places, sizes, levels and depth of everything standing on the map.
+        public MapStandLayout Stands { get; }
+        private readonly Func<string, bool> focusedRegion;
         private readonly VisualElement foreground;
         private bool panning;
         private int panPointer = -1;
@@ -108,6 +113,7 @@ namespace Wotr.Client
             focusable = true;
             AddToClassList("map");
             armyPulse = new ChoicePulse(this);
+            focusedRegion = Focused;
             Renderer.Prepare(data);
             Renderer.SetPoliticalView(ViewPreference.Political);
             Add(Renderer.Root);
@@ -161,6 +167,8 @@ namespace Wotr.Client
             });
             // UI-154: the track's stones lie under every marker.
             MordorTrack = new MapMordorTrack(this);
+            // UI-401: one y-sorted layer for everything that stands on the map, under the overlays.
+            Stands = new MapStandLayout(this);
             SyncMarkers();
             HistoryOverlay = new MapActionOverlay(this);
             DraftOverlay = new MapDraftOverlay(this);
@@ -316,39 +324,51 @@ namespace Wotr.Client
                 ghost.Captions.TryGetValue(Hovered, out caption) && Data.Shapes.ContainsKey(Hovered);
             if (!shown)
             {
-                if (ghostMarker != null)
-                    ghostMarker.style.display = ghostCaption.style.display = DisplayStyle.None;
+                HideGhost();
                 return;
             }
             EnsureGhost();
-            ghostMarker.EnableInClassList("fp", ghost.Army.Side == Side.FreePeoples);
-            ghostMarker.EnableInClassList("sh", ghost.Army.Side == Side.Shadow);
-            ghostArtwork.Apply(ghost.Army);
-            ghostArtwork.Layout(true);
-            var rect = GhostRect(Hovered);
-            ghostMarker.style.left = rect.x;
-            ghostMarker.style.top = rect.y;
+            ShowGhostArmy(ghost.Army);
+            ghostStand.Place(Camera.ToScreen(GhostPlace(Hovered)), Stands.FigureScale);
+            var rect = ghostStand.Bounds;
             ghostCaption.text = caption;
-            ghostCaption.style.left = rect.x - 22;
-            ghostCaption.style.top = rect.yMax + 2;
+            ghostCaption.style.translate = new Translate(rect.center.x - GhostCaptionWidth / 2, rect.yMax + 2);
+            if (ghostMarker.style.display == DisplayStyle.Flex)
+                return;
             ghostMarker.style.display = ghostCaption.style.display = DisplayStyle.Flex;
-            ghostMarker.BringToFront();
+            ghostStand.Root.BringToFront();
             ghostCaption.BringToFront();
         }
 
-        // Beside the target's own forces, or where its row would stand.
-        internal Rect GhostRect(string region)
+        private void HideGhost()
         {
-            var size = MapArmyArtwork.Size(false, true);
-            if (regionMarkers.TryGetValue(region, out var row) && row.Count > 0 && row[0].Visible)
-            {
-                var right = row[row.Count - 1].Bounds;
-                return LocalMarkerRect(new Vector2(right.xMax + 4 + size.x / 2, right.yMax - size.y / 2), size);
-            }
-            var shape = Data.Shapes[region];
-            var anchor = Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-            return LocalMarkerRect(RowCentre(0, anchor, size, Data.Regions[region].Settlement != null), size);
+            if (ghostMarker != null)
+                ghostMarker.style.display = ghostCaption.style.display = DisplayStyle.None;
         }
+
+        // The ghost's figures change with the planned army only, not with the camera.
+        private void ShowGhostArmy(ArmyMarker army)
+        {
+            if (ghostArmy == army)
+                return;
+            ghostArmy = army;
+            ghostMarker.EnableInClassList("fp", army.Side == Side.FreePeoples);
+            ghostMarker.EnableInClassList("sh", army.Side == Side.Shadow);
+            ghostArtwork.Apply(army);
+            ghostArtwork.Layout(true);
+        }
+
+        // UI-401: the planned army stands where it would arrive: on the region's field when no field force stands there,
+        // otherwise on its planned place beside them.
+        internal Vector2 GhostPlace(string region)
+        {
+            var stands = Stands.Stands(region);
+            var occupied = regionMarkers.TryGetValue(region, out var forces) && forces.Any(force => !force.Army.Garrison);
+            return occupied ? stands.Planned : stands.Field;
+        }
+
+        // The caption's width in Styles/Armies.uss (.army-ghost-caption).
+        private const float GhostCaptionWidth = 120;
 
         private void EnsureGhost()
         {
@@ -358,9 +378,13 @@ namespace Wotr.Client
             ghostMarker.AddToClassList("army");
             ghostMarker.AddToClassList("army-ghost");
             ghostArtwork = new MapArmyArtwork(ghostMarker);
+            ghostStand = new MapStand(ghostMarker, MapArmyArtwork.HolderSize);
+            ghostStand.Design(MapArmyArtwork.Feet(false, true), MapArmyArtwork.Visible(false, true));
             ghostCaption = new Label { name = "army-ghost-caption", pickingMode = PickingMode.Ignore };
             ghostCaption.AddToClassList("army-ghost-caption");
-            Add(ghostMarker);
+            ghostCaption.style.left = 0;
+            ghostCaption.style.top = 0;
+            Add(ghostStand.Root);
             Add(ghostCaption);
         }
 
@@ -510,6 +534,7 @@ namespace Wotr.Client
                 CameraChanged?.Invoke();
             }
             BeginLayout();
+            Stands.Measure();
             MordorTrack?.Layout();
             FellowshipMarker?.Layout();
             LayoutMarkers();
@@ -590,7 +615,7 @@ namespace Wotr.Client
                 {
                     marker = CreateMarker(army);
                     markers.Add(key, marker);
-                    Add(marker.Button);
+                    Stands.Add(marker.Stand);
                 }
                 marker.Army = army;
                 marker.Artwork.Apply(army);
@@ -608,12 +633,17 @@ namespace Wotr.Client
                 if (Animated())
                     Depart(gone);
                 else
-                    gone.Button.RemoveFromHierarchy();
+                    gone.Stand.Remove();
             }
             armiesShown |= Data.Armies.Count > 0;
             regionMarkers.Clear();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
-                regionMarkers.Add(group.Key, group.OrderBy(m => m.Army.Garrison ? 0 : 1).ThenBy(m => m.Army.Side).ToList());
+            {
+                var forces = group.ToList();
+                regionMarkers.Add(group.Key, forces);
+                Stands.Assign(group.Key, forces);
+            }
+            Stands.Sort();
         }
 
         // UI-274: a force holding a king that a decision or the selected die lights glows, and its click chooses the
@@ -629,10 +659,10 @@ namespace Wotr.Client
         public string LitSovereign(DraftToken army) =>
             army.Side is Side side && markers.TryGetValue((army.Id, side, army.Garrison), out var marker) ? LitSovereign(marker) : null;
 
-        private string LitSovereign(Marker marker) => eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison))
+        private string LitSovereign(MapArmyStand marker) => eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison))
             ? null : marker.Army.SovereignIds.FirstOrDefault(id => sovereignHint(id) != null);
 
-        private void ApplySovereignHint(Marker marker)
+        private void ApplySovereignHint(MapArmyStand marker)
         {
             var king = LitSovereign(marker);
             var description = ArmyMarkerText.Describe(marker.Army, Data.Regions[marker.Army.RegionId].Name);
@@ -640,22 +670,14 @@ namespace Wotr.Client
             marker.Button.EnableInClassList(SovereignTargetClass, king != null);
         }
 
-        // Left of a region's forces, or where its row would stand when it has none.
-        internal Rect BesideForces(string region, Vector2 size)
-        {
-            if (regionMarkers.TryGetValue(region, out var row) && row.Count > 0 && row[0].Visible)
-            {
-                var left = row[0].Bounds;
-                return LocalMarkerRect(new Vector2(left.xMin - 4 - size.x / 2, left.yMax - size.y / 2), size);
-            }
-            var shape = Data.Shapes[region];
-            var anchor = Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-            return LocalMarkerRect(RowCentre(0, anchor, size, Data.Regions[region].Settlement != null), size);
-        }
+        // UI-274, UI-401: a corrupted king's marker stands beside his capital's forces, on the region's last character
+        // place (characters fill theirs from the first, UI-402).
+        internal Vector2 BesideForces(string region) =>
+            Stands.Stands(region).Character(RegionStands.CharacterPlaces - 1);
 
         private bool Animated() => armiesShown && !Quiet && !Reduced();
 
-        private void Emerge(Marker marker, int? before)
+        private void Emerge(MapArmyStand marker, int? before)
         {
             if (Reduced())
                 return;
@@ -663,7 +685,7 @@ namespace Wotr.Client
             ScheduleChanges();
         }
 
-        private void Depart(Marker marker)
+        private void Depart(MapArmyStand marker)
         {
             marker.Button.name = "leaving-" + marker.Button.name;
             marker.Button.pickingMode = PickingMode.Ignore;
@@ -671,7 +693,7 @@ namespace Wotr.Client
             Later(departing, marker);
         }
 
-        private void Later(List<Marker> list, Marker marker)
+        private void Later(List<MapArmyStand> list, MapArmyStand marker)
         {
             list.Add(marker);
             ScheduleChanges();
@@ -702,45 +724,28 @@ namespace Wotr.Client
             departing.Clear();
         }
 
-        private bool Arriving(Marker marker) => Figures?.Arriving(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
+        private bool Arriving(MapArmyStand marker) => Figures?.Arriving(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
 
-        private bool Departing(Marker marker) => Figures?.Departing(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
+        private bool Departing(MapArmyStand marker) => Figures?.Departing(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
 
-        private void StartLeaving(Marker marker)
+        // UI-338, UI-401: a fading marker stays on its place while the view moves, until it is gone.
+        private void StartLeaving(MapArmyStand marker)
         {
-            if (marker.Button.parent == null)
+            if (marker.Stand.Root.parent == null)
                 return;
             if (Departing(marker))
             {
-                marker.Button.RemoveFromHierarchy();
+                marker.Stand.Remove();
                 return;
             }
-            var gone = new LeavingMarker(marker, AnchorOf(marker.Army.RegionId));
-            leaving.Add(gone);
-            marker.Artwork.Leave(() => Gone(gone));
+            leaving.Add(marker);
+            marker.Artwork.Leave(() => Gone(marker));
         }
 
-        private void Gone(LeavingMarker gone)
+        private void Gone(MapArmyStand marker)
         {
-            gone.Marker.Button.RemoveFromHierarchy();
-            leaving.Remove(gone);
-        }
-
-        // A fading marker stays where it stood on the map while the view moves.
-        private void LayoutLeaving()
-        {
-            foreach (var gone in leaving)
-            {
-                var position = AnchorOf(gone.Marker.Army.RegionId) + gone.Offset;
-                gone.Marker.Button.style.left = position.x;
-                gone.Marker.Button.style.top = position.y;
-            }
-        }
-
-        private Vector2 AnchorOf(string region)
-        {
-            var anchor = Data.Shapes[region].Anchor;
-            return Camera.ToScreen(new Vector2(anchor[0], anchor[1]));
+            marker.Stand.Remove();
+            leaving.Remove(marker);
         }
 
         // Skip shows the latest state: every army stands clear with its number, and every departed one is gone.
@@ -751,10 +756,10 @@ namespace Wotr.Client
             foreach (var marker in markers.Values)
                 marker.Artwork.EndEmerge();
             foreach (var marker in departing)
-                marker.Button.RemoveFromHierarchy();
+                marker.Stand.Remove();
             departing.Clear();
-            foreach (var gone in leaving)
-                gone.Marker.Button.RemoveFromHierarchy();
+            foreach (var marker in leaving)
+                marker.Stand.Remove();
             leaving.Clear();
         }
 
@@ -766,7 +771,7 @@ namespace Wotr.Client
             return false;
         }
 
-        private Marker CreateMarker(ArmyMarker army)
+        private MapArmyStand CreateMarker(ArmyMarker army)
         {
             var regionId = army.RegionId;
             var button = new MiniatureButton(() => ArmySelected?.Invoke(MarkerToken(army)));
@@ -778,7 +783,14 @@ namespace Wotr.Client
             if (army.Garrison)
                 button.AddToClassList("garrison");
             button.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
-            return new Marker { Button = button, Army = army, Artwork = new MapArmyArtwork(button) };
+            var artwork = new MapArmyArtwork(button);
+            return new MapArmyStand
+            {
+                Button = button,
+                Army = army,
+                Artwork = artwork,
+                Stand = new MapStand(button, MapArmyArtwork.HolderSize)
+            };
         }
 
         private static DraftToken MarkerToken(ArmyMarker army) => new DraftToken(
@@ -810,134 +822,52 @@ namespace Wotr.Client
                 yield return fellowship;
         }
 
-        // UI-126: every force is shown. A region's forces stand in one row just above its settlement symbol (or
-        // centred on a region without one), as figures on a base when zoomed in and as tokens otherwise. A row that
-        // would cover a placed marker or panel falls back to tokens, then tries the other sides of the anchor.
+        // UI-126, UI-401: every force is shown, standing on its region's place (MapStandLayout): figures on a base when the
+        // region shows figures, a token otherwise. A fading force keeps its place until it is gone.
         private void LayoutMarkers()
         {
             attentionPoint = null;
             if (contentRect.width <= 0)
                 return;
-            foreach (var entry in regionMarkers)
-                LayoutRegion(entry.Key, entry.Value);
-            LayoutLeaving();
-        }
-
-        private void LayoutRegion(string region, List<Marker> row)
-        {
-            var shape = Data.Shapes[region];
-            var anchor = Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-            var visible = NearView(anchor);
-            foreach (var marker in row)
-                ShowMarker(marker, visible);
-            if (!visible)
-                return;
-            var settled = Data.Regions[region].Settlement != null;
-            var focused = Focused(region, row);
-            var figures = focused || MarkerVisibility.Detail;
-            var bounds = PlaceRow(row, anchor, settled, figures);
-            // Only the zoom gives way to crowding; an inspected or selected force keeps its figures.
-            if (figures && !focused && OverlapsPlaced(bounds))
-            {
-                figures = false;
-                bounds = PlaceRow(row, anchor, settled, false);
-            }
-            used.Add(bounds);
-            ApplyRow(row, bounds, figures);
-            if (region == AttentionRegion)
-                attentionPoint = new Vector2(bounds.xMax + 12, bounds.center.y);
+            Stands.LayoutArmies(markers.Values, focusedRegion, used);
+            foreach (var marker in leaving)
+                Stands.LayoutArmy(marker, false);
+            if (regionMarkers.TryGetValue(AttentionRegion, out var forces))
+                attentionPoint = BesideShown(forces);
         }
 
         // The region shows figures for itself: inspected by a click, holding a selected force, or just arrived.
-        private bool Focused(string region, List<Marker> row)
+        private bool Focused(string region)
         {
             if (Figures?.Reveals(region) == true || region == MarkerVisibility.InspectedRegion)
                 return true;
-            foreach (var marker in row)
+            if (!regionMarkers.TryGetValue(region, out var forces))
+                return false;
+            foreach (var marker in forces)
                 if (marker.Selected)
                     return true;
             return false;
         }
 
-        private void ShowMarker(Marker marker, bool visible)
-        {
-            marker.Visible = visible;
-            marker.Button.style.opacity = Figures?.Arriving(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true ? .25f : 1f;
-            if (!visible && marker.Button.panel?.focusController.focusedElement == marker.Button)
-                Focus();
-            marker.Button.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-        }
+        // UI-401: whether a region shows figures now (focused, or zoomed in with room for them).
+        internal bool FiguresIn(string region) => Stands.Figures(region, Focused(region));
 
-        // UI-199: a row gives way only to the forces placed before it, never to the HUD or the open region panel, so it
-        // keeps its place on the map while the view scrolls.
-        private Rect PlaceRow(List<Marker> row, Vector2 anchor, bool settled, bool figures)
+        // UI-126: the attention mark stands right of a region's shown forces.
+        private static Vector2? BesideShown(List<MapArmyStand> forces)
         {
-            var size = RowSize(row, figures);
-            for (var place = 0; place < 4; place++)
-            {
-                var rect = LocalMarkerRect(RowCentre(place, anchor, size, settled), size);
-                if (!OverlapsPlaced(rect))
-                    return rect;
-            }
-            return LocalMarkerRect(RowCentre(0, anchor, size, settled), size);
-        }
-
-        // Above the settlement symbol first, then right of it, left of it and below the effects label. UI-195: the row
-        // stands clear of the largest gem, a Stronghold in its gold setting.
-        private const float SettlementClearance = 12;
-
-        private static Vector2 RowCentre(int place, Vector2 anchor, Vector2 size, bool settled) => place switch
-        {
-            0 => settled ? anchor + new Vector2(0, -SettlementClearance - size.y / 2) : anchor,
-            1 => anchor + new Vector2(14 + size.x / 2, 0),
-            2 => anchor - new Vector2(14 + size.x / 2, 0),
-            _ => anchor + new Vector2(0, 30 + size.y / 2)
-        };
-
-        private static Vector2 RowSize(List<Marker> row, bool figures)
-        {
-            var gap = figures ? 4 : 2;
-            float width = -gap;
-            var height = 0f;
-            foreach (var marker in row)
-            {
-                var size = MapArmyArtwork.Size(marker.Army.Garrison, figures);
-                width += size.x + gap;
-                height = Mathf.Max(height, size.y);
-            }
-            return new Vector2(width, height);
-        }
-
-        private static void ApplyRow(List<Marker> row, Rect bounds, bool figures)
-        {
-            var gap = figures ? 4 : 2;
-            var left = bounds.x;
-            foreach (var marker in row)
-            {
-                var size = MapArmyArtwork.Size(marker.Army.Garrison, figures);
-                var rect = new Rect(left, bounds.yMax - size.y, size.x, size.y);
-                left += size.x + gap;
-                marker.Artwork.Layout(figures);
-                marker.Bounds = rect;
-                marker.Button.style.left = rect.x;
-                marker.Button.style.top = rect.y;
-            }
-        }
-
-        private bool OverlapsPlaced(Rect rect)
-        {
-            foreach (var other in used)
-                if (other.Overlaps(rect))
-                    return true;
-            return false;
+            Rect? union = null;
+            foreach (var marker in forces)
+                if (marker.Visible)
+                    union = union is Rect rect ? Rect.MinMaxRect(Mathf.Min(rect.xMin, marker.Bounds.xMin),
+                        Mathf.Min(rect.yMin, marker.Bounds.yMin), Mathf.Max(rect.xMax, marker.Bounds.xMax),
+                        Mathf.Max(rect.yMax, marker.Bounds.yMax)) : marker.Bounds;
+            return union is Rect bounds ? new Vector2(bounds.xMax + 12, bounds.center.y) : (Vector2?)null;
         }
 
         // UI-199: a marker stands where it belongs and the map's edge cuts it (the map clips its overflow); it never
-        // moves inward. It shows while its region's point is within reach of the view, so it slides in and out with
-        // the map instead of appearing or vanishing whole.
+        // moves inward. It shows while the point under its feet is within reach of the view, so it slides in and out
+        // with the map instead of appearing or vanishing whole.
         public const float MarkerReach = 160;
-
-        internal Rect LocalMarkerRect(Vector2 centre, Vector2 size) => new Rect(centre - size / 2, size);
 
         internal bool NearView(Vector2 point) => new Rect(contentRect.x - MarkerReach, contentRect.y - MarkerReach,
             contentRect.width + 2 * MarkerReach, contentRect.height + 2 * MarkerReach).Contains(point);
@@ -979,29 +909,6 @@ namespace Wotr.Client
             painter.MoveTo(anchor + new Vector2(0, 5));
             painter.LineTo(anchor + new Vector2(0, 6));
             painter.Stroke();
-        }
-
-        private sealed class Marker
-        {
-            public Button Button;
-            public MapArmyArtwork Artwork;
-            public ArmyMarker Army;
-            public bool Selected;
-            public bool Visible;
-            public Rect Bounds;
-        }
-
-        // UI-338: a departed marker's place relative to its region's point when it began to fade.
-        private sealed class LeavingMarker
-        {
-            public readonly Marker Marker;
-            public readonly Vector2 Offset;
-
-            public LeavingMarker(Marker marker, Vector2 anchor)
-            {
-                Marker = marker;
-                Offset = marker.Bounds.position - anchor;
-            }
         }
     }
 }

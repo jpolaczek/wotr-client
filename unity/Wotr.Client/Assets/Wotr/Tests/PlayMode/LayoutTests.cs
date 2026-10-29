@@ -34,11 +34,14 @@ namespace Wotr.PlayTests
                 Assert.Greater(screen.Map.worldBound.height, screen.Tray.worldBound.height * 2);
                 Assert.LessOrEqual(screen.Tray.worldBound.yMax, screen.Root.worldBound.yMax + 1);
                 Assert.LessOrEqual(screen.Hand.worldBound.xMax, screen.Root.worldBound.xMax + 1);
-                var markers = screen.Map.Query<Button>(className: "army").ToList();
+                // UI-401: every force stands on its own place, so on the whole map two tokens share at most a quarter of
+                // either (a siege's garrison and besieger, or the tightest neighbours).
+                var markers = screen.Map.Query<Button>(className: "army").ToList()
+                    .Where(marker => marker.resolvedStyle.display != DisplayStyle.None).ToList();
                 for (var a = 0; a < markers.Count; a++)
                     for (var b = a + 1; b < markers.Count; b++)
-                        if (markers[a].resolvedStyle.display != DisplayStyle.None && markers[b].resolvedStyle.display != DisplayStyle.None)
-                            Assert.IsFalse(markers[a].worldBound.Overlaps(markers[b].worldBound), markers[a].text + " / " + markers[b].text);
+                        Assert.LessOrEqual(Overlap(markers[a].worldBound, markers[b].worldBound),
+                            .25f * Mathf.Min(Area(markers[a].worldBound), Area(markers[b].worldBound)), markers[a].name + " / " + markers[b].name);
                 Save(target, $"ui-{width}-overview.png");
                 screen.Map.Focus("helms-deep");
                 for (int i = 0; i < 6; i++)
@@ -144,6 +147,12 @@ namespace Wotr.PlayTests
             Assert.LessOrEqual(bounds.yMax, board.Console.Root.worldBound.yMin + .5f, "Decision window above the turn console");
             Assert.LessOrEqual(window.Dock.worldBound.yMax, bounds.yMax + .5f, "The decision window holds its whole content");
         }
+
+        private static float Overlap(Rect a, Rect b) =>
+            Mathf.Max(0, Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin)) *
+            Mathf.Max(0, Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin));
+
+        private static float Area(Rect rect) => rect.width * rect.height;
 
         public static void Save(RenderTexture target, string file)
         {

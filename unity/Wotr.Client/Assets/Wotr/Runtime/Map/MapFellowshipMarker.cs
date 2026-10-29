@@ -9,13 +9,16 @@ namespace Wotr.Client
         // UI-154: on the Mordor track the figure stands on its step, walks the path to the next one and carries its
         // Corruption, the missing-attempt mark and the drawn Hunt tile beside it.
         public const float MotionSeconds = .4f;
-        // UI-185/UI-192: as large as the figures of the armies (MapArmyArtwork).
+        // UI-185/UI-192: as large as the figures of the armies (MapArmyArtwork). UI-401: its design size; the map scales
+        // it, and it stands on its region's Fellowship place (UI-422).
         private static readonly Vector2 RegionSize = new Vector2(64, 72);
-        // UI-228: above the region's forces first; where that would stand in the neighbouring region (Gorgoroth under
-        // Barad-dûr), below them, then right and left of them.
-        private static readonly Vector2[] RegionPlaces = { new Vector2(0, -64), new Vector2(0, 64), new Vector2(70, -8), new Vector2(-70, -8) };
+        // UI-401: design points per board unit — the box spans the Fellowship's figure (36 units) and its base.
+        public const float DesignUnit = 1.8f;
+        // The point under the figure's feet on a region, and on the Mordor track's step (4 points below the box).
+        private static readonly Vector2 RegionFeet = new Vector2(32, 64);
+        private static readonly Vector2 TrackFeet = new Vector2(32, 68);
         // UI-283 (owner's request): on the Mordor track the figure is twice its first size, as large as on a region.
-        private static readonly Vector2 TrackDetail = new Vector2(72, 80), TrackToken = new Vector2(56, 64);
+        private const float TrackDetail = 80, TrackToken = 64;
         private const float StatusWidth = 58;
         private const float TileWidth = 30;
         private readonly MapCanvas map;
@@ -59,7 +62,7 @@ namespace Wotr.Client
         private double motionStart;
         private bool hovered;
         private bool inspected;
-        private Rect bounds;
+        private readonly MapStand stand;
 
         public MapFellowshipMarker(MapCanvas map)
         {
@@ -73,16 +76,21 @@ namespace Wotr.Client
             // The map's own figure needs no panel glow (UI-201).
             FigureArtwork.Apply(marker, FigureAppearances.Fellowship, Side.FreePeoples, glow: false);
             marker.style.display = DisplayStyle.None;
-            map.Add(marker);
+            marker.style.width = RegionSize.x;
+            marker.style.height = RegionSize.y;
+            stand = new MapStand(marker, RegionSize);
+            map.Stands.Add(stand);
             var ring = new VisualElement { name = "fellowship-mordor-ring", pickingMode = PickingMode.Ignore };
             status.Add(ring);
             status.Add(corruption);
             status.Add(idle);
             status.style.display = DisplayStyle.None;
+            Pin(status);
             map.Add(status);
             tile.Root.name = "fellowship-mordor-tile";
             tile.Root.style.position = Position.Absolute;
             tile.Root.style.display = DisplayStyle.None;
+            Pin(tile.Root);
             map.Add(tile.Root);
             motion = marker.schedule.Execute(Walk).Every(16);
             motion.Pause();
@@ -120,7 +128,25 @@ namespace Wotr.Client
             tileShown = mordor.Active && hunt?.Mordor == true && hunt.Face != null;
             if (tileShown)
                 tile.Apply(hunt.Face);
+            Stand();
             Layout();
+        }
+
+        // UI-401: where the figure stands, set when the Fellowship's position changes; the stand layer sorts it in then.
+        private void Stand()
+        {
+            if (mordor.Active)
+                map.Stands.Stand(stand, map.Data.MordorTrack.PointAt(Mathf.Max(0, shownStep)));
+            else if (map.Data.Shapes.ContainsKey(regionId))
+                map.Stands.Stand(stand, map.Stands.Stands(regionId).Fellowship);
+            map.Stands.Sort();
+        }
+
+        // Positioned by translate only, from the map's corner.
+        private static void Pin(VisualElement element)
+        {
+            element.style.left = 0;
+            element.style.top = 0;
         }
 
         // UI-280: wherever the revealed Fellowship stands, on a region or on the Mordor track, its figure glows while the
@@ -171,7 +197,7 @@ namespace Wotr.Client
             map.Refresh();
         }
 
-        public Rect? Bounds(string region) => region == regionId && marker.style.display == DisplayStyle.Flex ? bounds : null;
+        public Rect? Bounds(string region) => region == regionId && marker.style.display == DisplayStyle.Flex ? stand.Bounds : null;
 
         public void Layout()
         {
@@ -183,15 +209,16 @@ namespace Wotr.Client
             status.style.display = DisplayStyle.None;
             tile.Root.style.display = DisplayStyle.None;
             marker.style.opacity = map.Figures?.FellowshipArriving == true ? .25f : 1;
-            var visible = map.Data.Shapes.TryGetValue(regionId, out var shape);
-            var anchor = visible ? map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1])) : Vector2.zero;
             // A figure that offers the declaration, the move or the hide is the control for it, so it shows at every zoom.
-            visible &= map.NearView(anchor) && (DeclareOffered || HideOffered || MoveOffered || hovered || inspected ||
-                map.MarkerVisibility.Figures(regionId) || map.Figures?.Reveals(regionId) == true);
+            // It has no token, so a tight region (UI-401) keeps it at the Detail level too.
+            var visible = map.Data.Shapes.ContainsKey(regionId) && (DeclareOffered || HideOffered || MoveOffered || hovered ||
+                inspected || map.MarkerVisibility.Detail || map.FiguresIn(regionId) || map.Figures?.Reveals(regionId) == true);
+            stand.Design(RegionFeet, new Rect(Vector2.zero, RegionSize));
+            visible = visible && map.Stands.Place(stand, stand.Feet, map.Stands.Scale.Of(DesignUnit));
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
-            Place(map.LocalMarkerRect(RegionCentre(shape, anchor, map.Camera), RegionSize), true);
+            map.ReserveMarker(stand.Bounds);
             RefreshRegionTooltip();
         }
 
@@ -211,39 +238,27 @@ namespace Wotr.Client
             TooltipText.Parts("Fellowship", hidden ? "Hidden" : "Revealed", region + " (last known position)"),
             "Corruption " + corruption + "/12");
 
-        // The first place whose figure stands with its feet inside the region at the current zoom; a region too small
-        // for every place keeps the figure above its forces.
-        public static Vector2 RegionCentre(RegionGeometry shape, Vector2 anchor, CameraState camera)
-        {
-            foreach (var place in RegionPlaces)
-            {
-                var centre = anchor + place;
-                if (MapContourMath.Contains(shape, camera.ToBoard(Feet(centre))))
-                    return centre;
-            }
-            return anchor + RegionPlaces[0];
-        }
-
-        public static Vector2 Feet(Vector2 centre) => centre + new Vector2(0, RegionSize.y / 2 - 8);
-
         // The figure's feet stand on the step; under the step a row holds the drawn tile (zoomed in only) and the
-        // Corruption badge, clear of the neighbouring steps along the path.
+        // Corruption badge, clear of the neighbouring steps along the path. UI-401: the figure keeps its design size and
+        // is scaled to the track's size for the zoom level.
         private void LayoutOnTrack(bool reserve)
         {
             marker.style.opacity = 1;
             var detail = map.MarkerVisibility.Detail;
-            var size = detail ? TrackDetail : TrackToken;
-            var anchor = map.Camera.ToScreen(map.Data.MordorTrack.PointAt(shownStep));
-            var visible = map.NearView(anchor);
+            var point = map.Data.MordorTrack.PointAt(shownStep);
+            stand.Design(TrackFeet, new Rect(Vector2.zero, RegionSize));
+            var visible = map.Stands.Place(stand, point, (detail ? TrackDetail : TrackToken) / RegionSize.y);
             var withTile = visible && tileShown && detail;
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             status.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             tile.Root.style.display = withTile ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
-            var rect = map.LocalMarkerRect(anchor + new Vector2(0, 4 - size.y / 2), size);
-            Place(rect, reserve);
+            var rect = stand.Bounds;
+            if (reserve)
+                map.ReserveMarker(rect);
             marker.tooltip = mordor.FigureTooltip + (HideOffered ? "\n" + HideHint : "");
+            var anchor = map.Camera.ToScreen(point);
             var measured = status.resolvedStyle.width;
             var statusWidth = float.IsNaN(measured) || measured <= 0 ? StatusWidth : measured;
             var tileWidth = withTile ? TileWidth : 0;
@@ -256,21 +271,8 @@ namespace Wotr.Client
                 left = rect.x - tileWidth - statusWidth - 4;
                 top = anchor.y - 8;
             }
-            tile.Root.style.left = left;
-            tile.Root.style.top = top - 6;
-            status.style.left = left + tileWidth;
-            status.style.top = top;
-        }
-
-        private void Place(Rect rect, bool reserve)
-        {
-            bounds = rect;
-            if (reserve)
-                map.ReserveMarker(rect);
-            marker.style.width = rect.width;
-            marker.style.height = rect.height;
-            marker.style.left = rect.x;
-            marker.style.top = rect.y;
+            tile.Root.style.translate = new Translate(left, top - 6);
+            status.style.translate = new Translate(left + tileWidth, top);
         }
 
         // A new step walks the path from the shown position; the first sight of the track, or a jump back, places it.

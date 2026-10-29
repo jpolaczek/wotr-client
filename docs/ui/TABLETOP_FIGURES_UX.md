@@ -150,6 +150,62 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
 - **Hit shape.** `MiniatureButton.ContainsPoint` covers the base ellipse and the figure columns; transparent headroom
   above a figure never takes a click — it goes to whatever lies behind.
 
+**As built (UI-401, 2026-10-30).**
+
+- **Layout pass.** `MapStandLayout` replaces the row layout (`LayoutRegion`, `PlaceRow`, `RowCentre`, `ApplyRow`,
+  `OverlapsPlaced`). Places are assigned when the board changes (`Assign`), never per frame: a garrison stands at its
+  fortress's gate (`garrison`); the region's main field force (the one with army units, otherwise the larger) on
+  `field`; a second field force — Nazgûl or companions beside the other side's army, until UI-402 gives characters their
+  own places — on `planned`, and any further one on the character places. Planned recruits, a card's planned Nazgûl
+  flights and journeys stand on `planned`; the move ghost on `field` when no field force stands there, otherwise on
+  `planned` (`MapCanvas.GhostPlace`); a corrupted king's marker on the last character place (`MapCanvas.BesideForces`);
+  the Fellowship on `fellowship`, and on the Mordor track on its step. Characters still stand inside their army's
+  miniature (UI-402).
+- **Transform only.** Each standing object (`MapStand`) keeps its design size inside a holder of a fixed size with
+  `UsageHints.DynamicTransform`. Per frame only the holder's `style.translate` and `style.scale` are written, and only
+  when they change: the design point under the feet goes to `Camera.ToScreen(place)`. Width, height, left and top are
+  never written per frame, and the element keeps its own style transforms (a hover or pressed scale).
+- **Scale** (`MapStandScale`). The points per board unit are `p = clamp(zoom, 0.8035, 1.35)`: the minimum is the
+  worst-case Detail zoom (`MapStandSlots.WorstCaseZoom`, the footprints' scale 1), the maximum the miniature's design
+  size. The miniature is designed in board units at 1.35 points per unit (`MapArmyArtwork.DesignUnit`): its stand is the
+  army's 40 × 16 unit base (54 points wide) and an elite stands 40 units (54 points, the UI-192 figure height) tall; it is
+  drawn at scale `p / 1.35`, from 0.595 (a 32-point base and elite) to 1. The footprint's scale on the board is
+  `p / zoom`: 1 between the clamps, larger below the minimum (a focused region far out), smaller past 1.35 points per
+  unit, which gives the tight regions room. The Fellowship's 64 × 72 point figure is designed at 1.8 points per unit and
+  drawn at the same `p`; on the Mordor track it keeps its UI-283 size (80 or 64 points tall). An army's token is a puck
+  about as wide as its base: `clamp(40 × zoom, 32, 44)` points. A king's marker keeps its 30 × 34 points.
+- **Level** (`MapStandLayout.Figures`). A focused region (inspected, holding a selected force, or just reached by a
+  flight) shows figures; otherwise figures need the Detail level (1.3/1.2 × the fit zoom) and the footprint within the
+  region's capacity, and they stay until the footprint exceeds the capacity by the same 1.3/1.2 ratio. With the
+  1.35-point maximum every region gets figures before the closest zoom (2.6): the tightest, Western Mirkwood (0.57),
+  from a zoom of 2.37. The Fellowship's figure has no token, so it shows at the Detail level in every region (and at
+  any zoom while it offers a click), as before.
+- **Depth.** One stand layer (`map-stands`, above the Mordor track and under the history and draft overlays, the
+  flights, the observed traces and the move ghost) holds the armies, the Fellowship, the planned ghosts and the kings'
+  markers. It is sorted by the feet's board y, then x, when what stands there changes (an army sync, the planned ghosts,
+  the kings, the Fellowship's position), never per frame, so nearer figures are drawn in front.
+- **Callers.** `MarkerBounds` gives a stand's visible part (the stand, its figures and plaque, or the token);
+  `GhostPlace` and `BesideForces` give places; `NearView` hides a stand while its feet are more than 160 points
+  (`MarkerReach`) outside the view. Region names still hide under a stand that covers them (the reserved bounds).
+- **The miniature** (`MapArmyArtwork`, `Styles/Armies.uss`): a 66 × 86 point box with the feet at (33, 64), the middle
+  of the stand's top face; the stand 54 × 21 (a garrison's 54 × 23); the nearer figures stand 2 points in front of the
+  middle and the farther one 4–6 points behind; two figures stand ±9 points apart, three ±13, kept within the stand and
+  a 4-point overhang, and a cell wider than 62 points is drawn smaller with its feet on the line. The plaque (emblems 13
+  points, count 12) hangs at the stand's front, as wide as the stand, and takes a press with the stand and the figures.
+- **Cost.** A camera change writes no layout property of a stand, so it lays nothing out again. Measured in PlayMode on
+  the stress fixture (600 frames panned every frame, uncapped, against `expansions` 41882b0c): frame p95/p99 at
+  1366 × 768 on the whole map 3.21/3.51 ms (before 3.22/3.94), zoomed in 2.15/2.37 ms (2.23/2.35); at 1920 × 1080
+  3.55/3.91 ms (4.30/4.95) and 2.33/2.62 ms (2.60/2.88); `MapCanvas.Refresh` 0.21–0.38 ms at p99 (0.29–0.45). The
+  Development Player profile (`map-profile-2`) was not run for UI-401.
+- **Not yet.** Flights (`MapFigureMotion`) still fly between region points at their own size (UI-404); the token keeps
+  its UI-125 pictures (UI-406). The Mordor track's stones and the effects labels still move by `left`/`top`.
+- **Tests.** EditMode `MapStandScaleTests` (clamps, footprint, capacities within the closest zoom, hysteresis, token,
+  the miniature's design on the footprint), `MapContourDataTests.FellowshipFigureStandsInsideItsRegion`; PlayMode
+  `MapStandLayoutTests` (the Helm's Deep siege and its neighbours at 1366/1920 × 100/125 % and four zooms: feet on the
+  places, design size kept, board-unit size, panning moves every stand with the map, the layer sorted by depth, both
+  sides of the siege shown with the nearer garrison in front, Edoras's token until there is room), `MapVisibilityTests`,
+  `LayoutTests`, `MapMarkerEdgeTests`, `MapArmyArtworkTests`.
+
 ## The lifted figure, drag and drop
 
 - **Click-lift** (UI-403). A click on a legal source lifts exactly the selected figures into the hand

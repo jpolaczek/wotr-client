@@ -35,7 +35,7 @@ namespace Wotr.Client
             stale.AddRange(markers.Keys.Where(id => data.CorruptedSovereigns.All(s => s.Id != id)));
             foreach (var id in stale)
             {
-                Leave(markers[id].Button);
+                Leave(markers[id]);
                 markers.Remove(id);
             }
             foreach (var king in data.CorruptedSovereigns)
@@ -48,23 +48,26 @@ namespace Wotr.Client
                         Appearance.Arrive(marker.Button);
                 }
                 marker.Region = king.RegionId;
+                map.Stands.Stand(marker.Stand, map.BesideForces(king.RegionId));
                 // UI-420 (owner): the marker reads as the king's portrait does.
                 marker.Description = SovereignPresentation.Describe(king, data.Regions[king.RegionId].Name);
             }
+            map.Stands.Sort();
             seeded = true;
             Light(hint);
         }
 
-        private void Leave(Button button)
+        private void Leave(Marker marker)
         {
+            var button = marker.Button;
             button.pickingMode = PickingMode.Ignore;
             if (!seeded || !Appearance.Moving(button))
             {
-                button.RemoveFromHierarchy();
+                marker.Stand.Remove();
                 return;
             }
             button.AddToClassList(LeavingClass);
-            button.schedule.Execute(button.RemoveFromHierarchy).ExecuteLater(LeaveMilliseconds);
+            button.schedule.Execute(marker.Stand.Remove).ExecuteLater(LeaveMilliseconds);
         }
 
         // What a click on each king does now, or null when it only informs.
@@ -86,18 +89,14 @@ namespace Wotr.Client
                 Place(marker);
         }
 
+        // UI-401: a king's marker stands on its place beside his capital's forces (MapCanvas.BesideForces) at its own size,
+        // the puck's middle on the place.
         private void Place(Marker marker)
         {
-            var shape = map.Data.Shapes[marker.Region];
-            var anchor = map.Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-            var visible = map.NearView(anchor);
+            var visible = map.Stands.Place(marker.Stand, marker.Stand.Feet, 1);
             marker.Button.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!visible)
-                return;
-            var rect = map.BesideForces(marker.Region, Size);
-            map.ReserveMarker(rect);
-            marker.Button.style.left = rect.x;
-            marker.Button.style.top = rect.y;
+            if (visible)
+                map.ReserveMarker(marker.Stand.Bounds);
         }
 
         private Marker Create(string id)
@@ -107,13 +106,16 @@ namespace Wotr.Client
             button.userData = new DraftToken(DraftObject.Sovereign, id);
             // A press on the marker belongs to it, not to the map's region click or pan.
             button.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
-            map.Add(button);
-            return new Marker { Button = button };
+            var stand = new MapStand(button, Size);
+            stand.Design(Size / 2, new Rect(Vector2.zero, Size));
+            map.Stands.Add(stand);
+            return new Marker { Button = button, Stand = stand };
         }
 
         private sealed class Marker
         {
             public Button Button;
+            public MapStand Stand;
             public string Region = "";
             public string Description = "";
         }

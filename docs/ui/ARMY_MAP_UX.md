@@ -67,6 +67,9 @@ The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 
   the interval, it never puts the tags on itself.
 - Fellowship tag unchanged, in the same collision layer.
 
+Superseded by UI-401 (2026-10-30): every force stands on its region's fixed place and is sized with the map; nothing
+moves to make room ("Figures on their places, sized with the map — UI-401" below).
+
 <a id="treść-i-informacja"></a>
 ### Content and information
 
@@ -757,4 +760,31 @@ plinth pictures: eligible and a king's target (legal green), ability owner (ambe
 code-drawn plaque on the stand's front. Only the stand's ellipse and the figures' boxes take a press (`MiniatureButton`),
 so the headroom above a figure passes it to whatever lies behind. No filter is used on a map army. The far-zoom token
 keeps its UI-125 pictures until UI-406. Tests: `MapArmyArtworkTests`, `UiArtKitTests`.
+
+## Figures on their places, sized with the map — UI-401 (2026-10-30)
+
+UI-401 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "Stand places, scale, depth and hit shape"): an army no longer
+looks for room in a row beside its region's point. It stands on its region's fixed place (UI-422) at every zoom, sized
+in board units, and keeps that place while the map pans, glides or zooms.
+
+- **Where.** A garrison stands at its fortress's gate; the region's main field force (the one with army units,
+  otherwise the larger) on the field place; a second field force (Nazgûl or companions beside the other side's army)
+  on the planned place until UI-402 gives characters their own. Planned recruits, a card's planned Nazgûl flights and
+  journeys stand on the planned place; the planned army at a hovered target on the field place, or on the planned
+  place when a field force already stands there; a corrupted king's marker on the region's last character place; the
+  Fellowship's figure on its Fellowship place.
+- **How large.** The miniature is designed in board units: its stand is the army's 40-unit base and an elite stands as
+  tall as the base is wide (54 points at the design size, as since UI-192). It is drawn at the zoom clamped between the
+  worst-case Detail zoom and its design size, so a base is 32–54 points wide; a token is about as wide as the base,
+  32–44 points. The marker keeps its design size and is moved and scaled by a transform only (`MapStand`).
+- **Which level.** Figures show at the Detail level when the region's group fits its capacity at the current size, and
+  in a focused region (inspected, holding a selected force, just reached by a flight); otherwise the token. The fifteen
+  tightest regions show tokens at scale 1 and get figures as the zoom passes the design size.
+- **Depth.** One layer holds the armies, the Fellowship, the planned ghosts and the kings' markers, sorted by the feet
+  on the board whenever the board changes, so a nearer (lower) figure is drawn in front; a siege shows the besieger
+  behind its garrison.
+- **Supersedes** "Location" above, the UI-126 row and its fallbacks to tokens on crowding, UI-199's row that gives way
+  only to the forces placed before it, and UI-228's Fellowship places around the region's point.
+
+Tests: `MapStandLayoutTests`, `MapStandScaleTests`, `MapVisibilityTests`, `LayoutTests`, `MapMarkerEdgeTests`.
 
