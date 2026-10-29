@@ -313,6 +313,9 @@
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
 }
+/* UI-411 (owner): a Corruption tile that can be chosen breathes visibly: on an 18-point tile the fading rim alone hardly
+   showed, so it also grows a little in the same rhythm (the roster's rows do the same). Reduced motion keeps it lit. */
+.motion-enabled #board-screen .edge-left-panel .choice-glow-pulse .sovereign-tiles > .sovereign-tile.choice-glow { scale: 1.12 1.12; }
 
 /* UI-348 (EXP-15 D17): a Combat card's replacement is a gilt chip with its source's arms (the nation emblem stands in for
    Brand's or the Chieftain's arms until their own art exists) beside the player's own card, which shares its row. */

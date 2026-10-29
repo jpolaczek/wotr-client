@@ -205,6 +205,9 @@ namespace Wotr.PlayTests
             StringAssert.Contains("Click to use", guard.tooltip);
             var row = board.Characters.Root.Q<Button>("character-roster-" + dain);
             Assert.IsTrue(row.Contains(guard), "The icons stand on Dáin's row.");
+            // UI-408 (owner): a short roster stands two a line, its icons larger, beside the text.
+            Assert.IsTrue(board.Characters.Wide, "Two characters a line fit this roster.");
+            Assert.That(guard.worldBound.width, Is.GreaterThanOrEqualTo(17f), "The icons are larger two a line.");
             Assert.That(guard.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
             Assert.That(guard.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
             LayoutTests.Save(client.Panel.targetTexture, "ui391-roster-icons.png");

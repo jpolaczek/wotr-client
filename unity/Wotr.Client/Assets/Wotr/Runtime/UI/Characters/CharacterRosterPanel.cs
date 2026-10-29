@@ -43,6 +43,11 @@ namespace Wotr.Client
         // UI-391: a row's ability icon glows.
         private bool abilitiesOffered;
         private bool rosterAvailable;
+        // UI-408: two rows a line unless the roster is too tall for the board in that form; decided per roster size and room.
+        public const string WideClass = "roster-wide";
+        public const string CompactClass = "roster-compact";
+        private bool wide = true;
+        private string fitted = "";
         private PlayerView view;
         private VisualElement source;
         private bool visible;
@@ -55,6 +60,8 @@ namespace Wotr.Client
             Tab.AddToClassList("characters-tab");
             Tab.AddToClassList(RuntimeTooltip.RichHoverClass);
             Root.AddToClassList("characters-panel");
+            Root.AddToClassList(WideClass);
+            Root.RegisterCallback<GeometryChangedEvent>(_ => FitRows());
             Root.style.display = DisplayStyle.None;
             pulse = new ChoicePulse(Root);
             Inspector = new CharacterInspector(data, focus, CloseInspection, PinInspection);
@@ -143,6 +150,7 @@ namespace Wotr.Client
                 var id = entry.FigureId;
                 // UI-105: a row only inspects; figures are selected in their region's panel on the map.
                 row = new CharacterRosterRow(id);
+                row.Wide(wide);
                 rows.Add(id, row);
                 ObserveRow(row.Root, id);
                 ObserveAbilities(row, id);
@@ -294,6 +302,38 @@ namespace Wotr.Client
             if (Mathf.Abs(Inspector.Root.layout.y - top) > .25f)
                 Inspector.Root.style.top = top;
         }
+
+        // UI-408 (owner): two characters a line give each its larger icons; a roster that would then reach past the board
+        // area keeps three a line. A new roster size or a new room tries two a line again, so the form never flips back and
+        // forth while both stay the same.
+        private void FitRows()
+        {
+            if (Root.panel == null || Root.parent == null || Root.resolvedStyle.display == DisplayStyle.None)
+                return;
+            var key = rows.Count + "/" + Mathf.RoundToInt(Root.parent.worldBound.height);
+            if (key != fitted)
+            {
+                fitted = key;
+                if (!wide)
+                {
+                    SetWide(true);
+                    return;
+                }
+            }
+            if (wide && Root.worldBound.yMax > Root.parent.worldBound.yMax + 0.5f)
+                SetWide(false);
+        }
+
+        private void SetWide(bool value)
+        {
+            wide = value;
+            Root.EnableInClassList(WideClass, value);
+            Root.EnableInClassList(CompactClass, !value);
+            foreach (var row in rows.Values)
+                row.Wide(value);
+        }
+
+        public bool Wide => wide;
 
         // UI-391: a usable ability's icon starts it, as Click to use does; another opens the window with that ability unrolled.
         private void ObserveAbilities(CharacterRosterRow row, string id)

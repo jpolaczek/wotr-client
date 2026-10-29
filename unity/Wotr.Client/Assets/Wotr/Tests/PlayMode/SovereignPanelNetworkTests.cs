@@ -181,7 +181,27 @@ namespace Wotr.PlayTests
             var button = client.Board.Sovereigns.Root.Q("sovereign-slot-" + king).Q<Button>("corruption-choice-" + tile);
             Assert.IsNotNull(button, tile + " stands beside the king.");
             Assert.IsTrue(button.ClassListContains("legal-target"));
+            // UI-411 (owner): a tile that can be chosen wears the choice glow and its panel pulses it.
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), "The tile wears the choice glow.");
+            var pulsing = Pulsing(button);
+            for (var waited = 0; waited < 2000 && !pulsing; waited += 50)
+            {
+                await Task.Delay(50);
+                pulsing = Pulsing(button);
+            }
+            Assert.IsTrue(pulsing, "The tile pulses.");
             return button;
+        }
+
+        // The shared rhythm toggles its class on an ancestor (the Characters panel) every 750 ms.
+        private static bool Pulsing(VisualElement element)
+        {
+            for (var parent = element.parent; parent != null; parent = parent.parent)
+            {
+                if (parent.ClassListContains(ChoiceGlow.PulseClass))
+                    return true;
+            }
+            return false;
         }
 
         private static Task Ready(MatchTestRoom room, Button button)

@@ -1824,3 +1824,27 @@ Owner requests and reports from the Kings and Lords test scenarios:
   Each draw stays the server's own command, and opening the game still draws nothing (UI-12). The Sequential variant
   keeps one click per draw, as each is a choice. Tests: `ExpansionCorruptionNetworkTests`, `KingsCards02NetworkTests`
   (`KingsCardNetworkChecks.DrawTiles` clicks once), `SovereignPanelNetworkTests`.
+
+## Two characters a line, clear character tooltips, a dark Politics station — UI-408 to UI-410 (2026-10-29)
+
+- UI-408 (owner) — each character in the Characters tab has more room: two rows a line, each about twice as wide,
+  with the portrait, the name and region, and beside them a 2x2 block of 19-point ability icons (17 on a short
+  viewport; UI-391's were 15 points on the text's third line). A roster that two a line would make taller than the
+  board area — the full Kings roster on a 1366 x 768 screen — keeps three a line with UI-391's icons
+  (`roster-compact`); the panel tries two a line again only when the roster or the room for it changes, so the form
+  never flips back and forth. (First registered as UI-400, a number another session's registration took over.)
+  Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`.
+- UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
+  offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
+  with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
+  each ability with its name in bold; two thin gaps part identity, entry and abilities, and the merged entry line keeps
+  the height. Only a source with `RuntimeTooltip.FormattedClass` shows rich text; every other tooltip stays plain.
+  Tests: `CharacterRowTooltipTests`, the roster tests reading `CharacterRowTooltip.Plain`.
+- UI-410 (owner) — no station on a Politics track glows: the lit green circle on the next station misled. The
+  nation's token and its arrow show the step; the next station stays the drop target of a dragged token and shows a
+  white rim only while the drag points at it. Tests: `PoliticalGestureTests`, `PoliticalPanelTests`,
+  `PoliticalRecoveryTests`, `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `T22TurnNetworkTests`.
+- UI-411 (owner) — a Corruption tile that can be chosen (an attempt's drawn tiles, an inspection's tiles) pulses
+  visibly: besides its fading gold rim it grows a little in the shared 750 ms rhythm, as the roster's choices do; Reduced
+  motion keeps it lit and still. Test: `SovereignPanelNetworkTests` (the tile's panel pulses during the choice).

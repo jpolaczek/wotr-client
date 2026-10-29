@@ -195,15 +195,16 @@ namespace Wotr.Client
         private string TokenHint(NationRowActions actions) =>
             actions.CardTarget ? (actions.CardHint.Length > 0 ? actions.CardHint : "Choose this nation for the card.") :
             advancing && advanceHint.Length > 0 ? advanceHint :
-            advancing ? "Click this token, its arrow or the lit station to move it one step toward war. Dragging also moves it." :
+            advancing ? "Click this token or its arrow to move it one step toward war. Dragging it one station on also moves it." :
             ArrowHint();
 
+        // UI-410 (owner): no station glows — a lit circle on the track misled; the nation's token (and its arrow) shows the
+        // step. The next station stays the drop target of a dragged token, marked only while the drag points at it.
         private void RefreshSlot(int step)
         {
             var next = advancing && step == Nation.StepsToWar - 1;
             var current = step == Nation.StepsToWar;
             var slot = slots[step];
-            slot.EnableInClassList("legal-target", next);
             slot.EnableInClassList("destination-selected", next && highlighted);
             slot.EnableInClassList("passed-station", step > Nation.StepsToWar);
             slot.SetEnabled(next);

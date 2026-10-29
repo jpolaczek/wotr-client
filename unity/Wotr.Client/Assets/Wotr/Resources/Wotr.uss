@@ -959,8 +959,7 @@
     width: 22px; height: 22px; border-radius: 11px; border-color: rgb(170, 64, 50); background-color: rgb(48, 22, 18);
     background-image: resource("Wotr/Art/UI/actions/battle"); -unity-background-scale-mode: scale-to-fit;
 }
-.politics-panel .nation-slot.legal-target > .nation-station { width: 16px; height: 16px; border-radius: 8px; border-color: rgb(247, 213, 120); background-color: rgb(64, 84, 52); }
-.politics-panel .nation-slot-war.legal-target > .nation-station { width: 24px; height: 24px; border-radius: 12px; border-color: rgb(247, 213, 120); }
+/* UI-410 (owner): no station glows; a dragged token's destination shows only by a white rim while the drag points at it. */
 .politics-panel .nation-slot.destination-selected > .nation-station { border-color: rgb(255, 255, 255); }
 .politics-panel .nation-token {
     position: absolute; top: 2px; width: 28px; min-width: 28px;

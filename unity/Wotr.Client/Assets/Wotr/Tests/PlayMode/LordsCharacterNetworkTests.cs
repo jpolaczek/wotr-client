@@ -87,7 +87,7 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 var chief = Row(client, CharacterRosterVersions.Key(WitchKing, Chief));
                 Assert.AreEqual("characters-section-NotInPlay", chief.parent.parent.name);
-                StringAssert.StartsWith("Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the Ringwraiths", chief.tooltip);
+                StringAssert.StartsWith("Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the Ringwraiths", CharacterRowTooltip.Plain(chief.tooltip));
                 Assert.IsFalse(Row(client, WitchKing).ClassListContains(CharacterRosterPanel.EntryClass),
                     "The Black Captain's own row inspects him; the Chief's row changes him.");
                 await Enter(room, client, choice, "minas-morgul");

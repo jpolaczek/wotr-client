@@ -87,13 +87,17 @@ namespace Wotr.PlayTests
             Assert.IsNull(room.Fp.Board.Tray.Q<Button>("confirm-decision"));
             Assert.IsEmpty(track.Drawer.Query<Button>(className: "destination-selected").ToList());
             // UI-144: every own nation the die can move shows its arrow before any click in the panel.
-            Assert.IsTrue(track.Drawer.Q<Button>("political-slot-elves-1").ClassListContains("legal-target"));
+            // UI-410 (owner): the nation's token glows, never a station; the next station stays the drop target.
+            Assert.IsTrue(track.Drawer.Q<Button>("nation-status-elves").ClassListContains("legal-target"));
+            Assert.IsFalse(track.Drawer.Q<Button>("political-slot-elves-1").ClassListContains("legal-target"));
             Assert.IsTrue(track.Drawer.Q<Button>("political-slot-elves-1").enabledSelf);
             Assert.IsTrue(track.Drawer.Q<Button>("political-slot-north-2").enabledSelf, "A passive nation can advance before the war space.");
             var shadow = room.Fp.Board.View.Nations.Where(n => n.Id is "sauron" or "isengard" or "southrons").Select(n => n.Id).ToList();
             Assert.IsFalse(track.Drawer.Query<Button>(className: "nation-slot").ToList()
-                .Any(slot => slot.ClassListContains("legal-target") && shadow.Any(id => slot.name.StartsWith("political-slot-" + id))),
-                "An opponent's nation never shows an arrow.");
+                .Any(slot => slot.enabledSelf && shadow.Any(id => slot.name.StartsWith("political-slot-" + id))),
+                "An opponent's nation never offers a step.");
+            Assert.IsFalse(shadow.Any(id => track.Drawer.Q<Button>("nation-status-" + id)?.ClassListContains("legal-target") == true),
+                "An opponent's token never glows.");
             PoliticalRecoveryTests.AssertNoBottomPolitics(room.Fp.Board);
             CardNetworkTests.Click(track.ShowOpponent);
             await room.Settle();

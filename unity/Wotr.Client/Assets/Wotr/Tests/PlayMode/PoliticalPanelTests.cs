@@ -218,8 +218,9 @@ namespace Wotr.PlayTests
             {
                 Assert.IsTrue(arrow.enabledInHierarchy);
                 Hit(arrow);
-                // UI-178: the station is lit without a sign of its own; the row's arrow carries the step.
+                // UI-178: the station has no sign of its own; the row's arrow carries the step. UI-410: nor does it glow.
                 Assert.IsEmpty(arrow.text);
+                Assert.IsFalse(arrow.ClassListContains("legal-target"), arrow.name);
                 var advance = panel.Drawer.Q<Button>("nation-advance-" + arrow.name.Split('-')[2]);
                 Assert.IsTrue(advance.enabledInHierarchy && advance.ClassListContains("legal-target"), advance.name);
             }
@@ -240,8 +241,9 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, board.View.Revision, "Showing the actions sends nothing.");
         }
 
+        // UI-410: the station a step reaches stays enabled (a drop target) without glowing.
         private static List<Button> Arrows(PoliticalPanel panel) => panel.Drawer.Query<Button>(className: "nation-slot").ToList()
-            .Where(slot => slot.ClassListContains("legal-target")).ToList();
+            .Where(slot => slot.enabledSelf).ToList();
 
         private static BoardFixture Fixture()
         {

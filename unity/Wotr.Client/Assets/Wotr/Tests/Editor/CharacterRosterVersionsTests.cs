@@ -49,7 +49,7 @@ namespace Wotr.EditorTests
             var numenorean = Row(panel, CharacterRosterVersions.Key(Mouth, LordsMouth));
             Assert.AreEqual("Lieutenant", lieutenant.Q<Label>("character-roster-detail").text);
             Assert.AreEqual("Númenórean", numenorean.Q<Label>("character-roster-detail").text);
-            StringAssert.StartsWith("The Mouth of Sauron, Black Númenórean", numenorean.tooltip);
+            StringAssert.StartsWith("The Mouth of Sauron, Black Númenórean", CharacterRowTooltip.Plain(numenorean.tooltip));
             var chief = Row(panel, CharacterRosterVersions.Key(WitchKing, Chief));
             Assert.AreEqual("characters-section-NotInPlay", chief.parent.parent.name);
             Assert.AreEqual("characters-section-OnBoard", Row(panel, WitchKing).parent.parent.name);

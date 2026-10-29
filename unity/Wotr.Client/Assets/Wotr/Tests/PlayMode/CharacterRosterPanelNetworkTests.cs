@@ -35,7 +35,14 @@ namespace Wotr.PlayTests
             var row = board.Characters.Root.Q<Button>("character-roster-" + id);
             StringAssert.Contains("White", row.Q<Label>("character-roster-title").text);
             // UI-187: the row's tooltip ends with the short abilities of the card it shows.
-            StringAssert.EndsWith("\n" + string.Join("\n", CharacterAbilitySummaries.Lines("base.character.gandalf-white")), row.tooltip);
+            StringAssert.EndsWith("\n" + string.Join("\n", CharacterAbilitySummaries.Lines("base.character.gandalf-white")), CharacterRowTooltip.Plain(row.tooltip));
+            // UI-408 (owner): the base roster stands two a line, its ability icons larger, beside the text and inside the row.
+            Assert.IsTrue(board.Characters.Wide, "Two characters a line fit this roster.");
+            var icon = row.Query<Button>(className: CharacterAbilityStrip.IconClass).Where(b => b.resolvedStyle.display == DisplayStyle.Flex).First();
+            Assert.IsNotNull(icon, "Gandalf's row shows an ability icon.");
+            Assert.That(icon.worldBound.width, Is.GreaterThanOrEqualTo(17f), "The icons are larger two a line.");
+            Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
+            Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.IsTrue(board.Characters.InspectorPinned);
