@@ -15,12 +15,40 @@ namespace Wotr.EditorTests
         public void ACorruptedOrRemovedKingShowsNoCorruptionCount()
         {
             var king = new SovereignView { Id = "king", Resistance = 4, Corruption = 0, Status = SovereignStatus.Corrupted };
-            StringAssert.StartsWith("Corrupted", SovereignPresentation.Corruption(king));
-            StringAssert.DoesNotContain("/ 4", SovereignPresentation.Corruption(king));
+            // UI-420: the status word stays with the status ("◉ Corrupted"), not repeated in the corruption line.
+            Assert.AreEqual("His tiles are resolved; he now serves the Shadow", SovereignPresentation.Corruption(king));
+            StringAssert.DoesNotContain("/4", SovereignPresentation.Corruption(king));
             king.Status = SovereignStatus.Removed;
             Assert.AreEqual("Removed from play", SovereignPresentation.Corruption(king));
             king.Status = SovereignStatus.Initial;
-            Assert.AreEqual("Corruption 0 / 4", SovereignPresentation.Corruption(king));
+            Assert.AreEqual("Corruption 0/4", SovereignPresentation.Corruption(king));
+        }
+
+        // UI-420 (owner): a king's portrait and map marker read alike, without a repeated status word or a dangling part.
+        [Test]
+        public void AKingsDescriptionNamesHisStatusOnceAndARemovedKingInOneLine()
+        {
+            var king = new SovereignView { Id = "king", Title = "Dáin", Resistance = 4, Status = SovereignStatus.Corrupted };
+            Assert.AreEqual("Dáin · ◉ Corrupted · Erebor\nHis tiles are resolved; he now serves the Shadow",
+                SovereignPresentation.Describe(king, "Erebor"));
+            king.Status = SovereignStatus.Removed;
+            Assert.AreEqual("Dáin · × Removed from play", SovereignPresentation.Describe(king, "Out of play"));
+            king.Status = SovereignStatus.Initial;
+            king.Garrison = true;
+            Assert.AreEqual("Dáin · ♙ Initial · Erebor · Garrison\nCorruption ?/4", SovereignPresentation.Describe(king, "Erebor"));
+        }
+
+        // UI-420 (owner): the console's draw names its king and how many tiles it may still draw.
+        [Test]
+        public void TheDrawNamesItsKingAndHowManyTilesItMayDraw()
+        {
+            var view = View();
+            view.Options.Add(new ActionOption { Kind = CommandKind.DrawCorruptionTile, Enabled = true });
+            Assert.AreEqual("Draw tiles · Draw up to 2 Corruption tiles for Dáin, one after another · A Kings tile ends the draw",
+                SovereignAttempt.ConsoleOptions(view).Single().Tooltip);
+            view.CorruptionAttempt.Sequential = true;
+            StringAssert.StartsWith("Draw again · Draw another Corruption tile for Dáin, or click the latest tile",
+                SovereignAttempt.ConsoleOptions(view).Single().Tooltip);
         }
 
         [Test]
@@ -94,7 +122,8 @@ namespace Wotr.EditorTests
             Assert.AreEqual(Visibility.Hidden, slot.Q<Button>("sovereign-attempt-king").style.visibility.value,
                 "No attempt control for the Free Peoples.");
             panel.Show("king");
-            StringAssert.Contains("Corruption ? / 4", panel.Inspector.Q<Label>("sovereign-state").text);
+            StringAssert.Contains("Corruption ?/4", panel.Inspector.Q<Label>("sovereign-state").text);
+            Assert.AreEqual("Corruption ?/4 · 1 hidden tile", slot.Q("sovereign-meter").tooltip, "UI-420: the count already shows the resistance.");
             Assert.AreEqual("▧", panel.Inspector.Q<Label>("attached-tile-back-0").text);
             var labels = string.Join(" ", panel.Root.Query<VisualElement>().ToList().Concat(panel.Inspector.Query<VisualElement>().ToList())
                 .Select(e => e.name + e.tooltip + (e as TextElement)?.text));

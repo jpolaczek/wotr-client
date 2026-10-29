@@ -93,11 +93,15 @@ namespace Wotr.Client
         }
 
         // UI-172: the plaque's tooltip while it is the allocation's confirmation.
-        public static string Plaque(TurnDraft draft, ActionOption option, bool ready) => ready
-            ? Confirm(draft) + " · Click the plaque to allocate and roll"
-            : Hint(draft, option);
+        public static string Plaque(TurnDraft draft, ActionOption option, bool ready) => ready ? Confirm(draft) : Hint(draft, option);
 
-        public static string Confirm(TurnDraft draft) => "Allocate & roll · " +
-            (draft.Payload.Ids.Count == 0 ? "No dice in the Hunt" : draft.Payload.Ids.Count + (draft.Payload.Ids.Count == 1 ? " die" : " dice"));
+        // UI-420 (owner): what the click does with the dice — "Allocate & roll · Put 2 dice in the Hunt Box, then roll the rest".
+        public static string Confirm(TurnDraft draft)
+        {
+            var count = draft.Payload.Ids.Count;
+            if (count == 0)
+                return "Allocate & roll · Leave the Hunt Box empty, then roll all your dice";
+            return "Allocate & roll · Put " + count + (count == 1 ? " die" : " dice") + " in the Hunt Box, then roll the rest";
+        }
     }
 }

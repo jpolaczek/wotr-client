@@ -34,8 +34,13 @@ namespace Wotr.Client
             var pool = new Label { name = "hunt-pool", text = "▧ " + hunt.PoolCount };
             pool.tooltip = hunt.PoolCount == 0 ? "Pool empty · Eligible standard discards refill it on the next draw" : "Tiles in the Hunt pool";
             row.Add(pool);
-            row.tooltip = (hunt.Dice.Count > 0 ? "Roll: " + string.Join(", ", hunt.Dice.Select(d => d.Rerolled ? d.First + " → " + d.Result : d.Result.ToString())) +
-                " · Bonus +" + hunt.Bonus + "\n" : "") + "Reroll sources: " + string.Join(", ", hunt.RerollSources);
+            // UI-420 (owner): the roll with the Hunt window's words — "Roll bonus", "Rerolls · Shadow stronghold · Nazgûl".
+            row.tooltip = TooltipText.Lines(hunt.Dice.Count > 0 ? Roll(hunt) : "", HuntDiceStrip.Rerolls(hunt.RerollSources));
         }
+
+        // "Roll · 3, 2 → 6 · Roll bonus +1".
+        private static string Roll(HuntView hunt) => TooltipText.Parts("Roll",
+            string.Join(", ", hunt.Dice.Select(d => d.Rerolled ? d.First + " → " + d.Result : d.Result.ToString())),
+            "Roll bonus +" + hunt.Bonus);
     }
 }

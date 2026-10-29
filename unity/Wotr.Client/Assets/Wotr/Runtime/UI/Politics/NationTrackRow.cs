@@ -179,7 +179,7 @@ namespace Wotr.Client
             Advance.SetEnabled(advancing);
             Advance.EnableInClassList("legal-target", advancing);
             Advance.tooltip = !advancing ? ArrowHint() : advanceHint.Length > 0 ? advanceHint
-                : "Move " + FigureGrid.Name(Nation.Id) + " one step toward war";
+                : PoliticalActions.AdvanceTooltip(actions.Advancement, Nation.Id);
             Activation.style.visibility = actions.ActivationOffered ? Visibility.Visible : Visibility.Hidden;
             Activation.SetEnabled(activating);
             Activation.EnableInClassList("legal-target", activating);
@@ -188,7 +188,7 @@ namespace Wotr.Client
 
         private string ArrowHint() =>
             !Own ? "Opponent nation · Read-only" :
-            Nation.StepsToWar == 0 ? "This nation is already At War." :
+            Nation.StepsToWar == 0 ? "This nation is already at war." :
             !Nation.Active && Nation.StepsToWar == 1 ? "Activate this nation before it can enter war." :
             "Select a legal Muster result to advance this nation.";
 
@@ -209,7 +209,8 @@ namespace Wotr.Client
             slot.EnableInClassList("passed-station", step > Nation.StepsToWar);
             slot.SetEnabled(next);
             slot.userData = next ? new DraftToken(DraftObject.PoliticalSlot, Nation.Id) : null;
-            slot.tooltip = (step == 0 ? "At War" : step + " steps to war") + (current ? " · Current position" :
+            // UI-420 (owner): "At war" as the track's caption reads, and "1 step to war".
+            slot.tooltip = PoliticalActions.Distance(step) + (current ? " · Current position" :
                 next ? " · Advance this nation" :
                 step == 0 && !Nation.Active ? " · Activation required" : "");
         }

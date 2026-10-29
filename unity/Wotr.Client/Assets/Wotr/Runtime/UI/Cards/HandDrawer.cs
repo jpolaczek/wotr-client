@@ -86,7 +86,7 @@ namespace Wotr.Client
         public void Highlight(bool legal, bool selecting)
         {
             Tab.EnableInClassList("legal-target", legal || selecting);
-            Tab.tooltip = excess > 0 ? "Click a card, then click it again to discard it face down" : selecting ? "Choose cards from your hand"
+            Tab.tooltip = excess > 0 ? "Cards · " + DecisionTray.DiscardHint : selecting ? "Choose cards from your hand"
                 : legal ? "Cards · Highlighted plays and decks" : "Cards · Inspect your hand";
         }
 

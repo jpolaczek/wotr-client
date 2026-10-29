@@ -77,14 +77,15 @@ namespace Wotr.Tests
             draft.Choose(CommandKind.AllocateHunt);
             Assert.AreEqual("0/2", HuntAllocationText.Count(draft, option));
             StringAssert.Contains("0 of 2 · At least 1", HuntAllocationText.Hint(draft, option));
-            Assert.AreEqual("Allocate & roll · No dice in the Hunt", HuntAllocationText.Confirm(draft));
+            Assert.AreEqual("Allocate & roll · Leave the Hunt Box empty, then roll all your dice", HuntAllocationText.Confirm(draft));
             HuntActions.ToggleDie(draft, option, "a");
             HuntActions.ToggleDie(draft, option, "c");
             Assert.AreEqual("2/2", HuntAllocationText.Count(draft, option));
             StringAssert.Contains("Limit reached", HuntAllocationText.Hint(draft, option));
-            Assert.AreEqual("Allocate & roll · 2 dice", HuntAllocationText.Confirm(draft));
-            // UI-172: the plaque confirms; ready it names the set, otherwise it says what is missing.
-            Assert.AreEqual("Allocate & roll · 2 dice · Click the plaque to allocate and roll", HuntAllocationText.Plaque(draft, option, true));
+            Assert.AreEqual("Allocate & roll · Put 2 dice in the Hunt Box, then roll the rest", HuntAllocationText.Confirm(draft));
+            // UI-172: the plaque confirms; ready it names the set, otherwise it says what is missing. UI-420: it says what
+            // its click does with the dice.
+            Assert.AreEqual(HuntAllocationText.Confirm(draft), HuntAllocationText.Plaque(draft, option, true));
             Assert.AreEqual(HuntAllocationText.Hint(draft, option), HuntAllocationText.Plaque(draft, option, false));
             StringAssert.Contains("The Hunt plaque allocates and rolls", HuntAllocationText.Hint(draft, option));
             option.Minimum = 0;

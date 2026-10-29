@@ -79,7 +79,7 @@ namespace Wotr.PlayTests
                 StringAssert.EndsWith("Or Pass to finish without inspecting the Shadow hand.", client.Board.Console.Status.Hint.text);
                 Assert.IsTrue(client.Board.Console.Actions.Pass.ClassListContains(ChoiceGlow.ClassName), "A Pass that declines glows.");
                 var shadowHand = room.Sh.Board.View.Hand.Count;
-                await room.Pass(client, "Pass · Finish without inspecting the Shadow hand");
+                await room.Pass(client, "Pass · Skip Wind from the West: finish without inspecting the Shadow hand");
                 Assert.AreNotEqual(InspectedHand.Presentation, client.Board.View.Decision?.Presentation ?? "");
                 Assert.AreEqual(shadowHand, room.Sh.Board.View.Hand.Count);
                 watch.NeverOpened();
@@ -96,7 +96,7 @@ namespace Wotr.PlayTests
                 watch.OnItsObject(client);
                 // UI-347 (D7): Finish is the console's Pass, not a button.
                 Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.finish"));
-                Assert.AreEqual("Pass · Finish without inspecting the Shadow hand", client.Board.Console.Actions.Pass.tooltip);
+                Assert.AreEqual("Pass · Skip Wind from the West: finish without inspecting the Shadow hand", client.Board.Console.Actions.Pass.tooltip);
                 // UI-418 (owner): one lit button named after the card, saying what it does; no committed card beside it.
                 var option = client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.inspect-hand");
                 Assert.AreEqual("Wind from the West", option.text);

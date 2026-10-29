@@ -48,7 +48,8 @@ namespace Wotr.Client
                         Appearance.Arrive(marker.Button);
                 }
                 marker.Region = king.RegionId;
-                marker.Description = king.Title + " · Corrupted · " + data.Regions[king.RegionId].Name;
+                // UI-420 (owner): the marker reads as the king's portrait does.
+                marker.Description = SovereignPresentation.Describe(king, data.Regions[king.RegionId].Name);
             }
             seeded = true;
             Light(hint);

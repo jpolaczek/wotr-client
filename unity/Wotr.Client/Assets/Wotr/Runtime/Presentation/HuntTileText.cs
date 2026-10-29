@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -15,16 +14,20 @@ namespace Wotr.Client
         // UI-331: the tile in a sentence — its kind and face ("Shadow special tile 1").
         public static string Name(HuntTileFaceView face) => face.Pool == Smeagol ? "the Sméagol tile" : Kind(face) + " " + Title(face);
 
-        public static string Tooltip(HuntTileFaceView face)
-        {
-            var lines = new List<string> { Title(face) + " · " + Meaning(face) };
-            if (face.Reveal)
-                lines.Add("Reveal · The Fellowship is revealed, apart from the damage");
-            if (face.Stop)
-                lines.Add("Stop · Stops the Fellowship's move on the Mordor track");
-            lines.Add(Kind(face));
-            return string.Join("\n", lines);
-        }
+        // UI-420 (owner): the tile's kind and meaning without its value twice — "Standard tile · 3 Hunt damage" — then its
+        // Reveal and Stop; an expansion's tile names its edition at the end of the first line.
+        public static string Tooltip(HuntTileFaceView face) => TooltipText.Lines(
+            Summary(face),
+            face.Reveal ? "Reveal · The Fellowship is revealed, apart from the damage" : "",
+            face.Stop ? "Stop · Stops the Fellowship's move on the Mordor track" : "");
+
+        // "Standard tile · 3 Hunt damage", "Shadow special tile · Die · Damage equals a die roll".
+        public static string Summary(HuntTileFaceView face) =>
+            TooltipText.Parts(BaseKind(face), Symbol(face), Meaning(face), Edition(face));
+
+        // A number is already in the tile's meaning; an Eye or a die is named before it.
+        private static string Symbol(HuntTileFaceView face) =>
+            face.Pool == Smeagol || int.TryParse(face.Value, out _) ? "" : Title(face);
 
         private static string Meaning(HuntTileFaceView face)
         {
@@ -41,14 +44,18 @@ namespace Wotr.Client
 
         private static string Kind(HuntTileFaceView face)
         {
-            var kind = face.Pool switch
-            {
-                "special-fp" => "Free Peoples special tile",
-                "special-sh" => "Shadow special tile",
-                Smeagol => "Lords of Middle-earth tile",
-                _ => "Standard tile"
-            };
+            var kind = BaseKind(face);
             return face.Source == "kings" ? kind + " · Kings of Middle-earth" : kind;
         }
+
+        private static string BaseKind(HuntTileFaceView face) => face.Pool switch
+        {
+            "special-fp" => "Free Peoples special tile",
+            "special-sh" => "Shadow special tile",
+            Smeagol => "Lords of Middle-earth tile",
+            _ => "Standard tile"
+        };
+
+        private static string Edition(HuntTileFaceView face) => face.Source == "kings" ? "Kings of Middle-earth" : "";
     }
 }

@@ -17,7 +17,7 @@ namespace Wotr.PlayTests
     public class LordsBattleNetworkTests
     {
         private const string Mouth = "lords.character.mouth-of-sauron";
-        private const string KeepTheHit = "Pass · Keep the hit and fight on";
+        private const string KeepTheHit = "Pass · Skip Orderly Withdrawal: keep the hit and fight on";
 
         [UnityTest] public IEnumerator OrderlyWithdrawalCancelsAHitFromItsPip() => Wait(Withdrawal(true));
         [UnityTest] public IEnumerator ThePassKeepsTheHitWithoutWithdrawing() => Wait(Withdrawal(false));

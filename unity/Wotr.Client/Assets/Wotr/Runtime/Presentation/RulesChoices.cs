@@ -59,7 +59,7 @@ namespace Wotr.Client
         {
             NewCities => "Ered Luin and South Rhûn count as Cities.",
             Council => "Companion versions stay private, and alternate Companions may start outside the Fellowship; the Shadow then gains Council tokens.",
-            Dismay => "A spent Ruler token or a fallen Awakened sovereign gives the Shadow a Dismay token to re-roll a Ruler die.",
+            Dismay => "A spent Ruler token or a fallen Awakened sovereign gives the Shadow a Dismay token to reroll a Ruler die.",
             VisibleCorruption => "Corruption tiles on the sovereigns are face up for both players.",
             SequentialCorruption => "In a corruption attempt the Shadow draws tiles one at a time and may stop; only the last tile drawn is kept.",
             _ => "No Ruler tokens are used; only a fallen Awakened sovereign gives Dismay."

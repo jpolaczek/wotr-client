@@ -27,7 +27,9 @@ namespace Wotr.Client
         public static string CandidateTooltip(DieView die) =>
             "Click to discard this die · It returns at the next Recover\n" + DieDescriptions.Tooltip(die);
 
-        public static string DiscardedTooltip(DieView die) => DieDescriptions.Tooltip(die) + "\nDiscarded · Returns at the next Recover";
+        // UI-420 (owner): "Discarded" says where the die is, so its location's "Set aside" is not repeated above it.
+        public static string DiscardedTooltip(DieView die) =>
+            TooltipText.Lines(DieDescriptions.Title(die), "Discarded · Returns at the next Recover");
 
         public static string Hint(PlayerView view)
         {

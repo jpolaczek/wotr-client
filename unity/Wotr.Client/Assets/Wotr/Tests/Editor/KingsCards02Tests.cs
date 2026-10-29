@@ -171,17 +171,22 @@ namespace Wotr.EditorTests
             Assert.IsTrue(CombatReplacementChoice.OnChip(view, "replace"));
             Assert.IsFalse(CombatReplacementChoice.OnChip(view, "keep"));
             Assert.AreEqual("north", CombatReplacementChoice.Nation(view, chip));
-            StringAssert.StartsWith("Click to use Heir of Bard · Cancels no card at initiative 0", CombatReplacementChoice.Tooltip(view, chip));
-            // UI-397 (owner): the chip ends with the ability's printed text.
-            StringAssert.EndsWith("\nHeir of Bard: Once per battle, when Brand and a North Army unit take part, you may replace your Combat " +
+            // UI-420 (owner): without cards on the table the chip names neither as "no card".
+            StringAssert.StartsWith("Click to use Heir of Bard · Cancels the Shadow Combat card at initiative 0\n", CombatReplacementChoice.Tooltip(view, chip));
+            // UI-397 (owner): the chip ends with the ability's printed text. UI-420 (owner): it names the ability once.
+            StringAssert.EndsWith("\nOnce per battle, when Brand and a North Army unit take part, you may replace your Combat " +
                 "card’s effect after the reveal: cancel the Shadow Combat card at initiative 0.", CombatReplacementChoice.Tooltip(view, chip));
+            var tooltip = CombatReplacementChoice.Tooltip(view, chip);
+            Assert.AreEqual(tooltip.IndexOf("Heir of Bard", System.StringComparison.Ordinal),
+                tooltip.LastIndexOf("Heir of Bard", System.StringComparison.Ordinal), "The ability is named once.");
+            StringAssert.DoesNotContain("no card", tooltip);
             // UI-396 (owner): the battle window names the chip and its skip.
             Assert.IsTrue(CombatReplacementChoice.Skippable(view));
             Assert.AreEqual("Click Brand's arms beside your Combat card's place to use the ability, or Skip effect to fight on as usual.",
                 CombatReplacementChoice.Hint(view));
             var pass = OptionalDecline.Option(view, new TurnDraft());
             Assert.AreEqual("keep", pass.Id);
-            Assert.AreEqual("Pass · Keep your card's effects", pass.Tooltip);
+            Assert.AreEqual("Pass · Skip Heir of Bard: keep your card's effects", pass.Tooltip);
             Assert.AreEqual("Skip Heir of Bard · Keep your card's effects", OptionalDecline.SkipTooltip(view, new TurnDraft()));
 
             var root = new VisualElement();

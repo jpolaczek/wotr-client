@@ -193,6 +193,7 @@ namespace Wotr.Client
             return new NationRowActions
             {
                 CanAdvance = interactive && own && (step || ability != null),
+                Advancement = advancement,
                 AdvanceHint = ability == null || step && !ability.Activates ? "" : CharacterPolitics.Hint(view, ability, RegionName),
                 Highlighted = (dragged ?? selected) == id,
                 CardTarget = cardTargets.ContainsKey(id),

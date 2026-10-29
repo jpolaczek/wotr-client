@@ -46,6 +46,15 @@ namespace Wotr.EditorTests
                 TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), id => id).Guidance);
         }
 
+        // UI-420: an untitled response does not say "response" twice, and an empty detail leaves no blank line.
+        [Test]
+        public void AnUntitledGuideResponseIsNamedOnce()
+        {
+            var view = GuideWindow(Merry, MerryGuide, "", "");
+            Assert.AreEqual("Click to use Merry's Guide response\nOr Pass to skip it.",
+                HuntGuideResponses.Tooltip(view, HuntGuideResponses.Offered(view)[0]));
+        }
+
         [Test]
         public void TheTrayListsNoGuideResponse()
         {

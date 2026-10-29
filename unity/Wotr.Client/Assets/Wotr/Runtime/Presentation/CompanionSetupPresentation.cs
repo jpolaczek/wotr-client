@@ -25,7 +25,7 @@ namespace Wotr.Client
             var placement = draft.Payload.Placements.FirstOrDefault(p => p.UnitId == choice.CharacterId);
             var state = placement == null ? "stays with the Fellowship" : "starts in " + regionName(placement.RegionId);
             var nation = string.IsNullOrEmpty(nationIcon) ? "No nation icon: leaving does not activate a nation."
-                : "Leaving activates the " + FigureGrid.Name(nationIcon) + ".";
+                : "Leaving activates " + CharacterPolitics.NationPhrase(nationIcon) + ".";
             // UI-347 (D14): the selected, placed companion's second click keeps it with the Fellowship.
             var click = placement != null && draft.Payload.CharacterId == choice.CharacterId
                 ? "Click again to keep " + name + " with the Fellowship, or a lit homeland to start in " + homes

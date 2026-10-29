@@ -70,8 +70,7 @@ namespace Wotr.Client
             Status(king.Status);
             title.text = king.Title.Split(' ')[0];
             var region = data.Regions.TryGetValue(king.RegionId, out var definition) ? definition.Name : "Out of play";
-            var description = king.Title + " · " + SovereignPresentation.Status(king.Status) + " · " + region + (king.Garrison ? " · Garrison" : "") +
-                "\n" + SovereignPresentation.Corruption(king);
+            var description = SovereignPresentation.Describe(king, region);
             var holds = view.RulerTokens.Any(t => t.SovereignId == king.Id && t.Location == "free-peoples");
             token.style.display = holds ? DisplayStyle.Flex : DisplayStyle.None;
             if (holds)
@@ -143,8 +142,8 @@ namespace Wotr.Client
                 meter[index].EnableInClassList("filled", index < known);
                 meter[index].EnableInClassList("hidden", !king.Corruption.HasValue && index < hidden);
             }
-            meter.tooltip = SovereignPresentation.Corruption(king) + (hidden > 0 ? " · " + hidden + " hidden tile" + (hidden == 1 ? "" : "s") : "") +
-                " · Resistance " + king.Resistance;
+            // UI-420 (owner): "Corruption 2/4 · 1 hidden tile"; the count already shows the resistance.
+            meter.tooltip = TooltipText.Parts(SovereignPresentation.Corruption(king), hidden > 0 ? TooltipText.Count(hidden, "hidden tile") : "");
             meter.style.display = king.Status == SovereignStatus.Initial ? DisplayStyle.Flex : DisplayStyle.None;
             // UI-345: a changed corruption (a tile attached, one returned) pulses on the meter.
             var key = king.Resistance + ":" + known + ":" + hidden;

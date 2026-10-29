@@ -140,8 +140,8 @@ namespace Wotr.Client
         public static string ConfirmTooltip(PlayerView view, TurnDraft draft)
         {
             var planned = draft.Payload.CompanionMoves.SelectMany(g => g.Ids).ToList();
-            return planned.Count == 0 ? "Finish · Choose a Nazgûl and its destination first"
-                : "Finish · Use the Council token to move " + Describe(view, planned);
+            return planned.Count == 0 ? "Confirm · Choose a figure and its destination first"
+                : "Confirm · Move " + Describe(view, planned) + " with the Council token";
         }
 
         // "Nazgûl ×2, Witch-king": the figures by name, a repeated name counted.

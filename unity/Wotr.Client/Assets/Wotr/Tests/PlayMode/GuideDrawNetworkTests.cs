@@ -48,7 +48,7 @@ namespace Wotr.PlayTests
             var picked = portrait.panel.Pick(portrait.worldBound.center);
             Assert.IsTrue(picked == portrait || portrait.Contains(picked), "Gandalf's portrait can be clicked.");
             StringAssert.StartsWith("Click the Guide's glowing portrait", board.Console.Status.Hint.text);
-            Assert.AreEqual("Pass · Skip Gandalf the Grey · Draw matching card", board.Console.Actions.Pass.tooltip);
+            Assert.AreEqual("Pass · Skip Gandalf the Grey's Draw matching card", board.Console.Actions.Pass.tooltip);
             Assert.IsTrue(board.Edges.Corner.ClassListContains(BoardEdgeLayout.UsableClass));
             await RecallTheCardInTheConsole(board, token);
 

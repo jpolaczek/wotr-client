@@ -23,8 +23,10 @@ namespace Wotr.Client
             if (RulerDice.Discarded(view, die))
                 return RulerDice.DiscardedTooltip(die);
             var usable = die.Owner == view.You && die.Location == DieLocation.Available && view.Decision?.Kind == DecisionKind.Action;
-            var text = DieDescriptions.Tooltip(die, usable ? Uses(view, die.Id).Distinct().ToArray() : null);
-            return SpecialDice.IsLords(die) && die.RemoveSymbol ? text + "\n" + SpecialDice.RemoveLine(die, true) : text;
+            var uses = usable ? Uses(view, die.Id).Distinct().ToArray() : null;
+            // UI-420 (owner): the line explaining the Remove star replaces the bare "★ Remove" mark.
+            var removeLine = SpecialDice.IsLords(die) && die.RemoveSymbol ? SpecialDice.RemoveLine(die, true) : "";
+            return DieDescriptions.Tooltip(die, uses, removeLine);
         }
 
         private static IEnumerable<string> Uses(PlayerView view, string die)

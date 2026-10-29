@@ -131,7 +131,7 @@ namespace Wotr.PlayTests
             await Reconnect(room, actor);
             var button = actor.Board.OpponentDice.Q<Button>(die.Id);
             Assert.IsTrue(button.ClassListContains("resource-candidate"));
-            StringAssert.Contains("Dismay token and re-roll this Ruler die", button.tooltip);
+            StringAssert.Contains("Dismay token and reroll this Ruler die", button.tooltip);
             Assert.IsTrue(actor.Board.OwnDice.Q<Button>("ruler-token-" + token).ClassListContains("ruler-token-dismay"));
             StringAssert.Contains("Spent by clicking a glowing Ruler die", actor.Board.OwnDice.Q<Button>("ruler-token-" + token).tooltip);
             Assert.AreEqual("Pass · Keep your Dismay tokens", actor.Board.Console.Actions.Pass.tooltip);

@@ -27,6 +27,33 @@ namespace Wotr.EditorTests
             StringAssert.Contains("Kings of Middle-earth", HuntTileText.Tooltip(Face("standard", "2", source: "kings")));
         }
 
+        // UI-420: the value stands once, the kind leads, the edition ends the first line and no line is blank.
+        [Test]
+        public void ATileNamesItsValueOnceAfterItsKind()
+        {
+            Assert.AreEqual("Standard tile · 3 Hunt damage", HuntTileText.Tooltip(Face("standard", "3")));
+            Assert.AreEqual("Shadow special tile · Die · Damage equals a die roll\n" +
+                "Reveal · The Fellowship is revealed, apart from the damage\nStop · Stops the Fellowship's move on the Mordor track",
+                HuntTileText.Tooltip(Face("special-sh", "die", reveal: true, stop: true)));
+            Assert.AreEqual("Standard tile · 2 Hunt damage · Kings of Middle-earth", HuntTileText.Tooltip(Face("standard", "2", source: "kings")));
+        }
+
+        // UI-420: a drawn tile repeats its value only when the resolved damage differs, and explains Reveal and Stop
+        // together only when it has both.
+        [Test]
+        public void ADrawnTileShowsTheResolvedValueOnlyWhenItDiffers()
+        {
+            var printed = new HuntView { TileId = "base.hunt.standard.3.0.1", Damage = 3, Face = Face("standard", "3") };
+            Assert.AreEqual("Drawn tile · Standard tile · 3 Hunt damage", HuntTileView.Tooltip(printed, "Damage 3"));
+            var changed = new HuntView { TileId = "base.hunt.standard.3.0.1", Damage = 2, Face = Face("standard", "3") };
+            Assert.AreEqual("Drawn tile · Standard tile · 3 Hunt damage\nDamage 2", HuntTileView.Tooltip(changed, "Damage 2"));
+            var both = new HuntView { TileId = "base.hunt.special-sh.die", Damage = 4, Reveal = true, Stop = true,
+                Face = Face("special-sh", "die", reveal: true, stop: true) };
+            StringAssert.Contains("\nReveal and Stop are independent effects.", HuntTileView.Tooltip(both, "Damage 4"));
+            StringAssert.DoesNotContain("\n\n", HuntTileView.Tooltip(both, "Damage 4"));
+            StringAssert.DoesNotContain("independent", HuntTileView.Tooltip(printed, "Damage 3"));
+        }
+
         [Test]
         public void ListShowsOneEntryPerFaceAndRebuildsOnlyWhenTheCompositionChanges()
         {
@@ -57,7 +84,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(DisplayStyle.Flex, tile.Root.Q("hunt-tile-art").style.display.value);
             Assert.AreEqual(DisplayStyle.None, tile.Root.Q<Label>("hunt-tile-face").style.display.value);
             Assert.AreEqual(DisplayStyle.Flex, tile.Root.Q("hunt-face-reveal").style.display.value);
-            StringAssert.StartsWith("Eye ·", tile.Root.tooltip);
+            StringAssert.StartsWith("Drawn tile · Standard tile · Eye ·", tile.Root.tooltip);
             tile.Apply(new HuntView { TileId = "base.hunt.standard.eye.1.1" });
             Assert.AreEqual(DisplayStyle.None, tile.Root.Q("hunt-tile-art").style.display.value);
             Assert.AreEqual(DisplayStyle.Flex, tile.Root.Q<Label>("hunt-tile-face").style.display.value);

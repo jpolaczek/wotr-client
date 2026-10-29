@@ -102,19 +102,35 @@ namespace Wotr.Client
         private static string Definition(PlayerView view, string source) =>
             view.Characters.FirstOrDefault(c => c.Id == source)?.DefinitionId ?? source;
 
+        // UI-397: the chip's tooltip ends with the ability's printed text. UI-420 (owner): it names the ability once —
+        // Brand's first line names Heir of Bard (or Shadows in the North), so his printed text follows without its title;
+        // a Chieftain's line names him, so his ability keeps its title — and a side without a card is never "no card".
         public static string Tooltip(PlayerView view, EffectChoiceView choice)
         {
-            var own = CardTitle(view, view.You);
             var sovereign = view.Sovereigns.FirstOrDefault(s => s.Id == choice.SourceId);
-            // UI-397: the chip's tooltip ends with the ability's printed text.
             var printed = Ability(view, choice.SourceId);
-            var text = printed == null ? "" : "\n" + printed.Title + ": " + printed.Text;
             if (sovereign == null)
-                return "Click to use " + Short(choice.Title) + " instead of " + own + "'s effects" + (choice.Detail.Length > 0 ? " · " + choice.Detail : "") + text;
+                return TooltipText.Lines(ChieftainOffer(view, choice), printed == null ? "" : printed.Title + ": " + printed.Text);
+            return TooltipText.Lines(SovereignOffer(view, sovereign, choice, printed), printed?.Text ?? "");
+        }
+
+        private static string ChieftainOffer(PlayerView view, EffectChoiceView choice) =>
+            TooltipText.Parts("Click to use " + Short(choice.Title) + InsteadOfOwnCard(view), choice.Detail);
+
+        private static string SovereignOffer(PlayerView view, SovereignView sovereign, EffectChoiceView choice, CharacterAbilityText printed)
+        {
             var ability = sovereign.Status == SovereignStatus.Corrupted ? ShadowsInTheNorth : HeirOfBard;
             var opponent = view.You == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
-            return "Click to use " + (CharacterAbilityLibrary.Title(ability) ?? choice.Title) + " · Cancels " + CardTitle(view, opponent) +
-                " at initiative 0; " + own + "'s effects are given up · Once per battle" + text;
+            var cancelled = CardTitle(view, opponent);
+            var target = cancelled == NoCard ? "the " + BoardScreen.SideName(opponent) + " Combat card" : cancelled;
+            return TooltipText.Parts("Click to use " + (CharacterAbilityLibrary.Title(ability) ?? choice.Title),
+                "Cancels " + target + " at initiative 0" + InsteadOfOwnCard(view), printed == null ? "Once per battle" : "");
+        }
+
+        private static string InsteadOfOwnCard(PlayerView view)
+        {
+            var own = CardTitle(view, view.You);
+            return own == NoCard ? "" : " instead of " + own + "'s effects";
         }
 
         private static string CardTitle(PlayerView view, Side side)

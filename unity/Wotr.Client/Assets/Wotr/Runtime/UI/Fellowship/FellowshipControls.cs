@@ -17,8 +17,8 @@ namespace Wotr.Client
         public bool MoveOffered { get; private set; }
         // UI-220: a revealed Fellowship hides from its status plaque, not from a button in this row.
         public bool HideOffered { get; private set; }
-        // UI-293: the Fellowship's marker on its track hides it.
-        public const string HideDescription = "Click the Fellowship's marker on its track to hide it at its current position · No progress; this die does not enter the Hunt.";
+        // UI-293: the Fellowship's marker on its track hides it. UI-420 (owner): the marker's tooltip is the shared hide.
+        public const string HideDescription = FellowshipActions.HideTooltip;
         public string MoveDescription { get; private set; } = "";
         public string HideTooltip { get; private set; } = HideDescription;
         private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
@@ -76,8 +76,9 @@ namespace Wotr.Client
 
         private static string Description(PlayerView view, CommandKind kind) => kind switch
         {
-            CommandKind.MoveFellowship when view.Fellowship.MordorStep.HasValue => "Attempt to move · No Hunt roll. Draw and resolve a Hunt tile before any advance, even with no dice in the Hunt.",
-            CommandKind.MoveFellowship => "Move the Fellowship · Progress +1 and resolve the Hunt; the last known region stays unchanged.",
+            CommandKind.MoveFellowship when view.Fellowship.MordorStep.HasValue => "Click to move the Fellowship on the Mordor track · " +
+                "No Hunt roll; draw and resolve a Hunt tile before any advance, even with no dice in the Hunt",
+            CommandKind.MoveFellowship => FellowshipActions.MoveTooltip,
             _ => "Keep the current Guide and finish the Fellowship phase."
         };
     }

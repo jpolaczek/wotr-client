@@ -65,7 +65,7 @@ namespace Wotr.Client
                 Id = id,
                 Name = "decline-" + id,
                 Label = "Pass",
-                Tooltip = Tooltip(Skip(view, id)),
+                Tooltip = PassTooltip(view, Skip(view, id)),
                 Kind = ConsoleOptionKind.Effect
             };
         }
@@ -77,10 +77,10 @@ namespace Wotr.Client
             var decline = Option(view, draft);
             if (decline == null)
                 return "";
-            var skip = Skip(view, decline.Id);
-            return "Skip " + EffectName(view) + " · " + (skip.Length > 0 ? char.ToUpperInvariant(skip[0]) + skip.Substring(1) : decline.Tooltip);
+            return "Skip " + (EffectName(view) ?? "this effect") + " · " + Capital(What(view, decline));
         }
 
+        // The ability or card a decline skips, or null when its source has no name.
         private static string EffectName(PlayerView view)
         {
             if (CombatReplacementChoice.Chips(view).FirstOrDefault() is { } chip &&
@@ -89,7 +89,7 @@ namespace Wotr.Client
             var source = view?.Decision?.SourceId ?? "";
             if (CardLibrary.Cards.TryGetValue(source, out var card))
                 return view.Battle != null && card.CombatTitle.Length > 0 ? card.CombatTitle : card.Title;
-            return "this effect";
+            return null;
         }
 
         // The console's hint ends with what Pass does whenever it sends a decline.
@@ -98,13 +98,15 @@ namespace Wotr.Client
             var decline = Option(view, draft);
             if (decline == null || !decline.Enabled)
                 return "";
-            return "Or Pass to " + decline.Command switch
-            {
-                CommandKind.DeclineVilya => VilyaSkip,
-                CommandKind.DeclineDismay => DismaySkip,
-                _ => Skip(view, decline.Id)
-            } + ".";
+            return "Or Pass to " + What(view, decline) + ".";
         }
+
+        private static string What(PlayerView view, ConsoleOption decline) => decline.Command switch
+        {
+            CommandKind.DeclineVilya => VilyaSkip,
+            CommandKind.DeclineDismay => DismaySkip,
+            _ => Skip(view, decline.Id)
+        };
 
         private static ConsoleOption Vilya(PlayerView view)
         {
@@ -112,7 +114,7 @@ namespace Wotr.Client
             if (spend == null)
                 return null;
             spend.Label = "Pass";
-            spend.Tooltip = spend.Enabled ? Tooltip(VilyaSkip) : "Pass · " + spend.Tooltip;
+            spend.Tooltip = spend.Enabled ? Tooltip(VilyaSkip) : TooltipText.Parts("Pass", spend.Tooltip);
             return spend;
         }
 
@@ -124,14 +126,24 @@ namespace Wotr.Client
                 Id = "keep-tokens",
                 Name = "action-DeclineDismay",
                 Label = "Pass",
-                Tooltip = keep.Enabled ? Tooltip(DismaySkip) : "Pass · " + keep.Reason,
+                Tooltip = keep.Enabled ? Tooltip(DismaySkip) : TooltipText.Parts("Pass", keep.Reason),
                 Kind = ConsoleOptionKind.Action,
                 Command = CommandKind.DeclineDismay,
                 Enabled = keep.Enabled
             };
         }
 
-        private static string Tooltip(string skip) => "Pass · " + char.ToUpperInvariant(skip[0]) + skip.Substring(1);
+        private static string Tooltip(string skip) => "Pass · " + Capital(skip);
+
+        // UI-420 (owner): Pass names what it skips — "Pass · Skip Wind from the West: finish without inspecting the Shadow
+        // hand".
+        private static string PassTooltip(PlayerView view, string skip)
+        {
+            var name = EffectName(view);
+            return name == null ? Tooltip(skip) : "Pass · Skip " + name + ": " + skip;
+        }
+
+        private static string Capital(string text) => text.Length == 0 ? text : char.ToUpperInvariant(text[0]) + text.Substring(1);
 
         private static ActionOption Choice(PlayerView view) =>
             view?.Decision?.Kind is DecisionKind.EffectChoice or DecisionKind.CharacterEvent && view.DecisionOwner == view.You &&

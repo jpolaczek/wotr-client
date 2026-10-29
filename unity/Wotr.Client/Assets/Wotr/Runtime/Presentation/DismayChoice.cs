@@ -20,7 +20,7 @@ namespace Wotr.Client
         }
 
         public static string Offer(PlayerView view, string dieId) =>
-            "Click to spend " + ExpansionLabels.Token(view, Token(view, dieId)) + "'s Dismay token and re-roll this Ruler die";
+            "Click to spend " + ExpansionLabels.Token(view, Token(view, dieId)) + "'s Dismay token and reroll this Ruler die";
 
         public static void Choose(TurnDraft draft, string dieId, string token)
         {

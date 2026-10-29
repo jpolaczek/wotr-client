@@ -64,7 +64,7 @@ namespace Wotr.Client
                         OwnerId = character.CharacterId,
                         Symbol = CharacterSymbol(option.Kind, character.AbilityId),
                         Picture = AbilityPictures.For(option.Kind, character.AbilityId),
-                        Detail = character.Title + " · " + character.Detail,
+                        Detail = TooltipText.Parts(character.Title, character.Detail),
                         Character = character, Enabled = character.Dice.Contains(die)
                     };
             foreach (var cost in option.MovementCosts.Where(c => c.AbilityId.Length > 0 && c.DieId == die))
@@ -75,7 +75,7 @@ namespace Wotr.Client
                     OwnerId = cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron",
                     Symbol = option.Kind == CommandKind.AttackArmy ? "⚔" : "→",
                     Picture = AbilityPictures.For(option.Kind, cost.AbilityId),
-                    Detail = FigureGrid.Name(cost.AbilityId) + " · " + TravelLabel(option.Kind),
+                    Detail = (CharacterAbilityLibrary.Title(cost.AbilityId) ?? FigureGrid.Name(cost.AbilityId)) + " · " + TravelLabel(option.Kind),
                     AbilityId = cost.AbilityId, Movement = cost, Enabled = true
                 };
             if (option.RulerTravel != null && option.RulerTravel.Dice.Contains(die))
@@ -107,7 +107,7 @@ namespace Wotr.Client
                 {
                     Key = option.Kind.ToString(), Symbol = option.Kind == CommandKind.Pass ? "⇥" : "×",
                     Icon = option.Kind == CommandKind.Pass ? "pass" : "discard",
-                    Detail = option.Kind == CommandKind.Pass ? "Pass" : "Discard the selected die without effect",
+                    Detail = option.Kind == CommandKind.Pass ? "Pass · " + ConsoleActions.PassDetail : "Discard the selected die without effect",
                     Enabled = option.Kind == CommandKind.Pass || option.EligibleDice.Contains(die)
                 };
             var card = RemovalCard(view, option.Kind);
@@ -115,7 +115,7 @@ namespace Wotr.Client
                 yield return new ComponentAction
                 {
                     Key = "remove-" + id, Owner = CardLibrary.Title(id), Symbol = "×", CardId = id,
-                    Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any required Ring or cards",
+                    Detail = "Remove " + CardLibrary.Title(id) + " · Pay its removal cost with the selected die",
                     Enabled = option.EligibleDice.Contains(die)
                 };
         }

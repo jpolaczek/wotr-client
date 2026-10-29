@@ -6,8 +6,8 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-409 (owner): a roster row's tooltip in clear parts without growing: the click's offer in bright gold, the name in
-    // bold gold with its edition, the state dim, the statistics plain, the entry in gold with its cost on the same line and
-    // its conditions dim under it, the source small and faint, each ability with its name in bold; thin gaps part
+    // bold gold with its edition, the state dim, the statistics plain, the entry's cost in gold and its conditions dim
+    // under it, the source small and faint, each ability with its name in bold; thin gaps part
     // identity, entry and abilities. The tooltip shows it as rich text (RuntimeTooltip.FormattedClass); Plain reads it back.
     public static class CharacterRowTooltip
     {
@@ -55,9 +55,10 @@ namespace Wotr.Client
         // The tooltip's words without their styles.
         public static string Plain(string formatted) => Regex.Replace(formatted ?? "", "<[^>]+>", "");
 
+        // UI-420 (owner): the entry's line is its cost; its title ("Enter Saruman") would repeat the row's name and offer.
         private static IEnumerable<string> Entry(ActionAvailabilityView entry)
         {
-            yield return Color(Text(entry.Title), Gold) + (entry.Cost.Length > 0 ? " · Cost: " + Text(entry.Cost) : "");
+            yield return Color(Text(entry.Cost.Length > 0 ? "Cost: " + entry.Cost : entry.Title), Gold);
             foreach (var condition in entry.Conditions)
                 yield return "  " + (condition.Met ? Color("✓", Met) : "○") + " " + Color(Text(condition.Description), Dim);
             if (!entry.WindowOpen && entry.Timing.Length > 0)

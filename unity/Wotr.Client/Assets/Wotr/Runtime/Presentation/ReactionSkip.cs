@@ -46,13 +46,14 @@ namespace Wotr.Client
             return new string[0];
         }
 
-        // The skill's owner (a character, or the card that holds the response) and what the skill does.
+        // The skill's owner (a character, or the card that holds the response) and what the skill does; UI-420: as one
+        // phrase ("Gandalf the Grey's Draw matching card"), so the tooltip keeps one separator.
         private static string Name(EffectChoiceView choice)
         {
             var source = choice.SourceId.Length > 0 ? choice.SourceId : choice.Id;
             var owner = source.Contains(".character.") && !CardLibrary.Cards.ContainsKey(source)
                 ? CharacterLibrary.Name(source) : CardLibrary.Title(source);
-            return choice.Title.Length > 0 ? owner + " · " + choice.Title : owner;
+            return choice.Title.Length > 0 ? owner + "'s " + choice.Title : owner;
         }
     }
 }

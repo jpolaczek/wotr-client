@@ -45,20 +45,29 @@ namespace Wotr.Client
             {
                 new CharacterFact { Key = "level", Value = Number(level), Label = "Level " + Number(level) },
                 flying
-                    ? new CharacterFact { Key = "flight", Value = "∞", Label = "Move Flight", Meaning = "Unlimited movement" }
+                    ? new CharacterFact { Key = "flight", Value = "∞", Label = "Flight", Meaning = "Unlimited movement" }
                     : new CharacterFact { Key = "movement", Value = Number(movement), Label = "Move " + Number(movement), Meaning = "Level used to move" },
                 new CharacterFact { Key = "combat", Value = Number(combat), Label = "Combat level " + Number(combat), Meaning = "Level used for combat cards" },
                 new CharacterFact { Key = "leadership", Value = Number(leadership), Label = "Leadership " + Number(leadership) }
             };
+            // UI-420 (owner): the nation's emblem is named plainly ("Gondor", "Southrons & Easterlings").
             if (nation.Length > 0)
-                facts.Add(new CharacterFact { Key = "nation", Nation = nation, Label = "Nation " + NationName(nation) });
+                facts.Add(new CharacterFact { Key = "nation", Nation = nation, Label = NationName(nation) });
             return facts;
         }
 
-        // The statistics in words: the tooltip of the whole strip.
-        public static string Summary(IEnumerable<CharacterFact> facts) => string.Join(" · ", facts.Select(f => f.Label));
+        // The statistics in words: the tooltip of the whole strip and of a roster row. UI-420 (owner): Move and Combat
+        // level are named only where they differ from Level ("Level 3 · Leadership 1 · North").
+        public static string Summary(IEnumerable<CharacterFact> facts)
+        {
+            var list = facts.ToList();
+            var level = list.FirstOrDefault(f => f.Key == "level")?.Value;
+            return TooltipText.Parts(list.Where(f => !RepeatsLevel(f, level)).Select(f => f.Label).ToArray());
+        }
 
-        public static string NationName(string nation) => nation == AllFreePeoples ? "All Free Peoples" : FigureGrid.Name(nation);
+        private static bool RepeatsLevel(CharacterFact fact, string level) => fact.Key is "movement" or "combat" && fact.Value == level;
+
+        public static string NationName(string nation) => TooltipText.Nation(nation);
 
         public static CharacterStatus Status(CharacterRosterView row, string region)
         {

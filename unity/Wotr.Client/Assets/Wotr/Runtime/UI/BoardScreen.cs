@@ -532,7 +532,6 @@ namespace Wotr.Client
         {
             var b = new Button(action) { text = face };
             b.AddToClassList("die");
-            b.tooltip = "C Character · A Army · M Muster · P Event · W Will of the West";
             return b;
         }
         // OBS-03: an observer's board — the bar with the shown side, and the end of the game without Victory or Defeat.

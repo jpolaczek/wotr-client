@@ -16,9 +16,11 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             draft.Choose(CommandKind.RerollBattle);
             var preview = new ActionPreview { Legal = true };
-            StringAssert.Contains("Rerolls 0 / 2", BattleSummary.Describe(draft, view, preview));
+            view.Battle.Attacker.Hits = 2;
+            // UI-420 (owner): Keep roll names the roll it keeps; Reroll selected the dice it rolls again.
+            Assert.AreEqual("Keep roll · Accept your Combat roll (2 hits); use none of your 2 rerolls", BattleSummary.Describe(draft, view, preview));
             draft.Toggle(view.Options[0].EligibleIds[0]);
-            StringAssert.Contains("Rerolls 1 / 2", BattleSummary.Describe(draft, view, preview));
+            Assert.AreEqual("Reroll selected · Roll 1 failed die again · 1 of 2 rerolls", BattleSummary.Describe(draft, view, preview));
         }
 
         [Test]
@@ -30,8 +32,14 @@ namespace Wotr.EditorTests
             var button = new BattleDieButton(die, "Combat", battle, null);
             Assert.AreEqual(2, button.Query<DiePips>().ToList().Count);
             Assert.AreEqual("+5 › -2", button.Q<Label>("battle-die-modifier").text);
-            StringAssert.Contains("First roll 1 · Modifier 5 · Target 5+ · Miss", button.tooltip);
+            StringAssert.Contains("First roll 1 · Modifier +5 · Target 5+ · Miss", button.tooltip);
             StringAssert.Contains("Leader reroll 6 · Modifier -2 · Hit", button.tooltip);
+            StringAssert.DoesNotContain("\n\n", button.tooltip);
+            StringAssert.DoesNotEndWith("\n", button.tooltip);
+            // UI-420 (owner): a modifier of zero is left out.
+            die.Modifier = 0;
+            StringAssert.Contains("First roll 1 · Target 5+ · Miss", new BattleDieButton(die, "Combat", battle, null).tooltip);
+            die.Modifier = 5;
             Assert.AreEqual("✓", button.Q<Label>("battle-die-outcome").text);
             Assert.IsTrue(button.ClassListContains("battle-hit"));
             die.Reroll = null;
@@ -56,6 +64,9 @@ namespace Wotr.EditorTests
                 Operation = BattleLossKind.Downgrade, Hits = 1, ReplacementId = regular.Id, ReplacementFrom = "casualties" });
             Assert.IsEmpty(preview.Placements);
             StringAssert.Contains("Elite replaced by a regular", BattleSummary.Describe(draft, view, preview));
+            // UI-420 (owner): Apply losses names the region, the chosen losses and their hits.
+            StringAssert.StartsWith("Apply losses in Lossarnach · Remove 1 ", BattleSummary.Describe(draft, view, preview));
+            StringAssert.Contains(", downgrade 1 Gondor Elite (2 hits) · ", BattleSummary.Describe(draft, view, preview));
             StringAssert.Contains("Regular from casualties", BattleSummary.LossDetails(view, preview));
             Assert.AreEqual("Assigned 2 / 2 · Remaining 0", BattleLossText.Budget(view, draft, preview.Losses));
             var root = new VisualElement();

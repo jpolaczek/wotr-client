@@ -60,7 +60,7 @@ namespace Wotr.PlayTests
                 if (keep)
                 {
                     StringAssert.Contains("Or Pass to finish looking without returning a tile", room.Fp.Board.Console.Status.Hint.text);
-                    await room.Pass(room.Fp, "Pass · Finish looking without returning a tile");
+                    await room.Pass(room.Fp, "Pass · Skip Wisdom of Elrond: finish looking without returning a tile");
                 }
                 else
                     PointerGestureEvents.ClickAt(await KingsCardNetworkChecks.InspectedTile(room, room.Fp, "kings.sovereign.dain", tile));

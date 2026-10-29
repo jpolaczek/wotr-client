@@ -78,7 +78,9 @@ namespace Wotr.Client
                         p.CharacterId = sovereign.Id;
                         p.Route.Clear();
                     }));
-                button.tooltip = sovereign.Status + " · Resistance " + sovereign.Resistance;
+                // UI-420 (owner): what the click does to which king, then his state in words (no raw status).
+                button.tooltip = TooltipText.Lines(SovereignPresentation.LitHint(view, draft, sovereign.Id),
+                    TooltipText.Parts(SovereignPresentation.Status(sovereign.Status), SovereignPresentation.Corruption(sovereign)));
                 row.Add(button);
             }
         }

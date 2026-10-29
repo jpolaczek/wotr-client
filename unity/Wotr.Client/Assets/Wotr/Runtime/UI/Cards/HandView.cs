@@ -266,7 +266,7 @@ namespace Wotr.Client
         private string PaidWith(string id)
         {
             var face = CardActions.Cost(view, draft, context, id)?.Face;
-            return face.HasValue && view.Decision?.Kind == DecisionKind.Action ? " · " + face + " die" : "";
+            return face.HasValue && view.Decision?.Kind == DecisionKind.Action ? " · " + DieDescriptions.Face(face.Value) + " die" : "";
         }
     }
 }

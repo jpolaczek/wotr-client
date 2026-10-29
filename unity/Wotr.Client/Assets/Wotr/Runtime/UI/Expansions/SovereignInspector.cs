@@ -75,9 +75,10 @@ namespace Wotr.Client
                 "Resistance " + sovereign.Resistance + (sovereign.Corruption.HasValue ? "" : " · Attached tile values are not public.");
             Tiles(sovereign, same);
             var abilityTitle = sovereign.Status == SovereignStatus.Initial ? "After awakening · Abilities" :
-                sovereign.Status == SovereignStatus.Corrupted ? "Weaknesses · Hover" : "Abilities · Hover";
+                sovereign.Status == SovereignStatus.Corrupted ? "Weaknesses" : "Abilities";
             Show(ability, sovereign.DefinitionId.Length > 0 ? abilityTitle : "");
-            ability.tooltip = sovereign.DefinitionId.Length > 0 ? CharacterLibrary.Description(sovereign.DefinitionId) : "";
+            // UI-420 (owner): one line per printed ability ("Palantír of Anárion · <its gist>"); the window's title names him.
+            ability.tooltip = sovereign.DefinitionId.Length > 0 ? CharacterLibrary.Abilities(sovereign.DefinitionId) : "";
             var explanation = ResourcePresentation.Explain(view, sovereign.Id);
             Appearance.Display(availability, explanation.Length > 0);
             availability.tooltip = explanation;
@@ -120,7 +121,7 @@ namespace Wotr.Client
                 current.DrawnCount + " / " + current.DrawLimit + " drawn" + (view.You == Side.FreePeoples ? " · Shadow chooses" : ""));
             Show(revealed, current == null || current.RevealedTiles.Count == 0 ? "" : "Public tiles · " +
                 string.Join(" · ", current.RevealedTiles.Select(TileFace)));
-            revealed.tooltip = "Revealed in this attempt · Replaced tiles stay out of the Hunt Pool until it ends.";
+            revealed.tooltip = "Revealed in this attempt · Replaced tiles stay out of the Hunt pool until it ends.";
         }
 
         private string TileFace(string id)

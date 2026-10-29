@@ -82,14 +82,19 @@ namespace Wotr.Client
             };
         }
 
-        public static string Conditions(ActionAvailabilityView entry)
+        public static string Conditions(ActionAvailabilityView entry) => TooltipText.Lines(entry.Title, Cost(entry), Requirements(entry));
+
+        // UI-420 (owner): "Cost: X" wherever an entry's cost is shown (the roster row, the inspector).
+        public static string Cost(ActionAvailabilityView entry) => entry.Cost.Length > 0 ? "Cost: " + entry.Cost : "";
+
+        // The entry's conditions, its timing while its window is closed, and its source: what the cost label leaves out.
+        public static string Requirements(ActionAvailabilityView entry)
         {
-            var lines = new List<string> { entry.Title, "Cost · " + entry.Cost };
-            lines.AddRange(entry.Conditions.Select(c => (c.Met ? "✓ " : "○ ") + c.Description));
+            var lines = entry.Conditions.Select(c => (c.Met ? "✓ " : "○ ") + c.Description).ToList();
             if (!entry.WindowOpen)
                 lines.Add(entry.Timing);
             lines.Add(entry.Source);
-            return string.Join("\n", lines.Where(line => line.Length > 0));
+            return TooltipText.Lines(lines.ToArray());
         }
     }
 }

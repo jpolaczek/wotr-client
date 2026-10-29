@@ -21,14 +21,25 @@ namespace Wotr.Client
             _ => FigureGrid.Name(choice.Cost)
         };
 
+        // UI-420 (owner): "Gollum · Use ability · No die\n<what it does>\n<Guide ability>" — the source named once, its
+        // Level and Leadership only when it has them, and no ability ids.
         public static string Inspect(PlayerView view, EffectChoiceView choice)
         {
-            var text = Source(view, choice) + "\n" + choice.Detail + "\n" + Cost(choice);
             var version = CharacterVersion(view, choice.SourceId);
-            if (version.Length == 0)
-                return text;
-            var ability = FellowshipGuideText.Ability(version);
-            return text + "\n" + CharacterLibrary.Description(version) + (ability.Length > 0 ? "\n" + ability : "");
+            return TooltipText.Lines(
+                TooltipText.Parts(Source(view, choice), Stats(version), Cost(choice)),
+                choice.Detail,
+                version.Length > 0 ? FellowshipGuideText.Ability(version) : "");
+        }
+
+        // "Level 1 · Leadership 1" of a projected version; nothing for a figure without them, such as Gollum.
+        private static string Stats(string version)
+        {
+            var character = version.Length > 0 ? CharacterLibrary.Find(version) : null;
+            if (character == null)
+                return "";
+            return TooltipText.Parts(character.Level > 0 ? "Level " + character.Level : "",
+                character.Leadership > 0 ? "Leadership " + character.Leadership : "");
         }
 
         private static string CharacterVersion(PlayerView view, string source)

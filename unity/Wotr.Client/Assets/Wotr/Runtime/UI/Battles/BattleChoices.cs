@@ -23,6 +23,7 @@ namespace Wotr.Client
                 {
                     var keep = BoardScreen.Button("Keep all", () => edit(() => draft.Change(p => p.Losses.Clear())));
                     keep.name = "battle-keep-all";
+                    keep.tooltip = KeepAllTooltip;
                     footer.Add(keep);
                 }
             }
@@ -67,12 +68,16 @@ namespace Wotr.Client
             if (draft.Kind == CommandKind.AdvanceBattle)
             {
                 AddSelectAll(footer, option, draft, edit);
-                AddDirect(footer, "Stay", "battle-stay", draft.Kind.Value, direct);
+                var stay = AddDirect(footer, "Stay", "battle-stay", draft.Kind.Value, direct);
+                stay.tooltip = DirectTooltip(view, CommandKind.AdvanceBattle, data);
             }
             // UI-347 (D12): Evil Knowledge is the Mouth of Sauron's portrait, not a button beside Extend / Stop.
             foreach (var choice in view.Options.Where(o => o.Kind != draft.Kind && BattleDraft.IsImmediate(o.Kind) &&
                          !(o.Kind == CommandKind.UseEvilKnowledge && EvilKnowledgeChoice.OnPortrait(view))))
-                AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct);
+            {
+                var button = AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct);
+                button.tooltip = DirectTooltip(view, choice.Kind, data);
+            }
         }
 
         // UI-146: as in the region panel (UI-140), one toggle selects every figure that can advance, or, once all of
@@ -155,6 +160,39 @@ namespace Wotr.Client
             CommandKind.UseEvilKnowledge => "Click to extend the siege by one round without downgrading an Elite · Evil Knowledge, once per action",
             _ => ""
         };
+
+        public const string KeepAllTooltip = "Keep all · Take no voluntary losses";
+
+        // UI-420 (owner): a battle's direct choice says what its click does and names the battle's region. Stay is the
+        // empty advance (AdvanceBattle sent without figures).
+        public static string DirectTooltip(PlayerView view, CommandKind kind, BoardPresentation data)
+        {
+            var battle = view?.Battle;
+            if (battle == null)
+                return DirectTooltip(kind);
+            var region = RegionName(battle.RegionId, data);
+            return kind switch
+            {
+                CommandKind.ContinueBattle => "Continue battle · Fight another Combat round in " + region,
+                CommandKind.StopBattle => StopTooltip(battle, region, data),
+                CommandKind.HoldBattle => "Hold position · Do not retreat; fight on in " + region,
+                CommandKind.FightFieldBattle => "Fight in field · Defend " + region + " outside the stronghold",
+                CommandKind.RetreatIntoSiege => "Retreat inside · Withdraw into the " + region + " stronghold",
+                CommandKind.AdvanceBattle => "Stay · No figure advances into " + region,
+                _ => DirectTooltip(kind)
+            };
+        }
+
+        private static string StopTooltip(BattleView battle, string region, BoardPresentation data)
+        {
+            var home = battle.Attacker.RegionId;
+            if (home.Length == 0 || home == battle.RegionId)
+                return "Stop battle · End the attack; your army stays in " + region;
+            return "Stop battle · End the attack on " + region + "; your army stays in " + RegionName(home, data);
+        }
+
+        private static string RegionName(string id, BoardPresentation data) =>
+            data == null ? FigureGrid.Name(id) : ActionCardText.Region(id, data);
 
         public static string IconFor(CommandKind kind) => kind switch
         {

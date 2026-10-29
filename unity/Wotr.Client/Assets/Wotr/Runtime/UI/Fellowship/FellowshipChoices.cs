@@ -162,7 +162,12 @@ namespace Wotr.Client
             if (!contextual || TravelDraft.IsGrouped(draft.Kind))
             {
                 var stay = Choice("Stay here", "travel-stay", () => TravelDraft.Route(draft)?.Count == 1, () => TravelDraft.Stay(draft, option));
-                refresh.Add(() => stay.SetEnabled(TravelDraft.Travel(draft, option) is { } travel && travel.Targets.Contains(travel.Origin)));
+                refresh.Add(() =>
+                {
+                    var travel = TravelDraft.Travel(draft, option);
+                    stay.SetEnabled(travel != null && travel.Targets.Contains(travel.Origin));
+                    stay.tooltip = StayTooltip(travel);
+                });
                 row.Add(stay);
             }
             var summary = new Label { name = "travel-summary" };
@@ -185,11 +190,13 @@ namespace Wotr.Client
                 if (FellowshipDraft.LocationRoute(draft.Kind))
                 {
                     var undo = Choice("Undo step", "route-undo", () => false, () => FellowshipDraft.UndoRoute(draft));
+                    undo.tooltip = "Undo step · Remove the last region from the route";
                     refresh.Add(() => undo.SetEnabled(draft.Payload.Route.Count > 0));
                     actions.Add(undo);
                 }
                 var cancel = Choice("Cancel", "route-cancel", () => false, () => FellowshipDraft.CancelRoute(draft, view));
-                cancel.tooltip = "Clear this local selection · A required decision remains pending";
+                cancel.tooltip = draft.Kind == CommandKind.SeparateCompanions
+                    ? "Cancel · Clear the chosen companions and their route" : "Cancel · Clear the drawn route";
                 // UI-298: a forced separation starts with its companions chosen; Cancel waits until there is something to clear.
                 refresh.Add(() => cancel.SetEnabled(FellowshipDraft.CancelChanges(draft, view)));
                 actions.Add(cancel);
@@ -198,6 +205,10 @@ namespace Wotr.Client
         }
 
         private string Prompt => TravelDraft.TargetRoute(draft.Kind) ? "Choose a destination" : "Choose a route";
+
+        // UI-420 (owner): Stay here names the region the figures keep.
+        private string StayTooltip(TravelOption travel) =>
+            travel == null ? "Stay here · Choose a group first" : "Stay here · Remain in " + Region(travel.Origin);
 
         private string Region(string id) => data.Regions.TryGetValue(id, out var region) ? region.Name : id;
         private Button Choice(string label, string name, Func<bool> selected, Action change)

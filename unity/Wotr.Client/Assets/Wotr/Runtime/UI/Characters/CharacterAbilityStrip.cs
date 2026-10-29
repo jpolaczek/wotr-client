@@ -101,7 +101,7 @@ namespace Wotr.Client
             {
                 var ability = abilities[index];
                 var ready = Ready(ability.Id);
-                icons[index].tooltip = ability.Title + "\n" + ability.Text + "\n\n" + UseText(ability.Id, ready);
+                icons[index].tooltip = TooltipText.Lines(ability.Title, ability.Text, UseText(ability.Id, ready));
                 ChoiceGlow.Apply(icons[index], ready.Count > 0);
             }
             for (var index = abilities.Count; index < Slots; index++)
@@ -115,12 +115,19 @@ namespace Wotr.Client
         private string UseText(string ability, IReadOnlyList<ComponentAction> ready)
         {
             if (ready.Count > 1)
-                return "Usable now: click it to choose how in the character's window.";
+                return "Usable now · Click to choose how in the character's window";
             if (ready.Count == 0)
-                return usable[ability].Any() ? "Usable with an eligible die or token." : "Click to read it in the character's window.";
+                return usable[ability].Any() ? "Usable with an eligible die or token" : "Click to read it in the character's window";
             var action = ready[0];
             var effect = action.Detail.Length > 0 ? action.Detail : "Use this ability.";
-            return "Click to use · " + DieUse.Tooltip(dieName?.Invoke(action.DieId) ?? "", effect);
+            return ClickToUse(DieUse.Tooltip(dieName?.Invoke(action.DieId) ?? "", effect));
+        }
+
+        // UI-420 (owner): "Click to use your Muster die: Move the Dwarves…", not "Click to use · Use your Muster die: …".
+        private static string ClickToUse(string use)
+        {
+            const string spend = "Use your ";
+            return use.StartsWith(spend, StringComparison.Ordinal) ? "Click to use your " + use.Substring(spend.Length) : "Click to use · " + use;
         }
 
         private void Click(int slot) => Choose(icons[slot].userData as string ?? "");

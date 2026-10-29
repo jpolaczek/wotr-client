@@ -99,21 +99,23 @@ namespace Wotr.Client
         {
             DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Your other special dice wait for the next turn.",
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
-            DecisionKind.Dismay => "Click a glowing Ruler die to spend a Dismay token and re-roll it.",
+            DecisionKind.Dismay => "Click a glowing Ruler die to spend a Dismay token and reroll it.",
             DecisionKind.CouncilToken => "Click the glowing Council token you want; you use it later in an action, without a die.",
             DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or Pass to spend the die and keep Vilya.",
             _ => "Choose the exact die and its new face. Changing the face does not use the die."
         };
 
+        // UI-420 (owner): each explanation starts with its title, so they follow one another without a blank line.
         public static string Explain(PlayerView view, string subject)
         {
             var descriptions = view.Availability.Where(a => a.SubjectId == subject).Select(Describe);
-            return string.Join("\n\n", descriptions);
+            return TooltipText.Lines(descriptions.ToArray());
         }
 
         private static string Describe(ActionAvailabilityView availability)
         {
-            var lines = new List<string> { availability.Title, "Cost · " + availability.Cost };
+            var cost = availability.Cost.Length > 0 ? "Cost: " + availability.Cost : "";
+            var lines = new List<string> { availability.Title, cost };
             lines.AddRange(availability.Conditions.Where(c => !c.Met).Select(c => c.Description));
             if (!availability.WindowOpen)
                 lines.Add(availability.Timing);

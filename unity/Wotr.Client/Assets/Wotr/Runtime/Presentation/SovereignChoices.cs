@@ -41,13 +41,14 @@ namespace Wotr.Client
                         !InBattle(view, c.Id))
                     .ToDictionary(c => c.Id, c => new SovereignChoice
                     {
-                        EffectId = c.Id, Tooltip = "Click to choose " + Title(view, c.Id) + (c.Detail.Length > 0 ? " · " + c.Detail : "")
+                        EffectId = c.Id, Tooltip = TooltipText.Parts("Click to choose " + Title(view, c.Id), c.Detail)
                     });
             if (view.Decision.Presentation == Removal)
                 return option.EffectChoices.Where(c => c.Id == Remove && option.EligibleIds.Contains(c.Id) && view.Sovereigns.Any(s => s.Id == c.TargetId))
                     .ToDictionary(c => c.TargetId, c => new SovereignChoice
                     {
-                        EffectId = c.Id, Tooltip = "Click to return one random tile of " + Title(view, c.TargetId) + " to the Hunt Pool · " + c.Detail
+                        EffectId = c.Id,
+                        Tooltip = TooltipText.Parts("Click to return one random tile of " + Title(view, c.TargetId) + " to the Hunt pool", c.Detail)
                     });
             return None;
         }
@@ -65,7 +66,7 @@ namespace Wotr.Client
             return option.EffectChoices.Where(c => c.Id != Keep && option.EligibleIds.Contains(c.Id))
                 .ToDictionary(c => c.Id, c => new SovereignChoice
                 {
-                    EffectId = c.Id, Tooltip = "Click to return this tile to the Hunt Pool · " + c.Title
+                    EffectId = c.Id, Tooltip = TooltipText.Parts("Click to return this tile to the Hunt pool", c.Title)
                 });
         }
 

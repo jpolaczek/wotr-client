@@ -37,10 +37,20 @@ namespace Wotr.EditorTests
             });
             army.Characters = 1;
             army.CharacterNames.Add("Gandalf the White");
-            Assert.AreEqual("Helm's Deep · Garrison\nRohan: 2 regular, 1 elite, 1 leader\nGondor: 1 regular\n" +
-                "Characters: Gandalf the White", ArmyMarkerText.Describe(army, "Helm's Deep"));
+            Assert.AreEqual("Helm's Deep · Garrison\nRohan · 2 Regular · 1 Elite · 1 Leader\nGondor · 1 Regular\n" +
+                "Characters · Gandalf the White", ArmyMarkerText.Describe(army, "Helm's Deep"));
             var shadow = ArmyMarker.From("minas-morgul", Side.Shadow, false, new[] { ("sauron", UnitKind.Nazgul), ("sauron", UnitKind.Nazgul) });
-            Assert.AreEqual("Minas Morgul · Field army\nSauron: 2 Nazgûl", ArmyMarkerText.Describe(shadow, "Minas Morgul"));
+            Assert.AreEqual("Minas Morgul · Field army\nSauron · 2 Nazgûl", ArmyMarkerText.Describe(shadow, "Minas Morgul"));
+        }
+
+        // UI-420: one composition form for a nation's figures, with the Southrons & Easterlings named in full.
+        [Test]
+        public void CompositionNamesTheNationAndCountsEachKindOnce()
+        {
+            Assert.AreEqual("Gondor · 3 Regular · 1 Elite · 1 Leader", ArmyMarkerText.Composition("gondor", 3, 1, 1, 0));
+            Assert.AreEqual("Southrons & Easterlings · 2 Leaders", ArmyMarkerText.Composition("southrons", 0, 0, 2, 0));
+            Assert.AreEqual("Sauron · 1 Regular · 2 Nazgûl",
+                ArmyMarkerText.Composition("sauron", new[] { UnitKind.Nazgul, UnitKind.Regular, UnitKind.Nazgul }));
         }
     }
 }

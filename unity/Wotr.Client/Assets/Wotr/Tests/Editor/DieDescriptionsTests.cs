@@ -46,6 +46,35 @@ namespace Wotr.Tests
             StringAssert.EndsWith("Now · Recruit · Politics", now);
         }
 
+        // UI-420: a Hunt die says how it came there in words, and a location's list does not repeat the location.
+        [Test]
+        public void AHuntDiesOriginReadsInWordsAndAListEntryKeepsOnlyWhatTellsDiceApart()
+        {
+            var allocated = new DieView { Id = "a", Owner = Side.Shadow, Face = DieFace.Eye, Location = DieLocation.Hunt, HuntOrigin = "allocated" };
+            Assert.AreEqual("Eye · allocated by the Shadow", DieDescriptions.Entry(allocated));
+            Assert.AreEqual("Eye\nIn the Hunt Box · allocated by the Shadow", DieDescriptions.Tooltip(allocated));
+            Assert.AreEqual("rolled", DieDescriptions.HuntOrigin("rolled-eye"));
+            Assert.AreEqual("from an Elven Ring", DieDescriptions.HuntOrigin("elven-ring"));
+            Assert.AreEqual("from the Captain of Despair", DieDescriptions.HuntOrigin("captain-of-despair"));
+            Assert.AreEqual("", DieDescriptions.HuntOrigin(""));
+            var spent = new DieView { Id = "s", Owner = Side.FreePeoples, SpentWith = Side.Shadow, Face = DieFace.Eye, Location = DieLocation.Spent };
+            Assert.AreEqual("Eye · Free Peoples die", DieDescriptions.Entry(spent));
+            Assert.AreEqual("Army", DieDescriptions.Entry(new DieView { Id = "p", Owner = Side.Shadow, Face = DieFace.Army, Location = DieLocation.Spent }));
+        }
+
+        // UI-420: a Lords die whose Remove star is explained shows the explanation once, not also the bare mark.
+        [Test]
+        public void AnExplainedRemoveStarIsNotAlsoABareMark()
+        {
+            var gothmog = new DieView { Id = "g", Owner = Side.Shadow, Source = "lords.die.gothmog", Face = DieFace.Army,
+                Location = DieLocation.Available, RemoveSymbol = true };
+            var line = SpecialDice.RemoveLine(gothmog, true);
+            var text = DieDescriptions.Tooltip(gothmog, null, line);
+            StringAssert.EndsWith("\n" + line, text);
+            Assert.AreEqual(text.IndexOf("★ Remove", StringComparison.Ordinal), text.LastIndexOf("★ Remove", StringComparison.Ordinal));
+            StringAssert.Contains("★ Remove", DieDescriptions.Tooltip(gothmog), "Without the explanation the mark stays.");
+        }
+
         [Test]
         public void EveryRolledFaceHasItsGlyphTexture()
         {

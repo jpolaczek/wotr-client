@@ -104,10 +104,11 @@ namespace Wotr.Client
             CardDraft.Choose(draft, Option(view), id);
         }
 
+        // UI-420 (owner): "Title · Detail", without a dangling separator when either is empty.
         public static string Detail(PlayerView view, string id)
         {
             var choice = Option(view)?.EffectChoices.FirstOrDefault(c => c.Id == id);
-            return choice == null ? "" : (choice.Title.Length > 0 ? choice.Title + " · " : "") + choice.Detail;
+            return choice == null ? "" : TooltipText.Parts(choice.Title, choice.Detail);
         }
 
         // The next eligible figure of one nation and kind: identical figures of a stack are equivalent.

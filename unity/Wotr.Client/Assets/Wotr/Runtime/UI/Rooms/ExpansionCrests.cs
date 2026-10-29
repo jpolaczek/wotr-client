@@ -50,5 +50,13 @@ namespace Wotr.Client
             var variants = RulesChoices.VariantSummary(configuration);
             return RulesChoices.Summary(configuration) + (variants.Length > 0 ? "\nVariants: " + variants : "");
         }
+
+        // UI-420: the rules of a listed game for its row's tooltip — the crests' text, or "Base game".
+        public static string Rules(MatchConfiguration configuration)
+        {
+            configuration ??= new MatchConfiguration();
+            var crests = Tooltip(configuration);
+            return crests.Length > 0 ? crests : RulesChoices.Summary(configuration);
+        }
     }
 }

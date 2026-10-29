@@ -74,8 +74,10 @@ namespace Wotr.Client
                 Button.SetEnabled(state.Interactive);
                 image.sprite = FigureArtwork.Sprite(FigureAppearances.Unit(placement.Nation, placement.Kind, state.Side));
                 region.text = placement.RegionName + " ×";
-                Button.tooltip = FigureGrid.Name(placement.Nation) + " " + placement.Kind + " → " + placement.RegionName +
-                    " · Return it to the reserve";
+                // UI-420 (owner): the figure as printed ("Rohan Elite", "Nazgûl", a moved character by name).
+                var figure = placement.CharacterId.Length > 0 ? CharacterLibrary.Name(placement.CharacterId)
+                    : TooltipText.Unit(placement.Nation, placement.Kind);
+                Button.tooltip = figure + " → " + placement.RegionName + " · Click to return it to the reserve";
             }
         }
     }

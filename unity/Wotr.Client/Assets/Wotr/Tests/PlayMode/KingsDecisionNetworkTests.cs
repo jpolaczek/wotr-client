@@ -16,17 +16,18 @@ namespace Wotr.PlayTests
     // Pass. No text button and no generic window remain.
     public class KingsDecisionNetworkTests
     {
-        private const string KeepTheCard = "Pass · Keep your card's effects";
+        // UI-420: Pass names the ability whose replacement it declines.
+        private static string KeepTheCard(string ability) => "Pass · Skip " + ability + ": keep your card's effects";
 
-        [UnityTest] public IEnumerator HeirOfBardCancelsTheShadowCardFromItsChip() => Wait(Replacement("ui348-brand-heir", Side.FreePeoples));
-        [UnityTest] public IEnumerator ShadowsInTheNorthCancelsTheFreePeoplesCardFromItsChip() => Wait(Replacement("ui348-brand-shadows", Side.Shadow));
+        [UnityTest] public IEnumerator HeirOfBardCancelsTheShadowCardFromItsChip() => Wait(Replacement("ui348-brand-heir", Side.FreePeoples, "Heir of Bard"));
+        [UnityTest] public IEnumerator ShadowsInTheNorthCancelsTheFreePeoplesCardFromItsChip() => Wait(Replacement("ui348-brand-shadows", Side.Shadow, "Shadows in the North"));
         [UnityTest] public IEnumerator KeepingTheCardsEffectsIsThePass() => Wait(Keep());
         [UnityTest] public IEnumerator AChieftainSubstitutesFromHisChipBeforeTheReveal() => Wait(Chieftain());
         [UnityTest] public IEnumerator KeepingTheShadowCardsEffectsIsThePass() => Wait(ChieftainKeep());
         [UnityTest] public IEnumerator AChieftainEntersFromHisRowWithoutACouncilToken() => Wait(ChieftainEntry());
         [UnityTest] public IEnumerator AnarionsSkipIsThePass() => Wait(Anarion());
 
-        private static async Task Replacement(string scenario, Side owner)
+        private static async Task Replacement(string scenario, Side owner, string ability)
         {
             using (var room = await Connect(scenario, ScenarioKind.CardPack))
             using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
@@ -36,7 +37,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(CombatReplacementChoice.Presentation, client.Board.View.Decision.Presentation);
                 foreach (var id in new[] { "replace", CombatReplacementChoice.Keep })
                     Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-" + id), id);
-                Assert.AreEqual(KeepTheCard, client.Board.Console.Actions.Pass.tooltip);
+                Assert.AreEqual(KeepTheCard(ability), client.Board.Console.Actions.Pass.tooltip);
                 // The North's army attacks from Dale, so the Free Peoples' card is the attacker's.
                 var own = owner == Side.FreePeoples ? "battle-attacker" : "battle-defender";
                 var chip = client.Board.Tray.Q(own).Q<Button>("battle-replacement-replace");
@@ -45,6 +46,7 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(chip.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
                 StringAssert.StartsWith(owner == Side.FreePeoples ? "Click to use Heir of Bard · Cancels" : "Click to use Shadows in the North · Cancels",
                     chip.tooltip);
+                StringAssert.DoesNotContain("no card", chip.tooltip, "UI-420 (owner): a side without a card is not named \"no card\".");
                 await Layout(room, client, scenario, "ui348");
                 var revision = client.Board.View.Revision;
                 CardNetworkTests.Click(client.Board.Tray.Q(own).Q<Button>("battle-replacement-replace"));
@@ -92,7 +94,7 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 Assert.IsFalse(client.Board.View.Battle.CardsRevealed);
                 Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-kings.character.black-serpent"));
-                Assert.AreEqual(KeepTheCard, client.Board.Console.Actions.Pass.tooltip);
+                Assert.AreEqual(KeepTheCard("Red Wrath"), client.Board.Console.Actions.Pass.tooltip);
                 var chip = client.Board.Tray.Q("battle-defender").Q<Button>("battle-replacement-kings.character.black-serpent");
                 Assert.IsNotNull(chip, "The chip stands beside the Shadow's own card.");
                 Assert.IsTrue(chip.Q("battle-replacement-arms").ClassListContains("nation-emblem-southrons"));
@@ -114,7 +116,7 @@ namespace Wotr.PlayTests
             using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 await room.Settle();
-                await room.Pass(room.Sh, KeepTheCard);
+                await room.Pass(room.Sh, KeepTheCard("Red Wrath"));
                 Assert.IsEmpty(room.Sh.Board.View.CombatReplacements);
                 watch.NeverOpened();
             }

@@ -28,7 +28,9 @@ namespace Wotr.EditorTests
             var formatted = CharacterRowTooltip.Format("Click to bring Saruman into play", parts);
             StringAssert.StartsWith("<color=#FFD670><b>Click to bring Saruman into play</b></color>\n", formatted);
             StringAssert.Contains("<color=#F2D488><b>Saruman</b></color> · Base", formatted);
-            StringAssert.Contains("<color=#F2D488>Enter Saruman</color> · Cost: One Muster-capable result.", formatted);
+            // UI-420: the entry's line is its cost; its title would repeat the offer and the name.
+            StringAssert.Contains("\n<color=#F2D488>Cost: One Muster-capable result.</color>\n", formatted);
+            StringAssert.DoesNotContain("Enter Saruman", formatted);
             StringAssert.Contains("<size=11><color=#8E8672>BASE p.41</color></size>", formatted);
             StringAssert.EndsWith("<b>The Voice of Saruman</b> · Muster die: a Regular", formatted);
             var plain = CharacterRowTooltip.Plain(formatted);
@@ -36,7 +38,7 @@ namespace Wotr.EditorTests
             StringAssert.EndsWith("\nBound to Orthanc · Never leaves Orthanc\nThe Voice of Saruman · Muster die: a Regular", plain);
             StringAssert.Contains("  ○ An eligible entry die is available.", plain);
             StringAssert.Contains("  ✓ Saruman has never entered.", plain);
-            // The entry's title and cost share a line: ten full lines and two thin gaps, where the plain text had eleven lines.
+            // The entry's cost is one line: ten full lines and two thin gaps.
             Assert.AreEqual(12, plain.Split('\n').Length);
         }
 

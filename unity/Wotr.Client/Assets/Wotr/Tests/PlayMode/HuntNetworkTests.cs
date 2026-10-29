@@ -58,7 +58,7 @@ namespace Wotr.PlayTests
             Assert.IsFalse(board.Hunt.Tab.ClassListContains(HuntPanel.EmptyClass));
             Assert.IsTrue(board.Hunt.AllocationCount.ClassListContains(HuntPanel.CountFilledClass));
             Assert.Greater(board.Hunt.AllocationCount.resolvedStyle.backgroundColor.a, 0.9f, "The badge is filled.");
-            StringAssert.Contains("Click the plaque", board.Hunt.Tab.tooltip);
+            StringAssert.Contains("Put 1 die in the Hunt Box", board.Hunt.Tab.tooltip);
             Assert.AreEqual("Allocate 1/1", board.Hunt.Caption);
             Assert.IsFalse(board.Console.Actions.Confirm.enabledSelf, "UI-172: the console's ✓ does not allocate.");
             StringAssert.Contains("In your Hunt allocation", board.OwnDice.Q<Button>(first).tooltip);

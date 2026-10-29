@@ -46,7 +46,7 @@ namespace Wotr.PlayTests
                 var marker = board.Fellowship.HideMarker;
                 Assert.IsTrue(marker.ClassListContains(FellowshipStatus.HideClass), "The track's marker hides.");
                 Assert.IsTrue(marker.ClassListContains(ChoiceGlow.ClassName));
-                StringAssert.StartsWith("Click the Fellowship's marker on its track to hide", marker.tooltip);
+                Assert.AreEqual(FellowshipActions.HideTooltip, marker.tooltip, "UI-420: the hide's one wording.");
                 Assert.IsNotInstanceOf<Button>(board.Fellowship.Status.Q("fellowship-ring"), "The plaque's Ring is a picture.");
                 Assert.IsFalse(board.Fellowship.Status.ClassListContains(FellowshipStatus.HideClass), "No separate Hide control.");
                 Assert.AreEqual("Revealed", board.Fellowship.Status.Q<Label>("fellowship-status-condition").text);

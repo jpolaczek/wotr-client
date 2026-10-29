@@ -40,7 +40,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual(9, draft.Payload.Ids.Count);
             Assert.IsTrue(draft.Ready(option));
             view.Decision.SourceId = "base.sh.character.07";
-            Assert.That(NazgulLeadershipSummary.Describe(draft, view), Does.Contain("+1 Leader re-roll"));
+            Assert.That(NazgulLeadershipSummary.Describe(draft, view), Does.Contain("+1 Leader reroll"));
         }
 
         [Test]

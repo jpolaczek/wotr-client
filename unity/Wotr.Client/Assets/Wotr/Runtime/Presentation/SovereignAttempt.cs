@@ -43,7 +43,7 @@ namespace Wotr.Client
 
         public static string Tooltip(PlayerView view, TurnDraft draft, SovereignView king)
         {
-            var name = king.Title.Split(' ')[0];
+            var name = Name(king);
             if (Enabled(view, draft, king.Id))
             {
                 var eye = view.Dice.First(d => d.Id == Eye(view, draft));
@@ -80,7 +80,7 @@ namespace Wotr.Client
             {
                 Id = t.TileId, Value = t.Value, Kings = t.Kings, Selectable = choose?.EligibleIds.Contains(t.TileId) == true,
                 Tooltip = choose?.EligibleIds.Contains(t.TileId) == true
-                    ? "Click to attach this tile to " + king.Title.Split(' ')[0] + " · " + Face(t) +
+                    ? "Click to attach this tile to " + Name(king) + " · " + Face(t) +
                         (view.Configuration.VisibleCorruption ? " · face up" : " · face down")
                     : Face(t)
             }).ToList();
@@ -107,11 +107,25 @@ namespace Wotr.Client
             {
                 Id = "draw", Name = "action-DrawCorruptionTile", Label = sequential ? "Draw again" : "Draw tiles",
                 Kind = ConsoleOptionKind.Action, Command = CommandKind.DrawCorruptionTile, Enabled = draw.Enabled,
-                Tooltip = sequential ? "Draw another tile · Or click the latest tile beside the king to keep it"
-                    : "Click to draw this attempt's Corruption tiles, one after another, until the limit or a Kings tile"
+                Tooltip = DrawTooltip(view, sequential)
             });
             return options;
         }
+
+        // UI-420 (owner): the draw names its king and how many tiles it may draw.
+        private static string DrawTooltip(PlayerView view, bool sequential)
+        {
+            var attempt = view.CorruptionAttempt;
+            var king = view.Sovereigns.FirstOrDefault(s => s.Id == attempt?.SovereignId);
+            var name = king == null ? "the king" : Name(king);
+            if (sequential)
+                return "Draw again · Draw another Corruption tile for " + name + ", or click the latest tile beside him to keep it";
+            var remaining = attempt == null ? 0 : attempt.DrawLimit - attempt.DrawnCount;
+            var tiles = remaining > 0 ? "up to " + TooltipText.Count(remaining, "Corruption tile") : "the Corruption tiles";
+            return "Draw tiles · Draw " + tiles + " for " + name + ", one after another · A Kings tile ends the draw";
+        }
+
+        private static string Name(SovereignView king) => king.Title.Split(' ')[0];
 
         private static string Face(CorruptionTileView tile) => tile.Kings ? "Kings tile · Corruption 0" : tile.Value.HasValue
             ? "Corruption " + tile.Value + (tile.Reveal ? " · Reveal" : "") : "Face-down Corruption tile";

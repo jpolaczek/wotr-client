@@ -41,9 +41,12 @@ namespace Wotr.Tests
         public void PreviewDistinguishesKnownDamageHobbitReturnAndUnknownVictim()
         {
             var view = View();
-            StringAssert.Contains("Corruption 4 → 7", HuntResponseActions.Describe(view, HuntResponse.Ring));
-            StringAssert.Contains("Damage 3 → 0", HuntResponseActions.Describe(view, HuntResponse.Guide));
-            StringAssert.Contains("Lose the Guide", HuntResponseActions.Describe(view, HuntResponse.Guide));
+            // UI-420: the response by name, then what it does with the damage.
+            Assert.AreEqual("Ring · Take 3 Hunt damage as Corruption (4 → 7)", HuntResponseActions.Describe(view, HuntResponse.Ring));
+            Assert.AreEqual("Strider · Lose the Guide · Hunt damage 3 → 0", HuntResponseActions.Describe(view, HuntResponse.Guide));
+            view.Hunt.Healing = 1;
+            Assert.AreEqual("Ring · Take 3 Hunt damage as Corruption, heal 1 (4 → 6)", HuntResponseActions.Describe(view, HuntResponse.Ring));
+            view.Hunt.Healing = 0;
             view.Hunt.GuideReturns = true;
             StringAssert.Contains("Hobbit returns", HuntResponseActions.Describe(view, HuntResponse.Guide));
             StringAssert.Contains("unknown", HuntResponseActions.Describe(view, HuntResponse.RandomCompanion));

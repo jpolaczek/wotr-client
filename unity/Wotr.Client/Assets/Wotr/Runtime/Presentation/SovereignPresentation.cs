@@ -39,7 +39,7 @@ namespace Wotr.Client
                 return view.CorruptionAttempt?.Sequential == true ? "Click the latest tile beside the king to keep it · Or draw again"
                     : SovereignAttempt.MustDraw(view) ? "Click Draw tiles to draw the Corruption tiles" : "Click a glowing tile beside the king to attach it";
             if (view.Decision.Presentation == SovereignChoices.Inspection)
-                return "Click a tile beside the king to return it to the Hunt Pool";
+                return "Click a tile beside the king to return it to the Hunt pool";
             if (view.Decision.Presentation == "CorruptionRemoval")
                 return "Click the glowing king to return one random tile";
             if (view.Decision.Presentation == SovereignChoices.Sovereign)
@@ -84,18 +84,29 @@ namespace Wotr.Client
         };
 
         // UI-383 (owner): a corrupted king's tiles are resolved and a removed one is out of play (T28, KINGS p. 12–13), so
-        // neither shows a Corruption count.
+        // neither shows a Corruption count. UI-420 (owner): the count reads as the Fellowship's ("Corruption 2/4"), and the
+        // status word stays with the status ("◉ Corrupted"), not repeated here.
         public static string Corruption(SovereignView sovereign) => sovereign.Status switch
         {
-            SovereignStatus.Corrupted => "Corrupted · His tiles are resolved; he now serves the Shadow",
+            SovereignStatus.Corrupted => "His tiles are resolved; he now serves the Shadow",
             SovereignStatus.Removed => "Removed from play",
-            _ => "Corruption " + (sovereign.Corruption.HasValue ? sovereign.Corruption.Value.ToString() : "?") + " / " + sovereign.Resistance
+            _ => "Corruption " + (sovereign.Corruption.HasValue ? sovereign.Corruption.Value.ToString() : "?") + "/" + sovereign.Resistance
         };
+
+        // UI-420 (owner): a king's portrait and map marker read alike: "Dáin Ironfoot · ◉ Corrupted · Erebor", then his
+        // corruption; a removed king is one line.
+        public static string Describe(SovereignView king, string region)
+        {
+            if (king.Status == SovereignStatus.Removed)
+                return TooltipText.Parts(king.Title, "× Removed from play");
+            var heading = TooltipText.Parts(king.Title, Status(king.Status), region, king.Garrison ? "Garrison" : "");
+            return TooltipText.Lines(heading, Corruption(king));
+        }
 
         public static string Consequence(PlayerView view, TurnDraft draft)
         {
             if (view.Decision?.Presentation == "CorruptionRemoval")
-                return "Return one random non-Kings tile to the Hunt Pool, or keep the tiles. No extra die.";
+                return "Return one random non-Kings tile to the Hunt pool, or keep the tiles. No extra die.";
             if (draft?.Kind == CommandKind.AwakenSovereign)
                 return "Return all attached tiles · " + (view.Configuration.RemovingRulerTokens
                     ? "Ruler tokens are not used."
@@ -113,7 +124,7 @@ namespace Wotr.Client
             var id = view.CorruptionAttempt?.SovereignId == target ? view.CorruptionAttempt.DieId :
                 DecisionTarget(view, draft) == target ? draft?.Payload.DieId ?? "" : "";
             var die = view.Dice.FirstOrDefault(d => d.Id == id);
-            return die == null ? "" : "Cost · " + ExpansionLabels.DieFace(die) +
+            return die == null ? "" : "Cost: " + ExpansionLabels.DieFace(die) +
                 (ExpansionLabels.Special(die) ? " · " + ExpansionLabels.DieSource(die) : "") +
                 (view.CorruptionAttempt?.SovereignId == target ? " · Committed" : "");
         }

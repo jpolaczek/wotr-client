@@ -9,7 +9,7 @@ namespace Wotr.Client
     {
         private static readonly (string Key, string Title)[] Stages =
         {
-            ("cards", "Cards"), ("roll", "Combat roll"), ("reroll", "Leader re-roll"), ("losses", "Losses"), ("next", "Next round / end")
+            ("cards", "Cards"), ("roll", "Combat roll"), ("reroll", "Leader reroll"), ("losses", "Losses"), ("next", "Next round / end")
         };
 
         public static StageRibbon Ribbon() => new StageRibbon("battle-stages", "battle-stage-");

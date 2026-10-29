@@ -29,7 +29,7 @@ namespace Wotr.PlayTests
                 await room.Settle();
                 watch.OnItsObject(room.Sh);
                 Assert.IsNull(room.Sh.Board.Console.Status.Options.Q<Button>("effect-choice-" + LoreChoice.Keep));
-                Assert.AreEqual("Pass · Keep your dice as they are", room.Sh.Board.Console.Actions.Pass.tooltip);
+                Assert.AreEqual("Pass · Skip The Lore of the Elven Rings: keep your dice as they are", room.Sh.Board.Console.Actions.Pass.tooltip);
                 StringAssert.StartsWith("Click a lit die", room.Sh.Board.Console.Status.Hint.text);
                 StringAssert.Contains("Or Pass to keep your dice as they are", room.Sh.Board.Console.Status.Hint.text);
                 var die = room.Sh.Board.View.Dice.First(d => d.Owner == Side.Shadow && d.Location == DieLocation.Hunt);
@@ -105,7 +105,7 @@ namespace Wotr.PlayTests
                 // cards it accepts glow in the hand; UI-347 (D7): No Corruption is the console's Pass.
                 var row = room.Sh.Board.Hunt.Responses.Root.Q("hunt-card-responses");
                 Assert.IsNull(row.Q<Button>("effect-choice-smeagol.no-corruption"));
-                Assert.AreEqual("Pass · Take no Corruption and keep your cards", room.Sh.Board.Console.Actions.Pass.tooltip);
+                Assert.AreEqual("Pass · Skip We Won’t Go Back: take no Corruption and keep your cards", room.Sh.Board.Console.Actions.Pass.tooltip);
                 var card = row.Q<Button>("effect-choice-lords.sh.character.25");
                 StringAssert.StartsWith("Click to discard", card.tooltip);
                 Assert.IsNull(room.Sh.Board.Tray.Q<Button>("effect-choice-smeagol.no-corruption"));

@@ -27,13 +27,13 @@ namespace Wotr.Client
             var option = Option(view, NationStep);
             if (option != null)
                 return option.EffectChoices.Where(c => option.EligibleIds.Contains(c.Id))
-                    .ToDictionary(c => c.Id, c => "Click to choose " + c.Title + " for " + Card(view) + " · " + c.Detail);
+                    .ToDictionary(c => c.Id, c => TooltipText.Parts("Click to choose " + c.Title + " for " + Card(view), c.Detail));
             option = Option(view, Branch);
             if (option?.EligibleIds.Contains(Politics) != true)
                 return NoNations;
             // Under Kings each Free Peoples nation has its king, so the kings name the nations the Nation step offers.
             return view.Sovereigns.Select(s => s.Nation).Where(n => view.Nations.Any(nation => nation.Id == n)).Distinct()
-                .ToDictionary(n => n, n => "Click to activate and advance " + FigureGrid.Name(n) + " · " + Card(view));
+                .ToDictionary(n => n, n => "Click to activate and advance " + CharacterPolitics.NationPhrase(n) + " · " + Card(view));
         }
 
         // The effect a nation token's click sends now, or "".
@@ -61,7 +61,7 @@ namespace Wotr.Client
             if (cleanse != null && view.Sovereigns.FirstOrDefault(s => s.Id == cleanse.TargetId) is { } owner)
                 kings[owner.Id] = new SovereignChoice
                 {
-                    EffectId = Cleanse, Tooltip = "Click to remove corruption from " + owner.Title + " · " + cleanse.Detail
+                    EffectId = Cleanse, Tooltip = TooltipText.Parts("Click to remove corruption from " + owner.Title, cleanse.Detail)
                 };
             return kings;
         }
@@ -76,8 +76,8 @@ namespace Wotr.Client
             return view.Units.Any(u => u.Nation == recruit.TargetId && u.Location == "reserve") ? recruit.TargetId : "";
         }
 
-        public static string RecruitHint(PlayerView view) =>
-            "Click to recruit with " + Card(view) + " · " + (Option(view, Branch)?.EffectChoices.FirstOrDefault(c => c.Id == Recruit)?.Detail ?? "");
+        public static string RecruitHint(PlayerView view) => TooltipText.Parts("Click to recruit with " + Card(view),
+            Option(view, Branch)?.EffectChoices.FirstOrDefault(c => c.Id == Recruit)?.Detail ?? "");
 
         // This branch stands on its object, so the console leaves it out.
         public static bool OnObject(PlayerView view, string id)

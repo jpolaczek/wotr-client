@@ -140,9 +140,9 @@ namespace Wotr.EditorTests
             Choice(view, new EffectChoiceView { Id = "tile", TargetId = Dain, Title = "1 Corruption" });
             var pass = OptionalDecline.Option(view, Effect());
             Assert.AreEqual(SovereignChoices.Keep, pass.Id);
-            Assert.AreEqual("Pass · Finish looking without returning a tile", pass.Tooltip);
+            Assert.AreEqual("Pass · Skip Wisdom of Elrond: finish looking without returning a tile", pass.Tooltip);
             Assert.IsEmpty(CardConsoleOptions.For(view, Effect()));
-            Assert.AreEqual("Click a tile beside the king to return it to the Hunt Pool", SovereignPresentation.Hint(view, Effect()));
+            Assert.AreEqual("Click a tile beside the king to return it to the Hunt pool", SovereignPresentation.Hint(view, Effect()));
         }
 
         [Test]

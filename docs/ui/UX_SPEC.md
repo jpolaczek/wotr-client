@@ -1916,3 +1916,13 @@ Owner requests and reports from the Kings and Lords test scenarios:
   stands in its footer whenever the console's Pass sends a decline, and its tooltip names the effect it skips and what
   that does ("Skip Orderly Withdrawal · Keep the hit and fight on", "Skip Heir of Bard · Keep your card's effects"). It
   replaces UI-396's Keep card effects. Tests: `KingsDecisionNetworkTests`, `KingsCards02Tests`.
+
+## Tooltips say what they confirm or pass, once and cleanly — UI-420 (2026-10-29)
+
+- UI-420 (owner) — an audit of every tooltip of the base game and the expansions ([TOOLTIP_AUDIT](TOOLTIP_AUDIT.md)). An
+  action's tooltip names what it confirms or passes: the console's ✓ reads `Confirm · <card>: <chosen options>` or names
+  the armies, routes, recruits and nation of the step; Pass names the card or ability it skips; Finish the action it ends;
+  the battle window's direct steps and Apply losses name the region and the figures; Keep roll and Reroll selected the roll.
+  Informational tooltips drop repeated facts (a Hunt tile's value, a king's state, equal Level/Move/Combat level, a status
+  equal to its label), blank lines and dangling separators, raw ids and enum names; a force, a character, a deck and a
+  played card read the same everywhere. Tests: `TooltipTextTests` and the tests listed in the audit document.

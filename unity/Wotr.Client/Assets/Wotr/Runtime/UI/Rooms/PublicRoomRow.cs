@@ -56,8 +56,9 @@ namespace Wotr.Client
             name.text = room.Name;
             detail.text = Detail(room);
             ExpansionCrests.Show(crests, room.Configuration);
-            Root.tooltip = room.Name + " · " + RulesChoices.Summary(room.Configuration ?? new MatchConfiguration()) + " · " +
-                detail.text;
+            // UI-262: the row's lines end in an ellipsis, so its tooltip holds them in full. UI-420 (owner): one per line,
+            // then the expansions and variants the crests stand for.
+            Root.tooltip = TooltipText.Lines(room.Name, detail.text, ExpansionCrests.Rules(room.Configuration));
             play.SetEnabled(room.CanPlay);
             play.tooltip = room.CanPlay ? "Join as " + BoardScreen.SideName(room.OpenSide) + "."
                 : room.Status == RoomStatus.Started ? "The game has started." : "Both seats are taken.";

@@ -27,7 +27,7 @@ namespace Wotr.Client
                         edit(() => CharacterDraft.Select(draft, view, choice));
                 });
                 button.name = "character-action-" + choice.CharacterId + "-" + choice.AbilityId;
-                button.tooltip = choice.Title + "\n" + choice.Detail;
+                button.tooltip = Tooltip(choice);
                 portraits.Add(button);
                 refresh.Add(() => button.EnableInClassList("selected", CharacterDraft.Selected(draft, option) == choice));
             }
@@ -76,6 +76,15 @@ namespace Wotr.Client
             return CharacterLibrary.Name(selected.CharacterId) + " · Choose a highlighted region on the map" +
                 (selected.CouncilTokens.Count > 0 && !selected.RequiresCouncilToken && draft.Payload.CouncilTokenId.Length == 0
                     ? " · Or click a glowing Council token to enter with it" : "");
+        }
+
+        // UI-420 (owner): what the button's click chooses, with the character whose ability it is, then its detail; the
+        // label alone is not repeated as a title line.
+        public static string Tooltip(CharacterActionOption choice)
+        {
+            var owner = CharacterLibrary.Find(choice.CharacterId) != null ? CharacterLibrary.Name(choice.CharacterId) : "";
+            var subject = TooltipText.Parts(choice.Title, owner == choice.Title ? "" : owner);
+            return TooltipText.Lines("Click to choose " + subject, choice.Detail);
         }
 
         // One die, or dice of one kind, are chosen for the player; only different dice are a choice worth a button.

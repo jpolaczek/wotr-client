@@ -49,8 +49,8 @@ namespace Wotr.Client
 
         // What a click on the glowing socket does.
         public static string UseNow(string ringId) => ringId == Nenya
-            ? "Click to remove this Eye tile from the game and draw another. Nenya passes to the Shadow."
-            : "Click to keep the die that paid for this action. Vilya passes to the Shadow.";
+            ? "Click to remove this Eye tile from the game and draw another · Nenya passes to the Shadow"
+            : "Click to keep the die that paid for this action · Vilya passes to the Shadow";
 
         public static string Keeper(string ringId) => ringId switch
         {

@@ -46,25 +46,24 @@ namespace Wotr.Client
             column.AddToClassList("battle-force");
             column.AddToClassList(force.Side == Side.FreePeoples ? "fp" : "sh");
             root.Add(column);
-            var modifiers = BattleForceText.Modifiers(force, battle, view);
             var heading = new Label((role == "attacker" ? "ATTACKER" : "DEFENDER") + " · " + BoardScreen.SideName(force.Side).ToUpperInvariant() +
                 (force.Garrison ? " · GARRISON" : "")) { name = role + "-strength", enableRichText = false };
             heading.AddToClassList("battle-force-heading");
-            heading.tooltip = modifiers;
+            heading.tooltip = BattleForceText.Notes(force, battle);
             column.Add(heading);
             if (force.Characters.Count > 0)
                 Characters(column, force, view, draft, edit);
             column.Add(Composition(force, battle, view, draft, edit));
-            column.Add(Statistics(force, modifiers));
+            column.Add(Statistics(force, battle, view));
             var outside = draft == null ? "" : BattleForceText.Nonparticipants(force, battle, view);
             if (outside.Length > 0)
-                column.Add(Shelf(outside));
+                column.Add(Shelf(outside, BattleForceText.NonparticipantDetails(force, battle, view)));
             var chips = draft != null && complete != null && force.Side == view.You ? CombatReplacementChoice.Chips(view) : NoChips;
             var applied = chips.Count == 0 ? CombatReplacementChoice.Applied(view, force.Side) : null;
             var cardHost = chips.Count > 0 || applied != null ? BoardScreen.Row("battle-card-row") : column;
             if (cardHost != column)
                 column.Add(cardHost);
-            Card(cardHost, force, role, heading, inspect, force.Side != Side.FreePeoples ? "" :
+            Card(cardHost, force, role, inspect, force.Side != Side.FreePeoples ? "" :
                 battle.DenethorBlocksCards ? "Denethor · No card" :
                 battle.CompanionRequiredForCard && force.Characters.Count == 0 ? "No Companion · No card this round" : "", cards);
             foreach (var choice in chips)
@@ -106,7 +105,7 @@ namespace Wotr.Client
             {
                 var group = new VisualElement { name = "battle-nation-" + nation.Key };
                 group.AddToClassList("battle-nation-group");
-                group.tooltip = FigureGrid.Name(nation.Key) + "\n" + string.Join("\n", nation.GroupBy(u => u.Kind).Select(g => g.Key + " × " + g.Count()));
+                group.tooltip = BattleForceText.Composition(nation.Key, nation.Select(u => u.Kind));
                 group.Add(Emblem(nation.Key));
                 foreach (var kind in nation.GroupBy(u => u.Kind))
                 {
@@ -196,7 +195,7 @@ namespace Wotr.Client
                 element.pickingMode = offered || selected ? PickingMode.Position : element.pickingMode;
                 ChoiceGlow.Apply(element, offered && !selected);
                 element.EnableInClassList("selected", selected);
-                element.tooltip = offered ? BattleObjectChoices.Detail(view, id) + "\n" + tooltip : tooltip;
+                element.tooltip = offered ? TooltipText.Lines(BattleObjectChoices.Detail(view, id), tooltip) : tooltip;
             });
         }
 
@@ -208,7 +207,7 @@ namespace Wotr.Client
             if (reaction == null)
                 return null;
             portrait.pickingMode = PickingMode.Position;
-            var tooltip = BattleReactions.Offer(reaction) + "\n" + portrait.tooltip;
+            var tooltip = TooltipText.Lines(BattleReactions.Offer(reaction), portrait.tooltip);
             refresh.Add(() =>
             {
                 ChoiceGlow.Apply(portrait, true);
@@ -260,7 +259,7 @@ namespace Wotr.Client
             if (draft == null || direct == null || !EvilKnowledgeChoice.On(view, character))
                 return null;
             portrait.pickingMode = PickingMode.Position;
-            var tooltip = EvilKnowledgeChoice.Offer + "\n" + portrait.tooltip;
+            var tooltip = TooltipText.Lines(EvilKnowledgeChoice.Offer, portrait.tooltip);
             refresh.Add(() =>
             {
                 ChoiceGlow.Apply(portrait, true);
@@ -291,8 +290,9 @@ namespace Wotr.Client
                 element.pickingMode = PickingMode.Position;
                 ChoiceGlow.Apply(element, more);
                 element.EnableInClassList("selected", chosen > 0);
-                element.tooltip = (more ? "Click to forfeit one Leadership point" : "Click to take these points back") +
-                    " · " + chosen + " of " + points.Count + " chosen\n" + BattleObjectChoices.Detail(view, points[0]) + "\n" + tooltip;
+                var action = more ? "Click to forfeit one Leadership point" : "Click to take these points back";
+                element.tooltip = TooltipText.Lines(TooltipText.Parts(action, chosen + " of " + points.Count + " chosen"),
+                    BattleObjectChoices.Detail(view, points[0]), tooltip);
             });
             return () => edit(() => BattleObjectChoices.ClickPoints(view, draft, points));
         }
@@ -310,26 +310,26 @@ namespace Wotr.Client
             return figure;
         }
 
-        private static VisualElement Statistics(BattleForceView force, string modifiers)
+        // UI-420 (owner): each medallion explains its own number; the row between them has no tooltip of its own.
+        private static VisualElement Statistics(BattleForceView force, BattleView battle, PlayerView view)
         {
             var row = BoardScreen.Row("battle-statistics");
             row.name = "battle-statistics";
-            row.tooltip = modifiers;
-            row.Add(new BattleStatMedallion("strength", force.Strength.ToString(), "Strength " + force.Strength + "\n" + modifiers));
-            row.Add(new BattleStatMedallion("leadership", force.Leadership.ToString(), "Leadership " + force.Leadership + "\n" + modifiers));
-            row.Add(new BattleStatMedallion("dice", force.CombatDice.ToString(), "Combat dice " + force.CombatDice + "\n" + modifiers));
-            row.Add(new BattleStatMedallion("hit", force.HitTarget + "+", "Hits on " + force.HitTarget + "+\n" + modifiers));
+            row.Add(new BattleStatMedallion("strength", force.Strength.ToString(), BattleForceText.Strength(force)));
+            row.Add(new BattleStatMedallion("leadership", force.Leadership.ToString(), BattleForceText.Leadership(force, battle, view)));
+            row.Add(new BattleStatMedallion("dice", force.CombatDice.ToString(), BattleForceText.CombatDice(force)));
+            row.Add(new BattleStatMedallion("hit", force.HitTarget + "+", BattleForceText.HitTarget(force)));
             return row;
         }
 
-        private static VisualElement Shelf(string text)
+        private static VisualElement Shelf(string text, string details)
         {
             var shelf = BoardScreen.Row("battle-garrison-shelf");
             shelf.name = "battle-garrison-shelf";
             var icon = new VisualElement { name = "battle-garrison-icon", pickingMode = PickingMode.Ignore };
             icon.AddToClassList("battle-garrison-icon");
             shelf.Add(icon);
-            var label = new Label(text) { name = "battle-nonparticipants", tooltip = text, enableRichText = false };
+            var label = new Label(text) { name = "battle-nonparticipants", tooltip = details, enableRichText = false };
             label.AddToClassList("battle-nonparticipants");
             shelf.Add(label);
             return shelf;
@@ -342,7 +342,7 @@ namespace Wotr.Client
             root.Add(label);
         }
 
-        private static void Card(VisualElement root, BattleForceView force, string role, Label heading, Action<string> inspect, string prohibition, CardInspector cards)
+        private static void Card(VisualElement root, BattleForceView force, string role, Action<string> inspect, string prohibition, CardInspector cards)
         {
             var visible = !string.IsNullOrEmpty(force.CardId);
             CardText card = null;
@@ -362,10 +362,19 @@ namespace Wotr.Client
             button.EnableInClassList("battle-card-back", faceDown);
             button.EnableInClassList("battle-card-revealed", revealed);
             button.SetEnabled(visible);
-            button.tooltip = heading.tooltip + "\n" + (visible ? "Inspect " + label : label);
+            button.tooltip = CardTooltip(label, force, visible, faceDown);
             root.Add(button);
             if (visible && cards != null)
                 button.AddToClassList(RuntimeTooltip.RichHoverClass);
+        }
+
+        // UI-420 (owner): the card slot names the card and what its click does; the force's modifiers stay on the
+        // medallions. A slot whose text says everything (choosing, no card) has no tooltip.
+        private static string CardTooltip(string label, BattleForceView force, bool visible, bool faceDown)
+        {
+            if (visible)
+                return TooltipText.Lines(TooltipText.Parts(label, force.CardCancelled ? "Cancelled" : ""), "Click to inspect");
+            return faceDown ? "Combat card chosen face down · Revealed once both players have chosen" : "";
         }
 
         public void Refresh()

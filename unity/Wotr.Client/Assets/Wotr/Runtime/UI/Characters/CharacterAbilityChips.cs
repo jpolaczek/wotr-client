@@ -15,6 +15,7 @@ namespace Wotr.Client
         public const string ChipClass = "character-ability";
         public const string TitleClass = "character-ability-title";
         public const string UseClass = "character-ability-use-action";
+        public const string UsableNow = "Usable now · Click it, then Click to use below";
         private const int PageSize = 3;
         // A command's ability id where it differs from the printed ability it uses.
         private static readonly IReadOnlyDictionary<string, string> CommandChips = new Dictionary<string, string>
@@ -161,8 +162,8 @@ namespace Wotr.Client
                 chip.userData = ability.Id;
                 chip.Q<Label>(className: TitleClass).text = ability.Title;
                 var ready = editable && usable[ability.Id].Any(action => action.Enabled);
-                chip.tooltip = ability.Title + "\n" + ability.Text + "\n\n" + ability.Source +
-                    (ready ? "\n\nUsable now: click it, then Click to use." : "");
+                // UI-420 (owner): the chip shows the title, so its tooltip starts with the text, without blank lines.
+                chip.tooltip = TooltipText.Lines(ability.Text, ability.Source, ready ? UsableNow : "");
                 chip.EnableInClassList("selected", opened == ability.Id);
                 ChoiceGlow.Apply(chip, ready);
             }

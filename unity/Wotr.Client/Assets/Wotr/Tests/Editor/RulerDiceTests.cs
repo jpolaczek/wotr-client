@@ -25,6 +25,7 @@ namespace Wotr.EditorTests
             standard.Location = DieLocation.Discarded;
             Assert.IsTrue(RulerDice.Discarded(view, standard));
             StringAssert.EndsWith("Discarded · Returns at the next Recover", DieHints.Describe(view, standard));
+            StringAssert.DoesNotContain("Set aside", DieHints.Describe(view, standard), "UI-420: Discarded already says where it is.");
             view.Configuration.Kings = false;
             Assert.IsFalse(RulerDice.Discarded(view, standard), "Outside Kings a discarded die is only counted Out.");
         }

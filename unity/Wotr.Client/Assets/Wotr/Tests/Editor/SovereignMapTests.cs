@@ -17,7 +17,7 @@ namespace Wotr.EditorTests
             var erebor = data.Armies.Single(a => a.RegionId == "erebor");
             CollectionAssert.AreEqual(new[] { "dain" }, erebor.SovereignIds);
             CollectionAssert.AreEqual(new[] { "Dáin" }, erebor.CrownedTitles);
-            StringAssert.EndsWith("Led by Dáin (not awakened)", ArmyMarkerText.Describe(erebor, "Erebor"));
+            StringAssert.EndsWith("Led by Dáin · ♙ Initial", ArmyMarkerText.Describe(erebor, "Erebor"));
             var edoras = data.Armies.Single(a => a.RegionId == "edoras");
             CollectionAssert.AreEqual(new[] { "theoden" }, edoras.SovereignIds);
             Assert.IsEmpty(edoras.CrownedTitles, "An Awakened king is a character figure, not a crowned leader.");
@@ -26,7 +26,8 @@ namespace Wotr.EditorTests
             Assert.IsFalse(Crown(map, "erebor").ClassListContains(MapArmyArtwork.UnusedClass));
             Assert.IsTrue(Crown(map, "edoras").ClassListContains(MapArmyArtwork.UnusedClass));
             var marker = map.SovereignMarkers.Find("denethor");
-            Assert.AreEqual("Denethor · Corrupted · Minas Tirith", marker.tooltip);
+            // UI-420: the marker reads as his portrait does.
+            Assert.AreEqual("Denethor · ◉ Corrupted · Minas Tirith\nHis tiles are resolved; he now serves the Shadow", marker.tooltip);
             Assert.IsFalse(marker.ClassListContains(MapSovereignMarkers.LitClass));
             Assert.IsInstanceOf<DraftToken>(marker.userData);
         }
