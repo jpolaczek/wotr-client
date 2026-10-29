@@ -1160,7 +1160,6 @@
 .region-hover .hover-effects > .action { width: auto; min-width: 0; max-width: 100%; height: auto; min-height: 26px; padding: 2px 5px; font-size: 12px; white-space: normal; }
 .effect-scope-badge { width: 28px; min-width: 28px; height: 23px; min-height: 23px; padding: 0; margin: 0 2px; font-size: 11px; }
 /* UI-87: the transient scope badge covers the nation emblem instead of a long nation name. */
-.nation-track > .effect-scope-badge { position: absolute; left: 1px; top: 3px; width: 22px; min-width: 22px; }
 #effects-empty { font-size: 12px; color: rgb(173, 189, 184); padding: 8px; }
 
 /* UI-58 Resource decisions */

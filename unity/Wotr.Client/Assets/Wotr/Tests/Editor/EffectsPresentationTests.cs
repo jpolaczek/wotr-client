@@ -82,6 +82,40 @@ namespace Wotr.Tests
             Assert.IsNull(table.Root.Q("effect-card"), "An ability has no card text block.");
         }
 
+        // UI-414 (owner): each titled ability of a source has its own button, and a card's effects keep one.
+        [Test]
+        public void EachTitledAbilityHasItsOwnButtonAndACardKeepsOne()
+        {
+            var view = new PlayerView();
+            view.Effects.Add(Ability("ruler", "edoras", "Corrupted ruler · Théoden", "No Leader or Elite is recruited in Rohan."));
+            view.Effects.Add(Ability("mark", "helms-deep", "Mark of the White Hand · Théoden", "Helm's Deep is an Isengard Stronghold."));
+            view.Effects.Add(Effect("one", "rivendell", "EndTurn"));
+            view.Effects.Add(Effect("two", "lorien", "EndBattle"));
+            var sources = EffectsPresentation.Sources(view);
+            Assert.AreEqual(3, sources.Count);
+            CollectionAssert.AreEquivalent(new[] { "Corrupted ruler · Théoden", "Mark of the White Hand · Théoden", "A Power too Great" },
+                sources.Select(s => s.Title));
+            Assert.AreEqual(3, sources.Select(s => s.Key).Distinct().Count());
+            Assert.AreEqual(2, sources.Single(s => s.Title == "A Power too Great").Effects.Count);
+            Assert.AreEqual(EffectsPresentation.Key("base.fp.strategy.02", Side.FreePeoples), sources.Single(s => s.Title == "A Power too Great").Key);
+        }
+
+        // UI-414 (owner): a place shows its button once in a source, and none where the effect's text names it.
+        [Test]
+        public void APlaceShowsItsButtonOnceAndNotWhereTheTextNamesIt()
+        {
+            var view = new PlayerView();
+            view.Effects.Add(Effect("one", "rivendell", "EndTurn"));
+            view.Effects.Add(Effect("two", "rivendell", "EndBattle"));
+            view.Effects.Add(Ability("ban", "erebor", "Corrupted ruler · Dáin", "Leaders and Elites cannot be recruited in Erebor."));
+            var table = Panel();
+            table.Apply(view);
+            table.Inspect("base.fp.strategy.02");
+            Assert.AreEqual(1, table.Root.Query<Button>("effect-locate-rivendell").ToList().Count, "Rivendell shows once.");
+            table.Inspect("kings.character.dain.corrupted");
+            Assert.IsNull(table.Root.Q<Button>("effect-locate-erebor"), "The text names Erebor.");
+        }
+
         [Test]
         public void UpdatesKeepSourceControlsAndPinnedEndedInformationButRemoveTheirActions()
         {
@@ -189,6 +223,18 @@ namespace Wotr.Tests
             action.DieId = "army";
             StringAssert.Contains("one chosen Elven Ring", EffectsPresentation.RemovalCost(view, action));
             StringAssert.DoesNotContain("Will of the West", EffectsPresentation.RemovalCost(view, action));
+        }
+
+        private static ActiveEffectView Ability(string id, string region, string title, string description)
+        {
+            var effect = Effect(id, region);
+            effect.SourceId = id == "ban" ? "kings.character.dain.corrupted" : "kings.character.theoden.corrupted";
+            effect.SourceKind = "Ability";
+            effect.Owner = Side.Shadow;
+            effect.Title = title;
+            effect.Description = description;
+            effect.Modifier = "";
+            return effect;
         }
 
         private static TableEffectsView Panel() => new TableEffectsView(new VisualElement(), new MapCanvas(BoardPresentation.Load()));

@@ -1484,3 +1484,21 @@ Base-game parts of the owner's requests on the Kings branch:
   nation's token and its arrow show the step; the next station stays the drop target of a dragged token and shows a
   white rim only while the drag points at it. Tests: `PoliticalGestureTests`, `PoliticalPanelTests`,
   `PoliticalRecoveryTests`, `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `T22TurnNetworkTests`.
+
+## A settlement's own recruits, clear Politics names — UI-412 and UI-413 (2026-10-29)
+
+- UI-412 (owner) — with a Muster die chosen, a clicked settlement lights in the Reserve only the figures it can take:
+  the kinds whose recruitment targets (the server's `RecruitmentOption.Targets`) hold that settlement stay lit, and so
+  do their nations' rows. The others lose their light but stay choosable, as before, for another settlement; their
+  tooltip says why ("Cannot be recruited in Edoras now", or the server's words for a closed settlement) and that their
+  click lights the settlements that take them. The header reads "Reserve · Edoras". Another settlement moves the focus,
+  a region without a settlement clears it, and a committed recruit clears it too, so the next figure sees every
+  settlement again. The click flow is unchanged. Test: `BoardInteractionTests` (UI-130's recruitment).
+- UI-413 (owner) — the Politics rows carry no effect badges: the small diamond a nation-wide effect (Wormtongue on Rohan,
+  a Corrupted Brand or Théoden) placed at the start of a row covered the nation's name. The Effects tab still lists
+  every effect; the Fellowship's and the global badges keep their places (`EffectsScopeBadges`). Test:
+  `EffectsNetworkTests` (no badge on the Politics rows while Wormtongue is in play).
+- UI-414 (owner) — the Effects tab lists passive effects and what is happening now; an ability a player uses is
+  described and offered only in the Characters tab. Each titled ability of a source has its own button; a card's
+  effects keep one. A place shows its locate button once per source, and none where the effect's text already names
+  it (`EffectsPresentation`, `EffectSourceDetails`). Test: `EffectsPresentationTests`.
