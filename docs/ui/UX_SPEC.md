@@ -1850,3 +1850,27 @@ Owner requests and reports from the Kings and Lords test scenarios:
 - UI-411 (owner) — a Corruption tile that can be chosen (an attempt's drawn tiles, an inspection's tiles) pulses
   visibly: besides its fading gold rim it grows a little in the shared 750 ms rhythm, as the roster's choices do; Reduced
   motion keeps it lit and still. Test: `SovereignPanelNetworkTests` (the tile's panel pulses during the choice).
+
+## A settlement's own recruits, clear Politics names — UI-412 and UI-413 (2026-10-29)
+
+- UI-412 (owner) — with a Muster die chosen, a clicked settlement lights in the Reserve only the figures it can take:
+  the kinds whose recruitment targets (the server's `RecruitmentOption.Targets`) hold that settlement stay lit, and so
+  do their nations' rows. The others lose their light but stay choosable, as before, for another settlement; their
+  tooltip says why ("Cannot be recruited in Erebor now", or the server's words for a closed settlement) and that their
+  click lights the settlements that take them. The header reads "Reserve · Erebor". Another settlement moves the focus,
+  a region without a settlement clears it, and a committed recruit clears it too, so the next figure sees every
+  settlement again. The narrowing follows the targets, not the region's nation: Helm's Deep under the Mark of the White Hand
+  lights Isengard's figures. The click flow is unchanged (a figure's click still lights its settlements).
+  Test: `RecruitFocusMenuTests` (the Corrupted kings scenario: Erebor, the Iron Hills, Dale, the Old Forest).
+- UI-413 (owner) — the Politics rows carry no effect badges: the small diamond a nation-wide effect (Wormtongue on Rohan,
+  a Corrupted Brand or Théoden) placed at the start of a row covered the nation's name. The Effects tab still lists
+  every effect; the Fellowship's and the global badges keep their places (`EffectsScopeBadges`). Test:
+  `EffectsNetworkTests` (no badge on the Politics rows while Wormtongue is in play).
+- UI-414 (owner) — the Effects tab lists passive effects and what is happening now (tiles entering the Hunt Pool, a
+  card's lasting effect); an ability a player uses is described and offered only in the Characters tab. Each titled
+  ability of a source has its own button, named by the ability ("Corrupted ruler · Dáin", "Mark of the White Hand ·
+  Théoden"); a card's effects keep one button. A place shows its locate button once per source, and none where the
+  effect's text already names it. The server (`InGameEffectProjection`) projects each Corrupted sovereign's recruitment
+  ban naming its place and Théoden's Mark of the White Hand; Brand's Shadows in the North and the Fate abilities are
+  the Shadow's optional uses, offered in battle, and are no longer effects. Tests: `EffectsPresentationTests`, server
+  `InGameProjectionTests.CorruptedSovereignsProjectOnlyTheirPassiveEffectsTitledByAbility`.

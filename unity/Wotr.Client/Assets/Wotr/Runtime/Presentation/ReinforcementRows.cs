@@ -15,6 +15,8 @@ namespace Wotr.Client
         public string Warning = "";
         // UI-271: what this token's click does when it differs from the panel's hint (Gothmog's ability).
         public string Hint = "";
+        // UI-412: recruitable, but not in the settlement in focus: the token stays choosable and unlit.
+        public bool Elsewhere;
     }
 
     public sealed class ReinforcementRow
@@ -27,8 +29,26 @@ namespace Wotr.Client
         // A card plan's limits for the nation (UI-131); UI-179: never the nation's political status.
         public string Status = "";
         public bool CanRecruit;
+        // UI-412: the nation recruits, but not in the settlement in focus: its row is not lit.
+        public bool Elsewhere;
         public string Reason = "";
         public List<ReinforcementFigure> Figures = new List<ReinforcementFigure>();
+    }
+
+    // UI-412: the settlement whose click narrows a Muster recruitment's Reserve, with its name.
+    public readonly struct RecruitFocus
+    {
+        public static readonly RecruitFocus None = new RecruitFocus("", "");
+        public readonly string Region;
+        public readonly string Name;
+
+        public RecruitFocus(string region, string name)
+        {
+            Region = region ?? "";
+            Name = name ?? "";
+        }
+
+        public bool Active => Region.Length > 0;
     }
 
     // UI-130: one row per own nation of the Reinforcements tab. Legality comes from the server's Recruit option;
@@ -40,8 +60,12 @@ namespace Wotr.Client
         private static readonly string[] Order = { "dwarves", "elves", "gondor", "north", "rohan", "isengard", "sauron", "southrons" };
         public static readonly UnitKind[] Kinds = { UnitKind.Regular, UnitKind.Elite, UnitKind.Leader, UnitKind.Nazgul };
 
-        public static List<ReinforcementRow> For(PlayerView view, ActionOption recruit) =>
-            InOrder(view.Units.Where(u => u.Side == view.You).Select(u => u.Nation)).Select(nation => Row(view, recruit, nation)).ToList();
+        public static List<ReinforcementRow> For(PlayerView view, ActionOption recruit) => For(view, recruit, RecruitFocus.None);
+
+        // UI-412 (owner): with a settlement in focus only the figures it can take are lit; the others stay choosable and
+        // say why they are not lit.
+        public static List<ReinforcementRow> For(PlayerView view, ActionOption recruit, RecruitFocus focus) =>
+            InOrder(view.Units.Where(u => u.Side == view.You).Select(u => u.Nation)).Select(nation => Row(view, recruit, nation, focus)).ToList();
 
         // Free Peoples first in their printed order, then the Shadow nations.
         public static List<string> InOrder(IEnumerable<string> nations) => nations.Distinct()
@@ -83,24 +107,26 @@ namespace Wotr.Client
             return reason.Length > 0 ? reason : "Not available here now";
         }
 
-        private static ReinforcementRow Row(PlayerView view, ActionOption recruit, string nation)
+        private static ReinforcementRow Row(PlayerView view, ActionOption recruit, string nation, RecruitFocus focus)
         {
             var entry = Entry(view, nation);
             var groups = recruit?.Recruitment.Where(g => g.Nation == nation).ToList() ?? new List<RecruitmentOption>();
+            var here = focus.Active ? groups.Where(g => g.Targets.Contains(focus.Region)).ToList() : groups;
             var row = new ReinforcementRow
             {
                 Nation = nation,
                 Name = FigureGrid.Name(nation),
-                CanRecruit = groups.Count > 0
+                CanRecruit = groups.Count > 0,
+                Elsewhere = groups.Count > 0 && here.Count == 0
             };
-            row.Reason = row.CanRecruit ? "" : Reason(entry);
+            row.Reason = !row.CanRecruit ? Reason(entry) : row.Elsewhere ? Elsewhere(view, nation, focus) : "";
             foreach (var kind in Kinds.Where(k => view.Units.Any(u => u.Side == view.You && u.Nation == nation && u.Kind == k)))
-                row.Figures.Add(Figure(view, entry, groups, row, nation, kind));
+                row.Figures.Add(Figure(view, entry, groups, here, row, nation, kind, focus));
             return row;
         }
 
         private static ReinforcementFigure Figure(PlayerView view, ActionAvailabilityView entry, List<RecruitmentOption> groups,
-            ReinforcementRow row, string nation, UnitKind kind)
+            List<RecruitmentOption> here, ReinforcementRow row, string nation, UnitKind kind, RecruitFocus focus)
         {
             var figure = new ReinforcementFigure
             {
@@ -113,10 +139,21 @@ namespace Wotr.Client
                 : figure.ReserveId != null ? ""
                 : kind == UnitKind.Elite && budget != null && !budget.Met ? budget.Description
                 : row.Reason;
+            figure.Elsewhere = figure.ReserveId != null && here.All(g => g.Kind != kind);
+            if (figure.Elsewhere)
+                figure.Hint = Elsewhere(view, nation, focus) + " · Click it to light the settlements that take it";
             if (figure.ReserveId != null && groups.Where(g => g.Kind == kind).SelectMany(g => g.Targets)
                     .Any(region => MusterActions.OrphanLeader(view, kind, region)))
                 figure.Warning = OrphanWarning;
             return figure;
+        }
+
+        // A figure or nation the die can recruit elsewhere, but not in the settlement in focus: the server's words for a
+        // closed settlement, otherwise that it cannot go there.
+        private static string Elsewhere(PlayerView view, string nation, RecruitFocus focus)
+        {
+            var reason = SettlementReason(view, nation, focus.Region);
+            return reason.Length > 0 ? reason : "Cannot be recruited in " + focus.Name + " now";
         }
 
         public static string NationReason(PlayerView view, string nation) => Reason(Entry(view, nation));

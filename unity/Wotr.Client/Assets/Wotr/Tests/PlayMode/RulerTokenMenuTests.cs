@@ -34,7 +34,7 @@ namespace Wotr.PlayTests
             var fixture = Load();
             using var api = await fixture.Login(Side.FreePeoples, token);
             using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui380-" + Guid.NewGuid().ToString("N")));
-            await Open(client, scenario, token);
+            await OpenScenario(client, scenario, token);
             await Task.Delay(500, token);
             var board = client.Board;
             var ruler = board.OwnDice.Q<Button>("ruler-token-kings.token." + king);
@@ -75,7 +75,7 @@ namespace Wotr.PlayTests
             var fixture = Load();
             using var api = await fixture.Login(Side.FreePeoples, token);
             using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui384-" + Guid.NewGuid().ToString("N")));
-            await Open(client, "kings-brand-call-to-arms", token);
+            await OpenScenario(client, "kings-brand-call-to-arms", token);
             await Task.Delay(500, token);
             var board = client.Board;
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("kings.die.fp.ruler"));
@@ -112,7 +112,7 @@ namespace Wotr.PlayTests
             var fixture = Load();
             using var api = await fixture.Login(Side.FreePeoples, token);
             using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui389-" + Guid.NewGuid().ToString("N")));
-            await Open(client, "kings-ruler-token-thranduil", token);
+            await OpenScenario(client, "kings-ruler-token-thranduil", token);
             await Task.Delay(500, token);
             var board = client.Board;
             var ruler = board.OwnDice.Q<Button>("ruler-token-kings.token.thranduil");
@@ -153,7 +153,7 @@ namespace Wotr.PlayTests
             var fixture = Load();
             using var api = await fixture.Login(Side.FreePeoples, token);
             using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui389-" + Guid.NewGuid().ToString("N")));
-            await Open(client, "kings-fp-ruler-token", token);
+            await OpenScenario(client, "kings-fp-ruler-token", token);
             await Task.Delay(500, token);
             var board = client.Board;
             var ruler = board.OwnDice.Q<Button>("ruler-token-kings.token.denethor");
@@ -187,7 +187,7 @@ namespace Wotr.PlayTests
             var fixture = Load();
             using var api = await fixture.Login(Side.FreePeoples, token);
             using var client = new MountedFlowClient(api, Path.Combine(Path.GetTempPath(), "wotr-ui391-" + Guid.NewGuid().ToString("N")));
-            await Open(client, "kings-ruler-token-dain", token);
+            await OpenScenario(client, "kings-ruler-token-dain", token);
             await Task.Delay(500, token);
             var board = client.Board;
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("ruler-token-kings.token.dain"));
@@ -256,14 +256,5 @@ namespace Wotr.PlayTests
 
         private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex &&
             element.worldBound.width > 0 && element.panel != null;
-
-        private static async Task Open(MountedFlowClient client, string scenario, CancellationToken token)
-        {
-            await ClickReady(client.Root, "open-test-scenarios", token);
-            client.Root.Q<TextField>("test-scenario-search").value = scenario;
-            await Task.Delay(150, token);
-            await ClickReady(client.Root, "test-scenario-" + scenario, token);
-            await Until(() => client.Board?.View != null && client.Board.Connection.text == "Live", token);
-        }
     }
 }

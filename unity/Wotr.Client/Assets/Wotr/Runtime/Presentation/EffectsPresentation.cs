@@ -24,14 +24,14 @@ namespace Wotr.Client
             var sources = new Dictionary<string, EffectSource>();
             foreach (var effect in view.Effects)
             {
-                var key = Key(effect.SourceId, effect.Owner);
+                var key = SourceKey(sources, effect);
                 if (!sources.TryGetValue(key, out var source))
                 {
                     source = new EffectSource
                     {
                         Key = key, SourceId = effect.SourceId, Owner = effect.Owner,
                         Kind = effect.SourceKind.Length > 0 ? effect.SourceKind : "Card",
-                        Title = effect.Title.Length > 0 ? effect.Title : CardLibrary.Title(effect.SourceId)
+                        Title = Title(effect)
                     };
                     sources.Add(key, source);
                 }
@@ -54,6 +54,16 @@ namespace Wotr.Client
                 }
             return sources.Values.OrderBy(s => s.Owner).ThenBy(s => s.Title).ToList();
         }
+
+        // UI-414 (owner): each titled ability of a source has its own button (Théoden's Corrupted ruler and Mark of the White
+        // Hand); a card's effects share its title, so it keeps one button and its key.
+        private static string SourceKey(Dictionary<string, EffectSource> sources, ActiveEffectView effect)
+        {
+            var key = Key(effect.SourceId, effect.Owner);
+            return sources.TryGetValue(key, out var first) && first.Title != Title(effect) ? key + "/" + Title(effect) : key;
+        }
+
+        private static string Title(ActiveEffectView effect) => effect.Title.Length > 0 ? effect.Title : CardLibrary.Title(effect.SourceId);
 
         public static IEnumerable<string> LocalRegions(PlayerView view, ActiveEffectView effect)
         {

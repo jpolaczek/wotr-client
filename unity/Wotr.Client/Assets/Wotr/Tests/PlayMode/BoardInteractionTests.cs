@@ -185,6 +185,12 @@ namespace Wotr.PlayTests
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");
                 yield return Settle();
                 Assert.IsTrue(rohan.ClassListContains("reinforcement-focused"), "A clicked settlement marks its nation's row.");
+                // UI-412 (owner): Edoras takes no figure now (Rohan is not at war), so nothing is lit; Gondor's Regular stays
+                // choosable for another settlement.
+                Assert.AreEqual("Reserve · Edoras", panel.Q<Label>(className: "title").text);
+                Assert.IsFalse(token.ClassListContains("eligible-token"), "Edoras lights no Gondor figure.");
+                Assert.IsTrue(token.enabledSelf, "Gondor's Regular stays choosable.");
+                Assert.IsFalse(panel.Q("reinforcement-gondor").ClassListContains("recruitable"), "Gondor's row is not lit for Edoras.");
                 Assert.AreEqual(0, test.Backend.Commands, "Inspecting a settlement sends nothing.");
                 LayoutTests.Save(test.Viewport, "ui130-reinforcements.png");
                 MapContourProbe.ClickRegion(test.Board.Map, "edoras");

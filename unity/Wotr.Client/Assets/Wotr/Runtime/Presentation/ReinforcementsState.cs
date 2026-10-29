@@ -61,16 +61,21 @@ namespace Wotr.Client
         }
 
         public static ReinforcementsState For(PlayerView view, ActionOption recruit, string selected, bool interactive) =>
+            For(view, recruit, selected, interactive, RecruitFocus.None);
+
+        // UI-412 (owner): a clicked settlement lights only its own recruits in the Muster's Reserve and names it in the header.
+        public static ReinforcementsState For(PlayerView view, ActionOption recruit, string selected, bool interactive, RecruitFocus focus) =>
             new ReinforcementsState
             {
                 Open = true,
                 Interactive = interactive,
+                Title = focus.Active ? "Reserve · " + focus.Name : "Reserve",
                 Finishable = view.Decision?.Kind == DecisionKind.ActionSequence &&
                     view.ActionSequence is { Kind: CommandKind.Recruit } sequence && sequence.Owner == view.You,
                 Side = view.You,
                 Selected = selected,
                 Points = ReinforcementRows.Budget(view),
-                Rows = ReinforcementRows.For(view, recruit)
+                Rows = ReinforcementRows.For(view, recruit, focus)
             };
 
         public static ReinforcementsState For(PlayerView view, ReinforcementPlan plan, string selected, bool interactive) =>
