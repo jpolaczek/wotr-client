@@ -87,7 +87,53 @@ baked textures and opacity.
   settlement), `field` (open ground inside the contour, near the settlement but clear of it), `characters[0..5]`,
   `garrisonCharacters[0..2]`, `fellowship`, `planned`, and `capacity` (the largest footprint scale at which the group
   fits). Region overrides of expansion modules always get a place (fallback beside the settlement). Region names keep
-  clear of the places (`MapRegionNamePoints.For` with an obstacle predicate).
+  clear of the places (`MapRegionNamePoints.For` with an obstacle predicate). As built (2026-10-29):
+  - **Data.** Every place is the point under the figures' feet, in board units. A stronghold's record also holds its
+    `fortress`: its drawing together with its garrison's figures at the gate, which names keep clear of.
+    `MapStandSlots.Load` reads the file once and rejects it, like `MapBandGeometry.Validate`, when a recorded source
+    no longer matches: the bytes of `map-geometry.json` and `MapCanvas/landmarks.json`, a digest of the regions' ids,
+    names and settlements in `base-board.json` (the rest of that file may change freely), the worst-case zoom, the
+    footprints, a missing region or a garrison place that disagrees with the strongholds. `For(shape, current)` gives
+    a region's places for its current definition.
+  - **Footprints** (`StandFootprint`). Scale 1 is the readable minimum in the worst case: 1366×768 at 125 % is a
+    1092.8×614.4 point map, figures show down to 1.2 × its fit zoom (`MapMarkerVisibility.TokensBelow`), that is
+    0.8035 points per board unit. An army (field, garrison, planned): a base of 40 × 16 units (32 × 13 points there)
+    and figures 40 units tall; a character: a base of 14 × 5.6 and figures 16 × 36; the Fellowship: a base of 16 × 6.4
+    and figures 18 × 36. Every base is an ellipse 0.4 times as deep as it is wide. The figure rectangle runs from the
+    top of the figures to the front of the base, as wide as the wider of the two. UI-401 clamps a figure to at least
+    this size (`px >= units × 0.8035`), so at the Detail level a footprint is never larger than scale 1.
+  - **Choosing a place.** On an anisotropic distance transform of each region, so a base fits where the distance
+    reaches its half width, 1.5 units clear of the border and of the other bases. The garrison's feet lie on its
+    drawing, low on its middle (the gate: a fifth of the drawing's height above its lower edge), its three characters
+    beside it. The field stands as close to the settlement point as its figures allow without covering the gem, so
+    above or beside it; the planned recruits, the six characters and the Fellowship stand around the field.
+    Characters keep to the army's line: figures that hide one another cost heavily, and only where that leaves the
+    group below scale 1 does a lighter cost get its chance. A besieger in the field and the garrison never share more
+    than a quarter of either's figure rectangle, so a siege shows both. No figure rectangle covers a settlement gem
+    (as drawn at the worst-case zoom, the larger of the printed settlement and an expansion's, plus 2 units), another
+    region's fortress drawing or any region's name; a garrison group stands on its own drawing.
+  - **Capacity.** A tight region is laid out at the largest scale its group fits (steps of 0.05); `capacity` is the
+    largest scale, up to 2, at which the fixed places still hold. Fifteen regions are below 1 and show tokens in the
+    worst case: Western Mirkwood 0.57, Minas Morgul 0.60, Woodland Realm 0.62, Gladden Fields 0.70, Rhosgobel 0.70,
+    Dol Guldur 0.82, Southern Mirkwood 0.85, Ash Mountains 0.86, Moria 0.87, High Pass 0.91, Old Ford 0.95, Old Forest
+    Road 0.96, South Anduin Vale 0.96, Lossarnach 0.97, Edoras 0.98. Their figures show once the zoom shrinks the
+    footprint to their capacity (UI-401's maximum clamp). Minas Morgul, Woodland Realm and Moria stay tight even
+    without names: their drawings stand at narrow ends of their regions. The Helm's Deep siege fits at scale 1: the
+    garrison at the gate in the east of the region, the besieger's field north-west of it, the garrison's characters
+    in a row to the west.
+  - **Hand pins.** `pins` in `scripts/map-stands-overrides.json` (`{"<region>": {"field": [x, y],
+    "characters[2]": [x, y]}}`) replace the search for those places; none is needed today. Its `settlements` lists
+    the settlements expansion modules give regions (Fate of Erebor: Dale a Fortification, the Iron Hills a City; New
+    Cities: Ered Luin and South Rhûn Cities), so their larger gems are kept clear too.
+  - **Region overrides.** A region the file does not hold, or a stronghold an expansion module makes of a region
+    without a garrison place, stands beside its settlement: the field to its right and the garrison to its left, the
+    characters beyond them, the Fellowship above and the planned recruits below, 14 units clear of the gem, with
+    capacity 0 so it shows tokens. No module makes such a stronghold today.
+  - **Checks.** `python3 scripts/export_map_stands.py --check` lays everything out again, runs the acceptance checks
+    and compares the result with the file (about 80 s; NumPy, SciPy and Pillow as in
+    `scripts/requirements-map-canvas.txt`); `--preview <folder>` draws the places, names, gems and drawings over the
+    contours. EditMode `MapStandSlotsTests` check the file on their own with `MapContourMath`;
+    `MapRegionNamePointsTests` and `MapLandmarksTests` check the names and drawings against the places.
 - **Scale** (UI-401): `feet = Camera.ToScreen(place)`; size `px = clamp(boardUnits × Zoom, min, max)`, applied only
   through `style.translate`/`style.scale` with `UsageHints.DynamicTransform`; width and height are never written per
   frame.

@@ -1,0 +1,10 @@
+{
+  "version": "map-stands-overrides-1",
+  "settlements": {
+    "dale": "Fortification",
+    "ered-luin": "City",
+    "iron-hills": "City",
+    "south-rhun": "City"
+  },
+  "pins": {}
+}

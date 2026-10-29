@@ -21,11 +21,11 @@ namespace Wotr.Client
         }
     }
 
-    // UI-186: a name stands inside its region, as far from the borders as it can, and clear of the settlement and of
-    // the forces that stand above it (MapCanvas.RowCentre) or on the anchor of a region without one. Below the
-    // settlement is preferred, as on the printed board. The search runs once per region on the static geometry; the
-    // distances use the traced borders simplified to within one board unit (a quarter of the points): about 0.15 s for
-    // the whole board instead of 0.6 s, measured in MapRegionNamePointsTests.
+    // UI-186: a name stands inside its region, as far from the borders as it can. Below the settlement is preferred,
+    // as on the printed board. UI-422: it keeps clear of the stand places (MapStandSlots.NameObstacle) instead of a
+    // fixed box around the settlement. The search runs once per region on the static geometry; the distances use the
+    // traced borders simplified to within one board unit (a quarter of the points): about 0.15 s for the whole board
+    // instead of 0.6 s, measured in MapRegionNamePointsTests.
     public static class MapRegionNamePoints
     {
         private const int Grid = 14;
@@ -34,27 +34,35 @@ namespace Wotr.Client
         private const float MinimumClearance = 5;
         private const float ClearanceCap = 26;
         private const float BelowBonus = 6;
-        private const float ZonePenalty = 1000;
-        // The forces' row at figure size, in board units at the zoom where figures appear.
-        private const float ZoneHalfWidth = 42;
-        private const float ZoneAbove = 64;
-        private const float ZoneBelow = 12;
-        private const float CentredZoneHalfHeight = 32;
+        private const float BelowMargin = 12;
+        private const float CoveredPenalty = 1000;
 
-        // clearOfForces: false finds the region's roomiest point wherever its forces stand (UI-363).
-        public static MapNamePoint For(RegionGeometry region, bool settled, bool clearOfForces = true)
+        // UI-422: a name keeps the point it takes on the empty board, the region's roomiest point (UI-363), unless a
+        // name of this half size there would lie under an obstacle; then the search runs again, a covered point costing
+        // its score. scripts/export_map_stands.py lays the places out so that a region's own figures leave that point
+        // clear; only a neighbour's figures reaching over it, or a fortress, move a name.
+        public static MapNamePoint For(RegionGeometry region, Vector2 nameHalfSize = default, Func<Rect, bool> obstacle = null)
         {
             var anchor = new Vector2(region.Anchor[0], region.Anchor[1]);
             var borders = Borders(region);
             var bounds = Bounds(region);
             var step = Mathf.Max(2, Mathf.Min(bounds.width, bounds.height) / Grid);
-            var best = Search(region, borders, anchor, settled, clearOfForces, bounds, step, out var score);
-            var fine = new Rect(best - Vector2.one * step, Vector2.one * step * 2);
-            best = Search(region, borders, anchor, settled, clearOfForces, fine, step * 2 / Refinement, out _, score, best);
+            var best = Searched(region, borders, anchor, null, bounds, step);
+            if (obstacle != null && Covered(borders, best, nameHalfSize, obstacle))
+                best = Searched(region, borders, anchor, point => Covered(borders, point, nameHalfSize, obstacle), bounds, step);
             return new MapNamePoint(best, Chord(borders, best, Vector2.right), Chord(borders, best, Vector2.up));
         }
 
-        private static Vector2 Search(RegionGeometry region, List<Vector2[]> borders, Vector2 anchor, bool settled, bool clearOfForces,
+        // The best point of a coarse grid, then of a finer one around it.
+        private static Vector2 Searched(RegionGeometry region, List<Vector2[]> borders, Vector2 anchor, Func<Vector2, bool> covered,
+            Rect bounds, float step)
+        {
+            var best = Search(region, borders, anchor, covered, bounds, step, out var score);
+            var fine = new Rect(best - Vector2.one * step, Vector2.one * step * 2);
+            return Search(region, borders, anchor, covered, fine, step * 2 / Refinement, out _, score, best);
+        }
+
+        private static Vector2 Search(RegionGeometry region, List<Vector2[]> borders, Vector2 anchor, Func<Vector2, bool> covered,
             Rect area, float step, out float bestScore, float startScore = float.MinValue, Vector2 start = default)
         {
             var best = start;
@@ -65,7 +73,7 @@ namespace Wotr.Client
                     var point = new Vector2(x, y);
                     if (!MapContourMath.Contains(region, point))
                         continue;
-                    var score = Score(borders, anchor, settled, clearOfForces, point);
+                    var score = Score(borders, anchor, covered, point);
                     if (score > bestScore)
                     {
                         bestScore = score;
@@ -77,26 +85,28 @@ namespace Wotr.Client
             return best;
         }
 
-        private static float Score(List<Vector2[]> borders, Vector2 anchor, bool settled, bool clearOfForces, Vector2 point)
+        private static float Score(List<Vector2[]> borders, Vector2 anchor, Func<Vector2, bool> covered, Vector2 point)
         {
             var clearance = Clearance(borders, point);
             if (clearance < MinimumClearance)
-                return clearance - ZonePenalty * 2;
+                return clearance - CoveredPenalty * 2;
             var score = Mathf.Min(clearance, ClearanceCap);
-            if (clearOfForces && InForcesZone(anchor, settled, point))
-                score -= ZonePenalty;
-            if (point.y > anchor.y + ZoneBelow)
+            if (covered != null && covered(point))
+                score -= CoveredPenalty;
+            if (point.y > anchor.y + BelowMargin)
                 score += BelowBonus;
             return score;
         }
 
-        public static bool InForcesZone(Vector2 anchor, bool settled, Vector2 point)
+        // Whether a name at the point lies under an obstacle: at its largest, and if so within the room at the point,
+        // since a name wider or taller than its room is not drawn (MapRegionNames.BoardRect).
+        private static bool Covered(List<Vector2[]> borders, Vector2 point, Vector2 halfSize, Func<Rect, bool> obstacle)
         {
-            if (Mathf.Abs(point.x - anchor.x) > ZoneHalfWidth)
+            if (!obstacle(new Rect(point - halfSize, halfSize * 2)))
                 return false;
-            return settled
-                ? point.y >= anchor.y - ZoneAbove && point.y <= anchor.y + ZoneBelow
-                : Mathf.Abs(point.y - anchor.y) <= CentredZoneHalfHeight;
+            var room = new Vector2(Chord(borders, point, Vector2.right), Chord(borders, point, Vector2.up));
+            var half = Vector2.Min(halfSize, room);
+            return obstacle(new Rect(point - half, half * 2));
         }
 
         // The distance to the nearest border of the region, holes included.
@@ -207,7 +217,8 @@ namespace Wotr.Client
             return result.ToArray();
         }
 
-        private static Rect Bounds(RegionGeometry region)
+        // The bounds of the region's outer ring, which its name's point lies in.
+        public static Rect Bounds(RegionGeometry region)
         {
             var points = region.Rings[0].Points;
             float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
