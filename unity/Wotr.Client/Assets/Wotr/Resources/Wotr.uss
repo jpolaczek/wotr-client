@@ -838,6 +838,20 @@
 .interface-settings-panel .sound-settings { margin-top: 14px; }
 .interface-settings-panel #sound-heading { margin: 0 0 2px 0; }
 .interface-settings-panel .sound-level { flex-direction: row; align-items: center; margin: 0 0 4px 0; }
+/* UI-415 (owner): Settings as compact as the menu it opens from; every control keeps its 32-point target (QUAL-19:
+   34 points keep it after rounding at 125%). */
+.interface-settings-panel { padding: 12px 16px 14px 16px; }
+.interface-settings-panel .settings-heading { margin-bottom: 4px; }
+.interface-settings-panel #interface-options { margin-right: 20px; }
+.interface-settings-panel .display-choices { margin-bottom: 6px; }
+.interface-settings-panel .display-choice { height: 34px; min-height: 34px; margin: 0 4px 4px 0; }
+.interface-settings-panel .row { margin-bottom: 8px; }
+.interface-settings-panel .scale-choice { height: 36px; }
+.interface-settings-panel .sound-settings { margin-top: 8px; }
+.interface-settings-panel .sound-level { margin: 0 0 2px 0; }
+.interface-settings-panel .unity-toggle { min-height: 34px; margin-bottom: 2px; }
+.interface-settings-panel #reset-window-layout,
+.interface-settings-panel #test-sound { height: 34px; min-height: 34px; margin-top: 4px; }
 .interface-settings-panel .sound-level-label { width: 64px; margin: 0; }
 .interface-settings-panel .sound-level-slider { flex-grow: 1; min-width: 0; height: 32px; margin: 0 8px; }
 .interface-settings-panel .sound-level-value { width: 44px; margin: 0; -unity-text-align: middle-right; }
