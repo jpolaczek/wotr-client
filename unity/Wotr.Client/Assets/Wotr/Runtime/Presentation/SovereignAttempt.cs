@@ -15,9 +15,10 @@ namespace Wotr.Client
         public string Tooltip = "";
     }
 
-    // UI-274 (UX_SPEC): the Shadow's corruption attempt starts at the button beside an Initial king's portrait. Its click
-    // pays a standard Shadow Eye from the Hunt Box (then a Ruler Eye); a Lords special Eye pays only when the player
-    // clicked it first. The tiles drawn for the attempt stand beside the king: the Shadow sees their values, the Free
+    // UI-274 (UX_SPEC): the Shadow's corruption attempt is sent from the button beside an Initial king's portrait.
+    // UI-398 (owner): it starts from its Eye, as every action starts from its die (UI-389): the Eyes that may pay stand in
+    // the Shadow's dice row (UI-230), and only the one clicked lights the kings and their attempt buttons; before that the
+    // buttons stay dark and nothing glows for them. The tiles drawn for the attempt stand beside the king: the Shadow sees their values, the Free
     // Peoples their backs; a click on one attaches it. Every draw is the console's button, even when it is the only legal
     // step (UI-279).
     public static class SovereignAttempt
@@ -30,16 +31,11 @@ namespace Wotr.Client
             view?.Decision?.Kind == DecisionKind.Action && view.DecisionOwner == view.You && !view.Winner.HasValue
                 ? view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.AttemptCorruption) : null;
 
-        // The Eye that pays: one the player clicked first, else a standard Shadow Eye, else a Ruler Eye.
+        // The Eye that pays: the one the player clicked; "" before an Eye is chosen.
         public static string Eye(PlayerView view, TurnDraft draft)
         {
             var option = Option(view);
-            if (option == null)
-                return "";
-            if (draft?.Payload.DieId is { Length: > 0 } chosen && option.EligibleDice.Contains(chosen))
-                return chosen;
-            var eyes = option.EligibleDice.Select(id => view.Dice.FirstOrDefault(d => d.Id == id)).Where(d => d != null).ToList();
-            return eyes.FirstOrDefault(d => d.Source == "standard")?.Id ?? eyes.FirstOrDefault(RulerDice.IsRuler)?.Id ?? "";
+            return option != null && draft?.Payload.DieId is { Length: > 0 } chosen && option.EligibleDice.Contains(chosen) ? chosen : "";
         }
 
         public static bool Enabled(PlayerView view, TurnDraft draft, string king) =>
@@ -55,7 +51,7 @@ namespace Wotr.Client
                     "\nDraw a tile for each other Eye in the Hunt Box, up to three.";
             }
             if (Option(view)?.EligibleIds.Contains(king.Id) == true)
-                return "Attempt to corrupt " + name + "\nClick the special Eye that pays in the Hunt Box first.";
+                return "Attempt to corrupt " + name + "\nClick an Eye that pays in your dice row first.";
             var availability = view.Availability.FirstOrDefault(a => a.SubjectId == king.Id && a.ActionId == ActionId);
             var unmet = availability?.Conditions.Where(c => !c.Met).Select(c => "○ " + c.Description).ToList() ?? new List<string>();
             return "Attempt to corrupt " + name + (unmet.Count > 0 ? "\n" + string.Join("\n", unmet) : "\nNot available now");

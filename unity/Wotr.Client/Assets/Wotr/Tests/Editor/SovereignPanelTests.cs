@@ -126,10 +126,10 @@ namespace Wotr.EditorTests
             Assert.IsTrue(panel.HasShownPortraits);
         }
 
-        // UI-274: the attempt button beside an Initial king pays a standard Shadow Eye unless the player clicked a special
-        // Eye first; disabled, it says why.
+        // UI-274: the attempt button beside an Initial king sends the attempt; disabled, it says why. UI-398 (owner): it pays
+        // the Eye the player clicked, and before an Eye is chosen it stays dark.
         [Test]
-        public void TheAttemptButtonPaysAStandardEyeUnlessASpecialEyeWasClickedFirst()
+        public void TheAttemptButtonPaysTheEyeClickedFirst()
         {
             var view = View();
             view.Decision.Kind = DecisionKind.Action;
@@ -140,6 +140,10 @@ namespace Wotr.EditorTests
             view.Availability.Add(new ActionAvailabilityView { SubjectId = "other", ActionId = SovereignAttempt.ActionId,
                 Conditions = { new AvailabilityConditionView { Description = "This sovereign has not been targeted this turn.", Met = false } } });
             var draft = new TurnDraft();
+            Assert.AreEqual("", SovereignAttempt.Eye(view, draft), "No Eye pays before one is chosen.");
+            Assert.IsFalse(SovereignAttempt.Enabled(view, draft, "king"), "Nothing lights before an Eye is chosen.");
+            StringAssert.Contains("Click an Eye that pays in your dice row first", SovereignAttempt.Tooltip(view, draft, view.Sovereigns[0]));
+            draft.Choose(CommandKind.AttemptCorruption, "eye");
             Assert.AreEqual("eye", SovereignAttempt.Eye(view, draft));
             var panel = Panel(view);
             panel.Context(view, draft);
@@ -152,9 +156,6 @@ namespace Wotr.EditorTests
             StringAssert.Contains("○ This sovereign has not been targeted this turn.", other.tooltip);
             draft.Choose(CommandKind.AttemptCorruption, "lesser");
             Assert.AreEqual("lesser", SovereignAttempt.Eye(view, draft), "A special Eye clicked first pays.");
-            view.Options[0].EligibleDice.Remove("eye");
-            Assert.IsFalse(SovereignAttempt.Enabled(view, new TurnDraft(), "king"));
-            StringAssert.Contains("Click the special Eye that pays in the Hunt Box first", SovereignAttempt.Tooltip(view, new TurnDraft(), view.Sovereigns[0]));
             view.Sovereigns[0].Status = SovereignStatus.Awakened;
             panel.Apply(view);
             Assert.AreEqual(Visibility.Hidden, button.style.visibility.value, "An awakened king takes no attempt.");

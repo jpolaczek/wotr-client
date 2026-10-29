@@ -1811,3 +1811,9 @@ Owner requests and reports from the Kings and Lords test scenarios:
   reads its source, the ability (Red Wrath, Lord of the Bats, I Command, Heir of Bard, Shadows in the North), its printed
   text and what it replaces this round; an offered chip ends with the same text (`CombatReplacementChoice.Ability`).
   Test: `KingsCards02Tests`.
+- UI-398 (owner) — a corruption attempt starts from its Eye: before, the attempt button beside an Initial king paid a
+  standard Shadow Eye by itself (UI-274), so the attempt and the Characters tab glowed before any die was chosen. Now
+  the Eyes that may pay stand in the Shadow's dice row (UI-230); the click on one lights the kings it may target, their
+  attempt buttons and the Characters tab, and the attempt's click sends it with that Eye. Until then the buttons stay
+  dark and say "Click an Eye that pays in your dice row first". Tests: `SovereignPanelTests`,
+  `ExpansionCorruptionNetworkTests`.
