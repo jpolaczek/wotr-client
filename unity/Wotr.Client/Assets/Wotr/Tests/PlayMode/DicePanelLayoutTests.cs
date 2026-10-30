@@ -83,14 +83,16 @@ namespace Wotr.PlayTests
             }
             foreach (var pair in dice.SelectMany((a, i) => dice.Skip(i + 1).Select(b => (a, b))))
                 Assert.IsFalse(pair.a.worldBound.Overlaps(pair.b.worldBound), "Dice never overlap · " + label);
-            foreach (var location in new[] { "Spent", "Hunt", "Discarded" })
+            // UI-420 (owner, TOOLTIP_AUDIT): the location's name leads its count on the first line ("In the Hunt Box · 2",
+            // "Out · none"); one line per die follows.
+            foreach (var (location, heading) in new[] { ("Spent", "Spent"), ("Hunt", "In the Hunt Box"), ("Discarded", "Out") })
             {
                 var counter = panel.Q<Button>("pool-" + location);
                 Inside(counter, panel, label);
                 var icon = counter.Q("pool-count-icon");
                 Assert.IsNotNull(icon.resolvedStyle.backgroundImage.texture, "Counter icon · " + location);
                 Assert.Less(icon.worldBound.xMax, counter.worldBound.xMax, label);
-                StringAssert.StartsWith(location == "Discarded" ? "Out" : location, counter.tooltip, "The name leads the description.");
+                StringAssert.StartsWith(heading + " · ", counter.tooltip, "The name leads the description.");
             }
             // UI-160: the Elven Rings have their sockets in the turn console.
             Assert.IsEmpty(panel.Query<Button>(className: "pool-ring").ToList(), label);
