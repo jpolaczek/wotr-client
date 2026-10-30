@@ -80,7 +80,7 @@ namespace Wotr.PlayTests
 
 
         private static int Characters(MountedMatchClient client, string region, Side side) =>
-            client.Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == side).Sum(a => a.Characters);
+            client.Board.Presentation.Characters.Count(c => c.RegionId == region && c.Side == side);
 
         private static async Task Seen(MatchTestRoom room, Func<bool> condition, string what)
         {

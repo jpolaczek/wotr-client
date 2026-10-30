@@ -143,7 +143,8 @@ namespace Wotr.Client
             staged.Settle();
         }
 
-        private VisualElement Force(string region) => board.Map.MarkerArtwork(region, Side.FreePeoples, false);
+        // The force in his capital: its army, or (UI-402) the first character standing there on its own.
+        private VisualElement Force(string region) => board.Map.ForceArtworks(region, Side.FreePeoples, false).FirstOrDefault();
 
         // The pips as the Characters panel's meter shows them: filled for a known corruption, hatched for hidden tiles.
         private static VisualElement MeterPlate(SovereignView king)

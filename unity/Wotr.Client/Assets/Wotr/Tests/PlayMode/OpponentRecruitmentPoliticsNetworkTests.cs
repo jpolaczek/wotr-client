@@ -44,7 +44,7 @@ namespace Wotr.PlayTests
                     "The board's view is still the presented one.");
                 await session.Until(() => !fp.Playback.Holding);
                 Assert.AreEqual(target, fp.Board.View.Units.Single(u => u.Id == unit).Location);
-                Assert.AreEqual(before + 1, fp.Board.Presentation.Armies.Where(a => a.RegionId == target && a.Side == Side.Shadow).Sum(a => a.Total));
+                Assert.AreEqual(before + 1, fp.Board.Presentation.FigureCount(target, Side.Shadow));
             }
             finally
             {

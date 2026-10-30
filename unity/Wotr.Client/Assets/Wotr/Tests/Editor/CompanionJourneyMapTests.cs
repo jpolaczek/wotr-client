@@ -47,8 +47,8 @@ namespace Wotr.EditorTests
 
             var planned = CompanionJourneyDraft.Planned(view, draft);
             CollectionAssert.AreEqual(new[] { "lorien" }, planned.Keys.ToArray());
-            Assert.AreEqual(1, planned["lorien"].Characters);
-            Assert.AreEqual(CharacterLibrary.Name(Merry), planned["lorien"].CharacterNames.Single());
+            Assert.AreEqual(1, planned["lorien"].FigureCount);
+            Assert.AreEqual(CharacterLibrary.Name(Merry), planned["lorien"].Carried.Single().Name);
 
             TravelDraft.Stay(draft, option);
             Assert.IsEmpty(CompanionJourneyDraft.Planned(view, draft), "A companion that stays is not drawn elsewhere.");

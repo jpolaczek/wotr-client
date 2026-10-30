@@ -81,8 +81,8 @@ namespace Wotr.Client
         public sealed class TraceSet
         {
             private readonly MapObservedTrace owner;
-            private readonly List<(ObjectGlow Glow, string Region, Side Side, bool Garrison)> forces =
-                new List<(ObjectGlow, string, Side, bool)>();
+            private readonly List<(ForceGlow Glow, string Region, Side Side, bool Garrison)> forces =
+                new List<(ForceGlow, string, Side, bool)>();
             private readonly List<(VisualElement Element, string Region)> settlements = new List<(VisualElement, string)>();
             private readonly List<(VisualElement Element, string Region)> badges = new List<(VisualElement, string)>();
             private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison)> deltas =
@@ -115,10 +115,11 @@ namespace Wotr.Client
                 Plates.EnableInClassList("shown", shown);
             }
 
-            // UI-314: the force's own figures glow; the glow moves with its marker and to a rebuilt one.
+            // UI-314: the force's own figures glow; the glow moves with its marker and to a rebuilt one. UI-402: its
+            // characters' miniatures beside the army glow with its base.
             public TraceSet Force(string region, Side side, bool garrison)
             {
-                forces.Add((new ObjectGlow(), region, side, garrison));
+                forces.Add((new ForceGlow(), region, side, garrison));
                 Layout();
                 return this;
             }
@@ -202,8 +203,8 @@ namespace Wotr.Client
             public IEnumerable<VisualElement> Rings => settlements.Select(s => s.Element);
 
             // The figures glowing now: the forces' markers and the Fellowship's figure.
-            public IEnumerable<VisualElement> Lit => forces.Select(f => f.Glow.Target).Concat(fellowships.Select(f => f.Glow.Target))
-                .Where(target => target != null);
+            public IEnumerable<VisualElement> Lit => forces.SelectMany(f => f.Glow.Targets)
+                .Concat(fellowships.Select(f => f.Glow.Target)).Where(target => target != null);
             public IEnumerable<Label> Badges => badges.Select(b => (Label)b.Element);
 
             public void End()
@@ -227,7 +228,7 @@ namespace Wotr.Client
             internal void Layout()
             {
                 foreach (var (glow, region, side, garrison) in forces)
-                    glow.Follow(owner.map.MarkerArtwork(region, side, garrison));
+                    glow.Follow(owner.map.ForceArtworks(region, side, garrison));
                 foreach (var (element, region) in settlements)
                 {
                     var anchor = owner.Anchor(region);
@@ -241,7 +242,7 @@ namespace Wotr.Client
                 }
                 foreach (var (element, region, side, garrison) in deltas)
                 {
-                    var marker = owner.map.MarkerBounds(region, side, garrison);
+                    var marker = owner.map.ForceBounds(region, side, garrison);
                     var anchor = owner.Anchor(region);
                     element.style.left = marker.HasValue ? marker.Value.xMax + 4 : anchor.x + 12;
                     element.style.top = marker.HasValue ? marker.Value.y : anchor.y - 14;
@@ -249,7 +250,7 @@ namespace Wotr.Client
                 foreach (var (element, region, side, garrison, safe) in portraits)
                 {
                     var anchor = owner.Anchor(region);
-                    Above(element, owner.map.MarkerBounds(region, side, garrison) ?? new Rect(anchor.x - 12, anchor.y - 12, 24, 24), safe);
+                    Above(element, owner.map.ForceBounds(region, side, garrison) ?? new Rect(anchor.x - 12, anchor.y - 12, 24, 24), safe);
                 }
                 foreach (var (glow, region) in fellowships)
                     glow.Follow(owner.map.FellowshipMarker.Bounds(region).HasValue ? owner.map.FellowshipMarker.Root : null);

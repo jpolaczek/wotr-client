@@ -34,7 +34,7 @@ namespace Wotr.Client
             DraftObject.Card => "That card",
             DraftObject.Army => "That army",
             DraftObject.Figure or DraftObject.Reserve => "That unit",
-            DraftObject.Character or DraftObject.FellowshipPortrait or DraftObject.CouncilPortrait => "That character",
+            DraftObject.Character or DraftObject.FellowshipPortrait or DraftObject.CouncilPortrait or DraftObject.Miniature => "That character",
             DraftObject.RulerToken => "That token",
             DraftObject.Nation => "That nation",
             DraftObject.HuntTile => "That Hunt tile",

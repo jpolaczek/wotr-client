@@ -3,7 +3,8 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    public enum DraftObject { Die, Ring, Card, Action, Deck, Tray, Army, Region, Reserve, RulerToken, Figure, Nation, PoliticalSlot, Fellowship, FellowshipPortrait, Sovereign, CouncilPortrait, HuntEye, HuntTile, HuntResponse, Character }
+    // UI-402: Miniature is a character's own figure on the map (its id, its region in Region).
+    public enum DraftObject { Die, Ring, Card, Action, Deck, Tray, Army, Region, Reserve, RulerToken, Figure, Nation, PoliticalSlot, Fellowship, FellowshipPortrait, Sovereign, CouncilPortrait, HuntEye, HuntTile, HuntResponse, Character, Miniature }
 
     public sealed class DraftToken
     {
@@ -12,14 +13,23 @@ namespace Wotr.Client
         public CommandKind? Action { get; }
         public Side? Side { get; }
         public bool Garrison { get; }
-        public DraftToken(DraftObject item, string id = "", CommandKind? action = null, Side? side = null, bool garrison = false)
+        // UI-402: the region a map object stands in when its id is not the region's (a character's miniature).
+        public string Region { get; }
+        // The region a map object (a region, an army marker, a miniature) belongs to.
+        public string RegionId => Region.Length > 0 ? Region : Id;
+        public DraftToken(DraftObject item, string id = "", CommandKind? action = null, Side? side = null, bool garrison = false,
+            string region = "")
         {
             Object = item;
             Id = id;
             Action = action;
             Side = side;
             Garrison = garrison;
+            Region = region ?? "";
         }
+
+        // UI-402: a character's miniature counts as its region where a region is the target (a drop, an enemy's figure).
+        public DraftToken AsRegion() => Object == DraftObject.Miniature ? new DraftToken(DraftObject.Region, RegionId) : this;
     }
 
     public static class DraftGesture

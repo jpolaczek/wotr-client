@@ -287,8 +287,8 @@ Enter.
   `RegionHover.PreviewDrag` only responds to reserve.
 
 The figures election.
-- `ActionContextInteraction.SelectFigure` (region panel) first joins figure in an army collected in
-  the same region.
+- `ActionContextInteraction.SelectFigure` (region panel; since UI-402 also a character's own miniature on the map)
+  first joins figure in an army collected in the same region.
 - Then he asks `FigureSelector` (a journey of the character).
 - At the end of the army begins: it is joined by characters and Nazgûle previously selected in this
   region, so they do not lose the mark.
@@ -477,6 +477,12 @@ selected force or was just reached by a flight; nothing turns to tokens because 
 sorted by the feet on the board when the board changes, draws nearer forces in front. The region panel still avoids
 `MarkerBounds`, which are now the stands' visible parts. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md), "Figures on their
 places, sized with the map — UI-401", and [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md).
+
+UI-402 (2026-10-30): the characters leave the army markers. Each is its own miniature (`character-<id>`,
+`DraftObject.Miniature`) on its region's character places, in the same stand layer; the panel avoids `FigureBounds`
+(the armies, the Fellowship and the characters). Its click goes through `TurnInteraction.ChooseMiniature` to
+`ActionContextInteraction.SelectFigure` — the chip's own path below — and opens no region panel; the army's click is
+unchanged. The chips and the miniatures read one `FigureChoices`. Details: [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-402).
 
 <a id="wdrożenie-ruchu--ui-127"></a>
 <a id="implementation-z-moj--ui-127"></a>

@@ -13,6 +13,10 @@ namespace Wotr.Client
         public const float TokenUnits = 40;
         public const float TokenMinimum = 32;
         public const float TokenDesign = 44;
+        // UI-402: a character's token is a medallion a little wider than its base, between a readable size and its design.
+        public const float CharacterTokenUnits = 20;
+        public const float CharacterTokenMinimum = 18;
+        public const float CharacterTokenDesign = 24;
         // Figures come back to tokens only once the footprint exceeds the capacity by the Detail level's hysteresis.
         public const float CapacityHysteresis = MapMarkerVisibility.FiguresFrom / MapMarkerVisibility.TokensBelow;
         private const float Tolerance = 1e-4f;
@@ -34,6 +38,10 @@ namespace Wotr.Client
 
         // The element scale of an army's token.
         public float Token => Mathf.Clamp(TokenUnits * Zoom, TokenMinimum, TokenDesign) / TokenDesign;
+
+        // The element scale of a character's token.
+        public float CharacterToken =>
+            Mathf.Clamp(CharacterTokenUnits * Zoom, CharacterTokenMinimum, CharacterTokenDesign) / CharacterTokenDesign;
 
         // Whether a region's group fits its capacity at this footprint; `shown` keeps figures until the hysteresis.
         public bool Fits(float capacity, bool shown) =>

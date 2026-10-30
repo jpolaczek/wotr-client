@@ -132,7 +132,7 @@ namespace Wotr.PlayTests
         }
 
         public int Characters(string region, Side side) =>
-            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == side).Sum(a => a.Characters);
+            Board.Presentation.Characters.Count(c => c.RegionId == region && c.Side == side);
 
         // The names on the character moments and the moving groups' identities now on the map.
         public string Moments() => string.Join(",", Board.Map.Query<Label>("observed-portrait-name").ToList().Select(label => label.text));
@@ -188,8 +188,8 @@ namespace Wotr.PlayTests
         public Vector2 Anchor(string region) =>
             new Vector2(Board.Map.Data.Shapes[region].Anchor[0], Board.Map.Data.Shapes[region].Anchor[1]);
 
-        public int Army(string region, bool garrison = false) =>
-            Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == Opponent && a.Garrison == garrison).Sum(a => a.Total);
+        // The opponent's figures in a force: its army's units and (UI-402) the characters standing beside it.
+        public int Army(string region, bool garrison = false) => Board.Presentation.FigureCount(region, Opponent, garrison);
 
         public bool Flying(string destination) =>
             Board.Map.Figures.ActiveCount > 0 && Board.Map.Figures.Moves.Any(move => move.To.Region == destination);
@@ -216,8 +216,9 @@ namespace Wotr.PlayTests
                 .Concat(latest.Characters.Where(c => c.Side == Opponent).Select(c => (c.Location, c.Garrison)));
             var expected = figures.Where(f => Board.Map.Data.Regions.ContainsKey(f.Location))
                 .GroupBy(f => f).ToDictionary(g => g.Key, g => g.Count());
-            var shown = Board.Presentation.Armies.Where(a => a.Side == Opponent)
-                .ToDictionary(a => (a.RegionId, a.Garrison), a => a.Total);
+            var shown = Board.Presentation.Armies.Where(a => a.Side == Opponent).Select(a => (a.RegionId, a.Garrison))
+                .Concat(Board.Presentation.Characters.Where(c => c.Side == Opponent).Select(c => (c.RegionId, c.Garrison)))
+                .Distinct().ToDictionary(force => force, force => Board.Presentation.FigureCount(force.RegionId, Opponent, force.Garrison));
             CollectionAssert.AreEquivalent(expected, shown);
             foreach (var region in latest.Control.Keys)
                 Assert.AreEqual(latest.Control[region], Board.Presentation.Control.GetValueOrDefault(region), region);

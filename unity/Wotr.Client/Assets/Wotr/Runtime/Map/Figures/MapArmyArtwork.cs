@@ -154,9 +154,9 @@ namespace Wotr.Client
                 ShowEmblem(emblems[i], i < army.Nations.Count ? army.Nations[i].Nation : null);
             more.EnableInClassList(UnusedClass, army.Nations.Count <= emblems.Length);
             if (emergingCount != null)
-                emergingCount = army.Total.ToString();
+                emergingCount = army.FigureCount.ToString();
             else
-                count.text = army.Total.ToString();
+                count.text = army.FigureCount.ToString();
             crown.EnableInClassList(UnusedClass, army.CrownedTitles.Count == 0);
             button.EnableInClassList(FieldClass, !army.Garrison);
         }
@@ -320,15 +320,18 @@ namespace Wotr.Client
             return element;
         }
 
-        // ART-01: each figure is of the nation with the most figures of its kind (Nations come largest first).
+        // ART-01: each figure is of the nation with the most figures of its kind (Nations come largest first). UI-402: a
+        // ghost's carried characters stand first, each its own figure (one beside units, up to three alone); a board army
+        // carries none.
         private static List<FigureArt> Appearances(ArmyMarker army)
         {
             var result = new List<FigureArt>(3);
-            if (army.Characters > 0)
-                result.Add(army.CharacterAppearance);
-            if (army.Elite > 0)
+            var characters = army.Total > 0 ? 1 : 3;
+            foreach (var character in army.Carried.Take(characters))
+                result.Add(character.Art);
+            if (army.Elite > 0 && result.Count < 3)
                 result.Add(Of(army, UnitKind.Elite, n => n.Elite));
-            if (army.Regular > 0)
+            if (army.Regular > 0 && result.Count < 3)
                 result.Add(Of(army, UnitKind.Regular, n => n.Regular));
             if (army.Leaders > 0 && result.Count < 3)
                 result.Add(army.Nazgul > 0 ? Of(army, UnitKind.Nazgul, n => n.Nazgul)

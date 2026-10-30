@@ -12,14 +12,16 @@ namespace Wotr.Client
             var lines = new List<string> { region + " · " + (army.Garrison ? "Garrison" : "Field army") };
             foreach (var force in army.Nations)
                 lines.Add(Composition(force));
-            if (army.CharacterNames.Count > 0)
-                lines.Add("Characters · " + string.Join(", ", army.CharacterNames));
-            else if (army.Characters > 0)
-                lines.Add("Characters · " + army.Characters);
             if (army.CrownedTitles.Count > 0)
                 lines.Add("Led by " + string.Join(", ", army.CrownedTitles) + " · ♙ Initial");
             return string.Join("\n", lines);
         }
+
+        // UI-402: a character's own miniature reads as its region panel's chip does, then where it stands:
+        // "Strider · Level 3 · Leadership 1\nFangorn · Field".
+        public static string Describe(CharacterFigure character, string region) =>
+            character.Name + " · Level " + character.Level + " · Leadership " + character.Leadership + "\n" +
+            region + " · " + (character.Garrison ? "Garrison" : "Field");
 
         // UI-420 (owner): one form of a nation's figures wherever a force is described (the army marker, the region
         // window): "Gondor · 3 Regular · 1 Elite · 1 Leader".

@@ -18,13 +18,13 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "dain" }, erebor.SovereignIds);
             CollectionAssert.AreEqual(new[] { "Dáin" }, erebor.CrownedTitles);
             StringAssert.EndsWith("Led by Dáin · ♙ Initial", ArmyMarkerText.Describe(erebor, "Erebor"));
-            var edoras = data.Armies.Single(a => a.RegionId == "edoras");
-            CollectionAssert.AreEqual(new[] { "theoden" }, edoras.SovereignIds);
-            Assert.IsEmpty(edoras.CrownedTitles, "An Awakened king is a character figure, not a crowned leader.");
+            // UI-402: an Awakened king stands on his own character figure, not in an army.
+            Assert.IsFalse(data.Armies.Any(a => a.RegionId == "edoras"), "An Awakened king is a character figure, not a crowned leader.");
+            Assert.AreEqual("theoden", data.Characters.Single(c => c.RegionId == "edoras").SovereignId);
             Assert.AreEqual("denethor", data.CorruptedSovereigns.Single().Id);
             var map = new MapCanvas(data);
             Assert.IsFalse(Crown(map, "erebor").ClassListContains(MapArmyArtwork.UnusedClass));
-            Assert.IsTrue(Crown(map, "edoras").ClassListContains(MapArmyArtwork.UnusedClass));
+            Assert.IsNotNull(map.Q<Button>("character-theoden"), "Théoden stands as his own miniature.");
             var marker = map.SovereignMarkers.Find("denethor");
             // UI-420: the marker reads as his portrait does.
             Assert.AreEqual("Denethor · ◉ Corrupted · Minas Tirith\nHis tiles are resolved; he now serves the Shadow", marker.tooltip);
@@ -39,6 +39,7 @@ namespace Wotr.EditorTests
             map.LightSovereigns(id => id switch
             {
                 "dain" => "Click to awaken Dáin",
+                "theoden" => "Click to choose Théoden",
                 "denethor" => "Click to remove the corrupted Denethor",
                 _ => null
             });
@@ -47,7 +48,11 @@ namespace Wotr.EditorTests
             StringAssert.StartsWith("Click to awaken Dáin\nErebor", army.tooltip);
             Assert.AreEqual("dain", map.LitSovereign(Token("erebor")));
             Assert.IsNull(map.LitSovereign(Token("edoras")));
-            Assert.IsFalse(map.Q<Button>("army-edoras-FreePeoples").ClassListContains(MapCanvas.SovereignTargetClass));
+            // UI-402: an Awakened king's own miniature is his figure on the map.
+            var theoden = map.Q<Button>("character-theoden");
+            Assert.IsTrue(theoden.ClassListContains(MapCanvas.SovereignTargetClass));
+            StringAssert.StartsWith("Click to choose Théoden\n", theoden.tooltip);
+            Assert.AreEqual("theoden", map.LitSovereign((DraftToken)theoden.userData));
             var marker = map.SovereignMarkers.Find("denethor");
             Assert.IsTrue(marker.ClassListContains(MapSovereignMarkers.LitClass));
             StringAssert.StartsWith("Click to remove the corrupted Denethor", marker.tooltip);

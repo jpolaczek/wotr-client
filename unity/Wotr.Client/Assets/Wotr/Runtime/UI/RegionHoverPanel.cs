@@ -11,10 +11,12 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "region-hover" };
         public string Region { get; private set; } = "";
         public ComponentActionView Components { get; } = new ComponentActionView();
-        public Func<string, bool> Eligible { get; set; } = _ => false;
-        public Func<string, bool> Selected { get; set; } = _ => false;
+        // UI-402: the figures' choices, shared with the map's character miniatures.
+        public FigureChoices Choices { get; }
+        public Func<string, bool> Eligible { get => Choices.Eligible; set => Choices.Eligible = value; }
+        public Func<string, bool> Selected { get => Choices.Selected; set => Choices.Selected = value; }
         // UI-127: figures that already marched in this action; they cannot be chosen again.
-        public Func<string, bool> Moved { get; set; } = _ => false;
+        public Func<string, bool> Moved { get => Choices.Moved; set => Choices.Moved = value; }
         // UI-271: what a lit figure's click does when it is not a selection (an ability used on the figure).
         public Func<string, string> Offer { get; set; } = _ => "";
         public event Action<string> FigureChosen;
@@ -78,8 +80,10 @@ namespace Wotr.Client
             }
         }
 
-        public RegionHoverPanel()
+        public RegionHoverPanel(FigureChoices choices = null)
         {
+            Choices = choices ?? new FigureChoices();
+            Choices.Changed += ShowChoices;
             Root.AddToClassList("region-hover");
             pulse = new ChoicePulse(Root);
             Root.style.display = DisplayStyle.None;
@@ -229,7 +233,10 @@ namespace Wotr.Client
             row.Add(button);
         }
 
-        public void RefreshSelection()
+        // Tells every reader of the choices, this panel's chips and the map's figures.
+        public void RefreshSelection() => Choices.Refresh();
+
+        private void ShowChoices()
         {
             foreach (var (toggle, ids) in forceToggles)
                 RefreshToggle(toggle, ids);

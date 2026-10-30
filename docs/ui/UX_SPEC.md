@@ -872,6 +872,26 @@ The 2026-10-15 application: each character has its own, nice graphics matching t
   like the actors.
 - The expansions characters retain their existing portraits and silhouettes.
 
+<a id="ui-402"></a>
+## Every character is its own miniature — UI-402
+
+UI-421's decision 5 (owner, 2026-10-28), built 2026-10-30 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built
+(UI-402)"; [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-402)):
+
+- On the map every character stands as its own miniature on a small round base in its side's enamel, beside the army in
+  its region, on one of the region's character places (a garrison's beside the gate); it is never a figure of the army's
+  marker, and the army's number counts its units only. Gandalf and Strider standing together are two figures. A region
+  with more than six characters (three at a gate) shows a stacked pair with "+n" on its last place. Far out a character
+  is its portrait in its side's medallion.
+- Its click chooses it exactly as its chip in the region panel does (UI-105): with a Character die it starts its
+  travel, with an Army die it joins the army (the commander-first rule), and a card's choice, an ability or an order lit
+  on the figure is used. The player's own character's click opens no region panel; an enemy character's click is its
+  region's. The army's click still selects every figure that can move, its characters included.
+- The chips and the miniatures show one set of choices: a figure lit, selected or marched in the panel is lit, selected
+  or marched on the map, and the other way round.
+- A character appears, flies in or leaves on its own (UI-334, UI-338); the opponent's traces light an army together with
+  its characters.
+
 <a id="bez-granicy-mapy--ui-104"></a>
 ## Without map boundary — UI-104
 
@@ -888,7 +908,7 @@ UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters th
 
 The 2026-10-12 application: "Moving is only to be done on the map, click on the region, select selected units, characters, nudges etc. and select only by clicking the selected region, move is done immediately". Elections from the conversation: die first; the character's route with a range greater than 1 arranges the game.
 
-Flow. die   → click region → click figures in the region panel → click the highlighted target. The move is executed immediately, without Confirm. Another army or group in the budget dice begins the same way; ✓ with dice He's done early.
+Flow. die   → click region → click figures in the region panel → click the highlighted target. The move is executed immediately, without Confirm. Another army or group in the budget dice begins the same way; ✓ with dice He's done early. Since UI-402 (2026-10-30) a character's own miniature on the map is clicked as its chip in the panel is, without opening the panel ("Every character is its own miniature — UI-402" above).
 
 **Armies.**
 - figure Army select only in the region panel. The two-click banner continues to mark the entire

@@ -48,7 +48,8 @@ namespace Wotr.Client
             board.Hover.Panel.Context(components.Where(c => c.Region.Length > 0 && idle && !CharacterAbilityPlaces.OwnPlace(c)), enabled);
             board.TableEffects.Context(components.Where(c => c.CardId.Length > 0), enabled);
             board.TableEffects.Draft(view, draft);
-            board.Map.HighlightOwners(components.Where(c => c.Enabled && idle).Select(c => c.Region));
+            var owned = components.Where(c => c.Enabled && idle).ToList();
+            board.Map.HighlightOwners(owned.Select(c => c.Region), owned.Select(c => c.OwnerId));
             board.Characters.Actions.Apply(view, draft, components, enabled);
         }
 

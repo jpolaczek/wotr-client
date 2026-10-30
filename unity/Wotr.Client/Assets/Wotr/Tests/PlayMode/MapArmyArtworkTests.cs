@@ -54,9 +54,8 @@ namespace Wotr.PlayTests
                     var nation = side == Side.FreePeoples ? "rohan" : "isengard";
                     var ally = side == Side.FreePeoples ? "gondor" : "sauron";
                     cases.Add(new Sample("single", Army(side, false, (nation, UnitKind.Regular, 1)), figures, ""));
-                    var mixed = Army(side, false, (nation, UnitKind.Regular, 2), (ally, UnitKind.Elite, 1));
-                    mixed.Characters = 1;
-                    mixed.CharacterAppearance = side == Side.FreePeoples ? FigureAppearance.Companion : FigureAppearance.Minion;
+                    // UI-402: an army's figures are its units; its characters stand beside it on their own.
+                    var mixed = Army(side, false, (nation, UnitKind.Regular, 2), (ally, UnitKind.Elite, 1), (nation, UnitKind.Leader, 1));
                     cases.Add(new Sample("mixed", mixed, figures, ""));
                     cases.Add(new Sample("garrison", Army(side, true, (nation, UnitKind.Regular, 10)), figures, ""));
                     foreach (var state in States.Skip(1))
@@ -158,7 +157,7 @@ namespace Wotr.PlayTests
         private static Image[] Shown(Button button, string className) => button.Query<Image>(className: className).ToList()
             .Where(image => image.resolvedStyle.display != DisplayStyle.None).ToArray();
 
-        private static int Expected(ArmyMarker marker) => marker.Characters > 0 ? 3 : marker.Total > 1 ? 2 : 1;
+        private static int Expected(ArmyMarker marker) => marker.Leaders > 0 && marker.Total > 2 ? 3 : marker.Total > 1 ? 2 : 1;
 
         private static string Picture(Sample sample)
         {

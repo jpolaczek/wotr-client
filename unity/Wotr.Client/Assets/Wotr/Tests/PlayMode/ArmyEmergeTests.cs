@@ -65,10 +65,11 @@ namespace Wotr.PlayTests
             Assert.AreEqual((int.Parse(before) + 1).ToString(), marker.Q<Label>("army-count").text, "The new one at the end.");
         }
 
-        // UI-336: a character is part of its region's marker — alone it is a marker of its own that emerges, joining an army
-        // it makes the army flare and step its number.
+        // UI-336, UI-402: a character is its own miniature — alone it is no army, and it flares and emerges where it
+        // appears; beside an army it joins it emerges again, and the army keeps its figures and its number (an army counts
+        // its units only).
         [UnityTest]
-        public IEnumerator ACharacterAloneOrJoiningAnArmyFlaresAndEmerges()
+        public IEnumerator ACharacterEmergesAsItsOwnMiniatureAndTheArmyItJoinsKeepsItsNumber()
         {
             using var client = new MountedMatchClient("http://localhost", "character-emerge");
             var view = new BoardFixture().View;
@@ -79,27 +80,28 @@ namespace Wotr.PlayTests
             client.Apply(alone);
             yield return null;
             yield return null;
-            var marker = client.Board.Map.Q<Button>("army-lossarnach-FreePeoples");
-            Assert.IsNotNull(marker, "A character alone stands as its region's marker.");
-            Assert.IsTrue(marker.ClassListContains(MapArmyArtwork.FlaringClass), "It flares.");
-            Assert.IsTrue(marker.ClassListContains(MapArmyArtwork.HiddenClass), "It emerges from nothing.");
-            LayoutTests.Save(client.Viewport, "ui336-character-emerging.png");
+            Assert.IsNull(client.Board.Map.Q<Button>("army-lossarnach-FreePeoples"), "A character alone is no army.");
+            var figure = client.Board.Map.Q<Button>("character-emerge-gandalf");
+            Assert.IsNotNull(figure, "A character stands as its own miniature.");
+            Assert.IsTrue(figure.ClassListContains(MapArmyArtwork.FlaringClass), "It flares.");
+            Assert.IsTrue(figure.ClassListContains(MapArmyArtwork.HiddenClass), "It emerges from nothing.");
+            LayoutTests.Save(client.Viewport, "ui402-character-emerging.png");
             yield return new WaitForSecondsRealtime((MapArmyArtwork.FlareMilliseconds + MapArmyArtwork.EmergeMilliseconds) / 1000f + .1f);
-            Assert.IsFalse(marker.ClassListContains(MapArmyArtwork.FlaringClass));
-            Assert.AreEqual("1", marker.Q<Label>("army-count").text, "Then its number.");
+            Assert.IsFalse(figure.ClassListContains(MapArmyArtwork.FlaringClass));
+            Assert.AreEqual(1f, figure.Q("character-artwork").resolvedStyle.opacity, .01f, "Fully clear.");
 
             var army = client.Board.Map.Query<Button>(className: "army").ToList()
-                .First(button => button.name.EndsWith("-FreePeoples") && button != marker);
+                .First(button => button.name.EndsWith("-FreePeoples"));
             var region = army.name.Substring("army-".Length, army.name.Length - "army-".Length - "-FreePeoples".Length);
             var before = army.Q<Label>("army-count").text;
             var joined = Arrive(alone, region);
             client.Apply(joined);
             yield return null;
             yield return null;
-            Assert.IsTrue(army.ClassListContains(MapArmyArtwork.FlaringClass), "The army it joins flares.");
-            Assert.AreEqual(before, army.Q<Label>("army-count").text, "Its old number while it flares.");
+            Assert.IsTrue(figure.ClassListContains(MapArmyArtwork.FlaringClass), "It emerges beside the army it joins.");
+            Assert.IsFalse(army.ClassListContains(MapArmyArtwork.FlaringClass), "The army does not change.");
             yield return new WaitForSecondsRealtime((MapArmyArtwork.FlareMilliseconds + MapArmyArtwork.EmergeMilliseconds) / 1000f + .1f);
-            Assert.AreEqual((int.Parse(before) + 1).ToString(), army.Q<Label>("army-count").text, "Then the new one.");
+            Assert.AreEqual(before, army.Q<Label>("army-count").text, "The army counts its units only.");
         }
 
         [UnityTest]

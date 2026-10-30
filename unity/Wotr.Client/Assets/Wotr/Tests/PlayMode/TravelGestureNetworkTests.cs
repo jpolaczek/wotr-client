@@ -25,9 +25,12 @@ namespace Wotr.PlayTests
             room.Fp.Board.Map.Focus("hollin");
             FellowshipGestures.Figure(room.Fp, "hollin", "base.character.gimli");
             FellowshipGestures.Figure(room.Fp, "dale", "base.character.legolas");
-            Assert.IsFalse(room.Fp.Board.Map.Q<Button>("army-hollin-FreePeoples").ClassListContains("selected-force"));
-            Assert.IsTrue(room.Fp.Board.Map.Q<Button>("army-dale-FreePeoples").ClassListContains("selected-force"));
-            FellowshipGestures.Figure(room.Fp, "hollin", "base.character.gimli");
+            // UI-402: the selection lights each character's own miniature, never its region's army.
+            Assert.IsFalse(Selected(room, "base.character.gimli"));
+            Assert.IsTrue(Selected(room, "base.character.legolas"));
+            Assert.IsFalse(room.Fp.Board.Map.Q<Button>("army-dale-FreePeoples").ClassListContains("selected-force"));
+            // UI-402: Gimli's own miniature on the map chooses him again exactly as his chip did; it is lit as the chip is.
+            await Miniature(room, "hollin", "base.character.gimli");
             await room.Settle();
             // UI-105: the destination click moves the selected group at once; a figure is never dragged.
             Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.Targets.Contains("moria"), "Reachable destinations light up.");
@@ -52,6 +55,27 @@ namespace Wotr.PlayTests
             T22NetworkActions.Spent(room, Side.FreePeoples, die);
             Assert.AreEqual("dale", room.Sh.Board.View.Characters.Single(c => c.Id == "base.character.legolas").Location);
         }
+
+        // UI-402: a character's miniature on the map, clicked with a Character die, chooses it as its panel chip does: it is
+        // lit as the chip is, the click opens no region panel and the figure shows the selection. (One test per seeded
+        // scenario: a second one would find Gimli moved.)
+        private static async Task Miniature(MatchTestRoom room, string region, string id)
+        {
+            var board = room.Fp.Board;
+            board.Hover.Close();
+            await room.Settle();
+            var figure = board.Map.Q<Button>("character-" + id);
+            await MapContourProbe.ReachMarker(board.Map, figure, region);
+            Assert.IsTrue(figure.ClassListContains(MapCharacterArtwork.EligibleClass), "The die lights the figure as it lights its chip.");
+            LayoutTests.Save(room.Fp.Viewport, "ui402-character-travel-lit.png");
+            PointerGestureEvents.ClickAt(figure);
+            await room.Settle();
+            Assert.IsTrue(Selected(room, id), "Its figure shows the selection.");
+            Assert.AreEqual(DisplayStyle.None, board.Hover.Panel.Root.resolvedStyle.display, "A character's click opens no region panel.");
+        }
+
+        private static bool Selected(MatchTestRoom room, string id) =>
+            room.Fp.Board.Map.Q<Button>("character-" + id).ClassListContains(MapCharacterArtwork.SelectedClass);
 
         [UnityTest]
         public IEnumerator FellowshipPortraitAndDestinationClicksUseTheSelectedCostAndKeepTheGuideWindow() => Wait(Separate());

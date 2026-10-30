@@ -17,7 +17,7 @@ namespace Wotr.Client
             if (move == null || move.To.Length > 0 || move.UnitIds.Count + move.CharacterIds.Count == 0)
                 return null;
             var ghost = new ArmyGhost { Army = Figures(view, move) };
-            var count = ghost.Army.Total;
+            var count = ghost.Army.FigureCount;
             foreach (var region in ArmyActionTargets.For(draft, view, context, CommandKind.MoveArmies))
                 ghost.Captions[region] = "Move " + count + (count == 1 ? " figure" : " figures");
             foreach (var target in ArmyActionTargets.Options(draft, view, context, CommandKind.AttackArmy))
@@ -27,13 +27,8 @@ namespace Wotr.Client
 
         private static ArmyMarker Figures(PlayerView view, ArmyMoveChoice move)
         {
-            var units = view.Units.Where(u => move.UnitIds.Contains(u.Id)).Select(u => (u.Nation, u.Kind));
-            var army = ArmyMarker.From("", view.You, false, units);
-            var characters = view.Characters.Where(c => move.CharacterIds.Contains(c.Id)).ToList();
-            army.Characters = characters.Count;
-            if (characters.Count > 0)
-                army.CharacterAppearance = FigureAppearances.Art(characters[0]);
-            army.CharacterNames = characters.Select(c => CharacterLibrary.Name(c.DefinitionId)).ToList();
+            var army = ArmyMarker.From("", view.You, false, view.Units.Where(u => move.UnitIds.Contains(u.Id)));
+            army.Carried.AddRange(view.Characters.Where(c => move.CharacterIds.Contains(c.Id)).Select(CharacterFigure.From));
             return army;
         }
     }

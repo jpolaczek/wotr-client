@@ -25,6 +25,10 @@ namespace Wotr.Client
         public string AttentionRegion { get; private set; } = "";
         public event Action<string> RegionSelected;
         public event Action<DraftToken> ArmySelected;
+        // UI-402: a character's own miniature was clicked (DraftObject.Miniature: its id, side, garrison and region).
+        public event Action<DraftToken> MiniatureSelected;
+        // UI-402: which figures a click may choose, shared with the region panel's chips.
+        public FigureChoices Choices { get; } = new FigureChoices();
         // UI-100: a right click without a drag reads a region without touching the planned action.
         public event Action<string> RegionInspected;
         public event Action CameraChanged;
@@ -89,6 +93,8 @@ namespace Wotr.Client
         private Label ghostCaption;
         // UI-401: the places, sizes, levels and depth of everything standing on the map.
         public MapStandLayout Stands { get; }
+        // UI-402: every character's own miniature.
+        internal MapCharacterFigures Characters { get; }
         private readonly Func<string, bool> focusedRegion;
         private readonly VisualElement foreground;
         private bool panning;
@@ -169,6 +175,8 @@ namespace Wotr.Client
             MordorTrack = new MapMordorTrack(this);
             // UI-401: one y-sorted layer for everything that stands on the map, under the overlays.
             Stands = new MapStandLayout(this);
+            Characters = new MapCharacterFigures(this, figure => MiniatureSelected?.Invoke(figure));
+            Choices.Changed += ShowChoices;
             SyncMarkers();
             HistoryOverlay = new MapActionOverlay(this);
             DraftOverlay = new MapDraftOverlay(this);
@@ -505,8 +513,16 @@ namespace Wotr.Client
             Redraw();
         }
 
-        // UI-374: the lit sources and the owners of a figure's ability pulse together.
-        private void RunArmyPulse() => armyPulse.Run(eligibleSources.Count > 0 || ownerRegions.Count > 0);
+        // UI-374: the lit sources and the owners of a figure's ability pulse together; UI-402: so do the choosable
+        // characters.
+        private void RunArmyPulse() => armyPulse.Run(eligibleSources.Count > 0 || ownerRegions.Count > 0 || Characters.AnyEligible);
+
+        // UI-402: a context that lights a figure's chip lights its miniature too.
+        private void ShowChoices()
+        {
+            Characters.ShowChoices(Choices);
+            RunArmyPulse();
+        }
 
         // UI-212: the source whose Nazgûl a destination click flies; null clears it.
         public void MarkArmed(ArmyOption source, Side side)
@@ -560,38 +576,40 @@ namespace Wotr.Client
                     marched.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison)));
         }
 
-        public void HighlightOwners(IEnumerable<string> regions)
+        // UI-374: the regions whose army holds a figure whose ability or order a click uses; UI-402: the characters among
+        // those figures (by id) light on their own miniatures.
+        public void HighlightOwners(IEnumerable<string> regions, IEnumerable<string> figures = null)
         {
             ownerRegions.Clear();
             ownerRegions.UnionWith(regions);
             foreach (var marker in markers.Values)
                 marker.Button.EnableInClassList("ability-owner", ownerRegions.Contains(marker.Army.RegionId));
+            Characters.HighlightOwners(figures ?? Enumerable.Empty<string>());
             RunArmyPulse();
             Redraw();
         }
 
+        // The forces whose units the unsent moves take, and (UI-402) the characters they take, each on its own miniature.
         internal void ShowDraftSources(PlayerView view, TurnDraft draft)
         {
-            var leaving = draft.Payload.Moves.SelectMany(m => m.UnitIds).ToHashSet();
-            var characters = draft.Payload.Moves.SelectMany(m => m.CharacterIds).ToHashSet();
-            var travellers = draft.Payload.CompanionMoves.SelectMany(m => m.Ids).ToHashSet();
-            leaving.UnionWith(travellers);
-            characters.UnionWith(travellers);
-            var selected = view.Units.Where(u => leaving.Contains(u.Id)).Select(u => (u.Location, u.Side, u.Garrison))
-                .Concat(view.Characters.Where(c => characters.Contains(c.Id)).Select(c => (c.Location, c.Side, c.Garrison))).ToHashSet();
+            var travellers = draft.Payload.CompanionMoves.SelectMany(m => m.Ids).ToList();
+            var leaving = draft.Payload.Moves.SelectMany(m => m.UnitIds).Concat(travellers).ToHashSet();
+            var characters = draft.Payload.Moves.SelectMany(m => m.CharacterIds).Concat(travellers).ToHashSet();
+            var selected = view.Units.Where(u => leaving.Contains(u.Id)).Select(u => (u.Location, u.Side, u.Garrison)).ToHashSet();
             foreach (var marker in markers.Values)
             {
                 marker.Selected = selected.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison));
                 marker.Button.EnableInClassList("selected-force", marker.Selected);
             }
+            Characters.ShowDrafted(characters);
         }
 
-        // A marker may sit off its region's contour; a press on it reads its own region.
+        // A marker or a character may sit off its region's contour; a press on it reads its own region.
         private string MarkerRegion(VisualElement target)
         {
             for (var element = target; element != null && element != this; element = element.parent)
-                if (element.userData is DraftToken { Object: DraftObject.Army } token)
-                    return token.Id;
+                if (element.userData is DraftToken { Object: DraftObject.Army or DraftObject.Miniature } token)
+                    return token.RegionId;
             return null;
         }
 
@@ -635,14 +653,23 @@ namespace Wotr.Client
                 else
                     gone.Stand.Remove();
             }
-            armiesShown |= Data.Armies.Count > 0;
+            Characters.Sync(Data.Characters, armiesShown && !Quiet, Reduced());
+            armiesShown |= Data.Armies.Count > 0 || Data.Characters.Count > 0;
+            AssignPlaces();
+        }
+
+        // UI-401, UI-402: every force and character on its region's place; the characters beside their side's army.
+        private void AssignPlaces()
+        {
             regionMarkers.Clear();
+            var fieldSides = new Dictionary<string, Side?>();
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
             {
                 var forces = group.ToList();
                 regionMarkers.Add(group.Key, forces);
-                Stands.Assign(group.Key, forces);
+                fieldSides[group.Key] = Stands.Assign(group.Key, forces);
             }
+            Characters.Assign(region => fieldSides.TryGetValue(region, out var side) ? side : null);
             Stands.Sort();
         }
 
@@ -653,11 +680,19 @@ namespace Wotr.Client
             sovereignHint = hint;
             foreach (var marker in markers.Values)
                 ApplySovereignHint(marker);
+            Characters.LightSovereigns(hint);
             SovereignMarkers.Light(hint);
         }
 
-        public string LitSovereign(DraftToken army) =>
-            army.Side is Side side && markers.TryGetValue((army.Id, side, army.Garrison), out var marker) ? LitSovereign(marker) : null;
+        // The lit king an army marker or (UI-402) an Awakened king's own miniature stands for; null when its click is
+        // its own.
+        public string LitSovereign(DraftToken figure)
+        {
+            if (figure.Object == DraftObject.Miniature)
+                return Characters.LitSovereign(figure.Id);
+            return figure.Side is Side side && markers.TryGetValue((figure.Id, side, figure.Garrison), out var marker)
+                ? LitSovereign(marker) : null;
+        }
 
         private string LitSovereign(MapArmyStand marker) => eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison))
             ? null : marker.Army.SovereignIds.FirstOrDefault(id => sovereignHint(id) != null);
@@ -699,7 +734,7 @@ namespace Wotr.Client
             ScheduleChanges();
         }
 
-        private void ScheduleChanges()
+        internal void ScheduleChanges()
         {
             if (changesScheduled)
                 return;
@@ -722,6 +757,7 @@ namespace Wotr.Client
             foreach (var marker in departing)
                 StartLeaving(marker);
             departing.Clear();
+            Characters.StartChanges();
         }
 
         private bool Arriving(MapArmyStand marker) => Figures?.Arriving(marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison) == true;
@@ -761,6 +797,7 @@ namespace Wotr.Client
             foreach (var marker in leaving)
                 marker.Stand.Remove();
             leaving.Clear();
+            Characters.EndEmerging();
         }
 
         private bool Reduced()
@@ -822,6 +859,36 @@ namespace Wotr.Client
                 yield return fellowship;
         }
 
+        // UI-402: everything shown standing in a region — its armies, the Fellowship and its characters' miniatures — so
+        // the region's panel keeps clear of them.
+        public IEnumerable<Rect> FigureBounds(string region) =>
+            MarkerBounds(region).Concat(Characters.In(region).Where(c => c.Visible).Select(c => c.Bounds));
+
+        // UI-402: where one force stands, its army and the characters beside it (map-local); null while none is shown.
+        public Rect? ForceBounds(string region, Side side, bool garrison)
+        {
+            var shown = Characters.Of(region, side, garrison).Where(c => c.Visible).Select(c => c.Bounds).ToList();
+            if (MarkerBounds(region, side, garrison) is Rect army)
+                shown.Add(army);
+            if (shown.Count == 0)
+                return null;
+            return Rect.MinMaxRect(shown.Min(r => r.xMin), shown.Min(r => r.yMin), shown.Max(r => r.xMax), shown.Max(r => r.yMax));
+        }
+
+        // UI-402: the artwork of one force as the observed light marks it: its army's base and figures and its characters'
+        // miniatures beside it.
+        public IEnumerable<VisualElement> ForceArtworks(string region, Side side, bool garrison)
+        {
+            if (MarkerArtwork(region, side, garrison) is { } army)
+                yield return army;
+            foreach (var character in Characters.Of(region, side, garrison))
+                if (character.Visible)
+                    yield return character.Artwork.Root;
+        }
+
+        // UI-402: one character's miniature (its button), while it is shown.
+        public VisualElement CharacterMarker(string id) => Characters.Find(id) is { Visible: true } stand ? stand.Button : null;
+
         // UI-126, UI-401: every force is shown, standing on its region's place (MapStandLayout): figures on a base when the
         // region shows figures, a token otherwise. A fading force keeps its place until it is gone.
         private void LayoutMarkers()
@@ -832,21 +899,22 @@ namespace Wotr.Client
             Stands.LayoutArmies(markers.Values, focusedRegion, used);
             foreach (var marker in leaving)
                 Stands.LayoutArmy(marker, false);
+            Characters.Layout(focusedRegion, used);
             if (regionMarkers.TryGetValue(AttentionRegion, out var forces))
                 attentionPoint = BesideShown(forces);
         }
 
-        // The region shows figures for itself: inspected by a click, holding a selected force, or just arrived.
+        // The region shows figures for itself: inspected by a click, holding a selected force or character, or just
+        // arrived.
         private bool Focused(string region)
         {
             if (Figures?.Reveals(region) == true || region == MarkerVisibility.InspectedRegion)
                 return true;
-            if (!regionMarkers.TryGetValue(region, out var forces))
-                return false;
-            foreach (var marker in forces)
-                if (marker.Selected)
-                    return true;
-            return false;
+            if (regionMarkers.TryGetValue(region, out var forces))
+                foreach (var marker in forces)
+                    if (marker.Selected)
+                        return true;
+            return Characters.HoldsSelected(region);
         }
 
         // UI-401: whether a region shows figures now (focused, or zoomed in with room for them).

@@ -61,6 +61,8 @@ namespace Wotr.Client
         // UI-278 (D15): the object a Kings card branch's click carries into the card's next step.
         private readonly BranchCarry branchCarry = new BranchCarry();
         private bool held;
+        // UI-402: a character's own click acts as its region's click without opening the region panel.
+        private bool quietPanel;
         // UI-399: a standard corruption attempt's draws follow the first Draw tiles click.
         private readonly CorruptionDrawChain corruptionDraws = new CorruptionDrawChain();
         private bool online;
@@ -139,6 +141,7 @@ namespace Wotr.Client
             board.RulerTokenSelected += ChooseRulerToken;
             board.Map.RegionSelected += ChooseRegion;
             board.Map.ArmySelected += ChooseArmy;
+            board.Map.MiniatureSelected += ChooseMiniature;
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption, UsePalantir);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
@@ -164,7 +167,7 @@ namespace Wotr.Client
             if (view?.Decision == null)
             {
                 if (!battleInspected)
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (muster.Active && draft.Kind == CommandKind.Recruit)
@@ -174,7 +177,7 @@ namespace Wotr.Client
                 var refusal = muster.Refusal(region);
                 if (refusal.Length > 0)
                     ShowChoiceProblem(refusal);
-                board.Hover.Toggle(region);
+                TogglePanel(region);
                 return;
             }
             if (context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy)
@@ -182,13 +185,13 @@ namespace Wotr.Client
                 if (view.Revision >= requiredRevision && context.Target(region))
                     SubmitPreparedStep();
                 else
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (!draft.Kind.HasValue)
             {
                 if (!battleInspected)
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             // UI-215: a region holding a card's offered figures opens its panel, where the figures are chosen.
@@ -223,7 +226,7 @@ namespace Wotr.Client
             {
                 // UI-212: a card's Nazgûl fly by map clicks; any other region opens its panel.
                 if (!flights.Region(region))
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (view?.Decision != null && TravelDraft.TargetRoute(draft.Kind))
@@ -231,7 +234,7 @@ namespace Wotr.Client
                 // UI-105: a reachable destination moves the selected group at once; UI-294: in a card's journey a region
                 // with one lit companion chooses it; any other region opens its panel.
                 if (!travel.Reach(region) && !travel.Source(region))
-                    board.Hover.Toggle(region);
+                    TogglePanel(region);
                 return;
             }
             if (view?.Decision != null && FellowshipDraft.UsesRoute(draft.Kind))
@@ -296,6 +299,45 @@ namespace Wotr.Client
                 return;
             }
             ChooseRegion(army.Id);
+        }
+
+        // UI-402 (TABLETOP_FIGURES_UX): a character's own miniature is chosen as its region panel's chip is
+        // (ActionContextInteraction.SelectFigure, UI-105): with a Character die the click starts its travel, with an Army
+        // die it joins the army (the commander-first rule), and an ability lit on the figure is used. A lit Awakened king's
+        // figure chooses the king. An enemy character counts as its region; so does the player's own one whose click
+        // chooses nothing, except that it opens no region panel.
+        private void ChooseMiniature(DraftToken figure)
+        {
+            if (board.Map.LitSovereign(figure) is { } king)
+            {
+                board.Sovereigns.Click(king);
+                return;
+            }
+            if (view == null)
+                return;
+            if (figure.Side != view.You)
+            {
+                ChooseRegion(figure.RegionId);
+                return;
+            }
+            if (context.SelectFigure(figure.Id))
+                return;
+            quietPanel = true;
+            try
+            {
+                ChooseRegion(figure.RegionId);
+            }
+            finally
+            {
+                quietPanel = false;
+            }
+        }
+
+        // A region click opens or closes its panel, but a character's own click never does (UI-402).
+        private void TogglePanel(string region)
+        {
+            if (!quietPanel)
+                board.Hover.Toggle(region);
         }
 
         private void FinishSequence() => Choose(CommandKind.FinishActionSequence);
@@ -388,6 +430,8 @@ namespace Wotr.Client
                 return false;
             if (draft.Kind == CommandKind.DiscardCards)
                 return false;
+            // UI-402: a drop on a character's miniature is a drop on its region.
+            target = target?.AsRegion();
             if (huntContext.Drop(source, target))
                 return true;
             if (resources.Drop(source, target))
@@ -1144,6 +1188,7 @@ namespace Wotr.Client
             context.Dispose();
             board.Map.RegionSelected -= ChooseRegion;
             board.Map.ArmySelected -= ChooseArmy;
+            board.Map.MiniatureSelected -= ChooseMiniature;
             components.Dispose();
             consoleOptions.Dispose();
             rings.Dispose();

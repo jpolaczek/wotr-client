@@ -19,6 +19,9 @@ namespace Wotr.Client
         private readonly BoardFigureChanges changes = new BoardFigureChanges();
         private readonly List<Flight> flights = new List<Flight>();
         private readonly HashSet<(string, Side, bool)> arrivals = new HashSet<(string, Side, bool)>();
+        // UI-402: the characters a flight brings, by id; they stand on their own, so their force's army does not wait.
+        private readonly HashSet<string> characterArrivals = new HashSet<string>();
+        private const string CharacterKey = "character:";
         // UI-338: the forces figures fly away from; their marker needs no fade of its own.
         private readonly HashSet<(string, Side, bool)> departures = new HashSet<(string, Side, bool)>();
         private readonly HashSet<string> revealedRegions = new HashSet<string>();
@@ -129,6 +132,8 @@ namespace Wotr.Client
         public void Land() => Clear();
 
         public bool Arriving(string region, Side side, bool garrison) => arrivals.Contains((region, side, garrison));
+        // UI-402: a character's own miniature waits, dimmed, for the flight that brings it.
+        public bool ArrivingCharacter(string id) => characterArrivals.Contains(id);
         public bool Departing(string region, Side side, bool garrison) => departures.Contains((region, side, garrison));
         public bool Reveals(string region) => revealedRegions.Contains(region);
 
@@ -146,9 +151,11 @@ namespace Wotr.Client
                 revealedRegions.Add(move.To.Region);
                 if (move.To.Key == "fellowship")
                     FellowshipArriving = true;
+                else if (move.To.Key.StartsWith(CharacterKey))
+                    characterArrivals.Add(move.To.Key.Substring(CharacterKey.Length));
                 else
                     arrivals.Add((move.To.Region, move.To.Side, move.To.Garrison));
-                if (!move.IsArrival)
+                if (!move.IsArrival && !move.To.Key.StartsWith(CharacterKey))
                     departures.Add((move.From.Region, move.From.Side, move.From.Garrison));
                 var key = (move.From.Region, move.To.Region, move.To.Side, move.From.Garrison, move.To.Garrison);
                 if (!groups.TryGetValue(key, out var group))
@@ -192,6 +199,7 @@ namespace Wotr.Client
             {
                 Moves = Array.Empty<BoardFigureMove>();
                 arrivals.Clear();
+                characterArrivals.Clear();
                 departures.Clear();
                 FellowshipArriving = false;
                 timer.Pause();
@@ -221,11 +229,12 @@ namespace Wotr.Client
 
         private void Clear()
         {
-            var hadArrivals = arrivals.Count > 0 || FellowshipArriving || revealedRegions.Count > 0;
+            var hadArrivals = arrivals.Count > 0 || characterArrivals.Count > 0 || FellowshipArriving || revealedRegions.Count > 0;
             timer.Pause();
             Root.Clear();
             flights.Clear();
             arrivals.Clear();
+            characterArrivals.Clear();
             departures.Clear();
             revealedRegions.Clear();
             FellowshipArriving = false;

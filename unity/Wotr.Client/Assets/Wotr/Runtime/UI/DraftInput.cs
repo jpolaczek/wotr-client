@@ -102,11 +102,12 @@ namespace Wotr.Client
             if (pointer != evt.pointerId || clickKind == DraftClickKind.Suppressed ||
                 Vector2.Distance(origin, evt.position) < DraftClickSequence.MovementTolerance)
                 return;
-            // UI-105: armies, figures and characters move by clicks on the map only, so they are never dragged.
-            // UI-237: action dice are chosen by clicks only, too.
+            // UI-105: armies, figures and characters move by clicks on the map only, so they are never dragged (UI-405 will
+            // carry the map's miniatures). UI-237: action dice are chosen by clicks only, too.
             if (source == null ||
                 source.Object is DraftObject.Action or DraftObject.Deck or DraftObject.Tray or DraftObject.Region or DraftObject.Fellowship
-                    or DraftObject.Army or DraftObject.Figure or DraftObject.FellowshipPortrait or DraftObject.Character or DraftObject.Die)
+                    or DraftObject.Army or DraftObject.Figure or DraftObject.FellowshipPortrait or DraftObject.Character or DraftObject.Die
+                    or DraftObject.Miniature)
                 return;
             if (!dragging)
             {

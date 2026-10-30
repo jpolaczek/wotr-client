@@ -40,7 +40,7 @@ namespace Wotr.PlayTests
                 await session.Until(() => !fp.Playback.Holding);
                 foreach (var region in new[] { "dol-guldur", "mount-gundabad" })
                     Assert.AreEqual(fp.Board.View.Units.Count(u => u.Location == region && u.Side == Side.Shadow),
-                        fp.Board.Presentation.Armies.Where(a => a.RegionId == region && a.Side == Side.Shadow).Sum(a => a.Total));
+                        fp.Board.Presentation.FigureCount(region, Side.Shadow));
                 Assert.IsNull(fp.Board.Console.Status.Trail.Q("console-presented-source"));
             }
             finally

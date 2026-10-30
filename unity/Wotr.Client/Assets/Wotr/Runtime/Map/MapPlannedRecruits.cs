@@ -63,12 +63,15 @@ namespace Wotr.Client
         {
             var units = placements.Where(p => p.CharacterId.Length == 0).Select(p => (p.Nation, p.Kind));
             var marker = ArmyMarker.From(region, side, false, units);
-            var characters = placements.Where(p => p.CharacterId.Length > 0).ToList();
-            if (characters.Count == 0)
-                return marker;
-            marker.Characters = characters.Count;
-            marker.CharacterAppearance = FigureAppearances.Character(characters[0].CharacterId, side);
-            marker.CharacterNames.AddRange(characters.Select(c => CharacterLibrary.ShortName(c.CharacterId)));
+            foreach (var character in placements.Where(p => p.CharacterId.Length > 0))
+                marker.Carried.Add(new CharacterFigure
+                {
+                    Id = character.UnitId,
+                    DefinitionId = character.CharacterId,
+                    RegionId = region,
+                    Side = side,
+                    Art = FigureAppearances.Character(character.CharacterId, side)
+                });
             return marker;
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Wotr.Contracts;
 
 namespace Wotr.Client
 {
@@ -10,9 +11,10 @@ namespace Wotr.Client
     // on its region's place (UI-422, MapStandSlots) and is sized in board units. Its feet are Camera.ToScreen(place) and
     // its size the zoom clamped to a readable range (MapStandScale), applied by translate and scale only (MapStand). A
     // region shows figures when it is focused, or at the Detail zoom while its group's footprint fits its capacity;
-    // otherwise tokens. One stand layer holds the armies, the Fellowship, the planned ghosts and the kings' markers,
-    // sorted by their feet on the board whenever what stands there changes, never per frame, so nearer figures (lower on
-    // the map) are drawn in front. A figure never moves to make room: it keeps its place at every zoom and while panning.
+    // otherwise tokens. One stand layer holds the armies, the characters (UI-402), the Fellowship, the planned ghosts and
+    // the kings' markers, sorted by their feet on the board whenever what stands there changes, never per frame, so
+    // nearer figures (lower on the map) are drawn in front. A figure never moves to make room: it keeps its place at
+    // every zoom and while panning.
     public sealed class MapStandLayout
     {
         public VisualElement Layer { get; }
@@ -102,26 +104,24 @@ namespace Wotr.Client
         public float FigureScale => Scale.Of(MapArmyArtwork.DesignUnit);
 
         // Where each of a region's forces stands: a garrison at its fortress's gate; the main field force (the one with
-        // army units, otherwise the larger) on the field; any other field force (Nazgûl or companions beside the other
-        // side's army) on the planned place, then on the characters' places, until UI-402 gives characters their own.
-        internal void Assign(string region, IEnumerable<MapArmyStand> forces)
+        // army units, otherwise the larger) on the field; the other side's field force (Nazgûl beside an army) on the
+        // planned place, an army's place, since UI-402 gives the characters the character places. Returns the side of the
+        // force on the field, whose characters stand nearest it.
+        internal Side? Assign(string region, IEnumerable<MapArmyStand> forces)
         {
             var stands = Stands(region);
             var field = 0;
+            Side? fieldSide = null;
             foreach (var force in forces.OrderByDescending(f => f.Army.Regular + f.Army.Elite > 0)
                          .ThenByDescending(f => f.Army.Total).ThenBy(f => f.Army.Side))
             {
                 var gate = force.Army.Garrison ? stands.Garrison : null;
-                Stand(force.Stand, gate ?? FieldPlace(stands, field++));
+                if (gate == null && field == 0)
+                    fieldSide = force.Army.Side;
+                Stand(force.Stand, gate ?? (field++ == 0 ? stands.Field : stands.Planned));
             }
+            return fieldSide;
         }
-
-        private static Vector2 FieldPlace(RegionStands stands, int index) => index switch
-        {
-            0 => stands.Field,
-            1 => stands.Planned,
-            _ => stands.Character(Mathf.Min(index - 2, RegionStands.CharacterPlaces - 1))
-        };
 
         // The army pass: every force on its place at its region's level; the bounds of the shown ones are reserved, so
         // region names hide under them.
@@ -136,24 +136,37 @@ namespace Wotr.Client
         internal bool LayoutArmy(MapArmyStand force, bool focused)
         {
             var point = map.Camera.ToScreen(force.Stand.Feet);
-            var visible = map.NearView(point);
-            Show(force, visible);
-            if (!visible)
+            var army = force.Army;
+            force.Visible = map.NearView(point);
+            Show(force.Button, force.Visible, map.Figures?.Arriving(army.RegionId, army.Side, army.Garrison) == true);
+            if (!force.Visible)
                 return false;
             force.ShowLevel(Figures(force.Region, focused));
             force.Stand.Place(point, force.Figures == true ? FigureScale : Scale.Token);
             return true;
         }
 
-        private void Show(MapArmyStand force, bool visible)
+        // UI-402: one character, at its region's level like the armies: hidden behind the front of a stacked pair or while
+        // its feet are out of reach of the view, dimmed while a flight brings it; true when it is shown.
+        internal bool LayoutCharacter(MapCharacterStand character, bool focused, bool arriving)
         {
-            force.Visible = visible;
-            var army = force.Army;
-            var arriving = map.Figures?.Arriving(army.RegionId, army.Side, army.Garrison) == true;
-            force.Button.style.opacity = arriving ? .25f : 1f;
-            if (!visible && force.Button.panel?.focusController.focusedElement == force.Button)
+            var point = map.Camera.ToScreen(character.Stand.Feet);
+            character.Visible = !character.Stacked && map.NearView(point);
+            Show(character.Button, character.Visible, arriving);
+            if (!character.Visible)
+                return false;
+            character.ShowLevel(Figures(character.Region, focused));
+            character.Stand.Place(point, character.Figures == true ? FigureScale : Scale.CharacterToken);
+            return true;
+        }
+
+        // A figure a flight is bringing shows faintly until it lands; a hidden one gives up the focus.
+        private void Show(Button button, bool visible, bool arriving)
+        {
+            button.style.opacity = arriving ? .25f : 1f;
+            if (!visible && button.panel?.focusController.focusedElement == button)
                 map.Focus();
-            force.Button.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            button.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }

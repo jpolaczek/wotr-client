@@ -319,3 +319,156 @@
 #board-screen .planned-recruit-remove:hover { background-color: rgba(112, 34, 26, 0.98); }
 #board-screen .unity-button.action.icon-button.planned-recruit-remove.pressed { background-image: none; background-color: rgba(48, 14, 11, 0.98); }
 #board-screen .planned-recruit-remove > .icon-glyph { width: 13px; height: 13px; }
+
+/* UI-402 (TABLETOP_FIGURES_UX, decision 5): a character is its own miniature (MapCharacterArtwork) — its painted figure
+   on a small round stand in its side's enamel (stand-character, 19 points wide: the footprint's 14-unit base at 1.35
+   points a unit), a contact shadow a little down and right, and the state rim (rim-character) round the stand. The feet
+   are at (28, 56), the middle of the stand's top face; the map scales it as it does the armies (MapStand). Far out it is
+   a token: the character's portrait in its side's medallion. No filter: the flare is the glow texture, the fades opacity. */
+#board-screen .character-miniature,
+.character-miniature {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+.character-miniature.character-figures { width: 56px; height: 70px; }
+.character-miniature.character-token { width: 24px; height: 24px; }
+.character-artwork, .character-front, .character-behind { position: absolute; left: 0; top: 0; width: 56px; height: 70px; }
+.character-artwork .army-part-unused { display: none; }
+.character-token .character-front, .character-token .character-behind, .character-token .character-more { display: none; }
+.character-contact-shadow, .character-stand, .character-behind-stand, .character-rim { position: absolute; }
+.character-contact-shadow {
+    left: 20px;
+    top: 59px;
+    width: 19px;
+    height: 6px;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-stand, .character-behind-stand {
+    left: 18.5px;
+    top: 51.25px;
+    width: 19px;
+    height: 13.3px;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-miniature.fp .character-stand,
+.character-miniature.fp .character-behind-stand { background-image: resource("Wotr/Art/UI/armies/stand-character-free"); }
+.character-miniature.sh .character-stand,
+.character-miniature.sh .character-behind-stand { background-image: resource("Wotr/Art/UI/armies/stand-character-shadow"); }
+.character-miniature:hover .character-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
+.character-figure, .character-behind-figure { position: absolute; }
+/* The state is a rim round the stand; later states win: moved, owner, eligible, selected, pressed. */
+.character-rim {
+    left: 17.55px;
+    top: 49.8px;
+    width: 20.9px;
+    height: 16.15px;
+    display: none;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.character-figures.moved .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-moved"); }
+.character-figures.ability-owner .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-ability"); }
+.character-figures.eligible-character .character-rim,
+.character-figures.sovereign-target .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-eligible"); }
+.character-figures.selected-character .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-selected"); }
+.character-figures.pressed .character-rim { display: flex; background-image: resource("Wotr/Art/UI/armies/rim-character-rim-pressed"); }
+/* The stacked pair's count of the characters behind the front one, code-drawn on the stand's front. */
+.character-more {
+    position: absolute;
+    left: 31px;
+    top: 57px;
+    min-width: 13px;
+    height: 11px;
+    margin: 0;
+    padding: 0 2px;
+    font-size: 9px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgb(196, 154, 69);
+    color: rgb(247, 236, 209);
+    background-color: rgba(22, 16, 10, 0.9);
+}
+/* The token: the portrait in the side's medallion. */
+.character-portrait {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    padding: 3px;
+    display: none;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.character-token .character-portrait { display: flex; }
+.character-miniature.fp .character-portrait { background-image: resource("Wotr/Art/UI/battle/portrait-medallion-free"); }
+.character-miniature.sh .character-portrait { background-image: resource("Wotr/Art/UI/battle/portrait-medallion-shadow"); }
+.character-moved {
+    position: absolute;
+    left: 34px;
+    top: 40px;
+    width: 12px;
+    height: 12px;
+    display: none;
+    background-image: resource("Wotr/Art/UI/armies/moved-check");
+}
+.character-token .character-moved { left: 14px; top: -2px; width: 11px; height: 11px; }
+.character-miniature.moved .character-moved { display: flex; }
+.character-figures.moved .character-figure { opacity: 0.6; }
+/* ChoiceGlow (UI-301) as a capsule round the stand of a character a click may choose or whose ability it uses, a disc
+   round the token; it pulses with the armies' (MapCanvas runs the pulse). */
+.character-choice-glow {
+    position: absolute;
+    left: 13px;
+    top: 47px;
+    width: 30px;
+    height: 22px;
+    display: none;
+    border-width: 3px;
+    border-radius: 11px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.character-token > .character-choice-glow { left: -4px; top: -4px; width: 32px; height: 32px; border-radius: 16px; }
+.character-miniature.eligible-character > .character-choice-glow,
+.character-miniature.ability-owner > .character-choice-glow { display: flex; }
+.character-miniature.eligible-character.selected-character > .character-choice-glow { display: none; }
+.motion-enabled .character-miniature > .character-choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .map.choice-glow-pulse .character-miniature.eligible-character > .character-choice-glow,
+.motion-enabled .map.choice-glow-pulse .character-miniature.ability-owner > .character-choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
+/* UI-334 and UI-338 for a character: it flares and emerges, or fades out where it stood. */
+.character-flare {
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    width: 40px;
+    height: 60px;
+    background-image: resource("Wotr/Art/UI/ornaments/move-glow");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 236, 186);
+    opacity: 0;
+}
+.character-miniature.army-flaring .character-flare { opacity: 1; }
+.character-miniature.army-emerge-hidden .character-artwork { opacity: 0; }
+.character-miniature.army-leaving .character-artwork { opacity: 0; }
+.motion-enabled .character-miniature .character-flare { transition-property: opacity; transition-duration: 0.3s; transition-timing-function: ease-out-sine; }
+.motion-enabled .character-miniature.army-flaring .character-flare { transition-duration: 0.15s; }
+.motion-enabled .character-miniature .character-artwork { transition-property: opacity; transition-duration: 0.5s; transition-timing-function: ease-out-sine; }
+.motion-enabled .character-miniature.army-leaving .character-artwork { transition-duration: 0.7s; transition-timing-function: ease-in-out-sine; }

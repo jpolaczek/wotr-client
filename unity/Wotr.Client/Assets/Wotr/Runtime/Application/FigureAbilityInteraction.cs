@@ -52,7 +52,7 @@ namespace Wotr.Client
             {
                 uses[chief] = (ChiefReactionObjects.FollowOffer, () => edit(() => Respond(ChiefReactionObjects.Follow), true));
                 // A reaction window has no component to light the Chief's region; the figure's own use does.
-                board.Map.HighlightOwners(view.Characters.Where(c => c.Id == chief).Select(c => c.Location));
+                board.Map.HighlightOwners(view.Characters.Where(c => c.Id == chief).Select(c => c.Location), new[] { chief });
             }
             BalrogOrder();
             if (uses.Count == 0)
@@ -105,7 +105,7 @@ namespace Wotr.Client
                 var choice = figure.Value;
                 uses[figure.Key] = (BalrogCardOrder.Offer(choice), () => Order(choice, region));
             }
-            board.Map.HighlightOwners(new[] { region });
+            board.Map.HighlightOwners(new[] { region }, figures.Keys);
         }
 
         private void Order(string choice, string region)

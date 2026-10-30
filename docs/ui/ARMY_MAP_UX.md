@@ -73,7 +73,8 @@ moves to make room ("Figures on their places, sized with the map — UI-401" bel
 <a id="treść-i-informacja"></a>
 ### Content and information
 
-- The total number includes regular, elite, leaders, Nazgûle and characters.
+- The total number includes regular, elite, leaders, Nazgûle and characters. Since UI-402 (2026-10-30) characters
+  stand as their own miniatures: the number and the tooltip are the army's units only.
 - Tooltip after 200 ms (R19) gives the composition per nation: regular, elite, leaders, Nazgûle
   separately, character names; garrison/pole/obl Only data on the safe projection.
 - The `ArmyMarker` model in `BoardPresentation` gets counters per nation and a separate Nazgûli
@@ -722,7 +723,8 @@ occlusion changed until the picture is fully clear; the new number shows and the
 - Characters are part of their region's marker (`ArmyMarker.Characters`, counted in its total): a character standing alone
   in a region is that region's marker and emerges like an army; a character joining an army makes it flare and step its
   number (UI-336, which corrects UI-334's note that character marks were not covered; `CharacterMark` is a presentation
-  trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies.
+  trace's identity, not a map marker). The Fellowship's figure never appears from nothing; it flies. Superseded by
+  UI-402 (2026-10-30): each character is its own miniature and emerges on its own; an army counts its units only.
 - UI-322: the map's armies use no filter. The first version blurred the flare and the emerging figures, and a blurred
   element on a marker made Unity's renderer fail when the panel's scale, size or target changed (`FellowshipTrackLayoutTests`,
   `Shadow02LayoutTests`); the flare is now the soft glow texture (`move-glow`), the figures fade in opacity only, and the
@@ -769,7 +771,8 @@ in board units, and keeps that place while the map pans, glides or zooms.
 
 - **Where.** A garrison stands at its fortress's gate; the region's main field force (the one with army units,
   otherwise the larger) on the field place; a second field force (Nazgûl or companions beside the other side's army)
-  on the planned place until UI-402 gives characters their own. Planned recruits, a card's planned Nazgûl flights and
+  on the planned place (since UI-402 a Nazgûl force beside the other side's army; the characters stand on their own
+  places, "Every character is its own miniature — UI-402" below). Planned recruits, a card's planned Nazgûl flights and
   journeys stand on the planned place; the planned army at a hovered target on the field place, or on the planned
   place when a field force already stands there; a corrupted king's marker on the region's last character place; the
   Fellowship's figure on its Fellowship place.
@@ -787,4 +790,45 @@ in board units, and keeps that place while the map pans, glides or zooms.
   only to the forces placed before it, and UI-228's Fellowship places around the region's point.
 
 Tests: `MapStandLayoutTests`, `MapStandScaleTests`, `MapVisibilityTests`, `LayoutTests`, `MapMarkerEdgeTests`.
+
+<a id="ui-402"></a>
+## Every character is its own miniature — UI-402 (2026-10-30)
+
+UI-402 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), decision 5, "As built (UI-402)"): a force's characters leave its
+army marker. Each stands as its own miniature on a small round base beside the army in its region, and its click chooses
+it exactly as its region panel's chip does.
+
+- **The army** keeps its units only: its figures, emblems and count are its units' (`ArmyMarker.Units`, `Total`); a
+  region where characters stand alone has no army marker. Gandalf and Strider standing together are two figures, never
+  two Gandalfs. An Initial king still crowns his army; an Awakened king stands on his own figure. Nazgûl are units: a
+  lone Nazgûl is an army of one, a Nazgûl in a stack stands on its base (and lifts with it, UI-403).
+- **The miniature** (`character-<id>`): the character's painted figure at its stature on a round stand in its side's
+  enamel (`stand-character-*`), with a contact shadow and the state rim (`rim-character-*`): legal choice (green, with
+  ChoiceGlow pulsing with the armies), selected (gold), pressed, ability owner (amber), marched (a veil and ✓). It is
+  drawn at the armies' size for the zoom; far out, where the armies are tokens, it is the character's portrait in its
+  side's medallion.
+- **Where.** A field's characters stand on the region's six character places, a garrison's on the three beside the
+  gate, the field army's side nearest it; a character keeps its place while others come and go. More than six (three at
+  a gate) stand as a stacked pair on the last place with a code-drawn "+n" for the characters behind the front one; the
+  pair lights when any of them may be chosen, and its click chooses the front one (the others in the region panel or by
+  the army's click). The other side's field force (Nazgûl beside an army) stays on the planned place.
+- **Click.** With a Character die the character's click starts its travel; with an Army die it joins the army (the
+  commander-first rule, UI-105); a card, an ability or an order lit on the figure is used — the same command as the
+  chip's (`ActionContextInteraction.SelectFigure`). An enemy character's click is its region's (an attack target, or its
+  panel). The player's own character opens no region panel: a click that chooses nothing does what its region's click
+  does, without the panel. A reserve dropped on a character is dropped on its region. The army's click is unchanged: it
+  selects every figure that can move, its characters included, and opens the panel.
+- **One set of highlights.** The region panel's chips and the map's miniatures read one model (`FigureChoices`), so a
+  context that lights a chip lights the figure, and a selection made on either shows on both. The army's base is marked
+  marched when all of its units have; each character on its own.
+- **Appearing and leaving** apply per character (UI-334, UI-338): a character that enters or changes its place without
+  a flight flares and emerges there; one a flight brings waits faintly for it; one removed fades out where it stood. An
+  army no longer flares or steps its number when a character joins it.
+- **The opponent's traces** light a force's base together with its characters' miniatures, and the delta badges and
+  portraits stand beside the whole force (`ForceArtworks`, `ForceBounds`).
+- **Supersedes** "The total number includes … characters" and the tooltip's character names (Content and information),
+  UI-336's "characters are part of their region's marker" (UI-334 above) and UI-401's second field force "until UI-402".
+
+Tests: `CharacterMiniatureTests`, `CharacterPlacementTests`, `ArmyMarkerTests`, `SovereignMapTests`, `ArmyEmergeTests`,
+`TravelGestureNetworkTests`, `MapArmyArtworkTests`.
 

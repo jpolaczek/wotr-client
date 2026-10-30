@@ -14,29 +14,56 @@ namespace Wotr.Client
         public int Total => Regular + Elite + Leaders + Nazgul;
     }
 
+    // UI-402: one unit of a force, by its id (empty for a ghost or a fixture), nation and kind.
+    public readonly struct ArmyUnit
+    {
+        public ArmyUnit(string id, string nation, UnitKind kind)
+        {
+            Id = id ?? "";
+            Nation = nation ?? "";
+            Kind = kind;
+        }
+
+        public string Id { get; }
+        public string Nation { get; }
+        public UnitKind Kind { get; }
+    }
+
+    // UI-126, UI-402: one force's units on the map — the army's base with its figures, emblems and count. Its characters
+    // stand beside it as their own miniatures (BoardPresentation.Characters), so they are neither its figures nor counted.
     public sealed class ArmyMarker
     {
         public string RegionId;
         public Side Side;
         public bool Garrison;
         // Leaders include the Nazgûl; Nazgul counts them alone.
-        public int Regular, Elite, Leaders, Characters;
+        public int Regular, Elite, Leaders;
         public int Nazgul;
-        public FigureArt CharacterAppearance = FigureAppearance.Companion;
         public string Effect = "";
-        // UI-126: nations with the most figures first, and the characters by name.
+        // UI-126: nations with the most figures first.
         public List<NationForce> Nations = new List<NationForce>();
-        public List<string> CharacterNames = new List<string>();
-        // UI-274: the kings in this force; an Initial king is its crowned leader (CrownedTitles), an Awakened one
-        // stands among its characters.
+        public List<ArmyUnit> Units = new List<ArmyUnit>();
+        // UI-402: only a ghost of planned figures (a move, a card's recruits or journeys) carries characters on its base;
+        // on the board a character stands on its own.
+        public List<CharacterFigure> Carried = new List<CharacterFigure>();
+        // UI-274: the kings in this force; an Initial king is its crowned leader (CrownedTitles). An Awakened one stands
+        // on his own character figure (CharacterFigure.SovereignId).
         public List<string> SovereignIds = new List<string>();
         public List<string> CrownedTitles = new List<string>();
-        public int Total => Regular + Elite + Leaders + Characters;
+        public int Total => Regular + Elite + Leaders;
+        // The figures its base shows the count of: its units and, on a ghost, the characters it carries.
+        public int FigureCount => Total + Carried.Count;
 
-        public static ArmyMarker From(string region, Side side, bool garrison, IEnumerable<(string Nation, UnitKind Kind)> units)
+        public static ArmyMarker From(string region, Side side, bool garrison, IEnumerable<(string Nation, UnitKind Kind)> units) =>
+            From(region, side, garrison, units.Select(u => new ArmyUnit("", u.Nation, u.Kind)));
+
+        public static ArmyMarker From(string region, Side side, bool garrison, IEnumerable<UnitView> units) =>
+            From(region, side, garrison, units.Select(u => new ArmyUnit(u.Id, u.Nation, u.Kind)));
+
+        public static ArmyMarker From(string region, Side side, bool garrison, IEnumerable<ArmyUnit> units)
         {
-            var army = new ArmyMarker { RegionId = region, Side = side, Garrison = garrison };
-            foreach (var group in units.GroupBy(u => u.Nation))
+            var army = new ArmyMarker { RegionId = region, Side = side, Garrison = garrison, Units = units.ToList() };
+            foreach (var group in army.Units.GroupBy(u => u.Nation))
                 army.Nations.Add(new NationForce
                 {
                     Nation = group.Key,
@@ -52,6 +79,8 @@ namespace Wotr.Client
             army.Leaders = army.Nations.Sum(n => n.Leaders) + army.Nazgul;
             return army;
         }
+
+        public bool Is(string region, Side side, bool garrison) => RegionId == region && Side == side && Garrison == garrison;
     }
     public sealed class BoardPresentation
     {
@@ -71,6 +100,8 @@ namespace Wotr.Client
         // UI-265: the shown game's expansion modules (ExpansionModules ids), for the map's module-dependent drawings.
         public List<string> Modules { get; private set; } = new List<string>();
         public List<ArmyMarker> Armies = new List<ArmyMarker>();
+        // UI-402: every character on the map, each its own miniature beside its region's army.
+        public List<CharacterFigure> Characters = new List<CharacterFigure>();
         // UI-274: the corrupted kings, each a dark marker by his capital.
         public List<SovereignView> CorruptedSovereigns = new List<SovereignView>();
         private Dictionary<string, RegionDefinition> printedRegions;
@@ -123,6 +154,7 @@ namespace Wotr.Client
         {
             ResetRegions();
             Control = Board.Regions.ToDictionary(r => r.Id, r => r.OriginalOwner);
+            Characters = new List<CharacterFigure>();
             Armies = Board.Units.Where(u => u.Location != "reserve").GroupBy(u => u.Location).Select(group => ArmyMarker.From(
                 group.Key, Board.Nations.Single(n => n.Id == group.First().Nation).Side, false,
                 group.Select(u => (u.Nation, u.Kind)))).ToList();
@@ -132,6 +164,7 @@ namespace Wotr.Client
             ResetRegions();
             Modules = new List<string>();
             Armies.Clear();
+            Characters.Clear();
             CorruptedSovereigns.Clear();
             ProtectedRegions.Clear();
             Control.Clear();
@@ -144,52 +177,56 @@ namespace Wotr.Client
             ProtectedRegions.UnionWith(view.Effects.Where(e => e.Modifier == "PreventShadowArmyEntry").Select(e => e.TargetId));
             Control = new Dictionary<string, Side?>(view.Control);
             Armies = view.Units.Where(u => Regions.ContainsKey(u.Location))
-                .GroupBy(u => (u.Location, u.Side, u.Garrison)).Select(group => ArmyMarker.From(
-                    group.Key.Location, group.Key.Side, group.Key.Garrison, group.Select(u => (u.Nation, u.Kind)))).ToList();
-            foreach (var group in view.Characters.Where(c => Regions.ContainsKey(c.Location)).GroupBy(c => (c.Location, c.Side, c.Garrison)))
-            {
-                var army = Armies.FirstOrDefault(a => a.RegionId == group.Key.Location && a.Side == group.Key.Side && a.Garrison == group.Key.Garrison);
-                if (army == null)
-                {
-                    army = new ArmyMarker { RegionId = group.Key.Location, Side = group.Key.Side, Garrison = group.Key.Garrison };
-                    Armies.Add(army);
-                }
-                army.Characters = group.Count();
-                army.CharacterAppearance = FigureAppearances.Art(group.First());
-                army.CharacterNames = group.Select(c => CharacterLibrary.Name(c.DefinitionId)).ToList();
-            }
+                .GroupBy(u => (u.Location, u.Side, u.Garrison))
+                .Select(group => ArmyMarker.From(group.Key.Location, group.Key.Side, group.Key.Garrison, group)).ToList();
+            Characters = view.Characters.Where(c => Regions.ContainsKey(c.Location)).Select(CharacterFigure.From).ToList();
             foreach (var king in view.Sovereigns)
                 AddSovereign(view, king);
             CorruptedSovereigns = view.Sovereigns.Where(s => s.Status == SovereignStatus.Corrupted && Regions.ContainsKey(s.RegionId)).ToList();
         }
 
+        // UI-274: an Initial king crowns his force; an Awakened one stands on his own character figure (UI-402).
         private void AddSovereign(PlayerView view, SovereignView king)
         {
-            var army = king.Status switch
+            if (king.Status == SovereignStatus.Awakened)
             {
-                SovereignStatus.Initial => view.Units.Where(u => u.Id == king.Id).Select(u => Force(u.Location, u.Side, u.Garrison)).FirstOrDefault(),
-                SovereignStatus.Awakened => view.Characters.Where(c => c.Id == king.Id).Select(c => Force(c.Location, c.Side, c.Garrison)).FirstOrDefault(),
-                _ => null
-            };
+                var figure = Characters.FirstOrDefault(c => c.Id == king.Id);
+                if (figure != null)
+                    figure.SovereignId = king.Id;
+                return;
+            }
+            if (king.Status != SovereignStatus.Initial)
+                return;
+            var army = view.Units.Where(u => u.Id == king.Id).Select(u => Force(u.Location, u.Side, u.Garrison)).FirstOrDefault();
             if (army == null)
                 return;
             army.SovereignIds.Add(king.Id);
-            if (king.Status == SovereignStatus.Initial)
-                army.CrownedTitles.Add(king.Title);
+            army.CrownedTitles.Add(king.Title);
         }
 
         private ArmyMarker Force(string region, Side side, bool garrison) =>
-            Armies.FirstOrDefault(a => a.RegionId == region && a.Side == side && a.Garrison == garrison);
+            Armies.FirstOrDefault(a => a.Is(region, side, garrison));
+
+        // UI-402: how many figures a force shows on the map: its army's units and the characters standing beside it.
+        public int FigureCount(string region, Side side, bool garrison) =>
+            (Force(region, side, garrison)?.Total ?? 0) + Characters.Count(c => c.In(region, side, garrison));
+
+        // The same for both of a side's forces in a region, its field and its garrison.
+        public int FigureCount(string region, Side side) => FigureCount(region, side, false) + FigureCount(region, side, true);
+
         public void UseStressFixture()
         {
             UseSetup();
             Armies.RemoveAll(a => a.RegionId == "helms-deep");
-            Armies.Add(Stress("helms-deep", Side.FreePeoples, true, "Defence", 3, ("rohan", 3, 2, 2, 0)));
-            Armies.Add(Stress("helms-deep", Side.Shadow, false, "Siege", 1, ("isengard", 7, 3, 0, 0), ("sauron", 0, 0, 0, 3)));
-            Armies.Add(Stress("westemnet", Side.FreePeoples, false, "Relief", 4, ("rohan", 4, 2, 2, 0), ("gondor", 3, 1, 2, 0)));
+            Armies.Add(Stress("helms-deep", Side.FreePeoples, true, "Defence", ("rohan", 3, 2, 2, 0)));
+            Armies.Add(Stress("helms-deep", Side.Shadow, false, "Siege", ("isengard", 7, 3, 0, 0), ("sauron", 0, 0, 0, 3)));
+            Armies.Add(Stress("westemnet", Side.FreePeoples, false, "Relief", ("rohan", 4, 2, 2, 0), ("gondor", 3, 1, 2, 0)));
+            StressCharacters("helms-deep", Side.FreePeoples, true, "strider", "legolas", "gimli");
+            StressCharacters("helms-deep", Side.Shadow, false, "witch-king");
+            StressCharacters("westemnet", Side.FreePeoples, false, "gandalf-white", "boromir", "merry", "pippin");
         }
 
-        private static ArmyMarker Stress(string region, Side side, bool garrison, string effect, int characters,
+        private static ArmyMarker Stress(string region, Side side, bool garrison, string effect,
             params (string Nation, int Regular, int Elite, int Leaders, int Nazgul)[] forces)
         {
             var units = forces.SelectMany(f => Enumerable.Repeat((f.Nation, UnitKind.Regular), f.Regular)
@@ -198,8 +235,21 @@ namespace Wotr.Client
                 .Concat(Enumerable.Repeat((f.Nation, UnitKind.Nazgul), f.Nazgul)));
             var army = ArmyMarker.From(region, side, garrison, units);
             army.Effect = effect;
-            army.Characters = characters;
             return army;
+        }
+
+        // The stress fixture's characters by their base game names ("strider" is base.character.strider).
+        private void StressCharacters(string region, Side side, bool garrison, params string[] names)
+        {
+            foreach (var name in names)
+                Characters.Add(CharacterFigure.From(new CharacterView
+                {
+                    Id = "stress-" + name,
+                    DefinitionId = "base.character." + name,
+                    Side = side,
+                    Location = region,
+                    Garrison = garrison
+                }));
         }
 
         private void ResetRegions()

@@ -92,7 +92,7 @@ namespace Wotr.PlayTests
             stage.Play(latest, "grey-havens", step);
             yield return stage.Until(() => stage.Characters("erebor", Side.FreePeoples) == 1);
             Assert.IsTrue(stage.Playback.Holding, "The king stands before the release.");
-            Assert.AreEqual(3, stage.Board.Presentation.Armies.Where(a => a.RegionId == "erebor" && a.Side == Side.FreePeoples).Sum(a => a.Total),
+            Assert.AreEqual(3, stage.Board.Presentation.FigureCount("erebor", Side.FreePeoples),
                 "His Leader gave way to him; no second figure.");
             LayoutTests.Save(stage.Texture, "ui344-awakening-" + (reduced ? "quiet" : "motion") + ".png");
             yield return stage.Released();

@@ -51,14 +51,14 @@ namespace Wotr.Client
             view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence is { Kind: CommandKind.MoveArmies } sequence
                 ? sequence.UsedIds.ToHashSet() : new HashSet<string>();
 
-        // A force is marked on the map only when every one of its figures has marched.
+        // An army is marked on the map only when every one of its units has marched; UI-402: each character is marked on
+        // its own miniature (FigureChoices.Moved).
         private static IEnumerable<(string, Side, bool)> MarchedForces(PlayerView view, HashSet<string> moved)
         {
             if (moved.Count == 0)
                 return Enumerable.Empty<(string, Side, bool)>();
-            var figures = view.Units.Select(u => (Key: (u.Location, u.Side, u.Garrison), u.Id))
-                .Concat(view.Characters.Select(c => (Key: (c.Location, c.Side, c.Garrison), c.Id)));
-            return figures.GroupBy(f => f.Key).Where(g => g.All(f => moved.Contains(f.Id))).Select(g => g.Key).ToList();
+            return view.Units.GroupBy(u => (u.Location, u.Side, u.Garrison)).Where(g => g.All(u => moved.Contains(u.Id)))
+                .Select(g => g.Key).ToList();
         }
 
         // UI-127: an unsent selection that a click on a target would move.
@@ -162,10 +162,8 @@ namespace Wotr.Client
         {
             board.Hover.Panel.FigureChosen -= ChooseFigure;
             board.Hover.Panel.SelectAllRequested -= SelectAll;
-            board.Hover.Panel.Eligible = _ => false;
-            board.Hover.Panel.Selected = _ => false;
-            board.Hover.Panel.Moved = _ => false;
             board.Hover.Panel.Offer = _ => "";
+            board.Hover.Panel.Choices.Clear();
             board.Map.SetGhost(null);
             board.Map.ShowMarched(Enumerable.Empty<(string, Side, bool)>());
             board.Hover.Close();

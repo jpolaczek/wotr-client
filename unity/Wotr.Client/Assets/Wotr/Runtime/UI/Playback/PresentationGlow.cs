@@ -64,4 +64,40 @@ namespace Wotr.Client
 
         public void End() => Follow(null);
     }
+
+    // UI-402: one mark's glow on a force — its army's base and figures and the characters standing beside it, each its
+    // own miniature — following the elements found now; End puts them all out.
+    public sealed class ForceGlow
+    {
+        private readonly List<ObjectGlow> glows = new List<ObjectGlow>();
+
+        public IEnumerable<VisualElement> Targets
+        {
+            get
+            {
+                foreach (var glow in glows)
+                    if (glow.Target != null)
+                        yield return glow.Target;
+            }
+        }
+
+        public void Follow(IEnumerable<VisualElement> targets)
+        {
+            var index = 0;
+            foreach (var target in targets)
+            {
+                if (index == glows.Count)
+                    glows.Add(new ObjectGlow());
+                glows[index++].Follow(target);
+            }
+            for (; index < glows.Count; index++)
+                glows[index].End();
+        }
+
+        public void End()
+        {
+            foreach (var glow in glows)
+                glow.End();
+        }
+    }
 }

@@ -56,7 +56,7 @@ namespace Wotr.EditorTests
             Assert.IsTrue(ContextArmySelection.SelectAll(draft, view, context, "minas-tirith", false));
             var ghost = ArmyGhost.Of(view, draft, context);
             Assert.NotNull(ghost);
-            Assert.AreEqual(everyone.Count, ghost.Army.Total);
+            Assert.AreEqual(everyone.Count, ghost.Army.FigureCount);
             Assert.AreEqual("Move " + everyone.Count + " figures", ghost.Captions["osgiliath"]);
             Assert.AreEqual("Attack · Siege", ghost.Captions["minas-morgul"]);
             CollectionAssert.IsSubsetOf(ghost.Captions.Keys, ArmyActionTargets.For(draft, view, context).ToList(),

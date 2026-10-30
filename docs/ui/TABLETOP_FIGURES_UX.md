@@ -47,7 +47,7 @@ carry a dated pointer here.
 - **No common feet line.** `MapArmyArtwork` centres up to three 50×60 `ScaleToFit` silhouettes in their boxes, so wide
   cells float and every figure is the same height.
 - **Characters folded in.** A force's characters are merged into the army marker and only the first one's art shows;
-  Gandalf and Strider alone show two Gandalfs.
+  Gandalf and Strider alone show two Gandalfs. (Resolved by UI-402.)
 - **Flat motion.** `MapFigureMotion` slides a 96×84 box straight from anchor to anchor and the destination row then
   snaps into place: no lift, arc or landing.
 
@@ -160,7 +160,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   flights and journeys stand on `planned`; the move ghost on `field` when no field force stands there, otherwise on
   `planned` (`MapCanvas.GhostPlace`); a corrupted king's marker on the last character place (`MapCanvas.BesideForces`);
   the Fellowship on `fellowship`, and on the Mordor track on its step. Characters still stand inside their army's
-  miniature (UI-402).
+  miniature (UI-402). Since UI-402 a second field force can only be units (Nazgûl beside the other side's army) and it
+  always takes `planned`; the characters stand on their own places (below).
 - **Transform only.** Each standing object (`MapStand`) keeps its design size inside a holder of a fixed size with
   `UsageHints.DynamicTransform`. Per frame only the holder's `style.translate` and `style.scale` are written, and only
   when they change: the design point under the feet goes to `Camera.ToScreen(place)`. Width, height, left and top are
@@ -206,6 +207,67 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   sides of the siege shown with the nearer garrison in front, Edoras's token until there is room), `MapVisibilityTests`,
   `LayoutTests`, `MapMarkerEdgeTests`, `MapArmyArtworkTests`.
 
+**As built (UI-402, 2026-10-30): every character is its own miniature.**
+
+- **Data.** `BoardPresentation.Characters` holds every character on the map (`CharacterFigure`: id, definition, region,
+  side, field or garrison, level, leadership, art, and an Awakened king's `SovereignId`). `ArmyMarker` keeps a force's
+  units (`Units`, each an `ArmyUnit` with its id, nation and kind); its `Total` and its plaque's count no longer count
+  characters, and a region where characters stand alone has no army marker. Only a ghost carries characters on its base
+  (`ArmyMarker.Carried`, `FigureCount`: the planned move, a card's recruits, a journey), each its own figure. An Initial
+  king still crowns his army; an Awakened one stands on his own figure. Nazgûl are units: a lone Nazgûl is an army of
+  one; a Nazgûl in a mixed stack stands (and will lift) with its base.
+- **The miniature** (`MapCharacterArtwork`, `Styles/Armies.uss`) is designed at the army's 1.35 points a unit on the
+  character footprint: the painted round stand (`stand-character-*`, 40 × 28 art) drawn 19 × 13.3 points (14 units), the
+  feet at the middle of its top face, (28, 56) in a 56 × 70 box; the figure its `characters-v1` cell 48.6 points (36
+  units) tall × `FigureStature` (the Balrog 1.1), at most 54 points wide, feet on the line; the contact shadow 1.5 points
+  right and below; the state rims `rim-character-*` (moved, ability owner, eligible or king's target, selected, pressed)
+  and ChoiceGlow as a capsule round the stand, pulsing with the armies (`MapCanvas`'s pulse). It is drawn at the army's
+  scale for the zoom (`MapStandLayout.LayoutCharacter`, the same `FigureScale`). At the token level it is a medallion:
+  the portrait in its side's `portrait-medallion-*`, `clamp(20 × zoom, 18, 24)` points (`MapStandScale.CharacterToken`).
+  No filter; the flare is the glow texture and the fades are opacity.
+- **Places** (`CharacterPlacement`, `MapCharacterFigures.Assign`, on every board change, never per frame). A field's
+  characters stand on `characters[0..5]`, a garrison's on `garrisonCharacters[0..2]` (with the field's where the region
+  has no garrison place); the side of the army on `field` first, then by id. A character keeps its place while another
+  arrives or leaves; a newcomer takes the next free place. More characters than a group's places: all but the last place
+  hold one each, and the rest stand as a stacked pair on the last place — the front figure 3 points left, a second one on
+  its own stand 7 points right and 4 behind, a code-drawn "+n" (the characters behind the front one) on the stand's
+  front. The pair shows a state when any of its characters has it (marched when all have), and its click chooses the
+  front one; the others are chosen in the region panel or by the army's click. All of them share the y-sorted stand
+  layer with the armies, so a nearer character is drawn in front of an army behind it.
+- **Hit shape.** `MiniatureButton` with the stand's ellipse, a column under each figure as wide as the footprint's
+  figure (16 units, 21.6 points) from its head to its feet, and the "+n"; a token takes its disc. A wide cell (Strider's
+  sword, Boromir's shield) overhangs its neighbour's place, but only its column takes a press.
+- **Click.** A `character-<id>` button with `DraftObject.Miniature` (its region in `DraftToken.Region`) raises
+  `MapCanvas.MiniatureSelected`; `TurnInteraction.ChooseMiniature`: a lit Awakened king chooses the king; an enemy's
+  character is its region's click; the player's own calls `ActionContextInteraction.SelectFigure`, the chip's own path,
+  so the commands are the chip's — with a Character die it starts travel (`TravelContextInteraction.Figure` through
+  `FigureSelector`), with an Army die it joins the army (the commander-first rule), and a card's figure choice, the
+  Balrog's order or the Chief's reaction lit on the figure is used. A click that chooses nothing does what its region's
+  click does but never opens the region panel. A drop on a miniature is a drop on its region
+  (`DraftToken.AsRegion`). The army base's click is unchanged; a press on a character holds the open panel as a press on
+  an army does, and its right click reads its region.
+- **Shared highlights.** `FigureChoices` (Eligible, Selected, Moved, by figure id) is owned by the map and is the region
+  panel's `Eligible`/`Selected`/`Moved`; the contexts compose it as before, and `RegionHoverPanel.RefreshSelection` now
+  tells both readers (`FigureChoices.Refresh`): the panel's chips and the miniatures. A character also shows selected
+  while an unsent move or journey takes it (`MapCanvas.ShowDraftSources`), and an ability owner by the owners' ids
+  (`HighlightOwners(regions, figures)`). An army is marked marched when all of its units have. A region holding a
+  selected character shows figures (`MapCanvas.Focused`, from a set kept with the states, read every frame).
+- **Per character.** A character that enters, or changes its place without a flight, flares and emerges there; one a
+  flight brings (`MapFigureMotion.ArrivingCharacter`; the force's arrivals and departures are its units') waits at a
+  quarter opacity until it lands; one removed fades out where it stood (`leaving-character-<id>`). The first view, quiet
+  views, Reduced motion and Skip show the state (`MapCanvas.EndEmerging`).
+- **Traces.** `MapCanvas.ForceArtworks` (the army's artwork and its characters' miniatures) glow together (`ForceGlow`);
+  the delta badges and portraits stand beside `ForceBounds`, the region panel keeps clear of `FigureBounds`.
+- **Cost.** Per frame a character writes only its holder's translate and scale (the UI-401 rule); its states change on
+  a choice refresh, its place and art on a board change.
+- **Not yet.** Flights still fly between region points (UI-404); lifting (UI-403) and carrying (UI-405) are next.
+- **Tests.** EditMode `CharacterPlacementTests` (field, garrison and side order, kept places, the stacked pair),
+  `ArmyMarkerTests` (units only, two distinct figures, the character's tooltip), `SovereignMapTests` (an Awakened king's
+  figure); PlayMode `CharacterMiniatureTests` (two distinct figures on their places inside their region at the armies'
+  size, 1366/1920 × 100/125 %, the hit shape, a token far out; a figure's click equals its chip's and opens no panel,
+  the army's click takes its characters; the stress fixture's stacked pair "+2"), `ArmyEmergeTests`,
+  `TravelGestureNetworkTests` (a Character die's click on Gimli's figure travels him).
+
 ## The lifted figure, drag and drop
 
 - **Click-lift** (UI-403). A click on a legal source lifts exactly the selected figures into the hand
@@ -236,7 +298,10 @@ flight per destination marker, rendered with the same miniature.
 
 ## Defaults the owner can change at review
 
-- A character click opens no region panel.
+- A character click opens no region panel. As built (UI-402): a click on the player's own character that chooses
+  nothing does what its region's click does, without the panel; an enemy character's click is its region's.
+- A stacked pair's click chooses its front character (UI-402).
+- Far out a character is its portrait in its side's medallion (UI-402, until UI-406's tokens).
 - A Nazgûl inside a mixed stack lifts with its base.
 - The lifted figure is clipped to the map.
 - Edge pan works during a figure drag after a ~250 ms dwell.
@@ -258,6 +323,8 @@ flight per destination marker, rendered with the same miniature.
 | 10 | Character move with a Character die (`fp-character-move-*`) | Click Strider's figure | Only Strider lifts; clicking a destination flies him there |
 | 11 | Opponent's turn | Watch the opponent move | The opponent's figures arc and land the same way |
 | 12 | Helm's Deep siege | Look at the region | The besieger and the garrison both stand on their places, readable |
+| 13 | Character move with an Army die (an army with Strider, `fp-army-move`) | Choose the Army die, click Strider's figure, then a destination | Strider is selected without a panel opening; he moves as the chip would move him (a lone character needs a soldier first) |
+| 14 | Any position with a crowded region (seven or more characters) | Zoom in on it | Five single figures and a stacked pair with "+n"; the army's click selects them all |
 
 ## Superseded statements
 
