@@ -1496,7 +1496,8 @@ Base-game parts of the owner's requests on the Kings branch:
   settlement again. The click flow is unchanged. Test: `BoardInteractionTests` (UI-130's recruitment).
 - UI-413 (owner) — the Politics rows carry no effect badges: the small diamond a nation-wide effect (Wormtongue on Rohan,
   a Corrupted Brand or Théoden) placed at the start of a row covered the nation's name. The Effects tab still lists
-  every effect; the Fellowship's and the global badges keep their places (`EffectsScopeBadges`). Test:
+  every effect; the Fellowship's badge keeps its place (`EffectsScopeBadges`; the global one beside the Effects
+  window's close button was removed by UI-429, 2026-10-30). Test:
   `EffectsNetworkTests` (no badge on the Politics rows while Wormtongue is in play).
 - UI-414 (owner) — the Effects tab lists passive effects and what is happening now; an ability a player uses is
   described and offered only in the Characters tab. Each titled ability of a source has its own button; a card's
@@ -1572,3 +1573,13 @@ Chief's responses. Tests: `HuntGuideResponsesTests` (Skip effect in the Hunt win
 `HuntResponseTests.DamageResponsesGlowLikeTheResponsesBesideThem`, `RingChoiceTests.TheResultsAClickMayChooseGlow`,
 `CardJourneyDraftTests`, `CardFigureDraftTests`, `ReadableTextTests.ADraggedObjectReadsAsItsName`, PlayMode
 `PoliticalPanelTests`, `HuntLayoutTests`, `MultiUseDiceNetworkTests` and `ReactionGestures`.
+
+## The Effects window's header holds only its close button — UI-429 (2026-10-30)
+
+The owner: the Effects tab's bar keeps only the button that closes the window; the second one, which listed the
+effects, goes. That was the "◇ N" badge of game-wide effects (`EffectsScopeBadges`), placed beside the close button: its
+tooltip listed what the window already shows and its click opened the window that was already open. Game-wide effects
+now get no badge anywhere; the window still lists each of them as a source, and the Fellowship's badge for effects on
+the Fellowship keeps its place in the Fellowship's status row. This completes UI-221 ("the header holds only the close
+button") and follows UI-413 (no nation-wide badge on the Politics rows). Tests: `InGameDenseLayoutTests` (the header's
+only button is `close-effects`, four layouts).

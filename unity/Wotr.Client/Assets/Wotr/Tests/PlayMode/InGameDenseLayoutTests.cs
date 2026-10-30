@@ -111,9 +111,10 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual("Effects · 6", board.TableEffects.Tab.text);
             Inside(board.TableEffects.Root.worldBound, board.Map.worldBound);
-            // UI-221: every source is in view at once; the header has only its close button.
+            // UI-221, UI-429 (owner): the header holds only its close button; every source is in view at once.
+            CollectionAssert.AreEqual(new[] { "close-effects" }, board.TableEffects.Root.Q(className: "window-header")
+                .Query<Button>().ToList().Select(button => button.name).ToArray());
             Assert.AreEqual(6, Sources(board));
-            Assert.AreEqual(1, board.TableEffects.Root.Q(className: "window-header").Query<Button>().ToList().Count);
             SovereignTargets(board);
             LayoutTests.Save(target, $"ui63-dense-effects-{board.View.You}-{width}-{scale:0.00}.png");
             Press(board.TableEffects.Root.Q<Button>("close-effects"));
