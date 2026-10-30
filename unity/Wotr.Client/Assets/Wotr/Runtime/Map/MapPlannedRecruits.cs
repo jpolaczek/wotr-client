@@ -99,6 +99,14 @@ namespace Wotr.Client
                 pair.Value.Layout(map);
         }
 
+        // UI-404: the sent step's figures (by id) these ghosts show at their destination fly from there when the view
+        // takes them, standing, never from their source.
+        public void Expect(ICollection<string> sent, MapFigureMotion motion)
+        {
+            foreach (var ghost in ghosts.Values)
+                ghost.Expect(sent, motion);
+        }
+
         // UI-401: a ghost stands on its region's planned place (UI-422) in the stand layer, scaled as the armies are.
         private sealed class Ghost
         {
@@ -107,6 +115,7 @@ namespace Wotr.Client
             private readonly MapStand stand;
             private readonly Button remove;
             private readonly string region;
+            private ArmyMarker shown;
 
             public Ghost(MapCanvas map, string region, string prefix, Action removed)
             {
@@ -134,11 +143,26 @@ namespace Wotr.Client
 
             public void Apply(ArmyMarker army, bool interactive)
             {
+                shown = army;
                 marker.EnableInClassList("fp", army.Side == Side.FreePeoples);
                 marker.EnableInClassList("sh", army.Side == Side.Shadow);
                 artwork.Apply(army);
                 artwork.Layout(true);
                 remove?.SetEnabled(interactive);
+            }
+
+            // UI-404: the sent figures it shows start their flight standing on its place.
+            public void Expect(ICollection<string> sent, MapFigureMotion motion)
+            {
+                if (shown == null)
+                    return;
+                var keys = shown.Units.Where(unit => sent.Contains(unit.Id))
+                    .Select(unit => BoardFigurePosition.UnitPrefix + unit.Id)
+                    .Concat(shown.Carried.Where(character => sent.Contains(character.Id))
+                        .Select(character => BoardFigurePosition.CharacterPrefix + character.Id))
+                    .ToList();
+                if (keys.Count > 0)
+                    motion.Expect(keys, stand.Feet, FlightPose.Standing);
             }
 
             public void Layout(MapCanvas map)

@@ -11,11 +11,11 @@ namespace Wotr.Client
         public const float MotionSeconds = .4f;
         // UI-185/UI-192: as large as the figures of the armies (MapArmyArtwork). UI-401: its design size; the map scales
         // it, and it stands on its region's Fellowship place (UI-422).
-        private static readonly Vector2 RegionSize = new Vector2(64, 72);
+        internal static readonly Vector2 RegionSize = new Vector2(64, 72);
         // UI-401: design points per board unit — the box spans the Fellowship's figure (36 units) and its base.
         public const float DesignUnit = 1.8f;
         // The point under the figure's feet on a region, and on the Mordor track's step (4 points below the box).
-        private static readonly Vector2 RegionFeet = new Vector2(32, 64);
+        internal static readonly Vector2 RegionFeet = new Vector2(32, 64);
         private static readonly Vector2 TrackFeet = new Vector2(32, 68);
         // UI-283 (owner's request): on the Mordor track the figure is twice its first size, as large as on a region.
         private const float TrackDetail = 80, TrackToken = 64;
@@ -72,12 +72,8 @@ namespace Wotr.Client
             marker.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             marker.RegisterCallback<PointerEnterEvent>(_ => { hovered = true; map.Refresh(); });
             marker.RegisterCallback<PointerLeaveEvent>(_ => { hovered = false; map.Refresh(); });
-            marker.AddToClassList("fellowship-marker");
-            // The map's own figure needs no panel glow (UI-201).
-            FigureArtwork.Apply(marker, FigureAppearances.Fellowship, Side.FreePeoples, glow: false);
+            Dress(marker, "");
             marker.style.display = DisplayStyle.None;
-            marker.style.width = RegionSize.x;
-            marker.style.height = RegionSize.y;
             stand = new MapStand(marker, RegionSize);
             map.Stands.Add(stand);
             var ring = new VisualElement { name = "fellowship-mordor-ring", pickingMode = PickingMode.Ignore };
@@ -96,6 +92,20 @@ namespace Wotr.Client
             motion.Pause();
             pulse = new ChoicePulse(marker);
         }
+
+        // The figure on a region at its design size: the Fellowship's illustration and its Hidden or Revealed symbol. The
+        // map's own figure needs no panel glow (UI-201); UI-404's flight draws the same figure.
+        internal static void Dress(Button figure, string symbol)
+        {
+            figure.AddToClassList("fellowship-marker");
+            FigureArtwork.Apply(figure, FigureAppearances.Fellowship, Side.FreePeoples, glow: false);
+            figure.style.width = RegionSize.x;
+            figure.style.height = RegionSize.y;
+            figure.text = symbol;
+        }
+
+        // The Hidden or Revealed symbol the figure shows now.
+        public string Symbol => marker.text;
 
         // The figure's click: the hide, the move or the declaration it offers, otherwise its inspection.
         public void Activate()

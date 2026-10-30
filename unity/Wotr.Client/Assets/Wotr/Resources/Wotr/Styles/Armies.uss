@@ -282,14 +282,15 @@
 .figure-hand-piece { position: absolute; }
 .hand-lift { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
 .figure-hand-piece.figure-lifted > .hand-lift { translate: 0 -12px; scale: 1.1 1.1; }
-.hand-shadow {
+.hand-shadow,
+.flight-shadow {
     position: absolute;
     background-image: resource("Wotr/Art/UI/armies/contact-shadow");
     -unity-background-scale-mode: stretch-to-fill;
 }
 /* Where the miniature's own contact shadow lies (.army-contact-shadow, .character-contact-shadow). */
-.hand-army-shadow { left: 10px; top: 68px; width: 54px; height: 9px; }
-.hand-character-shadow { left: 20px; top: 59px; width: 19px; height: 6px; }
+.hand-army-shadow, .flight-army-shadow { left: 10px; top: 68px; width: 54px; height: 9px; }
+.hand-character-shadow, .flight-character-shadow { left: 20px; top: 59px; width: 19px; height: 6px; }
 .figure-hand-piece.figure-lifted > .hand-shadow { scale: 0.8 0.8; opacity: 0.35; }
 .figure-hand-piece .army-contact-shadow,
 .figure-hand-piece .character-contact-shadow { visibility: hidden; }
@@ -305,6 +306,17 @@
 .motion-enabled .figure-hand-piece.hand-returning > .hand-shadow { transition-duration: 0.22s; transition-timing-function: ease-in-sine; }
 .motion-enabled .figure-hand-piece.hand-planned > .hand-lift,
 .motion-enabled .figure-hand-piece.hand-planned > .hand-shadow { transition-duration: 0.25s; }
+
+/* UI-404 (TABLETOP_FIGURES_UX, "Flight profile"): a flight is the destination's own miniature (FlightMiniature) in a
+   holder on the ground (FigureFlight). FlightProfile writes the pose's translate and scale (origin at the feet) and the
+   shadow's scale and opacity every frame, so nothing here transitions; the miniature's own contact shadow is hidden, as
+   in the hand, and the flight's stays on the ground. The Fellowship's figure has no shadow on the table, so its
+   flight's shadow shows only while it is lifted. */
+.figure-flight { position: absolute; }
+.flight-lift { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.flight-fellowship-shadow { left: 19px; top: 61px; width: 30px; height: 8px; }
+.figure-flight .army-contact-shadow,
+.figure-flight .character-contact-shadow { visibility: hidden; }
 /* The source shows only what stays behind (MapArmyStand.Mask): a base none stays on disappears at once — no fade, so
    nothing shows twice when a piece lands — while its stand still takes the click it took. */
 .army.lifted-away .army-artwork,

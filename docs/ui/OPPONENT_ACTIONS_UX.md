@@ -31,7 +31,9 @@ through source → place → action → consequence, then gives the board back.
   card or the Log; only that explicit, complete display marks the step read (`ActionNoticeModel`,
   `NotificationReadStore`). Hover, time and automatic panels never mark anything read.
 - Figure moves of either side animate after the server confirms them (0.65–1.05 s, arrivals 0.45 s), **but only when
-  the next view is exactly the next revision** (`BoardFigureChanges`); a coalesced revision jumps without motion.
+  the next view is exactly the next revision** (`BoardFigureChanges`); a coalesced revision jumps without motion. Since
+  UI-404 a moving figure rises from its place, flies in an arc and lands on its new place as its own miniature
+  ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-404)").
 - The camera never moves by itself, no card opens by itself, and the battle and Hunt windows open in place without a
   camera move. The new decision is rendered in the same frame as the board update (`MatchSession.Update`).
 - The pennant feed (`filter=Opponent`) excludes automatic consequences (`Actor=null`): retreats, advances, Hunt
@@ -205,7 +207,7 @@ choices' plate or pulse; pale blue before):
 | --- | --- | --- |
 | Source emphasis (die, card corner, object) | ≈350 ms | static trace, 350 ms |
 | Camera travel | 450–750 ms | jump |
-| Figure movement | 650–1050 ms by distance (arrivals 450 ms), the existing `MapFigureMotion` | in-place arrival accent (`figure-arrival`) |
+| Figure movement | 650–1050 ms by distance (arrivals 450 ms), the existing `MapFigureMotion` (since UI-404 a lift, an arc and a landing on the stand place) | in-place arrival accent (`figure-arrival`) |
 | Result dwell (trace, badge, caption) | ≈1 s | ≈1 s, no fades |
 | Card reveal hold | ≥ 3 s, longer while inspected | ≥ 3 s |
 | A whole normal move | ≈2–4 s | ≈1.5–2.5 s |
@@ -316,7 +318,9 @@ settles first.
 - **March, travel, retreat, advance.**
   1. The source stack is traced (350 ms; 0.7 s since UI-315, §6.19).
   2. Exactly the recorded participants fly from source to destination with the board's own figure motion
-     (`MapFigureMotion.Fly`, 0.65–1.05 s, or an in-place arrival under Reduced motion).
+     (`MapFigureMotion.Fly`, 0.65–1.05 s, or an in-place arrival under Reduced motion). Since UI-404 they rise from
+     their force's place as one miniature with their count (each character on its own), arc and land on the
+     destination's place, while the rear guard stays on the source's base.
   3. Meanwhile the staged source shows the rear guard, and the staged destination its true final composition, dimmed
      until the figures land.
   4. The destination is traced for 0.6 s (0.9 s since UI-315).

@@ -12,7 +12,11 @@ namespace Wotr.Client
     // stays behind (MapCanvas.SetLiftMask). What it holds comes from the draft (LiftedFigures): the unsent move, and the
     // figures sent on their way until the view takes them from their place. A figure that leaves the hand drops back onto
     // its base (Esc, undo, a figure left behind in the region panel, an attack), dissolves where a planned ghost now shows
-    // it, or, once the view has carried it away, goes at once for the flight to show (UI-404 hands the flight its pose).
+    // it, or, once the view has carried it away, goes at once for the flight to show.
+    // UI-404: when the step that sends raised figures leaves, the hand hands their place and raised pose to the flight
+    // (MapFigureMotion.Expect) and keeps them raised, whatever the draft says, until the view carries them away. A
+    // rejection, a disconnect or the expiry (Lapse) puts them back on their base, where they stay while the draft still
+    // sends them.
     internal sealed class MapFigureHand
     {
         public VisualElement Layer { get; }
@@ -22,6 +26,12 @@ namespace Wotr.Client
         private readonly List<MapHandPiece> pieces = new List<MapHandPiece>();
         private readonly HashSet<string> held = new HashSet<string>();
         private readonly HashSet<string> planned = new HashSet<string>();
+        // The draft's unsent move, and the figures it sends on their way.
+        private readonly HashSet<string> selection = new HashSet<string>();
+        private readonly HashSet<string> sending = new HashSet<string>();
+        // UI-404: sent figures raised until the view flies them, and sent ones put back while the draft still sends them.
+        private readonly HashSet<string> awaited = new HashSet<string>();
+        private readonly HashSet<string> returned = new HashSet<string>();
         // Every figure standing on the table, by the piece that would lift it ("<piece key>|<region>|<figure id>").
         private readonly HashSet<string> standing = new HashSet<string>();
 
@@ -70,17 +80,60 @@ namespace Wotr.Client
             KeepStanding(forces, characters);
             foreach (var piece in pieces.ToList())
                 if (!piece.HasSource || !AtSource(piece))
+                {
+                    awaited.ExceptWith(piece.Ids);
                     Drop(piece);
+                }
         }
 
-        // The draft's figures (`lifted`) and the ones a planned ghost shows (`ghosts`), on every draft change.
+        // The draft's unsent move (`chosen`), the figures it sends on their way (`sent`) and the ones a planned ghost shows
+        // (`ghosts`), on every draft change.
         public void Hold(IReadOnlyCollection<MapArmyStand> forces, IReadOnlyCollection<MapCharacterStand> characters,
-            ICollection<string> lifted, ICollection<string> ghosts)
+            ICollection<string> chosen, ICollection<string> sent, ICollection<string> ghosts)
         {
-            held.Clear();
-            held.UnionWith(lifted);
+            selection.Clear();
+            selection.UnionWith(chosen);
+            sending.Clear();
+            sending.UnionWith(sent);
             planned.Clear();
             planned.UnionWith(ghosts);
+            Regroup(forces, characters);
+        }
+
+        // UI-404: the step that sends `sent` left. Each raised piece holding some of them hands its place and raised pose to
+        // the flight the view will bring, and stays up until then.
+        public void Expect(ICollection<string> sent)
+        {
+            foreach (var piece in pieces.Where(piece => piece.State == MapHandPiece.PieceState.InPlace))
+            {
+                var ids = piece.Ids.Where(sent.Contains).ToList();
+                if (ids.Count == 0)
+                    continue;
+                map.Figures.Expect(ids.Select(piece.FigureKey), piece.SourceFeet, FlightPose.Raised);
+                awaited.UnionWith(ids);
+            }
+        }
+
+        // UI-404: the view will not fly these figures (by figure key): they come back down onto their base. False when the
+        // hand awaited none of them.
+        public bool Lapse(IEnumerable<string> keys, IReadOnlyCollection<MapArmyStand> forces,
+            IReadOnlyCollection<MapCharacterStand> characters)
+        {
+            var ids = keys.Select(FigureId).Where(awaited.Contains).ToList();
+            if (ids.Count == 0)
+                return false;
+            awaited.ExceptWith(ids);
+            returned.UnionWith(ids.Where(sending.Contains));
+            Regroup(forces, characters);
+            return true;
+        }
+
+        private static string FigureId(string key) => key.Substring(key.IndexOf(':') + 1);
+
+        // The pieces for what the hand holds: new ones lift, raised ones still wanted stay, the others leave.
+        private void Regroup(IReadOnlyCollection<MapArmyStand> forces, IReadOnlyCollection<MapCharacterStand> characters)
+        {
+            GatherHeld();
             KeepStanding(forces, characters);
             var wanted = new Dictionary<string, Func<MapHandPiece>>();
             var updates = new Dictionary<string, Action<MapHandPiece>>();
@@ -92,6 +145,17 @@ namespace Wotr.Client
                 Keep(piece, wanted, updates);
             foreach (var create in wanted.Values)
                 Lift(create());
+        }
+
+        // What the hand holds: the unsent move, the figures sent on their way unless a planned ghost shows them or they
+        // came back down, and the sent ones awaiting their flight.
+        private void GatherHeld()
+        {
+            returned.IntersectWith(sending);
+            held.Clear();
+            held.UnionWith(selection);
+            held.UnionWith(sending.Where(id => !planned.Contains(id) && !returned.Contains(id)));
+            held.UnionWith(awaited);
         }
 
         private void KeepStanding(IEnumerable<MapArmyStand> forces, IEnumerable<MapCharacterStand> characters)

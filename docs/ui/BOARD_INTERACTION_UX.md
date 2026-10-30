@@ -48,6 +48,21 @@ Simple rasters have a clear background, a recognizable type figure, a separate p
 
 The traffic after the server confirmation takes about 0,65–1,05 p. figure or a compact group clearly moves from a known source to a target. Animation is only a presentation of subsequent public projections: without RNG , sending commands or queue blocking next choice. We do not add the supposed intermediate fields. Hidden progress Fellowship the first view, the reconnet and the revision gap show the current score without replay. Reduced motion skips the move and leaves a short accent. After animation, the actual target stack remains visible also at the distance, until the next projection or reset connection. This result indication does not open the preview, does not change the selection and does not show the secret route. UI-95 another projection that leaves flying figure for their purpose (e.g. next step turn right after the declaration Fellowship ), does not interrupt the flight; this new move figure replaces it and her disappearance ends. Corruption on track Fellowship moves smoothly to the new field (approx. 260 ms), and the first position and the change of scale set it immediately.
 
+**UI-404 (2026-10-30): a moving figure rises, flies in an arc and lands on its place.** `MapFigureMotion` no longer
+slides a box of pictures from anchor to anchor. Each flight is the destination marker's own miniature at the figures'
+scale (`FlightMiniature`: the army's base with the flying units and their count, a character on its stand, the
+Fellowship's figure), one per destination marker and source, from the place its figures stood on before the view
+(`FlightPlaces`, recorded on every sync) to the place they stand on now. It lifts in place into UI-403's raised pose
+(0–15 %), flies in an arc of `clamp(.12 × distance, 20, 80)` px with its shadow on the ground (15–85 %) and drops onto
+its place with a short settle (85–100 %); its last frame is the standing figure, drawn before the stand takes over, so
+nothing snaps. The duration is unchanged (0.65–1.05 s, arrivals 0.45 s), and every frame writes only transforms and
+opacity (`FigureFlight`, `FlightProfile`). A figure the player holds is expected (`MapFigureMotion.Expect`): as a step
+leaves, the raised pieces of the hand (and a card's faint planned figures) give the flight their place and pose, so a
+click-lifted army goes on from where it hovers and never rises again from its source; a rejection, a disconnect or 5 s
+without the view put it back on its base. A projection that moves a flying figure again takes it over in the air (UI-95
+above). Reduced motion and Skip are unchanged: an arrival on the destination's place, and the result at once. Details:
+[TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-404)".
+
 <a id="macierz-odbioru"></a>
 ## Acceptance matrix
 

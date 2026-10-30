@@ -90,7 +90,8 @@ namespace Wotr.Client
                 return null;
             // Both the old public fellowship identity and the newly public figure are required.
             return before.FellowshipPositionKnown
-                ? new BoardFigurePosition(figure.Key, before.FellowshipRegion, figure.Side, false, figure.Appearance, figure.Identity)
+                ? new BoardFigurePosition(figure.Key, before.FellowshipRegion, figure.Side, false, figure.Appearance,
+                    figure.Identity, inFellowship: true)
                 : figure;
         }
     }

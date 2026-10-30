@@ -1116,6 +1116,9 @@ namespace Wotr.Client
             pendingProblem = "";
             var recovering = sender.Pending != null;
             var command = recovering ? sender.Pending : draft.Command(view);
+            // UI-404: the figures this step sends that the player holds off the table fly on from where they are held.
+            if (!recovering)
+                board.Map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
             Render();
             try
             {
@@ -1133,7 +1136,11 @@ namespace Wotr.Client
                     notice = "";
                 }
                 else
+                {
                     notice = "The state changed or this choice is not legal. Review your selection.";
+                    // UI-404: nothing flies; the raised figures come back down onto their base.
+                    board.Map.Figures.Lapse();
+                }
                 await connection.Refresh();
                 if (!receipt.Accepted)
                     tray.Notice("The state changed or this choice is not legal. Review your selection.");

@@ -94,6 +94,8 @@ namespace Wotr.Client
         internal MapLandingMark Landing { get; }
         // UI-402: every character's own miniature.
         internal MapCharacterFigures Characters { get; }
+        // UI-404: the stand points flights leave from and land on.
+        internal FlightPlaces FlightPlaces { get; }
         private readonly Func<string, bool> focusedRegion;
         private readonly VisualElement foreground;
         private bool panning;
@@ -178,6 +180,7 @@ namespace Wotr.Client
             Hand.Changed += ApplyLiftMask;
             Landing = new MapLandingMark(this, Stands.Layer, Hand.Layer);
             Characters = new MapCharacterFigures(this, figure => MiniatureSelected?.Invoke(figure));
+            FlightPlaces = new FlightPlaces(this);
             Choices.Changed += ShowChoices;
             SyncMarkers();
             HistoryOverlay = new MapActionOverlay(this);
@@ -186,6 +189,7 @@ namespace Wotr.Client
             Legend = new MapLegend(this);
             EdgePan = new MapEdgePan(this);
             Figures = new MapFigureMotion(this);
+            Figures.Lapsed += ReturnLapsed;
             PlannedRecruits = new MapPlannedRecruits(this);
             PlannedFlights = new MapPlannedRecruits(this, "planned-flight", removable: false);
             SovereignMarkers = new MapSovereignMarkers(this);
@@ -570,8 +574,28 @@ namespace Wotr.Client
         private void HoldLifted(PlayerView view, TurnDraft draft)
         {
             var planned = PlannedFigureIds();
-            Hand.Hold(markers.Values, Characters.All, LiftedFigures.Held(view, draft, planned), planned);
+            Hand.Hold(markers.Values, Characters.All, LiftedFigures.Selection(view, draft), LiftedFigures.OnTheirWay(view, draft),
+                planned);
             ApplyLiftMask();
+        }
+
+        // UI-404: the step that sends these figures (by id) left. Those the player holds off the table — raised in the
+        // hand, or drawn faintly at their destination by a planned flight or journey — fly from there when the view
+        // takes them, never from their source.
+        public void ExpectFlights(ICollection<string> sent)
+        {
+            if (sent.Count == 0)
+                return;
+            Hand.Expect(sent);
+            PlannedFlights?.Expect(sent, Figures);
+            PlannedJourneys?.Expect(sent, Figures);
+        }
+
+        // UI-404: expected figures the view did not fly come back down onto their base.
+        private void ReturnLapsed(IReadOnlyCollection<string> keys)
+        {
+            if (Hand.Lapse(keys, markers.Values, Characters.All))
+                ApplyLiftMask();
         }
 
         // The figures a card's planned flights and journeys show at their destinations.
@@ -615,6 +639,8 @@ namespace Wotr.Client
 
         private void SyncMarkers()
         {
+            // UI-404: where every figure stood, before the new view gives it a new place; its flight leaves from there.
+            FlightPlaces.Record(markers.Values, Characters.All);
             obsolete.Clear();
             obsolete.AddRange(markers.Keys);
             foreach (var army in Data.Armies)
@@ -836,6 +862,10 @@ namespace Wotr.Client
             if (Occlusions != null)
                 covered.AddRange(Occlusions().Where(r => r.Overlaps(contentRect)));
         }
+
+        // UI-404: the board point one force stands on; null while the map has no marker for it.
+        internal Vector2? ForceFeet(string region, Side side, bool garrison) =>
+            markers.TryGetValue((region, side, garrison), out var marker) ? marker.Stand.Feet : (Vector2?)null;
 
         // UI-306: where one force's marker stands (map-local), for an observed trace; null while it is not shown.
         public Rect? MarkerBounds(string region, Side side, bool garrison) =>

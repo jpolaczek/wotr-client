@@ -1423,13 +1423,8 @@
     border-color: rgb(241, 209, 122);
     background-color: rgba(199, 164, 70, .15);
 }
-.figure-garrison { border-bottom-width: 3px; border-bottom-color: rgb(188, 180, 153); border-radius: 4px; }
 .figure-motion-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-/* UI-185/UI-192: the flying figures are as large as the map's figures; MapFigureMotion places them by their feet. */
-.moving-figures { position: absolute; width: 96px; height: 84px; }
-.moving-figures > .figure-art-image { position: absolute; width: 64px; height: 72px; top: 0; }
-.moving-figure-count { position: absolute; right: 0; bottom: 0; padding: 1px 5px; margin: 0; border-radius: 9px; background-color: rgb(34, 32, 30); color: rgb(250, 226, 167); -unity-font-style: bold; }
-.figure-arrival { border-bottom-width: 3px; border-bottom-color: rgb(242, 211, 133); border-radius: 12px; }
+/* UI-404: a flight is the destination's own miniature on the ground (Styles/Armies.uss, "figure-flight"). */
 
 .illustrated-companion > .figure-art-image { position: absolute; left: 0; right: 0; top: 0; bottom: 14px; }
 .illustrated-companion #portrait-name { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; height: 16px; font-size: 11px; -unity-text-align: middle-center; }

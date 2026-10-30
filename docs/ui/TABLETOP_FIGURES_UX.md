@@ -49,7 +49,7 @@ carry a dated pointer here.
 - **Characters folded in.** A force's characters are merged into the army marker and only the first one's art shows;
   Gandalf and Strider alone show two Gandalfs. (Resolved by UI-402.)
 - **Flat motion.** `MapFigureMotion` slides a 96×84 box straight from anchor to anchor and the destination row then
-  snaps into place: no lift, arc or landing.
+  snaps into place: no lift, arc or landing. (Resolved by UI-404.)
 
 ## Visual specification
 
@@ -198,8 +198,9 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   1366 × 768 on the whole map 3.21/3.51 ms (before 3.22/3.94), zoomed in 2.15/2.37 ms (2.23/2.35); at 1920 × 1080
   3.55/3.91 ms (4.30/4.95) and 2.33/2.62 ms (2.60/2.88); `MapCanvas.Refresh` 0.21–0.38 ms at p99 (0.29–0.45). The
   Development Player profile (`map-profile-2`) was not run for UI-401.
-- **Not yet.** Flights (`MapFigureMotion`) still fly between region points at their own size (UI-404); the token keeps
-  its UI-125 pictures (UI-406). The Mordor track's stones and the effects labels still move by `left`/`top`.
+- **Not yet.** Flights (`MapFigureMotion`) still fly between region points at their own size (resolved by UI-404: they
+  fly between stand points as the miniature); the token keeps its UI-125 pictures (UI-406). The Mordor track's stones
+  and the effects labels still move by `left`/`top`.
 - **Tests.** EditMode `MapStandScaleTests` (clamps, footprint, capacities within the closest zoom, hysteresis, token,
   the miniature's design on the footprint), `MapContourDataTests.FellowshipFigureStandsInsideItsRegion`; PlayMode
   `MapStandLayoutTests` (the Helm's Deep siege and its neighbours at 1366/1920 × 100/125 % and four zooms: feet on the
@@ -260,7 +261,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   the delta badges and portraits stand beside `ForceBounds`, the region panel keeps clear of `FigureBounds`.
 - **Cost.** Per frame a character writes only its holder's translate and scale (the UI-401 rule); its states change on
   a choice refresh, its place and art on a board change.
-- **Not yet.** Flights still fly between region points (UI-404); lifting (UI-403) and carrying (UI-405) are next.
+- **Not yet.** Flights still fly between region points (resolved by UI-404); lifting (UI-403) and carrying (UI-405) are
+  next.
 - **Tests.** EditMode `CharacterPlacementTests` (field, garrison and side order, kept places, the stacked pair),
   `ArmyMarkerTests` (units only, two distinct figures, the character's tooltip), `SovereignMapTests` (an Awakened king's
   figure); PlayMode `CharacterMiniatureTests` (two distinct figures on their places inside their region at the armies'
@@ -333,8 +335,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   The planned recruits, flights and journeys keep their faint ghost, now classed `planned-ghost`.
 - **Cost.** Per camera frame each piece, the ring and the caption write a translate (and a scale) only when it changes;
   the pieces and the mask change on a draft or board change only. No filter.
-- **Not yet.** A sent move stays raised until the view arrives, then the flight starts from the source's place (UI-404
-  hands the flight the pose); dragging (UI-405).
+- **Not yet.** A sent move stays raised until the view arrives, then the flight starts from the source's place (since
+  UI-404 the hand gives the flight its place and raised pose, "As built (UI-404)" below); dragging (UI-405).
 - **Tests.** EditMode `MapFigureHandTests` (exactly the selection lifts and the base shows the rest; a split; Esc or
   undo; a sent march kept until the view takes it; an attack's return; a planned flight's figure leaving its place) and
   `ArmyMovementTests` (the army's and travellers' captions, the attack set). PlayMode `FigureHandTests` (the pose and
@@ -353,6 +355,75 @@ flight per destination marker, rendered with the same miniature.
   is, never from its source; an attack, a rejection, a disconnect or the expiry returns it to its base.
 - Reduced motion and Skip behave as before.
 
+**As built (UI-404, 2026-10-30): a moving figure rises, flies in an arc and lands on its place.**
+
+- **Endpoints** (`Runtime/Map/Figures/FlightPlaces.cs`). Every sync records, before the new places are assigned, where
+  each unit and character stands (`MapCanvas.SyncMarkers` → `FlightPlaces.Record`). A flight leaves from that previous
+  place and lands on the place its figures stand on now: its force's stand (`MapCanvas.ForceFeet`; a force the map does
+  not show yet, its gate or `LandingPlace`), a character's own stand (or `MapCharacterFigures.NextPlace`), the
+  Fellowship's region `fellowship` place. A Companion separating from a Fellowship whose position is known leaves from
+  the Fellowship's place (`BoardFigurePosition.InFellowship`); from a hidden one it arrives in place, as before.
+  `BoardFigurePosition` gains `Nation` and `UnitKind`, and names its keys (`unit:`, `character:`, `fellowship`).
+- **One flight per destination marker and source** (`FigureFlight`, `FlightMiniature`): a force's moving units together,
+  each character and the Fellowship alone. It is drawn by the destination's own class at the figures' scale:
+  `MapArmyArtwork` with the flying units on the destination's base (a garrison's crenellated one) and their count on the
+  plaque (an Initial king among them keeps his crown), `MapCharacterArtwork` on its stand, the Fellowship's figure
+  (`MapFellowshipMarker.Dress`, its Hidden or Revealed symbol). Two forces landing on one force are two flights, since
+  each leaves from its own place. The miniature's own contact shadow is hidden; the flight's `flight-shadow` (the same
+  art at the same spot) stays on the ground. A flight's root keeps its name, `moving-<the first figure's key>`, and never
+  takes the pointer.
+- **Profile** (`Runtime/Map/Figures/FlightProfile.cs`). 0–15 %: it rises in place into UI-403's raised pose (1.10 round
+  its feet, 12 design points up, the shadow at .8 and .35), eased out. 15–85 %: it moves along the ground on a
+  smoothstep, in a parabola of `clamp(.12 × screen distance, 20, 80)` px above that pose whose top is half way; its
+  shadow follows the ground under it, up to a fifth smaller and two fifths fainter at the top. 85–100 %: it drops from
+  the raised pose onto its place (accelerating, the first 60 % of the landing), then settles with a hop of 2 design
+  points.
+  The last frame is the miniature standing on its place at the stand's scale, so the stand that takes over shows the
+  same picture: no snap. The duration is unchanged, `clamp(.65 + board distance / 1600, .65, 1.05)` s, and an arrival in
+  place .45 s.
+- **Transform only.** The holder is a `MapStand` on the ground point (translate and scale); inside it the pose
+  (`flight-lift`, origin at the feet: translate and scale) and the shadow (`flight-shadow`: scale and opacity), all
+  `DynamicTransform`, written each frame only when they change. No layout property, no `GeometryChangedEvent`, no
+  filter, no transition on these parts (Styles/Armies.uss, `figure-flight`). Each flight keeps its own clock.
+- **Hand-off** (`MapFigureMotion.Expect(keys, point, pose)`, `ExpectSeconds` = 5). As a step leaves
+  (`TurnInteraction.Submit`, before the command is sent), `MapCanvas.ExpectFlights(LiftedFigures.OnTheirWay(...))`:
+  every raised hand piece holding sent figures expects them at its place, `Raised`; a card's planned flight or journey
+  expects its figures `Standing` at its faint figure (the destination's planned place). The hand keeps an expected piece
+  raised whatever the draft says (an accepted step clears the draft before its view arrives). When the view takes the
+  figures, the hand lets the piece go at once and the flight starts from that point in that pose: a raised start skips
+  the lift (it begins at 15 %) and keeps the hand's gold rim, so the same miniature goes on from the same spot; a
+  planned figure steps from its faint figure onto its place. An expectation lapses (`Lapsed`) on a rejected receipt
+  (`Figures.Lapse`), a disconnect (`SetConnected(false)`), a reset (focus loss) or after 5 s: the hand drops its piece
+  back onto its base and keeps it there while the draft still sends it; a later view flies it from its base like any
+  flight. An attack is never on its way (UI-403), so it expects nothing and its army comes back to its base.
+- **Taken over mid-air (UI-95).** A projection that moves a flying figure again ends that flight where it was last
+  drawn, and the new flight starts there, at that lift and height: its old height fades out over the new arc, and one
+  interrupted while landing first rises again. Flights whose figures it does not move go on while the projection still
+  has them where they land; a figure that left the board ends its flight.
+- **An opponent's march** flies only the recorded movers (one flight with their count) from their force's place, which
+  the rear guard keeps (UI-306's staged board).
+- **Reduced motion and Skip** as before: an arrival on the destination's place (no lift, no arc, .45 s, fading from 1
+  to .4, `figure-arrival`), and Skip lands every flight (`Land`, `Quiet`).
+- **Removed.** The 96 × 84 box of images and its count (`.moving-figures`, `.moving-figure-count`), the old
+  `.figure-arrival` and `.figure-garrison` borders, `MapFigureMotion.FlightFeet` and `LiftedFigures.Held`.
+- **Cost.** Per frame and flight one profile evaluation and at most seven style writes (translate, scale, opacity);
+  flights are built on a projection only.
+- **Tests.** EditMode `FlightProfileTests` (the duration and arc bounds; lift, arc top, landing and the last frame
+  standing; a raised start begins at the arc in the hand's pose; a mid-air start keeps its height) and `MapFlightTests`
+  (stand points before and after, one flight per marker with exactly the movers and the rear guard on its place; the
+  hand-off with no second lift; a rejection, a disconnect and the expiry put the figures back and keep them there; a
+  planned flight's figure flies from its faint figure), `ReplayEffectsTests`, `MapFigureHandTests`. PlayMode
+  `FigureMotionTests` (`UI404AMarchRisesArcsAndLandsOnItsPlace`: frame by frame the ground runs straight, the shadow
+  lies on it and the miniature above it, the arc's top, the landing on the place at the stand's scale, pictures
+  `ui404-march-lift`, `-arc-top`, `-landing` and `ui404-landed`; `UI404AClickLiftedArmyFliesOnFromItsRaisedPose`:
+  `ui404-handoff-raised`, `-start`, `-arc-top`, `-landing`, `-landed`; the UI-95 take-over mid-air),
+  `MapClickMoveNetworkTests` (a real sent march's first frame is already raised and the hand is empty), and
+  `FigureMotionNetworkTests`, `FellowshipMotionNetworkTests`, `ArmyLeaveTests`, `ArmyEmergeTests`, the opponent's
+  presentation classes, `FigureHandTests`, `BoardInteractionTests`, `MovementNetworkTests`, `TravelGestureNetworkTests`,
+  `CharacterMiniatureTests`, `MapVisibilityTests`, `MapStandLayoutTests`.
+- **Not yet.** UI-405's drop will expect a dropped figure at its drop point (the same `Expect`); the Fellowship's base
+  and the tokens are UI-406's.
+
 ## Defaults the owner can change at review
 
 - A character click opens no region panel. As built (UI-402): a click on the player's own character that chooses
@@ -363,7 +434,12 @@ flight per destination marker, rendered with the same miniature.
 - The lifted figure is clipped to the map.
 - The lifted part of a split rises on a base of its own; the figures left behind stay on the source's base behind and
   below it, so at the default pose mostly their plaque and count show under the raised base (UI-403).
-- A sent move stays raised over its place until the view arrives (UI-403; UI-404 lets the flight start from there).
+- A sent move stays raised over its place until the view arrives (UI-403; UI-404 lets the flight start from there),
+  at most 5 s (`MapFigureMotion.ExpectSeconds`); then, or on a rejection or a disconnect, it comes back down.
+- A flight handed over by the hand keeps the hand's gold rim until it lands (UI-404).
+- A planned flight's or journey's figure flies from its faint figure at the destination onto its place, not from its
+  source (UI-404).
+- The arc's height is measured on the screen, so it follows the zoom; the settle is a hop of 2 design points (UI-404).
 - A lone character's landing mark is the army's ring at .35 of its size on the region's first free character place;
   while the lifted figure is out of view the caption hangs above the ring (UI-403).
 - Edge pan works during a figure drag after a ~250 ms dwell.
@@ -390,6 +466,13 @@ flight per destination marker, rendered with the same miniature.
 | 15 | A move with an Army die (`fp-army-move`, an army of three or more) | Click the army, then click one lit figure in its region panel | That figure drops back onto the base (its count on the base's plaque); the others stay raised with their own count |
 | 16 | A Shadow card that flies several Nazgûl (UI-212) | Click a lit Nazgûl stack, then a lit destination | One Nazgûl lifts; at the destination click it dissolves into the faint planned figure there and the next one lifts; the stack's base shows only the Nazgûl not yet flown |
 | 17 | Settings → Skip animations on, then a move with an Army die | Click the army, then press Esc | The army shows raised at once and is back on its base at once, without motion |
+| 18 | A move with an Army die (`fp-army-move`, an army with Strider) | Click the army, click a destination and watch the raised figures | They go on from where they hover — nothing drops onto its base and rises again — and each arcs (the army, then Strider on his own) and lands on its place; their shadows slide along the ground under them; the base the army lands on shows the same figures, nothing jumps |
+| 19 | Same, when the server refuses the step (the state changed meanwhile) | Click the army and a destination | The raised figures come back down onto their base and stay there until you choose again |
+| 20 | Same, with a slow connection (more than 5 s for the answer) | Click the army and a destination | After about 5 s the figures come back down onto their base; when the view arrives they fly from there |
+| 21 | A Shadow card that flies a Nazgûl (UI-212) | Plan the flight and confirm the card | The faint Nazgûl at the destination becomes the real one and steps onto its place; nothing flies from where it stood |
+| 22 | Opponent's turn: a march that leaves a rear guard | Watch the opponent's march | Only the moving figures rise from the force's place and fly; the rear guard stays on its base with its count |
+| 23 | A move while the opponent's next move arrives quickly (or two quick own steps) | Watch a figure that is still in the air when it moves again | It turns in the air towards its new place; it never jumps to its first destination or back to its source |
+| 24 | Settings → Skip animations on | Move an army | The army stands on its destination's place at once with a short fade, no lift or arc |
 
 ## Superseded statements
 

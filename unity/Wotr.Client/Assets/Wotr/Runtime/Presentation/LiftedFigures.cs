@@ -9,6 +9,8 @@ namespace Wotr.Client
     // being chosen (TravelActions, the Council token's chosen group) and the figure the next destination click flies
     // (NazgulFlightDraft) — and the figures the draft sends on their way (an army's march, a character's travel): those
     // stay lifted until the view takes them from their place, unless a planned ghost shows them at their destination.
+    // UI-404: when the step leaves, the figures on their way are the ones the flights take over from the hand
+    // (MapCanvas.ExpectFlights).
     public static class LiftedFigures
     {
         // The unsent move: figures chosen and not yet given a destination.
@@ -48,13 +50,5 @@ namespace Wotr.Client
 
         private static string Location(PlayerView view, string id) => view.Units.FirstOrDefault(unit => unit.Id == id)?.Location ??
             view.Characters.FirstOrDefault(character => character.Id == id)?.Location ?? "";
-
-        // Everything the hand holds: the unsent move and the figures on their way that no planned ghost shows.
-        public static HashSet<string> Held(PlayerView view, TurnDraft draft, ICollection<string> planned)
-        {
-            var held = Selection(view, draft);
-            held.UnionWith(OnTheirWay(view, draft).Where(id => !planned.Contains(id)));
-            return held;
-        }
     }
 }

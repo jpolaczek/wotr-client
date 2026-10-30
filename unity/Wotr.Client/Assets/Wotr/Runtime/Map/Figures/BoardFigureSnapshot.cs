@@ -6,15 +6,26 @@ namespace Wotr.Client
 {
     public sealed class BoardFigurePosition
     {
+        public const string UnitPrefix = "unit:";
+        public const string CharacterPrefix = "character:";
+        public const string FellowshipKey = "fellowship";
+
         public string Key { get; }
         public string Region { get; }
         public Side Side { get; }
         public bool Garrison { get; }
         public FigureArt Appearance { get; }
         public string Identity { get; }
+        // UI-404: a unit's nation and kind, so its flight draws the army's own miniature ("" and null for a character).
+        public string Nation { get; }
+        public UnitKind? UnitKind { get; }
+        // UI-404: the figure stands inside the Fellowship's figure (a separating Companion's source), so it flies from the
+        // Fellowship's place.
+        public bool InFellowship { get; }
 
         public BoardFigurePosition(string key, string region, Side side, bool garrison,
-            FigureArt appearance, string identity = "")
+            FigureArt appearance, string identity = "", string nation = "", UnitKind? unitKind = null,
+            bool inFellowship = false)
         {
             Key = key;
             Region = region;
@@ -22,7 +33,18 @@ namespace Wotr.Client
             Garrison = garrison;
             Appearance = appearance;
             Identity = identity;
+            Nation = nation ?? "";
+            UnitKind = unitKind;
+            InFellowship = inFellowship;
         }
+
+        public bool IsUnit => Key.StartsWith(UnitPrefix, StringComparison.Ordinal);
+        public bool IsCharacter => Key.StartsWith(CharacterPrefix, StringComparison.Ordinal);
+        public bool IsFellowship => Key == FellowshipKey;
+
+        // The unit's or character's id, without its prefix.
+        public string FigureId => IsUnit ? Key.Substring(UnitPrefix.Length)
+            : IsCharacter ? Key.Substring(CharacterPrefix.Length) : Key;
     }
 
     // Copies public positions only. Never retains a mutable PlayerView or a private roster.
@@ -48,15 +70,15 @@ namespace Wotr.Client
             FellowshipPositionKnown = PositionKnown(view.Fellowship, isRegion);
             foreach (var unit in view.Units)
                 if (isRegion(unit.Location))
-                    Add(new BoardFigurePosition("unit:" + unit.Id, unit.Location, unit.Side,
-                        unit.Garrison, FigureAppearances.Art(unit)));
+                    Add(new BoardFigurePosition(BoardFigurePosition.UnitPrefix + unit.Id, unit.Location, unit.Side,
+                        unit.Garrison, FigureAppearances.Art(unit), nation: unit.Nation, unitKind: unit.Kind));
             foreach (var character in view.Characters)
                 if (isRegion(character.Location))
-                    Add(new BoardFigurePosition("character:" + character.Id, character.Location,
+                    Add(new BoardFigurePosition(BoardFigurePosition.CharacterPrefix + character.Id, character.Location,
                         character.Side, character.Garrison, FigureAppearances.Art(character),
                         CharacterLibrary.Identity(character.DefinitionId)));
             if (FellowshipRegion.Length > 0)
-                Add(new BoardFigurePosition("fellowship", FellowshipRegion, Side.FreePeoples,
+                Add(new BoardFigurePosition(BoardFigurePosition.FellowshipKey, FellowshipRegion, Side.FreePeoples,
                     false, FigureAppearances.Fellowship));
         }
 

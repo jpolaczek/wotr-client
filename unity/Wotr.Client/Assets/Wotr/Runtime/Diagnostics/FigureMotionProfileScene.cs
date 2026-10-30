@@ -106,7 +106,8 @@ namespace Wotr.Client.Diagnostics
             var expectedActive = movements.Count > 0 && phase != "finished";
             if (expectedActive != (moving != null))
                 throw new InvalidOperationException("Incorrect movement lifetime in captured phase: " + phase);
-            var position = moving?.transform.position ?? Vector3.zero;
+            // UI-404: the flight's holder stands on the ground under its figures.
+            var position = moving?.resolvedStyle.translate ?? Vector3.zero;
             var frame = new CapturedFrame
             {
                 Phase = phase, Elapsed = Time.realtimeSinceStartupAsDouble - captureStarted,

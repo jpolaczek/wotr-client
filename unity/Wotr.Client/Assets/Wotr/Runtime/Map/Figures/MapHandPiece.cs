@@ -142,6 +142,12 @@ namespace Wotr.Client
         // Whether its source still stands on the table.
         public bool HasSource => source.Root.parent != null;
 
+        // UI-404: the board point it hovers over (its source's place), where the flight that carries it on begins.
+        public Vector2 SourceFeet => source.Feet;
+
+        // UI-404: one of its figures as the board's figure positions name it (BoardFigurePosition.Key).
+        public string FigureKey(string id) => (Units ? BoardFigurePosition.UnitPrefix : BoardFigurePosition.CharacterPrefix) + id;
+
         // It rises from its base: at once into the raised pose under Reduced motion, otherwise once it has been laid out,
         // so the pose transitions.
         public void Lift(bool moving)
