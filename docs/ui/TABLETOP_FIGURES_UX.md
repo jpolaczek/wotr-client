@@ -923,7 +923,24 @@ the army while the edge pan runs (`MapDragProfile`). Run on a Development Player
   does.
 
 **EditMode:** `bash scripts/unity.sh -runTests -testPlatform EditMode -testResults .artifacts/u407-edit.xml`, **1327/1327
-PASS**, 33.8 s. Python: `python3 scripts/test_map_profile.py` 14/14 PASS.
+PASS**, 33.8 s. Python: `python3 scripts/test_map_profile.py` 14/14 PASS. After UI-425–UI-428: EditMode **1335/1335 PASS**.
+
+**Batched PlayMode** (2026-10-30, `expansions` 58fa1ca4, after UI-425–UI-428): `scripts/discover-tests.py` then
+`scripts/test-client-batches.py --batching mixed --batch-size 8 --seed 1` — **819/856 passed**, complete scope. 24 of the 37
+failures are on the known baseline list (Effects panel UI-424, ContextHover, MapContourRendering ×2, T22, T23, the network
+flows, Kings03/04, GuideDraw, CharacterRoster, BoardCompletion and others). Of the 13 others, rerun one class per run:
+
+- `HandCardLayoutTests`, `MainMenuLayoutTests` and `FateAcceptanceNetworkTests.AFateGameAt100PercentAndItsReplay` pass alone
+  (a crowded-run "Layout update failed to stabilize" and an Escape timing flake).
+- `DicePanelLayoutTests` and the two Gothmog tests of `ExpansionAbilityNetworkTests` expected the wording before UI-420; the
+  tests now follow it (4bba4fb0; the base game's `DicePanelLayoutTests` likewise on `ability-chips`) and pass.
+- Six fail identically on the session's baseline `eb42551b`, so none is caused by the tabletop figures: the 125 % games of
+  `T36DesktopGameTests` and `FateAcceptanceNetworkTests` (UI-305's presentation camera frames the opponent's map cue, which
+  `FullGameDesktopChecks.Observer` forbids), `HuntResponseNetworkTests.RandomClickAndDropNeverSendAVictim` (when Merry or
+  Pippin is the random casualty the recovery is the console's ✓, UI-298, and the test looks only in the tray; about 1 run
+  in 3), `BoardProfileDriverTests` (UI-347's second click returns a placed companion; the Homelands workload's step 4
+  still expects its location), and `ReturnListTests`/`BoardMenuNetworkTests` (the server's match list omits the two
+  finished return matches).
 
 ## Playtest checklist
 
