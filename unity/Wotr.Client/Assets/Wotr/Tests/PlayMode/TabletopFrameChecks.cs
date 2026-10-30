@@ -345,6 +345,35 @@ namespace Wotr.PlayTests
             return x * x + y * y < 1;
         }
 
+        // UI-428 (TABLETOP_FIGURES_UX, "As built (UI-428)"): while a figure is carried over its target with its feet on the
+        // place it would take, the landing mark shows whole — no drawn part of a raised piece in the hand (its figures,
+        // stand, rim and plaque) lies on the ring; a piece's translucent shadow on the table may.
+        internal static void AssertLandingMarkClear(MapCanvas map, string label)
+        {
+            var ring = map.Q("landing-mark");
+            Assert.IsTrue(Visible(ring), "The landing mark shows · " + label);
+            var mark = Shrunk(ring.worldBound, Pixel);
+            var pieces = map.Query(className: "figure-hand-piece").ToList();
+            Assert.IsNotEmpty(pieces, "A figure is carried · " + label);
+            foreach (var piece in pieces)
+                foreach (var part in piece.Q("hand-lift").Query<VisualElement>().ToList().Where(Drawn))
+                    Assert.IsFalse(part.worldBound.Overlaps(mark),
+                        $"{piece.name}'s {part.name} lies on the landing mark ({part.worldBound} on {ring.worldBound}) · {label}");
+        }
+
+        // A part that paints something: a picture, a filled background or a text.
+        private static bool Drawn(VisualElement element)
+        {
+            if (!Visible(element) || element.worldBound.width <= 0 || element.worldBound.height <= 0)
+                return false;
+            var style = element.resolvedStyle;
+            return element is Image { sprite: not null } || element is Image { image: not null } ||
+                style.backgroundImage.texture != null || style.backgroundImage.sprite != null ||
+                style.backgroundColor.a > .05f || element is Label { text: { Length: > 0 } };
+        }
+
+        private static Rect Shrunk(Rect rect, float by) => Rect.MinMaxRect(rect.xMin + by, rect.yMin + by, rect.xMax - by, rect.yMax - by);
+
         private static bool Visible(VisualElement element)
         {
             for (var current = element; current != null; current = current.parent)

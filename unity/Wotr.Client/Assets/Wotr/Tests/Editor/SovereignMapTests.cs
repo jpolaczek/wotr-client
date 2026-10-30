@@ -30,6 +30,10 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Denethor · ◉ Corrupted · Minas Tirith\nHis tiles are resolved; he now serves the Shadow", marker.tooltip);
             Assert.IsFalse(marker.ClassListContains(MapSovereignMarkers.LitClass));
             Assert.IsInstanceOf<DraftToken>(marker.userData);
+            // UI-428: a figure carried onto the marker is dropped on his capital; a die dropped on it still chooses him.
+            var token = (DraftToken)marker.userData;
+            Assert.AreEqual("minas-tirith", token.StandsIn);
+            Assert.AreEqual(("denethor", DraftObject.Sovereign), (token.Id, token.AsRegion().Object));
         }
 
         [Test]

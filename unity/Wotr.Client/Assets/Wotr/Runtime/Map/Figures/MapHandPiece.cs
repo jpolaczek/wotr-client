@@ -19,6 +19,9 @@ namespace Wotr.Client
     // pointer takes it (a map-local point, so an edge pan leaves it under the pointer). Dropped, it rests on the board point
     // under it (Away) until it goes, flies on from there, or glides home over its source (`hand-gliding`: the holder's
     // translate transitions under .motion-enabled), as a return glides home while it drops.
+    // UI-428: away from its source (carried, or resting where it was dropped) it is held higher (`hand-carried`: 34 design
+    // points instead of 12), so over its target the landing mark on the table shows whole round its shadow; it comes down
+    // to the raised pose as it goes home, and a flight it hands its place to leaves from that height.
     internal sealed class MapHandPiece
     {
         public enum PieceState
@@ -33,9 +36,14 @@ namespace Wotr.Client
         public const string ReturningClass = "hand-returning";
         public const string PlannedClass = "hand-planned";
         public const string GlidingClass = "hand-gliding";
+        public const string CarriedClass = "hand-carried";
         // The pose in design points: the miniature grows round its feet and rises (Styles/Armies.uss).
         public const float LiftScale = 1.1f;
         public const float Rise = 12;
+        // UI-428: away from its source. The lowest part of an army's piece (its plaque, 20 points below the feet, grown
+        // 1.10 to 22) then lies 4.2 points above the top of the landing mark (7.8 points above the place, MapLandingMark)
+        // when its feet are on the place.
+        public const float CarriedRise = 34;
         public const float ShadowScale = .8f;
         public const float ShadowOpacity = .35f;
         public const long ReturnMilliseconds = 220;
@@ -174,6 +182,7 @@ namespace Wotr.Client
             grab = shownFeet - pointer;
             carried = shownFeet;
             rest = null;
+            HoldHigh();
         }
 
         // Its feet follow the pointer (map-local).
@@ -184,6 +193,7 @@ namespace Wotr.Client
         {
             carried = null;
             rest = ground;
+            HoldHigh();
         }
 
         // Back over its source: it glides there under motion, at once otherwise.
@@ -193,6 +203,7 @@ namespace Wotr.Client
                 return;
             carried = null;
             rest = null;
+            HoldHigh();
             if (moving)
                 Glide();
             if (map != null)
@@ -206,6 +217,16 @@ namespace Wotr.Client
             gliding = Stand.Root.schedule.Execute(StopGlide);
             gliding.ExecuteLater(GlideMilliseconds + Margin);
         }
+
+        // UI-428: held higher while away from its source; the pose transitions under .motion-enabled (Styles/Armies.uss).
+        private void HoldHigh() => root.EnableInClassList(CarriedClass, Away);
+
+        // How far the raised miniature stands above its feet, in design points.
+        public float ShownRise => Away ? CarriedRise : Rise;
+
+        // UI-404, UI-428: where the flight that carries it on begins — its ground, in the raised pose, and (held higher
+        // while away from its source) the extra height in pixels at the figures' scale, which the flight leaves behind.
+        public FlightStart Handoff(float figureScale) => new FlightStart(Ground, 1, (ShownRise - Rise) * figureScale);
 
         // A camera move never transitions: the glide ends once it has run, or when the piece is taken up again.
         private void StopGlide()
@@ -310,7 +331,7 @@ namespace Wotr.Client
             get
             {
                 var bounds = Stand.Bounds;
-                var rise = Rise * shownScale;
+                var rise = ShownRise * shownScale;
                 return Rect.MinMaxRect(Grown(bounds.xMin, shownFeet.x), Grown(bounds.yMin, shownFeet.y) - rise,
                     Grown(bounds.xMax, shownFeet.x), Grown(bounds.yMax, shownFeet.y) - rise);
             }

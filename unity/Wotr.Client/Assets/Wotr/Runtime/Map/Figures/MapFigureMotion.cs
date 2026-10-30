@@ -166,11 +166,14 @@ namespace Wotr.Client
 
         // UI-404: figures (by figure key) held off the table at a board point — lifted in place, or dropped on their
         // target — whose next flight starts there, in that pose, never from their source. Kept for ExpectSeconds.
-        public void Expect(IEnumerable<string> keys, Vector2 point, FlightPose pose)
+        public void Expect(IEnumerable<string> keys, Vector2 point, FlightPose pose) => Expect(keys, FlightStart.Of(point, pose));
+
+        // UI-428: a start with its own height above the raised pose (a dropped figure held higher, MapHandPiece).
+        public void Expect(IEnumerable<string> keys, FlightStart start)
         {
             var until = Now + ExpectSeconds;
             foreach (var key in keys)
-                expected[key] = (FlightStart.Of(point, pose), until);
+                expected[key] = (start, until);
             if (expected.Count > 0)
                 expiry.Resume();
         }
@@ -299,7 +302,7 @@ namespace Wotr.Client
         {
             var to = group[0].To;
             if (to.IsFellowship)
-                return FlightMiniature.Fellowship(map.FellowshipMarker?.Symbol ?? "");
+                return FlightMiniature.Fellowship(map.FellowshipMarker?.Hidden ?? true);
             if (to.IsCharacter)
                 return FlightMiniature.Character(to, chosen);
             var joined = map.Data.Armies.FirstOrDefault(army => army.Is(to.Region, to.Side, to.Garrison));

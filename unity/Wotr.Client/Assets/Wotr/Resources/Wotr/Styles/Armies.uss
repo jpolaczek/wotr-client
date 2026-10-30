@@ -257,6 +257,9 @@
 .figure-hand-piece { position: absolute; }
 .hand-lift { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
 .figure-hand-piece.figure-lifted > .hand-lift { translate: 0 -12px; scale: 1.1 1.1; }
+/* UI-428: away from its source — carried, or resting where it was dropped — the piece is held 34 design points up, so
+   over its target the landing mark on the table shows whole round its shadow (MapHandPiece.CarriedRise). */
+.figure-hand-piece.figure-lifted.hand-carried > .hand-lift { translate: 0 -34px; }
 .hand-shadow,
 .flight-shadow {
     position: absolute;
@@ -535,19 +538,15 @@
 
 /* UI-406 (TABLETOP_FIGURES_UX, "Fellowship figure"): the Fellowship's figure stands on a round Free Peoples base (the
    characters' painted stand, 16 units wide) over a contact shadow a little down and right, on its region's place and on
-   the Mordor track's step (MapFellowshipMarker.Dress places the parts). Its Hidden or Revealed symbol (the button's
-   text) keeps its place at the bottom of the box. The blue underline of UI-201's panel tiles is gone: the base is its
-   side's colour. */
+   the Mordor track's step (MapFellowshipMarker.Dress places the parts). The blue underline of UI-201's panel tiles is
+   gone: the base is its side's colour. UI-427: the button has no text (a text drawn behind the base never showed); its
+   Hidden or Revealed symbol is the plaque below. */
 .fellowship-marker.fellowship-miniature {
-    padding: 0 0 1px 0;
+    padding: 0;
     border-width: 0;
     border-radius: 8px;
     background-color: rgba(0, 0, 0, 0);
     background-image: none;
-    -unity-text-align: lower-center;
-    -unity-font-style: bold;
-    font-size: 11px;
-    color: rgb(247, 236, 209);
 }
 .fellowship-contact-shadow {
     background-image: resource("Wotr/Art/UI/armies/contact-shadow");
@@ -558,3 +557,21 @@
     -unity-background-scale-mode: stretch-to-fill;
 }
 .fellowship-miniature:hover > .fellowship-stand { -unity-background-image-tint-color: rgb(255, 246, 222); }
+/* UI-427 (FELLOWSHIP_UX "Fellowship on track"): ◇ Hidden or ◆ Revealed on a code-drawn plaque hanging on the base's front,
+   as an army's plaque hangs on its stand (FellowshipStateBadge places it and paints the diamond in its colour): the Free
+   Peoples' blue enamel with a gilt rim, the diamond in ivory, outlined while hidden and filled while revealed. It takes no
+   pointer and scales with the figure, on its region, on the Mordor track and in its flight. */
+.fellowship-state {
+    border-width: 1px;
+    border-radius: 5px;
+    border-color: rgb(222, 182, 96);
+    background-color: rgb(20, 46, 112);
+}
+.fellowship-state-symbol {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    color: rgb(250, 239, 206);
+}

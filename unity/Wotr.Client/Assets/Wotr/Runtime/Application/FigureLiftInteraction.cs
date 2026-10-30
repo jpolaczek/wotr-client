@@ -138,9 +138,9 @@ namespace Wotr.Client
             board.Map.EdgePan.EndDrag();
         }
 
-        // The region a drop lands in: the terrain's, an army marker's or a character miniature's.
-        private static string Region(DraftToken target) =>
-            target?.Object is DraftObject.Region or DraftObject.Army or DraftObject.Miniature ? target.RegionId : "";
+        // The region a drop lands in: the terrain's, or the one the map object under the pointer stands in — an army
+        // marker, a character's miniature and (UI-428) the Fellowship's figure or a king's marker — as a click there.
+        private static string Region(DraftToken target) => target?.StandsIn ?? "";
 
         // The board goes away mid-drag: the draft is put back as it was before the press, with nothing more shown.
         public void Dispose()

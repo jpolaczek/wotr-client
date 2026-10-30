@@ -74,10 +74,12 @@ baked textures and opacity.
   1.4)`; the control colour is unchanged (UI-195).
 - **Kings.** A sovereign marker is a small puck with a shadow.
 - **Fellowship figure.** It stands on a round Free Peoples base with a shadow, on its place and on the Mordor track.
+  Since UI-427 a plaque on the base's front shows ◇ Hidden or ◆ Revealed.
 - **Landing mark.** `landing-mark`, a baked ring on the table at the prospective place: green for a move, red for an
   attack.
 - **Lift pose.** Scale about 1.10 and a rise of about 12 px × scale; the shadow stays on the ground at scale .8 and
-  opacity .35.
+  opacity .35. Since UI-428 a carried figure (and one resting where it was dropped) is held 34 px × scale up, so the
+  landing mark shows under it.
 
 **As built (UI-400, 2026-10-29).** The atlases already paint each figure's stature on one cell height with the feet on
 the bottom edge (a regular's cell is 78 % filled, a hobbit's 62 %), so a figure's box is its cell's shape at the elite's
@@ -377,7 +379,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   pointer). It stays clipped to the map. The source's base keeps showing only what stays behind (`lifted-away` when
   nothing does). The caption hangs above the carried figures.
 - **The region under it** (`MapCanvas.SetDragTarget`, `MapRenderer`). The region under the pointer (terrain, an army
-  marker or a character's miniature; "" over the HUD or water) is the drag target: a legal target lights more strongly in
+  marker or a character's miniature, and since UI-428 the Fellowship's figure or a king's marker; "" over the HUD or
+  water) is the drag target: a legal target lights more strongly in
   its own colour (`CarriedTarget` green .50, `CarriedAttack` red .52), any other region gets the hover tint, and on a legal
   target the landing mark and its caption show as on a hover (`LandingRegion`). `RegionHover.PreviewDrag` treats a carried
   army or character as a reserve figure: the open region panel turns translucent and lets the drop through.
@@ -399,8 +402,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     dissolves where it was dropped; when a card arms the next Nazgûl of the same stack, the dropped piece leaves from
     there and the next rises at the stack on a piece of its own (`MapFigureHand.Replace`); a move that only waits for ✓
     glides home over its source, raised, as its click shows it;
-  - **nothing** (a drop on Lamedon beyond the mountains, on the HUD, on its own region, or a click that did nothing): the
-    checkpoint is put back and the figure glides home — onto its base when the press itself had chosen it, otherwise
+  - **nothing** (a drop on Lamedon beyond the mountains, on the HUD, on its own region, or a click that did nothing; until
+    UI-428 also a drop on the Fellowship's figure): the checkpoint is put back and the figure glides home — onto its base when the press itself had chosen it, otherwise
     raised over its place as it was chosen before.
   An attack's drop is sent like its click and, as with the click (UI-403), its army comes back to its base at once.
 - **Cancel.** Esc, focus loss, a cancelled pointer, a changed connection or decision, and a new revision (cancelled before
@@ -662,6 +665,92 @@ flight per destination marker, rendered with the same miniature.
   the closest zoom on every settlement, four layouts), `TabletopFrameChecks.AssertReadable` in every matrix frame,
   `TabletopObjectsTests` (Minas Tirith's name visible and clear of its gem).
 
+**As built (UI-427, 2026-10-30): the Fellowship's figure shows ◇ Hidden or ◆ Revealed.**
+
+- **The defect.** `MapFellowshipMarker.Apply` wrote ◇/◆ as the button's text. Since UI-406 the base, the contact shadow
+  and the figure, children drawn after the button's own text, covered it, so no frame showed the state (UI-406's report;
+  FELLOWSHIP_UX "Fellowship on track" requires it).
+- **The plaque** (`Runtime/Map/FellowshipStateBadge.cs`, `Styles/Armies.uss` `.fellowship-state`). A code-drawn plaque
+  hangs on the front of the base, as an army's plaque hangs on its stand: 24 × 16 of the figure's design points (1.8 a
+  unit) from the feet line down, centred under the feet, inside the figure's 64 × 80 box, the Free Peoples' blue enamel
+  with a gilt rim. Its diamond is painted by `Painter2D` in ivory, 9.5 × 13 points: outlined (◇, a 2.2-point line) while
+  the Fellowship is hidden, filled (◆) once revealed (`fellowship-hidden`, `fellowship-revealed`). It is the figure's
+  last child, so nothing of the figure covers it, and it repaints only when the state changes. The button has no text
+  any more; `MapFellowshipMarker.Symbol` and `Hidden` still give the state.
+- **Both levels.** It scales with the figure: on a region zoomed in 13–18 points wide (the figure at 0.56–0.75 of its
+  design size), on the Mordor track 21–27 (UI-283's 80 or 64 points over the figure's 72). Far out a region's figure is
+  drawn as small as 0.45 (it shows there only while it offers a click, UI-280, UI-282); the plaque never draws smaller
+  than at 0.62 (`FellowshipStateBadge.SmallestScale`): it grows round the middle of its top edge, so it stays below the
+  feet, and the figure's visible part (its `MapStand` bounds, which names keep clear of) reaches down to it. The scale is
+  written only when the zoom changes it. The flight (UI-404, `FlightMiniature.Fellowship(hidden)`) draws the same plaque
+  and fits it the same way (`FlightMiniature.Scaled`).
+- **Clicks.** The plaque and its diamond take no pointer: the figure's click is still the move, the declaration or the
+  hide (UI-236, UI-280, UI-282), and its ChoiceGlow and tooltips are unchanged (they already name the state).
+- **Cost.** Nothing per frame but the plaque's scale, written only when the zoom changes it below 1.116 points a unit
+  (0.62 × 1.8); no layout property, no `GeometryChangedEvent`, no filter.
+- **Tests.** EditMode `FellowshipFigureHideTests.ThePlaqueOnTheBaseShowsHiddenOrRevealed` (a region and the track) and
+  `FarOutThePlaqueKeepsAReadableSize`.
+  PlayMode `TabletopObjectsTests` (`AssertFellowshipState`, `AssertDiamondPainted`: in four layouts on its region zoomed in
+  and, offering a click, on the whole map, and at 1366 × 768 on the track zoomed in and on the whole map, the state
+  hidden, revealed and hidden again: the plaque shown on the base's front below the feet, at least 9.5 points tall, no
+  map object over it and a click there the figure's, and the diamond read from the frame — an ivory middle for ◆, the plaque's blue middle
+  inside an ivory outline for ◇; pictures `ui427-near-*`, `ui427-far-*`, `ui427-track-near-*`, `ui427-track-far-*`),
+  `MordorLayoutTests` (the UI-156 acceptance screens: both sides, steps 0, 3 and 5, hidden and revealed, four layouts; and
+  the track in four layouts at both levels, where the Hunt window does not lie over it), `OpponentHuntPresentationTests`.
+- **Verification** (2026-10-30, macOS, Unity 6000.6.0f1, `expansions` 25636789 plus UI-427 and UI-428): EditMode, the
+  whole suite, 1335/1335 PASS; PlayMode, one class per run: `TabletopObjectsTests` 4/4, `MordorLayoutTests` 5/5,
+  `OpponentHuntPresentationTests` 13/13, `FellowshipTrackLayoutTests` 2/2, `FellowshipMotionNetworkTests` 1/1,
+  `FigureMotionTests` 6/6, `CharacterMiniatureTests` 3/3. With the plaque left off the figure (as before the change) the
+  new assertions failed: EditMode `ThePlaqueOnTheBaseShowsHiddenOrRevealed` (both cases), `TabletopObjectsTests` 2/4,
+  `MordorLayoutTests` 3/5. Pictures checked: `ui427-near-*`, `ui427-far-*` (four layouts, both states; the worst case,
+  1366 × 768 at 125 % on the whole map, still reads ◇ against ◆), `ui427-track-near-*`, `ui427-track-far-*`.
+
+**As built (UI-428, 2026-10-30): a drop on any map object is a drop on its region, and the landing mark shows whole.**
+
+- **The drop on the Fellowship's figure** (UI-405's open point). `FigureLiftInteraction.Region` read only the terrain, an
+  army marker or a character's miniature, so a figure carried onto the Fellowship's figure in a lit target found no region
+  and glided home. The region a map object stands in is now one rule, `DraftToken.StandsIn`: the terrain's region, an
+  army marker's, a miniature's, the Fellowship's figure's (its token carries its region; on the Mordor track, which is no
+  region of the map's graph, the region under its step) and a Corrupted king's marker's (its token carries his capital).
+  The drag target and the drop read it, so a drop on the Fellowship's figure or a king's marker is that region's click
+  (`TurnInteraction.ChooseRegion`), payload and all. Every other map element either takes no pointer (gems, names,
+  labels, the hand, the landing mark, the planned ghosts) or has no token and reads the terrain under it (the Mordor
+  track's stones and gates, a planned recruit's ×). For other drags `DraftToken.AsRegion` turns the Fellowship's figure
+  into its region as it does a character's miniature; a king's marker keeps its own drop (a die on it chooses him,
+  UI-274).
+- **The landing mark under the carried army** (UI-407's defect 5). The ring lies on the table under the stands, and a
+  carried army whose feet were on its place covered all but its rim. A piece away from its source — carried, or resting
+  where it was dropped — is now held higher (`MapHandPiece.CarriedRise`, `hand-carried`: 34 design points instead of 12,
+  still grown 1.10 round its feet), so its lowest part, the plaque 22 points below the feet, hangs 4.2 points above the
+  ring's top edge when its feet (its shadow) are on the place: the whole ring shows round the shadow, the army clearly
+  over it. The rise transitions with the pose (0.18 s up, 0.22 s down, only a class change; Reduced motion: at once). A
+  piece gliding home comes down to the raised pose; one that drops back onto its base drops from there. The caption
+  hangs above the held figures (`LiftedBounds` reads the rise). A sent drop stays at that height where it was dropped, and
+  its flight starts there: the hand hands the flight the extra height (`MapHandPiece.Handoff`, `FlightStart.Height`,
+  `MapFigureMotion.Expect(keys, start)`), which the arc leaves behind as it does a flight taken over mid-air (UI-95), so
+  nothing snaps down.
+- **Cost.** No new per-frame write: a class on grab, drop and home; the flight's height is part of its profile.
+- **Tests.** EditMode `DraftTests.EveryMapObjectStandsInTheRegionADropOnItLandsIn`,
+  `FellowshipFigureHideTests.TheFiguresTokenStandsInItsRegionOrUnderItsStep`, `SovereignMapTests` (the marker stands in
+  Minas Tirith; its token keeps its own drop for a die), `MapFlightTests` (a carried army is held higher, comes down when it goes
+  home, and a dropped one's flight starts at that height; a click-lifted one at none). PlayMode `BoardInteractionTests`
+  (`UI428ADropOnTheFellowshipsFigureSendsItsRegionsClick`: an army carried onto the Fellowship's figure in Osgiliath lights
+  Osgiliath and its drop sends the click's payload, JSON-equal; `UI405TheCarriedArmyLightsItsTargetAndFliesOnFromWhereItWasDropped`:
+  carried with its feet on Osgiliath's planned place, no drawn part of the hand on the ring,
+  `TabletopFrameChecks.AssertLandingMarkClear`; pictures `ui428-carried-over-the-fellowship`, `ui428-carried-on-its-place`),
+  `TabletopAcceptanceMatrixTests` (the 16 carried frames now carry each side's army with its feet on its landing place and
+  assert the ring clear), `FigureHandTests` (the carried pose at 34), `MapContourInteractionTests`.
+- **Verification** (2026-10-30, the same run): EditMode 1335/1335 PASS; PlayMode `BoardInteractionTests` 22/22,
+  `FigureHandTests` 5/5, `TabletopAcceptanceMatrixTests` 4/4 (all 72 frames), `MapContourInteractionTests` 6/6,
+  `FigureMotionTests` 6/6, `FellowshipMotionNetworkTests` 1/1, `CharacterMiniatureTests` 3/3. With the old drop rule,
+  regionless tokens and the carried pose at 12 the new assertions failed: EditMode
+  `TheFiguresTokenStandsInItsRegionOrUnderItsStep`, `SovereignMapTests.EachKingStandsOnTheMapByHisState`,
+  `MapFlightTests.ADroppedArmyHandsTheDropPointToItsFlight`; `BoardInteractionTests` 19/22 (the drop on the
+  Fellowship's figure found no target; the carried army was not held higher); the matrix 2/4, the ring under the carried
+  army's stand in all 16 carried frames (both sides, four layouts, both levels); `FigureHandTests` 4/5. Pictures checked:
+  `ui428-carried-on-its-place`, `ui428-carried-over-the-fellowship`, `ui407-carried-{fp,sh}-*-near` (the whole ring under
+  the held army).
+
 ## Defaults the owner can change at review
 
 - A character click opens no region panel. As built (UI-402): a click on the player's own character that chooses
@@ -723,6 +812,16 @@ flight per destination marker, rendered with the same miniature.
   put seventeen regions below scale 1 instead of fifteen (UI-425).
 - A Corrupted king's marker stands on its own place, the nearest to the last character place that is off the armies'
   bases and covers no force's label and no gem (UI-401: the last character place) (UI-425).
+- The Fellowship's state is a plaque on its base's front — the Free Peoples' blue enamel with a gilt rim, an ivory ◇
+  outlined while hidden, ◆ filled while revealed — 24 × 16 of the figure's design points; far out it never draws smaller
+  than on a figure at 0.62 of its design size, growing downward from the feet line (UI-427; before it, a ◇/◆ text that
+  never showed).
+- A carried figure, and one resting where it was dropped, is held 34 design points up instead of the raised pose's 12
+  (still grown 1.10), so with its feet on the landing place its plaque hangs 4.2 points above the ring; it comes down to
+  12 when it goes home, and a sent drop's flight starts at 34 (UI-428; before it, 12 and the ring under the army).
+- A drop on any map object standing in a region — the Fellowship's figure and a king's marker too — is a drop on that
+  region; on the Mordor track, the region under the Fellowship's step (UI-428; before it, the Fellowship's figure and a
+  king's marker took no carried figure and it went home). A king's marker keeps its own drop for a die (UI-274).
 
 ## Acceptance (UI-407)
 
@@ -739,7 +838,7 @@ frame, so one run shows the whole matrix. 72 frames:
 | `ui407-map17-{fp,sh}-{1366,1920}-{1.00,1.25}-{far,near}` (16) | The seeder's `map17-dense` match, both real seats (HTTP/WebSocket): Helm's Deep's garrison of 7 with Strider, Gimli and Legolas besieged by 10 Isengard figures and 3 Nazgûl; Gondor's 14 in Westemnet. Far: the whole map (tokens); near: 2.2 × the whole map on Helm's Deep (miniatures). Nothing is sent. | The level (Detail only near; the focused forces as figures); every force's feet on its place at its board-unit size and design size (`MapStandLayoutTests.AssertOnPlaces`); the stand layer sorted by depth; every shown army's and character's feet inside its own region's contour; no shown region name under a stand; near: no figure on the middle of a settlement's stone, no two bases' top faces into each other, a garrison and its besieger sharing at most a quarter of either's picture. Per layout: both seats see every force on the same board point. |
 | `ui407-siege-{fp,sh}-…-{far,near}` (16) | UI-401's Helm's Deep siege with its neighbours (`MapStandLayoutTests.Siege`), seen from each seat | The same, plus UI-401's siege checks (`AssertSiege`: both sides as figures, the nearer garrison in front, Edoras's token until there is room). |
 | `ui407-carried-{fp,sh}-…-{far,near}` (16) | A fresh server scene per layout, `fp-army-move` and `sh-army-move`: the side's Army die, then a press that crosses the drag threshold on its largest army that can march (Minas Tirith's 5; Dol Guldur's 7, on the full setup board of 100 figures), carried over its first target (Drúadan
-Forest; Eastern Brown Lands) | The miniature under the pointer (its offset from the press kept); the target is the drag target and lights `CarriedTarget`; the green landing mark on the place the army would take; the caption above the carried figure; the figure on the map; no army ghost and no text label; the whole army lifted leaves its base empty. Esc puts it back onto its base. |
+Forest; Eastern Brown Lands); since UI-428 with its feet on the place it would take | The miniature under the pointer (its offset from the press kept); the target is the drag target and lights `CarriedTarget`; the green landing mark on the place the army would take; since UI-428 no drawn part of the carried army on the mark (`AssertLandingMarkClear`); the caption above the carried figure; the figure on the map; no army ghost and no text label; the whole army lifted leaves its base empty. Esc puts it back onto its base. |
 | `ui407-edge-pan-{fp,sh}-…` (8) | The same scenes, near | Held in an edge zone that can pan: within the dwell the map stays, after it the map has panned more than 20 points, the army is still under the pointer, and the drag target is the region under the pointer again. |
 | `ui407-flight-{fp,sh}-…` (8) | The same scenes: the army dropped on its target, so the real server takes the march | The own seat's flight leaves from where the army was dropped (within a board unit) and, about half way, its ground lies on the straight line between its two points, the miniature above it, landing on the destination force's place. |
 | `ui407-flight-observed-{sh,fp}-…` (8) | The opponent's seat watching that march | The flight leaves from the force's own stand point and runs on the ground between the stand points, above its shadow, to the destination's place. |
@@ -782,8 +881,9 @@ frame instead, `TabletopFrameChecks.AssertReadable`):
    26-point zone and the figure is centred under it, so the map's edge clips half of it while the map pans. This is the
    default "the lifted figure is clipped to the map"; the owner may prefer it drawn whole above the HUD while it is
    carried.
-5. Minor: **over the target the landing mark lies under the carried army** when the pointer is on the landing place
-   (`ui407-carried-*-near`), so only its rim shows; the lit region and the caption still tell the move.
+5. Minor: **over the target the landing mark lies under the carried army** — resolved by UI-428 (`ui407-carried-*-near`):
+   when the pointer is on the landing place only its rim showed; the lit region and the caption still told the move. A
+   carried army is now held higher, so the whole ring shows round its shadow, asserted in all 16 carried frames.
 
 None of these blocks a step: every frame's asserted checks pass. Each needs its own task (or the owner's acceptance as
 a default) before UI-407 can close. Defects 1 and 2 are resolved by UI-425 and defect 3 by UI-426 (2026-10-30, "As built
@@ -792,8 +892,8 @@ frames of the matrix (16 map17, 16 siege: the besieger's plaque under the garris
 the garrison's puck far at 125 %, Strider's and Legolas's medallions and the Westemnet, Edoras and Dale tokens on their
 stones far, Fords of Isen's plaque under the besieger near, "Helm's Deep" on its stone at 125 % near), in
 `TabletopObjectsTests` (Denethor's marker on Minas Tirith's count, Dale's token on its stone, "Helm's Deep" on its stone)
-and in the whole-map frames of `MapRegionNamesTests` ("Helm's Deep" in all four layouts), and pass after it. Defects 4
-and 5 remain.
+and in the whole-map frames of `MapRegionNamesTests` ("Helm's Deep" in all four layouts), and pass after it. Defect 5 is
+resolved by UI-428 ("As built (UI-428)"). Defect 4 remains.
 
 **Profile `map-profile-2`** with the drag-with-edge-pan workloads ([MAP17_ACCEPTANCE](MAP17_ACCEPTANCE.md), "Drag with
 edge pan (UI-407)"): `drag-edge-fp` and `drag-edge-sh` carry each side's own largest army that can march, on the
@@ -872,6 +972,10 @@ PASS**, 33.8 s. Python: `python3 scripts/test_map_profile.py` 14/14 PASS.
 | 41 | Standard setup | Zoom out to the whole map, then a little further onto the margins | Every army's puck stands just above its settlement's stone, which stays in view; zooming out past the whole map, the pucks and stones shrink with the map (UI-425) |
 | 42 | A Kings game with Corrupted Denethor (or any Corrupted king) | Look at his capital from the whole map to the closest zoom | His marker stands beside the forces and never covers an army's count or plaque, or a stone (UI-425) |
 | 43 | Any board | Zoom from the whole map to the closest over Helm's Deep, Minas Tirith and Fords of Isen | A name is never split or covered by its own stone: it steps aside, or where it cannot (Helm's Deep, zoomed in at 125 %), it hides until there is room (UI-426) |
+| 44 | The Fellowship hidden on a region, then revealed (a Hunt that reveals it, or `fp-character-move-*`) | Zoom in on its figure; then zoom out to the whole map while a Character die is chosen | A small blue plaque with a gilt rim on the front of its base shows an outlined ◇ while hidden and a filled ◆ once revealed; on the whole map, where the figure glows to be clicked, the plaque is still large enough to read (UI-427) |
+| 45 | The Fellowship on the Mordor track (Enter Mordor from Morannon or Minas Morgul) | Look at its figure on its step, zoomed in and on the whole map; reveal it, then hide it | The same plaque on its base shows ◇ or ◆ and changes with the state; clicking the glowing revealed figure still hides it (UI-427) |
+| 46 | A move with an Army die (`fp-army-move`) | Press the army and carry it over a legal region until its shadow lies in the green ring | The army hangs clearly above the ring — the whole ring shows round its shadow — then drops onto its place when released, flying on from that height (UI-428) |
+| 47 | A move with an Army die whose target holds the Fellowship (move the Fellowship there first, or `fp-army-move` with the Fellowship next to Minas Tirith) | Carry the army onto the Fellowship's figure in the lit region and release | The region lights under the Fellowship's figure and the drop moves the army there, exactly as clicking the region would; it does not glide home (UI-428) |
 
 ## Superseded statements
 

@@ -177,7 +177,8 @@ namespace Wotr.PlayTests
             yield return new WaitForSecondsRealtime(.3f);
             LayoutTests.Save(stage.Texture, "ui310-reveal.png");
             yield return stage.Released();
-            Assert.AreEqual("◆", stage.Board.Map.FellowshipMarker.Root.Q<Button>("fellowship-marker").text);
+            Assert.AreEqual("◆", stage.Board.Map.FellowshipMarker.Symbol);
+            Assert.IsFalse(FellowshipStateBadge.ShowsHidden(stage.Board.Map.FellowshipMarker.State), "UI-427: its plaque shows ◆.");
             yield return stage.NothingFlies();
         }
 
@@ -257,7 +258,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(shown, state.text, "UI-315: the Fellowship's state lights up before it turns.");
             yield return stage.Until(() => state.text != shown);
             Assert.IsTrue(PresentationGlow.IsLit(state), "It turns while lit.");
-            Assert.AreEqual("◇", stage.Board.Map.FellowshipMarker.Root.Q<Button>("fellowship-marker").text, "The figure is hidden in place.");
+            Assert.AreEqual("◇", stage.Board.Map.FellowshipMarker.Symbol, "The figure is hidden in place.");
+            Assert.IsTrue(FellowshipStateBadge.ShowsHidden(stage.Board.Map.FellowshipMarker.State), "UI-427: its plaque shows ◇.");
             Assert.AreEqual(0, stage.Board.Map.Figures.Moves.Count, "Hiding moves nothing.");
             yield return stage.Released();
             var healed = stage.Next(hidden);

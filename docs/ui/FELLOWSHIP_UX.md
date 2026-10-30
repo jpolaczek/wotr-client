@@ -145,8 +145,8 @@ The user's application with 2026-10-14: "Let's plan a graphical representation, 
 <a id="drużyna-na-torze"></a>
 ### Fellowship on track
 
-- At `MordorStep`, the Fellowship figure stands on the disc of the current step with the cliff ⁇
-  Hidden / ◆ Revealed; it does not disappear from the map.
+- At `MordorStep`, the Fellowship figure stands on the disc of the current step with the symbol ◇
+  Hidden / ◆ Revealed (since UI-427 on the plaque on its base, [below](#ui-427)); it does not disappear from the map.
 - After changing the step, it moves along the path (approx. 400 ms, like figures moves); at Stop it
   stays with a short "Stop" sign at the disc.
 - At the figure: a small counter Corruption ‘x/12’ and, when `MordorAttemptedThisTurn == false`, a
@@ -780,3 +780,35 @@ panels' figure tiles is gone: the stand is the side's colour. On the track the f
 tall zoomed in, 64 on the whole map) with the base below it. Its flight (UI-404) leaves its shadow on the ground. Its
 clicks, its glow (UI-236, UI-280, UI-282) and its tooltip are unchanged. Tests: `TabletopObjectsTests` (on a region and
 on the track), `MordorLayoutTests` (the base on its step), `MapVisibilityTests`, `FellowshipMotionNetworkTests`.
+
+<a id="ui-427"></a>
+## The Fellowship's figure shows ◇ Hidden or ◆ Revealed — UI-427 (2026-10-30)
+
+UI-407's acceptance matrix found that the figure's state had not been visible since the figure became a miniature:
+`MapFellowshipMarker.Apply` wrote ◇/◆ as the button's text, which the base, the shadow and the figure, drawn after it,
+covered. "Fellowship on track" (F07a) asks for the symbol on the figure, so the figure now carries it on its base, on its
+region and on the Mordor track alike ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-427)"):
+
+- **The plaque** (`FellowshipStateBadge`): a code-drawn plaque hanging on the front of the base, as an army's plaque hangs
+  on its stand — the Free Peoples' blue enamel with a gilt rim (Styles/Armies.uss), 24 × 16 of the figure's design points
+  from its feet line down, inside its 64 × 80 box, drawn last so nothing of the figure covers it. The diamond is painted
+  in ivory: outlined (◇) while the Fellowship is hidden, filled (◆) once it is revealed. It repaints only when the state
+  changes; the button has no text any more.
+- **Readable at both levels.** It scales with the figure (zoomed in on a region 13–18 points wide, on the track 21–27).
+  Far out, where a region's figure is drawn at 0.45 of its design size, the plaque never shrinks below its size at 0.62:
+  it grows round the middle of its top edge (a scale written only when the zoom changes it), so it stays clear of the
+  figure's feet. The flight (UI-404) draws the same plaque.
+- **No click of its own.** It takes no pointer: the figure's click stays the move, the declaration or the hide (UI-236,
+  UI-280, UI-282), and its ChoiceGlow is unchanged. The tooltips already name the state ("Fellowship · Hidden · …",
+  "Fellowship · Revealed · Mordor step 3 of 5").
+- **Tests.** EditMode `FellowshipFigureHideTests.ThePlaqueOnTheBaseShowsHiddenOrRevealed` (a region and the track: the
+  plaque is the figure's last child, takes no pointer and switches with `Hidden`) and `FarOutThePlaqueKeepsAReadableSize`;
+  PlayMode `TabletopObjectsTests` (on its region in four layouts, zoomed in and, while it offers a click, on the whole
+  map; on the track zoomed in and on the whole map; each frame hidden, revealed and hidden again: the plaque shown below the feet on the base's front, at least
+  9.5 points tall, uncovered, and the diamond read from the frame — an ivory middle for ◆, a blue middle inside an ivory
+  outline for ◇; pictures `ui427-near-*`, `ui427-far-*`, `ui427-track-*`), `MordorLayoutTests` (the acceptance screens of
+  both sides at steps 0, 3 and 5 hidden and revealed, and the track in four layouts at both levels),
+  `OpponentHuntPresentationTests` (the revealed and the re-hidden figure).
+
+A figure carried onto the Fellowship's figure is dropped on the region the Fellowship stands in, as a click there would
+be (UI-428, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md), "Carrying a figure — UI-405").

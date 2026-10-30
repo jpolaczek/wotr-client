@@ -65,6 +65,62 @@ namespace Wotr.PlayTests
             Assert.IsFalse(test.Board.Root.HasPointerCapture(PointerId.mousePointerId));
         }
 
+        // UI-428 (TABLETOP_FIGURES_UX, "As built (UI-428)"): the Fellowship's figure stands in its region, so the army carried
+        // onto it and dropped there is dropped on that region — the step the region's click sends, payload and all — instead
+        // of going home.
+        [UnityTest]
+        public IEnumerator UI428ADropOnTheFellowshipsFigureSendsItsRegionsClick()
+        {
+            var fixture = new BoardFixture();
+            fixture.View.Fellowship.RegionId = "osgiliath";
+            fixture.Refresh();
+            using var test = new Harness(fixture);
+            yield return Settle();
+            yield return SelectArmy(test.Board, "minas-tirith");
+            yield return Settle();
+            yield return HoverRegion(test.Board, "osgiliath");
+            MapContourProbe.Click(test.Board.Map, MapContourProbe.Terrain(test.Board.Map, "osgiliath"));
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(1, test.Backend.Commands);
+            var clicked = JsonConvert.SerializeObject(test.Backend.Last.Payload);
+            test.Reset();
+            yield return Settle();
+            yield return SelectArmy(test.Board, "minas-tirith");
+            yield return Settle();
+            test.Board.Hover.Close();
+            var map = test.Board.Map;
+            var army = map.Q<Button>("army-minas-tirith-FreePeoples");
+            map.FocusOn((StandFeet(map, army.name) + map.Stands.Stands("osgiliath").Fellowship) / 2, map.FitZoom * 2.4f);
+            yield return new WaitForSecondsRealtime(Pose);
+            var figure = map.FellowshipMarker.Root;
+            Assert.AreEqual(DisplayStyle.Flex, figure.resolvedStyle.display, "The Fellowship stands in Osgiliath.");
+            var onFigure = FellowshipPoint(map, figure);
+            MapContourProbe.LiftFigure(test.Board, army);
+            MapContourProbe.Carry(test.Board, onFigure);
+            yield return Settle();
+            Assert.AreEqual("osgiliath", map.DragTarget, "Over the Fellowship's figure, Osgiliath is the drop target.");
+            Assert.AreEqual(MapRegionEmphasis.CarriedTarget, map.Renderer.CurrentEmphasis("osgiliath"), "It lights.");
+            LayoutTests.Save(test.Viewport, "ui428-carried-over-the-fellowship.png");
+            MapContourProbe.Drop(test.Board, onFigure);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(2, test.Backend.Commands, "The drop on the figure is the step, with no Confirm.");
+            Assert.AreEqual(clicked, JsonConvert.SerializeObject(test.Backend.Last.Payload), "The drop sends what the click sends.");
+            Assert.IsFalse(test.Board.Root.HasPointerCapture(PointerId.mousePointerId));
+        }
+
+        // A point on the Fellowship's figure that a release there picks (the figure, not the terrain or another stand).
+        private static Vector2 FellowshipPoint(MapCanvas map, VisualElement figure)
+        {
+            var art = figure.Q("figure-art").worldBound;
+            foreach (var point in new[] { art.center, new Vector2(art.center.x, art.yMin + art.height * .7f), figure.worldBound.center })
+            {
+                var picked = map.panel.Pick(point);
+                if (picked == figure || figure.Contains(picked))
+                    return point;
+            }
+            throw new AssertionException("The Fellowship's figure is covered at " + art);
+        }
+
         // UI-405 (TABLETOP_FIGURES_UX, "Drag"): the chosen army is carried as its own lifted miniature, the region under it
         // lights (a legal target in its own colour, with the landing mark and the caption above the figure), and dropped on
         // the target it stays raised where it was dropped until the view comes, when its flight goes on from there.
@@ -88,7 +144,9 @@ namespace Wotr.PlayTests
             MapContourProbe.LiftFigure(test.Board, army);
             var halfway = Vector2.Lerp(press, MapContourProbe.Terrain(map, "osgiliath"), .5f);
             MapContourProbe.Carry(test.Board, halfway);
-            yield return Settle();
+            yield return new WaitForSecondsRealtime(Pose);
+            // UI-428: carried, it is held higher than over its place.
+            raised += HeldHigher(piece);
             AssertUnder(piece, raised + halfway - press, "The lifted miniature itself follows the pointer.");
             Assert.IsNull(map.Q("army-ghost"));
             Assert.IsTrue(army.ClassListContains("lifted-away"), "Its base stays empty while it is carried.");
@@ -107,6 +165,19 @@ namespace Wotr.PlayTests
             Assert.LessOrEqual(caption.worldBound.yMax, FigureHandTests.RaisedTop(piece), "The caption hangs above the carried figure.");
             AssertUnder(piece, raised + target - press, "Still under the pointer.");
             LayoutTests.Save(test.Viewport, "ui405-carried-target.png");
+
+            // UI-428: its feet (its shadow) on the place it would take, the landing mark shows whole under the held army.
+            var place = map.Stands.Stands("osgiliath").Planned;
+            var onPlace = press + FigureHandTests.World(map, place) - FigureHandTests.World(map, source);
+            MapContourProbe.Carry(test.Board, onPlace);
+            yield return Settle();
+            Assert.AreEqual("osgiliath", map.DragTarget, "Over its place, the target is still Osgiliath.");
+            Assert.AreEqual(DisplayStyle.Flex, ring.resolvedStyle.display);
+            FigureHandTests.AssertOnPlace(map, ring, place, "The mark lies on the planned place.");
+            TabletopFrameChecks.AssertLandingMarkClear(map, "carried onto its place");
+            LayoutTests.Save(test.Viewport, "ui428-carried-on-its-place.png");
+            MapContourProbe.Carry(test.Board, target);
+            yield return Settle();
 
             MapContourProbe.Drop(test.Board, target);
             yield return new WaitForSecondsRealtime(.2f);
@@ -244,7 +315,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(pan, map.Camera.Pan, "Within the dwell the map stays.");
             yield return new WaitForSecondsRealtime(.6f);
             Assert.Greater(Vector2.Distance(pan, map.Camera.Pan), 20, "After the dwell the map pans.");
-            AssertUnder(piece, raised + edge - press, "The carried figure stays under the pointer.");
+            AssertUnder(piece, raised + HeldHigher(piece) + edge - press, "The carried figure stays under the pointer.");
             Assert.AreEqual(MapRegion(DraftInput.At(map.panel, edge)), map.DragTarget, "The region under it is read again as the map moves.");
             LayoutTests.Save(test.Viewport, "ui405-edge-pan.png");
             LogDragCost(test.Board, edge);
@@ -278,8 +349,7 @@ namespace Wotr.PlayTests
                 $"p95 {costs[(int)(costs.Count * .95f)]:F3} ms, max {costs[costs.Count - 1]:F3} ms");
         }
 
-        internal static string MapRegion(DraftToken token) =>
-            token?.Object is DraftObject.Region or DraftObject.Army or DraftObject.Miniature ? token.RegionId : "";
+        internal static string MapRegion(DraftToken token) => token?.StandsIn ?? "";
 
         // A point in the map's right edge zone on exposed terrain (the HUD covers parts of the edges).
         private static Vector2 EdgePoint(MapCanvas map) =>
@@ -290,6 +360,17 @@ namespace Wotr.PlayTests
         {
             var shown = piece.Q("hand-lift").worldBound.center;
             Assert.Less(Vector2.Distance(expected, shown), 1.5f, message + $" (shown {shown}, expected {expected})");
+        }
+
+        // Longer than the pose's transitions (MapHandPiece: 0.18 s up, 0.22 s down).
+        internal const float Pose = .3f;
+
+        // UI-428: how much higher (map-world) a piece away from its source is held than over its place — 34 design points
+        // instead of 12 (MapHandPiece.CarriedRise, read here by its value), at its holder's scale.
+        internal static Vector2 HeldHigher(VisualElement piece)
+        {
+            var holder = piece.parent;
+            return new Vector2(0, -(34 - 12) * holder.worldBound.width / holder.resolvedStyle.width);
         }
 
         private static Vector2 StandFeet(MapCanvas map, string marker) => ((MapStand)map.Q<Button>(marker).parent.userData).Feet;

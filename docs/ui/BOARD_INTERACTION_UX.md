@@ -562,6 +562,16 @@ lifted figure, drag and drop" and "As built (UI-405)".
   each piece's `Ground`, the drop point (UI-404's hand-off).
 - **Cancel.** `FigureLiftInteraction.Cancel` (and `TurnInteraction.Update` before a new revision meets the draft) puts the
   checkpoint back, saves it, shows it and glides the figures home.
+- **UI-428 (2026-10-30): every map object is its region's drop.** The region under a carried figure, and the drop's, is
+  `DraftToken.StandsIn`: the terrain's region, or the region the map object under the pointer stands in — an army marker,
+  a character's miniature, the Fellowship's figure (`DraftObject.Fellowship` now carries its region; on the Mordor track
+  the region under its step) and a Corrupted king's marker (`DraftObject.Sovereign` with the capital). A drop on the
+  Fellowship's figure in a lit target is therefore that region's click, payload and all (it used to send nothing and
+  glide home). Pickable map elements without a token (the Mordor track's stones and gates) already read the terrain under
+  them; gems, names, labels, the hand and the landing mark take no pointer. For every other drag `DraftToken.AsRegion`
+  turns the Fellowship's figure into its region too, as a character's miniature; a king's marker keeps its own drop (a
+  die dropped on it chooses the king, UI-274). Details and the carried pose that keeps the landing mark visible:
+  [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-428)".
 
 <a id="panel-posiłków--ui-130"></a>
 ## Meal Panel — UI-130

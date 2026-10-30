@@ -72,16 +72,18 @@ namespace Wotr.Client
         private bool hovered;
         private bool inspected;
         private readonly MapStand stand;
+        // UI-427: the plaque on the base's front that shows ◇ Hidden or ◆ Revealed.
+        private readonly VisualElement plaque;
 
         public MapFellowshipMarker(MapCanvas map)
         {
             this.map = map;
             marker.clicked += Activate;
-            marker.userData = new DraftToken(DraftObject.Fellowship);
+            marker.userData = Token("");
             marker.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             marker.RegisterCallback<PointerEnterEvent>(_ => { hovered = true; map.Refresh(); });
             marker.RegisterCallback<PointerLeaveEvent>(_ => { hovered = false; map.Refresh(); });
-            Dress(marker, "");
+            plaque = Dress(marker, true);
             marker.style.display = DisplayStyle.None;
             stand = new MapStand(marker, RegionSize);
             map.Stands.Add(stand);
@@ -103,9 +105,10 @@ namespace Wotr.Client
         }
 
         // The figure on a region at its design size: the Fellowship's illustration standing on its round Free Peoples base
-        // over a contact shadow, and its Hidden or Revealed symbol (the button's text). The map's own figure needs no panel
-        // glow (UI-201); UI-404's flight draws the same figure.
-        internal static void Dress(Button figure, string symbol)
+        // over a contact shadow, and (UI-427) its Hidden or Revealed plaque on the base's front, drawn last so nothing of
+        // the figure covers it; returns the plaque. The map's own figure needs no panel glow (UI-201); UI-404's flight
+        // draws the same figure.
+        internal static VisualElement Dress(Button figure, bool hidden)
         {
             figure.AddToClassList("fellowship-marker");
             figure.AddToClassList(MiniatureClass);
@@ -115,9 +118,11 @@ namespace Wotr.Client
             image.name = "figure-art";
             Place(image, FigureBox);
             figure.Add(image);
+            var plaque = FellowshipStateBadge.Create(hidden);
+            figure.Add(plaque);
             figure.style.width = RegionSize.x;
             figure.style.height = RegionSize.y;
-            figure.text = symbol;
+            return plaque;
         }
 
         private static Rect BaseRect() => new Rect(RegionFeet.x - BaseSize.x / 2, RegionFeet.y - BaseSize.y * FeetOnTopFace,
@@ -147,8 +152,10 @@ namespace Wotr.Client
             element.style.height = box.height;
         }
 
-        // The Hidden or Revealed symbol the figure shows now.
-        public string Symbol => marker.text;
+        // The Hidden or Revealed symbol the figure shows now (UI-427: its plaque, State).
+        public string Symbol => hidden ? "◇" : "◆";
+        public bool Hidden => hidden;
+        public VisualElement State => plaque;
 
         // The figure's click: the hide, the move or the declaration it offers, otherwise its inspection.
         public void Activate()
@@ -172,8 +179,9 @@ namespace Wotr.Client
             regionId = fellowship?.MordorStep.HasValue == false ? fellowship.RegionId : "";
             hidden = fellowship?.Hidden == true;
             corruptionLevel = fellowship?.Corruption ?? 0;
-            marker.text = hidden ? "◇" : "◆";
+            FellowshipStateBadge.Show(plaque, hidden);
             MoveOnTrack(mordor.Step);
+            marker.userData = Token(StandingRegion());
             corruption.text = mordor.Corruption + "/12";
             idle.style.display = mordor.Attempted == false ? DisplayStyle.Flex : DisplayStyle.None;
             status.tooltip = "Corruption " + mordor.Corruption + "/12 · At 12 or more, the Shadow wins immediately." +
@@ -184,6 +192,17 @@ namespace Wotr.Client
             Stand();
             Layout();
         }
+
+        // UI-428 (TABLETOP_FIGURES_UX, "As built (UI-428)"): the region the figure stands in, where a figure carried onto it
+        // is dropped: its region, or on the Mordor track (no region of the map's graph) the region under its step.
+        private string StandingRegion()
+        {
+            if (!mordor.Active)
+                return regionId;
+            return map.Data.Contours.HitTest(map.Data.MordorTrack.PointAt(Mathf.Max(0, mordor.Step))) ?? "";
+        }
+
+        private static DraftToken Token(string region) => new DraftToken(DraftObject.Fellowship, region: region);
 
         // UI-401: where the figure stands, set when the Fellowship's position changes; the stand layer sorts it in then.
         private void Stand()
@@ -266,13 +285,23 @@ namespace Wotr.Client
             // It has no token, so a tight region (UI-401) keeps it at the Detail level too.
             var visible = map.Data.Shapes.ContainsKey(regionId) && (DeclareOffered || HideOffered || MoveOffered || hovered ||
                 inspected || map.MarkerVisibility.Detail || map.FiguresIn(regionId) || map.Figures?.Reveals(regionId) == true);
-            stand.Design(RegionFeet, new Rect(Vector2.zero, RegionSize));
-            visible = visible && map.Stands.Place(stand, stand.Feet, map.Stands.Scale.Of(DesignUnit));
+            var scale = map.Stands.Scale.Of(DesignUnit);
+            visible = visible && Place(stand.Feet, scale);
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (!visible)
                 return;
             map.ReserveMarker(stand.Bounds);
             RefreshRegionTooltip();
+        }
+
+        // Stands the figure on a board point at a scale (UI-401); UI-427: its plaque grows far out, and its visible part
+        // reaches down to the grown plaque. Transforms only.
+        private bool Place(Vector2 point, float scale)
+        {
+            var bottom = Mathf.Max(RegionSize.y, FellowshipStateBadge.Bottom(scale));
+            stand.Design(RegionFeet, new Rect(0, 0, RegionSize.x, bottom));
+            FellowshipStateBadge.Fit(plaque, scale);
+            return map.Stands.Place(stand, point, scale);
         }
 
         private void RefreshRegionTooltip()
@@ -299,8 +328,7 @@ namespace Wotr.Client
             marker.style.opacity = 1;
             var detail = map.MarkerVisibility.Detail;
             var point = map.Data.MordorTrack.PointAt(shownStep);
-            stand.Design(RegionFeet, new Rect(Vector2.zero, RegionSize));
-            var visible = map.Stands.Place(stand, point, (detail ? TrackDetail : TrackToken) / FigureHeight);
+            var visible = Place(point, (detail ? TrackDetail : TrackToken) / FigureHeight);
             var withTile = visible && tileShown && detail;
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             status.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;

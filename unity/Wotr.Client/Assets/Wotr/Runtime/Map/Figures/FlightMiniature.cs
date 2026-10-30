@@ -25,6 +25,8 @@ namespace Wotr.Client
         public string ShadowClass { get; }
         // The shadow's opacity under the standing miniature: its own contact shadow's (UI-406: the Fellowship's too).
         public float StandingShadow { get; }
+        // UI-427: told the figures' scale on every layout, for a part that keeps a readable size (the Fellowship's plaque).
+        public System.Action<float> Scaled { get; private set; }
 
         private FlightMiniature(Vector2 size, Vector2 feet, float designUnit, string shadowClass, float standingShadow)
         {
@@ -98,12 +100,14 @@ namespace Wotr.Client
             Art = to.Appearance
         };
 
-        // The Fellowship's figure on its base, as MapFellowshipMarker draws it on its place (UI-406: with its shadow).
-        public static FlightMiniature Fellowship(string symbol)
+        // The Fellowship's figure on its base, as MapFellowshipMarker draws it on its place (UI-406: with its shadow; UI-427:
+        // with its Hidden or Revealed plaque).
+        public static FlightMiniature Fellowship(bool hidden)
         {
             var miniature = new FlightMiniature(MapFellowshipMarker.RegionSize, MapFellowshipMarker.RegionFeet,
                 MapFellowshipMarker.DesignUnit, FellowshipShadowClass, 1);
-            MapFellowshipMarker.Dress(miniature.Element, symbol);
+            var state = MapFellowshipMarker.Dress(miniature.Element, hidden);
+            miniature.Scaled = scale => FellowshipStateBadge.Fit(state, scale);
             miniature.Visible = new Rect(Vector2.zero, MapFellowshipMarker.RegionSize);
             return miniature;
         }

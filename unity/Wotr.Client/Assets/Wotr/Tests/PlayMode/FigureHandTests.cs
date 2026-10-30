@@ -26,6 +26,9 @@ namespace Wotr.PlayTests
         private const string Returning = "hand-returning";
         // Longer than any of the pose's transitions.
         private const float Transition = .45f;
+        // The pose's rise in design points (MapHandPiece.Rise; UI-428: CarriedRise away from its place).
+        private const float Raised = 12;
+        private const float Carried = 34;
 
         [UnityTest]
         public IEnumerator AClickLiftsTheChosenFiguresAndTheRestStaysOnItsBase()
@@ -153,11 +156,14 @@ namespace Wotr.PlayTests
             MapContourProbe.LiftFigure(client.Board, source);
             var to = press + new Vector2(150, 70);
             MapContourProbe.Carry(client.Board, to);
-            yield return Settle();
-            Assert.Less(Vector2.Distance(armyAt + to - press, army.Q("hand-lift").worldBound.center), 1.5f, "The army follows…");
-            Assert.Less(Vector2.Distance(striderAt + to - press, strider.Q("hand-lift").worldBound.center), 1.5f, "…with Strider.");
-            AssertRaised(army, source);
-            AssertRaised(strider, map.Q<Button>("character-strider"));
+            yield return new WaitForSecondsRealtime(Transition);
+            // UI-428: away from their places they are held higher, 34 design points up instead of 12.
+            var armyHeld = armyAt + BoardInteractionTests.HeldHigher(army) + to - press;
+            var striderHeld = striderAt + BoardInteractionTests.HeldHigher(strider) + to - press;
+            Assert.Less(Vector2.Distance(armyHeld, army.Q("hand-lift").worldBound.center), 1.5f, "The army follows…");
+            Assert.Less(Vector2.Distance(striderHeld, strider.Q("hand-lift").worldBound.center), 1.5f, "…with Strider.");
+            AssertRaised(army, source, Carried);
+            AssertRaised(strider, map.Q<Button>("character-strider"), Carried);
             AssertNoTranslucentCopy(map);
             LayoutTests.Save(client.Viewport, "ui405-carried-army-and-strider.png");
             ((VisualElement)map).Focus();
@@ -192,13 +198,13 @@ namespace Wotr.PlayTests
             Assert.IsFalse(source.ClassListContains(Lifted));
         }
 
-        // The pose: grown 1.10 round the feet and raised 12 design points, the shadow on the table at .8 and .35, the
-        // miniature drawn at its source's scale.
-        private static void AssertRaised(VisualElement piece, VisualElement source)
+        // The pose: grown 1.10 round the feet and raised 12 design points (UI-428: 34 while carried), the shadow on the
+        // table at .8 and .35, the miniature drawn at its source's scale.
+        private static void AssertRaised(VisualElement piece, VisualElement source, float rise = Raised)
         {
             var lift = piece.Q("hand-lift");
             var shadow = piece.Q("hand-shadow");
-            Assert.AreEqual(-12, lift.resolvedStyle.translate.y, .01f, "Raised 12 px × its scale.");
+            Assert.AreEqual(-rise, lift.resolvedStyle.translate.y, .01f, $"Raised {rise} px × its scale.");
             Assert.AreEqual(1.1f, lift.resolvedStyle.scale.value.x, .001f, "Grown 1.10.");
             Assert.AreEqual(0, shadow.resolvedStyle.translate.y, .01f, "The shadow stays on the table.");
             Assert.AreEqual(.8f, shadow.resolvedStyle.scale.value.x, .001f);
@@ -216,6 +222,9 @@ namespace Wotr.PlayTests
         // The top of a lifted army's figures (map-world), under which the caption must not reach.
         internal static float RaisedTop(VisualElement piece) => piece.Query<Image>(className: "army-silhouette").ToList()
             .Where(image => !image.ClassListContains(MapArmyArtwork.UnusedClass)).Min(image => image.worldBound.yMin);
+
+        // A board point on the screen (map-world).
+        internal static Vector2 World(MapCanvas map, Vector2 board) => map.LocalToWorld(map.Camera.ToScreen(board));
 
         internal static void AssertOnPlace(MapCanvas map, VisualElement ring, Vector2 place, string message)
         {

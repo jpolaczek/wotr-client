@@ -8,8 +8,9 @@ namespace Wotr.Client
     // source, drawn as that marker's miniature (FlightMiniature). Its holder (a MapStand) stands on the ground under the
     // figures, between the two stand points, so the shadow inside it stays on the table; the pose inside lifts, arcs and
     // lands the miniature (FlightProfile). Each frame writes only the holder's translate and scale, the pose's translate
-    // and scale and the shadow's scale and opacity, each only when it changes. An arrival in place (a recruit) and every
-    // flight under Reduced motion stand at the destination and fade a little, as before.
+    // and scale and the shadow's scale and opacity (UI-427: and the Fellowship plaque's scale), each only when it changes. An
+    // arrival in place (a recruit) and every flight under Reduced motion stand at the destination and fade a little, as
+    // before.
     internal sealed class FigureFlight
     {
         public const string FlightClass = "figure-flight";
@@ -154,6 +155,7 @@ namespace Wotr.Client
             Ground = Vector2.Lerp(from, to, Frame.Progress);
             Height = FlightProfile.Raise(Frame, scale) * scale;
             stand.Place(Ground, scale);
+            miniature.Scaled?.Invoke(scale);
             ShowPose(FlightProfile.Raise(Frame, scale), FlightProfile.Scale(Frame));
             ShowShadow(FlightProfile.ShadowSize(Frame), FlightProfile.ShadowAlpha(Frame, miniature.StandingShadow));
             ShowOpacity(Arrival ? 1 - t * .6f : 1);

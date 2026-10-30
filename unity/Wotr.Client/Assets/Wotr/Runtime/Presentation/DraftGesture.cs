@@ -28,8 +28,21 @@ namespace Wotr.Client
             Region = region ?? "";
         }
 
+        // UI-428: the region a map object stands in — a region's terrain, an army marker, a character's miniature, the
+        // Fellowship's figure or a king's marker (their Region) — and "" for anything else (a portrait, a die, a card).
+        public string StandsIn => Object switch
+        {
+            DraftObject.Region or DraftObject.Army or DraftObject.Miniature => RegionId,
+            DraftObject.Fellowship or DraftObject.Sovereign => Region,
+            _ => ""
+        };
+
         // UI-402: a character's miniature counts as its region where a region is the target (a drop, an enemy's figure).
-        public DraftToken AsRegion() => Object == DraftObject.Miniature ? new DraftToken(DraftObject.Region, RegionId) : this;
+        // UI-428: so does the Fellowship's figure, which takes no drop of its own. A king's marker keeps its own (a die
+        // dropped on it chooses the king, UI-274).
+        public DraftToken AsRegion() => Object is DraftObject.Miniature or DraftObject.Fellowship && StandsIn.Length > 0
+            ? new DraftToken(DraftObject.Region, StandsIn)
+            : this;
     }
 
     public static class DraftGesture

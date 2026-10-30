@@ -72,15 +72,17 @@ namespace Wotr.PlayTests
             await Flight();
         }
 
-        // The army carried over its target: under the pointer, the target lit, the landing mark and the caption.
+        // The army carried over its target: under the pointer, the target lit, the landing mark and the caption. UI-428:
+        // its feet (its shadow) on the place it would take, where the landing mark lay under it (UI-407's defect 5).
         private async Task Carried(bool near)
         {
             FrameMarch(Map, near);
             await Settle();
             var label = TabletopAcceptanceMatrixTests.Label("carried", side, layout, near);
-            var (piece, _, pointer) = await Lift(label);
+            var feet = FigureHandTests.World(Map, FigureMotionTests.StandFeet(Map, SourceName));
+            var (piece, press, pointer) = await Lift(label);
             var lifted = piece.Q("hand-lift").worldBound.center;
-            var to = MapContourProbe.Terrain(Map, target.RegionId);
+            var to = press + FigureHandTests.World(Map, LandingPlace(Map)) - feet;
             MapContourProbe.Carry(Board, to);
             await Settle();
             own.Save(TabletopAcceptanceMatrixTests.Name("carried", side, layout, near));
@@ -97,6 +99,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.Flex, ring.resolvedStyle.display, "The landing mark shows · " + label);
             Assert.IsTrue(ring.ClassListContains("landing-move"), "Green for a move · " + label);
             FigureHandTests.AssertOnPlace(Map, ring, LandingPlace(Map), "It lies on the place the army would take · " + label);
+            TabletopFrameChecks.AssertLandingMarkClear(Map, label);
             var caption = Map.Q<Label>("landing-caption");
             Assert.AreEqual(DisplayStyle.Flex, caption.resolvedStyle.display, label);
             Assert.LessOrEqual(caption.worldBound.yMax, FigureHandTests.RaisedTop(piece) + .5f,

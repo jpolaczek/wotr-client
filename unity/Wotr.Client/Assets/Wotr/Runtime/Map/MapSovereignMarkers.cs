@@ -54,6 +54,8 @@ namespace Wotr.Client
                         Appearance.Arrive(marker.Button);
                 }
                 marker.Region = king.RegionId;
+                // UI-428: the marker stands in his capital, where a carried figure dropped on it lands.
+                marker.Button.userData = Token(king.Id, king.RegionId);
                 map.Stands.Stand(marker.Stand, map.BesideForces(king.RegionId));
                 // UI-420 (owner): the marker reads as the king's portrait does.
                 marker.Description = SovereignPresentation.Describe(king, data.Regions[king.RegionId].Name);
@@ -112,7 +114,7 @@ namespace Wotr.Client
             button.AddToClassList(ClassName);
             foreach (var part in Parts)
                 button.Add(Part(part));
-            button.userData = new DraftToken(DraftObject.Sovereign, id);
+            button.userData = Token(id, "");
             // A press on the marker belongs to it, not to the map's region click or pan.
             button.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             var stand = new MapStand(button, Size);
@@ -120,6 +122,8 @@ namespace Wotr.Client
             map.Stands.Add(stand);
             return new Marker { Button = button, Stand = stand };
         }
+
+        private static DraftToken Token(string id, string region) => new DraftToken(DraftObject.Sovereign, id, region: region);
 
         // The element's name doubles as its class, which Styles/Armies.uss selects.
         private static VisualElement Part(string name)

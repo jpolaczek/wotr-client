@@ -154,15 +154,16 @@ namespace Wotr.Client
 
         // UI-404: the step that sends `sent` left. Each raised piece holding some of them hands its place and raised pose to
         // the flight the view will bring, and stays up until then. UI-405: a dropped piece hands over the point it was
-        // dropped on.
+        // dropped on; UI-428: and the height it is held at there.
         public void Expect(ICollection<string> sent)
         {
+            var scale = map.Stands.FigureScale;
             foreach (var piece in pieces.Where(piece => piece.State == MapHandPiece.PieceState.InPlace))
             {
                 var ids = piece.Ids.Where(sent.Contains).ToList();
                 if (ids.Count == 0)
                     continue;
-                map.Figures.Expect(ids.Select(piece.FigureKey), piece.Ground, FlightPose.Raised);
+                map.Figures.Expect(ids.Select(piece.FigureKey), piece.Handoff(scale));
                 awaited.UnionWith(ids);
             }
         }

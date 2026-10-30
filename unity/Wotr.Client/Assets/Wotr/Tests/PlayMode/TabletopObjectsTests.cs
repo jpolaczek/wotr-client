@@ -13,10 +13,14 @@ namespace Wotr.PlayTests
     // UI-406 (TABLETOP_FIGURES_UX, decisions 3 and 4): far out an army is a puck lying on the table, every settlement's
     // gem a stone with a side band and a shadow, a Corrupted king a small puck, and the Fellowship's figure stands on a
     // round Free Peoples base — on its region and on the Mordor track. The gems are moved and scaled with the map by a
-    // transform, so a camera move repaints neither the map's vector layers nor any gem.
+    // transform, so a camera move repaints neither the map's vector layers nor any gem. UI-427: the Fellowship's figure
+    // shows ◇ Hidden or ◆ Revealed on a plaque on its base's front, on its region and on the track, at both levels.
     public sealed class TabletopObjectsTests
     {
         private const string Region = "minas-tirith";
+        // UI-427: the plaque's least height on the screen (map-world points): its 16 design points, never drawn smaller than
+        // on a figure at 0.62 of its design size (FellowshipStateBadge.SmallestScale).
+        private const float ReadablePlaque = 9.5f;
 
         [UnityTest]
         public IEnumerator TokensGemsKingsAndTheFellowshipLieOnTheTableAtBothLevels()
@@ -41,6 +45,7 @@ namespace Wotr.PlayTests
                     AssertTokens(map, label);
                     AssertReadable(map, "far " + label);
                     var far = AssertGem(map, "osgiliath", label);
+                    yield return FellowshipStates(client, fixture, texture, true, "far " + label, $"ui427-far-{width}-{scale:0.00}");
                     map.FocusOn(map.Stands.Stands(Region).Field, map.FitZoom * 2.2f);
                     yield return Settle();
                     LayoutTests.Save(texture, $"ui406-near-{width}-{scale:0.00}.png");
@@ -51,6 +56,7 @@ namespace Wotr.PlayTests
                     AssertNameClearOfItsGem(map, Region, label);
                     AssertKing(map, label);
                     AssertFellowship(map.FellowshipMarker.Root, label);
+                    yield return FellowshipStates(client, fixture, texture, false, "near " + label, $"ui427-near-{width}-{scale:0.00}");
                     client.Panel.targetTexture = client.Viewport;
                     texture.Release();
                     Object.Destroy(texture);
@@ -84,6 +90,11 @@ namespace Wotr.PlayTests
             Assert.That(stand.yMin + stand.height * .357f, Is.EqualTo(step.center.y).Within(3f), "The base stands on its step.");
             var art = figure.Q("figure-art").worldBound;
             Assert.That(art.height, Is.EqualTo(80 * 62 / 72f).Within(2f), "UI-283: the figure keeps its size.");
+            yield return FellowshipStates(client, fixture, texture, false, "Mordor", "ui427-track-near");
+            map.Fit();
+            yield return Settle();
+            Assert.IsFalse(map.MarkerVisibility.Detail, "The whole map: the track's token level.");
+            yield return FellowshipStates(client, fixture, texture, false, "Mordor, the whole map", "ui427-track-far");
             client.Panel.targetTexture = client.Viewport;
             texture.Release();
             Object.Destroy(texture);
@@ -255,6 +266,93 @@ namespace Wotr.PlayTests
             Assert.Greater(shadow.yMax, stand.worldBound.yMax, "The base's shadow lies under it · " + label);
             Assert.Greater(shadow.center.x, stand.worldBound.center.x, label);
             Assert.AreEqual(0, figure.resolvedStyle.borderBottomWidth, "No underline · " + label);
+        }
+
+        // UI-427: the figure's plaque shows ◇ while hidden, ◆ once the view reveals it, and ◇ again. Far out on a region the
+        // figure stands only while it offers a click (UI-280, UI-282): the move while hidden, the hide while revealed; the
+        // whole map's zoom is centred on it there, since at 125 % Minas Tirith lies under the console.
+        private static IEnumerator FellowshipStates(MountedMatchClient client, BoardFixture fixture, RenderTexture texture,
+            bool far, string label, string picture)
+        {
+            var map = client.Board.Map;
+            var fellowship = map.FellowshipMarker;
+            if (far)
+                map.FocusOn(map.Stands.Stands(Region).Fellowship, map.FitZoom);
+            foreach (var (hidden, name) in new[] { (true, "hidden"), (false, "revealed"), (true, "") })
+            {
+                fixture.View.Fellowship.Hidden = hidden;
+                fixture.View.Revision++;
+                client.Apply(fixture.View);
+                fellowship.OfferMove(far && hidden);
+                fellowship.OfferHide(far && !hidden);
+                yield return Settle();
+                if (name.Length > 0)
+                    LayoutTests.Save(texture, $"{picture}-{name}.png");
+                Assert.IsTrue(AssertFellowshipState(fellowship, hidden, label), "The plaque is in view · " + label);
+                AssertDiamondPainted(fellowship, texture, hidden, label);
+            }
+            fellowship.OfferMove(false);
+            fellowship.OfferHide(false);
+        }
+
+        // UI-427: the plaque hangs on the base's front below the figure's feet, shown and readable, ◇ while hidden, ◆ while
+        // revealed, and no map object covers it: a click there is the figure's own. Returns false when a window or the HUD
+        // lies over it (then it is out of view, not covered by the map).
+        internal static bool AssertFellowshipState(MapFellowshipMarker fellowship, bool hidden, string label)
+        {
+            var figure = fellowship.Root;
+            var plaque = figure.Q(FellowshipStateBadge.ClassName);
+            var state = (hidden ? "◇ Hidden" : "◆ Revealed") + " · " + label;
+            Assert.IsNotNull(plaque, "The figure carries its plaque · " + label);
+            Assert.AreEqual(DisplayStyle.Flex, figure.resolvedStyle.display, "The figure shows · " + state);
+            Assert.AreEqual(1, figure.resolvedStyle.opacity, .001f, state);
+            Assert.AreEqual(DisplayStyle.Flex, plaque.resolvedStyle.display, state);
+            Assert.AreEqual(Visibility.Visible, plaque.resolvedStyle.visibility, state);
+            Assert.AreEqual(1, plaque.resolvedStyle.opacity, .001f, state);
+            Assert.AreEqual(hidden, plaque.ClassListContains(FellowshipStateBadge.HiddenClass), state);
+            Assert.AreEqual(!hidden, plaque.ClassListContains(FellowshipStateBadge.RevealedClass), state);
+            Assert.AreEqual(hidden ? "◇" : "◆", fellowship.Symbol, state);
+            var stand = figure.Q("fellowship-stand").worldBound;
+            var art = figure.Q("figure-art").worldBound;
+            var box = plaque.worldBound;
+            Assert.That(box.center.x, Is.EqualTo(stand.center.x).Within(1f), "On the base's front · " + state);
+            Assert.GreaterOrEqual(box.yMin, art.yMax - 1, "Below the figure's feet · " + state);
+            Assert.Less(box.yMin, stand.yMax, "Over the base · " + state);
+            Assert.GreaterOrEqual(box.height, ReadablePlaque, "Readable · " + state);
+            var picked = figure.panel.Pick(box.center);
+            var map = figure.GetFirstAncestorOfType<MapCanvas>();
+            if (picked == null || picked != map && !map.Contains(picked))
+                return false;
+            Assert.IsTrue(picked == figure || figure.Contains(picked),
+                "No map object covers it, and a click there is the figure's · " + state + " (picked " + picked.name + ")");
+            return true;
+        }
+
+        // UI-427: the diamond is painted in the frame: an ivory ◆ fills the plaque's middle; a ◇ leaves its middle the
+        // plaque's blue inside an ivory outline.
+        internal static void AssertDiamondPainted(MapFellowshipMarker fellowship, RenderTexture target, bool hidden, string label)
+        {
+            var pixels = MapContourRenderingTests.Capture(target);
+            var box = fellowship.State.worldBound;
+            var scale = target.width / fellowship.Root.panel.visualTree.worldBound.width;
+            float Brightness(Vector2 world)
+            {
+                var x = Mathf.Clamp(Mathf.RoundToInt(world.x * scale), 0, target.width - 1);
+                var y = Mathf.Clamp(target.height - 1 - Mathf.RoundToInt(world.y * scale), 0, target.height - 1);
+                var pixel = (Color)pixels[y * target.width + x];
+                return pixel.grayscale;
+            }
+            var brightest = 0f;
+            for (var row = 2; row <= 8; row++)
+                for (var column = 2; column <= 8; column++)
+                    brightest = Mathf.Max(brightest, Brightness(box.min + Vector2.Scale(box.size, new Vector2(column, row) / 10f)));
+            var middle = Brightness(box.center);
+            var state = (hidden ? "◇ Hidden" : "◆ Revealed") + " · " + label;
+            Assert.Greater(brightest, .6f, "An ivory diamond on the plaque · " + state);
+            if (hidden)
+                Assert.Less(middle, .4f, "Its middle is the plaque's blue · " + state);
+            else
+                Assert.Greater(middle, .6f, "Its middle is filled · " + state);
         }
 
         private static BoardFixture Fixture()

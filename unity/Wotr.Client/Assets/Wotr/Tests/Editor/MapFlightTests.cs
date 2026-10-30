@@ -19,6 +19,10 @@ namespace Wotr.EditorTests
         private const string Region = "minas-tirith";
         private const string Target = "osgiliath";
         private const string Army = "army-minas-tirith-FreePeoples";
+        // UI-428 (MapHandPiece, read here by name): a piece away from its source is held 34 design points up, 22 above the
+        // raised pose's 12.
+        private const string CarriedClass = "hand-carried";
+        private const float CarriedHigher = 22;
 
         [Test]
         public void AFlightRunsFromItsPreviousPlaceToItsPlaceNowOnePerDestinationMarker()
@@ -68,6 +72,7 @@ namespace Wotr.EditorTests
             var flight = map.Figures.Flight(keys[0]).Value;
             Assert.AreEqual(source, flight.From, "It goes on from where it was held…");
             Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose: no second lift from the table.");
+            Assert.AreEqual(0, flight.Frame.Height, 1e-4f, "Lifted in place, it was not held higher (UI-428).");
             Assert.IsTrue(map.Figures.Root.Q("moving-" + keys[0]).Q<Button>().ClassListContains("selected-force"),
                 "It keeps the hand's gold rim.");
             Assert.AreEqual(1, map.Figures.Flight("character:strider").Value.Frame.Lift, 1e-4f, "Strider too.");
@@ -95,11 +100,14 @@ namespace Wotr.EditorTests
             map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
             map.HomeFigures();
             Assert.IsNotNull(map.Q("hand-" + Army), "Sent: it stays raised where it was dropped.");
+            Assert.IsTrue(map.Q("hand-" + Army).ClassListContains(CarriedClass), "UI-428: held as high as it was carried.");
 
             Move(view, map, movers.Append("strider"), Target);
             var flight = map.Figures.Flight("unit:" + movers[0]).Value;
             Assert.Less(Vector2.Distance(drop, flight.From), .01f, "It flies on from where it was dropped…");
-            Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose.");
+            Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose…");
+            Assert.AreEqual(CarriedHigher * map.Stands.FigureScale, flight.Frame.Height, .01f,
+                "…from the height it was held at (UI-428), which the arc leaves behind.");
             Assert.AreNotEqual(source, flight.From, "Never from its source.");
         }
 
@@ -114,9 +122,11 @@ namespace Wotr.EditorTests
             var source = Feet(map, Army);
             Assert.IsTrue(map.GrabFigures(map.Camera.ToScreen(source)));
             map.CarryFigures(map.Camera.ToScreen(source) + new Vector2(140, 60));
+            Assert.IsTrue(map.Q("hand-" + Army).ClassListContains(CarriedClass), "UI-428: carried, it is held higher.");
             map.DropFigures();
             map.HomeFigures();
-            Assert.IsNotNull(map.Q("hand-" + Army), "Still chosen, it stays raised.");
+            Assert.IsNotNull(map.Q("hand-" + Army), "Still chosen, it stays raised…");
+            Assert.IsFalse(map.Q("hand-" + Army).ClassListContains(CarriedClass), "…over its place, in the raised pose.");
             Assert.IsTrue(ContextArmySelection.Target(draft, view, context, Target));
             map.DraftOverlay.Apply(view, draft, context);
             map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));

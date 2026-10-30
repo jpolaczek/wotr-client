@@ -50,6 +50,26 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(DraftGesture.EquivalentDie(view, view.Options[0]), "An incomplete view must not guess a cost.");
         }
 
+        // UI-428: every map object stands in a region a carried figure's drop on it lands in, as a click there: the terrain,
+        // an army marker, a character's miniature, the Fellowship's figure and a king's marker; a portrait stands nowhere.
+        [Test]
+        public void EveryMapObjectStandsInTheRegionADropOnItLandsIn()
+        {
+            Assert.AreEqual("osgiliath", new DraftToken(DraftObject.Region, "osgiliath").StandsIn);
+            Assert.AreEqual("osgiliath", new DraftToken(DraftObject.Army, "osgiliath", side: Side.FreePeoples).StandsIn);
+            Assert.AreEqual("osgiliath", new DraftToken(DraftObject.Miniature, "strider", region: "osgiliath").StandsIn);
+            Assert.AreEqual("osgiliath", new DraftToken(DraftObject.Fellowship, region: "osgiliath").StandsIn);
+            Assert.AreEqual("osgiliath", new DraftToken(DraftObject.Sovereign, "denethor", region: "osgiliath").StandsIn);
+            Assert.AreEqual("", new DraftToken(DraftObject.Sovereign, "denethor").StandsIn, "A king's portrait.");
+            Assert.AreEqual("", new DraftToken(DraftObject.Fellowship).StandsIn, "A figure off the map.");
+            Assert.AreEqual("", new DraftToken(DraftObject.FellowshipPortrait, "strider").StandsIn);
+            Assert.AreEqual("", new DraftToken(DraftObject.Die, "army").StandsIn);
+            var fellowship = new DraftToken(DraftObject.Fellowship, region: "osgiliath").AsRegion();
+            Assert.AreEqual((DraftObject.Region, "osgiliath"), (fellowship.Object, fellowship.Id),
+                "The Fellowship's figure takes no drop of its own: a drop on it is a drop on its region.");
+            Assert.AreEqual(DraftObject.Fellowship, new DraftToken(DraftObject.Fellowship).AsRegion().Object);
+        }
+
         // UI-405: a carried figure's gesture that ends without a step leaves the draft exactly as it was, undo history too.
         [Test]
         public void ACheckpointPutsBackTheDraftAndItsUndoHistoryExactly()
