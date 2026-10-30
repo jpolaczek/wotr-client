@@ -77,6 +77,11 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(board.TableEffects.Tab);
             await room.Settle();
             Assert.IsTrue(board.TableEffects.Pinned, "The Effects tab opens with a click.");
+            // UI-429 (owner): with game-wide effects in play the header still holds only the close button.
+            Assert.IsTrue(board.View.Effects.Any(effect => effect.Targets.Any(target => target.Kind == "Global")),
+                "The scenario has game-wide effects.");
+            CollectionAssert.AreEqual(new[] { "close-effects" }, board.TableEffects.Root.Q(className: "window-header")
+                .Query<Button>().ToList().Select(button => button.name).ToArray(), "The Effects header holds only Close.");
         }
 
         // Every shown window, panel and bar stays inside the screen — an edge panel above the bottom bar — and every shown
