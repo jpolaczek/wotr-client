@@ -124,7 +124,8 @@ namespace Wotr.PlayTests
             StringAssert.StartsWith("Gothmog · Minas Morgul", row.Q<Label>("reinforcement-name").text);
             var token = row.Q<Button>("reserve-token-gothmog-" + (upgrade ? UnitKind.Elite : UnitKind.Regular));
             Assert.IsTrue(token.enabledSelf && token.ClassListContains("eligible-token"));
-            StringAssert.StartsWith(upgrade ? "Elite · " : "Regular · ", token.tooltip);
+            // UI-420 (owner, TOOLTIP_AUDIT rule 4): the figure as printed, its nation first, then the reserve.
+            StringAssert.StartsWith(upgrade ? "Sauron Elite · " : "Sauron Regular · ", token.tooltip);
             StringAssert.Contains(upgrade ? "Click to replace a Sauron Regular in Minas Morgul" : "Click to recruit a Sauron Regular in Minas Morgul",
                 token.tooltip);
             return token;

@@ -66,3 +66,9 @@ EditMode: `TooltipTextTests` (parts, units, nations, a card choice's ✓, moves 
 `HuntPoolListTests`, `HuntGuideResponsesTests`, `HuntReactionPresentationTests`, `MordorTrackStateTests`,
 `ArmyMarkerTests`, `PoliticalActionTests`, `SovereignPanelTests`, `ExpansionPresentationTests`, `DieDescriptionsTests`,
 `CharacterRosterPanelTests`, `CharacterRowTooltipTests`; PlayMode tests asserting console, battle and Hunt tooltips.
+Follow-up (2026-10-30): two PlayMode tests still read the pre-audit wording and now read the audit's —
+`DicePanelLayoutTests` expects each dice-pool counter to lead with its location and count (`Spent · 1`,
+`In the Hunt Box · none`, `Out · 2`), and `ExpansionAbilityNetworkTests` (Gothmog) expects a reserve token to lead with
+the figure as printed (`Sauron Regular · 6 in reserve`, rule 4). Gothmog's second line names the figure again
+(`Click to recruit a Sauron Regular in Minas Morgul · Gothmog`) because his token's click uses the ability at once, and
+an action names its object (rule 1).
