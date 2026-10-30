@@ -43,7 +43,8 @@ namespace Wotr.Client
             board.Map.ShowMarched(MarchedForces(view, moved));
             var sources = ArmyActive ? ContextArmySelection.Sources(view, board.ActionDie) : Enumerable.Empty<ArmyOption>();
             board.Map.HighlightSources(sources, view.You);
-            board.Map.SetGhost(ArmyActive ? ArmyGhost.Of(view, draft, board.ActionDie) : null);
+            // UI-403: the captions of the army's targets, or of a travelling figure's (a character, a card's flight).
+            board.Map.SetLanding(ArmyGhost.Of(view, draft, ArmyActive ? board.ActionDie : null, board.Map.Data));
         }
 
         // UI-127: figures that already marched in the current army action (the server's used ids).
@@ -164,7 +165,7 @@ namespace Wotr.Client
             board.Hover.Panel.SelectAllRequested -= SelectAll;
             board.Hover.Panel.Offer = _ => "";
             board.Hover.Panel.Choices.Clear();
-            board.Map.SetGhost(null);
+            board.Map.SetLanding(null);
             board.Map.ShowMarched(Enumerable.Empty<(string, Side, bool)>());
             board.Hover.Close();
         }

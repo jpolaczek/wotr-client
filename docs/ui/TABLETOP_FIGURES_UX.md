@@ -285,6 +285,63 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   (`SetDragTarget`); edge pan works after a ~250 ms dwell. The opponent's figures and any figure while the board is busy
   never lift.
 
+**As built (UI-403, 2026-10-30): the lifted figure.**
+
+- **What lifts** (`Presentation/LiftedFigures.cs`). The draft's unsent move: the army selection without a destination
+  (`ArmyDraft.Current`), the travelling group being chosen (`TravelActions.Selected`, the Council token's chosen group)
+  and the figure the next destination click flies (`NazgulFlightDraft.Next`). Also the figures the draft sends on their
+  way (a march, a character's travel) while they still stand where they leave from, unless a planned ghost shows them (a
+  card's flight or journey). An attack's army is not on its way: it comes back to its base.
+- **The hand** (`Runtime/Map/Figures/MapFigureHand.cs`, the layer `map-hand` right above `map-stands`, inside the map so
+  its edge clips it; it never takes the pointer). One piece (`MapHandPiece`, `hand-<the source's name>`) per force — its
+  lifted units drawn by `MapArmyArtwork` on a base of their own, with their count on the plaque and the gold rim — and
+  one per character, drawn by `MapCharacterArtwork` on its stand. A piece's holder is a `MapStand` on the source's feet
+  at the armies' `FigureScale`, moved by translate and scale only, and only when they change.
+- **The pose** is the class `figure-lifted` on the piece. Its `hand-lift` (transform origin at the feet) moves 12 points
+  up and scales 1.10. Being inside the scaled holder, that is 12 px × the figure's scale on the screen. Its
+  `hand-shadow` (the contact-shadow art where the miniature's own shadow lies, which is hidden in the hand) stays on the
+  table at scale .8 and opacity .35. The transitions run only under `.motion-enabled`: 0.18 s up, 0.22 s down, 0.25 s to
+  dissolve. Reduced motion shows the raised pose at once and takes a piece away at once. A new piece takes the class
+  after its first layout, so it rises.
+- **States** (`MapHandPiece.PieceState`). InPlace: raised over its place. Returning (`hand-returning`): it drops onto
+  its base, then goes. Planned (`hand-planned`): a planned ghost now shows it at its destination, so it dissolves where
+  it hovers, then goes. A piece whose figures the view carried away (the step was accepted) goes at once, and the flight
+  shows them.
+- **The source** (`MapCanvas.SetLiftMask`). Every army and character stand shows only what stays behind. An army draws
+  its staying units (figures, emblems and count). A stand none stays on takes `lifted-away`: its artwork is hidden at
+  once (visibility, no fade, so nothing shows twice when a piece lands) and its ChoiceGlow is off, but its hit shape
+  stays, so a click there is still its click (the army's second click keeps its selection). The mask holds the hand's
+  figures and those the planned ghosts show (`MapPlannedRecruits.FigureIds`). A stand changes only when its own lifted
+  figures change. A region holding a lifted figure shows figures (`MapCanvas.Focused`).
+- **A split** (`MapFigureHand.Regather`). A figure left behind in the region panel leaves the raised piece at once and
+  drops back onto the base as a piece of its own; the base then shows it.
+- **The landing mark** (`Runtime/Map/MapLandingMark.cs`). On a hovered region that has a caption, the ring
+  (`landing-mark`, 58 × 18.6 design points: the art's ellipse as wide as the army's 54-point base, centred 1.5 points
+  below the feet) lies on the prospective place at the figures' scale. For units that is `MapCanvas.LandingPlace`
+  (UI-401: the field, or the planned place when a field force stands there). For characters alone it is the region's
+  first free character place (`MapCharacterFigures.NextPlace`), at .35 of the army's size. It is green (`landing-move`)
+  or red (`landing-attack`). Its layer `map-landing` lies under the stands, so it never covers a figure near it. The
+  caption (`landing-caption`, 120 points wide) hangs 4 points above the raised figures' visible top, centred; while they
+  are out of view it hangs above the ring.
+- **Captions** (`ArmyGhost`, set on every refresh by `ActionContextInteraction` through `MapCanvas.SetLanding`). The
+  army's come from the server's targets ("Move n figures", "Attack · Siege"; `Attacks` makes the ring red). A card's
+  flight names the armed figure ("Fly a Nazgûl", "Fly the Witch-king", "Move the Balrog", UI-416's names), as does the
+  Council token's group. A character's travel names the travellers ("Move Strider", "Move Strider and Gimli", "Move 4
+  figures" beyond three; the Shadow's by UI-416's names).
+- **Removed.** The army ghost (`army-ghost`, `SetGhost`, `UpdateGhost`, `EnsureGhost`), its rules and `ArmyGhost.Army`;
+  UI-401's `GhostPlace` is now `LandingPlace`; the hand's layer stands above the stands, the landing mark's under them.
+  The planned recruits, flights and journeys keep their faint ghost, now classed `planned-ghost`.
+- **Cost.** Per camera frame each piece, the ring and the caption write a translate (and a scale) only when it changes;
+  the pieces and the mask change on a draft or board change only. No filter.
+- **Not yet.** A sent move stays raised until the view arrives, then the flight starts from the source's place (UI-404
+  hands the flight the pose); dragging (UI-405).
+- **Tests.** EditMode `MapFigureHandTests` (exactly the selection lifts and the base shows the rest; a split; Esc or
+  undo; a sent march kept until the view takes it; an attack's return; a planned flight's figure leaving its place) and
+  `ArmyMovementTests` (the army's and travellers' captions, the attack set). PlayMode `FigureHandTests` (the pose and
+  scale, the rest on its base, the green and red landing mark on its place, the caption above the lifted figure, no
+  translucent copy, a character alone, Escape, Reduced motion) and
+  `BoardInteractionTests.UI127OneClickLiftsTheArmyALandingMarkPreviewsTheTargetAndEscapePutsItBack`.
+
 ## Flight profile (UI-404)
 
 Flights run between stand points: the previous place at the source and the current place at the destination, one
@@ -304,6 +361,11 @@ flight per destination marker, rendered with the same miniature.
 - Far out a character is its portrait in its side's medallion (UI-402, until UI-406's tokens).
 - A Nazgûl inside a mixed stack lifts with its base.
 - The lifted figure is clipped to the map.
+- The lifted part of a split rises on a base of its own; the figures left behind stay on the source's base behind and
+  below it, so at the default pose mostly their plaque and count show under the raised base (UI-403).
+- A sent move stays raised over its place until the view arrives (UI-403; UI-404 lets the flight start from there).
+- A lone character's landing mark is the army's ring at .35 of its size on the region's first free character place;
+  while the lifted figure is out of view the caption hangs above the ring (UI-403).
 - Edge pan works during a figure drag after a ~250 ms dwell.
 - Where a place's capacity is too small, the region shows tokens.
 
@@ -325,6 +387,9 @@ flight per destination marker, rendered with the same miniature.
 | 12 | Helm's Deep siege | Look at the region | The besieger and the garrison both stand on their places, readable |
 | 13 | Character move with an Army die (an army with Strider, `fp-army-move`) | Choose the Army die, click Strider's figure, then a destination | Strider is selected without a panel opening; he moves as the chip would move him (a lone character needs a soldier first) |
 | 14 | Any position with a crowded region (seven or more characters) | Zoom in on it | Five single figures and a stacked pair with "+n"; the army's click selects them all |
+| 15 | A move with an Army die (`fp-army-move`, an army of three or more) | Click the army, then click one lit figure in its region panel | That figure drops back onto the base (its count on the base's plaque); the others stay raised with their own count |
+| 16 | A Shadow card that flies several Nazgûl (UI-212) | Click a lit Nazgûl stack, then a lit destination | One Nazgûl lifts; at the destination click it dissolves into the faint planned figure there and the next one lifts; the stack's base shows only the Nazgûl not yet flown |
+| 17 | Settings → Skip animations on, then a move with an Army die | Click the army, then press Esc | The army shows raised at once and is back on its base at once, without motion |
 
 ## Superseded statements
 

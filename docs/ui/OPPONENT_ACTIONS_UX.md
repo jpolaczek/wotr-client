@@ -100,7 +100,7 @@ An observed consequence must not be confused with an offered action. Existing me
 | Steady gold region edge (`map-source-glow`, UI-323) | the region the player's own draft moves from |
 | Gold rim on a warm plate pulsing every 750 ms (ChoiceGlow, `eligible-army` halo) | an object a click may choose |
 | Gold border with a lift (`selected-force`, `selected`) | chosen in the player's own draft |
-| 40 % ghost (`army-ghost`, planned recruits and flights) | the player's own plan |
+| 40 % ghost (`army-ghost`, planned recruits and flights; since UI-403 only the planned figures, `planned-ghost`, while the chosen figures are lifted into the hand) | the player's own plan |
 | Faded figure with ✓ (`moved`) | already marched in the player's own action |
 | Darker, one point lower (`pressed`) | the control under the held pointer |
 

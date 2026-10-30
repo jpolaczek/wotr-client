@@ -89,11 +89,15 @@ moves to make room ("Figures on their places, sized with the map — UI-401" bel
 | --- | --- | --- |
 | Hover | `:hover` | base game Lightening |
 | Legal Source | `eligible-army` | ChoiceGlow halo behind the marker (UI-301): gold rim on a warm plate, pulsing |
-| Chosen Army | `selected-force` | Gold border and lift 2 |
+| Chosen Army | `selected-force` | Gold rim round the stand (UI-400); since UI-403 the chosen figures are lifted into the hand (rows below) |
 | Capacity owner | `ability-owner` | gold plinth without lifting and, since UI-374, the ChoiceGlow halo, pulsing |
 | Pressing | `pressed` | principle UI-114 |
 | After the march | `moved` | extinguishing and sign ✓ on the stand |
-| The Spirit of Purpose | `army-ghost` | 40% opacity, without hitbox |
+| Lifted, in place (UI-403) | `figure-hand-piece` `figure-lifted` (in `map-hand`) | The chosen figures — a force's units on a base of their own with the gold rim, each character on its stand — drawn by the same miniature at the same scale, 1.10 × round the feet and 12 px × scale higher; their contact shadow stays on the table at .8 and .35 opacity; opaque, never takes the pointer |
+| What stays behind (UI-403) | the source's own classes; `lifted-away` when nothing stays | The source shows only its figures not lifted (its count too); a base none stays on disappears, its hit shape kept, so a click there is still its click |
+| Returning (UI-403) | `hand-returning` | Esc, undo, a figure left behind in the region panel or an attack: the piece drops back onto its base (0.22 s), then the base shows it again |
+| Planned (UI-403) | `hand-planned` | A card's planned flight or journey now shows the figure at its destination (the planned ghost): the piece dissolves where it hovers (0.25 s) and its place keeps showing only what stays behind |
+| Landing mark (UI-403) | `landing-mark` `landing-move` / `landing-attack` | On a hovered legal target: the baked ring on the table at the place the figures would take (an army's field or planned place, a lone character's next character place), green for a move, red for an attack; the click's caption (`landing-caption`) hangs above the lifted figure. Replaces UI-127's `army-ghost`: nothing is drawn faintly at the target |
 
 The `.illustrated-army` rule stops overwriting the colors of the pages and the border of the states; the pixel test in UI-126 checks each state.
 
@@ -119,7 +123,9 @@ Flow: die Army/Character → legal armies shine → **Army click marks the entir
 - **Review of the goal.** The implementation of the legal target shows the spirit marked figures
   (`army-ghost`) at the place they will take, and tooltip "Move n figures" or "Attack ·
   <BattleMode>" with `ArmyTargetOption.BattleMode`. Without predicting political effects and
-  control: tooltip does not ask the server (R19).
+  control: tooltip does not ask the server (R19). Superseded by UI-403 (2026-10-30): the hovered
+  target shows the landing mark on that place and the caption hangs above the lifted figure; no
+  faint copy is drawn ("A chosen figure lifts off the board — UI-403" below).
 - **The target click sends a step immediately (without a Confirm) as today.
 - Second march. figure They've already moved, they've got a condition. `moved` in panel (✓, not
   selected) and on the tag; the tray shows ‘ →   → “ from `ActionProgress`,  ✓ He's done early.
@@ -516,7 +522,7 @@ acceptance zmielny 2026-10-14 zmielny ed UI-124–UI-157 (last changes to accept
 | AM03 | UI-125: 47 Army Textur with `.meta`, `UiArtKitTests`; in acceptance full EditMode 722/722. |
 | AM04–AM08 | UI-126: `ArmyMarkerTests`, `MapMarkerVisibilityTests`, `MapArmyArtworkTests`, `MapVisibilityTests` (drops `ui126-map-fit/zoom` in four layouts), legend of "Armies"; dense scenes `map17-dense-*` both sides in four layouts and before/after with panorama (`MapContourAcceptanceTests`), field and garrison Helm's Deep separated. |
 | AM09 | UI-126 (tooltip per nation, public data); `map17` Development Player profile performed only including acceptance, cf. “Profile”. |
-| AM10–AM15 | UI-127 : `ArmyMovementTests` , `BoardInteractionTests` ( `UI127OneClickSelects…` ), `ArmyContextNetworkTests` ; in acceptance `BoardInteraction` and `ArmyContextNetwork` 19/19 , `MapClickMove` , `FigureMotionNetwork` , `Movement` (specify 1/1 ). |
+| AM10–AM15 | UI-127 : `ArmyMovementTests` , `BoardInteractionTests` ( `UI127OneClickLifts…` since UI-403 ), `ArmyContextNetworkTests` ; in acceptance `BoardInteraction` and `ArmyContextNetwork` 19/19 , `MapClickMove` , `FigureMotionNetwork` , `Movement` (specify 1/1 ). |
 | AM16 | UI-128: Packages expansions,  ShadowStrategy, Strategy,  CardPack, Kings,  Fate/Lords/Muster; in acceptance   `ExpansionToken` / `ExpansionAbility`   19/19,  `KingsCards01` / `LordsShadow`   9/9,  `KingsCards02`   7/7. |
 | AM17 | UI-129: `RecruitmentAvailabilityTests`, `MusterTests`, `RecruitSequenceTests`; in acceptance full `scripts/test.sh` server 3848/3848; package published (UI-133). |
 | AM18–AM19 | UI-130 (with UI-134, UI-135, UI-142, UI-150): `ReinforcementsLayoutTests` (split `ui130-reinforcements-*` from both sides in four systems), `MusterNetworkTests`, `MultiUseDiceNetworkTests`, `ResourcePanelNetworkTests` 12/12. |
@@ -831,4 +837,34 @@ it exactly as its region panel's chip does.
 
 Tests: `CharacterMiniatureTests`, `CharacterPlacementTests`, `ArmyMarkerTests`, `SovereignMapTests`, `ArmyEmergeTests`,
 `TravelGestureNetworkTests`, `MapArmyArtworkTests`.
+
+<a id="ui-403"></a>
+## A chosen figure lifts off the board — UI-403 (2026-10-30)
+
+UI-403 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "The lifted figure, drag and drop" and "As built (UI-403)"): the
+figures a click chooses leave the table. Before, a selection only changed the stand's rim, and a hovered target showed a
+faint copy of the army (UI-127's ghost), which the owner rejected.
+
+- **Lifting.** The units an army click (or a figure's click) chooses rise off their base on a base of their own — the
+  same miniature at the same scale, 1.10 × round its feet and 12 px × its scale higher, with the gold rim and their
+  count — and each chosen character rises on its own stand. Their contact shadow stays on the table, smaller and
+  fainter. The lifted figures are what the draft has not sent: the army selection, the travelling group being chosen,
+  the Nazgûl a card's next destination click flies. A sent step stays raised until the server's view takes the figures
+  (then the flight shows them).
+- **What stays behind.** The base shows only the figures that stay, with their count; when none stays it disappears,
+  but its click is still the army's. A figure the player leaves behind in the region panel drops back onto the base. A
+  region holding lifted figures shows figures, never tokens.
+- **The target.** Hovering a legal target lays the landing mark on the table where the figures would stand (the field
+  place, or the planned place beside a force already there; a lone character's next character place): green for a move,
+  red for an attack. The caption ("Move 3 figures", "Attack · Siege", "Fly a Nazgûl", "Move Strider") hangs above the
+  lifted figures. Nothing is drawn faintly at the target.
+- **Back down.** Esc and undo drop the figures back onto their base; so does an attack (its army fights from where it
+  stands). A card's planned flight or journey dissolves the lifted figure where it hovers, as the faint planned figure
+  appears at its destination, and its place keeps showing only what stays behind. Reduced motion shows the raised pose
+  and the return at once.
+- **States:** see the table in "States" above (lifted, what stays behind, returning, planned, landing mark).
+- **Supersedes** UI-127's `army-ghost` ("Review of the goal" above, BOARD_INTERACTION_UX "Implementation — UI-127").
+
+Tests: `MapFigureHandTests`, `ArmyMovementTests`, `FigureHandTests`, `BoardInteractionTests`
+(`UI127OneClickLiftsTheArmyALandingMarkPreviewsTheTargetAndEscapePutsItBack`).
 

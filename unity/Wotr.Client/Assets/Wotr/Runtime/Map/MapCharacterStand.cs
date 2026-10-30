@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,6 +20,8 @@ namespace Wotr.Client
         public bool? Figures;
         // The front of a stacked pair: itself first, then every character standing behind it.
         public readonly List<CharacterFigure> Members = new List<CharacterFigure>();
+        // UI-403: its characters held in the hand (or shown by a planned ghost elsewhere).
+        private readonly HashSet<string> lifted = new HashSet<string>();
 
         public string Region => Figure.RegionId;
         public Rect Bounds => Stand.Bounds;
@@ -28,9 +31,7 @@ namespace Wotr.Client
         {
             Members.Clear();
             Members.AddRange(members);
-            var second = members.Count > 1 ? members[1] : null;
-            Artwork.Apply(Figure, second, Mathf.Max(0, members.Count - 2));
-            Fit();
+            ShowMembers();
         }
 
         // Switches between the miniature and the token, with the point under its feet that each level stands on.
@@ -40,6 +41,31 @@ namespace Wotr.Client
                 return;
             Figures = figures;
             Artwork.Layout(figures);
+            Fit();
+        }
+
+        // UI-403 (SetLiftMask): the characters that left the table; the stand shows the ones that stay (on a stacked pair
+        // the next in line comes to the front) and disappears when none stays. Nothing changes while the same are lifted.
+        public void Mask(ICollection<string> ids)
+        {
+            var now = Members.Where(member => ids.Contains(member.Id)).Select(member => member.Id).ToList();
+            if (lifted.SetEquals(now))
+                return;
+            lifted.Clear();
+            lifted.UnionWith(now);
+            ShowMembers();
+        }
+
+        private void ShowMembers()
+        {
+            var staying = Members.Where(member => !lifted.Contains(member.Id)).ToList();
+            var empty = staying.Count == 0 && Members.Count > 0;
+            Button.EnableInClassList(MapArmyStand.LiftedClass, empty);
+            var shown = empty ? Members : staying;
+            if (shown.Count == 0)
+                return;
+            var second = shown.Count > 1 ? shown[1] : null;
+            Artwork.Apply(shown[0], second, Mathf.Max(0, shown.Count - 2));
             Fit();
         }
 

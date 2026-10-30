@@ -38,6 +38,30 @@ namespace Wotr.Client
 
         public MapCharacterStand Find(string id) => stands.TryGetValue(id, out var stand) ? stand : null;
 
+        public IReadOnlyCollection<MapCharacterStand> All => stands.Values;
+
+        // UI-403: the characters off the table (in the hand, or shown by a planned ghost) leave their stands.
+        public void Mask(ICollection<string> lifted)
+        {
+            foreach (var stand in stands.Values)
+                stand.Mask(lifted);
+        }
+
+        // UI-403: where a character arriving in a region would stand: the first of its character places no character
+        // holds (the last one while all are held, where a stacked pair forms).
+        public Vector2 NextPlace(string region)
+        {
+            var regionStands = map.Stands.Stands(region);
+            var taken = new HashSet<int>();
+            foreach (var stand in stands.Values)
+                if (stand.Region == region && places.TryGetValue(stand.Figure.Id, out var place) && place.Kind == StandKind.Character)
+                    taken.Add(place.Index);
+            for (var index = 0; index < RegionStands.CharacterPlaces; index++)
+                if (!taken.Contains(index))
+                    return regionStands.Character(index);
+            return regionStands.Character(RegionStands.CharacterPlaces - 1);
+        }
+
         public IEnumerable<MapCharacterStand> In(string region) => stands.Values.Where(stand => stand.Region == region);
 
         public IEnumerable<MapCharacterStand> Of(string region, Side side, bool garrison) =>

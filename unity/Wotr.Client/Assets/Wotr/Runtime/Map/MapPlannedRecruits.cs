@@ -12,10 +12,13 @@ namespace Wotr.Client
     // ghosts show a card's planned Nazgûl flights, without ×.
     public sealed class MapPlannedRecruits
     {
+        // The faint planned figures (Styles/Armies.uss); since UI-403 no other figure on the map is drawn faintly.
+        public const string GhostClass = "planned-ghost";
         public event Action<string> Removed;
         private readonly MapCanvas map;
         private readonly Dictionary<string, Ghost> ghosts = new Dictionary<string, Ghost>();
         private readonly List<string> stale = new List<string>();
+        private readonly HashSet<string> figureIds = new HashSet<string>();
 
         private readonly string prefix;
         private readonly bool removable;
@@ -28,6 +31,10 @@ namespace Wotr.Client
         }
 
         public IEnumerable<string> Regions => ghosts.Keys;
+
+        // UI-403: the ids of the figures the ghosts show (a planned flight's Nazgûl, a journey's companions); where they
+        // stand now shows only what stays behind.
+        public IReadOnlyCollection<string> FigureIds => figureIds;
 
         // UI-416 (owner): a planned character keeps its own figure (Marker); by nation and kind alone the Balrog's planned move
         // showed a Nazgûl.
@@ -55,13 +62,24 @@ namespace Wotr.Client
                 ghost.Apply(pair.Value, interactive);
             }
             map.Stands.Sort();
+            KeepFigureIds(regions.Values);
             Layout();
         }
 
-        // Planned units by nation and kind; a moved character (UI-271) shows its own figure.
+        private void KeepFigureIds(IEnumerable<ArmyMarker> markers)
+        {
+            figureIds.Clear();
+            foreach (var marker in markers)
+            {
+                figureIds.UnionWith(marker.Units.Select(unit => unit.Id).Where(id => id.Length > 0));
+                figureIds.UnionWith(marker.Carried.Select(character => character.Id));
+            }
+        }
+
+        // Planned units by nation, kind and id; a moved character (UI-271) shows its own figure.
         private static ArmyMarker Marker(string region, Side side, List<PlannedReinforcement> placements)
         {
-            var units = placements.Where(p => p.CharacterId.Length == 0).Select(p => (p.Nation, p.Kind));
+            var units = placements.Where(p => p.CharacterId.Length == 0).Select(p => new ArmyUnit(p.UnitId, p.Nation, p.Kind));
             var marker = ArmyMarker.From(region, side, false, units);
             foreach (var character in placements.Where(p => p.CharacterId.Length > 0))
                 marker.Carried.Add(new CharacterFigure
@@ -95,7 +113,7 @@ namespace Wotr.Client
                 this.region = region;
                 marker = new Button { name = prefix + "-" + region, focusable = false, pickingMode = PickingMode.Ignore };
                 marker.AddToClassList("army");
-                marker.AddToClassList("army-ghost");
+                marker.AddToClassList(GhostClass);
                 marker.AddToClassList("planned-recruit");
                 artwork = new MapArmyArtwork(marker);
                 stand = new MapStand(marker, MapArmyArtwork.HolderSize);

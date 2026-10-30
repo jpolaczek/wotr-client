@@ -273,9 +273,52 @@
     background-color: rgba(120, 88, 24, 0.55);
 }
 
-/* UI-127: the planned move ghost, figures of the selection at a hovered target; never interactive. */
-.army.army-ghost { opacity: 0.5; }
-.army-ghost-caption {
+/* UI-403 (TABLETOP_FIGURES_UX, "The lifted figure"): a chosen figure lifts off the table into the hand (MapFigureHand,
+   above the stands, clipped by the map). A piece is the same miniature at the same scale; its pose grows it 1.10 round its
+   feet (MapHandPiece sets the origin) and raises it 12 design points (12 px × the figure's scale), while a contact shadow
+   stays on the table at .8 and .35 opacity — the miniature's own shadow would rise with it, so it is hidden there. Only
+   translate, scale and opacity change, and only under .motion-enabled do they transition: Reduced motion shows the
+   static raised pose. A returning piece drops back onto its base; a planned one dissolves where it hovers. */
+.figure-hand-piece { position: absolute; }
+.hand-lift { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.figure-hand-piece.figure-lifted > .hand-lift { translate: 0 -12px; scale: 1.1 1.1; }
+.hand-shadow {
+    position: absolute;
+    background-image: resource("Wotr/Art/UI/armies/contact-shadow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+/* Where the miniature's own contact shadow lies (.army-contact-shadow, .character-contact-shadow). */
+.hand-army-shadow { left: 10px; top: 68px; width: 54px; height: 9px; }
+.hand-character-shadow { left: 20px; top: 59px; width: 19px; height: 6px; }
+.figure-hand-piece.figure-lifted > .hand-shadow { scale: 0.8 0.8; opacity: 0.35; }
+.figure-hand-piece .army-contact-shadow,
+.figure-hand-piece .character-contact-shadow { visibility: hidden; }
+.figure-hand-piece.hand-planned > .hand-lift,
+.figure-hand-piece.hand-planned > .hand-shadow { opacity: 0; }
+.motion-enabled .hand-lift,
+.motion-enabled .hand-shadow {
+    transition-property: translate, scale, opacity;
+    transition-duration: 0.18s;
+    transition-timing-function: ease-out-sine;
+}
+.motion-enabled .figure-hand-piece.hand-returning > .hand-lift,
+.motion-enabled .figure-hand-piece.hand-returning > .hand-shadow { transition-duration: 0.22s; transition-timing-function: ease-in-sine; }
+.motion-enabled .figure-hand-piece.hand-planned > .hand-lift,
+.motion-enabled .figure-hand-piece.hand-planned > .hand-shadow { transition-duration: 0.25s; }
+/* The source shows only what stays behind (MapArmyStand.Mask): a base none stays on disappears at once — no fade, so
+   nothing shows twice when a piece lands — while its stand still takes the click it took. */
+.army.lifted-away .army-artwork,
+.character-miniature.lifted-away .character-artwork { visibility: hidden; }
+.army.lifted-away > .army-choice-glow,
+.character-miniature.lifted-away > .character-choice-glow { display: none; }
+
+/* UI-403: the landing mark on a hovered legal target's prospective place, a baked ring on the table under the stands
+   (green for a move, red for an attack), drawn round an army's base (MapLandingMark) and the caption of that click
+   hanging above the lifted figure. It replaces UI-127's translucent army ghost; neither takes the pointer. */
+.landing-mark { position: absolute; width: 58px; height: 18.6px; -unity-background-scale-mode: stretch-to-fill; }
+.landing-mark.landing-move { background-image: resource("Wotr/Art/UI/armies/landing-mark-landing-move"); }
+.landing-mark.landing-attack { background-image: resource("Wotr/Art/UI/armies/landing-mark-landing-attack"); }
+.landing-caption {
     position: absolute;
     width: 120px;
     margin: 0;
@@ -301,7 +344,7 @@
 
 /* UI-131: a reinforcement planned by a card or an ability: the faint ghost of its figures with a close icon
    (UI-138) to return them. The small enamel disc replaces the square frame of other icon buttons. */
-.army.army-ghost.planned-recruit { opacity: 0.6; }
+.army.planned-ghost { opacity: 0.6; }
 #board-screen .planned-recruit-remove {
     position: absolute;
     width: 18px;

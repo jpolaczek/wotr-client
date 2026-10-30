@@ -58,11 +58,13 @@ namespace Wotr.PlayTests
             Assert.AreEqual(clicked, JsonConvert.SerializeObject(test.Backend.Last.Payload));
         }
 
-        // UI-127: one click selects the whole army and lights its targets; a figure click leaves it behind; a hover
-        // over a target shows the army there faintly with the server's caption; the first Escape drops the
-        // selection in one step, the second closes the panel. Nothing is sent.
+        // UI-127: one click selects the whole army and lights its targets; a figure click leaves it behind; the first
+        // Escape drops the selection in one step, the second closes the panel. Nothing is sent. UI-403 (rewritten from the
+        // army ghost): the selection lifts off the table while the figure left behind stays on the base; a hover over a
+        // target lays the landing mark on the place the army would take, with the server's caption above the lifted
+        // figure, and nothing is drawn faintly; the first Escape drops the lifted figures back onto their base.
         [UnityTest]
-        public IEnumerator UI127OneClickSelectsTheArmyAGhostPreviewsTheTargetAndEscapeClearsIt()
+        public IEnumerator UI127OneClickLiftsTheArmyALandingMarkPreviewsTheTargetAndEscapePutsItBack()
         {
             using var test = new Harness();
             yield return Settle();
@@ -86,19 +88,32 @@ namespace Wotr.PlayTests
             yield return Settle();
             Assert.AreEqual(selected.Count - 1, panel.Query<Button>(className: "selected").ToList().Count, "A click leaves one figure behind.");
             Assert.AreEqual(0, test.Backend.Commands);
+            yield return new WaitForSecondsRealtime(.45f);
+            var lifted = test.Board.Map.Q("hand-army-minas-tirith-FreePeoples");
+            Assert.NotNull(lifted, "The selection is lifted off the table.");
+            Assert.AreEqual((selected.Count - 1).ToString(), lifted.Q<Label>("army-count").text);
+            Assert.AreEqual("1", marker.Q<Label>("army-count").text, "The figure left behind stays on the base.");
 
             yield return HoverRegion(test.Board, "osgiliath");
-            var ghost = test.Board.Map.Q<Button>("army-ghost");
-            var caption = test.Board.Map.Q<Label>("army-ghost-caption");
-            Assert.NotNull(ghost);
-            Assert.AreEqual(DisplayStyle.Flex, ghost.resolvedStyle.display, "Hovering a target shows the army there.");
-            Assert.AreEqual(PickingMode.Ignore, ghost.pickingMode);
+            var map = test.Board.Map;
+            var ring = map.Q("landing-mark");
+            var caption = map.Q<Label>("landing-caption");
+            Assert.AreEqual(DisplayStyle.Flex, ring.resolvedStyle.display, "Hovering a target lays the landing mark there.");
+            Assert.IsTrue(ring.ClassListContains("landing-move"));
+            Assert.AreEqual(PickingMode.Ignore, ring.pickingMode);
+            Assert.AreEqual(PickingMode.Ignore, caption.pickingMode);
+            var place = map.LocalToWorld(map.Camera.ToScreen(map.Stands.Stands("osgiliath").Planned));
+            Assert.AreEqual(place.x, ring.worldBound.center.x, 1.5f, "On the place the army would take, beside Osgiliath's own.");
             Assert.AreEqual("Move " + (selected.Count - 1) + " figures", caption.text);
-            LayoutTests.Save(test.Viewport, "ui127-ghost.png");
+            if (lifted.parent.resolvedStyle.display == DisplayStyle.Flex)
+                Assert.LessOrEqual(caption.worldBound.yMax, FigureHandTests.RaisedTop(lifted), "The caption hangs above the lifted figure.");
+            Assert.IsNull(map.Q("army-ghost"), "No translucent copy is drawn.");
+            LayoutTests.Save(test.Viewport, "ui127-landing.png");
             // The pointer leaves the map the way RegionHover reports it; a move to the screen edge would edge-pan.
             test.Board.Map.SetHovered("");
             yield return Settle();
-            Assert.AreEqual(DisplayStyle.None, ghost.resolvedStyle.display, "Leaving the target removes the ghost.");
+            Assert.AreEqual(DisplayStyle.None, ring.resolvedStyle.display, "Leaving the target removes the landing mark.");
+            Assert.AreEqual(DisplayStyle.None, caption.resolvedStyle.display);
 
             test.Board.Hover.Open("minas-tirith");
             // Keyboard events go to the focused element; a player who clicked the map or a figure has focus there.
@@ -111,6 +126,9 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.Flex, panel.resolvedStyle.display, "The panel stays for a new choice.");
             Assert.AreEqual("army", test.Board.ActionDie.DieId, "The die stays chosen.");
             Assert.IsEmpty(test.Board.Map.DraftOverlay.Targets);
+            yield return new WaitForSecondsRealtime(.45f);
+            Assert.IsNull(map.Q("hand-army-minas-tirith-FreePeoples"), "The lifted figures are back on their base.");
+            Assert.AreEqual(selected.Count.ToString(), marker.Q<Label>("army-count").text);
             BoardMenuLayoutTests.Key(test.Board.Root, true);
             BoardMenuLayoutTests.Key(test.Board.Root, false);
             yield return Settle();

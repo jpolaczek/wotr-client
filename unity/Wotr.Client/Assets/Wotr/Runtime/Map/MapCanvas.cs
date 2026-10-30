@@ -84,15 +84,14 @@ namespace Wotr.Client
         private readonly Dictionary<string, List<MapArmyStand>> regionMarkers = new Dictionary<string, List<MapArmyStand>>();
         private readonly HashSet<(string, Side, bool)> marched = new HashSet<(string, Side, bool)>();
         private Vector2? attentionPoint;
-        // UI-127: the planned army drawn faintly at a hovered legal target, with its caption; never interactive.
-        private ArmyGhost ghost;
-        private Button ghostMarker;
-        private MapStand ghostStand;
-        private ArmyMarker ghostArmy;
-        private MapArmyArtwork ghostArtwork;
-        private Label ghostCaption;
+        // UI-127, UI-403: what a click on each legal target does with the unsent selection; on a hovered one the landing
+        // mark lies on the prospective place and the caption hangs above the lifted figure. Never interactive.
+        private ArmyGhost landingCaptions;
         // UI-401: the places, sizes, levels and depth of everything standing on the map.
         public MapStandLayout Stands { get; }
+        // UI-403: the figures lifted off the table, and where they would land.
+        internal MapFigureHand Hand { get; }
+        internal MapLandingMark Landing { get; }
         // UI-402: every character's own miniature.
         internal MapCharacterFigures Characters { get; }
         private readonly Func<string, bool> focusedRegion;
@@ -175,6 +174,9 @@ namespace Wotr.Client
             MordorTrack = new MapMordorTrack(this);
             // UI-401: one y-sorted layer for everything that stands on the map, under the overlays.
             Stands = new MapStandLayout(this);
+            Hand = new MapFigureHand(this);
+            Hand.Changed += ApplyLiftMask;
+            Landing = new MapLandingMark(this, Stands.Layer, Hand.Layer);
             Characters = new MapCharacterFigures(this, figure => MiniatureSelected?.Invoke(figure));
             Choices.Changed += ShowChoices;
             SyncMarkers();
@@ -315,85 +317,43 @@ namespace Wotr.Client
             if (Hovered == next)
                 return;
             Hovered = next;
-            UpdateGhost();
+            UpdateLanding();
             Redraw();
         }
 
-        public void SetGhost(ArmyGhost next)
+        // UI-403: the captions of the unsent selection's legal targets (ArmyGhost); null when nothing is chosen.
+        public void SetLanding(ArmyGhost captions)
         {
-            ghost = next;
-            UpdateGhost();
+            landingCaptions = captions;
+            UpdateLanding();
         }
 
-        private void UpdateGhost()
+        // On a hovered legal target: the landing mark on the prospective place (an army's, or a lone character's next
+        // place), green for a move and red for an attack, and the caption above the lifted figure.
+        private void UpdateLanding()
         {
             var caption = "";
-            var shown = ghost != null && contentRect.width > 0 && Hovered.Length > 0 &&
-                ghost.Captions.TryGetValue(Hovered, out caption) && Data.Shapes.ContainsKey(Hovered);
+            var shown = landingCaptions != null && contentRect.width > 0 && Hovered.Length > 0 &&
+                landingCaptions.Captions.TryGetValue(Hovered, out caption) && Data.Shapes.ContainsKey(Hovered);
             if (!shown)
             {
-                HideGhost();
+                Landing.Hide();
                 return;
             }
-            EnsureGhost();
-            ShowGhostArmy(ghost.Army);
-            ghostStand.Place(Camera.ToScreen(GhostPlace(Hovered)), Stands.FigureScale);
-            var rect = ghostStand.Bounds;
-            ghostCaption.text = caption;
-            ghostCaption.style.translate = new Translate(rect.center.x - GhostCaptionWidth / 2, rect.yMax + 2);
-            if (ghostMarker.style.display == DisplayStyle.Flex)
-                return;
-            ghostMarker.style.display = ghostCaption.style.display = DisplayStyle.Flex;
-            ghostStand.Root.BringToFront();
-            ghostCaption.BringToFront();
+            var units = Hand.HoldsUnits || !Hand.Pieces.Any();
+            var place = units ? LandingPlace(Hovered) : Characters.NextPlace(Hovered);
+            var scale = Stands.FigureScale * (units ? 1 : MapLandingMark.CharacterShare);
+            Landing.Show(Camera.ToScreen(place), scale, landingCaptions.Attacks.Contains(Hovered), caption, Hand.RaisedBounds,
+                contentRect);
         }
 
-        private void HideGhost()
-        {
-            if (ghostMarker != null)
-                ghostMarker.style.display = ghostCaption.style.display = DisplayStyle.None;
-        }
-
-        // The ghost's figures change with the planned army only, not with the camera.
-        private void ShowGhostArmy(ArmyMarker army)
-        {
-            if (ghostArmy == army)
-                return;
-            ghostArmy = army;
-            ghostMarker.EnableInClassList("fp", army.Side == Side.FreePeoples);
-            ghostMarker.EnableInClassList("sh", army.Side == Side.Shadow);
-            ghostArtwork.Apply(army);
-            ghostArtwork.Layout(true);
-        }
-
-        // UI-401: the planned army stands where it would arrive: on the region's field when no field force stands there,
-        // otherwise on its planned place beside them.
-        internal Vector2 GhostPlace(string region)
+        // UI-401: an army arrives on the region's field when no field force stands there, otherwise on its planned place
+        // beside them.
+        internal Vector2 LandingPlace(string region)
         {
             var stands = Stands.Stands(region);
             var occupied = regionMarkers.TryGetValue(region, out var forces) && forces.Any(force => !force.Army.Garrison);
             return occupied ? stands.Planned : stands.Field;
-        }
-
-        // The caption's width in Styles/Armies.uss (.army-ghost-caption).
-        private const float GhostCaptionWidth = 120;
-
-        private void EnsureGhost()
-        {
-            if (ghostMarker != null)
-                return;
-            ghostMarker = new Button { name = "army-ghost", focusable = false, pickingMode = PickingMode.Ignore };
-            ghostMarker.AddToClassList("army");
-            ghostMarker.AddToClassList("army-ghost");
-            ghostArtwork = new MapArmyArtwork(ghostMarker);
-            ghostStand = new MapStand(ghostMarker, MapArmyArtwork.HolderSize);
-            ghostStand.Design(MapArmyArtwork.Feet(false, true), MapArmyArtwork.Visible(false, true));
-            ghostCaption = new Label { name = "army-ghost-caption", pickingMode = PickingMode.Ignore };
-            ghostCaption.AddToClassList("army-ghost-caption");
-            ghostCaption.style.left = 0;
-            ghostCaption.style.top = 0;
-            Add(ghostStand.Root);
-            Add(ghostCaption);
         }
 
         public void Focus(string id)
@@ -554,7 +514,8 @@ namespace Wotr.Client
             MordorTrack?.Layout();
             FellowshipMarker?.Layout();
             LayoutMarkers();
-            UpdateGhost();
+            Hand.Layout();
+            UpdateLanding();
             PlannedRecruits?.Layout();
             PlannedFlights?.Layout();
             SovereignMarkers?.Layout();
@@ -602,6 +563,39 @@ namespace Wotr.Client
                 marker.Button.EnableInClassList("selected-force", marker.Selected);
             }
             Characters.ShowDrafted(characters);
+            HoldLifted(view, draft);
+        }
+
+        // UI-403: the hand holds the draft's unsent move (and the figures on their way that no planned ghost shows).
+        private void HoldLifted(PlayerView view, TurnDraft draft)
+        {
+            var planned = PlannedFigureIds();
+            Hand.Hold(markers.Values, Characters.All, LiftedFigures.Held(view, draft, planned), planned);
+            ApplyLiftMask();
+        }
+
+        // The figures a card's planned flights and journeys show at their destinations.
+        private HashSet<string> PlannedFigureIds()
+        {
+            var planned = new HashSet<string>(PlannedFlights?.FigureIds ?? Array.Empty<string>());
+            planned.UnionWith(PlannedJourneys?.FigureIds ?? Array.Empty<string>());
+            return planned;
+        }
+
+        private void ApplyLiftMask()
+        {
+            var lifted = PlannedFigureIds();
+            lifted.UnionWith(Hand.Lifted);
+            SetLiftMask(lifted);
+        }
+
+        // UI-403: the places of the lifted figures (in the hand or shown by a planned ghost) show only what stays behind;
+        // a base none stays on disappears, its hit shape kept. A stand changes only when its own lifted figures do.
+        internal void SetLiftMask(ICollection<string> lifted)
+        {
+            foreach (var marker in markers.Values)
+                marker.Mask(lifted);
+            Characters.Mask(lifted);
         }
 
         // A marker or a character may sit off its region's contour; a press on it reads its own region.
@@ -636,7 +630,7 @@ namespace Wotr.Client
                     Stands.Add(marker.Stand);
                 }
                 marker.Army = army;
-                marker.Artwork.Apply(army);
+                marker.ShowArmy();
                 if (armiesShown && !Quiet && (fresh || army.Total > before))
                     Emerge(marker, before);
                 else if (Animated() && army.Total < before)
@@ -656,6 +650,8 @@ namespace Wotr.Client
             Characters.Sync(Data.Characters, armiesShown && !Quiet, Reduced());
             armiesShown |= Data.Armies.Count > 0 || Data.Characters.Count > 0;
             AssignPlaces();
+            Hand.Settle(markers.Values, Characters.All);
+            ApplyLiftMask();
         }
 
         // UI-401, UI-402: every force and character on its region's place; the characters beside their side's army.
@@ -908,7 +904,7 @@ namespace Wotr.Client
         // arrived.
         private bool Focused(string region)
         {
-            if (Figures?.Reveals(region) == true || region == MarkerVisibility.InspectedRegion)
+            if (Figures?.Reveals(region) == true || region == MarkerVisibility.InspectedRegion || Hand.Holds(region))
                 return true;
             if (regionMarkers.TryGetValue(region, out var forces))
                 foreach (var marker in forces)

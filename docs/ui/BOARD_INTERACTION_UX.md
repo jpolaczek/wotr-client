@@ -501,7 +501,10 @@ unchanged. The chips and the miniatures read one `FigureChoices`. Details: [ARMY
 - `ArmyGhost` builds a selection model and target signatures only with options
   (`ArmyActionTargets.Options`, `BattleMode`); `MapCanvas.SetGhost` draws an uninteractive
   `army-ghost` spirit with a signature next to the target force at `SetHovered`, without queries to
-  the server.
+  the server. Superseded by UI-403 (2026-10-30): `ArmyGhost` only provides the captions (and which
+  targets attack); `MapCanvas.SetLanding` lays the landing mark on the hovered target's place and
+  hangs the caption above the figures lifted into the hand (`MapFigureHand`); no faint copy is drawn
+  ([ARMY_MAP_UX](ARMY_MAP_UX.md#ui-403)).
 - `ActionSequence.UsedIds` gives `moved` figures status in the panel (`RegionHoverPanel.Moved`) and
   on the tag (`MapCanvas.ShowMarched`, when all figure forces have moved).
 - `ArmyActionTargets.Blocking` lists figure outside `EligibleIds` of any purpose; the text trays and

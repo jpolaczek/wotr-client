@@ -892,6 +892,28 @@ UI-421's decision 5 (owner, 2026-10-28), built 2026-10-30 ([TABLETOP_FIGURES_UX]
 - A character appears, flies in or leaves on its own (UI-334, UI-338); the opponent's traces light an army together with
   its characters.
 
+<a id="ui-403"></a>
+## A chosen figure lifts off the board — UI-403
+
+UI-421's decisions 1 and 2 (owner, 2026-10-28: "the lifted thing is that object, not a square or its shadow"), built
+2026-10-30 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-403)"; [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-403)):
+
+- A click that chooses figures lifts exactly those off the table: a force's chosen units rise on a base of their own and
+  each chosen character on its stand, drawn as on the table at the same scale, a little larger (1.10) and higher (12 px
+  × the figure's scale), their shadow left on the table. The rest of the army stays on its base; a base none stays on
+  disappears, though a click there is still the army's click. A figure left behind in the region panel drops back onto
+  the base.
+- What is lifted is what the draft has not sent: the army selection, the travelling group being chosen, the Nazgûl a
+  card's next destination click flies. A sent step stays raised until the server's view arrives.
+- On a hovered legal target a landing mark lies on the table where the figures would stand, green for a move and red for
+  an attack, and the click's caption hangs above the lifted figures. The translucent army ghost (UI-127) is gone:
+  nothing is drawn faintly at the target.
+- Esc and undo drop the figures back onto their base, and so does an attack. A card's planned flight or journey
+  dissolves the lifted figure into its faint planned figure at the destination. Reduced motion shows the raised pose at
+  once.
+- The lifted figures never take the pointer and are clipped to the map; clicks remain the whole gesture until UI-405
+  adds carrying them.
+
 <a id="bez-granicy-mapy--ui-104"></a>
 ## Without map boundary — UI-104
 
