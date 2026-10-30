@@ -73,13 +73,23 @@ namespace Wotr.EditorTests
             Assert.AreEqual(MapMarkerVisibility.FiguresFrom / MapMarkerVisibility.TokensBelow, MapStandScale.CapacityHysteresis);
         }
 
-        // The token is about as wide as an army's base, between a readable 32 points and its 44-point design size.
+        // The token is about as wide as an army's base, between a readable 32 points and its 44-point design size. UI-425:
+        // zoomed out past the whole map of the worst case it keeps its board size, as do the medallion and the king's marker.
         [Test]
         public void TheTokenScalesWithTheMapWithinItsReadableRange()
         {
-            Assert.AreEqual(MapStandScale.TokenMinimum / MapStandScale.TokenDesign, At(.5f).Token, 1e-5f);
+            var whole = minimum / MapMarkerVisibility.TokensBelow;
+            Assert.AreEqual(whole, At(1).WholeMap, 1e-6f);
+            Assert.AreEqual(MapStandScale.TokenMinimum / MapStandScale.TokenDesign, At(whole).Token, 1e-5f);
             Assert.AreEqual(40 * .9f / MapStandScale.TokenDesign, At(.9f).Token, 1e-5f);
             Assert.AreEqual(1, At(2).Token, 1e-5f);
+            foreach (var zoom in new[] { whole * .9f, whole * .75f })
+            {
+                Assert.AreEqual(At(whole).Token / whole, At(zoom).Token / zoom, 1e-5f, "The token's board size at " + zoom);
+                Assert.AreEqual(At(whole).CharacterToken / whole, At(zoom).CharacterToken / zoom, 1e-5f, "The medallion's at " + zoom);
+                Assert.AreEqual(1 / whole, At(zoom).Marker / zoom, 1e-5f, "The king's marker's at " + zoom);
+            }
+            Assert.AreEqual(1, At(whole).Marker, 1e-6f);
         }
 
         // UI-406: a settlement gem is clamp(zoom / reference, .85, 1.4) of its UI-195 size, the reference being the
@@ -90,10 +100,13 @@ namespace Wotr.EditorTests
         {
             Assert.AreEqual(1, At(minimum).Gem, 1e-5f);
             Assert.AreEqual(1.2f, At(minimum * 1.2f).Gem, 1e-5f);
-            Assert.AreEqual(MapStandScale.GemSmallest, At(minimum * .5f).Gem, 1e-5f);
+            var whole = minimum / MapMarkerVisibility.TokensBelow;
+            Assert.AreEqual(MapStandScale.GemSmallest, At(whole).Gem, 1e-5f);
             Assert.AreEqual(MapStandScale.GemLargest, At(CameraState.ClosestZoom).Gem, 1e-5f);
             for (var zoom = minimum; zoom <= CameraState.ClosestZoom; zoom += .05f)
                 Assert.LessOrEqual(At(zoom).Gem / zoom, 1 / minimum + 1e-5f, "Board size at zoom " + zoom);
+            // UI-425: past the whole map of the worst case the gem keeps the board size it has there.
+            Assert.AreEqual(At(whole).Gem / whole, At(minimum * .5f).Gem / (minimum * .5f), 1e-5f);
         }
 
         // The miniature's design: its stand is the army's base and an elite stands as tall as the base is wide, so a
@@ -108,8 +121,11 @@ namespace Wotr.EditorTests
             Assert.LessOrEqual(feet.y - visible.yMin, (StandFootprint.Army.FigureHeight + 2) * MapArmyArtwork.DesignUnit);
             var holder = new Rect(Vector2.zero, MapArmyArtwork.HolderSize);
             Assert.IsTrue(holder.Contains(visible.min) && holder.Contains(visible.max));
-            foreach (var garrison in new[] { false, true })
-                Assert.AreEqual(MapArmyArtwork.Size(garrison, false) / 2, MapArmyArtwork.Feet(garrison, false));
+            // UI-425: a field force's token stands on its puck's lower edge; a garrison's lies with the middle of its
+            // puck's top face on its gate.
+            var token = MapArmyArtwork.Size(false, false);
+            Assert.AreEqual(new Vector2(token.x / 2, 37.2f), MapArmyArtwork.Feet(false, false));
+            Assert.AreEqual(new Vector2(token.x / 2, 16), MapArmyArtwork.Feet(true, false));
         }
     }
 }

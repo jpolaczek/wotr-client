@@ -10,6 +10,12 @@ figure rectangle covers a settlement gem, a fortress drawing or a region name. T
 keeps a clear spot. `capacity` is the largest footprint scale at which the region's whole group fits; below 1 the
 region shows tokens at the worst-case zoom (1366x768 at 125 %).
 
+UI-425: no map object hides a force's label or covers a settlement. The field force's and the garrison's plaque (at
+the footprint scale) and token count (on the whole map of the worst case, where tokens are largest on the board) stay
+clear of every other stand of their region drawn in front of them and of the neighbouring regions' forces; no token
+or medallion lies on a gem; and every region gets a `sovereign` place for a Corrupted king's marker that lies on no
+label and no gem at any zoom.
+
 Inputs: map-geometry.json, MapCanvas/landmarks.json and the size of its drawings, the regions of base-board.json
 (names and settlements) and scripts/map-stands-overrides.json: the settlements expansion modules give regions (their
 gems are kept clear too) and hand pins, {"pins": {"<region>": {"field": [x, y], "characters[2]": [x, y]}}}, which
@@ -34,7 +40,7 @@ LANDMARKS = RESOURCES / 'MapCanvas/landmarks.json'
 BOARD = RESOURCES / 'base-board.json'
 OVERRIDES = ROOT / 'scripts/map-stands-overrides.json'
 OUTPUT = RESOURCES / 'MapCanvas/stand-slots.json'
-VERSION = 'stand-slots-1'
+VERSION = 'stand-slots-2'
 MAP_W, MAP_H = 1632.0, 1338.0
 
 # The worst case: 1366x768 at 125 % is a 1092.8x614.4 point map; figures show down to 1.2 x its fit zoom
@@ -77,6 +83,10 @@ GIRDLES = {
     'Fortification': ([(-.14, -.98), (.14, -.98), (.95, .42), (.8, .66), (-.8, .66), (-.95, .42)], 8.0),
 }
 GEM_MARGIN = 2.0
+# UI-425: on the whole map of the worst case a gem is drawn at the gem scale's smallest share of its size (.85,
+# MapStandScale.Gem), larger on the board than at the worst-case Detail zoom, with its side band below (at most 1.6
+# points); tokens keep this margin from it.
+GEM_SMALLEST, SIDE_BAND, STONE_MARGIN = 0.85, 1.6, 1.0
 
 # Region names (MapRegionNames, MapRegionNamePoints).
 LETTER_HEIGHT, MAJOR_LETTER_HEIGHT = 11.0, 12.5
@@ -270,6 +280,7 @@ class Region:
         self.stronghold = self.settlement == 'Stronghold'
         self.drawing = drawing
         self.gem = gem_rect(self.anchor, self.gem_kinds(overrides))
+        self.stone = stone_rect(self.anchor, self.gem_kinds(overrides))
         self.pins = overrides.get('pins', {}).get(self.id, {})
         self.segments = [segments(ring) for ring in self.rings]
         self.borders = [segments(simplify(ring, NAME_SIMPLIFICATION)) for ring in self.rings]
@@ -308,32 +319,40 @@ class Region:
         return down(min(x0, gx0)), down(min(y0, gy0)), up(max(x1, gx1)), up(max(y1, gy1))
 
     def slots(self):
-        """The slots in the order they are placed: the garrison group, then the largest first."""
+        """The slots in the order they are placed: the garrison, the field force (UI-425: before the garrison's
+        characters, which keep clear of its label), the garrison's characters, then the largest first."""
         result = []
         if self.stronghold:
             result.append(Slot('garrison', None, ARMY))
-            result += [Slot('garrisonCharacters', i, CHARACTER) for i in range(3)]
         result.append(Slot('field', None, ARMY))
+        if self.stronghold:
+            result += [Slot('garrisonCharacters', i, CHARACTER) for i in range(3)]
         result.append(Slot('planned', None, ARMY))
         result += [Slot('characters', i, CHARACTER) for i in range(6)]
         result.append(Slot('fellowship', None, FELLOWSHIP))
         return result
 
 
-def gem_rect(anchor, kinds):
-    """The gem's drawn bounds in board units at the worst-case zoom, the largest of the region's settlements."""
+def gem_rect(anchor, kinds, unit=None, band=0.0, margin=GEM_MARGIN):
+    """The gem's drawn bounds in board units, the largest of the region's settlements: by default at the worst-case
+    zoom, `unit` board units per point otherwise, with `band` points of side band below."""
     if not kinds:
         return None
-    zoom = worst_case_zoom()
+    unit = unit if unit is not None else 1 / worst_case_zoom()
     x0 = y0 = x1 = y1 = 0.0
     for kind in kinds:
         girdle, size = GIRDLES[kind]
-        x0 = min(x0, min(p[0] for p in girdle) * size / zoom)
-        y0 = min(y0, min(p[1] for p in girdle) * size / zoom)
-        x1 = max(x1, max(p[0] for p in girdle) * size / zoom)
-        y1 = max(y1, max(p[1] for p in girdle) * size / zoom)
+        x0 = min(x0, min(p[0] for p in girdle) * size * unit)
+        y0 = min(y0, min(p[1] for p in girdle) * size * unit)
+        x1 = max(x1, max(p[0] for p in girdle) * size * unit)
+        y1 = max(y1, max(p[1] for p in girdle) * size * unit)
     ax, ay = anchor
-    return ax + x0 - GEM_MARGIN, ay + y0 - GEM_MARGIN, ax + x1 + GEM_MARGIN, ay + y1 + GEM_MARGIN
+    return ax + x0 - margin, ay + y0 - margin, ax + x1 + margin, ay + y1 + band * unit + margin
+
+
+def stone_rect(anchor, kinds):
+    """UI-425: the gem as drawn on the whole map of the worst case, with its side band, plus a margin."""
+    return gem_rect(anchor, kinds, GEM_SMALLEST / whole_map_zoom(), SIDE_BAND, STONE_MARGIN)
 
 
 class Raster:
@@ -408,6 +427,247 @@ class Place:
         return self.slot.footprint.rect(self.x, self.y, scale)
 
 
+# ---- Readability (UI-425) -----------------------------------------------------------------------------
+
+# What a force shows beyond its footprint, in board units at footprint scale 1 (MapArmyArtwork at 1.35 points a unit):
+# its figures down to the plaque that hangs below the stand, and the plaque with the emblems and the count; a
+# character's figure (the footprint's column) down to the front of its painted stand.
+ARMY_PICTURE = (-20.0, -40.0, 20.0, 15.6)
+PLAQUE = (-20.0, 2.2, 20.0, 14.8)
+CHARACTER_PICTURE = (-8.0, -36.0, 8.0, 6.3)
+# The forces whose labels stay readable, and what each slot shows far out: a field force's token, a garrison's walled
+# token or a character's medallion (the Fellowship has no token).
+ARMIES = ('field', 'garrison')
+TOKENS = {'field': 'field', 'garrison': 'garrison', 'planned': 'field', 'characters': 'medallion',
+          'garrisonCharacters': 'medallion'}
+# Other regions' forces whose labels a region's forces keep clear of, within this reach of its bounds (board units).
+NEIGHBOURHOOD = 80.0
+
+
+def whole_map_zoom():
+    """The whole map of the worst case (1366x768 at 125 %): tokens, medallions, kings' markers and gems are largest on
+    the board there, since zoomed out further they keep that board size (MapStandScale.Distant)."""
+    return worst_case_zoom() / TOKENS_BELOW
+
+
+def king_zooms():
+    """The zooms a king's marker is checked at, from the whole map of the worst case to the closest."""
+    return [whole_map_zoom(), worst_case_zoom(), 1.0, 1.35, 1.9, CLOSEST_ZOOM]
+
+
+class Token:
+    """A far-out picture in design points round the point under its feet (MapArmyArtwork, MapCharacterArtwork,
+    MapSovereignMarkers): its parts, each an ellipse (a puck, a coin) or a rectangle (a count badge) in its box, drawn
+    `units` x zoom points wide within [minimum, design], or always `design` wide."""
+
+    def __init__(self, feet, parts, design, units=None, minimum=None):
+        self.feet = feet
+        self.parts = parts
+        self.design = design
+        self.units = units
+        self.minimum = minimum
+
+    def unit(self, zoom):
+        """Board units per design point at a zoom; past the whole map it keeps its board size."""
+        zoom = max(zoom, whole_map_zoom())
+        size = self.design if self.units is None else min(self.design, max(self.minimum, self.units * zoom))
+        return size / self.design / zoom
+
+    def shapes(self, x, y, zoom=None):
+        """Its parts on the board, (round, (x0, y0, x1, y1)); the points may be arrays."""
+        unit = self.unit(zoom if zoom is not None else whole_map_zoom())
+        fx, fy = self.feet
+        return [(round_, (x + (x0 - fx) * unit, y + (y0 - fy) * unit, x + (x1 - fx) * unit, y + (y1 - fy) * unit))
+                for round_, (x0, y0, x1, y1) in self.parts]
+
+    def rect(self, x, y, zoom=None):
+        """Its first part's box: a label is one rectangle."""
+        return self.shapes(x, y, zoom)[0][1]
+
+
+# A field force's puck and its count (a two-digit badge) stand on the puck's lower edge; a garrison's walled puck lies
+# with the middle of its top face on its gate, as the gate is on the fortress drawing and a raised puck would reach over
+# the stone above some (Moria, Minas Morgul); a character's medallion (its face and the edge 2.5 points below) stands on
+# its coin's lower edge; a king's iron puck on its lower edge, at its fixed 30 points (MapArmyArtwork.Feet,
+# MapCharacterArtwork.Feet, MapSovereignMarkers).
+PUCK = (True, (0, 2, 44, 37.2))
+BADGE = (False, (22, 25, 44, 44))
+FIELD_FEET, GARRISON_FEET = (22, 37.2), (22, 16)
+PICTURES = {'field': Token(FIELD_FEET, [PUCK, BADGE], 44, 40, 32),
+            'garrison': Token(GARRISON_FEET, [PUCK, BADGE], 44, 40, 32),
+            'medallion': Token((12, 26.5), [(True, (0, 0, 24, 26.5))], 24, 20, 18)}
+COUNTS = {'field': Token(FIELD_FEET, [BADGE], 44, 40, 32), 'garrison': Token(GARRISON_FEET, [BADGE], 44, 40, 32)}
+KING_MARKER = Token((15, 28), [(True, (0, 4, 30, 28))], 30)
+
+
+def count_badge(kind, x, y, zoom=None):
+    """The count badge of a force's token (planned forces stand as field forces)."""
+    return COUNTS[TOKENS[kind]].rect(x, y, zoom)
+
+
+def touches(shapes, rect, clearance):
+    """Whether any of a picture's shapes comes within the clearance of a rectangle (vectorised)."""
+    hit = False
+    for round_, box in shapes:
+        hit = hit | (ellipse_touches(box, rect, clearance) if round_ else covers(box, rect, clearance))
+    return hit
+
+
+def ellipse_touches(box, rect, clearance):
+    """Whether the ellipse inscribed in a box, grown by the clearance, shares a point with a rectangle: the rectangle's
+    point nearest the ellipse's centre lies inside it."""
+    x0, y0, x1, y1 = box
+    rx0, ry0, rx1, ry1 = rect
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    a, b = (x1 - x0) / 2 + clearance, (y1 - y0) / 2 + clearance
+    px = np.minimum(np.maximum(cx, rx0), rx1)
+    py = np.minimum(np.maximum(cy, ry0), ry1)
+    return ((px - cx) / a) ** 2 + ((py - cy) / b) ** 2 < 1
+
+
+def offset(rect, x, y, scale):
+    return x + rect[0] * scale, y + rect[1] * scale, x + rect[2] * scale, y + rect[3] * scale
+
+
+def figure_picture(kind, x, y, scale):
+    """A stand's figures (and, for a force, its plaque) at a footprint scale, as one rectangle shape."""
+    return [(False, offset(ARMY_PICTURE if TOKENS.get(kind) in COUNTS else CHARACTER_PICTURE, x, y, scale))]
+
+
+def token_picture(kind, x, y):
+    """A stand's token or medallion on the whole map of the worst case."""
+    return PICTURES[TOKENS[kind]].shapes(x, y)
+
+
+def in_front(ax, ay, bx, by):
+    """Whether a stand on the first point is drawn in front of one on the second (MapStand.CompareDepth)."""
+    return (ay > by) | ((ay == by) & (ax > bx))
+
+
+def hides_label(owner, cover, scale):
+    """Whether a stand drawn in front lies on a force's label, both of one region and so at one level: its figures on the
+    plaque at the footprint scale, or its token on the count on the whole map. `owner` and `cover` are (kind, x, y);
+    either point may be arrays."""
+    (owner_kind, ox, oy), (kind, cx, cy) = owner, cover
+    figures = touches(figure_picture(kind, cx, cy, scale), offset(PLAQUE, ox, oy, scale), 0)
+    tokens = touches(token_picture(kind, cx, cy), count_badge(owner_kind, ox, oy), 0) if kind in TOKENS else False
+    return in_front(cx, cy, ox, oy) & (figures | tokens)
+
+
+def hides_label_across(owner, cover):
+    """The same for forces of two regions at one level: figures at scale 1, tokens on the whole map. (A tight region's
+    token beside a roomy neighbour's figures at the Detail zoom is not checked: it would cost Orthanc its figures.)"""
+    return hides_label(owner, cover, 1.0)
+
+
+def label_conflict(mover, placed, scale):
+    """The field force's and the garrison's labels stay clear of every other stand of their region drawn in front of
+    them — in a siege the other side, its own characters, the planned recruits and the Fellowship: `mover` is
+    (kind, x, y) with arrays, `placed` a Place."""
+    other = (placed.slot.kind, placed.x, placed.y)
+    hit = hides_label(mover, other, scale) if mover[0] in ARMIES else False
+    if other[0] in ARMIES:
+        hit = hit | hides_label(other, mover, scale)
+    return hit
+
+
+def neighbour_conflict(mover, neighbours):
+    """A force's label clear of the forces of the regions around it, and theirs of it."""
+    hit = False
+    if mover[0] not in ARMIES:
+        return hit
+    for other in neighbours:
+        hit = hit | hides_label_across(mover, other) | hides_label_across(other, mover)
+    return hit
+
+
+def token_on_gem(kind, x, y, gems):
+    """Whether a slot's token or medallion would lie on a settlement gem."""
+    if kind not in TOKENS:
+        return False
+    picture = token_picture(kind, x, y)
+    hit = False
+    for gem in gems:
+        hit = hit | touches(picture, gem, CLEARANCE)
+    return hit
+
+
+def armies_near(region, layouts):
+    """The forces of the other regions laid out so far that stand within reach of a region: (kind, x, y)."""
+    x0, y0, x1, y1 = region.bounds
+    reach = (x0 - NEIGHBOURHOOD, y0 - NEIGHBOURHOOD, x1 + NEIGHBOURHOOD, y1 + NEIGHBOURHOOD)
+    result = []
+    for owner, layout in layouts.items():
+        if owner == region.id:
+            continue
+        for place in layout:
+            if place.slot.kind in ARMIES and reach[0] < place.x < reach[2] and reach[1] < place.y < reach[3]:
+                result.append((place.slot.kind, place.x, place.y))
+    return result
+
+
+# ---- Kings (UI-425) -----------------------------------------------------------------------------------
+
+def king_hides_label(owner, xs, ys):
+    """Whether a king's marker on these points, drawn in front of a force, lies on its count or plaque at any zoom from
+    the whole map to the closest."""
+    owner_kind, ox, oy = owner
+    hit = False
+    for zoom in king_zooms():
+        marker = KING_MARKER.shapes(xs, ys, zoom)
+        hit = hit | touches(marker, count_badge(owner_kind, ox, oy, zoom), 0)
+        if zoom >= worst_case_zoom():
+            footprint = min(zoom, 1.35) / zoom
+            hit = hit | touches(marker, offset(PLAQUE, ox, oy, footprint), 0)
+    return in_front(xs, ys, ox, oy) & hit
+
+
+def king_on_gem(xs, ys, regions):
+    """Whether a king's marker on these points lies on a gem: on the whole map, or at the worst-case Detail zoom."""
+    hit = False
+    for zoom, stone in ((whole_map_zoom(), 'stone'), (worst_case_zoom(), 'gem')):
+        marker = KING_MARKER.shapes(xs, ys, zoom)
+        for region in regions:
+            if region.gem:
+                hit = hit | touches(marker, getattr(region, stone), CLEARANCE)
+    return hit
+
+
+def king_forces(region, layout, layouts):
+    """The forces a region's king stands beside or near: its own field, garrison and planned force and its neighbours'."""
+    own = [(place.slot.kind, place.x, place.y) for place in layout if place.slot.kind in ARMIES + ('planned',)]
+    return own + armies_near(region, layouts)
+
+
+def place_sovereign(region, layout, layouts, regions):
+    """Where a corrupted king's marker stands: the point nearest the region's last character place (beside its forces,
+    as before UI-425), off the armies' bases, whose marker lies on no force's label it stands in front of, at any zoom,
+    and on no gem."""
+    xs, ys, reach = region.raster.lattice()
+    feasible = reach >= CHARACTER.radius(1.0) + MARGIN
+    feasible &= clear(on_army_base(xs, ys, layout))
+    for owner in king_forces(region, layout, layouts):
+        feasible &= ~king_hides_label(owner, xs, ys)
+    feasible &= clear(king_on_gem(xs, ys, regions))
+    last = next(place for place in layout if place.slot.key == 'characters[5]')
+    score = np.where(feasible, -np.hypot(xs - last.x, ys - last.y), -np.inf)
+    best = int(np.argmax(score))
+    if not feasible[best]:
+        raise ValueError(f"No place for a king's marker fits {region.id}")
+    return round(float(xs[best]), 1), round(float(ys[best]), 1)
+
+
+def on_army_base(xs, ys, layout):
+    """Whether a king's marker on these points would stand on a base of the region's field, garrison or planned force,
+    taking the room of a character's base beside it (UI-422's gap)."""
+    hit = False
+    for place in layout:
+        if place.slot.footprint is ARMY:
+            distance = np.hypot(xs - place.x, (ys - place.y) / DEPTH)
+            hit = hit | (distance < ARMY.radius(1.0) + CHARACTER.radius(1.0) + GAP)
+    return hit
+
+
 # ---- Layout -------------------------------------------------------------------------------------------
 
 class Obstacles:
@@ -419,6 +679,7 @@ class Obstacles:
         for region in regions:
             if region.gem:
                 self.items.append(('gem', region.id, region.gem))
+                self.items.append(('stone', region.id, region.stone))
             if region.drawing:
                 self.items.append(('drawing', region.id, region.drawing))
         for region_id, rects in (reserved or {}).items():
@@ -436,7 +697,7 @@ class Obstacles:
     def applies(item, region, slot):
         """Whether a hard obstacle binds a slot: a garrison group stands at its own drawing."""
         kind, owner, _ = item
-        return kind != 'room' and not (kind == 'drawing' and owner == region.id and slot.garrison_group)
+        return kind in ('gem', 'drawing', 'name') and not (kind == 'drawing' and owner == region.id and slot.garrison_group)
 
 
 def target(region, slot, placed):
@@ -481,12 +742,14 @@ def total(layout):
 class Search:
     """One attempt to lay a region's slots out at one scale, with one weight against figures hiding each other."""
 
-    def __init__(self, region, candidates, obstacles, scale, hidden):
+    def __init__(self, region, candidates, obstacles, scale, hidden, neighbours=()):
         self.region = region
         self.candidates = candidates
         self.obstacles = obstacles
         self.scale = scale
         self.hidden = hidden
+        self.neighbours = neighbours
+        self.stones = [item[2] for item in obstacles if item[0] == 'stone']
 
     def solve(self):
         """The best layout: a short beam over the garrison and the field, the rest greedy."""
@@ -499,12 +762,10 @@ class Search:
         return max(layouts, key=total) if layouts else None
 
     def prefixes(self, slots):
-        """A stronghold's garrison groups from a short beam of gate points, each with its three characters."""
+        """A stronghold's garrison on a short beam of gate points; its characters follow the field."""
         if not self.region.stronghold:
             return [[]]
-        gates = self.options(slots[0], [], BEAM['garrison'])
-        groups = (self.complete(slots[:4], [gate]) for gate in gates)
-        return [group for group in groups if group]
+        return [[gate] for gate in self.options(slots[0], [], BEAM['garrison'])]
 
     def complete(self, slots, placed, budget=None):
         """The remaining slots, each on its best point around the places already chosen. Where a slot finds no
@@ -555,32 +816,42 @@ class Search:
         return feasible, score
 
     def feasible(self, slot, placed, rects, radius):
-        """Where the base fits the region clear of the other bases, and the figures cover no obstacle."""
+        """Where the base fits the region clear of the other bases, and the figures cover no obstacle; UI-425: where
+        its token covers no gem and no force's label lies under another stand of its region drawn in front of it."""
         xs, ys, reach = self.candidates
+        mover = (slot.kind, xs, ys)
         feasible = reach >= radius + MARGIN
         for place in placed:
             distance = np.hypot(xs - place.x, (ys - place.y) / DEPTH)
             feasible &= distance >= radius + place.slot.footprint.radius(self.scale) + GAP
             if {slot.kind, place.slot.kind} == SIEGE:
                 feasible &= hidden_share(rects, place.rect(self.scale)) <= ARMIES_HIDDEN
+            feasible &= clear(label_conflict(mover, place, self.scale))
         for item in self.obstacles:
             if Obstacles.applies(item, self.region, slot):
                 feasible &= ~covers(rects, item[2], CLEARANCE)
+        feasible &= clear(token_on_gem(slot.kind, xs, ys, self.stones))
+        feasible &= clear(neighbour_conflict(mover, self.neighbours))
         if slot.kind == 'garrison':
             dx0, dy0, dx1, dy1 = self.region.drawing
             feasible &= (xs > dx0 + 1) & (xs < dx1 - 1) & (ys > dy0 + 1) & (ys < dy1 - 1)
         return feasible
 
 
-def lay_out(region, obstacles):
+def clear(conflict):
+    """Where a conflict (an array, or False where it cannot arise) does not hold."""
+    return ~np.asarray(conflict, dtype=bool)
+
+
+def lay_out(region, obstacles, neighbours=()):
     """The region's places at the largest scale they fit and the capacity of the whole group; None if none fits.
     Figures that hide each other weigh heavily first; only where that leaves the group below scale 1 does a lighter
-    weight get its chance, and the larger capacity wins."""
+    weight get its chance, and the larger capacity wins. `neighbours` are the forces of the regions around it."""
     near = obstacles.near(region)
     candidates = region.raster.lattice()
     best = None
     for hidden in HIDDEN_WEIGHTS:
-        result = lay_out_with(region, candidates, near, hidden)
+        result = lay_out_with(region, candidates, near, hidden, neighbours)
         if result and (best is None or result[1] > best[1]):
             best = result
         if best and best[1] >= 1:
@@ -588,9 +859,9 @@ def lay_out(region, obstacles):
     return best
 
 
-def lay_out_with(region, candidates, obstacles, hidden):
+def lay_out_with(region, candidates, obstacles, hidden, neighbours):
     for scale in SCALES:
-        layout = Search(region, candidates, obstacles, scale, hidden).solve()
+        layout = Search(region, candidates, obstacles, scale, hidden, neighbours).solve()
         if layout:
             for place in layout:
                 place.x = round(place.x, 1)
@@ -611,6 +882,9 @@ def fits(region, layout, obstacles, scale):
                 return False
         rect = place.rect(scale)
         if any(Obstacles.applies(item, region, place.slot) and overlaps(rect, item[2]) for item in obstacles):
+            return False
+        mover = (place.slot.kind, place.x, place.y)
+        if any(bool(label_conflict(mover, other, scale)) for other in layout[:i]):
             return False
     return True
 
@@ -765,12 +1039,12 @@ def place_name(region, rects):
 
 # ---- Export -------------------------------------------------------------------------------------------
 
-def lay_out_region(region, regions, shared, path, fortresses, alternatives):
+def lay_out_region(region, regions, shared, path, fortresses, alternatives, neighbours=()):
     """A region's places and the search path of its name. First around the name's path. Where the group does not fit
     at scale 1 that way and alternatives are allowed, the places may come first, around another spot the name can be
     read at or around none, as long as the name's search still ends on a clear point it can be read at; the largest
-    capacity wins."""
-    first = lay_out(region, Obstacles(regions, {**shared, region.id: path}))
+    capacity wins. Its forces' labels keep clear of the `neighbours`' forces (UI-425)."""
+    first = lay_out(region, Obstacles(regions, {**shared, region.id: path}), neighbours)
     if first is None:
         raise ValueError(f'No stand places fit {region.id}; pin them in {OVERRIDES.relative_to(ROOT)}')
     best = first + (path,)
@@ -779,7 +1053,7 @@ def lay_out_region(region, regions, shared, path, fortresses, alternatives):
     trials = [Obstacles(regions, {**shared, region.id: [spot]}) for spot in name_spots(region, path[-1])]
     trials.append(Obstacles(regions, shared, {region.id: path}))
     for obstacles in trials:
-        trial = lay_out(region, obstacles)
+        trial = lay_out(region, obstacles, neighbours)
         if trial is None or trial[1] <= best[1]:
             continue
         layout, fitted = trial
@@ -819,28 +1093,94 @@ def export(regions):
     searches around them. Where it finds no clear point it can be read at, the name is shared: every region's places
     keep clear of its path from then on, and the regions that covered it are laid out again. A shared name whose own
     places must move goes back to its empty-board path for good. Shared names only accumulate and each stays clear,
-    so the rounds end."""
+    so the rounds end. UI-425: where two neighbouring regions' forces then cover each other's labels, the one of the two
+    that keeps more of its capacity is laid out again around the other's forces, and stays bound to its neighbours'."""
     fortresses = name_obstacles(regions)
     empty = {region.id: place_name(region, fortresses) for region in regions}
-    paths = dict(empty)
-    shared = set()
+    rounds = Rounds(regions, fortresses, empty)
     pending = regions
-    layouts, capacities = {}, {}
     for _ in range(NAME_ROUNDS):
         for region in pending:
-            if region.id in shared:
-                paths[region.id] = empty[region.id]
-            others = {key: paths[key] for key in shared if key != region.id}
-            layouts[region.id], capacities[region.id], paths[region.id] = lay_out_region(
-                region, regions, others, paths[region.id], fortresses, region.id not in shared)
-        final = name_obstacles(regions, layouts, capacities)
+            rounds.lay_out(region)
+        final = name_obstacles(regions, rounds.layouts, rounds.capacities)
         names = {region.id: place_name(region, final)[-1] for region in regions}
         covered = [region.id for region in regions if any(overlaps(rect, names[region.id]) for rect in final)]
-        if not covered:
-            return layouts, capacities, names
-        shared.update(covered)
-        pending = [region for region in regions if covers_names(region, layouts, capacities, covered, paths)]
-    raise ValueError('Region names stay covered by stands: ' + ', '.join(covered))
+        if covered:
+            rounds.shared.update(covered)
+            pending = [region for region in regions
+                       if covers_names(region, rounds.layouts, rounds.capacities, covered, rounds.paths)]
+            continue
+        clashes = label_clashes(regions, rounds.layouts)
+        if not clashes:
+            return rounds.layouts, rounds.capacities, names
+        rounds.settle(clashes)
+        pending = []
+    raise ValueError('Region names stay covered by stands, or forces cover their neighbours\' labels')
+
+
+class Rounds:
+    """The layouts of the export's rounds: each region's places, capacity and name path, the shared names and the
+    regions bound to their neighbours' forces (UI-425)."""
+
+    def __init__(self, regions, fortresses, empty):
+        self.regions = regions
+        self.by_id = {region.id: region for region in regions}
+        self.fortresses = fortresses
+        self.empty = empty
+        self.paths = dict(empty)
+        self.shared = set()
+        self.bound = set()
+        self.layouts, self.capacities = {}, {}
+
+    def lay_out(self, region):
+        self.layouts[region.id], self.capacities[region.id], self.paths[region.id] = self.trial(region)
+
+    def trial(self, region):
+        """A region laid out around the others as they stand now, without keeping the result."""
+        path = self.empty[region.id] if region.id in self.shared else self.paths[region.id]
+        others = {key: self.paths[key] for key in self.shared if key != region.id}
+        neighbours = armies_near(region, self.layouts) if region.id in self.bound else ()
+        return lay_out_region(region, self.regions, others, path, self.fortresses, region.id not in self.shared,
+                              neighbours)
+
+    def settle(self, clashes):
+        """Each clash once: the region that keeps more of its capacity around the other's forces moves."""
+        moved = set()
+        for a, b in clashes:
+            if a in moved or b in moved:
+                continue
+            trials = {key: self.bound_trial(key) for key in (a, b)}
+            trials = {key: trial for key, trial in trials.items() if trial}
+            if not trials:
+                raise ValueError(f'Neither {a} nor {b} fits around the other\'s forces')
+            key = max(trials, key=lambda k: (min(1.0, trials[k][1]) - min(1.0, self.capacities[k]), trials[k][1]))
+            self.bound.add(key)
+            self.layouts[key], self.capacities[key], self.paths[key] = trials[key]
+            moved.add(key)
+
+    def bound_trial(self, key):
+        """A trial of one region bound to its neighbours' forces, or None where nothing fits around them."""
+        was_bound = key in self.bound
+        self.bound.add(key)
+        try:
+            return self.trial(self.by_id[key])
+        except ValueError:
+            return None
+        finally:
+            if not was_bound:
+                self.bound.discard(key)
+
+
+def label_clashes(regions, layouts):
+    """UI-425: the pairs of regions whose forces (field or garrison) cover each other's labels, at either level."""
+    forces = [(region.id, (place.slot.kind, place.x, place.y)) for region in regions for place in layouts[region.id]
+              if place.slot.kind in ARMIES]
+    clashes = []
+    for i, (a, mover) in enumerate(forces):
+        for b, other in forces[i + 1:]:
+            if a != b and (a, b) not in clashes and bool(hides_label_across(mover, other) | hides_label_across(other, mover)):
+                clashes.append((a, b))
+    return clashes
 
 
 def covers_names(region, layouts, capacities, names, paths):
@@ -849,8 +1189,14 @@ def covers_names(region, layouts, capacities, names, paths):
     return any(overlaps(rect, step) for key in names if key != region.id for step in paths[key] for rect in rects)
 
 
-def region_json(region, layout, capacity_value):
-    """A region's capacity, its places in a fixed order and, for a stronghold, the fortress its name keeps clear of."""
+def place_sovereigns(regions, layouts):
+    """UI-425: every region's place for a corrupted king's marker, once every region's forces have their places."""
+    return {region.id: place_sovereign(region, layouts[region.id], layouts, regions) for region in regions}
+
+
+def region_json(region, layout, capacity_value, sovereign):
+    """A region's capacity, its places in a fixed order, the place of a corrupted king's marker and, for a stronghold,
+    the fortress its name keeps clear of."""
     result = {'capacity': capacity_value}
     if region.stronghold:
         result['fortress'] = list(region.fortress())
@@ -861,17 +1207,18 @@ def region_json(region, layout, capacity_value):
             result[place.slot.kind] = point
         else:
             result.setdefault(place.slot.kind, []).append(point)
+    result['sovereign'] = list(sovereign)
     return result
 
 
-def document(regions, layouts, capacities):
+def document(regions, layouts, capacities, sovereigns):
     return {
         'version': VERSION,
-        'task': 'UI-422',
+        'task': 'UI-422, UI-425',
         'sourceHashes': source_hashes(),
         'worstCaseZoom': round(worst_case_zoom(), 5),
         'footprints': {name: footprint.to_json() for name, footprint in FOOTPRINTS.items()},
-        'regions': {region.id: region_json(region, layouts[region.id], capacities[region.id])
+        'regions': {region.id: region_json(region, layouts[region.id], capacities[region.id], sovereigns[region.id])
                     for region in sorted(regions, key=lambda r: r.id)},
     }
 
@@ -941,14 +1288,57 @@ def verify_places(region, layout, scale, covers):
     return problems
 
 
+def verify_readability(regions, layouts, capacities, sovereigns):
+    """UI-425: no token or medallion on a gem; every force's label clear of the other stands of its region and of its
+    neighbours' forces; a king's marker inside its region, on no label it stands in front of and on no gem."""
+    stones = [(region.id, region.stone) for region in regions if region.gem]
+    problems = []
+    for region in regions:
+        layout = layouts[region.id]
+        neighbours = armies_near(region, layouts)
+        for i, place in enumerate(layout):
+            problems += verify_token(region, place, stones)
+            problems += verify_labels(region, place, layout[:i], neighbours, min(1.0, capacities[region.id]))
+        problems += verify_sovereign(region, sovereigns[region.id], layout, king_forces(region, layout, layouts), regions)
+    return problems
+
+
+def verify_token(region, place, stones):
+    return [f'{region.id} {place.slot.key}: its token lies on the gem of {owner}'
+            for owner, stone in stones if bool(token_on_gem(place.slot.kind, place.x, place.y, [stone]))]
+
+
+def verify_labels(region, place, before, neighbours, scale):
+    mover = (place.slot.kind, place.x, place.y)
+    problems = [f'{region.id} {place.slot.key}: a label lies under {other.slot.key} or covers it'
+                for other in before if bool(label_conflict(mover, other, scale))]
+    if bool(neighbour_conflict(mover, neighbours)):
+        problems.append(f"{region.id} {place.slot.key}: its label and a neighbouring force's cover each other")
+    return problems
+
+
+def verify_sovereign(region, point, layout, forces, regions):
+    x, y = point
+    problems = [] if region.contains(x, y) else [f"{region.id}: the king's marker stands outside the region"]
+    xs, ys = np.array([x]), np.array([y])
+    if on_army_base(xs, ys, layout).any():
+        problems.append(f"{region.id}: the king's marker stands on an army's base")
+    problems += [f"{region.id}: the king's marker lies on the label of {force[0]}" for force in forces
+                 if king_hides_label(force, xs, ys).any()]
+    problems += [f"{region.id}: the king's marker lies on the gem of {other.id}" for other in regions
+                 if other.gem and king_on_gem(xs, ys, [other]).any()]
+    return problems
+
+
 # ---- Preview ------------------------------------------------------------------------------------------
 
 COLOURS = {'garrison': (110, 60, 20), 'garrisonCharacters': (200, 140, 40), 'field': (30, 110, 40),
            'characters': (60, 160, 160), 'fellowship': (200, 180, 30), 'planned': (150, 150, 150)}
 
 
-def preview(regions, layouts, capacities, names, folder, scale=3):
-    """The contours, gems, drawings, names and every place at the scale its region shows figures at."""
+def preview(regions, layouts, capacities, names, sovereigns, folder, scale=3):
+    """The contours, gems, drawings, names, every place at the scale its region shows figures at and the kings'
+    markers on the whole map."""
     image = Image.new('RGB', (int(MAP_W * scale), int(MAP_H * scale)), (238, 228, 205))
     draw = ImageDraw.Draw(image)
     box = lambda r: [r[0] * scale, r[1] * scale, r[2] * scale, r[3] * scale]
@@ -966,6 +1356,7 @@ def preview(regions, layouts, capacities, names, folder, scale=3):
             a = place.slot.footprint.radius(factor)
             draw.rectangle(box(place.rect(factor)), outline=colour)
             draw.ellipse(box((place.x - a, place.y - a * DEPTH, place.x + a, place.y + a * DEPTH)), fill=colour)
+        draw.rectangle(box(KING_MARKER.rect(*sovereigns[region.id])), outline=(20, 20, 20))
         if capacities[region.id] < 1:
             label = f'{capacities[region.id]:.2f}'
             draw.text((region.anchor[0] * scale, region.anchor[1] * scale), label, fill=(200, 0, 0))
@@ -980,12 +1371,14 @@ def main():
     args = parser.parse_args()
     regions, _ = load_inputs()
     layouts, capacities, names = export(regions)
+    sovereigns = place_sovereigns(regions, layouts)
     problems = verify(regions, layouts, capacities, names)
+    problems += verify_readability(regions, layouts, capacities, sovereigns)
     if problems:
         raise ValueError('Stand places fail the acceptance checks:\n' + '\n'.join(problems))
-    text = serialise(document(regions, layouts, capacities))
+    text = serialise(document(regions, layouts, capacities, sovereigns))
     if args.preview:
-        preview(regions, layouts, capacities, names, args.preview)
+        preview(regions, layouts, capacities, names, sovereigns, args.preview)
     if args.check:
         if not OUTPUT.exists() or OUTPUT.read_text() != text:
             raise ValueError(f'Stale export: {OUTPUT.relative_to(ROOT)}')

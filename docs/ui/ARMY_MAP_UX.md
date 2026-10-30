@@ -936,3 +936,27 @@ out, and the settlements and kings at every zoom, get the miniatures' physical l
 
 Tests: `MapArmyArtworkTests`, `TabletopObjectsTests`, `MapSettlementGemsTests`, `MapStandScaleTests`, `UiArtKitTests`,
 `SovereignMapTests`, `MapVisibilityTests`, `MapRegionNamesTests`.
+
+<a id="ui-425"></a>
+## Counts, stones and names kept readable — UI-425, UI-426 (2026-10-30)
+
+UI-425 and UI-426 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-425)" and "As built (UI-426)") fix the
+UI-407 matrix's readability defects; the stand places (`stand-slots.json`, `stand-slots-2`) were laid out again.
+
+- **No count or plaque is covered.** A force's label — its token's count badge far out, its plaque (emblems and count)
+  at the figures' level — never lies under another stand of its region drawn in front of it: in a siege the other side,
+  and everywhere its own characters, the planned recruits and the Fellowship. Neighbouring regions' forces keep clear of
+  each other's labels at one level. At Helm's Deep the besieger's field now stands north-west of the gate with its plaque
+  clear of the garrison, and the garrison's characters stand to the west, the east and behind the gate.
+- **No token on a settlement.** A field force's token stands on its puck's lower edge, as its figures stand on their
+  feet, so it rises above its settlement's gem; a garrison's walled token lies with the middle of its top face on its gate;
+  a character's medallion stands on its coin's lower edge. Zoomed out past the whole map of 1366 × 768 at 125 %, tokens,
+  medallions, kings' markers and gems keep their board size.
+- **Kings.** A Corrupted king's marker stands on its own place beside the forces, chosen so that it covers no count,
+  plaque or gem at any zoom.
+- **Names.** A region's name its own stone reaches into steps down, up or sideways just clear of it — clear of the stand
+  places where they leave room, otherwise only inside its region — and hides where no step clears it, instead of being
+  split by the stone.
+
+Tests: `TabletopAcceptanceMatrixTests` (`TabletopFrameChecks.AssertReadable` in every static frame),
+`TabletopObjectsTests`, `MapRegionNamesTests`, `MapStandSlotsTests`, `MapStandScaleTests`.

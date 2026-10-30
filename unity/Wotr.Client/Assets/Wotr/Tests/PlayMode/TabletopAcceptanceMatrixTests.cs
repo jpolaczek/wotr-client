@@ -17,8 +17,9 @@ namespace Wotr.PlayTests
     // (the server's map17-dense scene) and UI-401's Helm's Deep siege; and on the server's fp-army-move and sh-army-move
     // scenes each side's army carried (both levels), held at the map's edge while it pans, and in flight after its drop,
     // seen by its own seat and by the opponent's. Every frame is saved as .artifacts/screenshots/ui407-*.png before its
-    // checks run; a failed check is collected, so one run shows the whole matrix. Occlusions beyond UI-422's limits (a
-    // count badge or a settlement's stone under another stand) are measured and logged as "UI-407 measure".
+    // checks run; a failed check is collected, so one run shows the whole matrix. UI-425, UI-426: what UI-407 measured
+    // beyond UI-422's limits — a count or plaque under another stand, a token on a settlement's stone, a name on its own
+    // stone — is asserted in every static frame (TabletopFrameChecks.AssertStatic).
     public sealed class TabletopAcceptanceMatrixTests
     {
         internal static readonly (int Width, float Scale)[] Layouts = { (1366, 1f), (1366, 1.25f), (1920, 1f), (1920, 1.25f) };
@@ -52,7 +53,6 @@ namespace Wotr.PlayTests
                         findings.Check(label, () => TabletopFrameChecks.AssertStatic(client.Board.Map, near, Siege, label));
                         if (near)
                             findings.Check(label, () => MapStandLayoutTests.AssertSiege(client.Board.Map, label));
-                        MatrixFindings.Measure(label, TabletopFrameChecks.Occlusions(client.Board.Map));
                     }
                     places[side] = TabletopFrameChecks.Places(client.Board.Map);
                 }
@@ -92,7 +92,6 @@ namespace Wotr.PlayTests
                         var label = Label("map17", side, layout, near);
                         viewport.Save(Name("map17", side, layout, near));
                         findings.Check(label, () => TabletopFrameChecks.AssertStatic(client.Board.Map, near, Siege, label));
-                        MatrixFindings.Measure(label, TabletopFrameChecks.Occlusions(client.Board.Map));
                     }
                     places[side] = TabletopFrameChecks.Places(client.Board.Map);
                 }
@@ -220,12 +219,5 @@ namespace Wotr.PlayTests
         }
 
         public void AssertNone() => Assert.IsEmpty(failures, string.Join("\n", failures));
-
-        // Readability measured beyond the asserted limits, logged with its frame for the acceptance record.
-        public static void Measure(string frame, IEnumerable<string> notes)
-        {
-            var list = new List<string>(notes);
-            Debug.Log($"UI-407 measure · {frame}: {list.Count} occluded" + (list.Count > 0 ? " — " + string.Join("; ", list) : ""));
-        }
     }
 }

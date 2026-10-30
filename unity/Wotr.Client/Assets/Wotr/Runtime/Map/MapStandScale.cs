@@ -44,15 +44,26 @@ namespace Wotr.Client
         // The element scale of something designed at `designUnit` points per board unit.
         public float Of(float designUnit) => PointsPerUnit / designUnit;
 
+        // UI-425: the whole map of the worst case, the Detail level's threshold below the worst-case Detail zoom. Zoomed out
+        // past it (onto the canvas's margins) the tokens, the medallions, the kings' markers and the gems keep their board
+        // size, so what the stand places keep clear there (scripts/export_map_stands.py) stays clear at every zoom.
+        public float WholeMap => Reference / MapMarkerVisibility.TokensBelow;
+
+        // UI-425: 1 down to the whole map of the worst case, then shrinking with the map.
+        public float Distant => Reference > 0 ? Mathf.Min(1, Zoom / WholeMap) : 1;
+
         // The element scale of an army's token.
-        public float Token => Mathf.Clamp(TokenUnits * Zoom, TokenMinimum, TokenDesign) / TokenDesign;
+        public float Token => Mathf.Clamp(TokenUnits * Zoom, TokenMinimum, TokenDesign) / TokenDesign * Distant;
 
         // The element scale of a character's token.
         public float CharacterToken =>
-            Mathf.Clamp(CharacterTokenUnits * Zoom, CharacterTokenMinimum, CharacterTokenDesign) / CharacterTokenDesign;
+            Mathf.Clamp(CharacterTokenUnits * Zoom, CharacterTokenMinimum, CharacterTokenDesign) / CharacterTokenDesign * Distant;
 
         // UI-406: the element scale of a settlement gem.
-        public float Gem => Reference > 0 ? Mathf.Clamp(Zoom / Reference, GemSmallest, GemLargest) : 1;
+        public float Gem => Reference > 0 ? Mathf.Clamp(Zoom / Reference, GemSmallest, GemLargest) * Distant : 1;
+
+        // UI-425: the element scale of a king's marker, its 30 × 34 points.
+        public float Marker => Distant;
 
         // Whether a region's group fits its capacity at this footprint; `shown` keeps figures until the hysteresis.
         public bool Fits(float capacity, bool shown) =>

@@ -61,6 +61,10 @@ namespace Wotr.Client
         // UI-406: the token's box; the puck (40 × 32 art drawn 44 wide) lies in it with room for its shadow and count. A
         // garrison's walled puck has the same size.
         private static readonly Vector2 TokenSize = new Vector2(44, 44);
+        // UI-425: the puck's lower edge in its box (Styles/Armies.uss: 2 points from the top, 35.2 tall), and the middle of
+        // its top face above the side band (the painted puck's face fills its upper 27.5 points).
+        private const float PuckBottom = 37.2f;
+        private const float TopFaceMiddle = 16;
         // The holder a marker stands in (MapStand): room for either level.
         public static readonly Vector2 HolderSize = new Vector2(BoxWidth, BoxHeight);
         // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front.
@@ -135,8 +139,13 @@ namespace Wotr.Client
 
         public static Vector2 Size(bool garrison, bool figures) => figures ? HolderSize : TokenSize;
 
-        // UI-401: the design point a level stands on its place: the stand's top face, or the token's middle.
-        public static Vector2 Feet(bool garrison, bool figures) => figures ? StandFeet : Size(garrison, false) / 2;
+        // UI-401: the design point a level stands on its place: the stand's top face, or the token's middle. UI-425: a field
+        // force's token stands on the lower edge of its puck, as its figures stand on their feet, so it rises above the place
+        // and the settlement's gem below the place stays in view; a garrison's walled token lies with the middle of its top
+        // face on its gate, since the gate is on the fortress drawing and a raised puck would reach over the stone above some
+        // of them (Moria, Minas Morgul).
+        public static Vector2 Feet(bool garrison, bool figures) =>
+            figures ? StandFeet : new Vector2(TokenSize.x / 2, garrison ? TopFaceMiddle : PuckBottom);
 
         // UI-401: what a level shows, in design points: the stand with its figures and plaque, or the whole token.
         public static Rect Visible(bool garrison, bool figures) => figures

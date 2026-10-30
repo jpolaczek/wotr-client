@@ -122,21 +122,30 @@ namespace Wotr.Client
         }
 
         // The free distance from the point along a direction and its opposite, whichever is shorter.
-        private static float Chord(List<Vector2[]> borders, Vector2 point, Vector2 direction)
+        private static float Chord(List<Vector2[]> borders, Vector2 point, Vector2 direction) =>
+            Mathf.Min(Free(borders, point, direction), Free(borders, point, -direction));
+
+        // UI-426: the free distance from a point to its region's border along each direction, on the simplified borders the
+        // name points use.
+        public static float[] Reach(RegionGeometry region, Vector2 point, IReadOnlyList<Vector2> directions)
         {
-            var forward = float.MaxValue;
-            var backward = float.MaxValue;
+            var borders = Borders(region);
+            var reach = new float[directions.Count];
+            for (var i = 0; i < reach.Length; i++)
+                reach[i] = Free(borders, point, directions[i]);
+            return reach;
+        }
+
+        // Crossing measures along the axis's positive side, so the direction's sign turns it round.
+        private static float Free(List<Vector2[]> borders, Vector2 point, Vector2 direction)
+        {
+            var sign = direction.x != 0 ? Mathf.Sign(direction.x) : Mathf.Sign(direction.y);
+            var free = float.MaxValue;
             foreach (var ring in borders)
                 for (var i = 1; i < ring.Length; i++)
-                {
-                    if (!Crossing(point, direction, ring[i - 1], ring[i], out var distance))
-                        continue;
-                    if (distance >= 0)
-                        forward = Mathf.Min(forward, distance);
-                    else
-                        backward = Mathf.Min(backward, -distance);
-                }
-            return Mathf.Min(forward, backward);
+                    if (Crossing(point, direction, ring[i - 1], ring[i], out var distance) && distance * sign >= 0)
+                        free = Mathf.Min(free, distance * sign);
+            return free;
         }
 
         // Where the line through the point along the direction crosses the segment, as a signed distance.

@@ -28,6 +28,8 @@ namespace Wotr.Client
         private const float BoxWidth = 56;
         private const float BoxHeight = 70;
         private const float TokenSize = 24;
+        // UI-406: the medallion's darkened edge lies this far below its face (Styles/Armies.uss).
+        private const float CoinEdge = 2.5f;
         // The point under the feet, the place: the middle of the stand's top face.
         private static readonly Vector2 StandFeet = new Vector2(BoxWidth / 2, 56);
         // The 14-unit base (40 × 28 points of art drawn 19 wide); its top face's middle is 0.357 of its height down.
@@ -93,8 +95,9 @@ namespace Wotr.Client
 
         public static Vector2 Size(bool figures) => figures ? HolderSize : new Vector2(TokenSize, TokenSize);
 
-        // The design point a level stands on its place: the stand's top face, or the token's middle.
-        public static Vector2 Feet(bool figures) => figures ? StandFeet : Size(false) / 2;
+        // The design point a level stands on its place: the stand's top face, or (UI-425) the medallion's lower edge — the
+        // coin's edge 2.5 points below its face (Styles/Armies.uss) — so it rises above the place like the figure.
+        public static Vector2 Feet(bool figures) => figures ? StandFeet : new Vector2(TokenSize / 2, TokenSize + CoinEdge);
 
         // What a level shows, in design points: the stand with its figures (and the stacked one), or the whole token.
         public Rect Visible(bool figures)

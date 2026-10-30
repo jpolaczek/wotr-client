@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,9 +20,9 @@ namespace Wotr.EditorTests
         // figures once the zoom shrinks the footprint to their capacity (TABLETOP_FIGURES_UX, "Stand places").
         private static readonly string[] TokenRegions =
         {
-            "ash-mountains", "dol-guldur", "edoras", "gladden-fields", "high-pass", "lossarnach", "minas-morgul", "moria",
-            "old-ford", "old-forest-road", "rhosgobel", "south-anduin-vale", "southern-mirkwood", "western-mirkwood",
-            "woodland-realm"
+            "ash-mountains", "dol-guldur", "edoras", "gladden-fields", "high-pass", "lorien", "lossarnach", "minas-morgul",
+            "moria", "narrows-of-the-forest", "old-ford", "old-forest-road", "rhosgobel", "south-anduin-vale",
+            "southern-mirkwood", "western-mirkwood", "woodland-realm"
         };
         private const float LowestCapacity = .5f;
 
@@ -196,6 +197,173 @@ namespace Wotr.EditorTests
             missing.Regions.Remove("andrast");
             Assert.Throws<InvalidDataException>(() => MapStandSlots.Validate(missing, data.Board, data.Geometry));
         }
+
+        // UI-425: on the whole map of the worst case, where they are largest on the board, no token or medallion lies on a
+        // settlement's stone (its crown, its setting and its side band as drawn there), nor does a king's marker there or
+        // at the worst-case Detail zoom.
+        [Test]
+        public void NoTokenOrKingsMarkerLiesOnASettlement()
+        {
+            var covered = new List<string>();
+            var whole = Stones(WholeMap);
+            foreach (var (region, place, _) in Bases())
+                covered.AddRange(whole.Where(s => Token(place).Any(shape => Touches(shape, s.Rect)))
+                    .Select(s => $"{region} {place} lies on the settlement of {s.Id}"));
+            foreach (var zoom in new[] { WholeMap, Worst })
+            {
+                var stones = Stones(zoom);
+                foreach (var entry in stands.Regions)
+                    covered.AddRange(stones.Where(s => Touches(King(entry.Value.Sovereign, zoom), s.Rect))
+                        .Select(s => $"the king's marker of {entry.Key} lies on the settlement of {s.Id} at {zoom:0.00}"));
+            }
+            CollectionAssert.IsEmpty(covered);
+        }
+
+        // UI-425: no force's label lies under another stand of its region drawn in front of it — in a siege the other
+        // side, and everywhere its own characters, the planned recruits and the Fellowship: its plaque under figures at the
+        // scale they show at, its count under a token or a medallion on the whole map.
+        [Test]
+        public void NoForcesLabelLiesUnderAStandOfItsRegion()
+        {
+            var covered = new List<string>();
+            foreach (var entry in stands.Regions)
+            {
+                var scale = entry.Value.ShownScale;
+                foreach (var owner in entry.Value.Places.Where(Labelled))
+                    foreach (var cover in entry.Value.Places.Where(p => !p.Equals(owner) && InFront(p.Feet, owner.Feet)))
+                    {
+                        if (FigurePicture(cover, scale).Overlaps(Plaque(owner, scale)))
+                            covered.Add($"{entry.Key}: the plaque of {owner} lies under {cover}");
+                        if (Token(cover).Any(shape => Touches(shape, Count(owner, WholeMap))))
+                            covered.Add($"{entry.Key}: the count of {owner} lies under {cover}");
+                    }
+            }
+            CollectionAssert.IsEmpty(covered);
+        }
+
+        // UI-425: a corrupted king's marker stands inside its region and, from the whole map to the closest zoom, lies on
+        // no count or plaque of a force it stands in front of — its region's field, garrison and planned forces and the
+        // forces around it.
+        [Test]
+        public void AKingsMarkerLiesOnNoForcesLabel()
+        {
+            var covered = new List<string>();
+            var forces = stands.Regions.SelectMany(e => e.Value.Places.Where(p => Labelled(p) || p.Kind == StandKind.Planned)
+                .Select(p => (Region: e.Key, Place: p))).ToList();
+            foreach (var entry in stands.Regions)
+            {
+                var king = entry.Value.Sovereign;
+                Assert.IsTrue(MapContourMath.Contains(data.Shapes[entry.Key], king), entry.Key + "'s king stands in it");
+                foreach (var army in entry.Value.Places.Where(p => p.Footprint.BaseWidth == StandFootprint.Army.BaseWidth))
+                    Assert.IsFalse(BasesOverlap((entry.Key, army, 1), (entry.Key, new StandPlace(StandKind.Character, 0, king), 1)),
+                        $"{entry.Key}'s king stands off the base of its {army}");
+                var beside = forces.Where(f => (f.Region == entry.Key || f.Place.Kind != StandKind.Planned) &&
+                    InFront(king, f.Place.Feet) && Near(king, f.Place.Feet));
+                foreach (var (region, force) in beside)
+                    foreach (var zoom in KingZooms)
+                        if (Touches(King(king, zoom), Count(force, zoom)) || zoom >= Worst && Touches(King(king, zoom), Plaque(force, At(zoom).Footprint)))
+                            covered.Add($"the king's marker of {entry.Key} lies on the label of {region} {force} at {zoom:0.00}");
+            }
+            CollectionAssert.IsEmpty(covered);
+        }
+
+        private float Worst => MapStandSlots.WorstCaseZoom(data.Geometry);
+
+        private float WholeMap => Worst / MapMarkerVisibility.TokensBelow;
+
+        private float[] KingZooms => new[] { WholeMap, Worst, 1, 1.35f, 1.9f, CameraState.ClosestZoom };
+
+        private MapStandScale At(float zoom) => new MapStandScale(zoom, Worst, MapArmyArtwork.DesignUnit);
+
+        // A force whose count and plaque stay readable: the field force and the garrison.
+        private static bool Labelled(StandPlace place) => place.Kind == StandKind.Field || place.Kind == StandKind.Garrison;
+
+        // MapStand.CompareDepth: the lower feet, then the one further right, are drawn in front.
+        private static bool InFront(Vector2 a, Vector2 b) => a.y > b.y || a.y == b.y && a.x > b.x;
+
+        private static bool Near(Vector2 a, Vector2 b) => Mathf.Abs(a.x - b.x) < 120 && Mathf.Abs(a.y - b.y) < 120;
+
+        // A force's figures down to its plaque (MapArmyArtwork.Visible); a character's (and the Fellowship's) column down to
+        // its stand's front.
+        private static Rect FigurePicture(StandPlace place, float scale)
+        {
+            if (place.Footprint.BaseWidth < StandFootprint.Army.BaseWidth)
+                return Rect.MinMaxRect(place.Feet.x - 8 * scale, place.Feet.y - 36 * scale, place.Feet.x + 8 * scale, place.Feet.y + 6.3f * scale);
+            var visible = MapArmyArtwork.Visible(false, true);
+            var feet = MapArmyArtwork.Feet(false, true);
+            var unit = scale / MapArmyArtwork.DesignUnit;
+            return new Rect(place.Feet + (visible.position - feet) * unit, visible.size * unit);
+        }
+
+        // The plaque hanging at the stand's front (Styles/Armies.uss: 6 points in from each side, 2 above the box's foot,
+        // 17 tall, in the 66 × 86 box with the feet at (33, 64)).
+        private static Rect Plaque(StandPlace place, float scale)
+        {
+            var unit = scale / MapArmyArtwork.DesignUnit;
+            return Rect.MinMaxRect(place.Feet.x - 27 * unit, place.Feet.y + 3 * unit, place.Feet.x + 27 * unit, place.Feet.y + 20 * unit);
+        }
+
+        // A token's two-digit count badge at its lower right (Styles/Armies.uss), at a zoom.
+        private Rect Count(StandPlace place, float zoom) =>
+            Part(place.Feet, MapArmyArtwork.Feet(place.Kind == StandKind.Garrison, false), Rect.MinMaxRect(22, 25, 44, 44),
+                At(zoom).Token / zoom, false).Box;
+
+        // What a place shows far out on the whole map: an army's puck and count, or a character's medallion; nothing for
+        // the Fellowship, which has no token.
+        private (Rect Box, bool Round)[] Token(StandPlace place)
+        {
+            var zoom = WholeMap;
+            switch (place.Kind)
+            {
+                case StandKind.Fellowship:
+                    return Array.Empty<(Rect, bool)>();
+                case StandKind.Character:
+                case StandKind.GarrisonCharacter:
+                    return new[] { Part(place.Feet, MapCharacterArtwork.Feet(false), new Rect(0, 0, 24, 26.5f), At(zoom).CharacterToken / zoom, true) };
+                default:
+                    var feet = MapArmyArtwork.Feet(place.Kind == StandKind.Garrison, false);
+                    var unit = At(zoom).Token / zoom;
+                    return new[] { Part(place.Feet, feet, Rect.MinMaxRect(0, 2, 44, 37.2f), unit, true), (Count(place, zoom), false) };
+            }
+        }
+
+        // A king's iron puck (Styles/Armies.uss: 30 × 24 points, 4 from the top) on its lower edge, at a zoom.
+        private (Rect Box, bool Round) King(Vector2 place, float zoom) =>
+            Part(place, MapSovereignMarkers.Feet, Rect.MinMaxRect(0, 4, 30, 28), At(zoom).Marker / zoom, true);
+
+        private static (Rect Box, bool Round) Part(Vector2 place, Vector2 feet, Rect box, float unit, bool round) =>
+            (new Rect(place + (box.position - feet) * unit, box.size * unit), round);
+
+        // Whether a shape — an ellipse in its box, or the box — shares a point with a rectangle.
+        private static bool Touches((Rect Box, bool Round) shape, Rect rect)
+        {
+            if (!shape.Box.Overlaps(rect))
+                return false;
+            if (!shape.Round)
+                return true;
+            var centre = shape.Box.center;
+            var nearest = new Vector2(Mathf.Clamp(centre.x, rect.xMin, rect.xMax), Mathf.Clamp(centre.y, rect.yMin, rect.yMax));
+            var offset = new Vector2((nearest.x - centre.x) / (shape.Box.width / 2), (nearest.y - centre.y) / (shape.Box.height / 2));
+            return offset.sqrMagnitude < 1;
+        }
+
+        // Every settlement's stone as drawn at a zoom: its crown or setting at the gem scale, and the side band below it.
+        private List<(string Id, Rect Rect)> Stones(float zoom)
+        {
+            var scale = At(zoom).Gem;
+            return data.Regions.Values.Where(r => r.Settlement != null && data.Shapes.ContainsKey(r.Id)).Select(r =>
+            {
+                var gem = GemRect(data.Shapes[r.Id], r.Settlement);
+                var anchor = new Vector2(data.Shapes[r.Id].Anchor[0], data.Shapes[r.Id].Anchor[1]);
+                var factor = scale * Worst / zoom;
+                var rect = Rect.MinMaxRect(anchor.x + (gem.xMin - anchor.x) * factor, anchor.y + (gem.yMin - anchor.y) * factor,
+                    anchor.x + (gem.xMax - anchor.x) * factor, anchor.y + (gem.yMax - anchor.y) * factor + SideBand * scale / zoom);
+                return (r.Id, rect);
+            }).ToList();
+        }
+
+        // UI-406: the side band's greatest thickness below a stone, in points.
+        private const float SideBand = 1.6f;
 
         // The ellipse lies inside the region when its centre does and no border segment comes into it: scaled to a unit
         // circle, every segment stays at least 1 from its centre.

@@ -782,10 +782,10 @@ namespace Wotr.Client
             marker.Button.EnableInClassList(SovereignTargetClass, king != null);
         }
 
-        // UI-274, UI-401: a corrupted king's marker stands beside his capital's forces, on the region's last character
-        // place (characters fill theirs from the first, UI-402).
-        internal Vector2 BesideForces(string region) =>
-            Stands.Stands(region).Character(RegionStands.CharacterPlaces - 1);
+        // UI-274, UI-401: a corrupted king's marker stands beside his capital's forces. UI-425: on its own place (UI-422's
+        // stand places), the nearest to the region's last character place on which it covers no force's count or plaque and
+        // no settlement's gem at any zoom.
+        internal Vector2 BesideForces(string region) => Stands.Stands(region).Sovereign;
 
         private bool Animated() => armiesShown && !Quiet && !Reduced();
 

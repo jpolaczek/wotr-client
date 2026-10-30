@@ -57,6 +57,52 @@ namespace Wotr.PlayTests
                 }
         }
 
+        // UI-426 (TABLETOP_FIGURES_UX, "As built (UI-426)"): no name lies on its own settlement's stone — on the whole map
+        // and at the closest zoom on every settlement, in the four layouts.
+        [UnityTest]
+        public IEnumerator NoNameLiesOnItsOwnSettlementAtTheWholeMapOrTheClosestZoom()
+        {
+            var fixture = new BoardFixture(true);
+            var findings = new MatrixFindings();
+            foreach (var width in new[] { 1366, 1920 })
+                foreach (var scale in new[] { 1f, 1.25f })
+                {
+                    using var client = new MountedMatchClient("http://localhost", fixture.View.MatchId);
+                    var texture = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                    texture.Create();
+                    client.Panel.targetTexture = texture;
+                    client.Panel.scale = scale;
+                    client.Apply(fixture.View);
+                    yield return Settle();
+                    var map = client.Board.Map;
+                    client.Board.Hover.Close();
+                    var label = $"{width} × {scale:0.00}";
+                    map.Fit();
+                    yield return Settle();
+                    LayoutTests.Save(texture, $"ui426-names-fit-{width}-{scale:0.00}.png");
+                    findings.Check("whole map " + label, () => TabletopFrameChecks.AssertNamesClearOfTheirGems(map, "whole map " + label));
+                    var shown = 0;
+                    foreach (var region in map.Data.Regions.Values.Where(region => region.Settlement != null))
+                    {
+                        var anchor = map.Data.Shapes[region.Id].Anchor;
+                        map.FocusOn(new Vector2(anchor[0], anchor[1]), map.Camera.MaximumZoom);
+                        yield return null;
+                        yield return null;
+                        var closest = $"closest on {region.Id} · {label}";
+                        findings.Check(closest, () => TabletopFrameChecks.AssertNamesClearOfTheirGems(map, closest));
+                        if (map.Names.Shown.Any(name => name.name == "map-name-" + region.Id))
+                            shown++;
+                        if (region.Id == "helms-deep")
+                            LayoutTests.Save(texture, $"ui426-helms-deep-closest-{width}-{scale:0.00}.png");
+                    }
+                    Assert.Greater(shown, 30, "Up close the settlements keep their names · " + label);
+                    client.Panel.targetTexture = client.Viewport;
+                    texture.Release();
+                    Object.Destroy(texture);
+                }
+            findings.AssertNone();
+        }
+
         private static int Check(MapCanvas map, string label)
         {
             var shown = map.Names.Shown.ToList();

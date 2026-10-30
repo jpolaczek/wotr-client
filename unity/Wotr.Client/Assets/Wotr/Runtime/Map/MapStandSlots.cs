@@ -105,6 +105,8 @@ namespace Wotr.Client
         [JsonProperty("characters")] public float[][] CharacterPoints { get; set; }
         [JsonProperty("fellowship")] public float[] FellowshipPoint { get; set; }
         [JsonProperty("planned")] public float[] PlannedPoint { get; set; }
+        // UI-425: where a corrupted king's marker stands, beside the forces but on none of their labels and no gem.
+        [JsonProperty("sovereign")] public float[] SovereignPoint { get; set; }
         private List<StandPlace> places;
 
         [JsonIgnore] public bool HasGarrison => GarrisonPoint != null;
@@ -113,6 +115,7 @@ namespace Wotr.Client
         [JsonIgnore] public Vector2 Field => Point(FieldPoint);
         [JsonIgnore] public Vector2 Fellowship => Point(FellowshipPoint);
         [JsonIgnore] public Vector2 Planned => Point(PlannedPoint);
+        [JsonIgnore] public Vector2 Sovereign => Point(SovereignPoint);
         [JsonIgnore] public Vector2? Garrison => GarrisonPoint == null ? (Vector2?)null : Point(GarrisonPoint);
 
         [JsonIgnore]
@@ -145,8 +148,9 @@ namespace Wotr.Client
         }
 
         // UI-422: places beside the settlement, for a region the export does not cover: the field to its right with
-        // the characters beyond, a garrison to its left with its characters beyond, the Fellowship above it and the
-        // planned recruits below, all clear of the gem. Their capacity is 0, so the region shows tokens.
+        // the characters beyond (UI-425: and a king's marker beyond them), a garrison to its left with its characters
+        // beyond, the Fellowship above it and the planned recruits below, all clear of the gem. Their capacity is 0, so the
+        // region shows tokens.
         public static RegionStands Beside(Vector2 anchor)
         {
             var army = StandFootprint.Army;
@@ -156,7 +160,8 @@ namespace Wotr.Client
                 FieldPoint = Coordinates(anchor + new Vector2(SettlementClearance + army.BaseWidth / 2, 0)),
                 CharacterPoints = Row(anchor, 1, CharacterPlaces),
                 FellowshipPoint = Coordinates(anchor - new Vector2(0, SettlementClearance + StandFootprint.Fellowship.BaseDepth / 2)),
-                PlannedPoint = Coordinates(anchor + new Vector2(0, SettlementClearance + army.FigureHeight))
+                PlannedPoint = Coordinates(anchor + new Vector2(0, SettlementClearance + army.FigureHeight)),
+                SovereignPoint = Row(anchor, 1, CharacterPlaces + 1)[CharacterPlaces]
             };
             stands.SetGarrisonBeside(anchor);
             return stands;
@@ -173,7 +178,8 @@ namespace Wotr.Client
                 FieldPoint = FieldPoint,
                 CharacterPoints = CharacterPoints,
                 FellowshipPoint = FellowshipPoint,
-                PlannedPoint = PlannedPoint
+                PlannedPoint = PlannedPoint,
+                SovereignPoint = SovereignPoint
             };
             stands.SetGarrisonBeside(anchor);
             return stands;
@@ -207,7 +213,7 @@ namespace Wotr.Client
     public sealed class MapStandSlots
     {
         public const string Resource = "MapCanvas/stand-slots";
-        public const string Version = "stand-slots-1";
+        public const string Version = "stand-slots-2";
         // The worst case the footprints are sized for: 1366×768 at 125 % is a 1092.8×614.4 point map.
         public static readonly Vector2 WorstCaseView = new Vector2(1366 / 1.25f, 768 / 1.25f);
         private const float ZoomTolerance = 1e-4f;
@@ -333,7 +339,8 @@ namespace Wotr.Client
         {
             var complete = data.Regions.TryGetValue(id, out var stands) && stands != null && stands.Capacity > 0 &&
                 MapContourValidation.ValidPoint(stands.FieldPoint) && MapContourValidation.ValidPoint(stands.FellowshipPoint) &&
-                MapContourValidation.ValidPoint(stands.PlannedPoint) && ValidPoints(stands.CharacterPoints, RegionStands.CharacterPlaces);
+                MapContourValidation.ValidPoint(stands.PlannedPoint) && MapContourValidation.ValidPoint(stands.SovereignPoint) &&
+                ValidPoints(stands.CharacterPoints, RegionStands.CharacterPlaces);
             MapContourValidation.Require(complete, "Incomplete map stand places: " + id);
             var garrison = MapContourValidation.ValidPoint(stands.GarrisonPoint) && stands.FortressBounds?.Length == 4 &&
                 ValidPoints(stands.GarrisonCharacterPoints, RegionStands.GarrisonCharacterPlaces);

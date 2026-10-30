@@ -39,10 +39,12 @@ namespace Wotr.PlayTests
                     yield return Settle();
                     LayoutTests.Save(texture, $"ui406-far-{width}-{scale:0.00}.png");
                     AssertTokens(map, label);
+                    AssertReadable(map, "far " + label);
                     var far = AssertGem(map, "osgiliath", label);
                     map.FocusOn(map.Stands.Stands(Region).Field, map.FitZoom * 2.2f);
                     yield return Settle();
                     LayoutTests.Save(texture, $"ui406-near-{width}-{scale:0.00}.png");
+                    AssertReadable(map, "near " + label);
                     Assert.IsTrue(map.Q<Button>("army-minas-tirith-FreePeoples").ClassListContains(MapArmyArtwork.FiguresClass), label);
                     var near = AssertGem(map, "osgiliath", label);
                     Assert.Greater(near, far, "A gem grows with the map · " + label);
@@ -183,6 +185,13 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-425, UI-426: the king's marker, the medallions and the tokens cover no force's count or plaque and no
+        // settlement's stone, and no name lies on its own stone.
+        private static void AssertReadable(MapCanvas map, string label)
+        {
+            TabletopFrameChecks.AssertReadable(map, label);
+        }
+
         // The gem stands on its anchor at the gem scale; returns its drawn width.
         private static float AssertGem(MapCanvas map, string region, string label)
         {
@@ -211,7 +220,9 @@ namespace Wotr.PlayTests
             var holder = map.Settlements.Find(region).parent;
             var expected = map.Stands.Scale.Gem;
             Assert.That(holder.resolvedStyle.scale.value.x, Is.EqualTo(expected).Within(1e-3f));
-            Assert.That(expected, Is.InRange(MapStandScale.GemSmallest, MapStandScale.GemLargest));
+            // UI-425: past the whole map of the worst case the gem keeps its board size, below its smallest scale.
+            var smallest = MapStandScale.GemSmallest * map.Stands.Scale.Distant;
+            Assert.That(expected, Is.InRange(smallest - 1e-5f, MapStandScale.GemLargest));
         }
 
         // The Corrupted king's marker is a small puck over its contact shadow, the crown and the Eye on its top face.

@@ -23,6 +23,8 @@ namespace Wotr.Client
         private const long LeaveMilliseconds = 450;
         private bool seeded;
         private static readonly Vector2 Size = new Vector2(30, 34);
+        // UI-425: the puck's lower edge (Styles/Armies.uss: 4 points from the top, 24 tall), on the marker's place.
+        public static readonly Vector2 Feet = new Vector2(15, 28);
         public event Action<string> Selected;
         private readonly MapCanvas map;
         private readonly Dictionary<string, Marker> markers = new Dictionary<string, Marker>();
@@ -93,11 +95,12 @@ namespace Wotr.Client
                 Place(marker);
         }
 
-        // UI-401: a king's marker stands on its place beside his capital's forces (MapCanvas.BesideForces) at its own size,
-        // the puck's middle on the place.
+        // UI-401: a king's marker stands on its place beside his capital's forces (MapCanvas.BesideForces) at its own size.
+        // UI-425: the puck's lower edge on the place, as a token stands; zoomed out past the whole map it keeps its board
+        // size (MapStandScale.Marker).
         private void Place(Marker marker)
         {
-            var visible = map.Stands.Place(marker.Stand, marker.Stand.Feet, 1);
+            var visible = map.Stands.Place(marker.Stand, marker.Stand.Feet, map.Stands.Scale.Marker);
             marker.Button.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible)
                 map.ReserveMarker(marker.Stand.Bounds);
@@ -113,7 +116,7 @@ namespace Wotr.Client
             // A press on the marker belongs to it, not to the map's region click or pan.
             button.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             var stand = new MapStand(button, Size);
-            stand.Design(Size / 2, new Rect(Vector2.zero, Size));
+            stand.Design(Feet, new Rect(Vector2.zero, Size));
             map.Stands.Add(stand);
             return new Marker { Button = button, Stand = stand };
         }

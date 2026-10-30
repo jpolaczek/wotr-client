@@ -90,9 +90,10 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   geometry, `landmarks.json`, the settlements, the name sizes and hand pins (`scripts/map-stands-overrides.json`), with
   `sourceHashes` and a `--check` mode. Per region: `garrison` (the gate of the fortress drawing, or beside the
   settlement), `field` (open ground inside the contour, near the settlement but clear of it), `characters[0..5]`,
-  `garrisonCharacters[0..2]`, `fellowship`, `planned`, and `capacity` (the largest footprint scale at which the group
-  fits). Region overrides of expansion modules always get a place (fallback beside the settlement). Region names keep
-  clear of the places (`MapRegionNamePoints.For` with an obstacle predicate). As built (2026-10-29):
+  `garrisonCharacters[0..2]`, `fellowship`, `planned`, `sovereign` (since UI-425: a Corrupted king's marker) and
+  `capacity` (the largest footprint scale at which the group fits). Region overrides of expansion modules always get a
+  place (fallback beside the settlement). Region names keep clear of the places (`MapRegionNamePoints.For` with an
+  obstacle predicate). As built (2026-10-29):
   - **Data.** Every place is the point under the figures' feet, in board units. A stronghold's record also holds its
     `fortress`: its drawing together with its garrison's figures at the gate, which names keep clear of.
     `MapStandSlots.Load` reads the file once and rejects it, like `MapBandGeometry.Validate`, when a recorded source
@@ -125,7 +126,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     footprint to their capacity (UI-401's maximum clamp). Minas Morgul, Woodland Realm and Moria stay tight even
     without names: their drawings stand at narrow ends of their regions. The Helm's Deep siege fits at scale 1: the
     garrison at the gate in the east of the region, the besieger's field north-west of it, the garrison's characters
-    in a row to the west.
+    in a row to the west. Since UI-425 (2026-10-30) seventeen regions are below 1 and the garrison's characters at
+    Helm's Deep stand to the west, the east and behind the gate ("As built (UI-425)" below).
   - **Hand pins.** `pins` in `scripts/map-stands-overrides.json` (`{"<region>": {"field": [x, y],
     "characters[2]": [x, y]}}`) replace the search for those places; none is needed today. Its `settlements` lists
     the settlements expansion modules give regions (Fate of Erebor: Dale a Fortification, the Iron Hills a City; New
@@ -135,7 +137,7 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
     characters beyond them, the Fellowship above and the planned recruits below, 14 units clear of the gem, with
     capacity 0 so it shows tokens. No module makes such a stronghold today.
   - **Checks.** `python3 scripts/export_map_stands.py --check` lays everything out again, runs the acceptance checks
-    and compares the result with the file (about 80 s; NumPy, SciPy and Pillow as in
+    and compares the result with the file (about 80 s, about 3 minutes since UI-425; NumPy, SciPy and Pillow as in
     `scripts/requirements-map-canvas.txt`); `--preview <folder>` draws the places, names, gems and drawings over the
     contours. EditMode `MapStandSlotsTests` check the file on their own with `MapContourMath`;
     `MapRegionNamePointsTests` and `MapLandmarksTests` check the names and drawings against the places.
@@ -158,7 +160,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   `field`; a second field force — Nazgûl or companions beside the other side's army, until UI-402 gives characters their
   own places — on `planned`, and any further one on the character places. Planned recruits, a card's planned Nazgûl
   flights and journeys stand on `planned`; the move ghost on `field` when no field force stands there, otherwise on
-  `planned` (`MapCanvas.GhostPlace`); a corrupted king's marker on the last character place (`MapCanvas.BesideForces`);
+  `planned` (`MapCanvas.GhostPlace`); a corrupted king's marker on the last character place (`MapCanvas.BesideForces`;
+  since UI-425 on its own `sovereign` place);
   the Fellowship on `fellowship`, and on the Mordor track on its step. Characters still stand inside their army's
   miniature (UI-402). Since UI-402 a second field force can only be units (Nazgûl beside the other side's army) and it
   always takes `planned`; the characters stand on their own places (below).
@@ -174,7 +177,9 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   `p / zoom`: 1 between the clamps, larger below the minimum (a focused region far out), smaller past 1.35 points per
   unit, which gives the tight regions room. The Fellowship's 64 × 72 point figure is designed at 1.8 points per unit and
   drawn at the same `p`; on the Mordor track it keeps its UI-283 size (80 or 64 points tall). An army's token is a puck
-  about as wide as its base: `clamp(40 × zoom, 32, 44)` points. A king's marker keeps its 30 × 34 points.
+  about as wide as its base: `clamp(40 × zoom, 32, 44)` points. A king's marker keeps its 30 × 34 points. (Since UI-425
+  a field force's token stands on its puck's lower edge, and past the whole map of the worst case tokens and kings'
+  markers keep their board size: "As built (UI-425)".)
 - **Level** (`MapStandLayout.Figures`). A focused region (inspected, holding a selected force, or just reached by a
   flight) shows figures; otherwise figures need the Detail level (1.3/1.2 × the fit zoom) and the footprint within the
   region's capacity, and they stay until the footprint exceeds the capacity by the same 1.3/1.2 ratio. With the
@@ -546,9 +551,10 @@ flight per destination marker, rendered with the same miniature.
   some (Minas Tirith's). A name its own settlement's stone (crown and side band, `MapSettlementGems.Bounds`) reaches
   into now moves just clear of it, 1 point away — down when it stands below the stone, up when above — as long as it
   stays within its vertical room at its point; otherwise it stays where it was. Per frame that is one rectangle test
-  per shown name, and the name's transform is written as before.
+  per shown name, and the name's transform is written as before. (Superseded by UI-426: the step may also go sideways,
+  and a name that cannot step clear hides, "As built (UI-426)".)
 - **Kings** (`MapSovereignMarkers`). A Corrupted king's marker is a small puck in its 30 × 34 box, at a fixed screen size
-  as before: the dark iron puck with an ember rim (`kings/puck-corrupted`, Codex, 30 × 24 points) over the contact shadow,
+  as before (since UI-425 on its own place, on its puck's lower edge, keeping its board size past the whole map): the dark iron puck with an ember rim (`kings/puck-corrupted`, Codex, 30 × 24 points) over the contact shadow,
   the crown under the ember Eye (`kings/emblem-corrupted`, UI-274's marker without its disc) on its top face. When a click
   chooses him, the steady gold halo lies behind the puck (`sovereign-glow`), no pulse.
 - **The Fellowship's figure** (`MapFellowshipMarker.Dress`). It stands on the characters' round Free Peoples stand
@@ -571,6 +577,90 @@ flight per destination marker, rendered with the same miniature.
   `MapRegionNamesTests`, `MapVisibilityTests`, `FellowshipTrackLayoutTests`, `CharacterMiniatureTests`,
   `FigureHandTests`, `MapStandLayoutTests`, `FigureMotionTests` and `FellowshipMotionNetworkTests` (the flights' shadows),
   `OpponentExpansionPresentationTests` (the kings' markers), `ArmyEmergeTests`, `MapMarkerEdgeTests`, `LayoutTests`.
+
+**As built (UI-425, 2026-10-30): no map object hides a force's count or covers its own settlement.**
+
+- **Labels.** A force's label is what tells its strength: its token's count badge far out, its plaque (the emblems and
+  the count) at the figures' level. UI-422's places kept the figure rectangles apart but not the plaque, which hangs
+  14.8 units below the feet, nor the tokens, which far out are larger on the board than the footprints. The export now
+  keeps every field force's and garrison's label clear of every other stand of its region drawn in front of it — in a
+  siege the other side, and everywhere the force's own characters, the planned recruits and the Fellowship: the plaque
+  at the footprint scale against the figures (an army's 40 × 55.6 units down to its plaque, a character's 16-unit column
+  down to its stand's front), the count on the whole map of the worst case against the tokens and medallions. Forces of
+  neighbouring regions keep clear of each other's labels at one level (figures at scale 1, tokens on the whole map):
+  the export first lays every region out, and where two regions' forces then cover each other's labels, the one of the
+  two that keeps more of its capacity is laid out again around the other's forces and stays bound to them
+  (`Rounds.settle`; Fords of Isen's field, for one, now stands west of its settlement). A tight region's token beside a
+  roomy neighbour's figures at the Detail zoom is not checked: that would cost Orthanc its figures.
+- **Placement order.** A stronghold's field force is now placed right after the garrison and before the garrison's
+  characters, so they keep clear of its label; the beam runs over the gate and the field. The Helm's Deep siege still
+  fits at scale 1: the garrison at the gate (752, 833), the besieger's field north-west of it at (712, 813) with its
+  plaque clear of the garrison's figures, and the garrison's characters to the west, the east and behind the gate.
+- **Tokens on their places.** A field force's token stands on its puck's lower edge (`MapArmyArtwork.Feet`), as its figures
+  stand on their feet, so it rises above its place, and the settlement's gem below the place stays in view; a garrison's
+  walled token lies with the middle of its top face on the gate (a raised puck would reach over the stone above Moria's and
+  Minas Morgul's drawings); a character's medallion stands on its coin's lower edge (`MapCharacterArtwork.Feet`). No place
+  lets a token, a medallion or a king's marker lie on a settlement's stone on the whole map of the worst case (the gem at
+  .85 of its size there, with its side band, plus a point of margin).
+- **Past the whole map** (zoomed out onto the canvas margins, below 0.67 points per unit on 1366 × 768 at 125 %) the
+  tokens, the medallions, the kings' markers and the gems keep the board size they have on the whole map of the worst
+  case (`MapStandScale.Distant`, `WholeMap`), so what the places keep clear there stays clear at every zoom.
+- **Kings.** A Corrupted king's marker stands on its own place, `sovereign` in `stand-slots.json` (`RegionStands.Sovereign`,
+  `MapCanvas.BesideForces`), on its puck's lower edge: the point nearest the region's last character place (its UI-401
+  place) off the armies' bases on which, from the whole map to the closest zoom, it lies on no count or plaque of a force
+  it stands in front of — the region's field, garrison and planned forces and its neighbours' — and on no gem. In 53 of
+  the 105 regions it is still the last character place; at Minas Tirith it is, and the field force it covered moved to
+  (1012, 919).
+- **Capacity.** Seventeen regions are below 1 (fifteen before): Western Mirkwood 0.57, Minas Morgul 0.60, Woodland Realm
+  0.62, Gladden Fields 0.70, Rhosgobel 0.70, Dol Guldur 0.71 (0.82), Southern Mirkwood 0.80 (0.85), Lossarnach 0.81
+  (0.97), South Anduin Vale 0.85 (0.96), Ash Mountains 0.85 (0.86), Moria 0.85 (0.87), High Pass 0.92, Old Ford 0.95, Edoras
+  0.96 (0.98), Lorien 0.96 (≥ 1), Narrows of the Forest 0.96 (≥ 1), Old Forest Road 0.96; every region still shows figures
+  before the closest zoom. 90 of the 105 regions' places moved; capacities above 1 now stop at 1.0–1.02 in many regions.
+- **Format.** `stand-slots-2` (the `sovereign` point; `MapStandSlots.Validate` rejects a region without it).
+- **Checks.** `python3 scripts/export_map_stands.py --check` lays everything out again, runs UI-422's checks and UI-425's
+  (`verify_readability`: tokens off the gems, labels clear within a region and across neighbours, kings' markers) and
+  compares the result with the file; it now takes about 3 minutes. EditMode `MapStandSlotsTests`
+  (`NoTokenOrKingsMarkerLiesOnASettlement`, `NoForcesLabelLiesUnderAStandOfItsRegion`, `AKingsMarkerLiesOnNoForcesLabel`)
+  check the file on their own; `MapStandScaleTests` the token feet and the board size past the whole map.
+- **Cost.** Nothing new per frame: the places, the kings' points and the token feet are fixed; a king's marker writes its
+  translate and scale like any stand.
+- **Tests.** PlayMode `TabletopAcceptanceMatrixTests` assert in every static frame (`TabletopFrameChecks.AssertReadable`)
+  that no count or plaque lies under a stand or a king's marker drawn in front of it (points along its middle line inside
+  that stand's picture: a token's puck and badge, a medallion's coin, an army's visible part, a character's column and
+  stand, a king's puck), that no token, medallion or king's marker lies on a settlement's stone, and that no name lies on
+  its own stone; `TabletopObjectsTests` assert the same with Minas Tirith's Corrupted king at both levels in four
+  layouts. Before the fix they failed with the UI-407 defects (below); after it they pass.
+- **Verification** (2026-10-30, macOS, Unity 6000.6.0f1, `expansions` 3ee14b42 plus this change):
+  `python3 scripts/export_map_stands.py --check` PASS (3 min 2 s, after a fresh export: deterministic); EditMode, the
+  whole suite, 1330/1330 PASS; PlayMode, one class per run: `TabletopAcceptanceMatrixTests` 4/4 (the two static matrices,
+  both carries with edge pan and flights), `TabletopObjectsTests` 4/4, `MapRegionNamesTests` 2/2, `MapStandLayoutTests` 1/1,
+  `MapVisibilityTests` 2/2, `CharacterMiniatureTests` 3/3, `FigureHandTests` 5/5, `OpponentExpansionPresentationTests` 12/12
+  (the kings' markers), `MapArmyArtworkTests` 1/1, `MapMarkerEdgeTests` 1/1. The same assertions before the change:
+  `TabletopAcceptanceMatrixTests`' two static tests, `TabletopObjectsTests`' first and the new `MapRegionNamesTests`
+  sweep failed (0/4).
+
+**As built (UI-426, 2026-10-30): a region's name stays clear of its own settlement's gem.**
+
+- **Steps** (`MapNameSteps`, found once with the name points, `MapRegionNames.StepsOf`). For each settlement region's name
+  and each way — down, up, left, right — two bounds in board units: the free distance from its point to the region's
+  border that way (`MapRegionNamePoints.Reach`, on the simplified borders), and how far its largest extent at its point
+  (`BoardRect` of the lines it breaks into there) goes before it meets a stand place or a fortress
+  (`MapStandSlots.NameObstacle`). The name points themselves are unchanged.
+- **The frame** (`MapRegionNames.ClearOfGem`): one rectangle test per shown name — does its own stone reach into it? If
+  so, of the four steps that leave it 1 point clear of the stone, the shortest one is taken that keeps its edge inside the
+  border on its middle line and its extent clear of the stand places; where the places leave no such step (the export
+  packs them close to the names' points), the shortest one that only keeps it inside its region — a stand standing there
+  then hides it, as at its point; and where no step is allowed at all, the name hides for that frame rather than lie
+  under its own stone. The rest is arithmetic; nothing is laid out.
+- **Results.** Helm's Deep's name, squeezed between its gem, the besieger's place and the region's south-western border,
+  hides where no step clears the stone (the matrix's 2.2 × whole-map frames at 125 %) instead of being split by it; on the
+  whole map of the stress board and at the closest zoom it stands left of its gem (`ui426-names-fit-*`,
+  `ui426-helms-deep-closest-*`). Minas Tirith's name steps down below its stone, as under UI-406.
+- **Not done.** No name breaks its line differently to dodge its gem: a label's lines are set once (UI-186's break at the
+  middle space where the name is wider than its region), and changing them on a zoom would lay the label out again.
+- **Tests.** PlayMode `MapRegionNamesTests.NoNameLiesOnItsOwnSettlementAtTheWholeMapOrTheClosestZoom` (the whole map and
+  the closest zoom on every settlement, four layouts), `TabletopFrameChecks.AssertReadable` in every matrix frame,
+  `TabletopObjectsTests` (Minas Tirith's name visible and clear of its gem).
 
 ## Defaults the owner can change at review
 
@@ -618,9 +708,21 @@ flight per destination marker, rendered with the same miniature.
 - A Corrupted king's marker is a dark iron puck with an ember rim and the crown under the Eye, at its fixed 30 × 34
   points (UI-406).
 - A region's name that its own settlement's gem reaches into moves just clear of the stone (1 point) within its room in
-  the region; the name points themselves are unchanged (UI-406).
-- The Fellowship's figure stands on the characters' round blue stand, 16 board units wide, without UI-201's blue
-  underline (UI-406).
+  the region; the name points themselves are unchanged (UI-406). Changed by UI-426: it takes the shortest of the four
+  steps (down, up, left, right) that keeps it clear of the stand places, else the shortest that keeps it inside its
+  region, and hides where none does.
+- A field force's token stands on its puck's lower edge on its place (UI-406: centred on it), so it rises above the place
+  like the figures; a garrison's walled token lies with the middle of its top face on the gate (UI-406: centred); a
+  character's medallion stands on its coin's lower edge (UI-406: centred); a king's marker on its puck's lower edge
+  (UI-425).
+- Zoomed out past the whole map of the worst case (0.67 points a unit), tokens, medallions, kings' markers and gems keep
+  their board size instead of their readable 32-, 18- and 30-point and .85 minimum (UI-425).
+- No force's count or plaque lies under another stand of its region drawn in front of it — in a siege the other side,
+  and everywhere its own characters, the planned recruits and the Fellowship — nor under a neighbouring region's force at
+  one level; a stronghold's field force is placed before the garrison's characters. This moved 90 regions' places and
+  put seventeen regions below scale 1 instead of fifteen (UI-425).
+- A Corrupted king's marker stands on its own place, the nearest to the last character place that is off the armies'
+  bases and covers no force's label and no gem (UI-401: the last character place) (UI-425).
 
 ## Acceptance (UI-407)
 
@@ -652,7 +754,8 @@ of each carry test also records the side's projection as it arrived (`.artifacts
 `drag-sh`) for the profile's drag workloads.
 
 **Occlusions measured** beyond UI-422's limits (logged per frame as `UI-407 measure`: a pick at a count badge's middle,
-or at a settlement stone's middle, that takes another stand's button):
+or at a settlement stone's middle, that takes another stand's button; since UI-425 and UI-426 asserted in every static
+frame instead, `TabletopFrameChecks.AssertReadable`):
 
 - The besieger's count is under the garrison at Helm's Deep in every far frame (16/16, both boards and seats), near on
   the siege fixture at every layout (8/8) and near on map17 at 125 % (4/8).
@@ -661,19 +764,19 @@ or at a settlement stone's middle, that takes another stand's button):
 
 **Defects found** (seen in the pictures, measured where they could be):
 
-1. **The besieger's count is hidden at Helm's Deep** (`ui407-map17-*-far`, `ui407-siege-*-far`, `ui407-siege-*-near`,
-   `ui407-map17-*-1.25-near`). Far out the garrison's walled puck lies on the besieger's puck over its count badge (at
+1. **The besieger's count is hidden at Helm's Deep** — resolved by UI-425 (`ui407-map17-*-far`, `ui407-siege-*-far`,
+   `ui407-siege-*-near`, `ui407-map17-*-1.25-near`). Far out the garrison's walled puck lies on the besieger's puck over its count badge (at
    125 % the "13" is gone); zoomed in the garrison's figures — and on map17 Gimli, the last of the garrison's companions
    in their row west of the gate — stand on the besieger's plaque, so its emblem and count read only at 100 % on map17.
    UI-422's quarter rule holds for the pictures' rectangles but not for the plaque. Suggested fix: in
    `scripts/export_map_stands.py` keep the field force's plaque (and, for tokens, its count badge) clear of the garrison's
    group in the siege check, or hang the besieger's plaque on the side away from the gate.
-2. **Far out a token covers its own settlement** (`ui407-map17-*-far`: Westemnet under the 14; `ui407-siege-*-far`:
-   Westemnet and Edoras). The puck is centred on the field place, which UI-422 sets just above the gem for figures at scale
+2. **Far out a token covers its own settlement** — resolved by UI-425 (`ui407-map17-*-far`: Westemnet under the 14;
+   `ui407-siege-*-far`: Westemnet and Edoras). The puck is centred on the field place, which UI-422 sets just above the gem for figures at scale
    1, so its lower half lies on the stone. Suggested fix: stand the token's lower edge (not its middle) on the place, as
    the figures' feet are, or keep the token level clear of the gem the way the places keep the figures clear.
-3. **"Helm's Deep" is split by its own stone at 125 %** (`ui407-map17-*-1.25-near`, `ui407-siege-*-1.25-near`: "Helm'
-   ◆ Deep"). UI-406's name-clear rule leaves the name where it is when it has no vertical room. Suggested fix: let the
+3. **"Helm's Deep" is split by its own stone at 125 %** — resolved by UI-426 (`ui407-map17-*-1.25-near`,
+   `ui407-siege-*-1.25-near`: "Helm' ◆ Deep"). UI-406's name-clear rule leaves the name where it is when it has no vertical room. Suggested fix: let the
    name move sideways, or break the line before the stone.
 4. **At the map's edge the carried army is half cut off** (`ui407-edge-pan-*`): the pointer rests 8 points inside the
    26-point zone and the figure is centred under it, so the map's edge clips half of it while the map pans. This is the
@@ -683,7 +786,14 @@ or at a settlement stone's middle, that takes another stand's button):
    (`ui407-carried-*-near`), so only its rim shows; the lit region and the caption still tell the move.
 
 None of these blocks a step: every frame's asserted checks pass. Each needs its own task (or the owner's acceptance as
-a default) before UI-407 can close.
+a default) before UI-407 can close. Defects 1 and 2 are resolved by UI-425 and defect 3 by UI-426 (2026-10-30, "As built
+(UI-425)", "As built (UI-426)"): the assertions that replace the measurements failed before the change in all 32 static
+frames of the matrix (16 map17, 16 siege: the besieger's plaque under the garrison, Gimli or Legolas near, its count under
+the garrison's puck far at 125 %, Strider's and Legolas's medallions and the Westemnet, Edoras and Dale tokens on their
+stones far, Fords of Isen's plaque under the besieger near, "Helm's Deep" on its stone at 125 % near), in
+`TabletopObjectsTests` (Denethor's marker on Minas Tirith's count, Dale's token on its stone, "Helm's Deep" on its stone)
+and in the whole-map frames of `MapRegionNamesTests` ("Helm's Deep" in all four layouts), and pass after it. Defects 4
+and 5 remain.
 
 **Profile `map-profile-2`** with the drag-with-edge-pan workloads ([MAP17_ACCEPTANCE](MAP17_ACCEPTANCE.md), "Drag with
 edge pan (UI-407)"): `drag-edge-fp` and `drag-edge-sh` carry each side's own largest army that can march, on the
@@ -758,6 +868,10 @@ PASS**, 33.8 s. Python: `python3 scripts/test_map_profile.py` 14/14 PASS.
 | 37 | A Kings game with a Corrupted king | Zoom in on his capital; then choose an action that acts on him | A small dark iron puck with an ember rim and the crown under the Eye lies beside the forces with its shadow; while a click chooses him a gold halo lies behind it |
 | 38 | The Fellowship on a region, then on the Mordor track | Zoom in on it | The figure stands on a round blue base with a shadow; on the track it stands on its step on the same base, as large as before |
 | 39 | A lone character outside the armies (`fp-character-move-*`) | Zoom out to the whole map | Its portrait medallion reads as a thick coin with a shadow |
+| 40 | The dense board (`map17-dense`): Helm's Deep besieged, Strider, Gimli and Legolas in the garrison | Look at Helm's Deep on the whole map, then zoomed in | Both counts read: the besieger's 13 and the garrison's 7, far out on the pucks and zoomed in on the plaques; no companion stands on a plaque (UI-425) |
+| 41 | Standard setup | Zoom out to the whole map, then a little further onto the margins | Every army's puck stands just above its settlement's stone, which stays in view; zooming out past the whole map, the pucks and stones shrink with the map (UI-425) |
+| 42 | A Kings game with Corrupted Denethor (or any Corrupted king) | Look at his capital from the whole map to the closest zoom | His marker stands beside the forces and never covers an army's count or plaque, or a stone (UI-425) |
+| 43 | Any board | Zoom from the whole map to the closest over Helm's Deep, Minas Tirith and Fords of Isen | A name is never split or covered by its own stone: it steps aside, or where it cannot (Helm's Deep, zoomed in at 125 %), it hides until there is room (UI-426) |
 
 ## Superseded statements
 
