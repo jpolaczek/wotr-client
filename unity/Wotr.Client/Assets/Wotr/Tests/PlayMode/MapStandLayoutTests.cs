@@ -63,7 +63,7 @@ namespace Wotr.PlayTests
 
         // A siege at Helm's Deep with neighbours around it, and a tight region (Edoras) that shows tokens until there is
         // room for its figures.
-        private static BoardFixture Siege()
+        internal static BoardFixture Siege()
         {
             var fixture = new BoardFixture();
             fixture.Put("rohan", UnitKind.Regular, "helms-deep", 2);
@@ -83,7 +83,7 @@ namespace Wotr.PlayTests
 
         // Each shown force stands with its feet on its place (the garrison at the gate, a field force on the field), at
         // its level's size: figures at the zoom clamped to the readable range, a token within its own.
-        private static void AssertOnPlaces(MapCanvas map, string label)
+        internal static void AssertOnPlaces(MapCanvas map, string label)
         {
             foreach (var army in map.Data.Armies)
             {
@@ -111,7 +111,7 @@ namespace Wotr.PlayTests
         }
 
         // UI-401: the stand layer is sorted by the feet on the board, so a nearer (lower) figure is drawn in front.
-        private static void AssertNearerInFront(MapCanvas map, string label)
+        internal static void AssertNearerInFront(MapCanvas map, string label)
         {
             var feet = map.Stands.Layer.Children().Select(child => ((MapStand)child.userData).Feet.y).ToList();
             for (var i = 1; i < feet.Count; i++)
@@ -120,7 +120,7 @@ namespace Wotr.PlayTests
 
         // At the Detail zoom the siege shows both sides as figures, the nearer garrison in front, sharing no more than a
         // quarter of either; Edoras, too tight for figures at scale 1, shows its token until the zoom gives it room.
-        private static void AssertSiege(MapCanvas map, string label)
+        internal static void AssertSiege(MapCanvas map, string label)
         {
             var garrison = map.Q<Button>("army-helms-deep-FreePeoples-garrison");
             var besieger = map.Q<Button>("army-helms-deep-Shadow");
@@ -151,7 +151,7 @@ namespace Wotr.PlayTests
             return result;
         }
 
-        private static string Name(ArmyMarker army) => "army-" + army.RegionId + "-" + army.Side + (army.Garrison ? "-garrison" : "");
+        internal static string Name(ArmyMarker army) => "army-" + army.RegionId + "-" + army.Side + (army.Garrison ? "-garrison" : "");
 
         private static float Overlap(Rect a, Rect b) =>
             Mathf.Max(0, Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin)) *

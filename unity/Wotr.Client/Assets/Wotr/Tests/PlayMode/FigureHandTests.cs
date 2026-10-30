@@ -217,7 +217,7 @@ namespace Wotr.PlayTests
         internal static float RaisedTop(VisualElement piece) => piece.Query<Image>(className: "army-silhouette").ToList()
             .Where(image => !image.ClassListContains(MapArmyArtwork.UnusedClass)).Min(image => image.worldBound.yMin);
 
-        private static void AssertOnPlace(MapCanvas map, VisualElement ring, Vector2 place, string message)
+        internal static void AssertOnPlace(MapCanvas map, VisualElement ring, Vector2 place, string message)
         {
             var point = map.LocalToWorld(map.Camera.ToScreen(place));
             Assert.AreEqual(point.x, ring.worldBound.center.x, 1.5f, message);

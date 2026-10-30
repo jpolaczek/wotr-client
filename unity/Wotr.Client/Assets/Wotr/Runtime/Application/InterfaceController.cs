@@ -25,14 +25,19 @@ namespace Wotr.Client
         // AUDIO-02: the application's one sound owner; games come and go, it stays.
         public SoundModule Sounds { get; } = new SoundModule();
 
-        public InterfaceController(VisualElement root, PanelSettings panel, InterfacePreferences preferences = null)
+        // ownsWindow false: the saved resolution and window mode are not applied (a Development Player profile run sizes
+        // its window itself, UI-407).
+        public InterfaceController(VisualElement root, PanelSettings panel, InterfacePreferences preferences = null,
+            bool ownsWindow = true)
         {
             this.root = root;
             this.panel = panel;
             Preferences = preferences ?? new InterfacePreferences();
             var screen = new UnityDisplayScreen();
             Settings = new InterfaceSettingsPanel(Preferences, Windows.Clear, screen, Sounds.TestSound);
-            display = new DisplayController(Preferences, screen);
+            display = ownsWindow
+                ? new DisplayController(Preferences, screen)
+                : new DisplayController(Preferences, screen, (_, _) => { });
             // UI-176: follow the game window to another screen.
             displayRefresh = root.schedule.Execute(display.Refresh).Every(1000);
             Barrier = new CursorBarrier(Preferences);

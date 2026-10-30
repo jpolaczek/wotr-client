@@ -622,6 +622,99 @@ flight per destination marker, rendered with the same miniature.
 - The Fellowship's figure stands on the characters' round blue stand, 16 board units wide, without UI-201's blue
   underline (UI-406).
 
+## Acceptance (UI-407)
+
+The automated part of UI-407, run on `expansions` 34bfe20d plus this change (2026-10-30, macOS 15.6.1, Apple M1 Pro,
+Unity 6000.6.0f1). The owner's playtest (the checklist below) and the owner's review of the defaults above are still
+open: UI-407 is not done until both are recorded.
+
+**Screen matrix** (PlayMode `TabletopAcceptanceMatrixTests`, with `TabletopFrameChecks` and `TabletopCarryScene`). Every
+frame is saved as `.artifacts/screenshots/ui407-*.png` before its checks run, and a failed check is collected with its
+frame, so one run shows the whole matrix. 72 frames:
+
+| Frames | Board and seats | What each frame asserts |
+| --- | --- | --- |
+| `ui407-map17-{fp,sh}-{1366,1920}-{1.00,1.25}-{far,near}` (16) | The seeder's `map17-dense` match, both real seats (HTTP/WebSocket): Helm's Deep's garrison of 7 with Strider, Gimli and Legolas besieged by 10 Isengard figures and 3 Nazgûl; Gondor's 14 in Westemnet. Far: the whole map (tokens); near: 2.2 × the whole map on Helm's Deep (miniatures). Nothing is sent. | The level (Detail only near; the focused forces as figures); every force's feet on its place at its board-unit size and design size (`MapStandLayoutTests.AssertOnPlaces`); the stand layer sorted by depth; every shown army's and character's feet inside its own region's contour; no shown region name under a stand; near: no figure on the middle of a settlement's stone, no two bases' top faces into each other, a garrison and its besieger sharing at most a quarter of either's picture. Per layout: both seats see every force on the same board point. |
+| `ui407-siege-{fp,sh}-…-{far,near}` (16) | UI-401's Helm's Deep siege with its neighbours (`MapStandLayoutTests.Siege`), seen from each seat | The same, plus UI-401's siege checks (`AssertSiege`: both sides as figures, the nearer garrison in front, Edoras's token until there is room). |
+| `ui407-carried-{fp,sh}-…-{far,near}` (16) | A fresh server scene per layout, `fp-army-move` and `sh-army-move`: the side's Army die, then a press that crosses the drag threshold on its largest army that can march (Minas Tirith's 5; Dol Guldur's 7, on the full setup board of 100 figures), carried over its first target (Drúadan
+Forest; Eastern Brown Lands) | The miniature under the pointer (its offset from the press kept); the target is the drag target and lights `CarriedTarget`; the green landing mark on the place the army would take; the caption above the carried figure; the figure on the map; no army ghost and no text label; the whole army lifted leaves its base empty. Esc puts it back onto its base. |
+| `ui407-edge-pan-{fp,sh}-…` (8) | The same scenes, near | Held in an edge zone that can pan: within the dwell the map stays, after it the map has panned more than 20 points, the army is still under the pointer, and the drag target is the region under the pointer again. |
+| `ui407-flight-{fp,sh}-…` (8) | The same scenes: the army dropped on its target, so the real server takes the march | The own seat's flight leaves from where the army was dropped (within a board unit) and, about half way, its ground lies on the straight line between its two points, the miniature above it, landing on the destination force's place. |
+| `ui407-flight-observed-{sh,fp}-…` (8) | The opponent's seat watching that march | The flight leaves from the force's own stand point and runs on the ground between the stand points, above its shadow, to the destination's place. |
+
+Command: `bash scripts/test-client.sh -testFilter Wotr.PlayTests.TabletopAcceptanceMatrixTests` (the pinned server and
+seeder; one class per run). Results: first run **4/4 PASS** (dense board 8.8 s, siege 7.7 s, Free Peoples carry 36.4 s,
+Shadow carry 36.2 s) with no finding; the static half again with the occlusion measurements below, 2/2 PASS; and the final
+run on the finished change with the classes whose helpers it reuses — `TabletopAcceptanceMatrixTests`,
+`BoardInteractionTests`, `FigureHandTests`, `MapStandLayoutTests`, `TabletopObjectsTests` — **35/35 PASS** (21, 5, 1, 4,
+4), no finding, the same measurements, and UI-405's drag cost p50 0.299 ms, p95 0.329 ms, max 0.644 ms. The first layout
+of each carry test also records the side's projection as it arrived (`.artifacts/ui407-map-drag.json`, `drag-fp` and
+`drag-sh`) for the profile's drag workloads.
+
+**Occlusions measured** beyond UI-422's limits (logged per frame as `UI-407 measure`: a pick at a count badge's middle,
+or at a settlement stone's middle, that takes another stand's button):
+
+- The besieger's count is under the garrison at Helm's Deep in every far frame (16/16, both boards and seats), near on
+  the siege fixture at every layout (8/8) and near on map17 at 125 % (4/8).
+- A field army's token lies on the middle of its own region's settlement in every far frame: Westemnet's (16/16) and, on
+  the siege fixture, Edoras's (8/8). Near, no figure covers a settlement's middle (asserted).
+
+**Defects found** (seen in the pictures, measured where they could be):
+
+1. **The besieger's count is hidden at Helm's Deep** (`ui407-map17-*-far`, `ui407-siege-*-far`, `ui407-siege-*-near`,
+   `ui407-map17-*-1.25-near`). Far out the garrison's walled puck lies on the besieger's puck over its count badge (at
+   125 % the "13" is gone); zoomed in the garrison's figures — and on map17 Gimli, the last of the garrison's companions
+   in their row west of the gate — stand on the besieger's plaque, so its emblem and count read only at 100 % on map17.
+   UI-422's quarter rule holds for the pictures' rectangles but not for the plaque. Suggested fix: in
+   `scripts/export_map_stands.py` keep the field force's plaque (and, for tokens, its count badge) clear of the garrison's
+   group in the siege check, or hang the besieger's plaque on the side away from the gate.
+2. **Far out a token covers its own settlement** (`ui407-map17-*-far`: Westemnet under the 14; `ui407-siege-*-far`:
+   Westemnet and Edoras). The puck is centred on the field place, which UI-422 sets just above the gem for figures at scale
+   1, so its lower half lies on the stone. Suggested fix: stand the token's lower edge (not its middle) on the place, as
+   the figures' feet are, or keep the token level clear of the gem the way the places keep the figures clear.
+3. **"Helm's Deep" is split by its own stone at 125 %** (`ui407-map17-*-1.25-near`, `ui407-siege-*-1.25-near`: "Helm'
+   ◆ Deep"). UI-406's name-clear rule leaves the name where it is when it has no vertical room. Suggested fix: let the
+   name move sideways, or break the line before the stone.
+4. **At the map's edge the carried army is half cut off** (`ui407-edge-pan-*`): the pointer rests 8 points inside the
+   26-point zone and the figure is centred under it, so the map's edge clips half of it while the map pans. This is the
+   default "the lifted figure is clipped to the map"; the owner may prefer it drawn whole above the HUD while it is
+   carried.
+5. Minor: **over the target the landing mark lies under the carried army** when the pointer is on the landing place
+   (`ui407-carried-*-near`), so only its rim shows; the lit region and the caption still tell the move.
+
+None of these blocks a step: every frame's asserted checks pass. Each needs its own task (or the owner's acceptance as
+a default) before UI-407 can close.
+
+**Profile `map-profile-2`** with the drag-with-edge-pan workloads ([MAP17_ACCEPTANCE](MAP17_ACCEPTANCE.md), "Drag with
+edge pan (UI-407)"): `drag-edge-fp` and `drag-edge-sh` carry each side's own largest army that can march, on the
+projections the matrix recorded from the server, to an edge of the map and hold it there, so every measured frame carries
+the army while the edge pan runs (`MapDragProfile`). Run on a Development Player of this change
+(`BuildTasks.BuildMac`), `python3 scripts/review-map-client.py --input .artifacts/map17-profile.json --drag-input
+.artifacts/ui407-map-drag.json --output .artifacts/map17-player-ui407`, 2026-10-30 07:59 UTC: 44 workloads × (120 warm-up
++ 360 measured frames), 50 pictures, all in a 1366 × 768 or 1920 × 1080 window. Summary:
+[profiles/ui407-map17-macos.json](profiles/ui407-map17-macos.json).
+
+- **The drag workloads meet MC17's thresholds at every layout:** lowest FPS at 1080p 455.3 (Free Peoples) and 495.9
+  (Shadow), at 1366 × 768 706–958; frame p95 at most 4.86 ms, p99 at most 6.04 ms; the longest input-to-render 8.13 ms
+  (limit 100); no static border repaint. The army was carried in all 360 measured frames of each of the 8 cases (one lift
+  each), and the edge pan moved the map in 23–43 of them by 171–323 points.
+- **The script's verdict is FAIL, on MAP-17's own workloads:** `projection` at 1366 × 768 × 100 % and 1920 × 1080 × 125 %
+  had a longest input-to-render of 121.0 and 106.8 ms (limit 100); at 1080p `override-fate` reached 59.1 and 52.3 FPS
+  (its longest input-to-render 192.8 ms, also over the limit) and `override-whitehand` 57.1 FPS (target 60). MC17's quiet
+  run had 298, 260 and 238 FPS for these. The machine was heavily loaded during this run (load average 48–53 on 10 cores: other sessions,
+  Spotlight indexing, a running release build), and the idle map ran at about a quarter of MC17's rate too (397.6 against
+  1438.5 FPS at 1080p), so this run cannot tell a regression from the load. MC17 needs a rerun on an idle machine; if those three
+  workloads still miss it there, applying a whole projection has become slower since MAP-17 and needs its own task.
+- Two harness fixes were needed to run the profile at all, since no Player profile had run since MENU-12: a Development
+  profile run no longer lets the saved window mode (Fullscreen, a maximized window on macOS) override the window its
+  command line asks for (`InterfaceController(ownsWindow: false)` when `ProfileResolution.Requested`); and the stress
+  workloads centre Helm's Deep in the side of the map the pinned card leaves clear, since the card has grown and covered it
+  at 125 % (`MapProfileScene.ExposeSiege`). The profile switches seats with a fresh `TurnInteraction`, as a match session
+  does.
+
+**EditMode:** `bash scripts/unity.sh -runTests -testPlatform EditMode -testResults .artifacts/u407-edit.xml`, **1327/1327
+PASS**, 33.8 s. Python: `python3 scripts/test_map_profile.py` 14/14 PASS.
+
 ## Playtest checklist
 
 | # | Scenario | Steps | Expectation |

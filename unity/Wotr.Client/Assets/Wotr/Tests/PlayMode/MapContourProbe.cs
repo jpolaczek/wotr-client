@@ -210,6 +210,22 @@ namespace Wotr.PlayTests
             Drop(board, point);
         }
 
+        // UI-405: a point 8 points inside the map's edge on one side (right, left, top or bottom), within its 26-point edge
+        // zone, on exposed terrain (the HUD covers parts of the edges); null when that edge is covered along its middle.
+        internal static Vector2? EdgeTerrain(MapCanvas map, Vector2 side)
+        {
+            var area = map.worldBound;
+            for (var along = .3f; along < .8f; along += .02f)
+            {
+                var point = side.x != 0
+                    ? new Vector2(side.x > 0 ? area.xMax - 8 : area.xMin + 8, area.yMin + area.height * along)
+                    : new Vector2(area.xMin + area.width * along, side.y > 0 ? area.yMax - 8 : area.yMin + 8);
+                if (map.panel.Pick(point) == map)
+                    return point;
+            }
+            return null;
+        }
+
         internal static Vector2 ExposedMap(MapCanvas map)
         {
             for (var row = 1; row < 10; row++)

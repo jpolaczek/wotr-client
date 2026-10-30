@@ -278,24 +278,15 @@ namespace Wotr.PlayTests
                 $"p95 {costs[(int)(costs.Count * .95f)]:F3} ms, max {costs[costs.Count - 1]:F3} ms");
         }
 
-        private static string MapRegion(DraftToken token) =>
+        internal static string MapRegion(DraftToken token) =>
             token?.Object is DraftObject.Region or DraftObject.Army or DraftObject.Miniature ? token.RegionId : "";
 
         // A point in the map's right edge zone on exposed terrain (the HUD covers parts of the edges).
-        private static Vector2 EdgePoint(MapCanvas map)
-        {
-            var area = map.worldBound;
-            for (var row = .3f; row < .8f; row += .02f)
-            {
-                var point = new Vector2(area.xMax - 8, area.yMin + area.height * row);
-                if (map.panel.Pick(point) == map)
-                    return point;
-            }
-            throw new AssertionException("No exposed terrain on the map's right edge.");
-        }
+        private static Vector2 EdgePoint(MapCanvas map) =>
+            MapContourProbe.EdgeTerrain(map, Vector2.right) ?? throw new AssertionException("No exposed terrain on the map's right edge.");
 
         // The lifted miniature's middle (map-world) is where it should be.
-        private static void AssertUnder(VisualElement piece, Vector2 expected, string message)
+        internal static void AssertUnder(VisualElement piece, Vector2 expected, string message)
         {
             var shown = piece.Q("hand-lift").worldBound.center;
             Assert.Less(Vector2.Distance(expected, shown), 1.5f, message + $" (shown {shown}, expected {expected})");
