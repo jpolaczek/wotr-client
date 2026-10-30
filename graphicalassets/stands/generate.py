@@ -33,6 +33,22 @@ ITEMS = {
     "token-puck-shadow": f"A single thick round game token like a heavy enamelled coin lying flat on a table: the top face is smooth "
                          f"plain {SHADOW}, slightly domed with a raised bronze rim, and its side band shows its thickness in "
                          "darker red-black with a fine bronze line. The top face is empty: no emblem, no symbol.",
+    # UI-406: a garrison's token is the same puck walled with battlements, as its crenellated stand.
+    "token-puck-garrison-free": f"A single thick round game token like a heavy enamelled coin lying flat on a table, crowned "
+                                f"by a low ring of small crenellated battlements of pale grey stone standing all around its "
+                                f"top rim: inside the battlements the top face is smooth plain {FREE}, and its side band "
+                                "shows its thickness in darker blue with a fine gold line. The top face is empty: no emblem, "
+                                "no symbol.",
+    "token-puck-garrison-shadow": f"A single thick round game token like a heavy enamelled coin lying flat on a table, crowned "
+                                  f"by a low ring of small crenellated battlements of black jagged stone standing all around "
+                                  f"its top rim: inside the battlements the top face is smooth plain {SHADOW}, and its side "
+                                  "band shows its thickness in darker red-black with a fine bronze line. The top face is "
+                                  "empty: no emblem, no symbol.",
+    # UI-406: a Corrupted king's marker is a small dark puck; the code lays the crown and the Eye on its top face.
+    "puck-corrupted": "A single small thick round game token like a heavy coin lying flat on a table: the top face is smooth "
+                      "plain blackened iron with a faint ash-grey sheen, slightly domed, inside a raised rim of dull "
+                      "smouldering ember-orange metal, and its side band shows its thickness in black iron with a thin "
+                      "ember-red line. The top face is empty: no emblem, no symbol.",
 }
 keys = sys.argv[1:] or list(ITEMS)
 log = open(ART + "generations-codex.jsonl", "a")

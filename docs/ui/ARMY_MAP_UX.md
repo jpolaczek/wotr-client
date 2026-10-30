@@ -53,7 +53,9 @@ what the target click sends (built by UI-405, 2026-10-30: [below](#ui-405)). The
 | Token | approximation < 1,3× match (return below 1,2×) | puck approx. 28 pt in the enamel of the page, coat of arms of the nation with the highest number of figures, total number; garrison has blanks on the upper edge |
 | Figures on the stand | approximation ≥ 1,3× match | up to three figures from the `board-figures-v2` atlas on the base of the page (approx. 76×56 pt, from UI-185 100×72 pt, from UI-192 116×84 pt); in front of the base game coats of arms of the nation (up to two, hereinafter ‘+’) and total number; garrison on the stand with blanks |
 
-The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 and 1920×1080 map. No tag disappears at a distance. The level switch changes only the class (`army-token`/`army-figures`) without redevelopment of the elements. The Silvets retain the priority of `MapArmyArtwork` (the character, elite, regular, leader or Nazgûl). figure in the atlas is common to the page; the nation shows the coat of arms with `Art/UI/icons/nations`.
+Since UI-406 (2026-10-30) the token is a puck lying on the table: the painted enamel puck (a garrison's walled with
+battlements) over a contact shadow, emblem and count on it, the state a rim round it ("Tokens, kings and settlements on
+the table — UI-406" below). The thresholds are start values; UI-126 fine-tunes them on the entire 1366×768 and 1920×1080 map. No tag disappears at a distance. The level switch changes only the class (`army-token`/`army-figures`) without redevelopment of the elements. The Silvets retain the priority of `MapArmyArtwork` (the character, elite, regular, leader or Nazgûl). figure in the atlas is common to the page; the nation shows the coat of arms with `Art/UI/icons/nations`.
 
 <a id="położenie"></a>
 ### Location
@@ -236,8 +238,8 @@ Category `graphicalassets/ui/src/armies/`, entries in `assets.json`, contract in
 
 | Group | Files | Options |
 | --- | --- | --- |
-| Bases | `base-field` (76×22), `base-garrison` (76×28, wall with blanks) | `free`/`shadow` × base, `selected`, `eligible`, `pressed`, `moved` |
-| Tokens | `token-field` (30×30), `token-garrison` (30×34, crown blank) | like a stand |
+| Bases | `base-field` (76×22), `base-garrison` (76×28, wall with blanks) — removed by UI-406 (the UI-400 stands replaced them) | `free`/`shadow` × base, `selected`, `eligible`, `pressed`, `moved` |
+| Tokens | `token-field` (30×30), `token-garrison` (30×34, crown blank) — removed by UI-406 (the puck `token-puck-*` and the rim `rim-token`) | like a stand |
 | Characters | `moved-check` (14×14), `ghost-outline` (48×48, 9-slice) | — |
 | Reserves | `reserve-slot` (48×48, 9-slice), `budget-slot` (18×18) | `selected`, `pressed`; `filled` |
 | Cards | variant `playable`lic card in hand: green glow (UI-124) | — |
@@ -772,7 +774,7 @@ plinth pictures: eligible and a king's target (legal green), ability owner (ambe
 (dim gold), moved (a veil); ChoiceGlow stays, as a capsule round the stand. The nation emblems and the count are a
 code-drawn plaque on the stand's front. Only the stand's ellipse and the figures' boxes take a press (`MiniatureButton`),
 so the headroom above a figure passes it to whatever lies behind. No filter is used on a map army. The far-zoom token
-keeps its UI-125 pictures until UI-406. Tests: `MapArmyArtworkTests`, `UiArtKitTests`.
+kept its UI-125 pictures until UI-406 (below). Tests: `MapArmyArtworkTests`, `UiArtKitTests`.
 
 ## Figures on their places, sized with the map — UI-401 (2026-10-30)
 
@@ -904,3 +906,33 @@ Tests: `DraftTests`, `MapFigureHandTests`, `MapFlightTests` (EditMode); `DraftIn
 `UI405AnIllegalDropOrEscapeSendsNothingAndLeavesTheDraftAsItWas`, `UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell`,
 `ArmyDragAndEscapeCannotSpendTheSelectedDie`), `FigureHandTests`, `MapContourInteractionTests`,
 `TravelGestureNetworkTests` (PlayMode).
+
+<a id="ui-406"></a>
+## Tokens, kings and settlements on the table — UI-406 (2026-10-30)
+
+UI-406 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), decisions 3 and 4, "As built (UI-406)"): what the map shows far
+out, and the settlements and kings at every zoom, get the miniatures' physical language. The two zoom levels stay.
+
+- **The token** is a puck lying on the table: the painted enamel puck of its side — a domed top face, a side band for its
+  thickness and a gilt (Free Peoples) or bronze (Shadow) rim — over the contact shadow down and right, 44 points wide at
+  its design size (UI-401's `clamp(40 × zoom, 32, 44)`). A garrison's puck is walled with crenellated stone, so the
+  battlements of UI-125 stay; it is now as large as a field army's. The nation emblem lies on the top face and the count
+  on the band, as before.
+- **States** are a rim drawn round the puck (`rim-token`) instead of a whole picture per state, in the stands' colours:
+  a legal source or a king's target green, a chosen or armed force gold, pressed dim gold, an ability owner amber, a
+  marched force veiled with ✓. ChoiceGlow's pulsing halo is a capsule round the puck. The colour meanings are unchanged.
+- **A character's token** — its portrait in its side's medallion — is a thick coin with a shadow.
+- **Settlements** are gem stones on the table: a darker band of side facets below the girdle (and below a Stronghold's
+  gold setting) and a soft shadow down and right; the control colour is unchanged (UI-195). They are sized
+  `clamp(zoom / reference, .85, 1.4)` of the UI-195 size, the reference being the worst-case Detail zoom, so between the
+  clamps a gem keeps one size on the board like the figures. Each gem is painted once and moved with the map by a
+  transform; a camera move repaints no gem and no vector layer, and only a change of control repaints its gem. A
+  region's name that its own gem reaches into moves just clear of the stone, within its room.
+- **A Corrupted king's marker** is a small dark iron puck with an ember rim and the crown under the Eye, over its shadow;
+  a click that chooses him lights a steady gold halo behind it.
+- **The legend** shows the pucks and their rims.
+- **Supersedes** the token pictures of "Graphics to create" (UI-125) and UI-301's "the plinth … keep their pictures"
+  for the token; UI-125's `base-*` and `token-*` art is removed.
+
+Tests: `MapArmyArtworkTests`, `TabletopObjectsTests`, `MapSettlementGemsTests`, `MapStandScaleTests`, `UiArtKitTests`,
+`SovereignMapTests`, `MapVisibilityTests`, `MapRegionNamesTests`.

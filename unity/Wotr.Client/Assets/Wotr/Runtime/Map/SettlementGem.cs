@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Wotr.Contracts;
@@ -7,7 +8,9 @@ namespace Wotr.Client
     // UI-195: a settlement on the map is a cut gemstone in the colour of the side that controls it, sapphire for the
     // Free Peoples and ruby for the Shadow. The cut tells its kind: a round brilliant for a Town, an emerald cut for a
     // City, a cushion in a gold setting for a Stronghold and a trillion for a Fortification (the ruins of Osgiliath,
-    // the Fords of Isen). Shapes are unit polygons with y pointing down, scaled to points on the screen.
+    // the Fords of Isen). Shapes are unit polygons with y pointing down, scaled to points on the screen. UI-406
+    // (TABLETOP_FIGURES_UX, "Settlements"): the stone lies on the table — a band of side facets below its girdle gives it
+    // thickness, and a soft shadow falls from it down and to the right.
     public sealed class SettlementGem
     {
         public static readonly GemPalette Sapphire = new GemPalette(new Color(.62f, .80f, 1f), new Color(.17f, .42f, .86f), new Color(.04f, .13f, .40f));
@@ -16,6 +19,12 @@ namespace Wotr.Client
         public static readonly GemPalette Gold = new GemPalette(new Color(1f, .88f, .52f), new Color(.80f, .60f, .24f), new Color(.42f, .28f, .08f));
         public static readonly Color Edge = new Color(.07f, .06f, .05f, .9f);
         public const float SettingScale = 1.3f;
+        // UI-406: the side band's depth, a share of the stone's size; the shadow's offset and its soft outer step.
+        public const float ThicknessShare = .2f;
+        public static readonly Vector2 ShadowOffset = new Vector2(1.6f, 1.9f);
+        public const float ShadowSpread = 1.16f;
+        public static readonly Color Shadow = new Color(.07f, .06f, .05f, .4f);
+        public static readonly Color ShadowFringe = new Color(.07f, .06f, .05f, .18f);
         // Light falls from the upper left, as on the rest of the board's art.
         private static readonly Vector2 Light = new Vector2(-.6f, -.8f);
 
@@ -80,6 +89,55 @@ namespace Wotr.Client
         public Vector2[] SettingOutline(Vector2 at) => Scaled(at, Size * SettingScale);
 
         public Vector2[] Table(Vector2 at) => Scaled(at, Size * TableScale);
+
+        // UI-406: how deep the band of side facets below the girdle (or the gold setting) is.
+        public float Thickness => Size * ThicknessShare;
+
+        // The outermost ring seen from above: the gold setting of a Stronghold, otherwise the girdle.
+        public Vector2[] Rim(Vector2 at) => Setting ? SettingOutline(at) : Outline(at);
+
+        // The side facet below edge i of a ring: the faces turned down show, darker than the crown and lit from the left.
+        public static bool FacesDown(Vector2[] ring, int edge, Vector2 at) =>
+            ((ring[edge] + ring[(edge + 1) % ring.Length]) / 2 - at).y > .05f;
+
+        public static Color SideFacet(GemPalette palette, Vector2[] ring, int edge, Vector2 at)
+        {
+            var middle = (ring[edge] + ring[(edge + 1) % ring.Length]) / 2 - at;
+            var facing = (Vector2.Dot(middle.normalized, Light.normalized) + 1) / 2;
+            var colour = Color.Lerp(palette.Dark * .55f, palette.Mid * .75f, facing);
+            colour.a = 1;
+            return colour;
+        }
+
+        // The stone's whole silhouette on the table: its rim and the rim lowered by the thickness, as one convex outline.
+        public Vector2[] Silhouette(Vector2 at)
+        {
+            var rim = Rim(at);
+            var lowered = rim.Select(point => point + new Vector2(0, Thickness));
+            return ConvexHull(rim.Concat(lowered).ToList());
+        }
+
+        // Andrew's monotone chain: the convex outline of a few points.
+        internal static Vector2[] ConvexHull(List<Vector2> points)
+        {
+            points.Sort((a, b) => a.x != b.x ? a.x.CompareTo(b.x) : a.y.CompareTo(b.y));
+            var hull = new List<Vector2>();
+            for (var pass = 0; pass < 2; pass++)
+            {
+                var start = hull.Count;
+                foreach (var point in points)
+                {
+                    while (hull.Count >= start + 2 && Cross(hull[hull.Count - 2], hull[hull.Count - 1], point) <= 0)
+                        hull.RemoveAt(hull.Count - 1);
+                    hull.Add(point);
+                }
+                hull.RemoveAt(hull.Count - 1);
+                points.Reverse();
+            }
+            return hull.ToArray();
+        }
+
+        private static float Cross(Vector2 o, Vector2 a, Vector2 b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
 
         // The facet between girdle points i and i + 1: lighter the more it faces the light.
         public Color Facet(int edge, GemPalette palette)

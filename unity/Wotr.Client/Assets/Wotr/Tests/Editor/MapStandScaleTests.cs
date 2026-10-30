@@ -82,6 +82,20 @@ namespace Wotr.EditorTests
             Assert.AreEqual(1, At(2).Token, 1e-5f);
         }
 
+        // UI-406: a settlement gem is clamp(zoom / reference, .85, 1.4) of its UI-195 size, the reference being the
+        // worst-case Detail zoom: there it has its UI-195 size, the size the stand places keep clear of, and between the
+        // clamps it keeps one size on the board, so it never grows into a figure's place.
+        [Test]
+        public void TheGemScalesWithTheMapWithinItsClampsAndNeverOutgrowsTheStandPlacesMargin()
+        {
+            Assert.AreEqual(1, At(minimum).Gem, 1e-5f);
+            Assert.AreEqual(1.2f, At(minimum * 1.2f).Gem, 1e-5f);
+            Assert.AreEqual(MapStandScale.GemSmallest, At(minimum * .5f).Gem, 1e-5f);
+            Assert.AreEqual(MapStandScale.GemLargest, At(CameraState.ClosestZoom).Gem, 1e-5f);
+            for (var zoom = minimum; zoom <= CameraState.ClosestZoom; zoom += .05f)
+                Assert.LessOrEqual(At(zoom).Gem / zoom, 1 / minimum + 1e-5f, "Board size at zoom " + zoom);
+        }
+
         // The miniature's design: its stand is the army's base and an elite stands as tall as the base is wide, so a
         // figure drawn at the footprint's scale 1 keeps within its footprint's width.
         [Test]

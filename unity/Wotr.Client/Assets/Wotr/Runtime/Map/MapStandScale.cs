@@ -17,17 +17,25 @@ namespace Wotr.Client
         public const float CharacterTokenUnits = 20;
         public const float CharacterTokenMinimum = 18;
         public const float CharacterTokenDesign = 24;
+        // UI-406: a settlement gem is sized clamp(zoom / reference, .85, 1.4) of its UI-195 size. The reference is the
+        // worst-case Detail zoom, where the stand places (UI-422) keep clear of the gems at that size, so between the
+        // clamps a gem keeps one size on the board, like the figures, and never grows into a figure's place.
+        public const float GemSmallest = .85f;
+        public const float GemLargest = 1.4f;
         // Figures come back to tokens only once the footprint exceeds the capacity by the Detail level's hysteresis.
         public const float CapacityHysteresis = MapMarkerVisibility.FiguresFrom / MapMarkerVisibility.TokensBelow;
         private const float Tolerance = 1e-4f;
 
         public readonly float Zoom;
         public readonly float PointsPerUnit;
+        // The worst-case Detail zoom, the footprints' scale 1 and the gems' reference.
+        public readonly float Reference;
 
         public MapStandScale(float zoom, float minimum, float maximum)
         {
             Zoom = zoom;
             PointsPerUnit = Mathf.Clamp(zoom, minimum, maximum);
+            Reference = minimum;
         }
 
         // The scale of the stand footprints on the board: 1 between the clamps.
@@ -42,6 +50,9 @@ namespace Wotr.Client
         // The element scale of a character's token.
         public float CharacterToken =>
             Mathf.Clamp(CharacterTokenUnits * Zoom, CharacterTokenMinimum, CharacterTokenDesign) / CharacterTokenDesign;
+
+        // UI-406: the element scale of a settlement gem.
+        public float Gem => Reference > 0 ? Mathf.Clamp(Zoom / Reference, GemSmallest, GemLargest) : 1;
 
         // Whether a region's group fits its capacity at this footprint; `shown` keeps figures until the hysteresis.
         public bool Fits(float capacity, bool shown) =>

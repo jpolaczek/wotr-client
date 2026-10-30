@@ -129,7 +129,7 @@ namespace Wotr.Client
         public static float ShadowSize(FlightFrame frame) =>
             Mathf.Lerp(1, ShadowScale, frame.Lift) * (1 - HighShadowScale * High(frame));
 
-        // `standing` is the shadow's opacity under a standing figure (the Fellowship's figure has none on the table).
+        // `standing` is the shadow's opacity under a standing figure (each has its contact shadow on the table, UI-406).
         public static float ShadowAlpha(FlightFrame frame, float standing) =>
             Mathf.Lerp(standing, ShadowOpacity, frame.Lift) * (1 - HighShadowFade * High(frame));
 

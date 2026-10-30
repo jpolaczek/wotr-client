@@ -102,7 +102,10 @@ namespace Wotr.PlayTests
                     Assert.IsTrue(map.Q<Button>("mordor-track-step-1").ClassListContains(MapMordorTrack.PassedClass));
                     Assert.IsFalse(map.Q<Button>("mordor-track-step-4").ClassListContains(MapMordorTrack.PassedClass));
                     Assert.That(figure.worldBound.center.x, Is.EqualTo(step.worldBound.center.x).Within(2f), "The figure stands on its step.");
-                    Assert.That(figure.worldBound.yMax, Is.EqualTo(step.worldBound.center.y + 4).Within(3f));
+                    // UI-406: the figure stands on its round base, the middle of the base's top face on the step.
+                    var stand = figure.Q("fellowship-stand").worldBound;
+                    Assert.That(stand.yMin + stand.height * .357f, Is.EqualTo(step.worldBound.center.y).Within(3f));
+                    Assert.That(stand.center.x, Is.EqualTo(step.worldBound.center.x).Within(2f));
                     Assert.AreEqual(DisplayStyle.Flex, step.Q<Label>("mordor-step-number").resolvedStyle.display, "Zoomed in, steps show numbers.");
                     Assert.AreEqual("7/12", map.Q<Label>("fellowship-mordor-corruption").text);
                     Assert.AreEqual(DisplayStyle.Flex, map.Q("fellowship-mordor-idle").resolvedStyle.display);

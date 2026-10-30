@@ -8,7 +8,9 @@ namespace Wotr.Client
 {
     // UI-186: the names of the regions on the map in the board's lettering (Styles/MapNames.uss). Each name stands
     // at its point (MapRegionNamePoints), grows with the zoom up to a reading size, and is hidden while it would not
-    // fit its region, lie under a force, a marker or a panel, or leave the view. It never takes the pointer.
+    // fit its region, lie under a force, a marker or a panel, or leave the view. It never takes the pointer. UI-406: a
+    // settlement's gem grows with the map up to 1.4 times its UI-195 size, so a name printed just under (or over) its own
+    // settlement steps clear of the stone, as far as its room in the region allows.
     public sealed class MapRegionNames
     {
         public const string NameClass = "map-region-name";
@@ -18,6 +20,8 @@ namespace Wotr.Client
         private const float MajorLetterHeight = 12.5f;
         private const float MinimumSize = 8;
         private const float ReadingSize = 15;
+        // UI-406: the gap a name keeps from its own settlement's gem, in points.
+        private const float GemGap = 1;
         // The width of a capital in Cinzel, in letter heights, for choosing one or two lines.
         private const float CapitalWidth = .72f;
         // The widest letter spacing and the line height of the names at their reading size (Styles/MapNames.uss).
@@ -31,10 +35,13 @@ namespace Wotr.Client
         private IReadOnlyList<Rect> occupied;
 
         public VisualElement Root { get; } = new VisualElement { name = "map-region-names", pickingMode = PickingMode.Ignore };
+        // UI-406: where a region's own settlement gem lies on the map now, or null where it has none.
+        public System.Func<string, Rect?> Gem { get; set; }
 
         private sealed class Entry
         {
             public Label Label;
+            public string Region;
             public MapNamePoint Point;
             public float LetterHeight;
             public bool Shown;
@@ -56,7 +63,7 @@ namespace Wotr.Client
                 label.EnableInClassList(MajorClass, major);
                 label.style.visibility = Visibility.Hidden;
                 Root.Add(label);
-                var entry = new Entry { Label = label, Point = point, LetterHeight = height };
+                var entry = new Entry { Label = label, Region = region.Id, Point = point, LetterHeight = height };
                 label.RegisterCallback<GeometryChangedEvent>(_ => Measured(entry));
                 entries.Add(entry);
             }
@@ -142,23 +149,23 @@ namespace Wotr.Client
             this.viewport = viewport;
             this.occupied = occupied;
             foreach (var entry in entries)
-                Place(entry, camera, viewport, occupied);
+                Place(entry);
         }
 
         private void Measured(Entry entry)
         {
             if (camera != null)
-                Place(entry, camera, viewport, occupied);
+                Place(entry);
         }
 
-        private static void Place(Entry entry, CameraState camera, Rect viewport, IReadOnlyList<Rect> occupied)
+        private void Place(Entry entry)
         {
             var size = entry.LetterHeight * camera.Zoom;
             var measured = entry.Label.layout.size;
             var scale = Mathf.Min(size, ReadingSize) / ReadingSize;
             var drawn = measured * scale;
-            var centre = camera.ToScreen(entry.Point.Point);
-            var bounds = new Rect(centre - drawn / 2, drawn);
+            var bounds = ClearOfGem(entry, new Rect(camera.ToScreen(entry.Point.Point) - drawn / 2, drawn));
+            var centre = bounds.center;
             var show = size >= MinimumSize && measured.x > 0 &&
                 drawn.x <= entry.Point.HalfWidth * 2 * camera.Zoom && drawn.y <= entry.Point.HalfHeight * 2 * camera.Zoom &&
                 viewport.Contains(bounds.min) && viewport.Contains(bounds.max) && !Covered(bounds, occupied);
@@ -172,6 +179,17 @@ namespace Wotr.Client
                 entry.Shown = show;
                 entry.Label.style.visibility = show ? Visibility.Visible : Visibility.Hidden;
             }
+        }
+
+        // UI-406: a name its own settlement's gem reaches into moves just clear of it — down when it stands below the stone,
+        // up when above — while it stays within its vertical room at its point; otherwise it stays where it is.
+        private Rect ClearOfGem(Entry entry, Rect bounds)
+        {
+            if (!(Gem?.Invoke(entry.Region) is Rect gem) || !gem.Overlaps(bounds))
+                return bounds;
+            var shift = bounds.center.y >= gem.center.y ? gem.yMax + GemGap - bounds.yMin : gem.yMin - GemGap - bounds.yMax;
+            var room = entry.Point.HalfHeight * camera.Zoom - bounds.height / 2;
+            return Mathf.Abs(shift) <= room ? new Rect(bounds.x, bounds.y + shift, bounds.width, bounds.height) : bounds;
         }
 
         private static bool Covered(Rect bounds, IReadOnlyList<Rect> occupied)

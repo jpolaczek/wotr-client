@@ -175,27 +175,41 @@ namespace Wotr.Client
             Popup.Add(heading);
             var entries = new VisualElement { name = "map-legend-army-entries", style = { flexDirection = FlexDirection.Row,
                 flexWrap = Wrap.Wrap, marginTop = 4 } };
-            entries.Add(Entry("armies/token-field-free", "Field army: emblem, count"));
-            entries.Add(Entry("armies/token-garrison-shadow", "Garrison on the walls"));
-            entries.Add(Entry("armies/token-field-free-eligible", "Can act with the die"));
-            entries.Add(Entry("armies/token-field-free-selected", "Selected force"));
-            entries.Add(Entry("armies/token-field-free-moved", "Already marched"));
+            // UI-406: the token is a puck, the state a rim drawn round it.
+            entries.Add(Entry("armies/token-puck-free", "Field army: emblem, count"));
+            entries.Add(Entry("armies/token-puck-garrison-shadow", "Garrison on the walls"));
+            entries.Add(Entry("armies/token-puck-free", "Can act with the die", "armies/rim-token-rim-eligible"));
+            entries.Add(Entry("armies/token-puck-free", "Selected force", "armies/rim-token-rim-selected"));
+            entries.Add(Entry("armies/token-puck-free", "Already marched", "armies/rim-token-rim-moved"));
             Popup.Add(entries);
         }
 
-        // An entry of the art kit: armies/<name> keeps its UI-126 element name, other art its category's.
-        private static VisualElement Entry(string art, string text)
+        // An entry of the art kit: armies/<name> keeps its UI-126 element name, other art its category's. UI-406: a state
+        // rim lies over a puck as on the map (the rim art is the puck's 40 × 32 outline 2 points clear on every side).
+        private static VisualElement Entry(string art, string text, string rim = null)
         {
             var category = art.Substring(0, art.IndexOf('/'));
+            var shown = rim ?? art;
             var row = new VisualElement { name = (category == "armies" ? "map-legend-army-" : "map-legend-" + category + "-") +
-                art.Substring(category.Length + 1), style = { flexDirection = FlexDirection.Row,
+                shown.Substring(shown.IndexOf('/') + 1), style = { flexDirection = FlexDirection.Row,
                 alignItems = Align.Center, width = Length.Percent(50), height = 24 } };
-            var texture = Resources.Load<Texture2D>("Wotr/Art/UI/" + art);
-            row.Add(new VisualElement { style = { width = 20, height = 20, marginRight = 5, flexShrink = 0,
-                backgroundImage = texture, backgroundSize = new BackgroundSize(BackgroundSizeType.Contain) } });
+            var icon = new VisualElement { style = { width = 20, height = 20, marginRight = 5, flexShrink = 0,
+                backgroundImage = Resources.Load<Texture2D>("Wotr/Art/UI/" + art),
+                backgroundSize = new BackgroundSize(BackgroundSizeType.Contain) } };
+            if (rim != null)
+                icon.Add(Rim(rim));
+            row.Add(icon);
             row.Add(Text(text));
             return row;
         }
+
+        // The rim round a 20-point puck drawn 16 tall in its icon (20 × 16 inside 20 × 20, centred).
+        private static VisualElement Rim(string art) => new VisualElement { pickingMode = PickingMode.Ignore, style =
+        {
+            position = Position.Absolute, left = -1, top = 1, width = 22, height = 18,
+            backgroundImage = Resources.Load<Texture2D>("Wotr/Art/UI/" + art),
+            backgroundSize = new BackgroundSize(Length.Percent(100), Length.Percent(100))
+        } };
 
         private static Label Text(string value, string name = "")
         {

@@ -12,7 +12,8 @@ namespace Wotr.EditorTests
         private const string ArtRoot = "Wotr/Art/UI/";
         private static readonly string[] Translucent =
         {
-            "surfaces/cast-shadow", "armies/contact-shadow", "armies/rim-field-rim-moved", "armies/rim-character-rim-moved"
+            "surfaces/cast-shadow", "armies/contact-shadow", "armies/rim-field-rim-moved", "armies/rim-character-rim-moved",
+            "armies/rim-token-rim-moved"
         };
 
         // Logical sizes in points from the SVG sources; textures are rendered at twice that size.
@@ -76,7 +77,8 @@ namespace Wotr.EditorTests
             ("dice/special-vilya-pressed", 40, 40, true), ("dice/origins/vilya", 16, 16, true), ("dice/ruler-crown", 18, 12, true),
             ("kings/attempt", 22, 22, true), ("kings/status-initial", 12, 12, true), ("kings/status-awakened", 12, 12, true),
             ("kings/status-corrupted", 12, 12, true), ("kings/status-removed", 12, 12, true), ("kings/tile-back", 18, 18, true),
-            ("kings/marker-corrupted", 26, 26, true),
+            // UI-406: a Corrupted king's puck (Codex art, graphicalassets/stands) and the crown and Eye on it.
+            ("kings/puck-corrupted", 30, 24, true), ("kings/emblem-corrupted", 18, 18, true),
             ("dice/special-nenya", 40, 40, true), ("dice/special-nenya-hover", 40, 40, true), ("dice/special-nenya-lit", 40, 40, true),
             ("dice/special-nenya-pressed", 40, 40, true), ("dice/origins/nenya", 16, 16, true),
             ("dice/special-narya", 40, 40, true), ("dice/special-narya-hover", 40, 40, true), ("dice/special-narya-lit", 40, 40, true),
@@ -151,34 +153,19 @@ namespace Wotr.EditorTests
             ("battle/die-5-die-selected", 22, 22, true), ("battle/die-5-die-pressed", 22, 22, true),
             ("battle/die-6", 22, 22, true), ("battle/die-6-hit", 22, 22, true), ("battle/die-6-rerolled", 22, 22, true),
             ("battle/die-6-die-selected", 22, 22, true), ("battle/die-6-die-pressed", 22, 22, true),
-            // UI-125: army bases and tokens on the map, reserve slots and budget points of the Reinforcements panel.
-            // UI-400/UI-403: the miniatures' painted stands and pucks, contact shadow, state rims and landing mark.
+            // UI-125: reserve slots and budget points of the Reinforcements panel. UI-400/UI-403: the miniatures' painted
+            // stands and pucks, contact shadow, state rims and landing mark. UI-406: the garrison's walled pucks and the
+            // token's state rims replace UI-125's base and token pictures.
             ("armies/stand-field-free", 112, 44, true), ("armies/stand-field-shadow", 112, 44, true),
             ("armies/stand-garrison-free", 112, 48, true), ("armies/stand-garrison-shadow", 112, 48, true),
             ("armies/stand-character-free", 40, 28, true), ("armies/stand-character-shadow", 40, 28, true),
             ("armies/token-puck-free", 40, 32, true), ("armies/token-puck-shadow", 40, 32, true),
+            ("armies/token-puck-garrison-free", 40, 32, true), ("armies/token-puck-garrison-shadow", 40, 32, true),
+            ("armies/rim-token-rim-eligible", 44, 36, true), ("armies/rim-token-rim-selected", 44, 36, true),
+            ("armies/rim-token-rim-pressed", 44, 36, true), ("armies/rim-token-rim-ability", 44, 36, true),
+            ("armies/rim-token-rim-moved", 44, 36, true),
             ("armies/contact-shadow", 112, 20, true), ("armies/rim-field-rim-eligible", 116, 50, true), ("armies/rim-field-rim-selected", 116, 50, true), ("armies/rim-field-rim-pressed", 116, 50, true), ("armies/rim-field-rim-ability", 116, 50, true), ("armies/rim-field-rim-moved", 116, 50, true), ("armies/rim-character-rim-eligible", 44, 34, true), ("armies/rim-character-rim-selected", 44, 34, true), ("armies/rim-character-rim-pressed", 44, 34, true), ("armies/rim-character-rim-ability", 44, 34, true), ("armies/rim-character-rim-moved", 44, 34, true),
             ("armies/landing-mark-landing-move", 112, 36, true), ("armies/landing-mark-landing-attack", 112, 36, true),
-            ("armies/base-field-free", 76, 22, true), ("armies/base-field-shadow", 76, 22, true),
-            ("armies/base-field-free-selected", 76, 22, true), ("armies/base-field-shadow-selected", 76, 22, true),
-            ("armies/base-field-free-eligible", 76, 22, true), ("armies/base-field-shadow-eligible", 76, 22, true),
-            ("armies/base-field-free-pressed", 76, 22, true), ("armies/base-field-shadow-pressed", 76, 22, true),
-            ("armies/base-field-free-moved", 76, 22, true), ("armies/base-field-shadow-moved", 76, 22, true),
-            ("armies/base-garrison-free", 76, 28, true), ("armies/base-garrison-shadow", 76, 28, true),
-            ("armies/base-garrison-free-selected", 76, 28, true), ("armies/base-garrison-shadow-selected", 76, 28, true),
-            ("armies/base-garrison-free-eligible", 76, 28, true), ("armies/base-garrison-shadow-eligible", 76, 28, true),
-            ("armies/base-garrison-free-pressed", 76, 28, true), ("armies/base-garrison-shadow-pressed", 76, 28, true),
-            ("armies/base-garrison-free-moved", 76, 28, true), ("armies/base-garrison-shadow-moved", 76, 28, true),
-            ("armies/token-field-free", 30, 30, true), ("armies/token-field-shadow", 30, 30, true),
-            ("armies/token-field-free-selected", 30, 30, true), ("armies/token-field-shadow-selected", 30, 30, true),
-            ("armies/token-field-free-eligible", 30, 30, true), ("armies/token-field-shadow-eligible", 30, 30, true),
-            ("armies/token-field-free-pressed", 30, 30, true), ("armies/token-field-shadow-pressed", 30, 30, true),
-            ("armies/token-field-free-moved", 30, 30, true), ("armies/token-field-shadow-moved", 30, 30, true),
-            ("armies/token-garrison-free", 30, 34, true), ("armies/token-garrison-shadow", 30, 34, true),
-            ("armies/token-garrison-free-selected", 30, 34, true), ("armies/token-garrison-shadow-selected", 30, 34, true),
-            ("armies/token-garrison-free-eligible", 30, 34, true), ("armies/token-garrison-shadow-eligible", 30, 34, true),
-            ("armies/token-garrison-free-pressed", 30, 34, true), ("armies/token-garrison-shadow-pressed", 30, 34, true),
-            ("armies/token-garrison-free-moved", 30, 34, true), ("armies/token-garrison-shadow-moved", 30, 34, true),
             ("armies/moved-check", 14, 14, true), ("armies/ghost-outline", 48, 48, true),
             ("armies/reserve-slot", 48, 48, true), ("armies/reserve-slot-selected", 48, 48, true), ("armies/reserve-slot-pressed", 48, 48, true),
             ("armies/budget-slot", 18, 18, true), ("armies/budget-slot-filled", 18, 18, true)

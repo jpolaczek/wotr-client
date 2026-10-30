@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "aa7d5f0681bda906adca851beb8d2166683fdfdbab60ada410cccdd50b5ebfd5",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "552732f28b6a5e3d5e546f359d688c5ff4688152b905920a086e4b035d5b696c"
+    "assets.json": "29177207b6a784fb604f2491aace580c3506ad93a34cf9141147345b9820edf4"
   },
   "assets": [
     {
@@ -1368,20 +1368,20 @@
       "png_sha256": "272021f3e0949c9a0d52ed3339c9bfa1367a7dda9ccb6517a919acb12615a7af"
     },
     {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/marker-corrupted.png",
-      "source": "src/kings/marker-corrupted.svg",
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/kings/emblem-corrupted.png",
+      "source": "src/kings/emblem-corrupted.svg",
       "variant": null,
       "logical": [
-        26,
-        26
+        18,
+        18
       ],
       "pixels": [
-        52,
-        52
+        36,
+        36
       ],
       "alpha": true,
-      "source_sha256": "3a2b215a7e6ead209252fbfbe867a2a1bc27668ac04f8ab7214abf7897c885cb",
-      "png_sha256": "fc1a8ce1e3851c83f737354961fc696076e585e3e49f538caca958f39667ac12"
+      "source_sha256": "9062abbec76e936e23419db9a73f83ae695b4dd523906516252c5fd6028a0b43",
+      "png_sha256": "e74702a6a3cb9cde14601b642d1983c388177ff94a15a420e010316e7256e518"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/origins/gothmog.png",
@@ -3224,646 +3224,6 @@
       "png_sha256": "3e05dc9279ca00abc59b27b80fc9a3e44a1baaca806cfec26ce004b4a4e15f42"
     },
     {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "free",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "1e90efc964a357f57a7992fc894638ea4735772fd9158ce9cdbbaabda0298e5b"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "shadow",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "052c9caeb57a37a1d458ca7724cdb015c89c70338ed921bbd7f90f37b132ddd7"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-selected.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "free-selected",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "a7f3ccceb53bdbab67787bb338fdbedc7af6213e046541c0ad53c0da160db94a"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-selected.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "shadow-selected",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "0ff66c2207f0aebbf9d50307cfb400c799b821a91b8360d1ace1d3279b26c653"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-eligible.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "free-eligible",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "aab2b8ed1878e298c39a7e8c3e22303a47511af8c846bf587993d45c7bae05d7"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-eligible.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "shadow-eligible",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "d32f90a6a2f1f1a123ca3a6add51d123b93852346e868a4ca0f7d735b5f03636"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-pressed.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "free-pressed",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "267e3c957213b49051d9dfa159e83755daef32d339c52d46fde1f54fb9920e4c"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-pressed.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "shadow-pressed",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "5c5fcf642c563ff4b1334a0747263dff6bdf5d30521ad47a65808e1362fdfa4e"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-free-moved.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "free-moved",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "699eb9131194df2cacb399874253bc89f87fb878cd87ae4915f00d9ebbb01265"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-field-shadow-moved.png",
-      "source": "src/armies/base-field.svg",
-      "variant": "shadow-moved",
-      "logical": [
-        76,
-        22
-      ],
-      "pixels": [
-        152,
-        44
-      ],
-      "alpha": true,
-      "source_sha256": "989f6169a336ebf16d8705e8aa0f0fdfcae00c710dd8088d1c2048f15303b05f",
-      "png_sha256": "305b06bb0ff2aaab353080a69bee7366ad4e38e34566d36c9d3f0503ac433a20"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "free",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "c98233507483e8772b0c0691fed04ac00912c1deac4702999828ec982c798c4e"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "shadow",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "a8a9928a98b23961d8a0b4720458966dcd4598b5e198aabe10f6e7bfae81c187"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-selected.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "free-selected",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "08483f2eee7666565cef1c2dd97d5de91bda73d8d1f24df549ba496da19bc589"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-selected.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "shadow-selected",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "288f464d365e1e897ba0461315c9077e92b0d273f4ac5905dbf2d9a5bed5c840"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-eligible.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "free-eligible",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "8d7a5d4b29907aa85e41dced2970237994b6af4adc5f321b97b5dcf114192304"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-eligible.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "shadow-eligible",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "f7dabcfe3094bc91adea3e1105ff23e6b2dba73c5be1367c43d0d824ba87cb4e"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-pressed.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "free-pressed",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "a207268c028d1853933c84b6d777040fde5833ee29e716cfe9f62aca23cc33c3"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-pressed.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "shadow-pressed",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "0981c0741f31248d77e417935ed179c2768eadd1b55f79e357368a23713e4875"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-free-moved.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "free-moved",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "8517072566854b533c2a88451cd074ded3c8d8e9b6438d6bc5a2546acf9682db"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/base-garrison-shadow-moved.png",
-      "source": "src/armies/base-garrison.svg",
-      "variant": "shadow-moved",
-      "logical": [
-        76,
-        28
-      ],
-      "pixels": [
-        152,
-        56
-      ],
-      "alpha": true,
-      "source_sha256": "6881c497fb9e0b06b4a03613bbe101c9855fcfaf27441b43cfd6ad0bbb34aaa0",
-      "png_sha256": "1cf1e9f82e4c8e320866afc64c525c7bceb7c5b34ba171eca0114e2b30d64b13"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "free",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "80e7d4a3d04867330b575e05949d24c7489ad10d30d91d3b7209c031cfcfc80b"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "shadow",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "d4363a07fc3e536a79430a26b337efb70097b76cb58e3e4d645082dea6159155"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-selected.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "free-selected",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "0308084bb03689b0ada5ae9465483759ebcfc0df8b701c122bc452a6d989fd86"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-selected.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "shadow-selected",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "74ecf0bb9d408d684b2fe7deaa1b5b1ec0b19116edfb71930a322f8e1a3e611e"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-eligible.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "free-eligible",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "230852ddcf044ee581dc5bc4bf4c1bac77ee7274517711b52b4a356456b02a8c"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-eligible.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "shadow-eligible",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "8d9d71a3b30458b48085366b85cd2c3364e2fded83951eef6d94dfb4536b1656"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-pressed.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "free-pressed",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "1606ee55c63db3c5b38ca03a83a73ad285f79a4c07a8835d72c8a209c7f9b0b6"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-pressed.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "shadow-pressed",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "5c4819b9caeb4134794eef9899bdd9a9a2ea990171d06ebf42bede101c6262a9"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-free-moved.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "free-moved",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "4cd8670e2bded9be1ef37ddb9ea76eb5df71f4a288527108eadd40a9dd9fb60f"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-field-shadow-moved.png",
-      "source": "src/armies/token-field.svg",
-      "variant": "shadow-moved",
-      "logical": [
-        30,
-        30
-      ],
-      "pixels": [
-        60,
-        60
-      ],
-      "alpha": true,
-      "source_sha256": "fa99e2543891ae6780cfd478e3ddc044a996adaa02b67d37ff26578b7338bcc7",
-      "png_sha256": "54b6fe6da7a04d7aa063e7ada3f1d5dcd2a292f870643bf423a31a678f294c3a"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "free",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "905246156940cce7e62fc3c5af9e175cd9adede5d9f5aef8d813ad4e1801db42"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "shadow",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "ae58dd0797987bea9aa63a2106026607dd8642993ce8e4cb6ba1d5abc03369e5"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-selected.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "free-selected",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "35959b7d6f3c37850d41e706ebda36adb66b730f6428294c967f78e23e99a76c"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-selected.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "shadow-selected",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "eba2845d5020a29844f07cb33e4ca2ab2961fdc0a8a775281c95b37c0234346c"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-eligible.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "free-eligible",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "b2e7f4c9a642028ad8251d4873f062c4554dbd6fb985f867a2ae8a93c4580d14"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-eligible.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "shadow-eligible",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "3e68ce3871e5f572c9abb42ae28fe06c43ded586cd344ac9d878556bca8c42fe"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-pressed.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "free-pressed",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "5cbee75fe62d80e85a4f5bb743888adbd7aab0fd3105a60a8bd12266042e6f54"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-pressed.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "shadow-pressed",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "3adcdab8cac2783367c3db692220db28845bb77f79ba3c22b2c1edeb16a7bd5d"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-free-moved.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "free-moved",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "0d8ee844a9f1510488654004aa675b52614238eed5081572972e94483baac335"
-    },
-    {
-      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/token-garrison-shadow-moved.png",
-      "source": "src/armies/token-garrison.svg",
-      "variant": "shadow-moved",
-      "logical": [
-        30,
-        34
-      ],
-      "pixels": [
-        60,
-        68
-      ],
-      "alpha": true,
-      "source_sha256": "89b5136e3b35a0d77bb8c70c1730f25d5e1381da66bc1f9951823ed47ecf20b3",
-      "png_sha256": "84273df1f2bedc6255c2dd65698f3df89a61f09fccccfb48ca43781b0d38c3b4"
-    },
-    {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/moved-check.png",
       "source": "src/armies/moved-check.svg",
       "variant": null,
@@ -4150,6 +3510,86 @@
       "alpha": true,
       "source_sha256": "077e25bea3cd77f898deed1991a0a2ba4b87c4e6f8deb658dd5eaab6c0b4c8fb",
       "png_sha256": "0cfb20f3efc86a2bec99609eea777a25ff0c68ce5468d99ad4a0a15627e11060"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-token-rim-eligible.png",
+      "source": "src/armies/rim-token.svg",
+      "variant": "rim-eligible",
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "cc2e79840a244065c0c2d48d2c72c870941c3eb7bce526479286121e0c0e0bb3",
+      "png_sha256": "e4a024d9a7de1e8dcd80fb5f07a2963ce5bc1e784f0a8c17e4db6bbf1b5282fb"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-token-rim-selected.png",
+      "source": "src/armies/rim-token.svg",
+      "variant": "rim-selected",
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "cc2e79840a244065c0c2d48d2c72c870941c3eb7bce526479286121e0c0e0bb3",
+      "png_sha256": "58908ea9f71b709bb1bc4c666d777201ab773fd07d6e5eaaf62c2f50ff9323c0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-token-rim-pressed.png",
+      "source": "src/armies/rim-token.svg",
+      "variant": "rim-pressed",
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "cc2e79840a244065c0c2d48d2c72c870941c3eb7bce526479286121e0c0e0bb3",
+      "png_sha256": "395f5f4d206b649541693ce89f1bd3f3d18f12e33f5f3e3b3536d271d4255997"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-token-rim-ability.png",
+      "source": "src/armies/rim-token.svg",
+      "variant": "rim-ability",
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "cc2e79840a244065c0c2d48d2c72c870941c3eb7bce526479286121e0c0e0bb3",
+      "png_sha256": "f3340304dd0d2022a084a94275b81b3a07998c8c0a466f6ca3a1982a8007ce97"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/rim-token-rim-moved.png",
+      "source": "src/armies/rim-token.svg",
+      "variant": "rim-moved",
+      "logical": [
+        44,
+        36
+      ],
+      "pixels": [
+        88,
+        72
+      ],
+      "alpha": true,
+      "source_sha256": "cc2e79840a244065c0c2d48d2c72c870941c3eb7bce526479286121e0c0e0bb3",
+      "png_sha256": "82462ec2734c920b1814ed0f8908ad51911a882f115201fbb116afd053000f4e"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/armies/landing-mark-landing-move.png",

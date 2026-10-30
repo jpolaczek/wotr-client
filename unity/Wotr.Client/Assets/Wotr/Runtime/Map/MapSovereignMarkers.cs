@@ -11,11 +11,15 @@ namespace Wotr.Client
     // him when a decision or the selected die lights him (the tooltip says what it does), and otherwise shows his
     // information.
     // UI-344 (D1): after the first board, a new marker emerges by fading in and a marker gone fades out where it stood.
+    // UI-406 (TABLETOP_FIGURES_UX, "Kings"): the marker is a small puck lying on the table — the dark iron puck over its
+    // contact shadow, the crown under the Eye on its top face — and its lit halo lies behind it (Styles/Armies.uss).
     public sealed class MapSovereignMarkers
     {
         public const string ClassName = "sovereign-marker";
         public const string LitClass = "legal-target";
         public const string LeavingClass = "sovereign-marker-leaving";
+        // UI-406: the puck's parts, back to front.
+        private static readonly string[] Parts = { "sovereign-glow", "sovereign-shadow", "sovereign-puck", "sovereign-emblem" };
         private const long LeaveMilliseconds = 450;
         private bool seeded;
         private static readonly Vector2 Size = new Vector2(30, 34);
@@ -103,6 +107,8 @@ namespace Wotr.Client
         {
             var button = new Button(() => Selected?.Invoke(id)) { name = "sovereign-marker-" + id };
             button.AddToClassList(ClassName);
+            foreach (var part in Parts)
+                button.Add(Part(part));
             button.userData = new DraftToken(DraftObject.Sovereign, id);
             // A press on the marker belongs to it, not to the map's region click or pan.
             button.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
@@ -110,6 +116,14 @@ namespace Wotr.Client
             stand.Design(Size / 2, new Rect(Vector2.zero, Size));
             map.Stands.Add(stand);
             return new Marker { Button = button, Stand = stand };
+        }
+
+        // The element's name doubles as its class, which Styles/Armies.uss selects.
+        private static VisualElement Part(string name)
+        {
+            var element = new VisualElement { name = name, pickingMode = PickingMode.Ignore };
+            element.AddToClassList(name);
+            return element;
         }
 
         private sealed class Marker

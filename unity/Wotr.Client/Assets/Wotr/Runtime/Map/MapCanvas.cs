@@ -54,6 +54,8 @@ namespace Wotr.Client
         public bool Panning => panning;
         public MapFellowshipMarker FellowshipMarker { get; }
         public MapMordorTrack MordorTrack { get; }
+        // UI-406: the settlements' gems, each painted once and moved with the map by a transform.
+        public MapSettlementGems Settlements { get; }
         // The HUD panels over the map; region names hide under them (UI-199: forces do not avoid them).
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         // UI-305: the player moved the camera (wheel zoom or a right/middle-drag pan), never a programmatic move.
@@ -129,6 +131,10 @@ namespace Wotr.Client
             // UI-186: the names lie on the terrain, under the settlements, the markers and every panel.
             Names = new MapRegionNames(data);
             Add(Names.Root);
+            Settlements = new MapSettlementGems(this);
+            Settlements.Apply(data);
+            Add(Settlements.Layer);
+            Names.Gem = Settlements.Bounds;
             foreground = new VisualElement { name = "map-foreground", pickingMode = PickingMode.Ignore };
             foreground.StretchToParentSize();
             foreground.generateVisualContent += Draw;
@@ -504,6 +510,7 @@ namespace Wotr.Client
             CancelPress();
             Data = data;
             Renderer.UpdateMetadata(data);
+            Settlements.Apply(data);
             SyncMarkers();
             SovereignMarkers.Apply(data);
             Refresh();
@@ -562,6 +569,7 @@ namespace Wotr.Client
             }
             BeginLayout();
             Stands.Measure();
+            Settlements.Layout(Stands.Scale.Gem);
             MordorTrack?.Layout();
             FellowshipMarker?.Layout();
             LayoutMarkers();
@@ -1025,7 +1033,6 @@ namespace Wotr.Client
         private void Draw(MeshGenerationContext context)
         {
             var painter = context.painter2D;
-            MapSettlementVisual.Draw(painter, Data, Camera, contentRect);
             if (attentionPoint is Vector2 beside)
                 DrawAttention(painter, beside);
             else if (Data.Shapes.TryGetValue(AttentionRegion, out var attention))

@@ -902,8 +902,8 @@
       "role": "UI-274: a face-down tile drawn for a corruption attempt."
     },
     {
-      "source": "kings/marker-corrupted.svg",
-      "role": "UI-274: the map marker of a Corrupted king by his capital."
+      "source": "kings/emblem-corrupted.svg",
+      "role": "UI-406: the crown under the ember Eye on a Corrupted king's puck (the puck is Codex art, graphicalassets/stands)."
     },
     {
       "source": "dice/origins/gothmog.svg",
@@ -1327,74 +1327,6 @@
       }
     },
     {
-      "source": "armies/base-field.svg",
-      "role": "Figure base of a field army on the map (UI-125) in the enamel of its side; code stands the silhouettes on it.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
-      "source": "armies/base-garrison.svg",
-      "role": "Battlemented figure base of a garrison on the map (UI-125) in the enamel of its side.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
-      "source": "armies/token-field.svg",
-      "role": "Whole-map token of a field army (UI-125); code draws the nation emblem and the count.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
-      "source": "armies/token-garrison.svg",
-      "role": "Whole-map token of a garrison crowned with merlons (UI-125); code draws the emblem and the count.",
-      "variants": [
-        "free",
-        "shadow",
-        "free-selected",
-        "shadow-selected",
-        "free-eligible",
-        "shadow-eligible",
-        "free-pressed",
-        "shadow-pressed",
-        "free-moved",
-        "shadow-moved"
-      ],
-      "base": false
-    },
-    {
       "source": "armies/moved-check.svg",
       "role": "Badge of figures that already marched in this action (UI-125)."
     },
@@ -1448,6 +1380,18 @@
     {
       "source": "armies/rim-character.svg",
       "role": "UI-400: the state rim round a character's round base, as rim-field.",
+      "variants": [
+        "rim-eligible",
+        "rim-selected",
+        "rim-pressed",
+        "rim-ability",
+        "rim-moved"
+      ],
+      "base": false
+    },
+    {
+      "source": "armies/rim-token.svg",
+      "role": "UI-406: the state rim round a far-zoom token's puck (eligible, selected, pressed, ability) and the veil of a moved one.",
       "variants": [
         "rim-eligible",
         "rim-selected",

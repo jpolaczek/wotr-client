@@ -10,13 +10,22 @@ namespace Wotr.Client
         // Corruption, the missing-attempt mark and the drawn Hunt tile beside it.
         public const float MotionSeconds = .4f;
         // UI-185/UI-192: as large as the figures of the armies (MapArmyArtwork). UI-401: its design size; the map scales
-        // it, and it stands on its region's Fellowship place (UI-422).
-        internal static readonly Vector2 RegionSize = new Vector2(64, 72);
-        // UI-401: design points per board unit — the box spans the Fellowship's figure (36 units) and its base.
+        // it, and it stands on its region's Fellowship place (UI-422). UI-406 (TABLETOP_FIGURES_UX, "Fellowship figure"):
+        // the figure stands on a round Free Peoples base over a contact shadow, so the box runs on below its feet to hold
+        // the base; the figure keeps its 64 × 72 point box above it.
+        internal static readonly Vector2 RegionSize = new Vector2(64, 80);
+        private const float FigureHeight = 72;
+        // UI-401: design points per board unit — the figure is 36 units tall and its base 16 units wide.
         public const float DesignUnit = 1.8f;
-        // The point under the figure's feet on a region, and on the Mordor track's step (4 points below the box).
+        // The point under the figure's feet, the middle of its base's top face, on a region and on the Mordor track's step.
         internal static readonly Vector2 RegionFeet = new Vector2(32, 64);
-        private static readonly Vector2 TrackFeet = new Vector2(32, 68);
+        // UI-406: the round base (40 × 28 points of art) drawn 16 units wide; its top face's middle is .357 of its height
+        // down. The figure's box is its art's, its feet on the base.
+        private static readonly Vector2 BaseSize = new Vector2(16 * DesignUnit, 16 * DesignUnit * 28 / 40);
+        private const float FeetOnTopFace = .357f;
+        private static readonly Rect FigureBox = new Rect(2, RegionFeet.y - 62, 60, 62);
+        // UI-406: the figure on its base, as the characters' miniatures (MapCharacterArtwork) stand.
+        public const string MiniatureClass = "fellowship-miniature";
         // UI-283 (owner's request): on the Mordor track the figure is twice its first size, as large as on a region.
         private const float TrackDetail = 80, TrackToken = 64;
         private const float StatusWidth = 58;
@@ -93,15 +102,49 @@ namespace Wotr.Client
             pulse = new ChoicePulse(marker);
         }
 
-        // The figure on a region at its design size: the Fellowship's illustration and its Hidden or Revealed symbol. The
-        // map's own figure needs no panel glow (UI-201); UI-404's flight draws the same figure.
+        // The figure on a region at its design size: the Fellowship's illustration standing on its round Free Peoples base
+        // over a contact shadow, and its Hidden or Revealed symbol (the button's text). The map's own figure needs no panel
+        // glow (UI-201); UI-404's flight draws the same figure.
         internal static void Dress(Button figure, string symbol)
         {
             figure.AddToClassList("fellowship-marker");
-            FigureArtwork.Apply(figure, FigureAppearances.Fellowship, Side.FreePeoples, glow: false);
+            figure.AddToClassList(MiniatureClass);
+            figure.Add(Part("fellowship-contact-shadow", ShadowRect()));
+            figure.Add(Part("fellowship-stand", BaseRect()));
+            var image = FigureArtwork.Image(FigureAppearances.Fellowship);
+            image.name = "figure-art";
+            Place(image, FigureBox);
+            figure.Add(image);
             figure.style.width = RegionSize.x;
             figure.style.height = RegionSize.y;
             figure.text = symbol;
+        }
+
+        private static Rect BaseRect() => new Rect(RegionFeet.x - BaseSize.x / 2, RegionFeet.y - BaseSize.y * FeetOnTopFace,
+            BaseSize.x, BaseSize.y);
+
+        // The contact shadow lies under the base, a little down and right, as under a character's stand.
+        private static Rect ShadowRect()
+        {
+            var stand = BaseRect();
+            return new Rect(stand.x + 2.3f, stand.y + stand.height * .58f, stand.width, stand.height * .45f);
+        }
+
+        private static VisualElement Part(string name, Rect box)
+        {
+            var element = new VisualElement { name = name, pickingMode = PickingMode.Ignore };
+            element.AddToClassList(name);
+            Place(element, box);
+            return element;
+        }
+
+        private static void Place(VisualElement element, Rect box)
+        {
+            element.style.position = Position.Absolute;
+            element.style.left = box.x;
+            element.style.top = box.y;
+            element.style.width = box.width;
+            element.style.height = box.height;
         }
 
         // The Hidden or Revealed symbol the figure shows now.
@@ -256,8 +299,8 @@ namespace Wotr.Client
             marker.style.opacity = 1;
             var detail = map.MarkerVisibility.Detail;
             var point = map.Data.MordorTrack.PointAt(shownStep);
-            stand.Design(TrackFeet, new Rect(Vector2.zero, RegionSize));
-            var visible = map.Stands.Place(stand, point, (detail ? TrackDetail : TrackToken) / RegionSize.y);
+            stand.Design(RegionFeet, new Rect(Vector2.zero, RegionSize));
+            var visible = map.Stands.Place(stand, point, (detail ? TrackDetail : TrackToken) / FigureHeight);
             var withTile = visible && tileShown && detail;
             marker.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             status.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;

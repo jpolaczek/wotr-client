@@ -12,14 +12,14 @@ namespace Wotr.PlayTests
 {
     // UI-126: tokens and figures on a base, with emblems, counts and the picture of every state. UI-400: the figures are
     // miniatures — a painted stand with a contact shadow, the state as a rim, the feet on one line, and only the miniature
-    // takes a click.
+    // takes a click. UI-406: the token is a puck on the table too — its side's puck (a garrison's walled) over a contact
+    // shadow, the state as a rim drawn round it.
     public sealed class MapArmyArtworkTests
     {
-        private static readonly (string Class, string Suffix, string Rim)[] States =
+        private static readonly (string Class, string Rim)[] States =
         {
-            ("", "", ""), ("moved", "-moved", "rim-moved"), ("eligible-army", "", "rim-eligible"),
-            ("ability-owner", "-selected", "rim-ability"), ("selected-force", "-selected", "rim-selected"),
-            ("pressed", "-pressed", "rim-pressed")
+            ("", ""), ("moved", "rim-moved"), ("eligible-army", "rim-eligible"), ("ability-owner", "rim-ability"),
+            ("selected-force", "rim-selected"), ("pressed", "rim-pressed")
         };
 
         [UnityTest]
@@ -84,8 +84,7 @@ namespace Wotr.PlayTests
             if (sample.Figures)
                 CheckMiniature(sample);
             else
-                Assert.AreEqual(Picture(sample), button.Q("army-plinth").resolvedStyle.backgroundImage.texture?.name,
-                    "The token picture follows the side, garrison and state: " + button.name);
+                CheckToken(sample);
             // UI-301: an army a click may choose keeps its picture and wears the ChoiceGlow halo behind it, larger than
             // the marker; UI-374: so does the army of a figure whose ability a click uses; no other state shows the halo.
             var halo = button.Q("army-choice-glow");
@@ -129,7 +128,8 @@ namespace Wotr.PlayTests
             var button = sample.Button;
             var stand = button.Q("army-stand");
             Assert.AreEqual(Stand(sample), stand.resolvedStyle.backgroundImage.texture?.name, button.name);
-            Assert.AreEqual(DisplayStyle.None, button.Q("army-plinth").resolvedStyle.display, button.name);
+            Assert.AreEqual(DisplayStyle.None, button.Q("army-puck").resolvedStyle.display, button.name);
+            Assert.AreEqual(DisplayStyle.None, button.Q("army-token-rim").resolvedStyle.display, button.name);
             var shadow = button.Q("army-contact-shadow");
             Assert.AreEqual(DisplayStyle.Flex, shadow.resolvedStyle.display, button.name);
             AssertInside(shadow, button);
@@ -151,6 +151,33 @@ namespace Wotr.PlayTests
             Assert.AreNotSame(button, button.panel.Pick(above), "The headroom above the figures takes no press: " + button.name);
         }
 
+        // UI-406: the puck of the side (walled for a garrison), its contact shadow below it and to the right, and the
+        // state's rim round it instead of a picture per state; the miniature's stand and rim stay hidden.
+        private static void CheckToken(Sample sample)
+        {
+            var button = sample.Button;
+            var puck = button.Q("army-puck");
+            Assert.AreEqual(Puck(sample), puck.resolvedStyle.backgroundImage.texture?.name, button.name);
+            Assert.That(puck.worldBound.width, Is.EqualTo(button.worldBound.width).Within(.5f), "The puck spans the token: " + button.name);
+            var shadow = button.Q("army-contact-shadow");
+            Assert.AreEqual(DisplayStyle.Flex, shadow.resolvedStyle.display, button.name);
+            Assert.Greater(shadow.worldBound.yMax, puck.worldBound.yMax, "The shadow lies under the puck: " + button.name);
+            Assert.Greater(shadow.worldBound.center.x, puck.worldBound.center.x, "Light from the upper left: " + button.name);
+            var rim = States.First(s => s.Class == sample.State).Rim;
+            var rimElement = button.Q("army-token-rim");
+            Assert.AreEqual(rim.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None, rimElement.resolvedStyle.display, button.name);
+            if (rim.Length > 0)
+            {
+                Assert.AreEqual("rim-token-" + rim, rimElement.resolvedStyle.backgroundImage.texture?.name, button.name);
+                Assert.IsTrue(rimElement.worldBound.Contains(puck.worldBound.center), "The rim lies round the puck: " + button.name);
+            }
+            Assert.AreEqual(DisplayStyle.None, button.Q("army-stand").resolvedStyle.display, button.name);
+            Assert.AreEqual(DisplayStyle.None, button.Q("army-rim").resolvedStyle.display, button.name);
+        }
+
+        private static string Puck(Sample sample) => "token-puck-" + (sample.Marker.Garrison ? "garrison-" : "") +
+            (sample.Marker.Side == Side.FreePeoples ? "free" : "shadow");
+
         private static string Stand(Sample sample) => "stand-" + (sample.Marker.Garrison ? "garrison-" : "field-") +
             (sample.Marker.Side == Side.FreePeoples ? "free" : "shadow");
 
@@ -158,13 +185,6 @@ namespace Wotr.PlayTests
             .Where(image => image.resolvedStyle.display != DisplayStyle.None).ToArray();
 
         private static int Expected(ArmyMarker marker) => marker.Leaders > 0 && marker.Total > 2 ? 3 : marker.Total > 1 ? 2 : 1;
-
-        private static string Picture(Sample sample)
-        {
-            var suffix = States.First(s => s.Class == sample.State).Suffix;
-            return "token-" + (sample.Marker.Garrison ? "garrison-" : "field-") +
-                (sample.Marker.Side == Side.FreePeoples ? "free" : "shadow") + suffix;
-        }
 
         private static void AssertInside(VisualElement child, Button button)
         {

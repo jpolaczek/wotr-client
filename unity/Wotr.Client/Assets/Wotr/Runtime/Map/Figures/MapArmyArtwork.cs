@@ -16,7 +16,10 @@ namespace Wotr.Client
     // emblems and the count a plaque on its front, and only the base and the figures take a click (MiniatureButton).
     // UI-401 (TABLETOP_FIGURES_UX, "Scale"): the miniature is designed in board units (StandFootprint.Army) — its stand is
     // the 40 × 16 unit base and an elite stands 40 units tall, as tall as the base is wide — at DesignUnit points per
-    // unit; the map stands its feet on the region's place and scales it (MapStand, MapStandScale).
+    // unit; the map stands its feet on the region's place and scales it (MapStand, MapStandScale). UI-406
+    // (TABLETOP_FIGURES_UX, decision 3): far out the army is a token that lies on the table too — a painted enamel puck
+    // (top face, side band, rim; a garrison's is walled with battlements) over the same contact shadow, its nation emblem
+    // and count on it, and the state as a rim drawn round the puck instead of one whole picture per state.
     public sealed class MapArmyArtwork
     {
         public const string FiguresClass = "army-figures";
@@ -55,8 +58,9 @@ namespace Wotr.Client
         private const float FigureHeight = 54;
         // A figure may overhang the stand's rim this much; a wider cell is drawn smaller, its feet on the line.
         private const float Overhang = 4;
+        // UI-406: the token's box; the puck (40 × 32 art drawn 44 wide) lies in it with room for its shadow and count. A
+        // garrison's walled puck has the same size.
         private static readonly Vector2 TokenSize = new Vector2(44, 44);
-        private static readonly Vector2 GarrisonTokenSize = new Vector2(44, 48);
         // The holder a marker stands in (MapStand): room for either level.
         public static readonly Vector2 HolderSize = new Vector2(BoxWidth, BoxHeight);
         // Two or three figures stand staggered: the first farther back (higher, a little smaller), the others in front.
@@ -96,9 +100,11 @@ namespace Wotr.Client
             button.AddToClassList("illustrated-army");
             // UI-301: the ChoiceGlow halo of an army a click may choose, behind the artwork (Armies.uss).
             button.Add(Ignored("army-choice-glow"));
-            Root.Add(Ignored("army-plinth"));
             // UI-400: the table under the miniature — its contact shadow, the painted stand and the state rim round it.
+            // UI-406: the token's puck and its state rim lie over the same shadow.
             Root.Add(Ignored("army-contact-shadow"));
+            Root.Add(Ignored("army-puck"));
+            Root.Add(Ignored("army-token-rim"));
             Root.Add(Ignored("army-stand"));
             Root.Add(Ignored("army-rim"));
             for (var i = 0; i < silhouettes.Length; i++)
@@ -127,8 +133,7 @@ namespace Wotr.Client
                 miniature.Shape = Contains;
         }
 
-        public static Vector2 Size(bool garrison, bool figures) =>
-            figures ? HolderSize : garrison ? GarrisonTokenSize : TokenSize;
+        public static Vector2 Size(bool garrison, bool figures) => figures ? HolderSize : TokenSize;
 
         // UI-401: the design point a level stands on its place: the stand's top face, or the token's middle.
         public static Vector2 Feet(bool garrison, bool figures) => figures ? StandFeet : Size(garrison, false) / 2;

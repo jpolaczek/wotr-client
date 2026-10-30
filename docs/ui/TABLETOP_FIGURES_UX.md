@@ -199,8 +199,8 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   3.55/3.91 ms (4.30/4.95) and 2.33/2.62 ms (2.60/2.88); `MapCanvas.Refresh` 0.21–0.38 ms at p99 (0.29–0.45). The
   Development Player profile (`map-profile-2`) was not run for UI-401.
 - **Not yet.** Flights (`MapFigureMotion`) still fly between region points at their own size (resolved by UI-404: they
-  fly between stand points as the miniature); the token keeps its UI-125 pictures (UI-406). The Mordor track's stones
-  and the effects labels still move by `left`/`top`.
+  fly between stand points as the miniature); the token keeps its UI-125 pictures (resolved by UI-406: a puck, "As built
+  (UI-406)" below). The Mordor track's stones and the effects labels still move by `left`/`top`.
 - **Tests.** EditMode `MapStandScaleTests` (clamps, footprint, capacities within the closest zoom, hysteresis, token,
   the miniature's design on the footprint), `MapContourDataTests.FellowshipFigureStandsInsideItsRegion`; PlayMode
   `MapStandLayoutTests` (the Helm's Deep siege and its neighbours at 1366/1920 × 100/125 % and four zooms: feet on the
@@ -503,14 +503,82 @@ flight per destination marker, rendered with the same miniature.
   presentation classes, `FigureHandTests`, `BoardInteractionTests`, `MovementNetworkTests`, `TravelGestureNetworkTests`,
   `CharacterMiniatureTests`, `MapVisibilityTests`, `MapStandLayoutTests`.
 - **Not yet.** UI-405's drop will expect a dropped figure at its drop point (the same `Expect`; built 2026-10-30, "As
-  built (UI-405)" above); the Fellowship's base and the tokens are UI-406's.
+  built (UI-405)" above); the Fellowship's base and the tokens are UI-406's (built 2026-10-30, "As built (UI-406)"
+  below).
+
+**As built (UI-406, 2026-10-30): tokens, settlements, kings and the Fellowship's figure lie on the table.**
+
+- **The token** (`MapArmyArtwork`, `Styles/Armies.uss`, decision 3). Far out an army is a puck lying on the table: the
+  painted enamel puck (`armies/token-puck-free`, `-shadow`: a domed top face, a side band for its thickness and a gilt or
+  bronze rim; a garrison's `token-puck-garrison-*` is the same puck walled with crenellated stone, so the garrison keeps
+  its UI-125 battlements), 44 × 35.2 design points in its 44 × 44 box, over the `contact-shadow` a point right and below
+  it. Its nation emblem (16 points) lies on the top face and its count on the band at the lower right, as before. The
+  state is a rim drawn round the puck's outline (`rim-token`: `rim-eligible` legal green, `rim-selected` gold for a
+  chosen or armed force, `rim-pressed` dim gold, `rim-ability` amber, `rim-moved` a veil, with the ✓) instead of twenty
+  whole pictures; the colour meanings are unchanged, and ChoiceGlow's halo is a capsule round the puck. A garrison's
+  token is now as large as a field's (it was 4 points taller). The plinth element and UI-125's `base-*` and `token-*`
+  pictures are gone; the legend shows the puck with its rims. The token's size is UI-401's `clamp(40 × zoom, 32, 44)`.
+- **A character's token** (`MapCharacterArtwork`). The portrait in its side's medallion is a thick coin: a darkened copy
+  of the medallion 2.5 points below gives its edge, and the contact shadow lies under it.
+- **Settlements** (`MapSettlementGems`, `MapSettlementVisual`, `SettlementGem`). Every gem is a stone on the table: a soft
+  shadow falls from it down and right (two translucent fills of its silhouette, the outer one 1.16 times larger, offset
+  1.6 × 1.9 points), and a band of side facets below its lower edges (below a Stronghold's gold setting) gives it a
+  thickness of a fifth of its size (1.2–1.6 points), each facet shaded by the light from the upper left, darker than the
+  crown and in its own colour. Painter2D only, no filter. The control colour is unchanged (UI-195: sapphire, ruby, quartz).
+- **Gem size.** `clamp(zoom / reference, .85, 1.4)` of its UI-195 size (`MapStandScale.Gem`). The reference is the
+  worst-case Detail zoom (`MapStandSlots.WorstCaseZoom`, 0.80 points per board unit), where the stand places (UI-422)
+  keep 2 units clear of the gems as drawn at their UI-195 size; between the clamps a gem keeps one size on the board like
+  the figures, so it never grows into a figure's place (EditMode
+  `MapStandScaleTests.TheGemScalesWithTheMapWithinItsClampsAndNeverOutgrowsTheStandPlacesMargin`). On the whole map
+  that is about .85 of the old size at 1366 × 768 and 125 %, 1.04 at 100 %, 1.17 at 1920 × 1080 and 125 % and 1.4 at
+  100 % (the fit zoom over the worst-case Detail zoom); zoomed in it grows to 1.4.
+- **Zero repaints on camera moves.** The gems left the screen-space foreground layer (which drew them again at every
+  camera frame). Each is its own element on a layer of its own (`map-settlements`, above the region names and under the
+  foreground, the Mordor track and the stand layer), painted once at its design size round the middle of a 32 × 32 box,
+  and stood on its anchor by a `MapStand` holder: a pan, a zoom or a glide writes only the holder's translate and scale
+  (`DynamicTransform`, and only when they change). A gem repaints only when its settlement or its controller changes
+  (`MapCanvas.UpdateData` → `MapSettlementGems.Apply`). The map's vector layers are untouched. PlayMode
+  `TabletopObjectsTests.CameraMovesRepaintNoVectorLayerAndNoGemAndACaptureRepaintsItsGemOnly` pans and zooms 40 frames and
+  glides to Minas Tirith: `MapRenderer.Repaints` and `MapSettlementGems.Repaints` stay the same while each gem's scale
+  follows the zoom; a capture of Osgiliath repaints exactly one gem.
+- **Names and gems** (`MapRegionNames.ClearOfGem`). The name points (UI-186, UI-422) keep clear of the stand places,
+  not of the gems, and a name may stand just under its settlement; zoomed in, a gem 1.4 times its old size reached into
+  some (Minas Tirith's). A name its own settlement's stone (crown and side band, `MapSettlementGems.Bounds`) reaches
+  into now moves just clear of it, 1 point away — down when it stands below the stone, up when above — as long as it
+  stays within its vertical room at its point; otherwise it stays where it was. Per frame that is one rectangle test
+  per shown name, and the name's transform is written as before.
+- **Kings** (`MapSovereignMarkers`). A Corrupted king's marker is a small puck in its 30 × 34 box, at a fixed screen size
+  as before: the dark iron puck with an ember rim (`kings/puck-corrupted`, Codex, 30 × 24 points) over the contact shadow,
+  the crown under the ember Eye (`kings/emblem-corrupted`, UI-274's marker without its disc) on its top face. When a click
+  chooses him, the steady gold halo lies behind the puck (`sovereign-glow`), no pulse.
+- **The Fellowship's figure** (`MapFellowshipMarker.Dress`). It stands on the characters' round Free Peoples stand
+  (`stand-character-free`, 16 units wide: 28.8 × 20.2 design points), its feet on the middle of the stand's top face
+  (32, 64), over the contact shadow down and right; its box grew to 64 × 80 below the feet to hold them, and the figure
+  keeps its 64 × 72 box above. UI-201's blue underline is gone (the stand is the side's colour). On the Mordor track it
+  stands on the step on the same base at UI-283's size (the scale is 80 or 64 points over the figure's former 72-point
+  box). Its flight (UI-404) now has a standing shadow, as the other miniatures, and hides the figure's own one in the air.
+- **Art** (`graphicalassets/stands`, README). Three new Codex generations: `token-puck-garrison-free`, `-shadow` and
+  `puck-corrupted`, keyed by `key.py` (a king's puck into `kings/`); the rim and the emblem are SVG in the UI kit
+  (`armies/rim-token`, `kings/emblem-corrupted`). Every picture is replaceable in place: the code and the USS name the
+  files only, and a new picture of the same size needs no change.
+- **Cost.** Per camera frame each gem writes at most a translate and a scale; tokens, kings and the Fellowship were
+  already transform-only (UI-401). No layout property, no `GeometryChangedEvent` callback and no CSS filter.
+- **Tests.** EditMode `MapSettlementGemsTests.TheStoneHasASideBandBelowItsGirdleInItsOwnColour`, `MapStandScaleTests`,
+  `UiArtKitTests`, `SovereignMapTests`, `FlightProfileTests`; PlayMode `TabletopObjectsTests` (both levels in four layouts,
+  pictures `ui406-far-*`, `ui406-near-*`, `ui406-mordor-track`, `ui406-legend`; the repaint count; Minas Tirith's name
+  clear of its gem; the legend's pucks and rims),
+  `MapArmyArtworkTests` (each token's puck, its shadow and its state's rim), `MordorLayoutTests` (the base on its step),
+  `MapRegionNamesTests`, `MapVisibilityTests`, `FellowshipTrackLayoutTests`, `CharacterMiniatureTests`,
+  `FigureHandTests`, `MapStandLayoutTests`, `FigureMotionTests` and `FellowshipMotionNetworkTests` (the flights' shadows),
+  `OpponentExpansionPresentationTests` (the kings' markers), `ArmyEmergeTests`, `MapMarkerEdgeTests`, `LayoutTests`.
 
 ## Defaults the owner can change at review
 
 - A character click opens no region panel. As built (UI-402): a click on the player's own character that chooses
   nothing does what its region's click does, without the panel; an enemy character's click is its region's.
 - A stacked pair's click chooses its front character (UI-402).
-- Far out a character is its portrait in its side's medallion (UI-402, until UI-406's tokens).
+- Far out a character is its portrait in its side's medallion (UI-402); since UI-406 the medallion is a thick coin with
+  a contact shadow.
 - A Nazgûl inside a mixed stack lifts with its base.
 - The lifted figure is clipped to the map.
 - The lifted part of a split rises on a base of its own; the figures left behind stay on the source's base behind and
@@ -540,6 +608,19 @@ flight per destination marker, rendered with the same miniature.
 - The region panel turns translucent and lets the drop through while a figure is carried, as for a reserve figure
   (UI-405).
 - Where a place's capacity is too small, the region shows tokens.
+- A garrison's token is the field's puck walled with crenellated stone (Codex art), the same 44-point size (UI-406).
+- A token's state is a rim round its puck in the stands' colours — green eligible or a king's target, gold selected or
+  armed, dim gold pressed, amber ability owner, a veil and ✓ when marched — with ChoiceGlow as a capsule round the puck
+  (UI-406).
+- A gem is `clamp(zoom / reference, .85, 1.4)` of its UI-195 size with the worst-case Detail zoom (0.80 points per board
+  unit) as the reference, so far out on a small screen it is a little smaller than before and on a large one up to 1.4
+  times larger; its side band is a fifth of its size and its shadow falls 1.6 × 1.9 points down and right (UI-406).
+- A Corrupted king's marker is a dark iron puck with an ember rim and the crown under the Eye, at its fixed 30 × 34
+  points (UI-406).
+- A region's name that its own settlement's gem reaches into moves just clear of the stone (1 point) within its room in
+  the region; the name points themselves are unchanged (UI-406).
+- The Fellowship's figure stands on the characters' round blue stand, 16 board units wide, without UI-201's blue
+  underline (UI-406).
 
 ## Playtest checklist
 
@@ -577,6 +658,13 @@ flight per destination marker, rendered with the same miniature.
 | 30 | A Shadow card that flies several Nazgûl (UI-212) | Press the lit Nazgûl stack and carry one onto a lit destination | The carried Nazgûl dissolves where you dropped it as its faint planned figure appears; the next one rises at the stack |
 | 31 | Opponent's turn, or while your step is on its way | Press one of your armies (or one of the opponent's) and drag | Nothing lifts; the press stays a click |
 | 32 | An attack (`fp-army-attack`) | Carry the army onto the enemy region and drop it | The battle opens as with the click; the attackers glide back to their base |
+| 33 | Standard setup (`setup`) | Zoom out to the whole map | Every army is a puck lying on the table — a top face, a side band and a rim, its shadow down and right; a garrison's puck is walled with battlements; Free Peoples blue, Shadow red; the emblem and count read |
+| 34 | A move with an Army die (`fp-army-move`), the whole map | Choose the Army die; after a march look at the army that marched | The armies that may move have a green rim round their puck and the pulsing gold halo; a marched one is veiled with ✓ (a clicked army shows its lifted figures, UI-403) |
+| 35 | Standard setup | Zoom from the whole map to the closest and back, pan across the map | Each settlement is a gem stone with a darker side band and a soft shadow; it grows a little as you zoom in and stays put on its spot while panning, without flicker |
+| 36 | A capture (a Shadow army takes a Free Peoples Town or City) | Watch its settlement | The stone turns from sapphire to ruby, keeping its cut, size, band and shadow |
+| 37 | A Kings game with a Corrupted king | Zoom in on his capital; then choose an action that acts on him | A small dark iron puck with an ember rim and the crown under the Eye lies beside the forces with its shadow; while a click chooses him a gold halo lies behind it |
+| 38 | The Fellowship on a region, then on the Mordor track | Zoom in on it | The figure stands on a round blue base with a shadow; on the track it stands on its step on the same base, as large as before |
+| 39 | A lone character outside the armies (`fp-character-move-*`) | Zoom out to the whole map | Its portrait medallion reads as a thick coin with a shadow |
 
 ## Superseded statements
 

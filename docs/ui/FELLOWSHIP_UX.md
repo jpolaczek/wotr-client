@@ -769,3 +769,14 @@ panel's action row beside Finish phase (`DecisionTray.ConfirmHost`, `FellowshipP
 `CompanionSetupPanelNetworkTests` (ready at once, the ✓'s place, `ui370-council-setup-*.png`),
 `CouncilHomelandPanelNetworkTests`.
 
+<a id="ui-406"></a>
+## The Fellowship's figure stands on a base — UI-406 (2026-10-30)
+
+The tabletop figures' design ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), decision 4, "As built (UI-406)"): the
+Fellowship's figure on the map is a miniature like the characters'. It stands on their round Free Peoples stand (16 board
+units wide, the blue enamel with a gilt edge) with a contact shadow down and right, its feet on the middle of the
+stand's top face — on its region's Fellowship place and on the Mordor track's step alike. The blue underline of the
+panels' figure tiles is gone: the stand is the side's colour. On the track the figure keeps UI-283's size (80 points
+tall zoomed in, 64 on the whole map) with the base below it. Its flight (UI-404) leaves its shadow on the ground. Its
+clicks, its glow (UI-236, UI-280, UI-282) and its tooltip are unchanged. Tests: `TabletopObjectsTests` (on a region and
+on the track), `MordorLayoutTests` (the base on its step), `MapVisibilityTests`, `FellowshipMotionNetworkTests`.

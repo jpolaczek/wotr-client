@@ -11,8 +11,9 @@ namespace Wotr.Client
     // base, figures 36 units tall), so it stands at the scale of the armies beside it. When a region holds more
     // characters than its places, the last place shows a stacked pair — a second figure on its own stand behind the
     // first — and a code-drawn "+n" for the characters behind the front one. Far out the miniature is a token: the
-    // character's portrait in its side's medallion. Only the stand, the figures' columns and the "+n" take a press
-    // (MiniatureButton), so the headroom beside a slim figure passes the press on.
+    // character's portrait in its side's medallion. UI-406: that medallion is a thick coin on the table — a darker copy of
+    // it below gives its edge, and the contact shadow lies under it. Only the stand, the figures' columns and the "+n"
+    // take a press (MiniatureButton), so the headroom beside a slim figure passes the press on.
     public sealed class MapCharacterArtwork
     {
         public const string MiniatureClass = "character-miniature";
@@ -80,6 +81,8 @@ namespace Wotr.Client
             Root.Add(front);
             more.AddToClassList("character-more");
             Root.Add(more);
+            Root.Add(Ignored("character-token-shadow"));
+            Root.Add(Ignored("character-token-edge"));
             portrait.AddToClassList("character-portrait");
             Root.Add(portrait);
             Root.Add(Ignored("character-moved"));
