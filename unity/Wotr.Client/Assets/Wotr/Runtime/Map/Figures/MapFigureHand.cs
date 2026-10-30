@@ -17,6 +17,10 @@ namespace Wotr.Client
     // (MapFigureMotion.Expect) and keeps them raised, whatever the draft says, until the view carries them away. A
     // rejection, a disconnect or the expiry (Lapse) puts them back on their base, where they stay while the draft still
     // sends them.
+    // UI-405: a drag carries the raised pieces of the unsent move under the pointer (Grab, Follow) and drops them where
+    // they are (Release): sent, they stay there and their flight leaves from there (Expect reads each piece's Ground);
+    // planned, they dissolve there; otherwise they glide home over their source (Home), or onto their base when they leave
+    // the hand.
     internal sealed class MapFigureHand
     {
         public VisualElement Layer { get; }
@@ -56,6 +60,54 @@ namespace Wotr.Client
                 if (piece.Region == region)
                     return true;
             return false;
+        }
+
+        // UI-405: whether a raised piece of this source (its stand's name) holds figures of the unsent move.
+        public bool Raises(string key) => pieces.Any(piece => piece.Key == key && Chosen(piece));
+
+        private bool Chosen(MapHandPiece piece) =>
+            piece.State == MapHandPiece.PieceState.InPlace && piece.Ids.Overlaps(selection);
+
+        // UI-405: the pointer (map-local) takes up every raised piece of the unsent move; false when there is none.
+        public bool Grab(Vector2 pointer)
+        {
+            var taken = false;
+            foreach (var piece in pieces.Where(Chosen))
+            {
+                piece.Grab(pointer);
+                taken = true;
+            }
+            return taken;
+        }
+
+        // The carried pieces stand under the pointer (map-local).
+        public void Follow(Vector2 pointer)
+        {
+            var scale = map.Stands.FigureScale;
+            foreach (var piece in pieces.Where(piece => piece.Carried))
+            {
+                piece.Follow(pointer);
+                piece.Layout(map, scale);
+            }
+        }
+
+        // Dropped: each carried piece rests on the board point under it. Returns the figures they hold.
+        public HashSet<string> Release()
+        {
+            var dropped = new HashSet<string>();
+            foreach (var piece in pieces.Where(piece => piece.Carried))
+            {
+                dropped.UnionWith(piece.Ids);
+                piece.Rest(map.Camera.ToBoard(piece.ShownFeet));
+            }
+            return dropped;
+        }
+
+        // After a drop: a raised piece away from its source that no flight will take glides home over its source.
+        public void Home()
+        {
+            foreach (var piece in pieces.Where(piece => piece.State == MapHandPiece.PieceState.InPlace && !piece.Ids.Overlaps(awaited)))
+                piece.Home(Moving);
         }
 
         // Whether the raised figures include units (they land as an army) or only characters.
@@ -101,7 +153,8 @@ namespace Wotr.Client
         }
 
         // UI-404: the step that sends `sent` left. Each raised piece holding some of them hands its place and raised pose to
-        // the flight the view will bring, and stays up until then.
+        // the flight the view will bring, and stays up until then. UI-405: a dropped piece hands over the point it was
+        // dropped on.
         public void Expect(ICollection<string> sent)
         {
             foreach (var piece in pieces.Where(piece => piece.State == MapHandPiece.PieceState.InPlace))
@@ -109,7 +162,7 @@ namespace Wotr.Client
                 var ids = piece.Ids.Where(sent.Contains).ToList();
                 if (ids.Count == 0)
                     continue;
-                map.Figures.Expect(ids.Select(piece.FigureKey), piece.SourceFeet, FlightPose.Raised);
+                map.Figures.Expect(ids.Select(piece.FigureKey), piece.Ground, FlightPose.Raised);
                 awaited.UnionWith(ids);
             }
         }
@@ -170,7 +223,7 @@ namespace Wotr.Client
 
         private static string Spot(string key, string region, string id) => key + "|" + region + "|" + id;
 
-        private static string CharacterKey(CharacterFigure figure) => "character-" + figure.Id;
+        private static string CharacterKey(CharacterFigure figure) => MapCharacterFigures.Key(figure.Id);
 
         // A force with held units wants a piece of those units; one already raised takes the new units.
         private void WantForce(MapArmyStand force, Dictionary<string, Func<MapHandPiece>> wanted,
@@ -214,23 +267,41 @@ namespace Wotr.Client
             var ids = units.Select(unit => unit.Id).ToHashSet();
             if (piece.Ids.SetEquals(ids))
                 return;
+            if (piece.Away && !piece.Ids.Overlaps(ids))
+            {
+                Replace(piece, MapHandPiece.Of(force, units));
+                return;
+            }
             var leaving = force.Army.Units.Where(unit => piece.Ids.Contains(unit.Id) && !ids.Contains(unit.Id)).ToList();
             piece.Hold(force, units);
-            LeaveRaised(force, leaving.Where(unit => !planned.Contains(unit.Id)).ToList(), false);
-            LeaveRaised(force, leaving.Where(unit => planned.Contains(unit.Id)).ToList(), true);
+            LeaveRaised(piece, force, leaving.Where(unit => !planned.Contains(unit.Id)).ToList(), false);
+            LeaveRaised(piece, force, leaving.Where(unit => planned.Contains(unit.Id)).ToList(), true);
         }
 
-        private void LeaveRaised(MapArmyStand force, List<ArmyUnit> units, bool toGhost)
+        // UI-405: none of a dropped piece's figures is still held (a card flew the carried Nazgûl and arms the next one):
+        // it leaves from where it was dropped, and the next one rises at the source. The new piece comes first in the hand,
+        // so the leaving one is not taken for a stale piece of a wanted source and ends its own motion.
+        private void Replace(MapHandPiece dropped, MapHandPiece next)
+        {
+            Insert(pieces.IndexOf(dropped), next);
+            next.Lift(Moving);
+            Leave(dropped);
+        }
+
+        // Figures leaving a raised piece go where it stands (UI-405: where it was dropped) and drop or dissolve from there.
+        private void LeaveRaised(MapHandPiece from, MapArmyStand force, List<ArmyUnit> units, bool toGhost)
         {
             if (units.Count == 0)
                 return;
             var leaving = MapHandPiece.Of(force, units);
+            if (from.Away)
+                leaving.Rest(from.Ground);
             Add(leaving);
             leaving.LeaveRaised(Moving, toGhost, () => Drop(leaving));
         }
 
         // A piece whose figures left the hand: dissolving into its planned ghost, gone with the view that carried it away,
-        // or dropping back onto its base.
+        // or dropping back onto its base (UI-405: gliding home from where it was dropped).
         private void Leave(MapHandPiece piece)
         {
             if (piece.Ids.All(planned.Contains))
@@ -250,9 +321,11 @@ namespace Wotr.Client
             piece.Lift(Moving);
         }
 
-        private void Add(MapHandPiece piece)
+        private void Add(MapHandPiece piece) => Insert(pieces.Count, piece);
+
+        private void Insert(int index, MapHandPiece piece)
         {
-            pieces.Add(piece);
+            pieces.Insert(index, piece);
             Layer.Add(piece.Stand.Root);
             piece.Layout(map, map.Stands.FigureScale);
         }

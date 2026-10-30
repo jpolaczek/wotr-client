@@ -19,8 +19,11 @@ namespace Wotr.PlayTests
 {
     public class BoardInteractionTests
     {
+        // UI-105: the final target click sends the step without a Confirm, also while the source's panel is open. UI-405
+        // (flipped from "…TheArmyIsNeverDragged"): carrying the army onto the same target and dropping it there sends
+        // exactly the step the click sends.
         [UnityTest]
-        public IEnumerator FinalTargetClickSendsTheStepWithoutConfirmAndTheArmyIsNeverDragged()
+        public IEnumerator FinalTargetClickSendsTheStepWithoutConfirmAndTheArmysDropSendsTheSameStep()
         {
             using var test = new Harness();
             yield return Settle();
@@ -40,14 +43,6 @@ namespace Wotr.PlayTests
             yield return Settle();
             MapContourProbe.ReachRegion(test.Board.Map, "osgiliath");
             yield return Settle();
-            // UI-105: dragging the army is not a move; the destination click sends the same step.
-            MapContourProbe.AttemptDrag(test.Board, test.Board.Map.Q<Button>("army-minas-tirith-FreePeoples"),
-                MapContourProbe.Terrain(test.Board.Map, "osgiliath"));
-            yield return new WaitForSecondsRealtime(.2f);
-            Assert.AreEqual(1, test.Backend.Commands);
-            Assert.IsTrue(test.Board.Map.DraftOverlay.Targets.Contains("osgiliath"), "The selection survives the drag attempt.");
-            MapContourProbe.ReachRegion(test.Board.Map, "osgiliath");
-            yield return Settle();
             // The region panel of the source is still open: the terrain press closes it and the markers settle again,
             // yet the release on the destination is the step (UI-105).
             Assert.AreEqual("minas-tirith", test.Board.Hover.Panel.Region);
@@ -56,6 +51,264 @@ namespace Wotr.PlayTests
             yield return new WaitForSecondsRealtime(.2f);
             Assert.AreEqual(2, test.Backend.Commands);
             Assert.AreEqual(clicked, JsonConvert.SerializeObject(test.Backend.Last.Payload));
+            test.Reset();
+            yield return Settle();
+            yield return SelectArmy(test.Board, "minas-tirith");
+            yield return Settle();
+            MapContourProbe.ReachRegion(test.Board.Map, "osgiliath");
+            yield return Settle();
+            MapContourProbe.DragFigure(test.Board, test.Board.Map.Q<Button>("army-minas-tirith-FreePeoples"),
+                MapContourProbe.Terrain(test.Board.Map, "osgiliath"));
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(3, test.Backend.Commands, "The drop is the step, with no Confirm.");
+            Assert.AreEqual(clicked, JsonConvert.SerializeObject(test.Backend.Last.Payload), "The drop sends what the click sends.");
+            Assert.IsFalse(test.Board.Root.HasPointerCapture(PointerId.mousePointerId));
+        }
+
+        // UI-405 (TABLETOP_FIGURES_UX, "Drag"): the chosen army is carried as its own lifted miniature, the region under it
+        // lights (a legal target in its own colour, with the landing mark and the caption above the figure), and dropped on
+        // the target it stays raised where it was dropped until the view comes, when its flight goes on from there.
+        [UnityTest]
+        public IEnumerator UI405TheCarriedArmyLightsItsTargetAndFliesOnFromWhereItWasDropped()
+        {
+            using var test = new Harness();
+            test.Board.SetConnection("Connected");
+            yield return Settle();
+            yield return SelectArmy(test.Board, "minas-tirith");
+            yield return Settle();
+            test.Board.Hover.Close();
+            var map = test.Board.Map;
+            var army = map.Q<Button>("army-minas-tirith-FreePeoples");
+            var source = StandFeet(map, army.name);
+            map.FocusOn((source + StandFeet(map, "army-osgiliath-FreePeoples")) / 2, map.FitZoom * 2.4f);
+            yield return new WaitForSecondsRealtime(.45f);
+            var piece = map.Q("hand-army-minas-tirith-FreePeoples");
+            var raised = piece.Q("hand-lift").worldBound.center;
+            var press = army.worldBound.center;
+            MapContourProbe.LiftFigure(test.Board, army);
+            var halfway = Vector2.Lerp(press, MapContourProbe.Terrain(map, "osgiliath"), .5f);
+            MapContourProbe.Carry(test.Board, halfway);
+            yield return Settle();
+            AssertUnder(piece, raised + halfway - press, "The lifted miniature itself follows the pointer.");
+            Assert.IsNull(map.Q("army-ghost"));
+            Assert.IsTrue(army.ClassListContains("lifted-away"), "Its base stays empty while it is carried.");
+            LayoutTests.Save(test.Viewport, "ui405-carried.png");
+
+            var target = MapContourProbe.Terrain(map, "osgiliath");
+            MapContourProbe.Carry(test.Board, target);
+            yield return Settle();
+            Assert.AreEqual("osgiliath", map.DragTarget, "The region under the figure is the drop target.");
+            Assert.AreEqual(MapRegionEmphasis.CarriedTarget, map.Renderer.CurrentEmphasis("osgiliath"), "It lights.");
+            var ring = map.Q("landing-mark");
+            var caption = map.Q<Label>("landing-caption");
+            Assert.AreEqual(DisplayStyle.Flex, ring.resolvedStyle.display, "The landing mark lies on its place.");
+            Assert.IsTrue(ring.ClassListContains("landing-move"));
+            Assert.AreEqual("Move 3 figures", caption.text);
+            Assert.LessOrEqual(caption.worldBound.yMax, FigureHandTests.RaisedTop(piece), "The caption hangs above the carried figure.");
+            AssertUnder(piece, raised + target - press, "Still under the pointer.");
+            LayoutTests.Save(test.Viewport, "ui405-carried-target.png");
+
+            MapContourProbe.Drop(test.Board, target);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(1, test.Backend.Commands, "The drop sends the step.");
+            Assert.AreEqual(CommandKind.MoveArmies, test.Backend.Last.Kind);
+            Assert.AreEqual("osgiliath", test.Backend.Last.Payload.Moves.Single().To);
+            Assert.IsNull(map.DragTarget, "Nothing is carried any more.");
+            Assert.AreSame(piece, map.Q("hand-army-minas-tirith-FreePeoples"), "Sent, it stays raised…");
+            AssertUnder(piece, raised + target - press, "…where it was dropped.");
+            LayoutTests.Save(test.Viewport, "ui405-dropped.png");
+
+            // Its feet keep their offset from the pointer: where the press took them, moved as far as the pointer went.
+            var dropped = map.Camera.ToBoard(map.Camera.ToScreen(source) + target - press);
+            var key = "unit:" + test.Backend.Last.Payload.Moves.Single().UnitIds[0];
+            foreach (var unit in test.Backend.View.Units.Where(u => u.Location == "minas-tirith"))
+                unit.Location = "osgiliath";
+            test.Backend.View.Revision++;
+            test.Push();
+            Assert.IsNull(map.Q("hand-army-minas-tirith-FreePeoples"), "The view takes the army: the hand gives it to the flight.");
+            var flight = map.Figures.Flight(key).Value;
+            Assert.Less(Vector2.Distance(dropped, flight.From), 1, "It flies on from where it was dropped…");
+            Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose.");
+            yield return null;
+            LayoutTests.Save(test.Viewport, "ui405-handoff-start.png");
+            var deadline = Time.realtimeSinceStartup + 3;
+            while (map.Figures.ActiveCount > 0 && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.AreEqual(0, map.Figures.ActiveCount, "It lands.");
+            yield return Settle();
+            LayoutTests.Save(test.Viewport, "ui405-landed.png");
+        }
+
+        // UI-405: a drop where the click would do nothing (Lamedon beyond the mountains, the HUD) sends nothing and the
+        // figure glides home; Esc, too, leaves the draft as it was before the press — a selection made by the press itself
+        // goes away again, and nothing opened a panel. The opponent's figures and any figure while the board is busy do not
+        // lift at all.
+        [UnityTest]
+        public IEnumerator UI405AnIllegalDropOrEscapeSendsNothingAndLeavesTheDraftAsItWas()
+        {
+            var fixture = new BoardFixture();
+            fixture.Put("sauron", UnitKind.Regular, "minas-morgul", 2);
+            fixture.Refresh();
+            using var test = new Harness(fixture);
+            yield return Settle();
+            yield return SelectArmy(test.Board, "minas-tirith");
+            yield return Settle();
+            test.Board.Hover.Close();
+            var map = test.Board.Map;
+            var army = map.Q<Button>("army-minas-tirith-FreePeoples");
+            map.FocusOn(StandFeet(map, army.name), map.FitZoom * 1.6f);
+            yield return new WaitForSecondsRealtime(.45f);
+            var targets = map.DraftOverlay.Targets.ToArray();
+            var piece = map.Q("hand-army-minas-tirith-FreePeoples");
+            var raised = piece.Q("hand-lift").worldBound.center;
+            Assert.IsFalse(targets.Contains("lamedon"));
+            MapContourProbe.DragFigure(test.Board, army, MapContourProbe.Terrain(map, "lamedon"));
+            yield return null;
+            if (Appearance.Moving(map))
+                Assert.IsTrue(piece.parent.ClassListContains("hand-gliding"), "Nothing takes it: it glides home…");
+            yield return new WaitForSecondsRealtime(.45f);
+            AssertUnder(piece, raised, "…raised over its place again, as it was chosen.");
+            Assert.IsFalse(piece.parent.ClassListContains("hand-gliding"));
+            MapContourProbe.DragFigure(test.Board, army, test.Board.Phase.worldBound.center);
+            yield return new WaitForSecondsRealtime(.45f);
+            AssertUnder(piece, raised, "A drop on the HUD returns it too.");
+            MapContourProbe.LiftFigure(test.Board, army);
+            MapContourProbe.Carry(test.Board, MapContourProbe.Terrain(map, "osgiliath"));
+            yield return Settle();
+            Escape(test.Board);
+            MapContourProbe.Release(map, MapContourProbe.Terrain(map, "osgiliath"));
+            yield return new WaitForSecondsRealtime(.45f);
+            Assert.AreEqual(0, test.Backend.Commands, "Nothing is sent.");
+            CollectionAssert.AreEquivalent(targets, map.DraftOverlay.Targets, "The selection is as it was.");
+            Assert.IsTrue(army.ClassListContains("selected-force"));
+            AssertUnder(piece, raised, "Esc puts it back.");
+
+            test.Reset();
+            yield return Settle();
+            Click(test.Board.OwnDice.Q<Button>("army"));
+            yield return Settle();
+            test.Board.Hover.Close();
+            yield return Settle();
+            MapContourProbe.LiftFigure(test.Board, army);
+            yield return Settle();
+            Assert.IsNotNull(map.Q("hand-army-minas-tirith-FreePeoples"), "A press on a legal source lifts it as its click would.");
+            Assert.IsNotEmpty(map.DraftOverlay.Targets);
+            Assert.AreEqual(DisplayStyle.None, test.Board.Hover.Panel.Root.resolvedStyle.display, "No panel opens.");
+            Escape(test.Board);
+            MapContourProbe.Release(map, MapContourProbe.Terrain(map, "osgiliath"));
+            yield return new WaitForSecondsRealtime(.45f);
+            Assert.IsEmpty(map.DraftOverlay.Targets, "Esc leaves the draft as it was before the press: nothing chosen…");
+            Assert.AreEqual("army", test.Board.ActionDie.DieId, "…the die still in hand.");
+            Assert.IsFalse(army.ClassListContains("selected-force"));
+            Assert.IsNull(map.Q("hand-army-minas-tirith-FreePeoples"), "The army is back on its base.");
+
+            map.FocusOn(StandFeet(map, "army-minas-morgul-Shadow"), map.FitZoom * 1.6f);
+            yield return Settle();
+            MapContourProbe.RefusedDrag(test.Board, map.Q<Button>("army-minas-morgul-Shadow"), MapContourProbe.Terrain(map, "osgiliath"));
+            yield return Settle();
+            Assert.IsEmpty(map.Query(className: "figure-hand-piece").ToList(), "An enemy figure lifts nothing.");
+            map.FocusOn(StandFeet(map, army.name), map.FitZoom * 1.6f);
+            yield return Settle();
+            test.Hold(true);
+            MapContourProbe.RefusedDrag(test.Board, army, MapContourProbe.Terrain(map, "osgiliath"));
+            yield return Settle();
+            Assert.IsEmpty(map.Query(className: "figure-hand-piece").ToList(), "Nothing lifts while the board is busy.");
+            test.Hold(false);
+            Assert.AreEqual(0, test.Backend.Commands);
+        }
+
+        // UI-405 (default "edge pan works during a figure drag after a ~250 ms dwell"): the carried figure held in the edge
+        // zone pans the map once the pointer has rested there, stays under the pointer, and the region under it is read
+        // again as the map moves.
+        [UnityTest]
+        public IEnumerator UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell()
+        {
+            using var test = new Harness();
+            yield return Settle();
+            yield return SelectArmy(test.Board, "minas-tirith");
+            yield return Settle();
+            test.Board.Hover.Close();
+            var map = test.Board.Map;
+            var army = map.Q<Button>("army-minas-tirith-FreePeoples");
+            map.FocusOn(StandFeet(map, army.name), map.FitZoom * 2f);
+            yield return new WaitForSecondsRealtime(.45f);
+            var piece = map.Q("hand-army-minas-tirith-FreePeoples");
+            var raised = piece.Q("hand-lift").worldBound.center;
+            var press = army.worldBound.center;
+            MapContourProbe.LiftFigure(test.Board, army);
+            var edge = EdgePoint(map);
+            MapContourProbe.Carry(test.Board, edge);
+            var pan = map.Camera.Pan;
+            yield return new WaitForSecondsRealtime(.12f);
+            Assert.IsTrue(map.EdgePan.Dragging);
+            Assert.AreEqual(pan, map.Camera.Pan, "Within the dwell the map stays.");
+            yield return new WaitForSecondsRealtime(.6f);
+            Assert.Greater(Vector2.Distance(pan, map.Camera.Pan), 20, "After the dwell the map pans.");
+            AssertUnder(piece, raised + edge - press, "The carried figure stays under the pointer.");
+            Assert.AreEqual(MapRegion(DraftInput.At(map.panel, edge)), map.DragTarget, "The region under it is read again as the map moves.");
+            LayoutTests.Save(test.Viewport, "ui405-edge-pan.png");
+            LogDragCost(test.Board, edge);
+            Escape(test.Board);
+            MapContourProbe.Release(map, edge);
+            yield return Settle();
+            Assert.IsFalse(map.EdgePan.Dragging);
+            Assert.IsFalse(map.EdgePan.Active, "The pan ends with the gesture.");
+            Assert.AreEqual(0, test.Backend.Commands);
+        }
+
+        // The profile of a drag with edge pan: the CPU work one frame does — a pointer move of the carried figure (pick,
+        // carry, caption, drag target, edge sample) and an edge-pan step (camera, map refresh, the region read again) —
+        // measured over 240 frames (rendering excluded; the Editor's frame time is capped by its frame rate).
+        private static void LogDragCost(BoardScreen board, Vector2 edge)
+        {
+            var map = board.Map;
+            var costs = new System.Collections.Generic.List<double>();
+            for (var frame = 0; frame < 240; frame++)
+            {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                MapContourProbe.Carry(board, edge + new Vector2(0, frame % 3));
+                map.Camera.Pan += new Vector2(frame % 2 == 0 ? -2 : 2, 0);
+                map.Refresh();
+                map.SetDragTarget(MapRegion(DraftInput.At(map.panel, edge)));
+                watch.Stop();
+                costs.Add(watch.Elapsed.TotalMilliseconds);
+            }
+            costs.Sort();
+            Debug.Log($"UI-405 drag with edge pan: {costs.Count} frames, p50 {costs[costs.Count / 2]:F3} ms, " +
+                $"p95 {costs[(int)(costs.Count * .95f)]:F3} ms, max {costs[costs.Count - 1]:F3} ms");
+        }
+
+        private static string MapRegion(DraftToken token) =>
+            token?.Object is DraftObject.Region or DraftObject.Army or DraftObject.Miniature ? token.RegionId : "";
+
+        // A point in the map's right edge zone on exposed terrain (the HUD covers parts of the edges).
+        private static Vector2 EdgePoint(MapCanvas map)
+        {
+            var area = map.worldBound;
+            for (var row = .3f; row < .8f; row += .02f)
+            {
+                var point = new Vector2(area.xMax - 8, area.yMin + area.height * row);
+                if (map.panel.Pick(point) == map)
+                    return point;
+            }
+            throw new AssertionException("No exposed terrain on the map's right edge.");
+        }
+
+        // The lifted miniature's middle (map-world) is where it should be.
+        private static void AssertUnder(VisualElement piece, Vector2 expected, string message)
+        {
+            var shown = piece.Q("hand-lift").worldBound.center;
+            Assert.Less(Vector2.Distance(expected, shown), 1.5f, message + $" (shown {shown}, expected {expected})");
+        }
+
+        private static Vector2 StandFeet(MapCanvas map, string marker) => ((MapStand)map.Q<Button>(marker).parent.userData).Feet;
+
+        private static void Escape(BoardScreen board)
+        {
+            using (var down = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.Escape }))
+                board.Root.SendEvent(down);
+            using (var up = KeyUpEvent.GetPooled(new Event { type = EventType.KeyUp, keyCode = KeyCode.Escape }))
+                board.Root.SendEvent(up);
         }
 
         // UI-127: one click selects the whole army and lights its targets; a figure click leaves it behind; the first
@@ -451,6 +704,8 @@ namespace Wotr.PlayTests
             }
         }
 
+        // UI-405 (flipped): the army is carried now, but its drop on the HUD is no step: the selection stays as it was, and
+        // Escape still clears it without spending the die.
         [UnityTest]
         public IEnumerator ArmyDragAndEscapeCannotSpendTheSelectedDie()
         {
@@ -459,7 +714,7 @@ namespace Wotr.PlayTests
             yield return SelectArmy(test.Board, "minas-tirith");
             yield return Settle();
             var selected = test.Board.Hover.Panel.Root.Query<Button>(className: "selected").ToList().Select(b => b.name).ToArray();
-            MapContourProbe.AttemptDrag(test.Board, test.Board.Map.Q<Button>("army-minas-tirith-FreePeoples"), test.Board.Phase.worldBound.center);
+            MapContourProbe.DragFigure(test.Board, test.Board.Map.Q<Button>("army-minas-tirith-FreePeoples"), test.Board.Phase.worldBound.center);
             yield return null;
             CollectionAssert.AreEqual(selected, test.Board.Hover.Panel.Root.Query<Button>(className: "selected").ToList().Select(b => b.name));
             Assert.AreEqual(0, test.Backend.Commands);
@@ -953,6 +1208,8 @@ namespace Wotr.PlayTests
                 interaction.SetConnection("Connected");
             }
             private void Update(PlayerView view) { Board.Apply(view); interaction.Update(view); }
+            // UI-304: an opponent presentation holds the board; nothing starts a new command meanwhile.
+            public void Hold(bool value) => interaction.Hold(value);
             // Delivers the backend's current view, as a server push would.
             public void Push() => Update(JsonConvert.DeserializeObject<PlayerView>(JsonConvert.SerializeObject(Backend.View)));
             public void Dispose()

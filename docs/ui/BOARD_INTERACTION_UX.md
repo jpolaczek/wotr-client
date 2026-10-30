@@ -293,13 +293,16 @@ Camera and map area.
 <a id="ruch-kliknięciami-na-mapie--ui-105"></a>
 ## Move clicks on the map — UI-105
 
-UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs. UI-405 shipped on 2026-10-30: the two "Enter" points below are superseded for the map's `Army` and `Miniature` (see [Carrying a figure — UI-405](#ui-405)); the clicks are unchanged.
 
 Enter.
 - `DraftInput.Move` does not start drag for `DraftObject.Army`, `Figure` or `FellowshipPortrait`.
-  Pressing and moving the indicator does not capture it and show no spirit.
+  Pressing and moving the indicator does not capture it and show no spirit. Since UI-405 an `Army` or `Miniature` press
+  drags only when `IFigureDrag.Begin` accepts it; `Figure` (the region panel's chips), `Character` and
+  `FellowshipPortrait` still never drag.
 - `TurnInteraction.Drop` no longer has branches of the army, figures, travel, battle or portraits;
-  `RegionHover.PreviewDrag` only responds to reserve.
+  `RegionHover.PreviewDrag` only responds to reserve. Since UI-405 its first branch is the carried figure's drop
+  (`FigureLiftInteraction.Drop`, the target's click), and `PreviewDrag` also responds to a carried army or character.
 
 The figures election.
 - `ActionContextInteraction.SelectFigure` (region panel; since UI-402 also a character's own miniature on the map)
@@ -530,7 +533,35 @@ unchanged. The chips and the miniatures read one `FigureChoices`. Details: [ARMY
 
 UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
 
-The path inventory and justification of exceptions (the ruler's token, card with routes and rescues) is in [ARMY_MAP_UX](ARMY_MAP_UX.md), ‘implementation UI-128’. `DraftGesture.Drop` rejects armies, and `BoardDraft.Drop` only supports reserves; the dead army drag branch with UI-105 disappeared.
+The path inventory and justification of exceptions (the ruler's token, card with routes and rescues) is in [ARMY_MAP_UX](ARMY_MAP_UX.md), ‘implementation UI-128’. `DraftGesture.Drop` rejects armies, and `BoardDraft.Drop` only supports reserves; the dead army drag branch with UI-105 disappeared. Since UI-405 (2026-10-30) a carried army or character never reaches `DraftGesture.Drop`: `TurnInteraction.Drop`'s first branch hands it to `FigureLiftInteraction`, whose drop is the target region's click (`TurnInteraction.ChooseRegion`), so there is still one movement flow.
+
+<a id="ui-405"></a>
+## Carrying a figure — UI-405
+
+Owner decision 2 of UI-421, built 2026-10-30. Design and details: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "The
+lifted figure, drag and drop" and "As built (UI-405)".
+
+- **Input.** `DraftInput` takes an `IFigureDrag` (`Runtime/UI/IFigureDrag.cs`). An `Army` or `Miniature` press that
+  crosses `DraftClickSequence.MovementTolerance` asks `Begin` once; refused, the press stays the button's click (UI-113:
+  the pressed state ends only when the drag takes the pointer). Accepted, the root takes the pointer, `Carry` gets each
+  move with `DraftInput.At` (the release's own pick), no `.drag-ghost` and no UI-393 icon shows, the release is the drop
+  callback and `ResetDrag` (Esc, focus loss, a cancelled pointer, a changed scope) calls `Cancel`.
+- **Lift.** `FigureLiftInteraction.Begin` checks the side, `SelectionBusy` and a lit king, keeps `TurnDraft.Checkpoint`,
+  and, unless the figure is already raised for the unsent move (`MapCanvas.Lifts`), makes its click through
+  `TurnInteraction.SelectToLift` (`RegionHover.Quiet`: no panel; a send it would make is held back and refuses the
+  lift). No raised piece, no lit target other than its own region, or no piece taken up (`MapCanvas.GrabFigures`) puts the
+  checkpoint back (`TurnDraft.Rewind`, `TurnInteraction.Restore`).
+- **During the drag.** `MapCanvas.CarryFigures` (the hand's pieces follow by translate), `MapCanvas.SetDragTarget` (the
+  renderer's `CarriedTarget`/`CarriedAttack`/hover tint; the landing mark reads `DragTarget` before `Hovered`),
+  `MapEdgePan.SampleDrag` (dwell 0.25 s; `DragPanned` reads the region under the resting pointer again);
+  `RegionHover.PreviewDrag` makes the open panel translucent and transparent to the pointer.
+- **Drop.** `FigureLiftInteraction.Drop`: `MapCanvas.DropFigures` rests the pieces on the board point under them; a lit
+  target other than the figure's own region, while nothing is busy, runs `TurnInteraction.ChooseRegion`. If the carried
+  figures are still in `LiftedFigures.Selection` afterwards, nothing happened to them and the checkpoint is put back.
+  `MapCanvas.HomeFigures` then glides home every raised piece that no flight awaits. A sent step's `ExpectFlights` reads
+  each piece's `Ground`, the drop point (UI-404's hand-off).
+- **Cancel.** `FigureLiftInteraction.Cancel` (and `TurnInteraction.Update` before a new revision meets the draft) puts the
+  checkpoint back, saves it, shows it and glides the figures home.
 
 <a id="panel-posiłków--ui-130"></a>
 ## Meal Panel — UI-130

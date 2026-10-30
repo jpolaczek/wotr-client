@@ -177,7 +177,7 @@ namespace Wotr.PlayTests
             var surface = Surface(client);
             var selected = 0;
             var drops = 0;
-            // UI-105: figures and armies are never dragged, so a reserve stands for the draggable object.
+            // UI-405: armies and characters drag only through IFigureDrag, so a reserve stands for a plain draggable object.
             var figure = new Button(() => selected++)
             {
                 text = "Reserve",

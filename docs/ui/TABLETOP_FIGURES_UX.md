@@ -262,7 +262,7 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
 - **Cost.** Per frame a character writes only its holder's translate and scale (the UI-401 rule); its states change on
   a choice refresh, its place and art on a board change.
 - **Not yet.** Flights still fly between region points (resolved by UI-404); lifting (UI-403) and carrying (UI-405) are
-  next.
+  next (both built since, "As built (UI-403)" and "As built (UI-405)" below).
 - **Tests.** EditMode `CharacterPlacementTests` (field, garrison and side order, kept places, the stacked pair),
   `ArmyMarkerTests` (units only, two distinct figures, the character's tooltip), `SovereignMapTests` (an Awakened king's
   figure); PlayMode `CharacterMiniatureTests` (two distinct figures on their places inside their region at the armies'
@@ -336,13 +336,94 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
 - **Cost.** Per camera frame each piece, the ring and the caption write a translate (and a scale) only when it changes;
   the pieces and the mask change on a draft or board change only. No filter.
 - **Not yet.** A sent move stays raised until the view arrives, then the flight starts from the source's place (since
-  UI-404 the hand gives the flight its place and raised pose, "As built (UI-404)" below); dragging (UI-405).
+  UI-404 the hand gives the flight its place and raised pose, "As built (UI-404)" below); dragging (UI-405, built
+  2026-10-30: "As built (UI-405)" below).
 - **Tests.** EditMode `MapFigureHandTests` (exactly the selection lifts and the base shows the rest; a split; Esc or
   undo; a sent march kept until the view takes it; an attack's return; a planned flight's figure leaving its place) and
   `ArmyMovementTests` (the army's and travellers' captions, the attack set). PlayMode `FigureHandTests` (the pose and
   scale, the rest on its base, the green and red landing mark on its place, the caption above the lifted figure, no
   translucent copy, a character alone, Escape, Reduced motion) and
   `BoardInteractionTests.UI127OneClickLiftsTheArmyALandingMarkPreviewsTheTargetAndEscapePutsItBack`.
+
+**As built (UI-405, 2026-10-30): a unit or character is picked up and carried; its drop is the target's click.**
+
+- **Input** (`Runtime/UI/DraftInput.cs`, `Runtime/UI/IFigureDrag.cs`). A press on an `Army` or a `Miniature` that crosses
+  the drag threshold (6 points) asks `IFigureDrag.Begin`, once per press. Refused, the press stays a click: nothing takes
+  the pointer, no label shows, and its release over the figure is its click (R16). Accepted, the board takes the pointer
+  and every move goes to `IFigureDrag.Carry` with the object under it (`DraftInput.At`, the release's own pick); no
+  `.drag-ghost` label and no UI-393 icon is shown for a figure. The release is the drop (the input's drop callback, as for
+  any drag); `ResetDrag` — Esc, focus loss, a cancelled pointer, a changed scope (revision, decision or connection) —
+  calls `IFigureDrag.Cancel`. Region-panel chips (`Figure`), Characters rows, Fellowship portraits, dice, cards, tokens
+  and the reserve keep their gestures. Without an `IFigureDrag` (isolated input tests) figures never drag.
+- **Begin** (`Runtime/Application/FigureLiftInteraction.cs`). It lifts the player's own figure while a decision waits and
+  nothing is busy (`SelectionBusy`: a command on its way, an opponent's presentation, an older revision); a force holding
+  a lit king never lifts (its click chooses the king). The draft is kept as a checkpoint with its undo history
+  (`TurnDraft.Checkpoint`). A figure already raised for the unsent move (`MapCanvas.Lifts`: its own piece in the hand
+  holds part of `LiftedFigures.Selection`) is carried as it is; otherwise its click is made quietly
+  (`TurnInteraction.SelectToLift`: `ChooseArmy` or `ChooseMiniature` with `RegionHover.Quiet`, so no panel opens). If
+  that click would send a step (an ability used on the figure), the send is held back and the press stays a click. The
+  figure lifts only when its piece is then raised, a lit target other than its own region exists
+  (`DraftOverlay.Targets`) and the hand takes it up; otherwise the checkpoint is put back (`TurnDraft.Rewind`, saved and
+  shown) and the press stays a click.
+- **Carried** (`MapFigureHand.Grab`/`Follow`, `MapHandPiece`). Every raised piece of the unsent move goes with the
+  pointer — the force's units and the characters chosen with them — each keeping its feet's offset from the press, so the
+  grabbed figure stays under the pointer. It is UI-403's piece itself in its raised pose: the same miniature at the same
+  scale, the contact shadow under it; only its holder's translate changes (map-local, so an edge pan leaves it under the
+  pointer). It stays clipped to the map. The source's base keeps showing only what stays behind (`lifted-away` when
+  nothing does). The caption hangs above the carried figures.
+- **The region under it** (`MapCanvas.SetDragTarget`, `MapRenderer`). The region under the pointer (terrain, an army
+  marker or a character's miniature; "" over the HUD or water) is the drag target: a legal target lights more strongly in
+  its own colour (`CarriedTarget` green .50, `CarriedAttack` red .52), any other region gets the hover tint, and on a legal
+  target the landing mark and its caption show as on a hover (`LandingRegion`). `RegionHover.PreviewDrag` treats a carried
+  army or character as a reserve figure: the open region panel turns translucent and lets the drop through.
+- **Edge pan** (`MapEdgePan.SampleDrag`). While a figure is carried the pointer is pressed and captured, so the drag feeds
+  its own samples (each move, and the screen's native samples, `MapScreenPointer`); the usual pick rules still apply.
+  Once the pointer has rested in the 26-point edge zone for `DragDwellSeconds` (0.25 s) the map pans; each step raises
+  `DragPanned` and the region under the resting pointer is read again. Leaving the zone resets the dwell; the drop or a
+  cancellation ends it (`EndDrag`).
+- **Drop** (the first branch of `TurnInteraction.Drop`, `FigureLiftInteraction.Drop`). The carried pieces rest on the
+  board point under them (`MapFigureHand.Release`). When the drop's region is in `DraftOverlay.Targets`, is not the
+  figure's own region and nothing is busy, `TurnInteraction.ChooseRegion(region)` runs — the target click itself
+  (`context.Target` and `SubmitPreparedStep`, `travel.Reach`, `flights.Region`, a card's armies, the Council token's
+  travel) — so the payload is the click's. Outcomes, read from whether the carried figures left the unsent move:
+  - **sent**: the step leaves and `MapCanvas.ExpectFlights` expects each dropped piece at the point it rests on
+    (`MapHandPiece.Ground`, UI-404's `Figures.Expect` with the drop point); it stays raised there, and when the view
+    takes the figures the flight goes on from there in the raised pose. A rejection, a disconnect or the 5 s expiry
+    glides it home onto its base (UI-404's lapse);
+  - **planned** (a card's flight or journey, a card's army move waiting for ✓): a piece the planned ghost now shows
+    dissolves where it was dropped; when a card arms the next Nazgûl of the same stack, the dropped piece leaves from
+    there and the next rises at the stack on a piece of its own (`MapFigureHand.Replace`); a move that only waits for ✓
+    glides home over its source, raised, as its click shows it;
+  - **nothing** (a drop on Lamedon beyond the mountains, on the HUD, on its own region, or a click that did nothing): the
+    checkpoint is put back and the figure glides home — onto its base when the press itself had chosen it, otherwise
+    raised over its place as it was chosen before.
+  An attack's drop is sent like its click and, as with the click (UI-403), its army comes back to its base at once.
+- **Cancel.** Esc, focus loss, a cancelled pointer, a changed connection or decision, and a new revision (cancelled before
+  the new view meets the draft, `TurnInteraction.Update`) put the checkpoint back, undo history included, save it, and
+  glide the figures home. Leaving the board mid-drag rewinds the draft without animation.
+- **Glide home** (`hand-gliding`, Styles/Armies.uss). A piece away from its source that goes home gets the class for its
+  0.22 s glide alone (a transition on its holder's translate under `.motion-enabled`), so camera moves never lag; a
+  return drops the pose at the same time. Reduced motion puts it back at once.
+- **Cost.** Per move: one pick, a translate per carried piece, the caption's and ring's translates when they change, and
+  a region repaint only when the region under the pointer changes. No layout property is written, no
+  `GeometryChangedEvent` callback writes layout, no CSS filter. Measured in PlayMode (`BoardInteractionTests`
+  `UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell`, 1366 × 768, Editor batch mode, Apple silicon): the CPU work of
+  one drag frame with edge pan — a carried move (pick, carry, caption, drag target, edge sample) and a pan step (camera,
+  `MapCanvas.Refresh`, the region read again) — over 240 frames: p50 0.217 ms, p95 0.226 ms, max 0.572 ms; rendering is
+  not included, and the Development Player profile was not run.
+- **Tests.** EditMode `DraftTests.ACheckpointPutsBackTheDraftAndItsUndoHistoryExactly`, `MapFigureHandTests`
+  (`OnlyARaisedPieceOfTheUnsentMoveIsCarried`, `ACarriedNazgulFlownByItsDropLeavesFromThereAndTheNextRisesAtTheStack`),
+  `MapFlightTests` (`ADroppedArmyHandsTheDropPointToItsFlight`, `ACarriedArmyDroppedWhereNothingTakesItGoesHome`);
+  PlayMode `DraftInputTests.AFigurePressLiftsOnlyWhenItsDragAcceptsAndNeverShowsALabel`, `BoardInteractionTests`
+  (`FinalTargetClickSendsTheStepWithoutConfirmAndTheArmysDropSendsTheSameStep`: the drop's payload equals the click's;
+  `UI405TheCarriedArmyLightsItsTargetAndFliesOnFromWhereItWasDropped`: pictures `ui405-carried`, `-carried-target`,
+  `-dropped`, `-handoff-start`, `-landed`; `UI405AnIllegalDropOrEscapeSendsNothingAndLeavesTheDraftAsItWas`: Lamedon, the
+  HUD, Esc, a press-made selection undone, an enemy and a busy board; `UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell`:
+  `ui405-edge-pan`; `ArmyDragAndEscapeCannotSpendTheSelectedDie`), `FigureHandTests`
+  (`UI405TheChosenArmyAndStriderAreCarriedTogetherAsTheirOwnMiniatures`: `ui405-carried-army-and-strider`,
+  `ui405-escape-back`), `MapContourInteractionTests` (both sides: a HUD drop is no step, a drop on the target's contour
+  commits the click's step, Lamedon returns), `TravelGestureNetworkTests` (Gimli's figure carried onto Moria travels him);
+  `MapContourProbe.DragFigure`/`LiftFigure`/`Carry`/`RefusedDrag` replace `AttemptDrag`.
 
 ## Flight profile (UI-404)
 
@@ -421,8 +502,8 @@ flight per destination marker, rendered with the same miniature.
   `FigureMotionNetworkTests`, `FellowshipMotionNetworkTests`, `ArmyLeaveTests`, `ArmyEmergeTests`, the opponent's
   presentation classes, `FigureHandTests`, `BoardInteractionTests`, `MovementNetworkTests`, `TravelGestureNetworkTests`,
   `CharacterMiniatureTests`, `MapVisibilityTests`, `MapStandLayoutTests`.
-- **Not yet.** UI-405's drop will expect a dropped figure at its drop point (the same `Expect`); the Fellowship's base
-  and the tokens are UI-406's.
+- **Not yet.** UI-405's drop will expect a dropped figure at its drop point (the same `Expect`; built 2026-10-30, "As
+  built (UI-405)" above); the Fellowship's base and the tokens are UI-406's.
 
 ## Defaults the owner can change at review
 
@@ -442,7 +523,22 @@ flight per destination marker, rendered with the same miniature.
 - The arc's height is measured on the screen, so it follows the zoom; the settle is a hop of 2 design points (UI-404).
 - A lone character's landing mark is the army's ring at .35 of its size on the region's first free character place;
   while the lifted figure is out of view the caption hangs above the ring (UI-403).
-- Edge pan works during a figure drag after a ~250 ms dwell.
+- Edge pan works during a figure drag after a ~250 ms dwell (UI-405: `MapEdgePan.DragDwellSeconds` = 0.25 s in the
+  26-point edge zone, at the usual edge-pan speed).
+- A press carries every raised figure of the unsent move, from the army's base or a chosen character: the army and the
+  characters chosen with it go together, each keeping its place beside the pointer (UI-405).
+- The drag target is the region under the pointer, which holds the carried figure, as the release reads it; a legal
+  target under it lights in its own colour more strongly (green .50, red .52 instead of .34 and .36), any other region
+  only takes the hover tint (UI-405).
+- A drop that sends nothing puts the draft back as it was before the press: a figure the press itself picked up goes
+  home onto its base, one a click had chosen before goes home raised over its base, still chosen (UI-405). The glide home
+  takes 0.22 s.
+- A dropped figure whose step was sent stays raised where it was dropped, not over its source, until the view arrives
+  (at most 5 s), and its flight leaves from there (UI-405).
+- A press on a figure whose click would send a step at once (an ability used on it) does not lift it; that press stays
+  a click (UI-405).
+- The region panel turns translucent and lets the drop through while a figure is carried, as for a reserve figure
+  (UI-405).
 - Where a place's capacity is too small, the region shows tokens.
 
 ## Playtest checklist
@@ -456,7 +552,7 @@ flight per destination marker, rendered with the same miniature.
 | 5 | Same | Press Esc | The figures drop back onto the base |
 | 6 | Same | Click a destination | The figures rise, fly in an arc and land on the destination's place without a snap |
 | 7 | Same | Press the army and drag it onto a legal region | The army is carried as itself (no square or text), the region lights, edge pan works after a short pause; the drop moves it exactly as the click would |
-| 8 | Same | Drag onto an illegal region or the HUD | Nothing is sent; the army returns to its base |
+| 8 | Same | Drag onto an illegal region (Lamedon, beyond the mountains from Minas Tirith) or the HUD | Nothing is sent; the army glides back: onto its base when the press picked it up, raised over its base, still chosen, when a click had chosen it first |
 | 9 | An attack (`fp-army-attack`) | Hover the enemy region | A red landing mark; the drop or click opens the battle and the attackers return to their base |
 | 10 | Character move with a Character die (`fp-character-move-*`) | Click Strider's figure | Only Strider lifts; clicking a destination flies him there |
 | 11 | Opponent's turn | Watch the opponent move | The opponent's figures arc and land the same way |
@@ -473,11 +569,20 @@ flight per destination marker, rendered with the same miniature.
 | 22 | Opponent's turn: a march that leaves a rear guard | Watch the opponent's march | Only the moving figures rise from the force's place and fly; the rear guard stays on its base with its count |
 | 23 | A move while the opponent's next move arrives quickly (or two quick own steps) | Watch a figure that is still in the air when it moves again | It turns in the air towards its new place; it never jumps to its first destination or back to its source |
 | 24 | Settings → Skip animations on | Move an army | The army stands on its destination's place at once with a short fade, no lift or arc |
+| 25 | A move with an Army die (`fp-army-move`), nothing chosen yet | Choose the Army die, press the army and drag it a little, then press Esc while still holding | It lifts as you drag (no panel opens) and follows the pointer; Esc puts it back onto its base; releasing afterwards does nothing |
+| 26 | Same, an army with Strider | Click the army, then press it and carry it | The army and Strider go together under the pointer, each as its own miniature; the caption hangs above them over a legal region |
+| 27 | Same | Carry the army to the map's edge and hold it there | After a short pause (about a quarter second) the map scrolls; the army stays under the pointer and the region under it keeps lighting |
+| 28 | Same, a slow connection | Carry the army onto a legal region and drop it | It stays raised where you dropped it until the answer comes, then flies on from there; if the server refuses, it glides back onto its base |
+| 29 | Character move with a Character die (`fp-character-move-*`) | Press Strider's figure and carry him onto a lit region | Strider alone is carried; the drop moves him as the destination click would |
+| 30 | A Shadow card that flies several Nazgûl (UI-212) | Press the lit Nazgûl stack and carry one onto a lit destination | The carried Nazgûl dissolves where you dropped it as its faint planned figure appears; the next one rises at the stack |
+| 31 | Opponent's turn, or while your step is on its way | Press one of your armies (or one of the opponent's) and drag | Nothing lifts; the press stays a click |
+| 32 | An attack (`fp-army-attack`) | Carry the army onto the enemy region and drop it | The battle opens as with the click; the attackers glide back to their base |
 
 ## Superseded statements
 
 - UX_SPEC (UI-105 section): "army movement remains only clicks; drag remains only for reserves" — superseded for units
-  and characters by UI-421 (2026-10-29).
+  and characters by UI-421 (2026-10-29); built by UI-405 (2026-10-30).
 - ARMY_MAP_UX: "armies are never dragged" — idem.
 - BOARD_INTERACTION_UX (UI-105, UI-128 sections) — idem.
-- Dice, cards, tokens and reserves keep their gestures.
+- Dice, cards, tokens and reserves keep their gestures; so do the region panel's figure chips, the Characters rows and
+  the Fellowship portraits.

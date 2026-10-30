@@ -117,6 +117,28 @@ namespace Wotr.Client
             ArmedSource = other.ArmedSource;
         }
 
+        // UI-405: the draft as it is, with its undo history, so a gesture that ends without a step puts back exactly that.
+        public TurnDraft Checkpoint()
+        {
+            var checkpoint = Fork();
+            checkpoint.history.AddRange(history.Select(entry => entry.Fork()));
+            return checkpoint;
+        }
+
+        // UI-405: back to a checkpoint, its undo history included; nothing is remembered, as nothing happened.
+        public void Rewind(TurnDraft checkpoint)
+        {
+            Kind = checkpoint.Kind;
+            Payload = Copy(checkpoint.Payload);
+            MoveFocus = checkpoint.MoveFocus;
+            ReserveId = checkpoint.ReserveId;
+            CompanionFocus = checkpoint.CompanionFocus;
+            HuntChoice = checkpoint.HuntChoice;
+            ArmedSource = checkpoint.ArmedSource;
+            history.Clear();
+            history.AddRange(checkpoint.history.Select(entry => entry.Fork()));
+        }
+
         public DraftSnapshot Snapshot() => new DraftSnapshot
         {
             Kind = Kind,

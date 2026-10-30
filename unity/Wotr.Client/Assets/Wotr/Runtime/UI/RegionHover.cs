@@ -70,6 +70,9 @@ namespace Wotr.Client
 
         public bool HoldsDecision => decision.Length > 0 && explicitRegion.Length > 0;
 
+        // UI-405: while a press lifts a figure to carry it, its click makes the selection without opening a panel.
+        public bool Quiet { get; set; }
+
         public bool HoldsDecisionOf(string decisionId) => HoldsDecision && decision == decisionId;
 
         public void Apply(PlayerView latest)
@@ -86,6 +89,8 @@ namespace Wotr.Client
 
         public void Open(string region)
         {
+            if (Quiet)
+                return;
             if (Excluded?.Invoke(region) == true) { Close(); return; }
             CancelLeave();
             decision = "";
@@ -97,6 +102,8 @@ namespace Wotr.Client
         // UI-254: opens the region panel that hosts a decision and keeps it while that decision waits.
         public void OpenDecision(string region, string decisionId)
         {
+            if (Quiet)
+                return;
             Open(region);
             decision = explicitRegion == region ? decisionId ?? "" : "";
         }
@@ -104,6 +111,8 @@ namespace Wotr.Client
         // UI-103: a click on the region whose panel is open closes that panel; another region switches to it.
         public void Toggle(string region)
         {
+            if (Quiet)
+                return;
             var open = pressedOpen == region ||
                 explicitRegion == region && Panel.Root.style.display.value != DisplayStyle.None;
             pressedOpen = "";
@@ -118,7 +127,8 @@ namespace Wotr.Client
             foreach (var entry in dragPicking)
                 entry.Key.pickingMode = entry.Value;
             dragPicking.Clear();
-            var active = source?.Object == DraftObject.Reserve;
+            // UI-405: a carried army or character, like a reserve figure, is dropped on the map under the panel.
+            var active = source?.Object is DraftObject.Reserve or DraftObject.Army or DraftObject.Miniature;
             Panel.Root.style.opacity = active ? .25f : 1f;
             if (!active)
                 return;

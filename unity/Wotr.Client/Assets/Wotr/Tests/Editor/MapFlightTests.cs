@@ -76,6 +76,57 @@ namespace Wotr.EditorTests
             Assert.IsNotNull(draft);
         }
 
+        // UI-405: a carried army dropped on its target stays raised where it was dropped and its flight goes on from there.
+        [Test]
+        public void ADroppedArmyHandsTheDropPointToItsFlight()
+        {
+            var (view, map, context) = Board();
+            var draft = new TurnDraft();
+            Assert.IsTrue(ContextArmySelection.SelectAll(draft, view, context, Region, false));
+            map.DraftOverlay.Apply(view, draft, context);
+            var source = Feet(map, Army);
+            Assert.IsTrue(map.GrabFigures(map.Camera.ToScreen(source)), "The raised army is taken up where its feet are.");
+            var drop = Vector2.Lerp(source, Feet(map, "army-osgiliath-FreePeoples"), .8f);
+            map.CarryFigures(map.Camera.ToScreen(drop));
+            var movers = view.Units.Where(u => u.Location == Region).Select(u => u.Id).ToList();
+            CollectionAssert.IsSubsetOf(movers, map.DropFigures(), "The drop releases what was carried.");
+            Assert.IsTrue(ContextArmySelection.Target(draft, view, context, Target));
+            map.DraftOverlay.Apply(view, draft, context);
+            map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
+            map.HomeFigures();
+            Assert.IsNotNull(map.Q("hand-" + Army), "Sent: it stays raised where it was dropped.");
+
+            Move(view, map, movers.Append("strider"), Target);
+            var flight = map.Figures.Flight("unit:" + movers[0]).Value;
+            Assert.Less(Vector2.Distance(drop, flight.From), .01f, "It flies on from where it was dropped…");
+            Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "…in its raised pose.");
+            Assert.AreNotEqual(source, flight.From, "Never from its source.");
+        }
+
+        // UI-405: dropped where nothing takes it, a still-chosen army goes home over its place, so its step leaves from there.
+        [Test]
+        public void ACarriedArmyDroppedWhereNothingTakesItGoesHome()
+        {
+            var (view, map, context) = Board();
+            var draft = new TurnDraft();
+            Assert.IsTrue(ContextArmySelection.SelectAll(draft, view, context, Region, false));
+            map.DraftOverlay.Apply(view, draft, context);
+            var source = Feet(map, Army);
+            Assert.IsTrue(map.GrabFigures(map.Camera.ToScreen(source)));
+            map.CarryFigures(map.Camera.ToScreen(source) + new Vector2(140, 60));
+            map.DropFigures();
+            map.HomeFigures();
+            Assert.IsNotNull(map.Q("hand-" + Army), "Still chosen, it stays raised.");
+            Assert.IsTrue(ContextArmySelection.Target(draft, view, context, Target));
+            map.DraftOverlay.Apply(view, draft, context);
+            map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
+            var movers = view.Units.Where(u => u.Location == Region).Select(u => u.Id).ToList();
+            Move(view, map, movers.Append("strider"), Target);
+            var flight = map.Figures.Flight("unit:" + movers[0]).Value;
+            Assert.AreEqual(source, flight.From, "Its step leaves from over its place, not from where it was dropped.");
+            Assert.AreEqual(1, flight.Frame.Lift, 1e-4f, "Still raised: no second lift.");
+        }
+
         [Test]
         public void ARejectionADisconnectOrTheExpiryPutsTheFiguresBackOnTheirBase()
         {

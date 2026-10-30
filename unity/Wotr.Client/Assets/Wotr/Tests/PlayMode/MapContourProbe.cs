@@ -167,16 +167,45 @@ namespace Wotr.PlayTests
 
         public static void ClickRegion(MapCanvas map, string region) => Click(map, ReachRegion(map, region));
 
-        // UI-105: armies, figures and characters are never dragged. Pressing one and moving away captures nothing,
-        // and releasing over a region is not a step.
-        public static void AttemptDrag(BoardScreen board, VisualElement source, Vector2 point)
+        // UI-405 (TABLETOP_FIGURES_UX, "Drag"): the player's own army or character is picked up and carried as the
+        // miniature itself, and its release over `point` is its drop there.
+        public static void DragFigure(BoardScreen board, VisualElement source, Vector2 point)
+        {
+            LiftFigure(board, source);
+            Drop(board, point);
+        }
+
+        // A press on a figure that crosses the drag threshold: the board takes the pointer and carries the figure, never
+        // a text label.
+        public static void LiftFigure(BoardScreen board, VisualElement source)
         {
             Assert.IsNotNull(source);
             PointerGestureEvents.Press(source);
             using (var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag,
                 button = 0, mousePosition = source.worldBound.center + new Vector2(9, 0) }))
                 source.SendEvent(move);
-            Assert.IsFalse(board.Root.HasPointerCapture(PointerId.mousePointerId), "A figure is never a drag source.");
+            Assert.IsTrue(board.Root.HasPointerCapture(PointerId.mousePointerId), "The figure is carried.");
+            Assert.AreEqual(DisplayStyle.None, board.Root.Q(className: "drag-ghost").resolvedStyle.display,
+                "A figure travels as itself, never as a label.");
+        }
+
+        // The carried figure's pointer moves to `point` without a release.
+        public static void Carry(BoardScreen board, Vector2 point)
+        {
+            using var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = point });
+            board.Root.SendEvent(move);
+        }
+
+        // UI-405: the opponent's figures, and any figure while the board is busy, never lift: pressing one and moving away
+        // takes nothing, and releasing over a region is not a step.
+        public static void RefusedDrag(BoardScreen board, VisualElement source, Vector2 point)
+        {
+            Assert.IsNotNull(source);
+            PointerGestureEvents.Press(source);
+            using (var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag,
+                button = 0, mousePosition = source.worldBound.center + new Vector2(9, 0) }))
+                source.SendEvent(move);
+            Assert.IsFalse(board.Root.HasPointerCapture(PointerId.mousePointerId), "This figure does not lift.");
             Assert.AreEqual(DisplayStyle.None, board.Root.Q(className: "drag-ghost").resolvedStyle.display);
             Drop(board, point);
         }

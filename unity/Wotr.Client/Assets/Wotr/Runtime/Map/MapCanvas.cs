@@ -22,6 +22,8 @@ namespace Wotr.Client
         }
         public string Selected { get; private set; } = "";
         public string Hovered { get; private set; } = "";
+        // UI-405: the region under a carried figure ("" over no region); null while nothing is carried.
+        public string DragTarget { get; private set; }
         public string AttentionRegion { get; private set; } = "";
         public event Action<string> RegionSelected;
         public event Action<DraftToken> ArmySelected;
@@ -332,24 +334,69 @@ namespace Wotr.Client
             UpdateLanding();
         }
 
+        // UI-405 (TABLETOP_FIGURES_UX, "Drag"): the region under a carried figure lights (a legal target in its own colour,
+        // more strongly), and on a legal target the landing mark and the caption show as on a hover; null ends the drag.
+        public void SetDragTarget(string region)
+        {
+            var next = region == null ? null : Data.Shapes.ContainsKey(region) ? region : "";
+            if (DragTarget == next)
+                return;
+            DragTarget = next;
+            UpdateLanding();
+            Redraw();
+        }
+
+        // Where the landing mark looks: the carried figure's region during a drag, otherwise the hovered one.
+        private string LandingRegion => DragTarget ?? Hovered;
+
         // On a hovered legal target: the landing mark on the prospective place (an army's, or a lone character's next
         // place), green for a move and red for an attack, and the caption above the lifted figure.
         private void UpdateLanding()
         {
             var caption = "";
-            var shown = landingCaptions != null && contentRect.width > 0 && Hovered.Length > 0 &&
-                landingCaptions.Captions.TryGetValue(Hovered, out caption) && Data.Shapes.ContainsKey(Hovered);
+            var region = LandingRegion;
+            var shown = landingCaptions != null && contentRect.width > 0 && region.Length > 0 &&
+                landingCaptions.Captions.TryGetValue(region, out caption) && Data.Shapes.ContainsKey(region);
             if (!shown)
             {
                 Landing.Hide();
                 return;
             }
             var units = Hand.HoldsUnits || !Hand.Pieces.Any();
-            var place = units ? LandingPlace(Hovered) : Characters.NextPlace(Hovered);
+            var place = units ? LandingPlace(region) : Characters.NextPlace(region);
             var scale = Stands.FigureScale * (units ? 1 : MapLandingMark.CharacterShare);
-            Landing.Show(Camera.ToScreen(place), scale, landingCaptions.Attacks.Contains(Hovered), caption, Hand.RaisedBounds,
+            Landing.Show(Camera.ToScreen(place), scale, landingCaptions.Attacks.Contains(region), caption, Hand.RaisedBounds,
                 contentRect);
         }
+
+        // UI-405: the name of the stand a figure's press lifts from (an army's marker, a character's miniature); "" for
+        // anything else.
+        internal string LiftKey(DraftToken figure)
+        {
+            if (figure?.Object == DraftObject.Miniature)
+                return MapCharacterFigures.Key(figure.Id);
+            return figure?.Object == DraftObject.Army && figure.Side is Side side &&
+                markers.TryGetValue((figure.Id, side, figure.Garrison), out var marker) ? marker.Button.name : "";
+        }
+
+        // UI-405: whether the figure's own raised piece holds figures of the unsent move.
+        public bool Lifts(DraftToken figure) => Hand.Raises(LiftKey(figure));
+
+        // UI-405: the pointer (map-local) takes up the raised figures of the unsent move; false when none is raised.
+        public bool GrabFigures(Vector2 pointer) => Hand.Grab(pointer);
+
+        // UI-405: the carried figures follow the pointer (map-local); the caption hangs above them.
+        public void CarryFigures(Vector2 pointer)
+        {
+            Hand.Follow(pointer);
+            UpdateLanding();
+        }
+
+        // UI-405: the carried figures rest where they were dropped; returns the figures they hold.
+        public HashSet<string> DropFigures() => Hand.Release();
+
+        // UI-405: after a drop, raised figures away from their place that no flight takes glide home over it.
+        public void HomeFigures() => Hand.Home();
 
         // UI-401: an army arrives on the region's field when no field force stands there, otherwise on its planned place
         // beside them.
@@ -970,7 +1017,8 @@ namespace Wotr.Client
 
         public void Redraw()
         {
-            Renderer.Update(Data, Camera, Selected, sourceRegions, ownerRegions, DraftOverlay, Hovered, pressedRegion);
+            Renderer.Update(Data, Camera, Selected, sourceRegions, ownerRegions, DraftOverlay, Hovered, pressedRegion,
+                DragTarget ?? "");
             foreground?.MarkDirtyRepaint();
         }
 

@@ -15,6 +15,10 @@ namespace Wotr.Client
     // opacity transition under .motion-enabled (Styles/Armies.uss), so nothing is written per frame. Reduced motion shows
     // the static raised pose. States: InPlace (raised over its place), Returning (dropping back onto its base, then gone)
     // and Planned (dissolving into the planned ghost at its destination, then gone).
+    // UI-405: a raised piece can be carried: it keeps the offset from the pointer it was grabbed at and stands wherever the
+    // pointer takes it (a map-local point, so an edge pan leaves it under the pointer). Dropped, it rests on the board point
+    // under it (Away) until it goes, flies on from there, or glides home over its source (`hand-gliding`: the holder's
+    // translate transitions under .motion-enabled), as a return glides home while it drops.
     internal sealed class MapHandPiece
     {
         public enum PieceState
@@ -28,6 +32,7 @@ namespace Wotr.Client
         public const string LiftedClass = "figure-lifted";
         public const string ReturningClass = "hand-returning";
         public const string PlannedClass = "hand-planned";
+        public const string GlidingClass = "hand-gliding";
         // The pose in design points: the miniature grows round its feet and rises (Styles/Armies.uss).
         public const float LiftScale = 1.1f;
         public const float Rise = 12;
@@ -35,6 +40,7 @@ namespace Wotr.Client
         public const float ShadowOpacity = .35f;
         public const long ReturnMilliseconds = 220;
         public const long DissolveMilliseconds = 250;
+        public const long GlideMilliseconds = 220;
         // A little after the transition ends, so its last frame is drawn.
         private const long Margin = 40;
 
@@ -53,7 +59,15 @@ namespace Wotr.Client
         private Vector2 shownFeet;
         private float shownScale;
         private IVisualElementScheduledItem ending;
+        private IVisualElementScheduledItem gliding;
         private Action afterLayout;
+        // UI-405: where its feet stand while carried (map-local), their offset from the pointer, and the board point it
+        // rests on once dropped away from its source.
+        private Vector2? carried;
+        private Vector2 grab;
+        private Vector2? rest;
+        // The map it was last laid out on, so a glide home writes its place at once.
+        private MapCanvas map;
 
         private MapHandPiece(string key, string region, bool units, MapStand source, Vector2 feet, Vector2 size)
         {
@@ -119,7 +133,7 @@ namespace Wotr.Client
         public static MapHandPiece Of(MapCharacterStand character, CharacterFigure figure)
         {
             var feet = MapCharacterArtwork.Feet(true);
-            var piece = new MapHandPiece("character-" + figure.Id, figure.RegionId, false, character.Stand, feet,
+            var piece = new MapHandPiece(MapCharacterFigures.Key(figure.Id), figure.RegionId, false, character.Stand, feet,
                 MapCharacterArtwork.HolderSize);
             var artwork = new MapCharacterArtwork(piece.miniature);
             artwork.Apply(figure, null, 0);
@@ -142,8 +156,64 @@ namespace Wotr.Client
         // Whether its source still stands on the table.
         public bool HasSource => source.Root.parent != null;
 
-        // UI-404: the board point it hovers over (its source's place), where the flight that carries it on begins.
-        public Vector2 SourceFeet => source.Feet;
+        // UI-405: carried by the pointer, and away from its source (carried, or dropped and resting elsewhere).
+        public bool Carried => carried.HasValue;
+        public bool Away => carried.HasValue || rest.HasValue;
+
+        // UI-404: the board point it hovers over, where the flight that carries it on begins: its source's place, or
+        // (UI-405) where it was dropped.
+        public Vector2 Ground => rest ?? source.Feet;
+
+        // Where its feet showed at the last layout (map-local).
+        public Vector2 ShownFeet => shownFeet;
+
+        // UI-405: the pointer takes it at a map-local point; it keeps its feet's offset from there.
+        public void Grab(Vector2 pointer)
+        {
+            StopGlide();
+            grab = shownFeet - pointer;
+            carried = shownFeet;
+            rest = null;
+        }
+
+        // Its feet follow the pointer (map-local).
+        public void Follow(Vector2 pointer) => carried = pointer + grab;
+
+        // Dropped: it rests on the board point under its feet.
+        public void Rest(Vector2 ground)
+        {
+            carried = null;
+            rest = ground;
+        }
+
+        // Back over its source: it glides there under motion, at once otherwise.
+        public void Home(bool moving)
+        {
+            if (!Away)
+                return;
+            carried = null;
+            rest = null;
+            if (moving)
+                Glide();
+            if (map != null)
+                Layout(map, shownScale);
+        }
+
+        private void Glide()
+        {
+            gliding?.Pause();
+            Stand.Root.AddToClassList(GlidingClass);
+            gliding = Stand.Root.schedule.Execute(StopGlide);
+            gliding.ExecuteLater(GlideMilliseconds + Margin);
+        }
+
+        // A camera move never transitions: the glide ends once it has run, or when the piece is taken up again.
+        private void StopGlide()
+        {
+            gliding?.Pause();
+            gliding = null;
+            Stand.Root.RemoveFromClassList(GlidingClass);
+        }
 
         // UI-404: one of its figures as the board's figure positions name it (BoardFigurePosition.Key).
         public string FigureKey(string id) => (Units ? BoardFigurePosition.UnitPrefix : BoardFigurePosition.CharacterPrefix) + id;
@@ -168,9 +238,11 @@ namespace Wotr.Client
                 root.AddToClassList(LiftedClass);
         }
 
-        // Esc, undo or an attack: it drops back onto its base, then `gone` takes it away.
+        // Esc, undo or an attack: it drops back onto its base (UI-405: gliding home from where it was dropped), then `gone`
+        // takes it away.
         public void Return(bool moving, Action gone)
         {
+            Home(moving);
             State = PieceState.Returning;
             root.RemoveFromClassList(LiftedClass);
             root.AddToClassList(ReturningClass);
@@ -218,12 +290,17 @@ namespace Wotr.Client
             ending.ExecuteLater(milliseconds + Margin);
         }
 
-        // Stands it over its source's place at the figures' scale; hidden while the place is out of reach of the view.
+        // Stands it at the figures' scale over its place — its source's, where it was dropped, or (carried) under the
+        // pointer; hidden while that place is out of reach of the view. Only the holder's translate and scale change.
         public void Layout(MapCanvas map, float scale)
         {
-            Visible = map.Stands.Place(Stand, source.Feet, scale);
+            this.map = map;
+            var feet = carried ?? map.Camera.ToScreen(Ground);
+            Visible = carried.HasValue || map.NearView(feet);
+            if (Visible)
+                Stand.Place(feet, scale);
             Stand.Root.style.display = Visible ? DisplayStyle.Flex : DisplayStyle.None;
-            shownFeet = map.Camera.ToScreen(source.Feet);
+            shownFeet = feet;
             shownScale = scale;
         }
 
@@ -244,6 +321,7 @@ namespace Wotr.Client
         public void Remove()
         {
             ending?.Pause();
+            gliding?.Pause();
             Stand.Remove();
         }
     }

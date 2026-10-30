@@ -101,7 +101,9 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   uses opens no panel, UI-388), and a second click releases it. UI-421 (owner, 2026-10-28)
   plans units and characters as tabletop miniatures that a click lifts and a drag carries, a drop
   sending exactly what the target click sends (docs/ui/TABLETOP_FIGURES_UX.md, UI-400–UI-407);
-  until UI-405 ships they move with clicks only. The permanent tray shows the
+  since UI-405 they can also be carried: a press on the player's own legal (or chosen) figure that
+  crosses the drag threshold lifts it, a drop on a lit target is that target's click, and any other
+  release or Esc puts it back without changing the draft. The permanent tray shows the
   active die and remaining budget; panels sit beside their objects. Do not require
   numeric entry or scrolling in decision panels. Do not automate strategic
   choices. Since 2026-10-14 (user decision), the layout has fixed sizes (the bottom

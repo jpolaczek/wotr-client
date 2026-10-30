@@ -270,11 +270,14 @@ namespace Wotr.Client
             });
         }
 
+        // A character's miniature, by its id; the hand names its lifted piece after it.
+        public static string Key(string id) => "character-" + id;
+
         private MapCharacterStand Create(CharacterFigure character)
         {
             var id = character.Id;
             var button = new MiniatureButton(() => Choose(id));
-            button.name = "character-" + id;
+            button.name = Key(id);
             button.AddToClassList(RuntimeTooltip.RichHoverClass);
             button.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) e.StopPropagation(); });
             var stand = new MapCharacterStand

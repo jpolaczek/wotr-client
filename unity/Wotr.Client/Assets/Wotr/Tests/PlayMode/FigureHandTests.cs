@@ -131,6 +131,46 @@ namespace Wotr.PlayTests
             Assert.IsFalse(strider.ClassListContains(Lifted), "He stands on his place again.");
         }
 
+        // UI-405: a press on the chosen army carries everything the click lifted — its units' piece and Strider's — under
+        // the pointer, each the same miniature in the same raised pose; Escape puts both back over their places.
+        [UnityTest]
+        public IEnumerator UI405TheChosenArmyAndStriderAreCarriedTogetherAsTheirOwnMiniatures()
+        {
+            var fixture = Fixture();
+            using var client = Mounted(fixture);
+            yield return Armed(client);
+            var map = client.Board.Map;
+            var source = map.Q<Button>(Army);
+            PointerGestureEvents.ClickAt(source);
+            yield return Settle();
+            client.Board.Hover.Close();
+            yield return new WaitForSecondsRealtime(Transition);
+            var army = map.Q("hand-" + Army);
+            var strider = map.Q("hand-character-strider");
+            var armyAt = army.Q("hand-lift").worldBound.center;
+            var striderAt = strider.Q("hand-lift").worldBound.center;
+            var press = source.worldBound.center;
+            MapContourProbe.LiftFigure(client.Board, source);
+            var to = press + new Vector2(150, 70);
+            MapContourProbe.Carry(client.Board, to);
+            yield return Settle();
+            Assert.Less(Vector2.Distance(armyAt + to - press, army.Q("hand-lift").worldBound.center), 1.5f, "The army follows…");
+            Assert.Less(Vector2.Distance(striderAt + to - press, strider.Q("hand-lift").worldBound.center), 1.5f, "…with Strider.");
+            AssertRaised(army, source);
+            AssertRaised(strider, map.Q<Button>("character-strider"));
+            AssertNoTranslucentCopy(map);
+            LayoutTests.Save(client.Viewport, "ui405-carried-army-and-strider.png");
+            ((VisualElement)map).Focus();
+            BoardMenuLayoutTests.Key(client.Board.Root, true);
+            BoardMenuLayoutTests.Key(client.Board.Root, false);
+            MapContourProbe.Release(map, to);
+            yield return new WaitForSecondsRealtime(Transition);
+            Assert.Less(Vector2.Distance(armyAt, army.Q("hand-lift").worldBound.center), 1.5f, "Escape: the army is back over its place…");
+            Assert.Less(Vector2.Distance(striderAt, strider.Q("hand-lift").worldBound.center), 1.5f, "…and Strider over his.");
+            Assert.IsTrue(source.ClassListContains("selected-force"), "Still chosen, as before the press.");
+            LayoutTests.Save(client.Viewport, "ui405-escape-back.png");
+        }
+
         [UnityTest]
         public IEnumerator ReducedMotionShowsTheStaticRaisedPose()
         {

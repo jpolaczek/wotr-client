@@ -32,10 +32,14 @@ namespace Wotr.PlayTests
             // UI-402: Gimli's own miniature on the map chooses him again exactly as his chip did; it is lit as the chip is.
             await Miniature(room, "hollin", "base.character.gimli");
             await room.Settle();
-            // UI-105: the destination click moves the selected group at once; a figure is never dragged.
+            // UI-105: the destination click moves the selected group at once. UI-405: so does carrying Gimli's own figure
+            // onto the destination and dropping it there — the drop is the destination's click.
             Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.Targets.Contains("moria"), "Reachable destinations light up.");
             var revision = room.Fp.Board.View.Revision;
-            FellowshipGestures.FinishRoute(room.Fp, "moria");
+            var map = room.Fp.Board.Map;
+            var moria = MapContourProbe.ReachRegion(map, "moria");
+            await room.Settle();
+            MapContourProbe.DragFigure(room.Fp.Board, map.Q<Button>("character-base.character.gimli"), moria);
             await room.At(revision + 1);
             Assert.AreEqual(1, room.Fp.Board.View.ActionSequence.Remaining);
             Assert.AreEqual(die, room.Fp.Board.View.ActionSequence.DieId);

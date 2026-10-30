@@ -28,6 +28,11 @@ namespace Wotr.Client
         public Task LocalWrites => persistence?.Flushed ?? Task.CompletedTask;
         private TurnDraft draft => session.Draft;
         private readonly DraftInput input;
+        // UI-405: the map's armies and characters picked up and carried; a drop is the target's click.
+        private readonly FigureLiftInteraction lift;
+        // UI-405: a figure's click made to lift it never sends a step; one that would is undone and stays a click.
+        private bool lifting;
+        private bool liftWouldSend;
         private readonly ActionContextInteraction context;
         private readonly CardContextInteraction cards;
         private readonly BattleContextInteraction battles;
@@ -123,9 +128,11 @@ namespace Wotr.Client
             councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy);
             context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
                 cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
+            lift = new FigureLiftInteraction(board, draft, () => view, () => SelectionBusy, SelectToLift, ChooseRegion, Restore);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
             input = new DraftInput(board.Root, Confirm, Back, Drop,
-                () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch);
+                () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch,
+                lift);
             input.DragChanged += board.Nations.PreviewDrag;
             input.DragChanged += board.Battles.PreviewDrag;
             input.DragChanged += board.HandDrawer.PreviewDrag;
@@ -333,6 +340,38 @@ namespace Wotr.Client
             }
         }
 
+        // UI-405: a press that lifts a figure to carry it makes that figure's click without opening a panel; a click that
+        // would send a step lifts nothing (false), and the caller puts the draft back.
+        private bool SelectToLift(DraftToken figure)
+        {
+            lifting = true;
+            liftWouldSend = false;
+            board.Hover.Quiet = true;
+            try
+            {
+                if (figure.Object == DraftObject.Miniature)
+                    ChooseMiniature(figure);
+                else
+                    ChooseArmy(figure);
+            }
+            finally
+            {
+                board.Hover.Quiet = false;
+                lifting = false;
+            }
+            return !liftWouldSend;
+        }
+
+        // UI-405: a carried figure's gesture ended without a step: the draft as it was before the press, saved and shown.
+        private void Restore(TurnDraft checkpoint)
+        {
+            notice = "";
+            draft.Rewind(checkpoint);
+            session.Edited(view);
+            PersistDraft();
+            Render();
+        }
+
         // A region click opens or closes its panel, but a character's own click never does (UI-402).
         private void TogglePanel(string region)
         {
@@ -368,6 +407,8 @@ namespace Wotr.Client
 
         private void SubmitPreparedStep()
         {
+            if (WouldSendWhileLifting())
+                return;
             notice = "";
             session.Edited(view);
             PersistDraft();
@@ -426,6 +467,9 @@ namespace Wotr.Client
 
         private bool Drop(DraftToken source, DraftToken target)
         {
+            // UI-405: a carried army or character is dropped as its target's click (FigureLiftInteraction), busy or not.
+            if (lift.Carrying)
+                return lift.Drop(target);
             if (CommandBusy || view == null)
                 return false;
             if (draft.Kind == CommandKind.DiscardCards)
@@ -436,8 +480,8 @@ namespace Wotr.Client
                 return true;
             if (resources.Drop(source, target))
                 return true;
-            // UI-105: armies, figures, characters and Fellowship portraits move by clicks only; DraftInput never
-            // drags them.
+            // UI-105: region panels' figure chips, Characters rows and Fellowship portraits move by clicks only; DraftInput
+            // never drags them (UI-405 carries the map's armies and characters, above).
             if (source?.Object == DraftObject.Nation)
                 return politics.Drop(source, target);
             if (muster.Active && source?.Object == DraftObject.Reserve)
@@ -532,6 +576,9 @@ namespace Wotr.Client
             version ??= new ViewVersion(latest.MatchId);
             if (!version.IsNewer(latest))
                 return;
+            // UI-405: a new revision ends a carried figure's gesture first, so its pre-press draft meets the new view.
+            if (lift.Carrying && latest.Revision != view?.Revision)
+                input.CancelGesture();
             view = latest;
             if (view.Revision != version.Revision)
             {
@@ -1106,8 +1153,17 @@ namespace Wotr.Client
             }
         }
 
+        // UI-405: the click a press makes to lift a figure never sends; it only learns that it would have.
+        private bool WouldSendWhileLifting()
+        {
+            liftWouldSend |= lifting;
+            return lifting;
+        }
+
         private async Task Submit(bool immediate = false)
         {
+            if (WouldSendWhileLifting())
+                return;
             if (sending || policy.Busy || !online || view == null || view.Revision < requiredRevision ||
                 sender.Pending == null && (held || view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
                 return;
@@ -1167,6 +1223,7 @@ namespace Wotr.Client
         {
             if (persistence != null)
                 persistence.Changed -= Render;
+            lift.Dispose();
             if (saveDraft && view != null)
                 PersistDraft();
             board.Escape.CancelGesture = null;

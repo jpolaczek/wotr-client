@@ -4,9 +4,15 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // Presentation-only navigation. The timer runs only while an exposed edge can move.
+    // UI-405 (TABLETOP_FIGURES_UX): while a figure is carried the pointer is pressed and captured, so the drag feeds its own
+    // samples (SampleDrag, and the screen's native samples); the map pans once the pointer has rested in the edge zone for
+    // DragDwellSeconds, and each step reports DragPanned so the region under the carried figure is read again.
     public sealed class MapEdgePan
     {
         public bool Active { get; private set; }
+        public const double DragDwellSeconds = .25;
+        public event System.Action DragPanned;
+        public bool Dragging { get; private set; }
         private const float EdgeWidth = 26f;
         private const float OuterRimPixels = 4f;
         private const float Speed = 650f;
@@ -19,6 +25,8 @@ namespace Wotr.Client
         private bool focused = true;
         private bool suspended;
         private int pressedButtons;
+        // When the carried figure's pointer entered the edge zone; negative while it is outside.
+        private double dwellStart = -1;
 
         public MapEdgePan(MapCanvas map)
         {
@@ -95,6 +103,11 @@ namespace Wotr.Client
 
         public void SamplePointer(Vector2 point, int buttons)
         {
+            if (Dragging)
+            {
+                SampleDrag(point);
+                return;
+            }
             // A stationary native sample needs no second hit-test. The active
             // timer still checks overlays/capture and the camera's remaining range.
             if (Active && pointer.Equals(point) && pressedButtons == buttons)
@@ -104,6 +117,9 @@ namespace Wotr.Client
 
         private void ObservePointer(Vector2 point, int buttons)
         {
+            // A carried figure's own samples decide (SampleDrag); its pressed button would stop the pan here.
+            if (Dragging)
+                return;
             pointer = point;
             pressedButtons = buttons;
             velocity = VelocityAt(pointer, map.worldBound);
@@ -117,6 +133,38 @@ namespace Wotr.Client
             Active = true;
             previousTime = Time.realtimeSinceStartupAsDouble;
             timer.Resume();
+        }
+
+        // UI-405: the pointer of a carried figure (panel coordinates). In the edge zone the timer runs, and it pans once the
+        // pointer has dwelt there; outside it, nothing pans and the dwell starts again.
+        public void SampleDrag(Vector2 point)
+        {
+            Dragging = true;
+            pointer = point;
+            velocity = VelocityAt(pointer, map.worldBound);
+            if (velocity == Vector2.zero || !CanPan())
+            {
+                dwellStart = -1;
+                Stop();
+                return;
+            }
+            if (dwellStart < 0)
+                dwellStart = Time.realtimeSinceStartupAsDouble;
+            if (Active)
+                return;
+            Active = true;
+            previousTime = Time.realtimeSinceStartupAsDouble;
+            timer.Resume();
+        }
+
+        // The carried figure was dropped or its gesture cancelled.
+        public void EndDrag()
+        {
+            if (!Dragging)
+                return;
+            Dragging = false;
+            dwellStart = -1;
+            Stop();
         }
 
         // UI-305: an automatic camera travel suspends passive edge pan, so the two never fight.
@@ -137,9 +185,11 @@ namespace Wotr.Client
                 return false;
             var panel = map.panel;
             var viewport = map.worldBound;
-            if (!focused || pressedButtons != 0 || map.Panning || !map.enabledInHierarchy || panel == null ||
-                !map.Camera.CanPan(velocity) ||
-                panel.GetCapturingElement(PointerId.mousePointerId) != null || !ContainsViewportPoint(viewport, pointer))
+            if (!focused || map.Panning || !map.enabledInHierarchy || panel == null || !map.Camera.CanPan(velocity) ||
+                !ContainsViewportPoint(viewport, pointer))
+                return false;
+            // A press or a capture is a gesture of its own, except the carried figure's, which pans the map.
+            if (!Dragging && (pressedButtons != 0 || panel.GetCapturingElement(PointerId.mousePointerId) != null))
                 return false;
 
             // The exact outer coordinate belongs to navigation, while UI Toolkit
@@ -185,6 +235,11 @@ namespace Wotr.Client
                 return;
             }
             var now = Time.realtimeSinceStartupAsDouble;
+            if (Dragging && now - dwellStart < DragDwellSeconds)
+            {
+                previousTime = now;
+                return;
+            }
             var elapsed = Mathf.Min(.05f, (float)(now - previousTime));
             previousTime = now;
             velocity = VelocityAt(pointer, map.worldBound);
@@ -193,7 +248,10 @@ namespace Wotr.Client
             var before = map.Camera.Pan;
             map.Camera.Pan += velocity * elapsed;
             map.Refresh();
-            map.SetHovered("");
+            if (Dragging)
+                DragPanned?.Invoke();
+            else
+                map.SetHovered("");
             if (map.Camera.Pan == before)
                 Stop();
         }
@@ -230,7 +288,12 @@ namespace Wotr.Client
             Stop();
         }
 
-        private void Captured(PointerCaptureEvent _) => Stop();
+        private void Captured(PointerCaptureEvent _)
+        {
+            // The carried figure's input takes the pointer as its drag begins.
+            if (!Dragging)
+                Stop();
+        }
         private void Cancel(PointerCancelEvent _) => Stop();
         private void LeaveWindow(MouseLeaveWindowEvent _) => Stop();
 

@@ -40,7 +40,7 @@ The decisions of the user from this conversation:
 
 The REQUIREMENTS R08, R09, R15–R20, R22, R23, UX_SPEC U01, U04, U05, [BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md) and the rule of pressing with [BATTLE_WINDOW_UX](BATTLE_WINDOW_UX.md). Without changing the rules of the game, commands and Contracts. Army movement remains only clicks (UI-105); drag remains only for reserves (R16) — for units and characters superseded
 by UI-421 (2026-10-28), [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md): they are picked up and carried, a drop sending
-what the target click sends. The graphics do not contain text, digits or rules; numbers, legality and hitboxes belong to the code (R08).
+what the target click sends (built by UI-405, 2026-10-30: [below](#ui-405)). The graphics do not contain text, digits or rules; numbers, legality and hitboxes belong to the code (R08).
 
 <a id="znaczniki-armii"></a>
 ## Army markers
@@ -100,6 +100,9 @@ moves to make room ("Figures on their places, sized with the map — UI-401" bel
 | Landing mark (UI-403) | `landing-mark` `landing-move` / `landing-attack` | On a hovered legal target: the baked ring on the table at the place the figures would take (an army's field or planned place, a lone character's next character place), green for a move, red for an attack; the click's caption (`landing-caption`) hangs above the lifted figure. Replaces UI-127's `army-ghost`: nothing is drawn faintly at the target |
 | Sent, awaiting the view (UI-404) | `figure-hand-piece` `figure-lifted` | The step left: the lifted piece stays raised (at most 5 s) and its flight is expected from there (`MapFigureMotion.Expect`); a rejection, a disconnect or the expiry drops it back onto its base |
 | In flight (UI-404) | `figure-flight` (in `map-figure-motion`) | The destination's own miniature at the figures' scale rises from its place (or goes on from the hand's raised pose), arcs with its shadow on the ground and lands on the destination's place, where its stand waits at a quarter opacity; `figure-arrival` under Reduced motion: it stands on the place and fades a little. Details: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-404)" |
+| Carried (UI-405) | `figure-hand-piece` `figure-lifted`; the region under it `CarriedTarget` / `CarriedAttack` | A press dragged past the threshold carries the raised pieces of the unsent move under the pointer, in the raised pose, clipped to the map; no label; a legal target under it lights more strongly in its own colour, with the landing mark and the caption |
+| Dropped, sent (UI-405) | `figure-hand-piece` `figure-lifted` | It stays raised where it was dropped (at most 5 s) and its flight leaves from there |
+| Gliding home (UI-405) | `hand-gliding` on the piece's holder | A drop that sends nothing, Esc or a lapse: the holder's translate glides back over its source in 0.22 s (with `hand-returning` when it drops onto its base) |
 
 The `.illustrated-army` rule stops overwriting the colors of the pages and the border of the states; the pixel test in UI-126 checks each state.
 
@@ -870,3 +873,34 @@ faint copy of the army (UI-127's ghost), which the owner rejected.
 Tests: `MapFigureHandTests`, `ArmyMovementTests`, `FigureHandTests`, `BoardInteractionTests`
 (`UI127OneClickLiftsTheArmyALandingMarkPreviewsTheTargetAndEscapePutsItBack`).
 
+
+<a id="ui-405"></a>
+## A unit or character is picked up and carried — UI-405 (2026-10-30)
+
+UI-405 ([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "The lifted figure, drag and drop" and "As built (UI-405)"): the
+army or character the player presses and drags is the lifted miniature itself, and its drop is the target's click.
+Supersedes "armies are never dragged" (UI-105, UI-128) for the map's units and characters; dice, cards, tokens, the
+reserve, the region panel's figure chips, the Characters rows and the Fellowship portraits keep their gestures.
+
+- **Pick up.** A press on the player's own army or character that is a legal source, or already chosen, lifts it once the
+  pointer moves past the drag threshold: its click's selection is made (without opening the region panel) and every
+  raised figure of the unsent move — the army and the characters chosen with it — follows the pointer. An enemy figure,
+  any figure while a command is on its way or a presentation plays, a force holding a lit king, a figure whose click
+  would send a step, and a figure with no lit target lift nothing: the press stays a click.
+- **Carry.** The region under the pointer lights (a legal target more strongly, green or red), the landing mark lies on
+  its place and the caption hangs above the carried figures; the open region panel turns translucent and lets the drop
+  through. At the map's edge the map pans after about a quarter second.
+- **Drop.** On a lit target other than its own region the drop calls the target's click, so the command is the click's.
+  A sent move stays raised where it was dropped and flies on from there; an attack's army returns to its base; a card's
+  planned flight dissolves the figure where it was dropped and the next Nazgûl rises at its stack.
+- **Back.** A drop elsewhere (Lamedon beyond the mountains, the HUD, its own region), Esc, focus loss, a reconnection or a
+  new revision sends nothing and restores the draft as it was before the press, undo history included; the figure
+  glides home.
+- **States:** see "Carried", "Dropped, sent" and "Gliding home" in the table in "States" above.
+
+Tests: `DraftTests`, `MapFigureHandTests`, `MapFlightTests` (EditMode); `DraftInputTests`, `BoardInteractionTests`
+(`FinalTargetClickSendsTheStepWithoutConfirmAndTheArmysDropSendsTheSameStep`,
+`UI405TheCarriedArmyLightsItsTargetAndFliesOnFromWhereItWasDropped`,
+`UI405AnIllegalDropOrEscapeSendsNothingAndLeavesTheDraftAsItWas`, `UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell`,
+`ArmyDragAndEscapeCannotSpendTheSelectedDie`), `FigureHandTests`, `MapContourInteractionTests`,
+`TravelGestureNetworkTests` (PlayMode).

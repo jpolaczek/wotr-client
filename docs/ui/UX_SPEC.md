@@ -912,7 +912,29 @@ UI-421's decisions 1 and 2 (owner, 2026-10-28: "the lifted thing is that object,
   dissolves the lifted figure into its faint planned figure at the destination. Reduced motion shows the raised pose at
   once.
 - The lifted figures never take the pointer and are clipped to the map; clicks remain the whole gesture until UI-405
-  adds carrying them.
+  adds carrying them (built 2026-10-30, below).
+
+<a id="ui-405"></a>
+## A unit or character is picked up and carried — UI-405
+
+UI-421's decision 2 (owner, 2026-10-28: drag and click for units and characters only), built 2026-10-30
+([TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-405)"; [ARMY_MAP_UX](ARMY_MAP_UX.md#ui-405);
+[BOARD_INTERACTION_UX](BOARD_INTERACTION_UX.md#ui-405)):
+
+- A press on the player's own army or character that is a legal source (or already chosen) and moves past the drag
+  threshold lifts it as its click would, without opening a panel, and carries the lifted miniature itself under the
+  pointer — the army together with the characters chosen with it. No text label or square follows the pointer. The
+  opponent's figures, any figure while the board is busy and a figure with nowhere to go do not lift: their press stays
+  a click.
+- The region under the carried figure lights (a legal target more strongly in its own colour), and on a legal target the
+  landing mark and the caption show as on a hover. Held at the map's edge for about a quarter second, the map pans.
+- A drop on a lit target other than the figure's own region is that target's click: the same command, with no Confirm.
+  A sent step leaves the figure raised where it was dropped until the view comes, and its flight goes on from there; a
+  card's planned flight dissolves it where it was dropped; an attack returns its army to its base as the click does.
+- A drop anywhere else (an unlit region, its own region, the HUD), Esc, focus loss, a reconnection or a new revision
+  sends nothing and puts the draft back exactly as it was before the press; the figure glides home.
+- Clicks and the keyboard remain the whole path (R16); dice, cards, tokens, the reserve, the region panel's figure chips,
+  the Characters rows and the Fellowship portraits keep their gestures.
 
 <a id="bez-granicy-mapy--ui-104"></a>
 ## Without map boundary — UI-104
@@ -926,7 +948,7 @@ UI-421's decisions 1 and 2 (owner, 2026-10-28: "the lifted thing is that object,
 <a id="ruch-wyłącznie-na-mapie--ui-105"></a>
 ## Movement exclusively on the map — UI-105
 
-UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs.
+UI-421 (owner, 2026-10-28; written down 2026-10-29): for units and characters this is superseded by [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md) — they become miniatures that a click lifts and a drag carries; a drop sends what the target click sends, and clicks stay the full path (R16). Until UI-405 ships, the gestures below stay as written; dice, cards, tokens and reserves keep theirs. UI-405 shipped on 2026-10-30 ([A unit or character is picked up and carried — UI-405](#ui-405)): the clicks below are unchanged, and the map's armies and characters can also be carried to their target.
 
 The 2026-10-12 application: "Moving is only to be done on the map, click on the region, select selected units, characters, nudges etc. and select only by clicking the selected region, move is done immediately". Elections from the conversation: die first; the character's route with a range greater than 1 arranges the game.
 
@@ -955,7 +977,9 @@ Flow. die   → click region → click figures in the region panel → click the
 
 No gestures.
 - Drag of Army, figures, Charters list lines and Fellowship portraits does not capture anything and
-  is not a move.
+  is not a move. Since UI-405 (2026-10-30) the map's own armies and characters are carried and their drop on a lit
+  target is the target's click; the region panel's figure chips, the Characters rows and the Fellowship portraits still
+  do not drag.
 - The list of Characters only shows the inspector. It replaces the UI-67 paragraph with a joint list
   and map selection.
 - Drag remains for reserves (Muster), tokens of nations, cards and portraits of homelands on the

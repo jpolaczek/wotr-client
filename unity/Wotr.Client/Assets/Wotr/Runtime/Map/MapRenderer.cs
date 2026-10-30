@@ -139,7 +139,8 @@ namespace Wotr.Client
         }
 
         public void Update(BoardPresentation data, CameraState camera, string selected,
-            HashSet<string> sources, HashSet<string> owners, MapDraftOverlay draft, string hovered = "", string pressed = "")
+            HashSet<string> sources, HashSet<string> owners, MapDraftOverlay draft, string hovered = "", string pressed = "",
+            string carried = "")
         {
             var started = Stopwatch.GetTimestamp();
             Prepare(data);
@@ -151,7 +152,7 @@ namespace Wotr.Client
             chosen.Clear();
             foreach (var entry in regions)
             {
-                var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed);
+                var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed, carried);
                 entry.Value.Update(emphasis);
                 if (draft?.AttackTargets.Contains(entry.Key) == true)
                     attackable.Add(entry.Key);
@@ -171,10 +172,15 @@ namespace Wotr.Client
             regions.TryGetValue(id, out var region) ? region.Emphasis : MapRegionEmphasis.None;
 
         private static MapRegionEmphasis Emphasis(string id, string selected, HashSet<string> sources,
-            HashSet<string> owners, MapDraftOverlay draft, BoardPresentation data, string hovered, string pressed)
+            HashSet<string> owners, MapDraftOverlay draft, BoardPresentation data, string hovered, string pressed, string carried)
         {
             if (id == pressed)
                 return MapRegionEmphasis.Pressed;
+            // UI-405: the legal target under a carried figure lights more strongly in its own colour.
+            if (id == carried && draft?.AttackTargets.Contains(id) == true)
+                return MapRegionEmphasis.CarriedAttack;
+            if (id == carried && draft?.Targets.Contains(id) == true)
+                return MapRegionEmphasis.CarriedTarget;
             if (draft?.AttackTargets.Contains(id) == true)
                 return MapRegionEmphasis.Attack;
             if (draft?.PlannedRegions.Contains(id) == true || draft?.ChosenRegions.Contains(id) == true)
@@ -187,7 +193,7 @@ namespace Wotr.Client
                 return MapRegionEmphasis.Selected;
             if (sources.Contains(id) || owners.Contains(id))
                 return MapRegionEmphasis.Source;
-            if (id == hovered)
+            if (id == hovered || id == carried)
                 return MapRegionEmphasis.Hover;
             return data.ProtectedRegions.Contains(id) ? MapRegionEmphasis.Protection : MapRegionEmphasis.None;
         }

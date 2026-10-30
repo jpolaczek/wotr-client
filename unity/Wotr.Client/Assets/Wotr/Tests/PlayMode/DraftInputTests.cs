@@ -150,7 +150,7 @@ namespace Wotr.PlayTests
                 surface.style.top = 100;
                 surface.style.width = 180;
                 client.Board.Root.parent.Add(surface);
-                // UI-105: figures and armies are never dragged, so a reserve stands for the draggable object.
+                // UI-405: armies and characters drag only through IFigureDrag, so a reserve stands for a plain draggable object.
                 var clicks = 0;
                 var figure = new Button(() => clicks++) { text = "Reserve", userData = new DraftToken(DraftObject.Reserve, "reserve") };
                 var target = new Button { text = "Region", userData = new DraftToken(DraftObject.Region, "region") };
@@ -182,6 +182,94 @@ namespace Wotr.PlayTests
                 }
                 surface.RemoveFromHierarchy();
             }
+        }
+
+        // UI-405: an army or character press that crosses the drag threshold asks IFigureDrag whether it lifts. Refused, it
+        // stays a click (nothing taken, no label, its release clicks it); accepted, the board takes the pointer, no text
+        // ghost shows, every move is carried with what lies under it, the release is a drop and Esc a cancellation.
+        [UnityTest]
+        public IEnumerator AFigurePressLiftsOnlyWhenItsDragAcceptsAndNeverShowsALabel()
+        {
+            using (var client = new MountedMatchClient("http://127.0.0.1:5088", "input-fixture"))
+            {
+                var surface = new VisualElement();
+                surface.style.position = Position.Absolute;
+                surface.style.left = 100;
+                surface.style.top = 100;
+                surface.style.width = 220;
+                client.Board.Root.parent.Add(surface);
+                var clicks = 0;
+                var army = new Button(() => clicks++) { text = "Army", userData = new DraftToken(DraftObject.Army, "minas-tirith", side: Side.FreePeoples) };
+                var target = new Button { text = "Region", userData = new DraftToken(DraftObject.Region, "osgiliath") };
+                surface.Add(army);
+                surface.Add(target);
+                var drag = new FigureDragProbe();
+                var drops = new List<string>();
+                using (var input = new DraftInput(surface, () => { }, () => { }, (source, at) => { drops.Add(source.Id + ">" + at?.Id); return true; },
+                           () => "a", drag))
+                {
+                    yield return null;
+                    drag.Accept = false;
+                    PointerGestureEvents.Press(army);
+                    Move(army, army.worldBound.center + Vector2.right * 9);
+                    Move(army, army.worldBound.center + Vector2.right * 12);
+                    Assert.AreEqual(1, drag.Begun, "A refused figure is asked once per press.");
+                    Assert.IsFalse(surface.HasPointerCapture(PointerId.mousePointerId), "Refused, it takes nothing.");
+                    PointerGestureEvents.Release(army);
+                    yield return null;
+                    Assert.AreEqual(1, clicks, "Its press stays a click.");
+                    Assert.IsEmpty(drops);
+
+                    drag.Accept = true;
+                    PointerGestureEvents.Press(army);
+                    Move(army, army.worldBound.center + Vector2.right * 9);
+                    Assert.IsTrue(surface.HasPointerCapture(PointerId.mousePointerId), "Accepted, the figure is carried.");
+                    Assert.AreEqual(DisplayStyle.None, surface.Q(className: "drag-ghost").resolvedStyle.display, "Never as a label.");
+                    Move(surface, target.worldBound.center);
+                    Assert.AreEqual("osgiliath", drag.LastTarget?.Id, "The carry knows what lies under the pointer.");
+                    PointerGestureEvents.Release(target);
+                    yield return null;
+                    CollectionAssert.AreEqual(new[] { "minas-tirith>osgiliath" }, drops, "The release is its drop…");
+                    Assert.AreEqual(0, drag.Cancelled, "…never a cancellation.");
+                    Assert.AreEqual(1, clicks, "…and never a click.");
+
+                    PointerGestureEvents.Press(army);
+                    Move(army, army.worldBound.center + Vector2.right * 9);
+                    Key(surface, KeyCode.Escape, true);
+                    Key(surface, KeyCode.Escape, false);
+                    Assert.AreEqual(1, drag.Cancelled, "Esc cancels the carried figure.");
+                    Assert.IsFalse(surface.HasPointerCapture(PointerId.mousePointerId));
+                    PointerGestureEvents.Release(target);
+                    yield return null;
+                    Assert.AreEqual(1, drops.Count, "A cancelled carry drops nothing.");
+                }
+                surface.RemoveFromHierarchy();
+            }
+        }
+
+        private static void Move(VisualElement target, Vector2 point)
+        {
+            using var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = point });
+            target.SendEvent(move);
+        }
+
+        // Records what DraftInput asks of a carried figure.
+        private sealed class FigureDragProbe : IFigureDrag
+        {
+            public bool Accept { get; set; }
+            public int Begun { get; private set; }
+            public int Cancelled { get; private set; }
+            public DraftToken LastTarget { get; private set; }
+
+            public bool Begin(DraftToken figure, Vector2 press)
+            {
+                Begun++;
+                return Accept;
+            }
+
+            public void Carry(Vector2 pointer, DraftToken target) => LastTarget = target;
+
+            public void Cancel() => Cancelled++;
         }
 
         private static void Click(VisualElement target, int count = 1)

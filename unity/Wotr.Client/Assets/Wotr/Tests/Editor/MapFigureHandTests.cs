@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.UIElements;
 using Wotr.Client;
 using Wotr.Contracts;
@@ -84,6 +85,76 @@ namespace Wotr.EditorTests
         [Test]
         public void APlannedFlightsFigureLeavesItsPlaceForTheGhost()
         {
+            var (view, data, map, draft) = ArmedNazgul();
+            var source = map.Q<Button>("army-minas-morgul-Shadow");
+            var piece = map.Q("hand-army-minas-morgul-Shadow");
+            Assert.AreEqual("1", piece.Q<Label>("army-count").text, "Only the Nazgûl the next click flies lifts.");
+            Assert.AreEqual("1", source.Q<Label>("army-count").text, "The other stays on the base.");
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "moria", data));
+            map.PlannedFlights.Apply(NazgulFlightDraft.Planned(view, draft), Side.Shadow, false);
+            map.DraftOverlay.Apply(view, draft);
+            Assert.AreEqual("1", map.Q("hand-army-minas-morgul-Shadow").Q<Label>("army-count").text, "The next Nazgûl lifts.");
+            Assert.IsTrue(source.ClassListContains(Lifted), "The flown one stands in its ghost now; none stays behind.");
+            Assert.IsNotNull(map.Q<Button>("planned-flight-moria"));
+            Assert.IsTrue(map.Q<Button>("planned-flight-moria").ClassListContains(MapPlannedRecruits.GhostClass));
+        }
+
+        // UI-405: the raised figures of the unsent move are what a press carries, from the army's piece or a character's.
+        [Test]
+        public void OnlyARaisedPieceOfTheUnsentMoveIsCarried()
+        {
+            var (view, map, context) = Board();
+            var draft = new TurnDraft();
+            Assert.IsFalse(map.Lifts(ArmyToken(Region)), "Nothing raised, nothing to carry.");
+            Assert.IsFalse(map.GrabFigures(Vector2.zero));
+            ContextArmySelection.SelectAll(draft, view, context, Region, false);
+            map.DraftOverlay.Apply(view, draft, context);
+            Assert.IsTrue(map.Lifts(ArmyToken(Region)), "The army's own piece holds the selection.");
+            Assert.IsTrue(map.Lifts(new DraftToken(DraftObject.Miniature, "strider", side: Side.FreePeoples, region: Region)));
+            Assert.IsFalse(map.Lifts(ArmyToken("dale")), "Another army has nothing raised.");
+            Assert.IsFalse(map.Lifts(new DraftToken(DraftObject.Region, Region)), "A region is never carried.");
+
+            // A split in the region panel: the figure left behind drops back onto the base and is not carried.
+            var regular = view.Units.First(u => u.Location == Region && u.Kind == UnitKind.Regular);
+            Assert.IsTrue(ContextArmySelection.Select(draft, view, context, regular.Id));
+            map.DraftOverlay.Apply(view, draft, context);
+            Assert.IsTrue(map.Lifts(ArmyToken(Region)), "The rest of the selection is still raised.");
+            Assert.IsTrue(map.GrabFigures(map.Camera.ToScreen(Feet(map, Army))));
+            var carried = map.DropFigures();
+            CollectionAssert.AreEquivalent(LiftedFigures.Selection(view, draft), carried, "Exactly the selection is carried.");
+            CollectionAssert.DoesNotContain(carried, regular.Id, "The figure left behind stays on its base.");
+        }
+
+        // UI-405: a card's Nazgûl carried to its destination leaves the hand from where it was dropped (dissolving into its
+        // planned figure), and the next one rises at the stack on a piece of its own.
+        [Test]
+        public void ACarriedNazgulFlownByItsDropLeavesFromThereAndTheNextRisesAtTheStack()
+        {
+            var (view, data, map, draft) = ArmedNazgul();
+            var carried = map.Q("hand-army-minas-morgul-Shadow");
+            var feet = map.Camera.ToScreen(Feet(map, "army-minas-morgul-Shadow"));
+            Assert.IsTrue(map.GrabFigures(feet));
+            map.CarryFigures(map.Camera.ToScreen(map.Stands.Stands("moria").Field));
+            CollectionAssert.AreEquivalent(new[] { NazgulFlightDraft.Next(view, draft).Id }, map.DropFigures());
+            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "moria", data));
+            map.PlannedFlights.Apply(NazgulFlightDraft.Planned(view, draft), Side.Shadow, false);
+            map.DraftOverlay.Apply(view, draft);
+            map.HomeFigures();
+            var next = map.Q("hand-army-minas-morgul-Shadow");
+            Assert.IsNotNull(next, "The next Nazgûl rises.");
+            Assert.AreNotSame(carried, next, "On a piece of its own: the dropped one left from where it was dropped.");
+            Assert.AreEqual(1, map.Query(className: "figure-hand-piece").ToList().Count, "Outside a panel the flown one is gone at once.");
+            Assert.AreEqual("1", next.Q<Label>("army-count").text);
+        }
+
+        private static DraftToken ArmyToken(string region) => new DraftToken(DraftObject.Army, region, side: Side.FreePeoples);
+
+        // The board point a marker (by its button's name) stands on.
+        private static Vector2 Feet(MapCanvas map, string marker) => ((MapStand)map.Q<Button>(marker).parent.userData).Feet;
+
+        // A Shadow card's two Nazgûl in Minas Morgul, the stack armed: the first one is raised for its flight.
+        private static (PlayerView View, BoardPresentation Data, MapCanvas Map, TurnDraft Draft) ArmedNazgul()
+        {
             var data = BoardPresentation.Load();
             var view = new PlayerView
             {
@@ -114,17 +185,7 @@ namespace Wotr.EditorTests
             draft.Choose(CommandKind.MoveShadowCharacters);
             Assert.IsTrue(NazgulFlightDraft.Arm(view, draft, "minas-morgul"));
             map.DraftOverlay.Apply(view, draft);
-            var source = map.Q<Button>("army-minas-morgul-Shadow");
-            var piece = map.Q("hand-army-minas-morgul-Shadow");
-            Assert.AreEqual("1", piece.Q<Label>("army-count").text, "Only the Nazgûl the next click flies lifts.");
-            Assert.AreEqual("1", source.Q<Label>("army-count").text, "The other stays on the base.");
-            Assert.IsTrue(NazgulFlightDraft.Fly(view, draft, "moria", data));
-            map.PlannedFlights.Apply(NazgulFlightDraft.Planned(view, draft), Side.Shadow, false);
-            map.DraftOverlay.Apply(view, draft);
-            Assert.AreEqual("1", map.Q("hand-army-minas-morgul-Shadow").Q<Label>("army-count").text, "The next Nazgûl lifts.");
-            Assert.IsTrue(source.ClassListContains(Lifted), "The flown one stands in its ghost now; none stays behind.");
-            Assert.IsNotNull(map.Q<Button>("planned-flight-moria"));
-            Assert.IsTrue(map.Q<Button>("planned-flight-moria").ClassListContains(MapPlannedRecruits.GhostClass));
+            return (view, data, map, draft);
         }
 
         private static (PlayerView View, MapCanvas Map, ActionDieContext Context) Board(bool attack = false)
