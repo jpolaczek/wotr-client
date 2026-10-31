@@ -13,9 +13,13 @@ namespace Wotr.Client
         public Button Status => status.Summary;
         // UI-293: the Fellowship's marker on its visible track, which hides it while hiding is legal.
         public VisualElement HideMarker => status.HideMarker;
+        // UI-431: the Fellowship's marker on the corruption track, offered while a card offers Corruption.
+        public VisualElement CorruptionMarker => status.CorruptionMarker;
         public bool HideOffered => controls.HideOffered;
         public event Action<CommandKind> ActionSelected;
         public event Action<string> PortraitSelected;
+        // UI-431: the offered corruption marker clicked (Lure of the Ring's Corruption).
+        public event Action CorruptionChosen;
         public event Action Opening;
         public event Action VisibilityChanged;
         // UI-290: something in the panel can be used now (a Guide's or character's skill, the Guide, a move, hiding,
@@ -48,6 +52,7 @@ namespace Wotr.Client
             Root.style.display = DisplayStyle.None;
             status = new FellowshipStatus(Open);
             status.HideRequested += () => RequestHide();
+            status.CorruptionRequested += () => CorruptionChosen?.Invoke();
             status.TrackFocusRequested += focus;
             Observe(Status);
             Observe(map.FellowshipMarker.Root);
@@ -125,6 +130,8 @@ namespace Wotr.Client
             controls.Refresh(latest, draft, context, enabled && !hunt, route || separation || hunt, Docked);
             status.OfferMove(controls.MoveOffered, controls.MoveDescription);
             status.OfferHide(controls.HideOffered, controls.HideTooltip);
+            var corruption = enabled && LureChoice.CorruptionOffered(latest);
+            status.OfferCorruption(corruption, corruption ? LureChoice.CorruptionTooltip(latest) : "");
             roster.Context(latest, draft, context, enabled && !hunt);
             var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;
@@ -138,7 +145,7 @@ namespace Wotr.Client
             else if (!owns && tray.parent == Root)
                 dock.Add(tray);
             // UI-290: the opponent's Fellowship decision lights nothing on this side.
-            SetUsable(owns && latest.Decision != null && latest.DecisionOwner == latest.You || controls.Offers || roster.Choosing);
+            SetUsable(owns && latest.Decision != null && latest.DecisionOwner == latest.You || controls.Offers || roster.Choosing || corruption);
             OpenNewDecision(latest, owns);
             RefreshVisibility();
         }

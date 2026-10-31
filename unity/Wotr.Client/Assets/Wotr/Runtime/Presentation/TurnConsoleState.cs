@@ -64,6 +64,10 @@ namespace Wotr.Client
             DecisionKind.EffectChoice when DeckChoice.Pending(view) => DeckChoice.Hint(view),
             // UI-430: The Nazgûl Strike!'s red table cards, Hunt Box and ✓.
             DecisionKind.EffectChoice when NazgulStrikeChoice.Hint(view, draft) is { Length: > 0 } strike => strike,
+            // UI-431: a region's forces, the Black Captain's Nazgûl, Lure of the Ring's portrait and marker.
+            DecisionKind.EffectChoice when RegionForceChoices.Hint(view, draft) is { Length: > 0 } forces => forces,
+            DecisionKind.EffectChoice when BlackCaptainOrder.Hint(view) is { Length: > 0 } captain => captain,
+            DecisionKind.EffectChoice when LureChoice.Hint(view) is { Length: > 0 } lure => lure,
             DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
             DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
                 "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Pass to skip it.",

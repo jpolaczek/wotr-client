@@ -184,8 +184,21 @@ namespace Wotr.Client
 
         private void Draw(string deck)
         {
-            if (!busy() && view != null && CardActions.CanDraw(view, draft, board.ActionDie, deck))
+            if (busy() || view == null)
+                return;
+            // UI-431: a response's draw from its deck (ReactionDecks), sent as its old console button sent it.
+            var reaction = ReactionDecks.Draw(view, deck);
+            if (reaction.Length > 0)
+                edit(() => Respond(reaction), true);
+            else if (CardActions.CanDraw(view, draft, board.ActionDie, deck))
                 edit(() => CardActions.Draw(draft, view, board.ActionDie, deck), true);
+        }
+
+        private void Respond(string reaction)
+        {
+            if (draft.Kind != CommandKind.RespondEffect)
+                draft.Choose(CommandKind.RespondEffect);
+            draft.Change(p => p.ReactionId = reaction);
         }
 
         private void Cost(EventCostOption cost)

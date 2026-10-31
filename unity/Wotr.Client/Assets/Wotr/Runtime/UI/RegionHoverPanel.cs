@@ -23,14 +23,17 @@ namespace Wotr.Client
         public event Action<string, string> SettlementInspected;
         // UI-140: select or leave behind every figure of a force that can move (region, garrison).
         public event Action<string, bool> SelectAllRequested;
-        // UI-251: the card choice a force section makes now ("" when none), and its click.
+        // UI-251: the card choice a force section makes now ("" when none), and its click. UI-431: what its tooltip says.
         public Func<Side, bool, string> ForceChoice { get; set; } = (_, _) => "";
+        public Func<string, string> ForceTooltip { get; set; } = _ => "";
         public event Action<string> ForceChosen;
         private readonly List<(VisualElement Force, VisualElement Header, Side Side, bool Garrison)> forceSections =
             new List<(VisualElement, VisualElement, Side, bool)>();
         private readonly Dictionary<string, Button> figures = new Dictionary<string, Button>();
-        // UI-301: the figures a click may choose pulse in ChoiceGlow's rhythm.
+        // UI-301: the figures a click may choose pulse in ChoiceGlow's rhythm; UI-431: so do the forces a card may choose.
         private readonly ChoicePulse pulse;
+        private bool figuresGlowing;
+        private bool forcesGlowing;
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
         // UI-187: a character's ability lines, after the line that names it and its state.
         private readonly Dictionary<string, string> abilities = new Dictionary<string, string>();
@@ -68,12 +71,18 @@ namespace Wotr.Client
         // UI-251: a force the current card may choose glows and its header chooses it.
         public void RefreshForces()
         {
+            forcesGlowing = false;
             foreach (var force in forceSections)
             {
                 var choice = ForceChoice(force.Side, force.Garrison);
                 ChoiceGlow.Apply(force.Force, choice.Length > 0);
-                force.Header.tooltip = choice.Length > 0 ? "Click to choose this force" : "";
+                var tooltip = choice.Length > 0 ? ForceTooltip(choice) : "";
+                force.Header.tooltip = choice.Length == 0 ? "" : tooltip.Length > 0 ? tooltip : "Click to choose this force";
+                // UI-113: a header that chooses signals it and depresses while pressed.
+                force.Header.EnableInClassList(PressFeedback.PressableClass, choice.Length > 0);
+                forcesGlowing |= choice.Length > 0;
             }
+            pulse.Run(figuresGlowing || forcesGlowing);
         }
 
         public RegionHoverPanel()
@@ -156,7 +165,8 @@ namespace Wotr.Client
             var rowWidth = 24 + units.Length * 36 + characters.Length * 42 +
                 units.Select(u => u.Nation).Distinct().Count() * 24;
             contentsWidth = Math.Max(contentsWidth, Math.Max(280, rowWidth));
-            var force = new VisualElement();
+            // UI-431: named by side and place, as its Select all toggle is.
+            var force = new VisualElement { name = "hover-force-" + side + (garrison ? "-garrison" : "-field") };
             force.AddToClassList("hover-force");
             force.AddToClassList(side == Side.FreePeoples ? "fp" : "sh");
             var header = BoardScreen.Row("hover-force-header");
@@ -242,7 +252,8 @@ namespace Wotr.Client
                     ? " · Click to select" : moved ? " · Already marched in this action" : "") +
                     (abilities.TryGetValue(entry.Key, out var lines) ? lines : "");
             }
-            pulse.Run(glowing);
+            figuresGlowing = glowing;
+            pulse.Run(figuresGlowing || forcesGlowing);
         }
 
         // Shown only for a force with a figure that can move; it selects them all, or leaves all behind once they are.

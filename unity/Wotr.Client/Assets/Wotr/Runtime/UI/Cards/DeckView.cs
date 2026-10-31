@@ -35,12 +35,14 @@ namespace Wotr.Client
             foreach (var entry in buttons)
             {
                 var count = counts != null && counts.TryGetValue(entry.Key, out var n) ? n : 0;
-                var available = CardActions.CanDraw(view, draft, context, entry.Key);
+                // UI-431: a response's draw that would otherwise be a console button is its deck (ReactionDecks).
+                var draw = ReactionDecks.Draw(view, entry.Key).Length > 0;
+                var available = draw || CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
                 entry.Value.EnableInClassList("empty-deck", count == 0);
                 ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
-                entry.Value.tooltip = DeckTooltip(entry.Key, count, available);
+                entry.Value.tooltip = draw ? ReactionDecks.Tooltip(view) + "\n" + DeckState(entry.Key, count) : DeckTooltip(entry.Key, count, available);
             }
         }
 

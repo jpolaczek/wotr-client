@@ -18,6 +18,8 @@ namespace Wotr.Client
         private readonly Func<string, bool> recruitAtOnly;
         private readonly Action confirm;
         private readonly Action finish;
+        // UI-431: makes and sends a choice that completes the decision (The Black Captain Commands' recruit).
+        private readonly Action<Action> complete;
         private PlayerView view;
         private TurnDraft draft;
         // UI-412: the settlement whose click narrowed the Muster's Reserve, the last one the region panel showed, and the
@@ -29,7 +31,7 @@ namespace Wotr.Client
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
         public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster, Func<string, bool> recruitAtOnly,
-            Action confirm, Action finish)
+            Action confirm, Action finish, Action<Action> complete)
         {
             this.board = board;
             this.edit = edit;
@@ -38,6 +40,7 @@ namespace Wotr.Client
             this.recruitAtOnly = recruitAtOnly;
             this.confirm = confirm;
             this.finish = finish;
+            this.complete = complete;
             board.Reinforcements.FigureChosen += Choose;
             board.Reinforcements.PlacementRemoved += Remove;
             board.Reinforcements.Finish += Finish;
@@ -61,6 +64,8 @@ namespace Wotr.Client
         {
             if (plan != null)
                 return ReinforcementsState.For(view, plan, draft.ReserveId, !busy());
+            if (CaptainRecruit())
+                return ReinforcementsState.CaptainRecruit(view, !busy());
             if (!muster() || draft.Kind is not (null or CommandKind.Recruit))
                 return ReinforcementsState.Browse(view);
             var recruitment = MusterActions.Option(view, board.ActionDie, CommandKind.Recruit);
@@ -72,6 +77,11 @@ namespace Wotr.Client
         {
             if (view == null || busy())
                 return;
+            if (CaptainRecruit())
+            {
+                RecruitNazgul();
+                return;
+            }
             if (Planning)
                 edit(() => ReinforcementPlans.Choose(draft, view, id));
             else if (muster())
@@ -83,6 +93,17 @@ namespace Wotr.Client
             }
             // The lit settlements may lie off screen: the view moves there.
             board.Map.Reveal(board.Map.DraftOverlay.Targets);
+        }
+
+        // UI-431: The Black Captain Commands' recruit waits on the Reserve's Nazgûl.
+        private bool CaptainRecruit() => view != null && !ReinforcementPlans.Active(view, draft) && BlackCaptainOrder.RecruitOffered(view);
+
+        // UI-431: the Reserve's Nazgûl clicked: the card recruits them with the Witch-king, as its old Recruit button did.
+        private void RecruitNazgul()
+        {
+            var option = DraftOptions.For(view, draft);
+            if (option != null)
+                complete(() => CardDraft.Choose(draft, option, BlackCaptainOrder.Recruit));
         }
 
         private RecruitFocus Focus() => focus.Length > 0 && board.Presentation.Regions.TryGetValue(focus, out var region)

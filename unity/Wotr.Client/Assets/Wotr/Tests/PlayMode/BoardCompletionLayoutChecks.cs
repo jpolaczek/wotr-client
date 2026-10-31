@@ -191,7 +191,7 @@ namespace Wotr.PlayTests
             return true;
         }
 
-        private sealed class LayoutViewport : IDisposable
+        internal sealed class LayoutViewport : IDisposable
         {
             public RenderTexture Texture { get; }
             private readonly MountedMatchClient client;

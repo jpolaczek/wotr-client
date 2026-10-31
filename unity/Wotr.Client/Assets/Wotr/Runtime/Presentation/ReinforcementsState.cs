@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Wotr.Contracts;
 
 namespace Wotr.Client
@@ -32,6 +33,27 @@ namespace Wotr.Client
         // UI-179: outside a recruitment the tab lists the player's reserves, every row plain and inert.
         public static ReinforcementsState Browse(PlayerView view) =>
             new ReinforcementsState { Side = view.You, Rows = ReinforcementRows.For(view, null) };
+
+        // UI-431: The Black Captain Commands' recruit is the Reserve's Nazgûl: only their token is shown, lit, and its click
+        // recruits them with the Witch-king.
+        public static ReinforcementsState CaptainRecruit(PlayerView view, bool interactive)
+        {
+            var reserve = view.Units.Count(u => u.Side == view.You && u.Kind == UnitKind.Nazgul && u.Location == "reserve");
+            var nazgul = new ReinforcementFigure { Kind = UnitKind.Nazgul, Reserve = reserve, ReserveId = BlackCaptainOrder.ReserveNazgul(view) };
+            return new ReinforcementsState
+            {
+                Open = true,
+                Interactive = interactive,
+                Title = "Reserve · " + CardLibrary.Title(view.Decision.SourceId),
+                TokenPrefix = "captain-reserve-",
+                TokenHint = BlackCaptainOrder.RecruitTooltip(view),
+                Side = view.You,
+                Rows = new List<ReinforcementRow>
+                {
+                    new ReinforcementRow { Nation = "sauron", Name = FigureGrid.Name("sauron"), CanRecruit = true, Figures = { nazgul } }
+                }
+            };
+        }
 
         public static ReinforcementsState For(PlayerView view, ActionOption recruit, string selected, bool interactive) =>
             For(view, recruit, selected, interactive, RecruitFocus.None);

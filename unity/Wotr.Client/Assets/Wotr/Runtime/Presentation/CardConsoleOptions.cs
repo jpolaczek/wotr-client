@@ -28,13 +28,18 @@ namespace Wotr.Client
         // then leaves the trail.
         public bool Lit;
         public string SourceId = "";
+        // UI-431: the region a region panel's force section belongs to, kept in the payload as the region's click did.
+        public string Region = "";
     }
 
     // UI-214 (CARD_CHOICES_UX rule 4): a card's modes and options, and the object-less responses of a reaction outside
     // the Hunt and battles, are at most three buttons in the console. A choice with an object stays on it: a table
     // card in the Effects panel, a reaction card at the card in the hand. A reaction with more object-less choices
     // than fit keeps the decision window. UI-430 (owner's rule): a button stands only for an option no object draws — a
-    // red table card, the glowing Hunt Box and the console's ✓ (a Finish) take no button.
+    // red table card, the glowing Hunt Box and the console's ✓ (a Finish) take no button. UI-431: nor do a region's
+    // forces (their region panel's sections), a card army event's steps (the map and the ✓), the Black Captain's orders
+    // (the Reserve's and the map's Nazgûl), Lure of the Ring's (the companion's portrait and the corruption track) and a
+    // reaction's draw from a deck (the deck).
     public static class CardConsoleOptions
     {
         public const int Limit = 3;
@@ -49,13 +54,11 @@ namespace Wotr.Client
         public static bool Owns(PlayerView view, TurnDraft draft) =>
             Card(view, draft) && !RegionChoice(view) || Reaction(view, draft) && ReactionOptions(view).Count <= Limit;
 
-        // A region's alternatives (Dreadful Spells) are console buttons; the region itself stays a map click.
-        public static bool HostsAlternatives(PlayerView view, TurnDraft draft) => Card(view, draft) && RegionChoice(view);
-
         public static IReadOnlyList<ConsoleOption> For(PlayerView view, TurnDraft draft)
         {
+            // UI-431: a card army event's Move and Attack are its lit targets on the map, its Skip maneuver the ✓.
             if (CardArmyEvent.Active(view, draft))
-                return CardArmyEvent.Alternatives(view, draft);
+                return None;
             if (Card(view, draft))
                 return CardOptions(view, draft);
             return Owns(view, draft) ? ReactionOptions(view) : None;
@@ -87,15 +90,14 @@ namespace Wotr.Client
         private static IReadOnlyList<ConsoleOption> CardOptions(PlayerView view, TurnDraft draft)
         {
             var option = DraftOptions.For(view, draft);
-            if (option == null)
+            // UI-431: a region's two forces are its region panel's glowing sections (RegionForceChoices).
+            if (option == null || RegionChoice(view))
                 return None;
-            if (RegionChoice(view))
-                return Alternatives(view, draft, option);
             // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring.
             // UI-430 (owner): a table card is red in the Effects panel, The Nazgûl Strike!'s Hunt roll is the Hunt Box and a
             // Finish (Stay) is the console's ✓, so none of them is a button.
             var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id) &&
-                    !NazgulStrikeChoice.OnObject(c.Id) && !FinishingOption.Finishes(c.Id))
+                    !NazgulStrikeChoice.OnObject(c.Id) && !FinishingOption.Finishes(c.Id) && !OnBoardObject(view, c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();
             if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Effect)
                 Single(options[0], view.Decision.SourceId);
@@ -116,14 +118,9 @@ namespace Wotr.Client
             option.SourceId = source;
         }
 
-        // Dreadful Spells: a field army and a garrison in the chosen region are two buttons.
-        private static IReadOnlyList<ConsoleOption> Alternatives(PlayerView view, TurnDraft draft, ActionOption option)
-        {
-            var regions = option.EffectChoices.Select(c => c.TargetId).Distinct().ToList();
-            var region = draft.Payload.RegionId.Length > 0 ? draft.Payload.RegionId : regions.Count == 1 ? regions[0] : "";
-            var alternatives = option.EffectChoices.Where(c => region.Length > 0 && c.TargetId == region).ToList();
-            return alternatives.Count > 1 ? alternatives.Select(c => Effect(view, draft, option, c)).ToList() : None;
-        }
+        // UI-431: an option a board object makes — the Black Captain's Nazgûl, Lure of the Ring's companion and corruption
+        // track — has no button; one without its object (a recruit with no Nazgûl in the reserve) keeps it (R16).
+        private static bool OnBoardObject(PlayerView view, string id) => BlackCaptainOrder.OnObject(view, id) || LureChoice.OnObject(view, id);
 
         private static ConsoleOption Effect(PlayerView view, TurnDraft draft, ActionOption option, EffectChoiceView choice) => new ConsoleOption
         {
@@ -173,8 +170,9 @@ namespace Wotr.Client
             // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247).
             // UI-430 (owner): a table card's response is that red card in the Effects panel, with no button of its own.
             var tableCards = ReactionTableCards(view);
+            // UI-431: a response that draws from a deck is that lit deck (ReactionDecks).
             var options = respond?.EffectChoices.Where(c => !view.Hand.Contains(c.SourceId) && !FellowshipActions.ReactionOnRoster(view, c.Id) &&
-                    !tableCards.ContainsKey(c.SourceId))
+                    !tableCards.ContainsKey(c.SourceId) && !ReactionDecks.OnObject(view, c.Id))
                 .Select(Response).ToList() ??
                 new List<ConsoleOption>();
             // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place. UI-418: a single

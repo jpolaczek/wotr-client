@@ -144,6 +144,10 @@ with the whole army and opens its region panel, whose lit figures toggle; a lit 
 n of m", offers the event's alternatives (another kind of army step, Skip maneuver) as buttons, ↶ undoes the last
 step and ✓ sends. The decision window no longer lists plans, routes or figures. Code: `CardArmyEvent`
 (presentation), `CardArmyInteraction` (application); details in [CARD_CHOICES_UX](CARD_CHOICES_UX.md).
+UI-431 (2026-10-31): the alternatives are no buttons any more. As with the Army die (UI-389) the armies of both steps
+glow and the chosen army's attack targets light with its moves, red as the Army die's; an attack target's click makes
+the step that attack, and Skip maneuver is the console's ✓ while no army is chosen
+([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 
 ## Meal Panel
 

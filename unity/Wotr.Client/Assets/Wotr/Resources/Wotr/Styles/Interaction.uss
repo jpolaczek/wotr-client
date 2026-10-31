@@ -280,6 +280,31 @@
     background-color: rgba(120, 88, 24, 0.35);
 }
 #board-screen .region-hover .hover-force.choice-glow > .hover-force-header { color: rgb(255, 226, 150); }
+/* UI-431 (owner's rule, UI-430): the force sections are the field army's and the garrison's only click, so they breathe
+   in the shared rhythm with the panel's pulse — rim and plate only, no size change and no filter. */
+.motion-enabled #board-screen .region-hover.choice-glow-pulse .hover-force.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.2);
+}
+
+/* UI-431 (owner's rule, UI-430): the companion Lure of the Ring may eliminate wears a red rim on a red plate in the
+   Fellowship panel — the red of a card to discard or an attack target — and breathes with the roster's pulse; no filter,
+   and its size stays (scale 1 1). */
+#board-screen .fellowship-panel .companion-token.eliminate-target {
+    border-width: 3px;
+    border-color: rgb(236, 72, 48);
+    background-color: rgba(128, 26, 20, 0.55);
+}
+.motion-enabled #board-screen .fellowship-panel .companion-token.eliminate-target {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .choice-glow-pulse .companion-token.eliminate-target {
+    border-color: rgba(236, 72, 48, 0.4);
+    background-color: rgba(80, 18, 14, 0.3);
+    scale: 1 1;
+}
 
 /* UI-250: a member of another planned group stays in the roster, dimmed with a blue rim; its click selects that group. */
 /* UI-378: a planned group's portrait dims with a faint gold rim, no pale blue. */

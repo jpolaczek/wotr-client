@@ -39,6 +39,8 @@ namespace Wotr.Client
         private readonly NazgulFlightInteraction flights;
         private readonly CardFigureInteraction cardFigures;
         private readonly CardArmyInteraction cardArmies;
+        // UI-431: The Black Captain Commands' Move Nazgûl on the map's Nazgûl.
+        private readonly CaptainOrderInteraction captainOrder;
         private readonly FellowshipContextInteraction fellowshipContext;
         private readonly HuntContextInteraction huntContext;
         private readonly ResourceContextInteraction resources;
@@ -96,7 +98,7 @@ namespace Wotr.Client
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
             reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.CanRecruit,
-                id => muster.RecruitAtOnly(id), Confirm, FinishSequence);
+                id => muster.RecruitAtOnly(id), Confirm, FinishSequence, CompleteChoice);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);
@@ -108,6 +110,7 @@ namespace Wotr.Client
             flights = new NazgulFlightInteraction(board, EditSelection, () => SelectionBusy);
             cardFigures = new CardFigureInteraction(board, EditSelection, () => SelectionBusy);
             cardArmies = new CardArmyInteraction(board, EditSelection, () => SelectionBusy);
+            captainOrder = new CaptainOrderInteraction(board, EditSelection, () => SelectionBusy, flights.Region);
             context.FigureSelector = id => flights.Figure(id) || cardFigures.Figure(id) || cardArmies.Figure(id) || travel.Figure(id);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
             input = new DraftInput(board.Root, Confirm, Back, Drop,
@@ -175,6 +178,9 @@ namespace Wotr.Client
                     board.Hover.Toggle(region);
                 return;
             }
+            // UI-431: a lit Nazgûl moves the Nazgûl for The Black Captain Commands.
+            if (captainOrder.Region(region))
+                return;
             // UI-215: a region holding a card's offered figures opens its panel, where the figures are chosen.
             if (cardFigures.Region(region))
                 return;
@@ -239,7 +245,11 @@ namespace Wotr.Client
                 }
                 if (view.Decision?.Presentation == "Region")
                 {
+                    // UI-431: a region with two forces opens its panel, whose glowing sections choose the force.
+                    var forces = RegionForceChoices.HasAlternatives(view, draft, region);
                     EditChoice(() => EffectChoiceDraft.ChooseRegion(draft, option, region));
+                    if (forces)
+                        board.Hover.OpenDecision(region, view.Decision.Id);
                     return;
                 }
                 var choice = option.EligibleIds.Contains(region) ? region : "";
@@ -584,7 +594,7 @@ namespace Wotr.Client
             }
             var option = DraftOptions.For(view, draft);
             if (option != null && !draft.Payload.Ids.Contains(choice.Id))
-                CompleteChoice(() => CardDraft.Choose(draft, option, choice.Id));
+                CompleteChoice(() => EffectChoiceDraft.Choose(draft, option, choice.Id, choice.Region.Length > 0 ? choice.Region : null));
         }
 
         private void Choose(CommandKind kind)
@@ -815,6 +825,9 @@ namespace Wotr.Client
             huntContext.Refresh(view, draft);
             resources.Refresh(view, draft);
             components.Refresh(view, draft, !SelectionBusy);
+            // UI-431: after the armies' contexts, whose map sources The Black Captain Commands' order replaces while it waits.
+            captainOrder.Refresh(view, draft);
+            board.Map.OfferForces(captainOrder.Offers);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             board.CompanionSetup.Context(view);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
@@ -1045,6 +1058,7 @@ namespace Wotr.Client
             components.Dispose();
             consoleOptions.Dispose();
             rings.Dispose();
+            board.Map.OfferForces(null);
             console.Dispose();
             board.Characters.EntryRequested -= RequestEntry;
             board.Characters.Enterable = _ => false;

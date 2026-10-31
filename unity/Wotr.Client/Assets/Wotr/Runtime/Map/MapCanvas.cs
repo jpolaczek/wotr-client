@@ -52,6 +52,8 @@ namespace Wotr.Client
         // UI-305: the player moved the camera (wheel zoom or a right/middle-drag pan), never a programmatic move.
         public event Action Steered;
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
+        // UI-431: what a click on a lit force does now (a card's choice made on it), by region; its tooltip leads with it.
+        private IReadOnlyDictionary<string, string> forceOffers = new Dictionary<string, string>();
         // UI-301: the armies a click may choose pulse together in ChoiceGlow's rhythm.
         private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
@@ -553,7 +555,7 @@ namespace Wotr.Client
                 else if (Animated() && army.Total < before)
                     Later(shrinking, marker);
                 marker.Button.EnableInClassList(MapArmyArtwork.MovedClass, marched.Contains(key));
-                marker.Button.tooltip = ArmyMarkerText.Describe(army, Data.Regions[army.RegionId].Name);
+                marker.Button.tooltip = MarkerTooltip(army);
             }
             foreach (var key in obsolete)
             {
@@ -569,6 +571,29 @@ namespace Wotr.Client
             foreach (var group in markers.Values.GroupBy(m => m.Army.RegionId))
                 regionMarkers.Add(group.Key, group.OrderBy(m => m.Army.Garrison ? 0 : 1).ThenBy(m => m.Army.Side).ToList());
         }
+
+        // UI-431 (TOOLTIP_AUDIT rule 1): a force whose click makes a card's choice now says so first.
+        private string MarkerTooltip(ArmyMarker army)
+        {
+            var description = ArmyMarkerText.Describe(army, Data.Regions[army.RegionId].Name);
+            return forceOffers.TryGetValue(army.RegionId, out var offer) ? TooltipText.Lines(offer, description) : description;
+        }
+
+        // UI-431: the forces whose click makes a card's choice now (The Black Captain Commands' Nazgûl); an empty map
+        // withdraws the offers.
+        public void OfferForces(IReadOnlyDictionary<string, string> offers)
+        {
+            var next = offers ?? new Dictionary<string, string>();
+            if (SameOffers(next))
+                return;
+            forceOffers = next;
+            foreach (var marker in markers.Values)
+                marker.Button.tooltip = MarkerTooltip(marker.Army);
+        }
+
+        // The offers each refresh brings are usually the last ones; only a change rewrites the markers' tooltips.
+        private bool SameOffers(IReadOnlyDictionary<string, string> next) => next.Count == forceOffers.Count &&
+            next.All(pair => forceOffers.TryGetValue(pair.Key, out var text) && text == pair.Value);
 
         private bool Animated() => armiesShown && !Quiet && !Reduced();
 

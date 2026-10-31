@@ -44,6 +44,13 @@ namespace Wotr.Client
                 Targets.Add(view.Battle.RegionId);
             if (context == null && draft.Kind == CommandKind.MoveArmies && draft.MoveFocus >= 0)
                 Targets.UnionWith(ArmyDraft.Targets(draft, view));
+            // UI-431: a card army event lights its other step's targets with its own, as the Army die does (UI-389), and
+            // draws every target its click attacks red.
+            if (context == null && CardArmyEvent.Active(view, draft))
+            {
+                Targets.UnionWith(CardArmyEvent.OtherTargets(view, draft));
+                AttackTargets.UnionWith(CardArmyEvent.AttackTargets(view, draft));
+            }
             if (context == null && draft.Kind == CommandKind.Recruit)
                 Targets.UnionWith(RecruitDraft.Targets(draft, view));
             if (draft.Kind == CommandKind.ChooseEffect)

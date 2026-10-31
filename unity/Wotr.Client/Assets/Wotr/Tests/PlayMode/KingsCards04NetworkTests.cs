@@ -39,15 +39,21 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-enemy-army", ScenarioKind.CardPack))
             {
+                // UI-431 (owner's rule, UI-430): the field army and the garrison are the region panel's glowing sections (UI-251),
+                // which the lit region's click opens; neither the console nor the tray has a button for them.
                 MapContourProbe.ClickRegion(room.Sh.Board.Map, "minas-tirith");
-                var field = room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:field");
-                var garrison = room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:garrison");
-                Assert.IsTrue(field.text.Contains("Field"));
-                Assert.IsTrue(garrison.text.Contains("Garrison"));
+                await room.Settle();
+                AssertConsoleOptions(room.Sh);
+                Assert.IsNull(room.Sh.Board.Tray.Q<Button>("effect-choice-minas-tirith:garrison"));
+                StringAssert.Contains("Click to choose the field army because of", BoardDrawnOptionsTests.ForceHeader(room.Sh, false).tooltip);
+                StringAssert.Contains("Click to choose the garrison because of", BoardDrawnOptionsTests.ForceHeader(room.Sh, true).tooltip);
                 Assert.IsFalse(room.Sh.Board.Console.Status.Trail.Query<Button>(className: "committed-choice").ToList().Any(b => b.text.Contains("kings.")));
                 await Layout(room, room.Sh, "army");
+                // The layout pass inspects the played card; the region's click brings its panel back.
+                MapContourProbe.ClickRegion(room.Sh.Board.Map, "minas-tirith");
+                await room.Settle();
                 var revision = room.Sh.Board.View.Revision;
-                CardNetworkTests.Click(garrison);
+                CardNetworkTests.Click(BoardDrawnOptionsTests.ForceHeader(room.Sh, true));
                 await room.At(revision + 1);
                 await KingsCardNetworkChecks.Reconnect(room, room.Sh);
                 Assert.Greater(room.Fp.Board.View.Revision, revision);

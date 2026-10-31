@@ -25,11 +25,15 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("shadow-lure", ScenarioKind.CardPack))
             {
-                // UI-214: Lure of the Ring's two options are console buttons naming the Companion.
-                AssertConsoleOptions(room.Fp, "effect-choice-lure.corruption", "effect-choice-lure.eliminate");
-                Assert.That(TrayOrConsole(room.Fp, "effect-choice-lure.corruption").text, Does.StartWith("Gimli"));
-                Click(room.Fp, "effect-choice-lure.corruption");
-                await room.Confirm(room.Fp);
+                // UI-431 (owner's rule, UI-430): Lure of the Ring's options are the Fellowship panel's objects — Gimli's red
+                // portrait and the offered corruption marker — not console buttons.
+                AssertConsoleOptions(room.Fp);
+                await room.Settle();
+                var marker = room.Fp.Board.Fellowship.CorruptionMarker;
+                StringAssert.StartsWith("Corruption +2 · Click to keep Gimli and take 2 Corruption", marker.tooltip);
+                var revision = room.Fp.Board.View.Revision;
+                CardNetworkTests.Click(marker);
+                await room.At(revision + 1);
                 Assert.AreEqual(2, room.Sh.Board.View.Fellowship.Corruption);
                 Assert.AreEqual(7, room.Sh.Board.View.Fellowship.CompanionCount);
             }

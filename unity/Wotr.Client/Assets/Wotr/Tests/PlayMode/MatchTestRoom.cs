@@ -434,7 +434,7 @@ namespace Wotr.PlayTests
                 await ArmyGestures.Target(this, client, to);
                 return;
             }
-            Click(client, "action-AttackArmy");
+            // UI-431: a card army event lights its attack targets with its moves; the attack target's click makes the attack.
             client.Board.Map.Select(from);
             await Settle();
             MapContourProbe.ClickRegion(client.Board.Map, to);

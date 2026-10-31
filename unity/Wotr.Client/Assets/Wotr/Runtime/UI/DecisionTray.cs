@@ -136,6 +136,10 @@ namespace Wotr.Client
                     // UI-430: The Nazgûl Strike!'s red table cards, Hunt Box and ✓; There Is Another Way's track and ✓.
                     : NazgulStrikeChoice.Hint(view, draft) is { Length: > 0 } strike ? strike
                     : FellowshipCardActions.Guidance(view) is { Length: > 0 } another ? another
+                    // UI-431: a region's forces, the Black Captain's Nazgûl, Lure of the Ring's portrait and marker.
+                    : RegionForceChoices.Hint(view, draft) is { Length: > 0 } forces ? forces
+                    : BlackCaptainOrder.Hint(view) is { Length: > 0 } captain ? captain
+                    : LureChoice.Hint(view) is { Length: > 0 } lure ? lure
                     : draft.Kind == CommandKind.SelectGuide && ContextualFellowship ? FellowshipGuideText.ChooseHint
                     // UI-291: a reaction the console hosts is guided by the console's own hint (TurnConsoleState).
                     : ContextualHunt && draft.Kind == CommandKind.RespondEffect ||
