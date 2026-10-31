@@ -22,7 +22,7 @@ namespace Wotr.Client
         public void Attach(Button plaque)
         {
             plaque.AddToClassList("console-hunt-plaque");
-            plaque.tooltip = "Hunt Box · Eyes and Free Peoples movement dice · Click to open the Hunt";
+            plaque.tooltip = HuntPanel.PlaqueTooltip;
             Well.Add(plaque);
         }
     }

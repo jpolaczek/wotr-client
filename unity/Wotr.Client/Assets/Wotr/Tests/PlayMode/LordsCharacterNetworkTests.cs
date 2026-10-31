@@ -29,7 +29,7 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator HeSeesMovesTheChiefFromHisFigure() => Wait(HeSees());
         [UnityTest] public IEnumerator TheBalrogsCardMovesHimAloneAlongHisPath() => Wait(BalrogAlone());
         [UnityTest] public IEnumerator TheBalrogsCardMovesHisArmyFromItsFigure() => Wait(BalrogArmy());
-        [UnityTest] public IEnumerator TheBalrogsCardFinishesWithThePass() => Wait(BalrogFinish());
+        [UnityTest] public IEnumerator TheBalrogsCardFinishesWithTheConfirm() => Wait(BalrogFinish());
 
         private static async Task Keepers()
         {
@@ -157,11 +157,11 @@ namespace Wotr.PlayTests
             {
                 var client = room.Sh;
                 await room.Settle();
-                foreach (var choice in new[] { BalrogCardOrder.Alone, BalrogCardOrder.Army, OptionalDecline.BalrogFinish })
+                foreach (var choice in new[] { BalrogCardOrder.Alone, BalrogCardOrder.Army, FinishingOption.BalrogFinish })
                     Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-" + choice), choice);
                 StringAssert.StartsWith("Click the Balrog's glowing army to move it with him, or his region and then his figure",
                     client.Board.Console.Status.Hint.text);
-                StringAssert.EndsWith("Or Pass to finish without moving the Balrog.", client.Board.Console.Status.Hint.text);
+                StringAssert.EndsWith("Or ✓ to finish without moving the Balrog.", client.Board.Console.Status.Hint.text);
                 var figure = await MapFigure(room, client, "moria", Balrog);
                 StringAssert.Contains(BalrogCardOrder.Offer(BalrogCardOrder.Alone), figure.tooltip);
                 await Layout(room, client, "balrog-order", "ui347");
@@ -214,7 +214,7 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-347 (D7, D11): the console's Pass finishes the card without moving the Balrog.
+        // UI-347 (D11), UI-430 (owner's rule): the console's ✓ finishes the card without moving the Balrog.
         private static async Task BalrogFinish()
         {
             using (var room = await Connect("ui347-balrog-finish", ScenarioKind.CardPack))
@@ -222,7 +222,13 @@ namespace Wotr.PlayTests
             {
                 var client = room.Sh;
                 await room.Settle();
-                await room.Pass(client, "Pass · Skip A Balrog is Come! · Finish without moving the Balrog");
+                var finish = client.Board.Console.Actions.Confirm;
+                Assert.IsTrue(finish.enabledSelf && finish.ClassListContains(ChoiceGlow.ClassName), "The ✓ finishes.");
+                Assert.AreEqual("Finish · End A Balrog is Come! without moving the Balrog", finish.tooltip);
+                Assert.IsFalse(client.Board.Console.Actions.Pass.ClassListContains(ChoiceGlow.ClassName), "The Pass declines nothing here.");
+                var revision = client.Board.View.Revision;
+                PointerGestureEvents.ClickAt(finish);
+                await room.At(revision + 1);
                 Assert.AreEqual("moria", room.Fp.Board.View.Characters.Single(c => c.Id == Balrog).Location);
                 Assert.AreNotEqual(BalrogCardOrder.Presentation, client.Board.View.Decision?.Presentation ?? "");
                 watch.NeverOpened();

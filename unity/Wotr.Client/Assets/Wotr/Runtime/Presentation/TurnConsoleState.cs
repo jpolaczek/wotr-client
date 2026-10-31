@@ -55,13 +55,15 @@ namespace Wotr.Client
         }
 
         // UI-347: a step made on its objects names their clicks — a marked Council token (D13), the Balrog card's order
-        // (D11), the Council's homelands with the second click that keeps a companion (D14).
+        // (D11), the Council's homelands with the second click that keeps a companion (D14). UI-430: The Nazgûl Strike!'s
+        // red table cards, Hunt Box and ✓, and a card's red table cards.
         private static string ObjectGuidance(PlayerView view, TurnDraft draft)
         {
             foreach (var hint in new[]
                      {
                          ResourcePresentation.CouncilHint(view, draft), BalrogCardOrder.Hint(view), CouncilHomelandPresentation.Hint(view, draft),
-                         KingsCardChoices.Hint(view), DeckChoice.Hint(view)
+                         KingsCardChoices.Hint(view), DeckChoice.Hint(view), NazgulStrikeChoice.Hint(view, draft),
+                         TableDiscardText.DecisionHint(view, draft)
                      })
                 if (hint.Length > 0)
                     return hint;

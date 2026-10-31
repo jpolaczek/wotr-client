@@ -22,7 +22,7 @@ namespace Wotr.Client
         {
             Alone => "Balrog alone",
             Army => "Balrog with his army",
-            OptionalDecline.BalrogFinish => "Finished without moving",
+            FinishingOption.BalrogFinish => "Finished without moving",
             _ => null
         };
 

@@ -56,14 +56,14 @@ namespace Wotr.EditorTests
         }
 
         // UI-347 (EXP-15 D11): the Balrog card's order stands on the Balrog's figure (alone) and his army's figures (with
-        // it); Finish is the console's Pass, so the console has no button and no window opens.
+        // it); Finish is the console's ✓ (UI-430), so the console has no button and no window opens.
         [Test]
         public void TheBalrogsOrderStandsOnHisFigureAndHisArmy()
         {
             var view = Card(BalrogCardOrder.Presentation,
                 new EffectChoiceView { Id = BalrogCardOrder.Alone, Title = "Move the Balrog alone" },
                 new EffectChoiceView { Id = BalrogCardOrder.Army, Title = "Move or attack with his army" },
-                new EffectChoiceView { Id = OptionalDecline.BalrogFinish, Title = "Finish" });
+                new EffectChoiceView { Id = FinishingOption.BalrogFinish, Title = "Finish" });
             view.Characters.Add(new CharacterView { Id = "lords.character.balrog", DefinitionId = "lords.character.balrog", Side = Side.Shadow, Location = "moria" });
             view.Units.Add(new UnitView { Id = "orc-1", Side = Side.Shadow, Location = "moria" });
             view.Units.Add(new UnitView { Id = "orc-2", Side = Side.Shadow, Location = "dol-guldur" });
@@ -77,7 +77,8 @@ namespace Wotr.EditorTests
             Assert.AreEqual("moria", BalrogCardOrder.Region(view));
             Assert.AreEqual("Click the Balrog's glowing army to move it with him, or his region and then his figure to move him alone.",
                 BalrogCardOrder.Hint(view));
-            Assert.AreEqual(OptionalDecline.BalrogFinish, OptionalDecline.Option(view, draft).Id);
+            Assert.AreEqual(FinishingOption.BalrogFinish, FinishingOption.Option(view, draft).Id);
+            Assert.IsNull(OptionalDecline.Option(view, draft), "The Balrog's Finish is not the Pass.");
             view.Options[0].EligibleIds.Remove(BalrogCardOrder.Army);
             Assert.AreEqual(new[] { "lords.character.balrog" }, BalrogCardOrder.Figures(view).Keys.ToArray());
         }
@@ -121,19 +122,22 @@ namespace Wotr.EditorTests
             Assert.IsFalse(decks.Root.Q<Button>("deck-strategy").enabledSelf);
         }
 
+        // UI-430 (owner): The Nazgûl Strike! has no console buttons; its table cards are red in the Effects panel, its Hunt
+        // roll is the Hunt Box and its Finish the console's ✓ (ObjectFirstChoicesTests). The decision window stays closed.
         [Test]
-        public void TheNazgulStrikeDiscardsTableCardsInTheEffectsPanelAndKeepsThreeButtons()
+        public void TheNazgulStrikeHasNoConsoleButtonsItsObjectsCarryItsOptions()
         {
-            var view = Card("NazgulStrike",
+            var view = Card(NazgulStrikeChoice.Presentation,
                 new EffectChoiceView { Id = "base.fp.character.05", SourceId = "base.fp.character.05", Title = "Table card", Detail = "Discard this card." },
                 new EffectChoiceView { Id = "base.fp.character.08", SourceId = "base.fp.character.08", Title = "Table card", Detail = "Discard this card." },
-                new EffectChoiceView { Id = "nazgul-strike.hunt", Title = "Roll for the Hunt" },
-                new EffectChoiceView { Id = "nazgul-strike.decline", Title = "Finish" });
+                new EffectChoiceView { Id = NazgulStrikeChoice.HuntRoll, Title = "Roll for the Hunt" },
+                new EffectChoiceView { Id = FinishingOption.StrikeFinish, Title = "Finish" });
             var draft = Draft(CommandKind.ChooseEffect);
-            var options = CardConsoleOptions.For(view, draft);
-            CollectionAssert.AreEqual(new[] { ConsoleOptionKind.OpenEffects, ConsoleOptionKind.Effect, ConsoleOptionKind.Effect }, options.Select(o => o.Kind));
-            CollectionAssert.AreEqual(new[] { "Discard a table card", "Roll for the Hunt", "Finish" }, options.Select(o => o.Label));
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
+            Assert.IsTrue(CardConsoleOptions.Owns(view, draft), "The console keeps the decision, so no window opens.");
             CollectionAssert.AreEquivalent(new[] { "base.fp.character.05", "base.fp.character.08" }, CardConsoleOptions.TableCards(view, draft).Keys);
+            Assert.AreEqual(NazgulStrikeChoice.HuntRoll, NazgulStrikeChoice.Roll(view, draft).Id);
+            Assert.AreEqual(FinishingOption.StrikeFinish, FinishingOption.Option(view, draft).Id);
             Assert.IsFalse(WindowChoices(view, draft));
         }
 

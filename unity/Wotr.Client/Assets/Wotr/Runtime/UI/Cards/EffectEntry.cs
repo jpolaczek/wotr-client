@@ -13,6 +13,8 @@ namespace Wotr.Client
         private string inspectTooltip = "";
         // UI-272: what a click on the card itself does now (Lore before Dismay), or "" when the click inspects it.
         private string use = "";
+        // UI-430: why an effect offers this card's discard now (its tile's and its ×'s tooltip), or "".
+        private string offer = "";
 
         // UI-94: a click selects the source; its details, including a card's complete text, open below the list.
         // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll).
@@ -23,7 +25,9 @@ namespace Wotr.Client
             Root.AddToClassList("effect-entry");
             title = BoardScreen.Button(source.Title, () =>
             {
-                if (use.Length > 0)
+                if (offer.Length > 0)
+                    remove(Source.SourceId);
+                else if (use.Length > 0)
                     used(Source.SourceId);
                 else
                     inspect(Source, true);
@@ -65,7 +69,7 @@ namespace Wotr.Client
             title.text = source.Title;
             inspectTooltip = source.Kind == "Ability" ? "Show this public ability below"
                 : CardLibrary.Cards.ContainsKey(source.SourceId) ? "Show the complete Event and Combat text below" : "Show this effect below";
-            title.tooltip = use.Length > 0 ? use : inspectTooltip;
+            title.tooltip = TitleTooltip();
             owner.text = source.Owner == Wotr.Contracts.Side.FreePeoples ? "FP ◆" : "SH ◆";
             owner.tooltip = BoardScreen.SideName(source.Owner);
             Root.EnableInClassList("shadow-effect", source.Owner == Wotr.Contracts.Side.Shadow);
@@ -73,6 +77,7 @@ namespace Wotr.Client
 
         public void Context(ComponentAction action, bool enabled, Wotr.Contracts.PlayerView view)
         {
+            WithdrawOffer();
             removal.style.display = action == null ? DisplayStyle.None : DisplayStyle.Flex;
             removal.SetEnabled(enabled && action?.Enabled == true);
             removal.tooltip = action == null ? "" : "Remove " + Source.Title + " · " + EffectsPresentation.RemovalCost(view, action) +
@@ -89,19 +94,35 @@ namespace Wotr.Client
             if (next.Length == 0 && use.Length == 0)
                 return;
             use = next;
-            title.tooltip = use.Length > 0 ? use : inspectTooltip;
+            title.tooltip = TitleTooltip();
             ChoiceGlow.Apply(title, use.Length > 0);
             if (use.Length > 0)
                 title.EnableInClassList("legal-target", true);
         }
 
-        // UI-214: a card's effect offers this source (The Nazgûl Strike! discards a table card); its × chooses it.
+        // UI-214: a card's effect offers this source (The Nazgûl Strike! discards a table card); its × chooses it. UI-430
+        // (owner): the card is red instead of lit, and a click on the card itself chooses it too; both say why.
         public void Offer(string tooltip, bool enabled)
         {
+            offer = tooltip ?? "";
             removal.style.display = DisplayStyle.Flex;
             removal.SetEnabled(enabled);
-            removal.tooltip = tooltip;
-            title.EnableInClassList("legal-target", enabled);
+            removal.tooltip = offer;
+            title.EnableInClassList("legal-target", false);
+            title.EnableInClassList(TableEffectsView.DiscardClass, enabled);
+            title.tooltip = TitleTooltip();
         }
+
+        private void WithdrawOffer()
+        {
+            if (offer.Length == 0)
+                return;
+            offer = "";
+            title.RemoveFromClassList(TableEffectsView.DiscardClass);
+            title.tooltip = TitleTooltip();
+        }
+
+        // What a click on the card itself does: discard it for an effect (UI-430), use it (UI-272), or show its text.
+        private string TitleTooltip() => offer.Length > 0 ? offer : use.Length > 0 ? use : inspectTooltip;
     }
 }

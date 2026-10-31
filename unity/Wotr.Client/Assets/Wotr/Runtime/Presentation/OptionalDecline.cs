@@ -6,15 +6,14 @@ namespace Wotr.Client
 {
     // UI-347 (EXP-15 D7, owner's decision): an optional decline of the Lords has no button of its own. The console's Pass
     // sends it, as it declines a reaction window (UI-291), lights while it can, and its tooltip and the console's hint name
-    // what passing skips: Vilya's Spend the die, the Lore of the Elven Rings' Keep results, Wind from the West's and the
-    // Balrog card's Finish, Orderly Withdrawal's Keep the hit and We Won't Go Back's No Corruption. UI-348: Palantír of
-    // Anárion's Skip extra card and a Combat card replacement's Keep card effects (Brand, the Dark Chieftains), whose ids
-    // are generic and count only in their own steps. UI-276: Dismay's Keep tokens. UI-278: the kings' Keep tiles after an
-    // inspection (Wisdom of Elrond, It Is Not So Dark Here) and after a political cleanse.
+    // what passing skips: Vilya's Spend the die, the Lore of the Elven Rings' Keep results, the Balrog card's Finish,
+    // Orderly Withdrawal's Keep the hit and We Won't Go Back's No Corruption. UI-348: Palantír of Anárion's Skip extra
+    // card and a Combat card replacement's Keep card effects (Brand, the Dark Chieftains), whose ids are generic and count
+    // only in their own steps. UI-276: Dismay's Keep tokens. UI-278: the kings' Keep tiles after an inspection (Wisdom of
+    // Elrond, It Is Not So Dark Here) and after a political cleanse. UI-430 (owner): Wind from the West's Finish ends the
+    // card, so it is the console's ✓ (FinishingOption), no longer the Pass.
     public static class OptionalDecline
     {
-        public const string BalrogFinish = "balrog.finish";
-        public const string WindFinish = "wind.finish";
         public const string WithdrawalKeep = "withdrawal.decline";
         private const string VilyaSkip = "spend the die and keep Vilya";
         private const string DismaySkip = "keep your Dismay tokens";
@@ -23,8 +22,6 @@ namespace Wotr.Client
         private static readonly IReadOnlyDictionary<string, string> Skips = new Dictionary<string, string>
         {
             [LoreChoice.Keep] = "keep your dice as they are",
-            [BalrogFinish] = "finish without moving the Balrog",
-            [WindFinish] = "finish without inspecting the Shadow hand",
             [WithdrawalKeep] = "keep the hit and fight on",
             [HuntCardResponses.NoCorruption] = "take no Corruption and keep your cards"
         };
@@ -135,8 +132,7 @@ namespace Wotr.Client
 
         private static string Tooltip(string skip) => "Pass · " + TooltipText.Capital(skip);
 
-        // UI-420 (owner): Pass names what it skips — "Pass · Skip Wind from the West · Finish without inspecting the Shadow
-        // hand".
+        // UI-420 (owner): Pass names what it skips — "Pass · Skip Orderly Withdrawal · Keep the hit and fight on".
         private static string PassTooltip(PlayerView view, string skip)
         {
             var name = EffectName(view);

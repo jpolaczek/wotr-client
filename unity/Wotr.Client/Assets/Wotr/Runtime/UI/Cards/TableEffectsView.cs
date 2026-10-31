@@ -9,6 +9,8 @@ namespace Wotr.Client
 {
     public sealed class TableEffectsView
     {
+        // UI-430 (owner): a table card an effect lets the player discard wears the hand's red discard parchment (UI-222).
+        public const string DiscardClass = "discard-target";
         public VisualElement Root { get; } = new VisualElement { name = "effects-panel" };
         public Button Tab { get; }
         public VisualElement DecisionHost { get; } = new VisualElement { name = "effects-decision-host" };
@@ -19,7 +21,7 @@ namespace Wotr.Client
         public string SelectedSource => selected?.SourceId ?? "";
         public event Action Opening;
         public event Action<ComponentAction> RemovalSelected;
-        // UI-214: the source a card's effect offers was chosen with its ×.
+        // UI-214: the source a card's effect offers was chosen with its × (UI-430: or with its red tile).
         public event Action<string> OfferChosen;
         // UI-272: a card the decision uses itself was clicked (The Lore of the Elven Rings before Dismay).
         public event Action<string> UseChosen;

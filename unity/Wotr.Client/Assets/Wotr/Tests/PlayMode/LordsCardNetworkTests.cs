@@ -13,7 +13,8 @@ namespace Wotr.PlayTests
 {
     // UI-272: the Lords cards' choices on their objects: The Gates are Closed at its × on a declaration, Wind from the
     // West and Safe Paths in the Dark at the Shadow table cards' ×, Wind's inspected Shadow hand in the drawer, and Three
-    // Rings for the Elven-Kings at the Ring sockets. No decision window opens.
+    // Rings for the Elven-Kings at the Ring sockets. No decision window opens. UI-430 (owner): the offered table cards are
+    // red and their tiles' click works as their ×; Wind's Finish is the console's ✓.
     public class LordsCardNetworkTests
     {
         private const string Gates = "lords.sh.character.27";
@@ -22,7 +23,7 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator TheGatesAnswerADeclarationAtTheirCross() => Wait(GatesDeclaration());
         [UnityTest] public IEnumerator WindDiscardsAShadowTableCardAtItsCross() => Wait(WindTable());
         [UnityTest] public IEnumerator WindShowsTheShadowHandInTheDrawer() => Wait(WindHand());
-        [UnityTest] public IEnumerator WindsFinishIsTheConsolesPass() => Wait(WindFinish());
+        [UnityTest] public IEnumerator WindsFinishIsTheConsolesConfirm() => Wait(WindFinish());
         [UnityTest] public IEnumerator SafePathsDiscardsASmeagolCardAtItsCross() => Wait(SafePaths());
         [UnityTest] public IEnumerator ThreeRingsRecoversRingsOnTheirSockets() => Wait(ThreeRings());
 
@@ -55,12 +56,17 @@ namespace Wotr.PlayTests
                 var client = room.Fp;
                 await room.Settle();
                 watch.OnItsObject(client);
-                Assert.IsNotNull(client.Board.Console.Status.Options.Q<Button>("console-option-table-cards"));
+                // UI-430 (owner): no "Discard a table card" button; the card is red and its tile's click discards it.
+                Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("console-option-table-cards"));
+                Assert.AreEqual(TableDiscardText.Hint, client.Board.Console.Status.Hint.text);
                 var cross = await Cross(room, client, Gates);
-                StringAssert.StartsWith("Discard The Gates are Closed", cross.tooltip);
+                Assert.AreEqual("Discard The Gates are Closed · Click to discard it because of Wind from the West", cross.tooltip);
+                var tile = client.Board.TableEffects.Root.Q<Button>("effect-source-" + Gates);
+                Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass), "The card is red.");
+                Assert.AreEqual(cross.tooltip, tile.tooltip);
                 await Layout(room, client, "wind-table", "ui272");
                 var revision = client.Board.View.Revision;
-                CardNetworkTests.Click(cross);
+                PointerGestureEvents.ClickAt(tile);
                 await room.At(revision + 1);
                 Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == Gates));
                 Assert.IsTrue(room.Sh.Board.View.Effects.Any(e => e.SourceId == Lore));
@@ -68,7 +74,8 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-347 (D7): the console's Pass finishes Wind from the West without inspecting the Shadow hand; the hint says so.
+        // UI-430 (owner): Wind from the West's Finish ends the card, so the console's ✓ sends it (it was the Pass, UI-347 D7),
+        // lit and naming what finishing leaves undone; the Pass declines nothing here.
         private static async Task WindFinish()
         {
             using (var room = await Connect("ui347-wind-finish", ScenarioKind.CardPack))
@@ -76,10 +83,14 @@ namespace Wotr.PlayTests
             {
                 var client = room.Fp;
                 await room.Settle();
-                StringAssert.EndsWith("Or Pass to finish without inspecting the Shadow hand.", client.Board.Console.Status.Hint.text);
-                Assert.IsTrue(client.Board.Console.Actions.Pass.ClassListContains(ChoiceGlow.ClassName), "A Pass that declines glows.");
+                var finish = client.Board.Console.Actions.Confirm;
+                Assert.IsTrue(finish.enabledSelf && finish.ClassListContains(ChoiceGlow.ClassName), "The ✓ finishes.");
+                Assert.AreEqual("Finish · End Wind from the West without inspecting the Shadow hand", finish.tooltip);
+                Assert.IsFalse(client.Board.Console.Actions.Pass.ClassListContains(ChoiceGlow.ClassName), "The Pass declines nothing here.");
                 var shadowHand = room.Sh.Board.View.Hand.Count;
-                await room.Pass(client, "Pass · Skip Wind from the West · Finish without inspecting the Shadow hand");
+                var revision = client.Board.View.Revision;
+                PointerGestureEvents.ClickAt(finish);
+                await room.At(revision + 1);
                 Assert.AreNotEqual(InspectedHand.Presentation, client.Board.View.Decision?.Presentation ?? "");
                 Assert.AreEqual(shadowHand, room.Sh.Board.View.Hand.Count);
                 watch.NeverOpened();
@@ -94,9 +105,9 @@ namespace Wotr.PlayTests
                 var client = room.Fp;
                 await room.Settle();
                 watch.OnItsObject(client);
-                // UI-347 (D7): Finish is the console's Pass, not a button.
+                // UI-430 (owner): Finish is the console's ✓, not a button (it was the Pass, UI-347 D7).
                 Assert.IsNull(client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.finish"));
-                Assert.AreEqual("Pass · Skip Wind from the West · Finish without inspecting the Shadow hand", client.Board.Console.Actions.Pass.tooltip);
+                Assert.AreEqual("Finish · End Wind from the West without inspecting the Shadow hand", client.Board.Console.Actions.Confirm.tooltip);
                 // UI-418 (owner): one lit button named after the card, saying what it does; no committed card beside it.
                 var option = client.Board.Console.Status.Options.Q<Button>("effect-choice-wind.inspect-hand");
                 Assert.AreEqual("Wind from the West", option.text);

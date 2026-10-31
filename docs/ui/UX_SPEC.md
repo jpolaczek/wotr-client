@@ -2044,3 +2044,63 @@ now get no badge anywhere; the window still lists each of them as a source, and 
 the Fellowship keeps its place in the Fellowship's status row. This completes UI-221 ("the header holds only the close
 button") and follows UI-413 (no nation-wide badge on the Politics rows). Tests: `InGameDenseLayoutTests` (the header's
 only button is `close-effects`, four layouts), `LayoutStressScenarioTests.TheFullestEffectsPanelFits` (the same with ten game-wide effects in play).
+
+<a id="no-button-for-an-option-the-board-draws--ui-430"></a>
+## No button for an option the board draws — UI-430 (2026-10-30)
+
+The owner, about The Nazgûl Strike!'s console buttons ("✓ The Nazgûl Strike!", "Discard a table card", "Roll for the
+Hunt", "Finish"): Finish disappears and the standard confirm choice replaces it; of the other buttons only the card's
+name and the ones with no other picture stay; the Effects tab already lights, the discardable effects only lack a red
+glow; the Hunt Box glows and pulses and its tooltip explains that a click starts a new Hunt because of this effect.
+From now on this is the general rule of the design:
+
+- **A new button only for an option with no other picture on the board.** Otherwise the map, the UI and tooltips signal
+  the option — the lit object's tooltip names the action and the effect that offers it — and a click on the lit object
+  sends exactly what the button sent. Every option keeps a click path (R16).
+- **Finish → ✓, decline → Pass / Skip effect.** A Finish that ends a card's event is the console's ✓ (the standard
+  confirm choice): enabled, lit and pulsing while nothing else is chosen, its tooltip `Finish · End <card> without …`
+  (`FinishingOption`: The Nazgûl Strike!'s Finish, There is Another Way's Stay, and Wind from the West's and A Balrog
+  is Come!'s Finish, which were the Pass since UI-347 D7). A decline of a response or of an optional effect stays the
+  console's Pass and a window's Skip effect (UI-291, UI-419, UI-423; `OptionalDecline`, `ReactionSkip`).
+- **The Nazgûl Strike!** has no console option and its decision window stays closed; the console keeps the card's
+  committed chip. Its Free Peoples Character cards are red in the Effects panel (the tab lights as before), its Hunt
+  roll is the console's Hunt Box — gold choice glow and the shared pulse, no filter and no size change — whose tooltip
+  reads `Roll for the Hunt · Click to start a Hunt roll now because of The Nazgûl Strike!: a Nazgûl is in the
+  Fellowship's region · The Fellowship does not move and no die is spent · <n> Eyes in the Hunt Box`, and its Finish the
+  ✓. The hint names them within two lines of the status column at 1366×768: "Discard: red card in Effects · Roll: Hunt
+  Box · ✓ finishes" ("Click the glowing Hunt Box to roll · ✓ finishes" when no Free Peoples card is on the table); each
+  object's tooltip says the rest. In a Lords or Kings game at 125 % the status column is too narrow for any hint (an
+  earlier limit of that layout, not of this decision). Outside this offer the Hunt Box behaves as before.
+- **The card's name chip is never cut.** In the console's line the committed chips keep their share (up to 45 %) instead
+  of yielding to a long hint; without options, chips that do not fit that share at their full text stand alone in the
+  strip above the console (`ConsoleOptionsFit`, as TEST-15 lifts them with options) and the hint takes the whole line.
+  Before, UI-297 shortened them with "…" (the Strike's chip read "✓ The Nazg…" in all four layouts).
+- **A table card an effect lets the player discard** (The Nazgûl Strike!, Wind from the West, Safe Paths in the Dark, a
+  table card's own reaction, UI-247) wears the hand's red discard parchment (UI-222) on its tile, and a click on the
+  tile or on its × sends the same command (`ChooseEffect`, or `RespondEffect` for a reaction). Its tooltip reads
+  `Discard <card> · Click to discard it because of <effect>[: reason]` (`Discard <card> · Click to discard it and use
+  its reaction · …` for a reaction). The console's "Discard a table card" and "Use a table card" are gone.
+- **Buttons that stay** (no other picture): the console's Back, ✓, Pass and Discard and the committed card-name chips;
+  the battle window's Continue/Stop, Hold, Field/Retreat inside, No card, Stay, Select all, Skip cards this battle,
+  Apply losses, Keep/Reroll and Skip effect; the Hunt window's Keep/Reroll and Skip effect; a Kings branch without a
+  board object; the game end's reopen; the Elven Ring and Lore result pickers; a character's ability controls on its
+  row; the Black Captain's recruit with an empty reserve; a card's one option without an object (Wind from the West's
+  Inspect Shadow hand, UI-418). The other cases of the analysis (the Black Captain's orders, Lure of the Ring, Dreadful
+  Spells, card army events, Worn with Sorrow and Toil, the Scouts, the Fellowship tray) are UI-431 and UI-432.
+
+Playtest (owner's checklist):
+- [ ] The Strike — Testing catalog `layout-console-options` (Lords group, play the Shadow). Expect: no option strip, the
+  card's chip only; the Effects tab lit, its four Free Peoples cards red with "Discard … because of The Nazgûl Strike!";
+  the Hunt Box glowing and pulsing with "Roll for the Hunt …"; the ✓ lit with "Finish · End The Nazgûl Strike! …".
+  A red card's click discards it; in a new session the Hunt Box's click starts the Hunt roll, then the ✓ finishes.
+- [ ] Wind from the West — `lords-card-wind-finish`. Expect: Inspect Shadow hand is the card's one lit button, the ✓
+  lit "Finish · End Wind from the West without inspecting the Shadow hand", the Pass unlit; the ✓ ends the card.
+- [ ] A table card's reaction — base Balrog of Moria when the Fellowship is revealed or declared beside Moria (no catalog
+  scenario yet; PlayMode `Shadow03NetworkTests`). Expect: no "Use a table card"; the card red in Effects; its click uses the reaction.
+
+Tests: `ObjectFirstChoicesTests` (the registry, the ✓'s, Hunt Box's and red cards' tooltips, the hints with and without
+table cards), `CardConsoleOptionsTests`, `FellowshipCardActionsTests`, `LordsCardChoicesTests`; PlayMode
+`NazgulStrikeObjectTests` (on a real server, a red table card's tile, the Hunt Box and the ✓ each send the `ChooseEffect`
+payload the old button sent, recorded from the buttons at 7ddddb8e), `Shadow02NetworkTests`, `Shadow02LayoutTests`,
+`CardPack02NetworkTests`, `Shadow03NetworkTests`, `LordsCardNetworkTests`, `LayoutStressScenarioTests` (the Strike's
+scenario, `layout-console-options`, now checks the objects instead of three buttons; screenshots `ui430-strike-*`).

@@ -103,27 +103,33 @@ namespace Wotr.EditorTests
             Assert.IsNull(root.Q<Button>("effect-choice-" + HuntCardResponses.NoCorruption), "No second decline button.");
         }
 
-        // Wind from the West: the Shadow table cards at their ×, the inspected hand in the drawer.
+        // Wind from the West: the Shadow table cards red in the Effects panel (UI-430: no console button), the inspected hand
+        // in the drawer.
         [Test]
         public void WindsChoicesStandOnTheTableCardsAndTheInspectedHand()
         {
-            var table = Decision(Side.FreePeoples, DecisionKind.EffectChoice, "TableCards", CommandKind.ChooseEffect,
+            var table = Decision(Side.FreePeoples, DecisionKind.EffectChoice, CardConsoleOptions.TableCardsPresentation, CommandKind.ChooseEffect,
                 new EffectChoiceView { Id = "lords.sh.character.27", SourceId = "lords.sh.character.27", Detail = "Discard from the table without effect." });
+            table.Decision.SourceId = "lords.fp.character.27";
             var draft = new TurnDraft();
             draft.Choose(CommandKind.ChooseEffect);
             Assert.IsTrue(CardConsoleOptions.Owns(table, draft));
-            CollectionAssert.AreEqual(new[] { "console-option-table-cards" }, CardConsoleOptions.For(table, draft).Select(o => o.Name));
+            Assert.IsEmpty(CardConsoleOptions.For(table, draft), "The red table cards need no console button.");
             CollectionAssert.AreEqual(new[] { "lords.sh.character.27" }, CardConsoleOptions.TableCards(table, draft).Keys);
+            Assert.AreEqual("Discard The Gates are Closed · Click to discard it because of Wind from the West",
+                CardConsoleOptions.TableCards(table, draft)["lords.sh.character.27"]);
+            Assert.AreEqual(TableDiscardText.Hint, TableDiscardText.DecisionHint(table, draft));
 
             var hand = Decision(Side.FreePeoples, DecisionKind.EffectChoice, InspectedHand.Presentation, CommandKind.ChooseEffect,
                 new EffectChoiceView { Id = "base.sh.character.01", SourceId = "base.sh.character.01" });
             CollectionAssert.AreEqual(new[] { "base.sh.character.01" }, InspectedHand.Cards(hand));
             Assert.AreEqual(DecisionHost.Hand, DecisionRoutes.Of(hand));
 
-            // Without Shadow table cards: Inspect the hand stays a button, Finish is the console's Pass (UI-347, D7).
-            var empty = Decision(Side.FreePeoples, DecisionKind.EffectChoice, "TableCards", CommandKind.ChooseEffect,
+            // Without Shadow table cards: Inspect the hand stays a button; UI-430 (owner): Finish ends the card, so it is the
+            // console's ✓ (it was the Pass, UI-347 D7).
+            var empty = Decision(Side.FreePeoples, DecisionKind.EffectChoice, CardConsoleOptions.TableCardsPresentation, CommandKind.ChooseEffect,
                 new EffectChoiceView { Id = "wind.inspect-hand", Title = "Inspect Shadow hand" },
-                new EffectChoiceView { Id = OptionalDecline.WindFinish, Title = "Finish" });
+                new EffectChoiceView { Id = FinishingOption.WindFinish, Title = "Finish" });
             CollectionAssert.AreEqual(new[] { "effect-choice-wind.inspect-hand" }, CardConsoleOptions.For(empty, draft).Select(o => o.Name));
             // UI-418 (owner): the one option is the card's own lit button, its tooltip saying what it does.
             empty.Decision.SourceId = "lords.fp.character.27";
@@ -132,8 +138,10 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Wind from the West", single.Label);
             StringAssert.StartsWith("Inspect Shadow hand", single.Tooltip);
             Assert.AreEqual("lords.fp.character.27", single.SourceId);
-            Assert.AreEqual(OptionalDecline.WindFinish, OptionalDecline.Option(empty, draft).Id);
-            Assert.IsNull(OptionalDecline.Option(table, draft), "With table cards Wind offers no Finish.");
+            Assert.IsNull(OptionalDecline.Option(empty, draft), "The Pass declines nothing here.");
+            Assert.AreEqual(FinishingOption.WindFinish, FinishingOption.Option(empty, draft).Id);
+            Assert.AreEqual("Finish · End Wind from the West without inspecting the Shadow hand", FinishingOption.Option(empty, draft).Tooltip);
+            Assert.IsNull(FinishingOption.Option(table, draft), "With table cards Wind offers no Finish.");
         }
 
         // UI-347 (D7): the opponent's decline is never this player's Pass.

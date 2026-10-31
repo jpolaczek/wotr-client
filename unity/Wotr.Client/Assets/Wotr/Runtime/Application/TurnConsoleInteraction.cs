@@ -8,6 +8,7 @@ namespace Wotr.Client
     // UI-160: feeds the turn console from the projection and the draft, and routes its permanent actions through the
     // tray's own paths: Back, Confirm (Check result), finishing a multi-step action, the Pass and discard
     // components and the Elven Ring choice. The decision window opens only while the docked tray offers choices.
+    // UI-430 (owner): the ✓ also sends a card's Finish (FinishingOption), the way its old console button did.
     public sealed class TurnConsoleInteraction : IDisposable
     {
         private readonly BoardScreen board;
@@ -17,6 +18,7 @@ namespace Wotr.Client
         private readonly Action finish;
         private readonly Action decline;
         private readonly Action<ConsoleOption> declineOption;
+        private readonly Action<ConsoleOption> finishOption;
         private readonly Action<ComponentAction> component;
         private readonly Action<string> ring;
         private readonly Func<bool> reinforcing;
@@ -29,10 +31,11 @@ namespace Wotr.Client
         private string trayDetail = "";
 
         // reinforcing: a card or ability recruitment plan is under way; the Reinforcements panel holds its choices
-        // and its own ✓, so the decision window stays closed and the status opens that panel.
+        // and its own ✓, so the decision window stays closed and the status opens that panel. finishOption: the path a
+        // card's console option took (UI-214), which the ✓ takes for the card's Finish.
         public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action confirm, Action finish,
-            Action decline, Action<ConsoleOption> declineOption, Action<ComponentAction> component, Action<string> ring,
-            Func<bool> reinforcing)
+            Action decline, Action<ConsoleOption> declineOption, Action<ConsoleOption> finishOption, Action<ComponentAction> component,
+            Action<string> ring, Func<bool> reinforcing)
         {
             this.board = board;
             this.tray = tray;
@@ -41,6 +44,7 @@ namespace Wotr.Client
             this.finish = finish;
             this.decline = decline;
             this.declineOption = declineOption;
+            this.finishOption = finishOption;
             this.component = component;
             this.ring = ring;
             this.reinforcing = reinforcing;
@@ -107,13 +111,16 @@ namespace Wotr.Client
                 "Back · Undo the last unsent step");
             var finishing = Finishing();
             var card = CardChoice(onBoard) || PlacedChoice();
-            ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || card && ChoiceReady()),
+            var ending = CardFinish(onBoard);
+            ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || ending?.Enabled == true || card && ChoiceReady()),
                 uncertain ? "Check result · Recover the interrupted response"
                 : finishing ? FinishTooltip()
+                : ending != null ? ending.Tooltip
                 : card ? ConfirmChoiceTooltip()
                 : "Finish · Available during an action of several steps");
-            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it.
-            actions.Invite(actions.Confirm, uncertain && tray.RecoversInConsole);
+            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it; UI-430: so it
+            // does while it finishes a card.
+            actions.Invite(actions.Confirm, uncertain && tray.RecoversInConsole || idle && ending?.Enabled == true);
             RefreshAllocation();
         }
 
@@ -180,17 +187,26 @@ namespace Wotr.Client
             board.Console.Status.SetHint(WithDecline(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallback);
         }
 
-        // UI-347 (D7): a step whose decline is the console's Pass says so, unless its hint already names Pass.
+        // UI-347 (D7): a step whose decline is the console's Pass says so, unless its hint already names Pass; UI-430: a
+        // step whose Finish is the console's ✓ likewise.
         private string WithDecline(string text)
         {
             var decline = view != null && draft != null ? OptionalDecline.Hint(view, draft) : "";
-            return decline.Length == 0 || text.Contains("Pass") ? text : (text.Length > 0 ? text + " " : "") + decline;
+            var finish = view != null && draft != null ? FinishingOption.Hint(view, draft) : "";
+            return Append(Append(text, decline, "Pass"), finish, "✓");
         }
+
+        // The sentence joins the hint unless the hint already names its control.
+        private static string Append(string text, string sentence, string control) =>
+            sentence.Length == 0 || text.Contains(control) ? text : (text.Length > 0 ? text + " " : "") + sentence;
 
         private bool Finishing() => view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Owner == view.You;
 
         // UI-211: a card's decision whose choices are on the board or in the console is confirmed with the console's ✓.
         private bool CardChoice(bool onBoard) => onBoard && CardDecisions.Owns(view, draft);
+
+        // UI-430: the card's Finish the ✓ sends while nothing else is chosen, or null.
+        private ConsoleOption CardFinish(bool onBoard) => CardChoice(onBoard) ? FinishingOption.Option(view, draft) : null;
 
         // UI-381: so is a choice planned on the board's objects (ConsoleConfirm).
         private bool PlacedChoice() => ConsoleConfirm.Owns(view, draft, reinforcing());
@@ -220,6 +236,8 @@ namespace Wotr.Client
                 confirm();
             else if (idle && Finishing())
                 finish();
+            else if (idle && CardFinish(OnBoard()) is { Enabled: true } ending)
+                finishOption(ending);
             else if (idle && (CardChoice(OnBoard()) || PlacedChoice()) && ChoiceReady())
                 confirm();
         }

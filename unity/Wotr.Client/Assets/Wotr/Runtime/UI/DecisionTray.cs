@@ -198,13 +198,15 @@ namespace Wotr.Client
             return silent ? "" : DecisionObjects.Confirm(view, draft);
         }
 
-        // The hint of a choice made on a board object: an entry's region, a Ring, a die, a card in the drawer.
+        // The hint of a choice made on a board object: an entry's region, a Ring, a die, a card in the drawer. UI-430: The
+        // Nazgûl Strike!'s red table cards, Hunt Box and ✓, a card's red table cards, There Is Another Way's track and ✓.
         private static string ObjectHint(PlayerView view, TurnDraft draft)
         {
             foreach (var hint in new[]
             {
                 CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
-                SovereignPresentation.Hint(view, draft),
+                SovereignPresentation.Hint(view, draft), NazgulStrikeChoice.Hint(view, draft), TableDiscardText.DecisionHint(view, draft),
+                FellowshipCardActions.Guidance(view),
                 RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
                 BalrogCardOrder.Hint(view), KingsCardChoices.Hint(view),
                 ResourcePresentation.PoolHint(view)

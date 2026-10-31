@@ -33,7 +33,7 @@ The audit (2026-10-29) listed the features whose layout is at risk and whether a
 | `layout-white-rider` | Free Peoples | The White Rider's chip at a battle's start, with Pass. |
 | `layout-all-resources` | Free Peoples | The special, Ruler and Keeper dice, three Ruler tokens, two Council and two Dismay tokens, the three Elven Rings. |
 | `layout-effects-sources` | Free Peoples | The Effects panel with 22 entries: six Free Peoples and eight Shadow table cards and three corrupted kings. |
-| `layout-console-options` | Shadow | The Nazgûl Strike!'s three console options beside Pass, with four table cards lit in the Effects panel. |
+| `layout-console-options` | Shadow | The Nazgûl Strike!'s three console options beside Pass, with four table cards lit in the Effects panel. Since UI-430 (2026-10-30) the Strike has no console options: open the Effects tab and look at the four red table cards, the glowing Hunt Box and the lit ✓ (the server's title still says "three console options"). |
 
 The Witch-king's Sorcerer is not in the White Rider scenario: its window opens only after the first round. A long trail of
 committed steps before a three-option console choice is not reachable with any card of the engine, so the console
@@ -55,6 +55,8 @@ task.
   game at 1366×768 and 125 % (the wider dice panel leaves the status a narrow column) they were "…" only. Fixed: options
   that do not fit the line at their full text stand in a strip just above the console, with the played card's button
   when that does not fit either (`ConsoleOptionsFit`); the bottom row keeps its height, wide layouts keep the line.
+  UI-430 (owner, 2026-10-30): the Strike's options are its objects now, so `LayoutStressScenarioTests.TheNazgulStrikesObjectsFit`
+  checks no option strip, the red cards in the open Effects panel, the glowing Hunt Box and the lit ✓ in the four layouts.
 - **The Effects panel reaches past the bottom row** (`layout-effects-sources`) with 18 sources at 1366×768 and 125 %
   (592.6 against 474.4 points) — the defect behind the earlier `EffectsLayoutTests.MultipleSources` failure. Its own task
   is UI-424; until then the stress test logs it as a warning and keeps the screenshot.

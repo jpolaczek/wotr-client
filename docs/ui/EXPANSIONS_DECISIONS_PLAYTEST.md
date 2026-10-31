@@ -115,7 +115,9 @@ difference in the rules (`Kings/KingsDismay.cs`).
   UI-347, Brand's, the Chieftains' and Dismay's with UI-276–UI-277 and UI-348, the kings' Keep tiles with UI-278
   (`kings-card-wisdom`: inspect a king, then Pass). Expect: no "Spend the die", "Keep results", "Finish" (Wind, the Balrog card), "Keep the hit", "No
   Corruption", "Keep card effects", "Keep tokens" or "Keep tiles" button; the console's Pass declines, glows and its
-  tooltip names what it skips.
+  tooltip names what it skips. UI-430 (owner, 2026-10-30): Wind's Finish ends the card, so `lords-card-wind-finish`
+  expects the console's ✓ lit instead ("Finish · End Wind from the West without inspecting the Shadow hand"), the Pass
+  unlit.
 - [ ] **D8 — Forced single steps stay automatic.** Try: `fate-card-book-of-mazarbul`, `fate-card-orcs-multiplying-again`,
   `fate-card-monsters-roused`, and `fate-card-orcs-erebor-held` (a North army holds Erebor, so Mount Gundabad and its
   plan are the only legal choice; TEST-14). Expect: where only one region or plan is legal the server applies it without a click,

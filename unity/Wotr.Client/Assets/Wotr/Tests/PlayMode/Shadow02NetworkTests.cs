@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -86,21 +87,26 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-214 CC06: Roll for the Hunt and Finish are console buttons beside "Discard a table card", which opens the lit
-        // Effects panel; a table card's × discards it and sends the decision. No decision window opens.
+        // UI-214 CC06, UI-430 (owner): no console button — the lit Effects tab opens the panel where the Free Peoples cards
+        // are red, the Hunt Box glows for the Hunt roll and the ✓ finishes; a red card's click discards it and sends the
+        // decision. No decision window opens.
         private static async Task DiscardTableCard(MatchTestRoom room, string card)
         {
-            var options = room.Sh.Board.Console.Status.Options;
-            CollectionAssert.AreEqual(new[] { "console-option-table-cards", "effect-choice-nazgul-strike.hunt", "effect-choice-nazgul-strike.decline" },
-                options.Query<Button>().ToList().Select(b => b.name));
-            Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen);
-            Assert.IsTrue(room.Sh.Board.TableEffects.Tab.ClassListContains("legal-target"));
-            CardNetworkTests.Click(options.Q<Button>("console-option-table-cards"));
-            var discard = room.Sh.Board.TableEffects.Root.Q<Button>("remove-table-" + card);
-            await room.Until(() => discard.enabledInHierarchy && discard.worldBound.width > 0);
+            var board = room.Sh.Board;
+            CollectionAssert.IsEmpty(board.Console.Status.Options.Query<Button>().ToList().Select(b => b.name));
+            Assert.IsFalse(board.DecisionWindow.IsOpen);
+            Assert.IsTrue(board.TableEffects.Tab.ClassListContains("legal-target"));
+            Assert.IsTrue(board.Hunt.Tab.ClassListContains(ChoiceGlow.ClassName), "The Hunt Box glows for the Hunt roll.");
+            Assert.IsTrue(board.Console.Actions.Confirm.enabledSelf && board.Console.Actions.Confirm.ClassListContains(ChoiceGlow.ClassName),
+                "The ✓ finishes.");
+            PointerGestureEvents.ClickAt(board.TableEffects.Tab);
+            var tile = board.TableEffects.Root.Q<Button>("effect-source-" + card);
+            await room.Until(() => tile.enabledInHierarchy && tile.worldBound.width > 0);
             await room.Settle();
-            var revision = room.Sh.Board.View.Revision;
-            CardNetworkTests.Click(discard);
+            Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass), "The card is red.");
+            Assert.IsTrue(board.TableEffects.Root.Q<Button>("remove-table-" + card).enabledSelf, "Its × still discards it.");
+            var revision = board.View.Revision;
+            PointerGestureEvents.ClickAt(tile);
             await room.At(revision + 1);
         }
 

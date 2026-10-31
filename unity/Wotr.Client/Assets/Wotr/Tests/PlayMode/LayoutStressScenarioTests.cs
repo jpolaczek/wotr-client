@@ -25,7 +25,9 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator TheWhiteRiderFits() => Wait(Check("layout-white-rider", Side.FreePeoples, OpenDecision));
         [UnityTest] public IEnumerator EveryResourceFits() => Wait(Check("layout-all-resources", Side.FreePeoples, OpenDecision));
         [UnityTest] public IEnumerator TheFullestEffectsPanelFits() => Wait(Check("layout-effects-sources", Side.FreePeoples, OpenEffects));
-        [UnityTest] public IEnumerator TheConsoleOptionsFit() => Wait(Check("layout-console-options", Side.Shadow, OpenDecision));
+        // UI-430 (owner): the scenario stressed The Nazgûl Strike!'s three console options; they are its objects now, so it
+        // checks those instead — no option strip, the red table cards in the open Effects panel, the glowing Hunt Box, the lit ✓.
+        [UnityTest] public IEnumerator TheNazgulStrikesObjectsFit() => Wait(Check("layout-console-options", Side.Shadow, OpenStrikeObjects));
 
         private static async Task Check(string scenario, Side side, Func<TestScenarioRoom, BoardScreen, Task> open)
         {
@@ -82,6 +84,12 @@ namespace Wotr.PlayTests
                 "The scenario has game-wide effects.");
             CollectionAssert.AreEqual(new[] { "close-effects" }, board.TableEffects.Root.Q(className: "window-header")
                 .Query<Button>().ToList().Select(button => button.name).ToArray(), "The Effects header holds only Close.");
+        }
+
+        private static async Task OpenStrikeObjects(TestScenarioRoom room, BoardScreen board)
+        {
+            await NazgulStrikeObjectTests.RedTile(room, board, "base.fp.character.08");
+            NazgulStrikeObjectTests.AssertObjectsLit(board);
         }
 
         // Every shown window, panel and bar stays inside the screen — an edge panel above the bottom bar — and every shown
