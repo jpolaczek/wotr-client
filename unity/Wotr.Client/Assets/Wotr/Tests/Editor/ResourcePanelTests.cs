@@ -23,7 +23,7 @@ namespace Wotr.EditorTests
             view.Options.Add(new ActionOption { Kind = CommandKind.DeclineDismay, Enabled = true });
             Assert.IsTrue(ResourcePresentation.PoolDecision(view));
             Assert.AreEqual(DecisionHost.Dice, DecisionRoutes.Of(view));
-            StringAssert.StartsWith("Click a glowing Ruler die to spend a Dismay token", ResourcePresentation.PoolHint(view));
+            StringAssert.StartsWith("Click the glowing Ruler die in the top bar to reroll it with Dismay", ResourcePresentation.PoolHint(view));
             Assert.AreEqual("kings.token.theoden", DismayChoice.Token(view, "ruler"));
             Assert.AreEqual("", DismayChoice.Token(view, "other"));
             var draft = new TurnDraft();

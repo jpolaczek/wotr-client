@@ -1646,7 +1646,10 @@ The owner's decisions EXP-15 D7 and D18–D20 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_
 deleted, since no resource decision is made in it any more (UI-264's plan).
 
 - **Dismay (D20, D7).** After the roll the Shadow spends Dismay by clicking a glowing Ruler die alone — the Free Peoples'
-  in the opponent's pool, or the Shadow's own: it pulses with the expansions' lit art, and its tooltip names the token
+  in the opponent's pool, or the Shadow's own: it pulses with the expansions' lit art (UI-433, 2026-10-31, owner's report
+  "nothing is lit": in the top bar the lit art alone read as unlit, so the opponent's offered die also wears the shared
+  gold ChoiceGlow and pulses, and the hint reads "Click the glowing Ruler die in the top bar to reroll it with
+  Dismay."), and its tooltip names the token
   it spends ("Click to spend Théoden's Dismay token and re-roll this Ruler die"). Which token is spent makes no
   difference (KINGS, `Kings/KingsDismay.cs`), so the first one offered is picked (`DismayChoice`); the log names it.
   The Dismay tokens in the Shadow's pool are information. Keeping the tokens is the console's Pass ("Pass · Keep your

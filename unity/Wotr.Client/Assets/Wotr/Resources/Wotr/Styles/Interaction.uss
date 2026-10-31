@@ -80,6 +80,18 @@
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1.05 1.05;
 }
+/* UI-433 (owner's report): the opponent's die a choice offers in the top bar (Dismay's Ruler die) wears the same gold
+   rim and warm plate, and breathes with the pulse its pool hosts (ResourceContextInteraction). */
+#board-screen #opponent-dice .die.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen #opponent-dice.choice-glow-pulse .die.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1.05 1.05;
+}
 /* UI-284: a journey's portraits fill their row edge to edge, so their pulse changes the rim and plate only (they are
    .action buttons too, so the scale of the rule above is undone here). UI-285: so do the Hunt's table-card responses;
    UI-291: and the console's actions, whose column keeps its fixed size; UI-360: and the Guides' Hunt responses; UI-345:

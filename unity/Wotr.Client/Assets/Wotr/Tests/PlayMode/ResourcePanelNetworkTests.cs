@@ -131,6 +131,12 @@ namespace Wotr.PlayTests
             await Reconnect(room, actor);
             var button = actor.Board.OpponentDice.Q<Button>(die.Id);
             Assert.IsTrue(button.ClassListContains("resource-candidate"));
+            // UI-433 (owner's report): the die visibly glows in the top bar — the gold rim, not only its lit art — and
+            // nothing else there does.
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), "The offered Ruler die glows.");
+            Assert.AreEqual(3f, button.resolvedStyle.borderTopWidth, "The glow's rim.");
+            Assert.AreEqual(1, actor.Board.OpponentDice.Query<Button>(className: ChoiceGlow.ClassName).ToList().Count);
+            StringAssert.Contains("Click the glowing Ruler die in the top bar", actor.Board.Console.Status.Hint.text);
             StringAssert.Contains("Dismay token and reroll this Ruler die", button.tooltip);
             Assert.IsTrue(actor.Board.OwnDice.Q<Button>("ruler-token-" + token).ClassListContains("ruler-token-dismay"));
             StringAssert.Contains("Spent by clicking a glowing Ruler die", actor.Board.OwnDice.Q<Button>("ruler-token-" + token).tooltip);

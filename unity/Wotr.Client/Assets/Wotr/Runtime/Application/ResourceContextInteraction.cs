@@ -12,7 +12,8 @@ namespace Wotr.Client
         private readonly Func<bool> busy;
         private readonly Action<ComponentAction> select;
         private readonly ChoicePulse litArt;
-        private readonly ChoicePulse litOpponentArt;
+        // UI-433: the opponent's die a choice offers (Dismay's Ruler die) glows in gold in the top bar and pulses.
+        private readonly ChoicePulse opponentGlow;
         private PlayerView view;
         private TurnDraft draft;
 
@@ -24,7 +25,7 @@ namespace Wotr.Client
             this.busy = busy;
             this.select = select;
             litArt = new ChoicePulse(board.OwnDice, ChoiceGlow.LitArtPulseClass);
-            litOpponentArt = new ChoicePulse(board.OpponentDice, ChoiceGlow.LitArtPulseClass);
+            opponentGlow = new ChoicePulse(board.OpponentDice);
             board.Sovereigns.Activate = Sovereign;
             board.CouncilTokenSelected += Council;
         }
@@ -62,6 +63,10 @@ namespace Wotr.Client
                     button.EnableInClassList("resource-candidate", eligible);
                     lit |= eligible && pool == board.OwnDice;
                     litOpponent |= eligible && pool == board.OpponentDice;
+                    // UI-433 (owner's report): in the top bar the lit art alone reads as unlit at 29 points, so the
+                    // offered die wears the shared gold glow there.
+                    if (pool == board.OpponentDice)
+                        ChoiceGlow.Apply(button, eligible);
                     // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does; every other die keeps
                     // the pool's own tooltip (a Lords die set aside says so).
                     if (pool == board.OpponentDice && view.Dice.FirstOrDefault(d => d.Id == token.Id) is { } die &&
@@ -75,7 +80,7 @@ namespace Wotr.Client
             lit |= board.OwnDice.Query<Button>(className: ActionPoolView.CouncilTokenClass).ToList()
                 .Any(button => button.ClassListContains("legal-target"));
             litArt.Run(lit);
-            litOpponentArt.Run(litOpponent);
+            opponentGlow.Run(litOpponent);
         }
 
         // UI-267: during the special-die choice a die an Eye rules out is disabled (its tooltip, DieHints, says why).
