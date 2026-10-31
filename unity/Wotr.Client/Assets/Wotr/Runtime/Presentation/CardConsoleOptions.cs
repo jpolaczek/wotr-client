@@ -8,7 +8,6 @@ namespace Wotr.Client
     {
         Effect,
         Reaction,
-        OpenEffects,
         Action,
         // UI-233: after View board, the console reopens the end of the game (result, log, Save replay).
         OpenGameEnd
@@ -34,13 +33,17 @@ namespace Wotr.Client
     // UI-214 (CARD_CHOICES_UX rule 4): a card's modes and options, and the object-less responses of a reaction outside
     // the Hunt and battles, are at most three buttons in the console. A choice with an object stays on it: a table
     // card in the Effects panel, a reaction card at the card in the hand. A reaction with more object-less choices
-    // than fit keeps the decision window.
+    // than fit keeps the decision window. UI-430 (owner's rule): a button stands only for an option no object draws — a
+    // red table card, the glowing Hunt Box and the console's ✓ (a Finish) take no button.
     public static class CardConsoleOptions
     {
         public const int Limit = 3;
         private static readonly IReadOnlyList<ConsoleOption> None = new List<ConsoleOption>();
         private static readonly IReadOnlyDictionary<string, string> NoTableCards = new Dictionary<string, string>();
-        private static readonly HashSet<string> Modes = new HashSet<string> { "CaptainOrder", "LureCompanion", "FellowshipAction", "NazgulStrike" };
+        private static readonly HashSet<string> Modes = new HashSet<string>
+        {
+            "CaptainOrder", "LureCompanion", FellowshipCardActions.Presentation, NazgulStrikeChoice.Presentation
+        };
 
         // The decision's choices belong to the console and their objects; the tray builds none of them.
         public static bool Owns(PlayerView view, TurnDraft draft) =>
@@ -60,14 +63,16 @@ namespace Wotr.Client
 
         private static bool RegionChoice(PlayerView view) => view.Decision.Presentation == "Region";
 
-        // The Nazgûl Strike's table cards, chosen with their × in the Effects panel: source id → tooltip.
+        // The Nazgûl Strike's table cards, red in the Effects panel, where a click on the tile or its × discards them:
+        // source id → tooltip (UI-430: the effect that offers them).
         public static IReadOnlyDictionary<string, string> TableCards(PlayerView view, TurnDraft draft)
         {
             var option = Card(view, draft) ? DraftOptions.For(view, draft) : null;
-            if (option == null || view.Decision.Presentation != "NazgulStrike")
+            if (option == null || view.Decision.Presentation != NazgulStrikeChoice.Presentation)
                 return NoTableCards;
+            var effect = ConfirmSummary.Source(view);
             return option.EffectChoices.Where(TableCard).ToDictionary(c => c.Id,
-                c => TooltipText.Parts("Discard " + CardLibrary.Title(c.SourceId), c.Detail));
+                c => TableDiscardText.Offered(c.SourceId, effect, NazgulStrikeChoice.Reason));
         }
 
         private static bool Card(PlayerView view, TurnDraft draft) =>
@@ -86,18 +91,12 @@ namespace Wotr.Client
                 return None;
             if (RegionChoice(view))
                 return Alternatives(view, draft, option);
-            // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring; Stay stays here.
-            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id))
+            // UI-249: There Is Another Way's Move and Hide are made on the Fellowship's track and Ring.
+            // UI-430 (owner): a table card is red in the Effects panel, The Nazgûl Strike!'s Hunt roll is the Hunt Box and a
+            // Finish (Stay) is the console's ✓, so none of them is a button.
+            var options = option.EffectChoices.Where(c => !TableCard(c) && !FellowshipCardActions.OnObject(view, c.Id) &&
+                    !NazgulStrikeChoice.OnObject(c.Id) && !FinishingOption.Finishes(c.Id))
                 .Select(c => Effect(view, draft, option, c)).ToList();
-            if (option.EffectChoices.Any(TableCard))
-                options.Insert(0, new ConsoleOption
-                {
-                    Id = "table-cards",
-                    Name = "console-option-table-cards",
-                    Label = "Discard a table card",
-                    Tooltip = "Choose a lit table card in the Effects panel",
-                    Kind = ConsoleOptionKind.OpenEffects
-                });
             if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Effect)
                 Single(options[0], view.Decision.SourceId);
             return options;
@@ -144,8 +143,9 @@ namespace Wotr.Client
                 ? CharacterLibrary.ShortName(view, choice.SourceId) + " · " + title : title;
         }
 
-        // UI-247: a table card's own reaction outside a battle or the Hunt (The Balrog of Moria) is used at that card's ×
-        // in the Effects panel — the reaction discards the card: source id → tooltip.
+        // UI-247: a table card's own reaction outside a battle or the Hunt (The Balrog of Moria) is used at that card in the
+        // Effects panel — the reaction discards the card; UI-430: the card is red and a click on its tile or its × uses it:
+        // source id → tooltip.
         public static IReadOnlyDictionary<string, string> ReactionTableCards(PlayerView view)
         {
             var respond = TableReactionOption(view);
@@ -153,7 +153,7 @@ namespace Wotr.Client
                 return NoTableCards;
             return respond.EffectChoices.Where(c => respond.EligibleIds.Contains(c.Id) && view.Effects.Any(e => e.SourceId == c.SourceId))
                 .GroupBy(c => c.SourceId).Where(g => g.Count() == 1)
-                .ToDictionary(g => g.Key, g => TooltipText.Parts("Discard " + CardLibrary.Title(g.Key) + " to use it", g.First().Detail));
+                .ToDictionary(g => g.Key, g => TableDiscardText.Reaction(g.Key, g.First().Detail));
         }
 
         // The reaction a table card's × uses, or "".
@@ -171,20 +171,12 @@ namespace Wotr.Client
         {
             var respond = view.Options.FirstOrDefault(o => o.Enabled && o.Kind == CommandKind.RespondEffect);
             // A reaction from a card in the hand is used at that card (UI-164), the Guide's on its portrait (UI-247).
+            // UI-430 (owner): a table card's response is that red card in the Effects panel, with no button of its own.
             var tableCards = ReactionTableCards(view);
             var options = respond?.EffectChoices.Where(c => !view.Hand.Contains(c.SourceId) && !FellowshipActions.ReactionOnRoster(view, c.Id) &&
                     !tableCards.ContainsKey(c.SourceId))
                 .Select(Response).ToList() ??
                 new List<ConsoleOption>();
-            if (tableCards.Count > 0)
-                options.Insert(0, new ConsoleOption
-                {
-                    Id = "table-cards",
-                    Name = "console-option-table-cards",
-                    Label = "Use a table card",
-                    Tooltip = "Click the lit table card's × in the Effects panel",
-                    Kind = ConsoleOptionKind.OpenEffects
-                });
             // UI-291: the console's Pass declines the window, so no Decline option takes the hint's place. UI-418: a single
             // response is lit.
             if (options.Count == 1 && options[0].Kind == ConsoleOptionKind.Reaction)

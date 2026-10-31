@@ -9,9 +9,11 @@ namespace Wotr.Client
     // 125 %, where the wider dice panel leaves the status a narrow column — stand in a strip just above the console at their
     // full width, with the played card's committed button when that does not fit the line either. The bottom row keeps its
     // height (UI-160), and wide layouts keep the options in the line.
+    // UI-430: without options (The Nazgûl Strike!'s are its objects now) the played card's committed button that does not
+    // fit its share of the line at its full text stands in the strip alone, so the card's name is never cut to "…".
     // The strip stands on the bottom row's fixed top edge (Console.uss); only its left edge follows the status column. Text
     // is measured and the strip placed outside layout callbacks (doing either inside one would start another layout pass),
-    // only while options are shown and only when the line's width or the options change.
+    // only while options or committed steps are shown and only when the line's width, the steps or the options change.
     internal sealed class ConsoleOptionsFit
     {
         private const float TrailShare = .45f;
@@ -43,7 +45,7 @@ namespace Wotr.Client
         // After the options change: measured once their buttons are laid out.
         public void Refit()
         {
-            if (Shown())
+            if (Active())
                 measure.ExecuteLater(0);
             else
                 Place(false, false);
@@ -51,15 +53,18 @@ namespace Wotr.Client
 
         private void Changed(GeometryChangedEvent evt)
         {
-            if (evt.oldRect != evt.newRect && Shown())
+            if (evt.oldRect != evt.newRect && Active())
                 measure.ExecuteLater(0);
         }
+
+        // Options or committed steps are shown, or something still stands in the strip.
+        private bool Active() => Shown() || Visible(trail) || Raised || TrailRaised;
 
         private void Measure()
         {
             if (!Shown())
             {
-                Place(false, false);
+                Place(false, TrailTooWide());
                 return;
             }
             var spare = Available() - Needed();
@@ -73,15 +78,24 @@ namespace Wotr.Client
             {
                 Raised = raise;
                 (raise ? Strip : line).Add(options);
-                Strip.style.display = raise ? DisplayStyle.Flex : DisplayStyle.None;
             }
             if (liftTrail != TrailRaised)
             {
                 TrailRaised = liftTrail;
                 (liftTrail ? Strip : line).Insert(0, trail);
             }
-            if (Raised)
+            Strip.style.display = Raised || TrailRaised ? DisplayStyle.Flex : DisplayStyle.None;
+            if (Raised || TrailRaised)
                 AlignLeft();
+        }
+
+        // UI-430: shown committed steps wider than their share of the line; back in the line only with room to spare.
+        private bool TrailTooWide()
+        {
+            if (!Visible(trail))
+                return false;
+            var share = line.contentRect.width * TrailShare;
+            return TrailRaised ? Steps() + Hysteresis > share : Steps() > share;
         }
 
         private bool Shown() => options.style.display == DisplayStyle.Flex && options.childCount > 0;

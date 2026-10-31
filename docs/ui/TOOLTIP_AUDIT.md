@@ -20,7 +20,12 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
      response skill first, then its owner (`Pass · Skip Draw matching card (Gandalf the Grey)`); the battle window's Skip
      effect reads the same without Pass (`Skip Orderly Withdrawal · Keep the hit and fight on`);
    - Finish names the action it ends (`Finish · End the action now (Move armies); the steps already made stay`), Discard
-     the die;
+     the die; UI-430 (2026-10-30): a card's Finish is the console's ✓ and names the card and what it leaves undone
+     (`Finish · End The Nazgûl Strike! without discarding a table card or rolling for the Hunt`);
+   - UI-430: a lit object that sends an option names the action, the effect that offers it and what it does: a red table
+     card `Discard Wizard's Staff · Click to discard it because of The Nazgûl Strike!: a Nazgûl is in the Fellowship's
+     region`, the Hunt Box `Roll for the Hunt · Click to start a Hunt roll now because of The Nazgûl Strike!: … · The
+     Fellowship does not move and no die is spent · 1 Eye in the Hunt Box`;
    - the battle window's direct steps name the region (`Continue battle · Fight another Combat round in Osgiliath`,
      `Retreat inside · Withdraw into the Minas Tirith stronghold`, `Stay · No figure advances into Osgiliath`), and Apply
      losses lists them (`Remove 1 Gondor Regular, downgrade 1 Gondor Elite in Lossarnach (2 hits)`);
@@ -53,7 +58,8 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
 - `Presentation/ConfirmSummary.cs` — the ✓'s object: card choices, army moves, recruits.
 - `Presentation/TurnSummary.cs`, `BattleSummary.cs`, `FellowshipSummary.cs` — the server preview's summaries without
   "Ready" fillers.
-- `Presentation/OptionalDecline.cs`, `ReactionSkip.cs` — what Pass and Skip effect skip.
+- `Presentation/OptionalDecline.cs`, `ReactionSkip.cs` — what Pass and Skip effect skip; UI-430: `FinishingOption.cs`
+  (what the ✓'s Finish leaves undone), `NazgulStrikeChoice.cs` (the Hunt Box), `TableDiscardText.cs` (red table cards).
 - `UI/Battles/BattleChoices.cs` (`DirectTooltip`), `BattleForceText.cs` (one statistic per medallion, `Composition`).
 - `Presentation/FellowshipActions.cs` (`HideTooltip`, `MoveTooltip`), `PoliticalActions.cs` (`Distance`,
   `AdvanceTooltip`), `HuntTileText.cs`, `HuntWindowState.cs` (`HuntAllocationText.Confirm`), `ArmyMarkerText.Composition`.

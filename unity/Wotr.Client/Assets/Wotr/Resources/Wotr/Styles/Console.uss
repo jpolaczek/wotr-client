@@ -95,6 +95,9 @@
 .console-line > .console-hint,
 .console-line > .console-options { flex-grow: 1; flex-shrink: 1; min-width: 0; }
 .console-trail { flex-direction: row; flex-shrink: 1; max-width: 45%; height: 38px; margin: 6px 0 0 6px; align-items: center; overflow: hidden; }
+/* UI-430: in the line the committed steps keep their share (up to 45 %) instead of yielding to a long hint, so a card's
+   name that fits its share is whole; one that does not stands in the strip above the console (ConsoleOptionsFit). */
+.console-line > .console-trail { flex-shrink: 0; }
 .console-trail > .effect-trail { flex-direction: row; flex-wrap: nowrap; flex-shrink: 1; min-width: 0; overflow: hidden; }
 #board-screen .console-trail .committed-choice {
     flex-shrink: 1;
@@ -185,6 +188,24 @@
 #board-screen .console-hunt .hunt-tab:hover,
 #board-screen .console-hunt .hunt-tab:focus { background-color: rgba(241, 209, 122, 0.12); }
 #board-screen .console-hunt .hunt-tab.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
+/* UI-430 (owner): a Hunt roll an effect offers (The Nazgûl Strike!) lights the plaque with the shared choice glow — the gold
+   rim on a warm plate — and its own ticker pulses it in the shared rhythm; no filter, and its size stays (scale 1 1). */
+#board-screen .console-hunt .hunt-tab.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+    color: rgb(255, 236, 180);
+}
+.motion-enabled #board-screen .console-hunt .hunt-tab.choice-glow {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .console-hunt .hunt-tab.choice-glow.choice-glow-pulse {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+    scale: 1 1;
+}
 /* UI-172: during the Shadow's own allocation the plaque is its confirmation: lit when ready, dimmed until then. */
 #board-screen .console-hunt .hunt-tab.hunt-confirm-ready {
     border-width: 2px;

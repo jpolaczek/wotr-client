@@ -6,12 +6,15 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-214 (CARD_CHOICES_UX): a card's object-less options and a reaction's responses as buttons in the console, and
-    // The Nazgûl Strike's table cards at their × in the Effects panel. A click that completes the decision sends it.
+    // The Nazgûl Strike's table cards in the Effects panel. A click that completes the decision sends it. UI-430 (owner):
+    // the table cards are red and their tiles' click discards them, and The Nazgûl Strike!'s Hunt roll is the console's
+    // glowing Hunt Box; each sends what its old console button sent.
     public sealed class ConsoleOptionsInteraction : IDisposable
     {
         private readonly BoardScreen board;
         private readonly Action<ConsoleOption> choose;
         private PlayerView view;
+        private ConsoleOption huntRoll;
 
         public ConsoleOptionsInteraction(BoardScreen board, Action<ConsoleOption> choose)
         {
@@ -19,6 +22,7 @@ namespace Wotr.Client
             this.choose = choose;
             board.Console.Status.OptionChosen += Chosen;
             board.TableEffects.OfferChosen += TableCard;
+            board.Hunt.OfferChosen += HuntRoll;
             board.Hover.Panel.ForceChosen += Force;
         }
 
@@ -35,6 +39,14 @@ namespace Wotr.Client
             panel.RefreshForces();
             board.Console.Status.SetOptions(CardConsoleOptions.For(view, draft), enabled);
             board.TableEffects.Offer(TableOffers(view, draft), enabled);
+            OfferHuntRoll(enabled ? NazgulStrikeChoice.Roll(view, draft) : null);
+        }
+
+        // UI-430: the Hunt Box glows and pulses while its click rolls for the Hunt (The Nazgûl Strike!).
+        private void OfferHuntRoll(ConsoleOption roll)
+        {
+            huntRoll = roll;
+            board.Hunt.Offer(roll?.Tooltip ?? "");
         }
 
         // The Nazgûl Strike's table cards and, outside a battle or the Hunt, a table card's own reaction (UI-247).
@@ -57,15 +69,11 @@ namespace Wotr.Client
             var reopen = board.Console.Status.Options.Q<Button>(GameEndConsole.Name);
             ChoiceGlow.Apply(reopen, board.GameEnd.Replay is ReplaySaveState.Ready or ReplaySaveState.Failed);
             board.TableEffects.Offer(CardConsoleOptions.TableCards(view, draft), false);
+            OfferHuntRoll(null);
         }
 
         private void Chosen(ConsoleOption option)
         {
-            if (option.Kind == ConsoleOptionKind.OpenEffects)
-            {
-                board.TableEffects.Open();
-                return;
-            }
             if (option.Kind == ConsoleOptionKind.OpenGameEnd)
             {
                 board.GameEnd.Open();
@@ -75,6 +83,12 @@ namespace Wotr.Client
         }
 
         private void Force(string id) => choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Effect });
+
+        private void HuntRoll()
+        {
+            if (huntRoll != null)
+                choose(huntRoll);
+        }
 
         private void TableCard(string id)
         {
@@ -88,6 +102,7 @@ namespace Wotr.Client
         {
             board.Console.Status.OptionChosen -= Chosen;
             board.TableEffects.OfferChosen -= TableCard;
+            board.Hunt.OfferChosen -= HuntRoll;
             board.Hover.Panel.ForceChosen -= Force;
         }
     }

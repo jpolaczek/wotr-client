@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -86,23 +88,46 @@ namespace Wotr.PlayTests
             }
         }
 
-        // UI-214 CC06: Roll for the Hunt and Finish are console buttons beside "Discard a table card", which opens the lit
-        // Effects panel; a table card's × discards it and sends the decision. No decision window opens.
+        // UI-214 CC06, UI-430 (owner): no console button — the lit Effects tab opens the panel where the Free Peoples cards
+        // are red, the Hunt Box glows for the Hunt roll and the ✓ finishes; a red card's click discards it and sends the
+        // decision with the payload the old × sent (OldButtonPayload). No decision window opens.
         private static async Task DiscardTableCard(MatchTestRoom room, string card)
         {
-            var options = room.Sh.Board.Console.Status.Options;
-            CollectionAssert.AreEqual(new[] { "console-option-table-cards", "effect-choice-nazgul-strike.hunt", "effect-choice-nazgul-strike.decline" },
-                options.Query<Button>().ToList().Select(b => b.name));
-            Assert.IsFalse(room.Sh.Board.DecisionWindow.IsOpen);
-            Assert.IsTrue(room.Sh.Board.TableEffects.Tab.ClassListContains("legal-target"));
-            CardNetworkTests.Click(options.Q<Button>("console-option-table-cards"));
-            var discard = room.Sh.Board.TableEffects.Root.Q<Button>("remove-table-" + card);
-            await room.Until(() => discard.enabledInHierarchy && discard.worldBound.width > 0);
+            var board = room.Sh.Board;
+            CollectionAssert.IsEmpty(board.Console.Status.Options.Query<Button>().ToList().Select(b => b.name));
+            Assert.IsFalse(board.DecisionWindow.IsOpen);
+            Assert.IsTrue(board.TableEffects.Tab.ClassListContains("legal-target"));
+            Assert.IsTrue(board.Hunt.Tab.ClassListContains(ChoiceGlow.ClassName), "The Hunt Box glows for the Hunt roll.");
+            Assert.AreEqual("Roll for the Hunt · Click to start a Hunt roll now because of The Nazgûl Strike!: a Nazgûl is in the " +
+                "Fellowship's region · The Fellowship does not move and no die is spent · No Eyes in the Hunt Box", board.Hunt.Tab.tooltip);
+            Assert.IsTrue(board.Console.Actions.Confirm.enabledSelf && board.Console.Actions.Confirm.ClassListContains(ChoiceGlow.ClassName),
+                "The ✓ finishes.");
+            Assert.AreEqual("Finish · End The Nazgûl Strike! without discarding a table card or rolling for the Hunt",
+                board.Console.Actions.Confirm.tooltip);
+            Assert.AreEqual("Discard: red card in Effects · Roll: Hunt Box · ✓ finishes", board.Console.Status.Hint.text);
+            PointerGestureEvents.ClickAt(board.TableEffects.Tab);
+            var tile = board.TableEffects.Root.Q<Button>("effect-source-" + card);
+            await room.Until(() => tile.enabledInHierarchy && tile.worldBound.width > 0);
             await room.Settle();
-            var revision = room.Sh.Board.View.Revision;
-            CardNetworkTests.Click(discard);
+            Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass), "The card is red.");
+            StringAssert.StartsWith("Discard " + CardLibrary.Title(card) + " · Click to discard it because of The Nazgûl Strike!", tile.tooltip);
+            Assert.IsTrue(board.TableEffects.Root.Q<Button>("remove-table-" + card).enabledSelf, "Its × still discards it.");
+            GameCommand sent = null;
+            room.Sh.Interaction.CommandAnswered += (command, receipt, recovering) => sent ??= command;
+            var revision = board.View.Revision;
+            PointerGestureEvents.ClickAt(tile);
             await room.At(revision + 1);
+            Assert.AreEqual(CommandKind.ChooseEffect, sent.Kind);
+            Assert.AreEqual(OldButtonPayload(card), JsonConvert.SerializeObject(sent.Payload), "The red tile sends what the old × sent.");
         }
+
+        // The payload the old console buttons and the table card's × sent, recorded from them on this match at c7d38fd5 (the
+        // option's id, every other field at its default; ObjectFirstChoicesTests holds the same for the Hunt Box and the ✓).
+        private static string OldButtonPayload(string option) =>
+            "{\"Stepwise\":false,\"DieId\":\"\",\"RingId\":\"\",\"RulerTokenId\":\"\",\"CouncilTokenId\":\"\",\"Deck\":\"\",\"Face\":null," +
+            "\"Ids\":[\"" + option + "\"],\"NationId\":\"\",\"Placements\":[],\"MovementCost\":1,\"Moves\":[],\"CardId\":\"\",\"CardCost\":4," +
+            "\"ReactionId\":\"\",\"GuideId\":\"\",\"Route\":[],\"CompanionMoves\":[],\"HuntResponse\":0,\"Losses\":[],\"RegionId\":\"\"," +
+            "\"AutoDecision\":null,\"CharacterId\":\"\",\"AbilityId\":\"\"}";
 
         // UI-212: these events may fly several Nazgûl, so the destination click records the flight on the map (a ghost
         // and the console's progress) and the console's ✓ sends the shared command.

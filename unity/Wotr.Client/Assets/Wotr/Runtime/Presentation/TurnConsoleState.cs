@@ -30,7 +30,7 @@ namespace Wotr.Client
                 Own = own,
                 Headline = own ? RingChoice.Headline(draft) is { Length: > 0 } ring ? ring : OwnHeadline(view, draft, die)
                     : WaitingHeadline(view, owner, regionName),
-                Guidance = own ? OwnGuidance(view, die) : owner.HasValue
+                Guidance = own ? OwnGuidance(view, draft, die) : owner.HasValue
                     ? "The opponent is deciding. The notices under the top bar show what they do."
                     : "The game moves to its next step."
             };
@@ -54,7 +54,7 @@ namespace Wotr.Client
             return card.Length > 0 ? card : DecisionTray.Title(view.Decision.Kind, draft.Kind);
         }
 
-        private static string OwnGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
+        private static string OwnGuidance(PlayerView view, TurnDraft draft, ActionDieContext die) => view.Decision.Kind switch
         {
             DecisionKind.Action when die.DieId.Length == 0 => "Choose an action die, then what it acts on: the map, a card or a panel.",
             DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),
@@ -62,6 +62,8 @@ namespace Wotr.Client
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
             DecisionKind.EffectChoice when DeckChoice.Pending(view) => DeckChoice.Hint(view),
+            // UI-430: The Nazgûl Strike!'s red table cards, Hunt Box and ✓.
+            DecisionKind.EffectChoice when NazgulStrikeChoice.Hint(view, draft) is { Length: > 0 } strike => strike,
             DecisionKind.EffectChoice when FellowshipCardActions.Guidance(view) is { Length: > 0 } card => card,
             DecisionKind.Reaction when FellowshipActions.RosterReaction(view, view.Fellowship?.Guide ?? "") is { } reaction =>
                 "Click the Guide's glowing portrait in the Fellowship panel to use " + reaction.Title + " · or Pass to skip it.",

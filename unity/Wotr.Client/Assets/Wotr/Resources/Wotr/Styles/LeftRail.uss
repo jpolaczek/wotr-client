@@ -325,6 +325,13 @@
 }
 #board-screen .effects-panel .effect-source.effect-card-tile:hover { -unity-background-image-tint-color: rgb(255, 244, 214); }
 #board-screen .effects-panel .effect-source.effect-card-tile.legal-target { background-image: resource("Wotr/Art/UI/cards/parchment-playable"); }
+/* UI-430 (owner): a table card an effect lets the player discard now (The Nazgûl Strike!, a table card's own reaction)
+   takes the hand's red discard parchment (UI-222) instead of the green playable one or a gold rim; its click discards it. */
+#board-screen .effects-panel .effect-entry .effect-source.effect-card-tile.discard-target,
+#board-screen .effects-panel .effect-entry .effect-source.effect-card-tile.discard-target:hover {
+    background-image: resource("Wotr/Art/UI/cards/parchment-discard");
+    border-color: rgba(0, 0, 0, 0);
+}
 #board-screen .effects-panel .effect-card-tile > .action-symbol { left: 5px; top: 50%; width: 13px; height: 13px; margin-top: -6px; }
 
 /* UI-94: a selected card source shows its complete text on the parchment of an unrolled hand card

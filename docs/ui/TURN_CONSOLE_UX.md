@@ -143,6 +143,9 @@ The console replaces the present dock and has a **fixed height** of the entire l
   dice at the assignment. The console does not have a separate pool button – the list belongs to the
   panel (from UI-162 to the window) Hunt .
 - At the assignment of Shadow the recess is lit (`hunt-box-eligible`, section C).
+- UI-430 (owner, 2026-10-30): while an effect offers a Hunt roll (The Nazgûl Strike!) the plaque glows and pulses (the
+  shared choice glow, no filter, no size change), its tooltip says that a click starts a Hunt roll now and why, and the
+  click sends that roll instead of opening the panel ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 <a id="pierścienie-w-kolumnie-zasobów-trzy-gniazda"></a>
 ### Rings in the resource column (three sockets)
@@ -172,7 +175,9 @@ The console replaces the present dock and has a **fixed height** of the entire l
   completion of march or recruitment earlier. Since UI-210 this includes every card decision:
   ✓ is "Confirm choice" and ↶ undoes its last step ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)). Decision in window (battle,  Hunt, decision window)
   has approval in the window footer at its election; then ✓ and ⁇ consoles are greyed out. With the
-  server's reply interrupted ✓ acts as ‘Check result’.
+  server's reply interrupted ✓ acts as ‘Check result’. UI-430 (owner, 2026-10-30): a Finish that ends a card's event
+  (The Nazgûl Strike!, There is Another Way's Stay) is this ✓ — lit while nothing else is chosen,
+  `Finish · End <card> without …` — and no longer a button ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 - Other action components (form capabilities, expansions chips) belong to the panels of their
   objects (Characters, Dice & tokens), not to the console.
 
@@ -466,7 +471,8 @@ Results, commands and commits go to the to-do documents, this document, TESTING 
 
 In the Fellowship phase the console reads "Guide: click a glowing companion" (no Change guide button). For There Is
 Another Way it names the Fellowship's controls first: "Move: click the glowing track" or "Hide: click the glowing
-Ring", then "or Stay to finish after healing"; Stay is the console's only button for the card.
+Ring", then "or Stay to finish after healing"; Stay is the console's only button for the card. UI-430 (owner,
+2026-10-30): Stay is the console's ✓ now, and the hint ends "· ✓ finishes after healing" ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 ## Payment dice light the pool — UI-248 (2026-10-17)
 
@@ -509,7 +515,8 @@ second click on it closes the card it opened (`TurnConsoleInteraction.ToggleCard
 combat form). This is the default for every card and effect. No window, panel or tray repeats the chips
 (`DecisionTray` renders no `committed-choice`), so a decision whose only content was the trail no longer opens the
 decision window. The strip is rebuilt only when the trail changes, holds at most 45 % of the line, and its chips are
-shortened with an ellipsis (the tooltip keeps the full text). The tray's ⟵ (`decision-back`) is gone from reactions,
+shortened with an ellipsis (the tooltip keeps the full text; UI-430, 2026-10-30: without options a chip that does not fit
+stands above the console at its full text instead). The tray's ⟵ (`decision-back`) is gone from reactions,
 where it did nothing; it stays where it steps back (an action's draft, an ArmyEvent, a die-and-result or region
 choice). Tests: `GuideDrawNetworkTests` (no ⟵ and no tray chip in Gandalf's draw; the console chip opens Book of Mazarbul
 and its second click closes it), `EffectTrailTests`, `NazgulFlightDraftTests`, `CardConsoleOptionsTests`,
@@ -554,3 +561,7 @@ their full text (The Nazgûl Strike!'s three options, or any options in a Lords 
 the wider dice panel leaves the status a narrow column), they stand in a strip just above the console, on the bottom row's
 fixed top edge and aligned with the status column, with the committed button when that does not fit the line either. The
 choice is measured outside layout callbacks with a small hysteresis, so it never flips back and forth (`ConsoleOptionsFit`).
+UI-430 (owner, 2026-10-30): The Nazgûl Strike! has no console options any more — its table cards are red in the Effects
+panel, its Hunt roll the glowing Hunt Box and its Finish the ✓ ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)); the strip stays for other cards' options.
+Without options, a committed chip that does not fit its share of the line at its full text stands alone in the strip, so a
+card's name is never cut to "…" (UI-430; it was the UI-297 ellipsis).

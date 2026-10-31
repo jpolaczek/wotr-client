@@ -35,7 +35,10 @@ window. MVP scope: base-game cards. Expansion decisions stay on their own panels
 4. **Choices without an object sit in the console.** A card's modes and yes/no options
    (e.g. "Recruit 2 Nazgûl" / "Move Nazgûl", "Discard a card" / "Hunt roll" / "Finish",
    "Decline") replace the hint lines of the status zone as up to three compact buttons in one
-   row. A click that completes the decision sends it at once (UI-142).
+   row. A click that completes the decision sends it at once (UI-142). UI-430 (owner, 2026-10-30): a button stands only
+   for an option with no other picture on the board — The Nazgûl Strike!'s table cards are red in the Effects panel, its
+   Hunt roll is the glowing Hunt Box, a Finish is the console's ✓, and a decline stays Pass / Skip effect
+   ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 5. **No floating decision window for base-game card decisions.** Battles, the Hunt, the
    Fellowship panel and Politics keep hosting the decisions that belong to them (they are part
    of the fixed UI). A list that cannot fit in the console is the only exception and has to be
@@ -59,7 +62,7 @@ floating decision window (UI-160).
 | Several dice and Confirm | The Lidless Eye (0–3 dice) | Dice in the pool; a window holding only Confirm | Dice in the pool; ✓ in the console | UI-214 |
 | Nazgûl flights (`CharacterEvent`) | Nazgûl Search, The Nazgûl Strike!, The Ringwraiths Are Abroad, The Black Captain Commands (fly) | Portrait buttons, groups and "Finish movement" in the window; destinations on the map | Movable Nazgûl highlighted on the map; arm a stack once and distribute by destination clicks; ✓ in the console | UI-212 |
 | Card recruitment (`RecruitmentPlan`, `ReserveFigures`) | A New Power is Rising, Shadows on the Misty Mountains, Horde from the East, Many Kings, Pits of Mordor, Círdan's Ships, Swords in Eriador, Dead Men (recruits), national recruit cards when both Regular and Elite are available | Reserve panel; the armed token is released after each placement | Reserve tab and eligible tokens highlighted; the armed token stays armed while it can still be placed; ✓ in the console | UI-213 |
-| Card modes and options | The Black Captain Commands (order), The Nazgûl Strike! (discard, roll or finish), Lure of the Ring (Free Peoples' choice), There is Another Way | Option buttons in the window | Option buttons in the console; The Nazgûl Strike!'s table cards are discarded with their × in the lit Effects panel ("Discard a table card" opens it) | UI-214 |
+| Card modes and options | The Black Captain Commands (order), The Nazgûl Strike! (discard, roll or finish), Lure of the Ring (Free Peoples' choice), There is Another Way | Option buttons in the window | Option buttons in the console; The Nazgûl Strike!'s table cards are discarded with their × in the lit Effects panel ("Discard a table card" opens it). UI-430: the Strike's table cards red (tile or ×), its Hunt roll the Hunt Box, its Finish and Another Way's Stay the ✓ — no buttons | UI-214, UI-430 |
 | Reactions outside the Hunt and battles | The Ents Awake follow-up (Decline), Gandalf the Grey's draw, Balrog of Moria at a declaration, a reveal outside the Hunt | Response list and Decline in the window | Use in the card preview (UI-164) of the lit hand card; Decline and object-less responses in the console. Exception: more than three console buttons keep the window | UI-214 |
 | Figures of one army (`ArmyFigure`, `ArmyFigures`) | Denethor's Folly, Stormcrow (Free Peoples' loss), The Grey Company, Hill-Trolls, Rage of the Dunlendings (units to move) | Region click, then figure buttons and Confirm in the window | Eligible regions highlighted; the region panel lists the army with eligible figures highlighted; figure clicks; ✓ in the console | UI-215 |
 | Companions with a destination | Dead Men of Dunharrow | Companion buttons and Confirm in the window; destination on the map | Companions highlighted on the map and in the region panel; destination on the map; ✓ in the console | UI-215 |
@@ -135,7 +138,8 @@ floating decision window (UI-160).
   not a card in the hand, plus Decline, outside the Hunt, battles and event losses. Buttons keep the tray's names
   (`effect-choice-<id>`, `action-DeclineReaction`). The Nazgûl Strike!'s table cards are offered in the Effects
   panel (`TableEffectsView.Offer`): the tab and the cards are lit, their × discards and sends; the console's
-  "Discard a table card" opens the panel at the first offered card. A reaction card in the hand is lit
+  "Discard a table card" opens the panel at the first offered card (UI-430, 2026-10-30: gone — the cards are red and
+  their tiles' click discards them; the Strike's Hunt roll is the Hunt Box and its Finish the ✓). A reaction card in the hand is lit
   ("Click, then Use its reaction") and answers with its preview's Use. `ConsoleStatus.SetOptions` replaces the hint
   with up to three buttons in its place and rebuilds them only when the set changes; `ConsoleOptionsInteraction`
   sends a completing click through `TurnInteraction` (CompleteChoice, or DeclineReaction). The tray builds none of
@@ -179,7 +183,7 @@ floating decision window (UI-160).
 | CC03 | Shadows on the Misty Mountains: Nazgûl token armed once, 2 units and the Nazgûl placed by region clicks; Reserve tab and tokens lit; ✓ in the console | UI-213 |
 | CC04 | Many Kings: three settlements filled with one armed token; ↶ removes the last placement | UI-213 |
 | CC05 | The Black Captain Commands: Recruit/Move in the console; Move continues as CC01 | UI-214 |
-| CC06 | The Nazgûl Strike! options in the console after the flights; a table card discarded with its × in the Effects panel | UI-214 |
+| CC06 | The Nazgûl Strike! options in the console after the flights; a table card discarded with its × in the Effects panel (UI-430: no console options; a red table card's tile or ×, the glowing Hunt Box, the ✓) | UI-214, UI-430 |
 | CC07 | Hill-Trolls: two regulars chosen in the region panel; ✓ in the console | UI-215 |
 | CC08 | Shadows Gather: armies moved on the map; progress and ✓ in the console; "Skip manoeuvre" in the console | UI-216 |
 | CC09 | No base-game card decision opens the decision window (both sides) | UI-164 |
@@ -222,7 +226,7 @@ and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports)
 The Breaking of the Fellowship's Companions are chosen on the Hunt panel's roster portraits, and There Is Another
 Way's Move and Hide on the Fellowship's track and Ring (`FellowshipActions.RosterChoice`, `FellowshipCardActions`);
 the choice list and the console no longer repeat them. Stay, Keep-style declines and Lure of the Ring's alternatives
-stay buttons. See FELLOWSHIP_UX, UI-249.
+stay buttons. See FELLOWSHIP_UX, UI-249. UI-430 (owner, 2026-10-30): Stay is the console's ✓ now ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 ## Reactions at their sources — UI-247 (2026-10-17)
 
@@ -231,6 +235,8 @@ the Hunt panel's response area (UI-214), a battle character on its portrait in t
 draw on the Guide's portrait in the Fellowship panel, and a table card's own reaction outside a battle or the Hunt —
 The Balrog of Moria — at that card's × in the Effects panel (the reaction discards the card). The console keeps
 "Use a table card" (it opens the Effects panel) and Decline; it no longer lists a reaction that has a source object.
+UI-430 (owner, 2026-10-30): "Use a table card" is gone too — the card is red and a click on its tile or × uses it
+([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 Worn with Sorrow and Toil keeps its three explicit alternatives. Tests: `ReactionSourcesTests`,
 `CharacterNetworkTests`, `Shadow03NetworkTests`.
 

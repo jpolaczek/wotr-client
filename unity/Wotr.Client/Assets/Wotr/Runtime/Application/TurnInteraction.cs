@@ -130,7 +130,7 @@ namespace Wotr.Client
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
-                ChooseComponent, ChooseRing, () => reinforcements.Planning);
+                ChooseConsoleOption, ChooseComponent, ChooseRing, () => reinforcements.Planning);
             tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
@@ -561,7 +561,8 @@ namespace Wotr.Client
             view != null && view.Revision >= requiredRevision && DraftOptions.All(view, draft).Any(o => o.Kind == kind && o.Enabled);
 
         // UI-214: an option of a card or a reaction chosen in the console (or a table card at its ×) completes the
-        // decision, so it is sent at once when the draft is ready.
+        // decision, so it is sent at once when the draft is ready. UI-430: so is a red table card's tile, the Hunt Box's
+        // Hunt roll and the ✓'s Finish, which take this path.
         private void ChooseConsoleOption(ConsoleOption choice)
         {
             if (SelectionBusy || view?.Decision == null)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -47,8 +48,11 @@ namespace Wotr.PlayTests
             using (var room = await Connect("another-way", ScenarioKind.CardPack))
             {
                 Assert.AreEqual(2, room.Fp.Board.View.Fellowship.Corruption);
-                // UI-214: There is Another Way's choices are console buttons.
-                Assert.IsNotNull(TrayOrConsole(room.Fp, "effect-choice-fellowship.stay"));
+                // UI-249: Move and Hide on the Fellowship's track and Ring; UI-430 (owner): Stay is the console's ✓, no button.
+                Assert.IsNull(TrayOrConsole(room.Fp, "effect-choice-fellowship.stay"));
+                var finish = room.Fp.Board.Console.Actions.Confirm;
+                Assert.IsTrue(finish.enabledSelf && finish.ClassListContains(ChoiceGlow.ClassName), "The ✓ finishes.");
+                Assert.AreEqual("Finish · End There is Another Way without moving or hiding the Fellowship", finish.tooltip);
                 Assert.IsFalse(room.Fp.Board.DecisionWindow.IsOpen);
                 Click(room.Fp, "effect-choice-fellowship.move");
                 await room.Confirm(room.Fp);

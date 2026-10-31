@@ -54,6 +54,9 @@ namespace Wotr.PlayTests
                                 var size = decline.MeasureTextSize(decline.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
                                 Assert.LessOrEqual(size.x, decline.contentRect.width + 1, "Keep all fits its button.");
                             }
+                            // UI-430 (owner): The Nazgûl Strike!'s options are its objects, so the console has no option strip.
+                            if (mode == "strike")
+                                CollectionAssert.IsEmpty(client.Board.Console.Status.Options.Query<Button>().ToList().Select(b => b.name));
                             if (mode is "dread" or "terrible")
                                 foreach (var id in view.Options[0].EligibleIds.Take(mode == "dread" ? 10 : 1))
                                 {
@@ -157,8 +160,8 @@ namespace Wotr.PlayTests
                 view.Decision.Presentation = "NazgulStrike";
                 foreach (var id in new[] { "base.fp.character.05", "base.fp.character.06", "base.fp.character.07", "base.fp.character.08" })
                     option.EffectChoices.Add(new EffectChoiceView { Id = id, SourceId = id, Title = CardLibrary.Title(id), Detail = "Discard this Free Peoples Character card from the table." });
-                option.EffectChoices.Add(new EffectChoiceView { Id = "nazgul-strike.hunt", Title = "Roll for the Hunt" });
-                option.EffectChoices.Add(new EffectChoiceView { Id = "nazgul-strike.decline", Title = "Finish" });
+                option.EffectChoices.Add(new EffectChoiceView { Id = NazgulStrikeChoice.HuntRoll, Title = "Roll for the Hunt" });
+                option.EffectChoices.Add(new EffectChoiceView { Id = FinishingOption.StrikeFinish, Title = "Finish" });
             }
             option.EligibleIds = option.EffectChoices.Select(c => c.Id).ToList();
             return view;

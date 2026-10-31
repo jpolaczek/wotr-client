@@ -105,6 +105,11 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   bar does not change height), minimal empty space and a stable position for every
   control: unavailable controls are disabled rather than hidden, and a mechanic's
   control belongs to its object's panel rather than the shared bar (TURN_CONSOLE_UX).
+  Since UI-430 (owner, 2026-10-30), a new button stands only for an option with no other picture
+  on the board; otherwise the map, the UI and tooltips signal the option (the lit object's tooltip
+  names the action and the effect that offers it) and a click on the lit object sends exactly what
+  the button sent. A Finish that ends an event is the console's ✓; a decline of a response stays
+  Pass / Skip effect.
   Details and implementation boundary: UX_SPEC and UI-14–UI-24.
 - Card and expansion exceptions must follow explicit integration rules. Do not
   resolve conflicts through file loading order.
