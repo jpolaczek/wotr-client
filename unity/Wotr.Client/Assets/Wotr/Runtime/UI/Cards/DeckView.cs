@@ -41,16 +41,20 @@ namespace Wotr.Client
             foreach (var entry in buttons)
             {
                 var count = counts != null && counts.TryGetValue(entry.Key, out var n) ? n : 0;
-                // UI-271: the Chief's Spear of Terror is drawn from the Character deck itself.
+                // UI-271: the Chief's Spear of Terror is drawn from the Character deck itself; UI-431: so is a response's draw
+                // that would otherwise be a console button (ReactionDecks).
                 var spear = ChiefReactionObjects.DeckReaction(view, entry.Key).Length > 0;
-                var available = spear || CardActions.CanDraw(view, draft, context, entry.Key);
+                var draw = !spear && ReactionDecks.Draw(view, entry.Key).Length > 0;
+                var available = spear || draw || CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
-                entry.Value.EnableInClassList(SpearClass, spear);
-                spearOffered |= spear;
+                entry.Value.EnableInClassList(SpearClass, spear || draw);
+                spearOffered |= spear || draw;
                 entry.Value.EnableInClassList("empty-deck", count == 0);
                 ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
-                entry.Value.tooltip = spear ? ChiefReactionObjects.SpearOffer + "\n" + DeckState(entry.Key, count) : DeckTooltip(entry.Key, count, available);
+                entry.Value.tooltip = spear ? ChiefReactionObjects.SpearOffer + "\n" + DeckState(entry.Key, count)
+                    : draw ? ReactionDecks.Tooltip(view) + "\n" + DeckState(entry.Key, count)
+                    : DeckTooltip(entry.Key, count, available);
             }
             litArt.Run(spearOffered);
         }

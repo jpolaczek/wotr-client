@@ -116,13 +116,13 @@ namespace Wotr.PlayTests
             using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 watch.OnItsObject(room.Sh);
-                Click(room.Sh, "effect-choice-fate.monsters.east");
+                // UI-431 (owner's rule, UI-430): the halves are their lit regions; Withered Heath's click chooses the east and
+                // carries the region into the Elite's destination, so one click makes both steps.
+                AssertConsoleOptions(room.Sh);
                 await Layout(room, room.Sh, "monsters-branch", "fate");
-                await room.Confirm(room.Sh);
                 var revision = room.Sh.Board.View.Revision;
-                watch.OnItsObject(room.Sh);
                 await Target(room, room.Sh, "withered-heath");
-                await room.At(revision + 1);
+                await room.At(revision + 2);
                 watch.OnItsObject(room.Sh);
                 await RecruitAt(room, room.Sh, "sauron", UnitKind.Regular, "northern-mirkwood");
                 await RecruitAt(room, room.Sh, "sauron", UnitKind.Elite, "withered-heath");

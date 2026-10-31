@@ -84,6 +84,8 @@ namespace Wotr.Client
                 return ReinforcementsState.For(view, plan, draft.ReserveId, !busy());
             if (BranchNation() is { Length: > 0 } nation)
                 return ReinforcementsState.Branch(view, nation, !busy());
+            if (CaptainRecruit())
+                return ReinforcementsState.CaptainRecruit(view, !busy());
             if (!muster() || draft.Kind is not (null or CommandKind.Recruit))
                 return ReinforcementsState.Browse(view);
             var recruitment = MusterActions.Option(view, board.ActionDie, CommandKind.Recruit);
@@ -107,6 +109,11 @@ namespace Wotr.Client
                 Recruit(id);
                 return;
             }
+            if (CaptainRecruit())
+            {
+                RecruitNazgul();
+                return;
+            }
             if (Planning)
                 edit(() => ReinforcementPlans.Choose(draft, view, id));
             else if (muster())
@@ -127,6 +134,17 @@ namespace Wotr.Client
                 return;
             carry.Set(view, BranchCarry.Reserve, figure);
             complete(() => EffectChoiceSelection.Choose(view, draft, option, KingsCardChoices.Recruit));
+        }
+
+        // UI-431: The Black Captain Commands' recruit waits on the Reserve's Nazgûl.
+        private bool CaptainRecruit() => view != null && !ReinforcementPlans.Active(view, draft) && BlackCaptainOrder.RecruitOffered(view);
+
+        // UI-431: the Reserve's Nazgûl clicked: the card recruits them with the Witch-king, as its old Recruit button did.
+        private void RecruitNazgul()
+        {
+            var option = DraftOptions.For(view, draft);
+            if (option != null)
+                complete(() => CardDraft.Choose(draft, option, BlackCaptainOrder.Recruit));
         }
 
         // UI-392 (owner): the lit settlement chosen for an ability's recruitment opens the panel for it, and the camera

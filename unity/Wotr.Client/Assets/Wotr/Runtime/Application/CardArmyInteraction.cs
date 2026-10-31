@@ -5,7 +5,9 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-216 (CARD_CHOICES_UX): a card's army event on the map and in the region panel, as with an Army die. A lit army
-    // starts its move and opens its panel; the panel's lit figures toggle; destinations keep their map click.
+    // starts its move and opens its panel; the panel's lit figures toggle; destinations keep their map click. UI-431: an
+    // event that may move or attack lights both steps; a red attack target's click (or a move destination's while it
+    // attacks) turns the planned army's step into that step (CardArmyEvent.Switch), and the ✓ confirms.
     public sealed class CardArmyInteraction
     {
         private readonly BoardScreen board;
@@ -65,12 +67,20 @@ namespace Wotr.Client
             return true;
         }
 
-        // A lit army starts (or restarts) its move and opens its panel; a destination keeps its usual map click.
+        // A lit army starts (or restarts) its move and opens its panel; a destination keeps its usual map click, and the
+        // other step's target switches the step (UI-431).
         public bool Region(string region)
         {
-            if (!Active || busy() || !CardArmyEvent.IsSource(view, draft, region) || CardArmyEvent.IsTarget(view, draft, region))
+            if (!Active || busy())
                 return false;
-            edit(() => BoardDraft.SelectRegion(draft, view, region), false);
+            if (CardArmyEvent.OtherTargets(view, draft).Contains(region))
+            {
+                edit(() => CardArmyEvent.Switch(view, draft, region), false);
+                return true;
+            }
+            if (!CardArmyEvent.IsSource(view, draft, region) || CardArmyEvent.IsTarget(view, draft, region))
+                return false;
+            edit(() => CardArmyEvent.Start(view, draft, region), false);
             if (CardArmyEvent.ArmyRegion(draft) == region)
                 board.Hover.Open(region);
             return true;

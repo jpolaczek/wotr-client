@@ -2104,3 +2104,105 @@ table cards), `CardConsoleOptionsTests`, `FellowshipCardActionsTests`, `LordsCar
 payload the old button sent, recorded from the buttons at 7ddddb8e), `Shadow02NetworkTests`, `Shadow02LayoutTests`,
 `CardPack02NetworkTests`, `Shadow03NetworkTests`, `LordsCardNetworkTests`, `LayoutStressScenarioTests` (the Strike's
 scenario, `layout-console-options`, now checks the objects instead of three buttons; screenshots `ui430-strike-*`).
+
+<a id="options-the-board-draws-are-chosen-on-the-board--ui-431"></a>
+## Options the board draws are chosen on the board — UI-431 (2026-10-31)
+
+UI-430's rule (owner, 2026-10-30) applied to the analysis's other cases: a card's option whose object is on the board is
+lit there and chosen with a click; neither the console nor the tray keeps a button for it, and the click sends exactly the
+payload the old button sent (JSON-equal on a real server, recorded from the buttons at 3da66214). Every option keeps a
+click path (R16). Map terrain has no tooltip (UI-80), so where a region is the object the console's hint names it and the
+forces standing there carry the tooltip.
+
+- **A region's two forces** (Dreadful Spells, Work of the Enemy: "Target · Field / · Garrison"). The console's
+  alternatives (`CardConsoleOptions.Alternatives`) and the tray's (`CardChoices.RegionAlternatives`) are gone. The lit
+  region's click opens its panel as a decision panel (`RegionHover.OpenDecision`) and the region keeps the chosen edge
+  (UI-392) until a force is chosen; both force sections glow and breathe with the panel's pulse (UI-251's
+  `.hover-force.choice-glow`, rim and plate only), their headers press (UI-113), and each header's tooltip reads `<server
+  title> · Click to choose the garrison because of <card> · <detail>` (`3 dice · 5+ · Garrison · Click to choose the
+  garrison because of Work of the Enemy · The Free Peoples choose this Army's losses.`). The click sends the choice with
+  its region (`ConsoleOption.Region`), as the region's click and the old button did. Hint: "Click the glowing field army
+  or garrison in the region's panel" ("Click the lit region, then …" while a one-region choice waits).
+- **Card army events** ("Move armies", "Attack", "Skip maneuver": The Black Captain Commands', The Ringwraiths Are
+  Abroad's, A Balrog is Come!'s and Dol Guldur's maneuvers). No mode buttons. The armies of either step glow; once one is
+  chosen, its move destinations light with its attack targets, which are red with the red landing mark and an `Attack ·
+  Field` caption, as for the Army die (UI-389, UI-403; `CardArmyEvent.OtherTargets`, `AttackTargets`, `ArmyGhost`). A red
+  target's click makes the planned army's step that attack with that target, in one undo step — its figures in the
+  attack's own order, so the payload is the old Attack button's — and the ✓ confirms; ↶ takes it back. An army that may
+  only attack starts the attack (and lights its moves, if any). An attack takes one army, so with two armies planned (The
+  Ringwraiths Are Abroad) only moves light, and an army whose destination is chosen lights nothing more. Skip maneuver
+  ends the event, so it is the console's ✓ while no army is chosen (`FinishingOption`: `Finish · End <card> without moving
+  or attacking`, hint "Or ✓ to finish without moving or attacking."); with an army chosen the ✓ confirms its step. Hint:
+  "Click a lit army, then where it moves or a red region it attacks", then "Click a lit destination to move or a red region
+  to attack". **What stays:** the decision window's fallback while the console does not hold the event (nothing is lit
+  then) keeps its buttons.
+- **The Black Captain Commands** (`captain.recruit` / `captain.fly`). Recruit is the Reserve's Nazgûl: the Reinforcements
+  panel shows the Shadow's Nazgûl token alone, lit (`eligible-token`, the tab `legal-target`), `Recruit · 2 Nazgûl · Click
+  to recruit them with the Witch-king because of The Black Captain Commands`; its click recruits. Move Nazgûl is the map's
+  Nazgûl: their forces and the Witch-king's miniature glow (`ability-owner`) and each force's tooltip leads with `Move
+  Nazgûl · Click to move these Nazgûl and the others, the Witch-king among them, because of The Black Captain Commands`
+  (`MapCanvas.OfferForces`); a click on one (force, miniature or region) chooses Move Nazgûl and arms that stack in the
+  flight that follows, so the next click is its destination (`CaptainOrderInteraction`, as A Balrog is Come!'s "alone",
+  UI-417). The view moves once to the lit Nazgûl when they lie off the map's view (`MapCanvas.Reveal`; a force under the
+  console's bottom row still counts as in view, a limit of `Reveal` left as it is). **What stays:** with no Nazgûl in the reserve the recruit has no object, so it keeps its console button, lit
+  and named after the card (UI-418). Hint: "Click a glowing Nazgûl in the Reserve to recruit, or a glowing Nazgûl on the
+  map to move them".
+- **Lure of the Ring** (`lure.eliminate` / `lure.corruption`; the Free Peoples choose). The Fellowship panel opens once for
+  the choice. The companion's portrait glows red (`eliminate-target`: red rim on a red plate, the roster's pulse, no size
+  change, no filter) — `Eliminate · Click to eliminate Gimli because of Lure of the Ring · <detail>` — and its click
+  eliminates him. The Fellowship's marker on the corruption track, a picture until now, is offered as the hide marker is
+  (UI-293: gold glow, pulse, pointer) — `Corruption +2 · Click to keep Gimli and take 2 Corruption because of Lure of the
+  Ring · <detail>` (the companion's Level, `LureChoiceStep`) — and its click takes the Corruption. Hint: "Click Gimli's red
+  portrait to eliminate Gimli, or the Fellowship's corruption marker to take the Corruption".
+- **Monsters Roused** (Fate: "West / East of the mountains"). The regions of both halves light (Angmar, Ettenmoors, Weather
+  Hills, Trollshaws; Western and Northern Mirkwood, Withered Heath — the server's program, `FateCards.cs` and
+  `FateMonstersEliteStep.Regions`, since the branch choices carry no region); a force standing there leads its tooltip
+  with `East of the mountains · Click to recruit east of the mountains because of Monsters Roused · <detail>`. A region's
+  click chooses its half and carries the region into the card's next step (`BranchCarry`), where it is that step's region
+  click: East's Elite destination is that region, sent at once as its own click was (one click makes both steps); West's
+  recruitment plan starts with that region. The regions lie in the north, often off screen, so the view moves to them once
+  for the decision (`MapCanvas.Reveal`). Hint, within two lines of the status column at 1366×768: "Click a lit region west
+  or east of the Misty Mountains to recruit on that side".
+- **A reaction's response whose object is drawn.** A response that draws a card is its deck, as Spear of Terror is the
+  Character deck (UI-271): Gandalf the Grey's draw, whenever the Guide's portrait cannot hold it (UI-247 keeps it there
+  when it can), lights the deck of the Event card just resolved (`ReactionDecks`) — `Draw matching card · Click to draw a
+  Strategy card because of Gandalf the Grey` — and its click sends the response. **What stays:** a response without any
+  object keeps its console button. No seeded match reaches this case (the server offers the draw only while Gandalf the
+  Grey is the Guide, so his portrait holds it); EditMode proves that the deck sends the old button's reaction id.
+- **The finish hint.** "Or ✓ to finish …" joins the console's hint only while the ✓ can act (online and idle), as on
+  ability-chips; offline the ✓ is disabled and the sentence is gone.
+
+Branches: the forces, the army events, the Black Captain, Lure of the Ring, the deck draw and the finish hint are base
+game; Work of the Enemy (Kings), A Balrog is Come!'s maneuver and the Spear's deck (Lords) and Monsters Roused (Fate) are
+expansions. The base port (ability-chips) lacks `BranchCarry` (only Monsters Roused uses it), the chosen-region edge
+(UI-392), the markers' king hint (`ApplySovereignHint`, beside which `OfferForces` composes its line) and the decks'
+lit-art pulse (UI-345), so there the drawn deck lights with `legal-target` alone.
+
+Playtest (owner's checklist):
+- [ ] Work of the Enemy's forces — seeded `kings-enemy-army`. Expect: no console or tray buttons; Minas Tirith lit; its
+  click opens its panel with both Free Peoples sections glowing and pulsing, each header's tooltip "… · Click to choose
+  the garrison because of Work of the Enemy · …"; the garrison's click sends.
+- [ ] The Black Captain Commands — seeded `shadow-captain`. Expect: no console buttons; the Reserve's Nazgûl token lit
+  with "Recruit · 2 Nazgûl · Click to recruit them …"; Osgiliath's force and the Witch-king glowing, "Move Nazgûl · Click to
+  move …". The token recruits; then the Witch-king's maneuver: no buttons, the ✓ lit "Finish · End The Black Captain
+  Commands without moving or attacking"; Osgiliath's army clicked lights its moves and Minas Tirith red ("Attack · Field"
+  on hover); Minas Tirith's click and the ✓ attack. In a new session the force's click moves the Nazgûl with Osgiliath's
+  stack armed.
+- [ ] Lure of the Ring — seeded `shadow-lure` (the Free Peoples). Expect: the Fellowship panel open; Gimli's portrait red,
+  "Eliminate · Click to eliminate Gimli …"; the corruption marker glowing, "Corruption +2 · Click to keep Gimli and take 2
+  Corruption …"; either click sends.
+- [ ] Monsters Roused — seeded `fate-monsters`. Expect: no buttons; the seven regions lit; Withered Heath's click recruits
+  the east with its Elite there (two steps, one click); in a new session Trollshaws' click chooses the west and its plan
+  follows.
+
+Tests: EditMode `CardConsoleOptionsTests` (no buttons for the orders, Lure, the forces and a response's draw; the
+recruit's button with an empty reserve), `CardArmyEventTests` (no buttons; the ✓'s Finish; the attack lit with the moves
+and its click's step JSON-equal to the old Attack button's, in one undo step; an attack-only army; two planned armies),
+`RegionForceChoicesTests` (the waiting region, the tooltips, the region kept in the payload), `BoardDrawnChoicesTests` (the
+Black Captain's objects and Reserve, Lure's red portrait and offered marker, Monsters Roused's halves and the carry);
+PlayMode `BoardDrawnOptionsTests` (one test per path on the seeded matches, each in its own run: the garrison; the
+Reserve's Nazgûl, then the ✓; the map's Nazgûl and the armed stack; the red attack and the ✓; Gimli's portrait; the
+corruption marker; Withered Heath; Trollshaws — each payload JSON-equal to the old button's; screenshots
+`ui431-*-1366-1.00.png`), `Shadow03NetworkTests`, `Shadow04NetworkTests`, `Shadow04LayoutTests`, `KingsCards04NetworkTests`
+(its garrison is the section now, so `EnemySeparatesFieldArmyFromGarrison` no longer expects the UI-214 buttons),
+`FateCardsNetworkTests`.

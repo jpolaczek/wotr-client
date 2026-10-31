@@ -41,18 +41,37 @@ namespace Wotr.EditorTests
             return tray.HasChoices;
         }
 
-        [Test]
-        public void TheBlackCaptainsOrdersAreTwoConsoleButtonsAndNoWindow()
+        internal static PlayerView Captain(bool reserveNazgul)
         {
-            var view = Card("CaptainOrder",
-                new EffectChoiceView { Id = "captain.recruit", Title = "Recruit · 2 Nazgûl", Detail = "Recruit available Nazgûl with the Witch-king." },
-                new EffectChoiceView { Id = "captain.fly", Title = "Move Nazgûl", Detail = "Move any Nazgûl, including the Witch-king." });
+            var view = Card(BlackCaptainOrder.Presentation,
+                new EffectChoiceView { Id = BlackCaptainOrder.Recruit, Title = "Recruit · 2 Nazgûl", Detail = "Recruit available Nazgûl with the Witch-king." },
+                new EffectChoiceView { Id = BlackCaptainOrder.Fly, Title = "Move Nazgûl", Detail = "Move any Nazgûl, including the Witch-king." });
+            view.Decision.SourceId = "base.sh.character.24";
+            view.Characters.Add(new CharacterView { Id = "base.character.witch-king", DefinitionId = "base.character.witch-king", Side = Side.Shadow, Location = "osgiliath" });
+            view.Units.Add(new UnitView { Id = "base.sauron.nazgul.01", Nation = "sauron", Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "osgiliath" });
+            view.Units.Add(new UnitView { Id = "base.sauron.nazgul.04", Nation = "sauron", Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "morannon" });
+            if (reserveNazgul)
+                view.Units.Add(new UnitView { Id = "base.sauron.nazgul.02", Nation = "sauron", Kind = UnitKind.Nazgul, Side = Side.Shadow, Location = "reserve" });
+            return view;
+        }
+
+        // UI-431 (owner's rule, UI-430): the Black Captain's orders stand on the Reserve's Nazgûl (recruit) and the map's
+        // Nazgûl (move); no console button and no window. With no Nazgûl in the reserve the recruit has no object, so it
+        // keeps its button (R16), lit as the card's one option.
+        [Test]
+        public void TheBlackCaptainsOrdersStandOnTheNazgulAndAnEmptyReserveKeepsTheRecruitButton()
+        {
+            var view = Captain(reserveNazgul: true);
             var draft = Draft(CommandKind.ChooseEffect);
-            var options = CardConsoleOptions.For(view, draft);
-            CollectionAssert.AreEqual(new[] { "Recruit · 2 Nazgûl", "Move Nazgûl" }, options.Select(o => o.Label));
-            CollectionAssert.AreEqual(new[] { "effect-choice-captain.recruit", "effect-choice-captain.fly" }, options.Select(o => o.Name));
-            Assert.IsTrue(options.All(o => o.Kind == ConsoleOptionKind.Effect && o.Enabled));
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
+            Assert.IsTrue(CardConsoleOptions.Owns(view, draft), "The console keeps the decision, so no window opens.");
             Assert.IsFalse(WindowChoices(view, draft));
+            var empty = Captain(reserveNazgul: false);
+            var recruit = CardConsoleOptions.For(empty, draft).Single();
+            Assert.AreEqual("effect-choice-captain.recruit", recruit.Name);
+            Assert.AreEqual(BlackCaptainOrder.Recruit, recruit.Id);
+            Assert.IsTrue(recruit.Lit && recruit.Enabled);
+            Assert.AreEqual(CardLibrary.Title("base.sh.character.24"), recruit.Label);
         }
 
         // UI-347 (EXP-15 D11): the Balrog card's order stands on the Balrog's figure (alone) and his army's figures (with
@@ -141,21 +160,33 @@ namespace Wotr.EditorTests
             Assert.IsFalse(WindowChoices(view, draft));
         }
 
-        [Test]
-        public void LureOfTheRingNamesItsCompanionOnBothButtons()
+        internal static PlayerView Lure()
         {
-            var view = Card("LureCompanion",
-                new EffectChoiceView { Id = "lure.corruption", SourceId = "base.character.merry", Title = "Corruption +1" },
-                new EffectChoiceView { Id = "lure.eliminate", SourceId = "base.character.merry", Title = "Eliminate" });
+            var view = Card(LureChoice.Presentation,
+                new EffectChoiceView { Id = LureChoice.Corruption, SourceId = "base.character.gimli", Title = "Corruption +2", Detail = "Gimli: keep this Companion in the Fellowship." },
+                new EffectChoiceView { Id = LureChoice.Eliminate, SourceId = "base.character.gimli", Title = "Eliminate", Detail = "Gimli: eliminate this Companion; Take Them Alive still applies." });
             view.You = Side.FreePeoples;
             view.DecisionOwner = Side.FreePeoples;
-            var labels = CardConsoleOptions.For(view, Draft(CommandKind.ChooseEffect)).Select(o => o.Label).ToList();
-            Assert.AreEqual(2, labels.Count);
-            Assert.IsTrue(labels.All(l => l.StartsWith(CharacterLibrary.ShortName(view, "base.character.merry") + " · ")));
+            view.Decision.SourceId = "base.sh.character.13";
+            view.OwnCompanions.Add(new CharacterView { Id = "base.character.gimli", DefinitionId = "base.character.gimli", Level = 2 });
+            return view;
         }
 
+        // UI-431: Lure of the Ring's choice is the companion's red portrait and the corruption marker; no buttons, no window.
         [Test]
-        public void DreadfulSpellsAlternativesAppearOnceTheirRegionIsChosen()
+        public void LureOfTheRingStandsOnTheCompanionsPortraitAndTheCorruptionMarker()
+        {
+            var view = Lure();
+            var draft = Draft(CommandKind.ChooseEffect);
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
+            Assert.IsFalse(WindowChoices(view, draft));
+            Assert.IsTrue(LureChoice.OnObject(view, LureChoice.Eliminate) && LureChoice.OnObject(view, LureChoice.Corruption));
+        }
+
+        // UI-431: Dreadful Spells' (and Work of the Enemy's) field army and garrison are the region panel's glowing sections;
+        // neither the console nor the tray has a button for them, before or after the region's click.
+        [Test]
+        public void ARegionsTwoForcesHaveNoButtonsTheirRegionPanelChoosesThem()
         {
             var view = Card("Region",
                 new EffectChoiceView { Id = "osgiliath:field", TargetId = "osgiliath", Title = "Target · Field" },
@@ -163,9 +194,14 @@ namespace Wotr.EditorTests
                 new EffectChoiceView { Id = "pelargir:field", TargetId = "pelargir", Title = "Target · Field" });
             var draft = Draft(CommandKind.ChooseEffect);
             Assert.IsEmpty(CardConsoleOptions.For(view, draft), "The regions are chosen on the map first.");
+            Assert.AreEqual("", RegionForceChoices.Waiting(view, draft));
             draft.Change(p => p.RegionId = "osgiliath");
-            CollectionAssert.AreEqual(new[] { "Target · Field", "Target · Garrison" }, CardConsoleOptions.For(view, draft).Select(o => o.Label));
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft));
+            Assert.AreEqual("osgiliath", RegionForceChoices.Waiting(view, draft));
             Assert.IsFalse(WindowChoices(view, draft));
+            var root = new VisualElement();
+            new DecisionTray(root).Render(view, draft, false, false);
+            Assert.IsNull(root.Q<Button>("effect-choice-osgiliath:garrison"), "No tray button either.");
         }
 
         private static PlayerView Reaction(int characters, bool hunt = false)
@@ -203,6 +239,37 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Skip " + CardLibrary.Title("base.fp.character.01") + "\nSkip Draw · 0 (Gandalf the Grey)",
                 ReactionSkip.SkipTooltip(view));
             Assert.IsFalse(WindowChoices(view, draft), "The card in hand answers with its preview's Use.");
+        }
+
+        // UI-431: a response that draws a card is its lit deck when the roster does not hold it (as Spear of Terror is the
+        // Character deck, UI-271): the console has no button for it, and the deck's click sends the response the button sent
+        // (RespondEffect with that reaction id: CardContextInteraction.Respond, as TurnInteraction.ChooseConsoleOption did).
+        [Test]
+        public void AResponsesDrawIsItsDeckNotAConsoleButton()
+        {
+            var respond = new ActionOption { Kind = CommandKind.RespondEffect, Enabled = true, EligibleIds = { ReactionDecks.GreyDraw } };
+            respond.EffectChoices.Add(new EffectChoiceView { Id = ReactionDecks.GreyDraw, SourceId = "base.character.gandalf-grey", Title = "Draw matching card" });
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples,
+                DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "grey", Kind = DecisionKind.Reaction, Window = "event.completed", SourceId = "base.fp.strategy.12" },
+                Options = { respond, new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true } }
+            };
+            var draft = Draft(CommandKind.RespondEffect);
+            var deck = CardLibrary.Cards["base.fp.strategy.12"].Deck;
+            Assert.IsEmpty(CardConsoleOptions.For(view, draft), "No button: the deck carries the draw.");
+            Assert.AreEqual(ReactionDecks.GreyDraw, ReactionDecks.Draw(view, deck), "The deck sends the old button's reaction id.");
+            Assert.AreEqual("", ReactionDecks.Draw(view, deck == "strategy" ? "character" : "strategy"));
+            var decks = new DeckView();
+            decks.Refresh(view, draft, new ActionDieContext(), false);
+            var lit = decks.Root.Q<Button>("deck-" + deck);
+            Assert.IsTrue(lit.enabledSelf && lit.ClassListContains("legal-target") && lit.ClassListContains(DeckView.SpearClass));
+            StringAssert.StartsWith("Draw matching card · Click to draw a " + FigureGrid.Name(deck) + " card because of Gandalf the Grey", lit.tooltip);
+            // Once the Guide's portrait holds it (UI-247), the deck stays as it was.
+            view.Fellowship = new FellowshipView { Guide = "base.character.gandalf-grey" };
+            view.OwnCompanions.Add(new CharacterView { Id = "base.character.gandalf-grey", DefinitionId = "base.character.gandalf-grey", Level = 3 });
+            Assert.AreEqual("", ReactionDecks.Draw(view, deck));
         }
 
         // The Ents Awake follow-up: a free Character Event from the hand, or the console's Pass (UI-291); the effect trail

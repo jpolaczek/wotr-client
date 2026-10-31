@@ -15,6 +15,8 @@ namespace Wotr.Client
         private TurnDraft draft;
         // UI-155: this player asked to enter Mordor, so the entry brings the track into its view.
         private bool entering;
+        // UI-431: the Lure of the Ring decision whose objects the panel was opened for.
+        private string lureShown = "";
 
         public FellowshipContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -24,6 +26,7 @@ namespace Wotr.Client
             board.Fellowship.ActionSelected += Choose;
             board.Fellowship.PortraitSelected += Portrait;
             board.Fellowship.GuideChosen += Guide;
+            board.Fellowship.CorruptionChosen += LureCorruption;
             board.Fellowship.VisibilityChanged += HighlightDice;
             board.Map.MordorTrack.StepClicked += Step;
             board.Map.MordorTrack.GateClicked += Gate;
@@ -40,6 +43,30 @@ namespace Wotr.Client
             board.Fellowship.Context(view, draft, board.ActionDie, !busy());
             HighlightDice();
             OfferTrack();
+            ShowLure();
+        }
+
+        // UI-431: Lure of the Ring's objects are the Fellowship panel's portrait and corruption marker, so the panel opens once
+        // for the decision.
+        private void ShowLure()
+        {
+            var decision = LureChoice.Active(view) ? view.Decision.Id : "";
+            if (decision == lureShown)
+                return;
+            lureShown = decision;
+            if (decision.Length > 0)
+                board.Fellowship.Open();
+        }
+
+        // UI-431: the red portrait eliminates the companion and the corruption marker takes the Corruption, each sending
+        // what its old console button sent.
+        private void LureCorruption() => ChooseLure(LureChoice.Corruption);
+
+        private void ChooseLure(string choice)
+        {
+            var option = view == null || busy() || !LureChoice.Active(view) ? null : DraftOptions.For(view, draft);
+            if (option?.EligibleIds.Contains(choice) == true)
+                edit(() => CardDraft.Choose(draft, option, choice), true);
         }
 
         // UI-155: the track takes the clicks of the server's options: step 0 and the gate enter, the next step
@@ -137,6 +164,11 @@ namespace Wotr.Client
                     edit(() => CouncilDraft.Homeland(draft, id, ""), false);
                 return;
             }
+            if (view != null && LureChoice.Eliminates(view, id))
+            {
+                ChooseLure(LureChoice.Eliminate);
+                return;
+            }
             var kind = FellowshipActions.PortraitKind(view, board.ActionDie, id, draft);
             if (busy() || !kind.HasValue || HuntActions.UsesPanel(view, draft))
                 return;
@@ -150,6 +182,7 @@ namespace Wotr.Client
             board.Fellowship.ActionSelected -= Choose;
             board.Fellowship.PortraitSelected -= Portrait;
             board.Fellowship.GuideChosen -= Guide;
+            board.Fellowship.CorruptionChosen -= LureCorruption;
             board.Fellowship.VisibilityChanged -= HighlightDice;
             board.Map.MordorTrack.StepClicked -= Step;
             board.Map.MordorTrack.GateClicked -= Gate;

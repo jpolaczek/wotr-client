@@ -65,6 +65,8 @@ namespace Wotr.Client
         private readonly HashSet<(string, Side, bool)> eligibleSources = new HashSet<(string, Side, bool)>();
         public const string SovereignTargetClass = "sovereign-target";
         private Func<string, string> sovereignHint = _ => null;
+        // UI-431: what a click on a lit force does now (a card's choice made on it), by region; its tooltip leads with it.
+        private IReadOnlyDictionary<string, string> forceOffers = new Dictionary<string, string>();
         // UI-301: the armies a click may choose pulse together in ChoiceGlow's rhythm.
         private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
@@ -778,9 +780,26 @@ namespace Wotr.Client
         {
             var king = LitSovereign(marker);
             var description = ArmyMarkerText.Describe(marker.Army, Data.Regions[marker.Army.RegionId].Name);
-            marker.Button.tooltip = king != null ? sovereignHint(king) + "\n" + description : description;
+            var offer = forceOffers.TryGetValue(marker.Army.RegionId, out var text) ? text : "";
+            marker.Button.tooltip = TooltipText.Lines(king != null ? sovereignHint(king) : "", offer, description);
             marker.Button.EnableInClassList(SovereignTargetClass, king != null);
         }
+
+        // UI-431 (TOOLTIP_AUDIT rule 1): the forces whose click makes a card's choice now (The Black Captain Commands' Nazgûl,
+        // Monsters Roused's regions) say so first; an empty map withdraws the offers.
+        public void OfferForces(IReadOnlyDictionary<string, string> offers)
+        {
+            var next = offers ?? new Dictionary<string, string>();
+            if (SameOffers(next))
+                return;
+            forceOffers = next;
+            foreach (var marker in markers.Values)
+                ApplySovereignHint(marker);
+        }
+
+        // The offers each refresh brings are usually the last ones; only a change rewrites the markers' tooltips.
+        private bool SameOffers(IReadOnlyDictionary<string, string> next) => next.Count == forceOffers.Count &&
+            next.All(pair => forceOffers.TryGetValue(pair.Key, out var text) && text == pair.Value);
 
         // UI-274, UI-401: a corrupted king's marker stands beside his capital's forces. UI-425: on its own place (UI-422's
         // stand places), the nearest to the region's last character place on which it covers no force's count or plaque and

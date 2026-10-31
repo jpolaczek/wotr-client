@@ -87,9 +87,8 @@ namespace Wotr.Client
             }
             if (view.Decision?.Presentation is "Region" or "ActionDie")
             {
-                // UI-214: a card decision's alternatives in one region are buttons in the console.
-                if (view.Decision.Presentation == "Region" && !CardConsoleOptions.HostsAlternatives(view, draft))
-                    RegionAlternatives(root, option);
+                // UI-431: a region's two forces are chosen on its region panel's glowing sections (RegionForceChoices), not
+                // on buttons here or in the console.
                 BoardChoice(root, option);
                 return;
             }
@@ -130,20 +129,6 @@ namespace Wotr.Client
                     root.Add(row);
                 }
                 row.Add(EffectButton(option, choice));
-            }
-        }
-
-        private void RegionAlternatives(VisualElement root, ActionOption option)
-        {
-            var regions = option.EffectChoices.GroupBy(c => c.TargetId).ToList();
-            foreach (var group in regions.Where(g => g.Key.Length > 0 && g.Count() > 1))
-            {
-                var row = BoardScreen.Row();
-                foreach (var choice in group)
-                    row.Add(EffectButton(option, choice));
-                refresh.Add(() => row.style.display = regions.Count == 1 || draft.Payload.RegionId == group.Key
-                    ? DisplayStyle.Flex : DisplayStyle.None);
-                root.Add(row);
             }
         }
 

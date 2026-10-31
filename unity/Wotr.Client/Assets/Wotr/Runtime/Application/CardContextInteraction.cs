@@ -197,9 +197,12 @@ namespace Wotr.Client
         {
             if (busy() || view == null)
                 return;
-            var spear = ChiefReactionObjects.DeckReaction(view, deck);
-            if (spear.Length > 0)
-                edit(() => Respond(spear), true);
+            // UI-271: the Spear's deck; UI-431: a response's draw from its deck (ReactionDecks).
+            var reaction = ChiefReactionObjects.DeckReaction(view, deck);
+            if (reaction.Length == 0)
+                reaction = ReactionDecks.Draw(view, deck);
+            if (reaction.Length > 0)
+                edit(() => Respond(reaction), true);
             else if (CardActions.CanDraw(view, draft, board.ActionDie, deck))
                 edit(() => CardActions.Draw(draft, view, board.ActionDie, deck), true);
         }

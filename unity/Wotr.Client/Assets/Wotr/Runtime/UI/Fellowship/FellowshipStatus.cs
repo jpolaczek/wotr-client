@@ -21,6 +21,10 @@ namespace Wotr.Client
         // The Ring on the plaque and in the panel's header is a picture of the condition only.
         public event Action HideRequested;
         public VisualElement HideMarker => inMordor ? mordor.Marker : journey.Marker;
+        // UI-431: a click on the Fellowship's marker on the corruption track while a card offers Corruption (Lure of the Ring).
+        public event Action CorruptionRequested;
+        public VisualElement CorruptionMarker => corruption.Marker;
+        public const string CorruptionOfferClass = "fellowship-corruption-target";
         private readonly Label state = new Label { name = "fellowship-condition", pickingMode = PickingMode.Ignore };
         private readonly Label location = new Label { name = "fellowship-location", pickingMode = PickingMode.Ignore };
         private readonly Label guide = new Label { name = "fellowship-guide" };
@@ -73,6 +77,7 @@ namespace Wotr.Client
             mordor.Activated += () => MoveRequested?.Invoke();
             journey.MarkerActivated += () => HideRequested?.Invoke();
             mordor.MarkerActivated += () => HideRequested?.Invoke();
+            corruption.MarkerActivated += () => CorruptionRequested?.Invoke();
             mordor.Root.RegisterCallback<ClickEvent>(e =>
             {
                 if (!(e.target is VisualElement target && mordor.Controls(target)))
@@ -141,6 +146,9 @@ namespace Wotr.Client
             journey.OfferMarker(offered && !inMordor, tooltip);
             mordor.OfferMarker(offered && inMordor, tooltip);
         }
+
+        // UI-431: while a card offers Corruption the corruption track's marker glows, pulses and is its click.
+        public void OfferCorruption(bool offered, string tooltip) => corruption.OfferMarker(offered, tooltip, CorruptionOfferClass);
 
         public void OfferMove(bool offered, string tooltip)
         {

@@ -177,7 +177,9 @@ difference in the rules (`Kings/KingsDismay.cs`).
 ### Fate — UI-349
 
 - [ ] **D21 — Monsters Roused, West or East.** Try: `fate-card-monsters-roused`. Expect: two console buttons with the
-  shared glow; hovering one only highlights its branch's regions; a click chooses the branch.
+  shared glow; hovering one only highlights its branch's regions; a click chooses the branch. UI-431 (2026-10-31): no
+  buttons — the seven regions of both halves are lit and a region's click chooses its half (East: also the Elite's
+  destination); seeded `fate-monsters` ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 - [ ] **D22 — Gimli's political abilities.** Try: `fate-gimli-renown`. Expect: they stay in the region panel and the
   Characters roster (one place per mechanic), not on the Dwarves' Politics row.
 

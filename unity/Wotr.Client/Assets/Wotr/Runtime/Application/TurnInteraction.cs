@@ -45,6 +45,9 @@ namespace Wotr.Client
         private readonly CardFigureInteraction cardFigures;
         private readonly CardArmyInteraction cardArmies;
         private readonly FigureAbilityInteraction figureAbilities;
+        // UI-431: The Black Captain Commands' Move Nazgûl on the map's Nazgûl; Monsters Roused's halves on their regions.
+        private readonly CaptainOrderInteraction captainOrder;
+        private readonly MonstersHalfInteraction monsters;
         private readonly CouncilTravelInteraction councilTravel;
         private readonly LoreInteraction lore;
         private readonly FellowshipContextInteraction fellowshipContext;
@@ -126,6 +129,8 @@ namespace Wotr.Client
             figureAbilities = new FigureAbilityInteraction(board, ChooseComponent, EditSelection, () => SelectionBusy, cardArmies.Carry,
                 flights.Region);
             councilTravel = new CouncilTravelInteraction(board, EditSelection, () => SelectionBusy);
+            captainOrder = new CaptainOrderInteraction(board, EditSelection, () => SelectionBusy, flights.Region);
+            monsters = new MonstersHalfInteraction(board, EditSelection, () => SelectionBusy, branchCarry, ChooseRegion);
             context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
                 cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
             lift = new FigureLiftInteraction(board, draft, () => view, () => SelectionBusy, SelectToLift, ChooseRegion, Restore);
@@ -201,6 +206,9 @@ namespace Wotr.Client
                     TogglePanel(region);
                 return;
             }
+            // UI-431: a lit Nazgûl moves the Nazgûl for The Black Captain Commands; a lit region chooses Monsters Roused's half.
+            if (captainOrder.Region(region) || monsters.Region(region))
+                return;
             // UI-215: a region holding a card's offered figures opens its panel, where the figures are chosen.
             if (cardFigures.Region(region))
                 return;
@@ -272,7 +280,11 @@ namespace Wotr.Client
                 }
                 if (view.Decision?.Presentation == "Region")
                 {
+                    // UI-431: a region with two forces opens its panel, whose glowing sections choose the force.
+                    var forces = RegionForceChoices.HasAlternatives(view, draft, region);
                     EditChoice(() => EffectChoiceDraft.ChooseRegion(draft, option, region));
+                    if (forces)
+                        board.Hover.OpenDecision(region, view.Decision.Id);
                     return;
                 }
                 var choice = option.EligibleIds.Contains(region) ? region : "";
@@ -745,7 +757,7 @@ namespace Wotr.Client
             }
             var option = DraftOptions.For(view, draft);
             if (option != null && !draft.Payload.Ids.Contains(choice.Id))
-                CompleteChoice(() => CardDraft.Choose(draft, option, choice.Id));
+                CompleteChoice(() => EffectChoiceDraft.Choose(draft, option, choice.Id, choice.Region.Length > 0 ? choice.Region : null));
         }
 
         // UI-347 (D7): the console's Pass sends an optional decline: Vilya's command, or the decline's effect choice alone
@@ -1008,6 +1020,10 @@ namespace Wotr.Client
             components.Refresh(view, draft, !SelectionBusy);
             // UI-271: after the components, whose map owners a figure's reaction extends.
             figureAbilities.Refresh(view, draft, components.Current);
+            // UI-431: after the components and the figures' abilities, whose map owners the Black Captain's order replaces.
+            captainOrder.Refresh(view, draft);
+            monsters.Refresh(view, draft);
+            board.Map.OfferForces(captainOrder.Offers.Count > 0 ? captainOrder.Offers : monsters.Offers);
             lore.Refresh(view, draft);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
@@ -1259,6 +1275,7 @@ namespace Wotr.Client
             rings.Dispose();
             lore.Dispose();
             councilTravel.Dispose();
+            board.Map.OfferForces(null);
             console.Dispose();
             board.Characters.EntryRequested -= RequestEntry;
             board.Characters.Enterable = _ => false;

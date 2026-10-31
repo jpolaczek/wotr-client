@@ -38,7 +38,10 @@ window. MVP scope: base-game cards. Expansion decisions stay on their own panels
    row. A click that completes the decision sends it at once (UI-142). UI-430 (owner, 2026-10-30): a button stands only
    for an option with no other picture on the board — The Nazgûl Strike!'s table cards are red in the Effects panel, its
    Hunt roll is the glowing Hunt Box, a Finish is the console's ✓, and a decline stays Pass / Skip effect
-   ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
+   ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)). UI-431 (2026-10-31): so are the examples
+   above — "Recruit 2 Nazgûl" is the Reserve's Nazgûl and "Move Nazgûl" the map's, a region's two forces are its panel's
+   sections, a card army event's Move/Attack are its lit targets and its Skip maneuver the ✓, Lure of the Ring's choice is
+   the companion's red portrait and the corruption marker, Monsters Roused's halves are their regions ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 5. **No floating decision window for base-game card decisions.** Battles, the Hunt, the
    Fellowship panel and Politics keep hosting the decisions that belong to them (they are part
    of the fixed UI). A list that cannot fit in the console is the only exception and has to be
@@ -57,17 +60,17 @@ floating decision window (UI-160).
 | Group | Cards | Today | Target | Task |
 | --- | --- | --- | --- | --- |
 | Map click only (`Region`) | Return to Valinor, Spirit of Mordor, Faramir's Rangers, Círdan's Ships, Riders of Théoden, Éomer, Half-orcs, Olog-hai, Rage of the Dunlendings (region), Eagles are Coming!, Cruel Weather | Map; hint in the console | Unchanged; card title and progress in the console | UI-211 |
-| Same-region alternatives | Dreadful Spells (field army or garrison in one region) | Two buttons in the window | Two buttons in the console | UI-214 |
+| Same-region alternatives | Dreadful Spells (field army or garrison in one region) | Two buttons in the window | Two buttons in the console. UI-431: none — the lit region opens its panel, whose glowing force sections choose | UI-214, UI-431 |
 | Board components | Mirror of Galadriel (die), Palantír of Orthanc (deck) | Die in the pool, deck by the hand | Unchanged | — |
 | Several dice and Confirm | The Lidless Eye (0–3 dice) | Dice in the pool; a window holding only Confirm | Dice in the pool; ✓ in the console | UI-214 |
 | Nazgûl flights (`CharacterEvent`) | Nazgûl Search, The Nazgûl Strike!, The Ringwraiths Are Abroad, The Black Captain Commands (fly) | Portrait buttons, groups and "Finish movement" in the window; destinations on the map | Movable Nazgûl highlighted on the map; arm a stack once and distribute by destination clicks; ✓ in the console | UI-212 |
 | Card recruitment (`RecruitmentPlan`, `ReserveFigures`) | A New Power is Rising, Shadows on the Misty Mountains, Horde from the East, Many Kings, Pits of Mordor, Círdan's Ships, Swords in Eriador, Dead Men (recruits), national recruit cards when both Regular and Elite are available | Reserve panel; the armed token is released after each placement | Reserve tab and eligible tokens highlighted; the armed token stays armed while it can still be placed; ✓ in the console | UI-213 |
-| Card modes and options | The Black Captain Commands (order), The Nazgûl Strike! (discard, roll or finish), Lure of the Ring (Free Peoples' choice), There is Another Way | Option buttons in the window | Option buttons in the console; The Nazgûl Strike!'s table cards are discarded with their × in the lit Effects panel ("Discard a table card" opens it). UI-430: the Strike's table cards red (tile or ×), its Hunt roll the Hunt Box, its Finish and Another Way's Stay the ✓ — no buttons | UI-214, UI-430 |
+| Card modes and options | The Black Captain Commands (order), The Nazgûl Strike! (discard, roll or finish), Lure of the Ring (Free Peoples' choice), There is Another Way | Option buttons in the window | Option buttons in the console; The Nazgûl Strike!'s table cards are discarded with their × in the lit Effects panel ("Discard a table card" opens it). UI-430: the Strike's table cards red (tile or ×), its Hunt roll the Hunt Box, its Finish and Another Way's Stay the ✓ — no buttons. UI-431: the Black Captain's recruit the Reserve's Nazgûl (a button only with none in the reserve), its move the map's Nazgûl; Lure of the Ring's the companion's red portrait and the corruption marker | UI-214, UI-430, UI-431 |
 | Reactions outside the Hunt and battles | The Ents Awake follow-up (Decline), Gandalf the Grey's draw, Balrog of Moria at a declaration, a reveal outside the Hunt | Response list and Decline in the window | Use in the card preview (UI-164) of the lit hand card; Decline and object-less responses in the console. Exception: more than three console buttons keep the window | UI-214 |
 | Figures of one army (`ArmyFigure`, `ArmyFigures`) | Denethor's Folly, Stormcrow (Free Peoples' loss), The Grey Company, Hill-Trolls, Rage of the Dunlendings (units to move) | Region click, then figure buttons and Confirm in the window | Eligible regions highlighted; the region panel lists the army with eligible figures highlighted; figure clicks; ✓ in the console | UI-215 |
 | Companions with a destination | Dead Men of Dunharrow | Companion buttons and Confirm in the window; destination on the map | Companions highlighted on the map and in the region panel; destination on the map; ✓ in the console | UI-215 |
 | Excess figures after a card | Stack limit after card recruitment (`RemoveExcess`) | Figure list and Confirm in the window | Region panel with the excess figures highlighted; ✓ in the console | UI-215 |
-| Card army events (`ArmyEvent`) | Help Unlooked For, Paths of the Woses, Through a Day and a Night, Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Corsairs of Umbar, The Ringwraiths Are Abroad and The Black Captain Commands (manoeuvre), Grond, The Fighting Uruk-hai | Plan list, routes and Confirm in the window | Armies highlighted on the map; army moves and attacks with the map and region panel as with an Army die (UI-105); "Skip manoeuvre" and progress in the console; ✓ in the console | UI-216 |
+| Card army events (`ArmyEvent`) | Help Unlooked For, Paths of the Woses, Through a Day and a Night, Shadows Gather, The Shadow Lengthens, The Shadow is Moving, Corsairs of Umbar, The Ringwraiths Are Abroad and The Black Captain Commands (manoeuvre), Grond, The Fighting Uruk-hai | Plan list, routes and Confirm in the window | Armies highlighted on the map; army moves and attacks with the map and region panel as with an Army die (UI-105); "Skip manoeuvre" and progress in the console; ✓ in the console. UI-431: no mode buttons — moves and red attack targets lit together, Skip manoeuvre the ✓ | UI-216, UI-431 |
 | Fellowship, Hunt, battle and Politics hosts | Gwaihir, We Prove the Swifter, Book of Mazarbul, Fear! Fire! Foes!, I Will Go Alone, There and Back Again; Breaking of the Fellowship, Worn with Sorrow and Toil, Hunt tile cards and table-card reactions; event losses and combat cards; Wisdom of Elrond, Stormcrow (nation) | Their panels and windows | Unchanged (UI-294, 2026-10-20: a journey of companions outside the Fellowship moved to the map with the console's ✓, FELLOWSHIP_UX) | — |
 
 ## Interaction details
@@ -169,6 +172,9 @@ floating decision window (UI-160).
   Figure clicks toggle through `EventArmyDraft.Toggle` (route events) or `ArmyDraft.Toggle`. The event's other
   options are console buttons (`ConsoleOptionKind.Action`, named `action-<Kind>`, e.g. Skip maneuver); the console
   shows "Armies moved n of m" and its ✓ sends. The tray builds no plan list, route label, figure grid or alternatives.
+  UI-431 (2026-10-31): the other step's targets light with the chosen army's (attacks red, `CardArmyEvent.OtherTargets`)
+  and their click switches the step (`Switch`); Skip maneuver is the ✓ while no army is chosen (`FinishingOption`), so
+  the console has no buttons ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 - **UI-164 (aggregate).** CC09 for both sides: while the other side decides outside a battle and the Hunt, the
   committed steps of the effect trail do not count as window choices either, so the waiting side gets no window that
   only recalls a card (a Nazgûl Search's player after the flights). The recorded Shadow04 layout failure was the Combat
@@ -182,10 +188,10 @@ floating decision window (UI-160).
 | CC02 | Nazgûl Search confirmed with no move | UI-212 |
 | CC03 | Shadows on the Misty Mountains: Nazgûl token armed once, 2 units and the Nazgûl placed by region clicks; Reserve tab and tokens lit; ✓ in the console | UI-213 |
 | CC04 | Many Kings: three settlements filled with one armed token; ↶ removes the last placement | UI-213 |
-| CC05 | The Black Captain Commands: Recruit/Move in the console; Move continues as CC01 | UI-214 |
+| CC05 | The Black Captain Commands: Recruit/Move in the console; Move continues as CC01 (UI-431: Recruit the Reserve's lit Nazgûl, Move the map's, whose click arms that stack in the flight) | UI-214, UI-431 |
 | CC06 | The Nazgûl Strike! options in the console after the flights; a table card discarded with its × in the Effects panel (UI-430: no console options; a red table card's tile or ×, the glowing Hunt Box, the ✓) | UI-214, UI-430 |
 | CC07 | Hill-Trolls: two regulars chosen in the region panel; ✓ in the console | UI-215 |
-| CC08 | Shadows Gather: armies moved on the map; progress and ✓ in the console; "Skip manoeuvre" in the console | UI-216 |
+| CC08 | Shadows Gather: armies moved on the map; progress and ✓ in the console; "Skip manoeuvre" in the console (UI-431: the ✓) | UI-216, UI-431 |
 | CC09 | No base-game card decision opens the decision window (both sides) | UI-164 |
 
 ## Tasks
@@ -226,7 +232,7 @@ and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports)
 The Breaking of the Fellowship's Companions are chosen on the Hunt panel's roster portraits, and There Is Another
 Way's Move and Hide on the Fellowship's track and Ring (`FellowshipActions.RosterChoice`, `FellowshipCardActions`);
 the choice list and the console no longer repeat them. Stay, Keep-style declines and Lure of the Ring's alternatives
-stay buttons. See FELLOWSHIP_UX, UI-249. UI-430 (owner, 2026-10-30): Stay is the console's ✓ now ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
+stay buttons (UI-431, 2026-10-31: Lure's are the companion's red portrait and the corruption marker now, [UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)). See FELLOWSHIP_UX, UI-249. UI-430 (owner, 2026-10-30): Stay is the console's ✓ now ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
 
 ## Reactions at their sources — UI-247 (2026-10-17)
 
@@ -257,7 +263,8 @@ Test: `CostDiceTests`; `EffectsNetworkTests` (Palantír on the Ring).
 
 When a card's region holds two eligible forces — Dreadful Spells' field army and garrison — each force's section in
 the region panel glows and its header chooses it (`RegionForceChoices`); the console keeps the same two named
-alternatives, so the region alone never collapses them. A region with one eligible force is chosen by the region
+alternatives, so the region alone never collapses them. UI-431 (2026-10-31): the console's and the tray's alternatives are
+gone; the lit region's click opens its panel, which holds the decision, and the headers say why ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)). A region with one eligible force is chosen by the region
 click. Test: `RegionForceChoicesTests`.
 
 UI-246 revision (2026-10-17): Leadership points are taken on their source figure or portrait (a badge counts them) and
@@ -274,7 +281,7 @@ window (`DecisionRoutes`, test `FateCardStepsHaveObjectHosts`):
 | Book of Mazarbul | Move the Companions outside the Fellowship; the Dwarven region; the recruit | The figures' routes on the map; the lit region (`Region`); the reserve figure (`ReserveFigures`) |
 | Bardings, Dwarves of the Iron Hills | The region next to Dale (or Dale) with its two recruits | The recruitment plan: a region click, then the reserve figures (`RecruitmentPlan`) |
 | Orcs Multiplying Again | Mount Gundabad or Erebor, then the limited reserve | The lit region, then the recruitment plan |
-| Monsters Roused | West or East of the mountains, then the Elite's region and the plan | Two console buttons (`EffectTargets`), the lit region, the recruitment plan |
+| Monsters Roused | West or East of the mountains, then the Elite's region and the plan | Two console buttons (`EffectTargets`), the lit region, the recruitment plan. UI-431: the halves' regions lit; a region's click chooses its half and is the next step's region click |
 
 Gimli's abilities keep the path of every character ability: a click on the paying die lights the ability in the
 panel of the region where he stands, and its click uses it (Dwarf of Renown, Messenger of the Dwarves). The task

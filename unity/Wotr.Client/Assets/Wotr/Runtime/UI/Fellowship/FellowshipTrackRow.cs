@@ -139,13 +139,14 @@ namespace Wotr.Client
         }
 
         // UI-293: while hiding is legal the marker glows and pulses (ChoiceGlow) and says what a click does; otherwise it is
-        // a picture that takes no pointer.
-        public void OfferMarker(bool offered, string tooltip)
+        // a picture that takes no pointer. UI-431: the corruption track's marker is offered the same way (Lure of the Ring),
+        // with its own class.
+        public void OfferMarker(bool offered, string tooltip, string offerClass = FellowshipStatus.HideClass)
         {
             MarkerOffered = offered;
             marker.pickingMode = offered ? PickingMode.Position : PickingMode.Ignore;
             marker.focusable = offered;
-            marker.EnableInClassList(FellowshipStatus.HideClass, offered);
+            marker.EnableInClassList(offerClass, offered);
             ChoiceGlow.Apply(marker, offered);
             marker.tooltip = offered ? tooltip : "";
             markerPulse.Run(offered);

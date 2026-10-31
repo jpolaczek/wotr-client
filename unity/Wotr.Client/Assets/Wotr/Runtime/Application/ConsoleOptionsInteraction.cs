@@ -41,6 +41,7 @@ namespace Wotr.Client
             this.draft = draft;
             var panel = board.Hover.Panel;
             panel.ForceChoice = (side, garrison) => enabled ? RegionForceChoices.For(view, draft, panel.Region, garrison) : "";
+            panel.ForceTooltip = id => RegionForceChoices.Tooltip(view, draft, id);
             panel.RefreshForces();
             board.Console.Status.SetOptions(CardConsoleOptions.For(view, draft), enabled);
             board.TableEffects.Offer(TableOffers(view, draft), enabled);
@@ -100,7 +101,9 @@ namespace Wotr.Client
             choose(option);
         }
 
-        private void Force(string id) => choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Effect });
+        // UI-431: a force section's click sends its choice with its region, as the region's click and the old button did.
+        private void Force(string id) =>
+            choose(new ConsoleOption { Id = id, Kind = ConsoleOptionKind.Effect, Region = board.Hover.Panel.Region });
 
         private void HuntRoll()
         {

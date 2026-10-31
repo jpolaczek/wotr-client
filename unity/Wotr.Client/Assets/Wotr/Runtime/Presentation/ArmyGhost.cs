@@ -21,6 +21,8 @@ namespace Wotr.Client
             var ghost = new ArmyGhost();
             if (context != null)
                 ghost.AddArmy(view, draft, context);
+            else if (CardArmyEvent.Active(view, draft))
+                ghost.AddCardEvent(view, draft);
             if (ghost.Captions.Count == 0)
                 ghost.AddTravel(view, draft, data);
             return ghost.Captions.Count > 0 ? ghost : null;
@@ -38,6 +40,23 @@ namespace Wotr.Client
             {
                 Captions[target.RegionId] = "Attack · " + (target.BattleMode ?? BattleMode.Field);
                 Attacks.Add(target.RegionId);
+            }
+        }
+
+        // UI-431: a card army event's planned army, as the Army die's (UI-389): its move destinations and, in red, its
+        // attack targets.
+        private void AddCardEvent(PlayerView view, TurnDraft draft)
+        {
+            var move = ArmyDraft.Current(draft);
+            if (move == null || move.To.Length > 0 || move.UnitIds.Count + move.CharacterIds.Count == 0)
+                return;
+            var count = move.UnitIds.Count + move.CharacterIds.Count;
+            var moves = draft.Kind == CommandKind.MoveArmies ? ArmyDraft.Targets(draft, view) : CardArmyEvent.OtherTargets(view, draft);
+            Add(moves, "Move " + count + (count == 1 ? " figure" : " figures"));
+            foreach (var region in CardArmyEvent.AttackTargets(view, draft))
+            {
+                Captions[region] = "Attack · " + (CardArmyEvent.AttackMode(view, move.From, region) ?? BattleMode.Field);
+                Attacks.Add(region);
             }
         }
 

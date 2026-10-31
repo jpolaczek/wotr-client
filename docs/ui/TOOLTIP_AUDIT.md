@@ -26,7 +26,15 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
    - UI-430: a lit object that sends an option names the action, the effect that offers it and what it does: a red table
      card `Discard Wizard's Staff · Click to discard it because of The Nazgûl Strike!: a Nazgûl is in the Fellowship's
      region`, the Hunt Box `Roll for the Hunt · Click to start a Hunt roll now because of The Nazgûl Strike!: … · The
-     Fellowship does not move and no die is spent · 1 Eye in the Hunt Box`;
+     Fellowship does not move and no die is spent · 1 Eye in the Hunt Box`; UI-431: a force section `3 dice · 5+ · Garrison
+     · Click to choose the garrison because of Work of the Enemy · …`, the Reserve's Nazgûl `Recruit · 2 Nazgûl · Click to
+     recruit them with the Witch-king because of The Black Captain Commands`, a Nazgûl force `Move Nazgûl · Click to move
+     these Nazgûl and the others, the Witch-king among them, because of …`, a red portrait `Eliminate · Click to eliminate
+     Gimli because of Lure of the Ring · …`, the corruption marker `Corruption +2 · Click to keep Gimli and take 2
+     Corruption because of Lure of the Ring · …`, a Monsters Roused force `East of the mountains · Click to recruit east of
+     the mountains because of Monsters Roused · …`, a response's deck `Draw matching card · Click to draw a Strategy card
+     because of Gandalf the Grey`, and an army event's ✓ `Finish · End The Black Captain Commands without moving or
+     attacking`;
    - the battle window's direct steps name the region (`Continue battle · Fight another Combat round in Osgiliath`,
      `Retreat inside · Withdraw into the Minas Tirith stronghold`, `Stay · No figure advances into Osgiliath`), and Apply
      losses lists them (`Remove 1 Gondor Regular, downgrade 1 Gondor Elite in Lossarnach (2 hits)`);
@@ -60,7 +68,8 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
 - `Presentation/TurnSummary.cs`, `BattleSummary.cs`, `FellowshipSummary.cs` — the server preview's summaries without
   "Ready" fillers.
 - `Presentation/OptionalDecline.cs`, `ReactionSkip.cs` — what Pass and Skip effect skip; UI-430: `FinishingOption.cs`
-  (what the ✓'s Finish leaves undone), `NazgulStrikeChoice.cs` (the Hunt Box), `TableDiscardText.cs` (red table cards).
+  (what the ✓'s Finish leaves undone), `NazgulStrikeChoice.cs` (the Hunt Box), `TableDiscardText.cs` (red table cards);
+  UI-431: `RegionForceChoices.cs`, `BlackCaptainOrder.cs`, `LureChoice.cs`, `MonstersHalves.cs`, `ReactionDecks.cs`.
 - `UI/Battles/BattleChoices.cs` (`DirectTooltip`), `BattleForceText.cs` (one statistic per medallion, `Composition`).
 - `Presentation/FellowshipActions.cs` (`HideTooltip`, `MoveTooltip`), `PoliticalActions.cs` (`Distance`,
   `AdvanceTooltip`), `HuntTileText.cs`, `HuntWindowState.cs` (`HuntAllocationText.Confirm`), `ArmyMarkerText.Composition`.

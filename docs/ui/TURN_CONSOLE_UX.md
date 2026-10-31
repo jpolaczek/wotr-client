@@ -129,7 +129,10 @@ The console replaces the present dock and has a **fixed height** of the entire l
 - UI-214: a card's object-less options and the object-less responses of a reaction outside the Hunt and
   battles replace the hint as up to three buttons (`console-options`, 38 pt like the hint), so the console keeps
   its height. A click that completes the decision sends it. Their model is `CardConsoleOptions`
-  ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)).
+  ([CARD_CHOICES_UX](CARD_CHOICES_UX.md)). UI-431 (2026-10-31): the Black Captain's orders, Lure of the Ring's, a
+  region's forces, a card army event's steps and Monsters Roused's halves have no buttons any more — their objects are
+  lit; the Black Captain's recruit keeps its button only with no Nazgûl in the reserve, and an army event's Skip maneuver
+  is the ✓ ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 - From UI-167 the badge is lit (`your-turn`) until the player starts to work, and the ribbon "YOUR
   ACTION" means the pass of action; from UI-169 the status "GAME OVER" opens the game end screen
   ([SIGNALS_UX](SIGNALS_UX.md)).
@@ -409,7 +412,8 @@ keep it …") and no panel, window or Back; Vilya's keep, Dismay and the Council
 UI-268, UI-276 and UI-270; Companion versions and homelands stay with the setup panel (UI-269, UI-270); a corruption
 tile and a card's choice of a sovereign belong to the sovereigns (UI-274, UI-278). Fate's Monsters branch is console
 buttons like the base cards' modes (`CardConsoleOptions`); since UI-278 (D15) the Kings cards' branches stand on their
-objects, and the console keeps only a branch without one.
+objects, and the console keeps only a branch without one. UI-431 (2026-10-31): Monsters Roused's halves are their lit
+regions too ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 
 <a id="wdrożenie-ui-164"></a>
 ### implementation UI-164

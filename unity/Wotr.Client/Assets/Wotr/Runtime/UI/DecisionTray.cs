@@ -207,6 +207,8 @@ namespace Wotr.Client
                 CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
                 SovereignPresentation.Hint(view, draft), NazgulStrikeChoice.Hint(view, draft), TableDiscardText.DecisionHint(view, draft),
                 FellowshipCardActions.Guidance(view),
+                // UI-431: a region's forces, the Black Captain's Nazgûl, Lure of the Ring's objects, Monsters Roused's regions.
+                RegionForceChoices.Hint(view, draft), BlackCaptainOrder.Hint(view), LureChoice.Hint(view), MonstersHalves.Hint(view),
                 RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
                 BalrogCardOrder.Hint(view), KingsCardChoices.Hint(view),
                 ResourcePresentation.PoolHint(view)

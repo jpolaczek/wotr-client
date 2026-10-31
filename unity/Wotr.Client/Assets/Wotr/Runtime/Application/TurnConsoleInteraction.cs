@@ -188,11 +188,11 @@ namespace Wotr.Client
         }
 
         // UI-347 (D7): a step whose decline is the console's Pass says so, unless its hint already names Pass; UI-430: a
-        // step whose Finish is the console's ✓ likewise.
+        // step whose Finish is the console's ✓ likewise, and (UI-431, as on ability-chips) only while the ✓ can send it.
         private string WithDecline(string text)
         {
             var decline = view != null && draft != null ? OptionalDecline.Hint(view, draft) : "";
-            var finish = view != null && draft != null ? FinishingOption.Hint(view, draft) : "";
+            var finish = idle && view != null && draft != null ? FinishingOption.Hint(view, draft) : "";
             return Append(Append(text, decline, "Pass"), finish, "✓");
         }
 

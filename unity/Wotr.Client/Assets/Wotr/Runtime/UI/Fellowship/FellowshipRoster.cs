@@ -158,14 +158,17 @@ namespace Wotr.Client
             foreach (var item in portraits)
             {
                 var kind = FellowshipActions.PortraitKind(view, context, item.Key, draft);
+                // UI-431: the companion Lure of the Ring may eliminate glows red and its click eliminates it.
+                var lure = enabled && LureChoice.Eliminates(view, item.Key);
                 // Inspection and keyboard focus remain available for non-candidates.
                 item.Value.SetEnabled(true);
                 item.Value.EnableInClassList("legal-target", enabled && kind.HasValue);
+                item.Value.EnableInClassList(LureChoice.EliminateClass, lure);
                 // UI-229/UI-240: a portrait whose click chooses the next Guide or separates the companion glows and
                 // pulses, and its tooltip starts with what the click does.
-                var offer = enabled ? Offer(view, item.Key, kind) : "";
+                var offer = lure ? LureChoice.EliminateTooltip(view) : enabled ? Offer(view, item.Key, kind) : "";
                 choosing |= offer.Length > 0;
-                ChoiceGlow.Apply(item.Value, offer.Length > 0);
+                ChoiceGlow.Apply(item.Value, offer.Length > 0 && !lure);
                 if (descriptions.TryGetValue(item.Key, out var description))
                     item.Value.tooltip = offer.Length > 0 ? offer + "\n" + description : description;
                 item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key

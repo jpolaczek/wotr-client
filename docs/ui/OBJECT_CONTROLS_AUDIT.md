@@ -78,7 +78,8 @@ does not place the tray either: "CharacterCardDiscard → Hand" has no object be
 - Exceptions recorded only by agents, for the owner to confirm or drop: Stay / Stay all (UI-250), There Is Another
   Way's Stay and Lure of the Ring's console alternatives (UI-249), the Reserve panel's own ✓, Keep misses / hits / all
   (UI-245/246), Worn's alternatives (UI-247), the console's table-card opener (UI-214/247), the Dreadful Spells double
-  control (UI-251).
+  control (UI-251). UI-431 (2026-10-31): Lure of the Ring's alternatives and the Dreadful Spells double control are gone —
+  the portrait, the corruption marker and the force sections are the only controls ([UX_SPEC](UX_SPEC.md#options-the-board-draws-are-chosen-on-the-board--ui-431)).
 
 ## Fixed with this audit
 
