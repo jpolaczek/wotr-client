@@ -59,15 +59,6 @@ namespace Wotr.Client
             draft.CompanionFocus = -1;
         });
 
-        public static void TravelMode(TurnDraft draft, ActionOption option, bool ruler) => draft.Change(p =>
-        {
-            p.AbilityId = ruler ? option.RulerTravel.AbilityId : "";
-            p.DieId = "";
-            p.Route.Clear();
-            p.CompanionMoves.Clear();
-            draft.CompanionFocus = -1;
-        });
-
         public static void Reconcile(TurnDraft draft, ActionOption option)
         {
             if (CouncilDraft.Handles(draft.Kind))

@@ -58,11 +58,11 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(pan, board.Map.Camera.Pan);
                 Assert.AreEqual(0, room.Boundary.Commands);
                 Assert.IsNull(board.Tray.Q<Button>("confirm-decision"));
-                var stay = board.Tray.Q<Button>("travel-stay");
-                Assert.IsNotNull(stay);
-                await room.Until(() => stay.enabledInHierarchy);
+                // UI-432 (owner's rule, UI-430): the king stays by the click on his lit home region, as Stay here did.
+                Assert.IsNull(board.Tray.Q<Button>("travel-stay"));
+                await room.Until(() => board.Map.DraftOverlay.Targets.Contains(Home));
                 LayoutTests.Save(room.Fp.Viewport, "ui63-siege-" + source + "-before.png");
-                PointerGestureEvents.ClickAt(stay);
+                MapContourProbe.ClickRegion(board.Map, Home);
                 await room.At(before.Revision + 1);
                 Assert.AreEqual(1, room.Boundary.Commands);
                 var sent = room.Boundary.LastCommand;

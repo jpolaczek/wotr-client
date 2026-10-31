@@ -1307,6 +1307,8 @@ no decision reaches any more are removed, each after its reachability was traced
   the map and in the region panel (`DirectArmy`, `CardArmyEvent`); ruler tokens no longer pay for armies.
 
 `ExcessChoices` stays: an excess opened by a battle's retreat, advance or landing is chosen in the Battle window.
+UI-432 (2026-10-31) removed the next fallbacks — an unsent Discard die's dice, the decks and the Hunt's dice of the
+decision window ([below](#declines-and-window-lists-follow-the-board-rule--ui-432)).
 Tests: the layout fixtures of `CardPack02LayoutTests` and `Shadow02LayoutTests` now offer the battle's own figures as
 the server does; `CardFigureDraftTests`, `DecisionRoutesTests` and the army and card network tests are unchanged.
 
@@ -1736,3 +1738,112 @@ the map's Nazgûl and the armed stack; the red attack and the ✓; Gimli's portr
 JSON-equal to the old button's, recorded at 16f8c966; screenshots `c431-*-1366-1.00.png`), `Shadow03NetworkTests`,
 `Shadow04NetworkTests`, `Shadow04LayoutTests`, `KingsCards04NetworkTests` (its garrison is the section now, so
 `EnemySeparatesFieldArmyFromGarrison`, failing here since UI-214 moved the alternatives into the console, passes again).
+
+<a id="declines-and-window-lists-follow-the-board-rule--ui-432"></a>
+## Declines and window lists follow the board rule — UI-432, base parts (2026-10-31)
+
+UI-430's rule (owner, 2026-10-30) applied to the declines and window lists of the analysis (cases 11–16): a decline of an
+optional effect is the window's Skip effect and the console's Pass (UI-419, UI-423), and a window button that repeats an
+object always on screen goes. Each object sends a payload JSON-equal to its old button's (recorded from the buttons at
+425411db on a real server); every option keeps a click path (R16).
+
+- **The decline machinery.** This branch had no optional decline: its Pass and Skip effect skipped reaction windows only
+  (`ReactionSkip`). `OptionalDecline` comes over with the base cards' declines alone (the ids below; the Lords' and Kings'
+  declines stay on `expansions`): the console's Pass lights and sends the decline's effect choice by itself (a figure
+  already chosen in the same step is dropped, as the old exclusive button dropped it), its tooltip `Pass · Skip <card> ·
+  <what passing does>` (the card's combat side in a battle), the hint ends "Or Pass to …" unless it already names Pass,
+  and the battle and Hunt windows' Skip effect sends the same Pass with the same tooltip without `Pass · `.
+- **The base battle cards' declines.** Black Breath's and Heroic Death's "Keep all", Fateful Strike's "Keep Minions" and
+  Andúril's "Keep misses" leave the battle window's list: `Skip Black Breath · Eliminate no Leader or Companion`, `Skip
+  Heroic Death · Eliminate no figure and take every hit`, `Skip Fateful Strike · Eliminate no Minion`, `Skip Andúril ·
+  Convert no miss; Aragorn still forfeits his Leadership` (the server forfeits it when he converts none, `AndurilStep`).
+  **What stays:** Heroic Death's "Keep hits" (zero hits — a legal, costly choice: the Companion is still eliminated) is no
+  decline and keeps its button (UI-246).
+- **Worn with Sorrow and Toil** (the Shadow, during the Hunt). No list in the Hunt window. A Free Peoples Character card on
+  the table is red in the Effects panel, whose tab lights (UI-430's look and path): `Discard Mithril Coat and Sting · Click
+  to discard it because of Worn with Sorrow and Toil: a Companion was taken as a casualty`; a click on the tile or its ×
+  discards it. The random card from the Free Peoples hand is the opponent's card counter in the top bar, a picture until
+  now: it wears the red of a card to discard (a red rim on a red plate, breathing in the shared pulse, no filter, its size
+  kept), presses like a button and leads its tooltip with `Discard a random card · Click to discard a random card from the
+  Free Peoples hand because of Worn with Sorrow and Toil · <the server's detail>`; its click sends the choice. Keep cards
+  is the Hunt window's Skip effect and the console's Pass: `Skip Worn with Sorrow and Toil · Discard no Free Peoples
+  Character card`. Hint: "Discard: red card in Effects · Random card: red hand counter · Pass discards none" (the hint
+  names the Pass itself, so no "Or Pass to …" sentence is glued after it).
+- **Scouts' Withdraw into siege.** The battle's own region — the stronghold the army withdraws into — lights on the map
+  beside the regions the army may retreat to (Retreat was already their click), and its click sends the withdrawal, as a
+  click on the battle region advances after a won battle (`BattleContextInteraction`). Map terrain has no tooltip (UI-80),
+  so the forces standing there lead their tooltip with `Withdraw into siege · Click to withdraw into the stronghold because
+  of Scouts · End this battle before the Combat roll.` (`MapCanvas.OfferForces`, after the Black Captain's order) and the
+  hint names the region: "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat". The battle
+  window lists no button for it.
+- **The Fellowship tray** (`FellowshipChoices`), each button checked against its object:
+  - *Stay here* goes. Its object is the lit origin region of the group or route (`MapDraftOverlay` lights it exactly when
+    the button was enabled), whose click is `TravelDraft.RouteTo` → `TravelDraft.Stay`, the button's own code. On this
+    branch the button was live: a king's awakening in the Sovereigns panel (this branch's kings keep their tray there)
+    stayed home with it (`SovereignPanelNetworkTests`, `UI63SiegeNetworkTests`). The king's home region is lit, and its
+    click sends the awakening at once, as the button did (recorded: `AwakenSovereign` with the die, the king and the
+    route `[erebor]`). The tray's Back keeps its place in that route row (where Stay here stood, beside the summary).
+  - *Stay all* goes. With an empty plan the console's ✓ sends what Stay all + ✓ sent (an empty `CompanionMoves`); a
+    planned group is given up by clicking its members off. Its journeys (the card journeys, the Nazgûl's and the Balrog's
+    flights) are on the map with the ✓ since UI-212 and UI-294, so the button no longer appeared.
+  - *Standard* / *Far-sighted* go. This branch carries the Kings' Far-sighted: Thranduil's component with the Ruler die
+    (`component-far-sighted-<kind>`) starts a Far-sighted move, the plain portrait gesture the standard one, and the
+    tray's toggle repeated them. Both paths send the toggle's command (recorded on a real server at 425411db: the
+    separation chosen with the old buttons and with the objects, JSON-equal). The tray names a Far-sighted move with a
+    label (`Far-sighted · Range +1`).
+  - **What stays:** *Undo step* and *Cancel* of a drawn Fellowship route (Declare, Reveal) and of a separation. The console's
+    ↶ is off while the tray sits in the Fellowship panel, and a step back is not an Undo step (the first map step adds the
+    origin and the region together; after a server view the history is empty), Declare has no die whose second click
+    clears it, and Esc on an empty route opens the menu. Making ↶ do both is a change of its own, not a removal.
+- **The decision window's fallback lists** (`DecisionTray`, `CharacterChoices`), each re-audited on this branch:
+  - an unsent Discard die lists no die (`cost-<die>`): the own pool — always beside the console, never under the window —
+    sends the same `ChooseDie` the list's buttons sent;
+  - the decks `deck-<deck>` go: a draw is the hand's decks (`DirectCard`), so the tray never built them, and a draw's die
+    is not listed either;
+  - the Hunt's `select-<die>` dice go: the Hunt allocation never reaches the tray (UI-162, UI-172) — dead code, deleted
+    with the tray's `DeckChosen` and `CardOrDieToggled` events;
+  - `CharacterChoices`' dice list goes: it was always empty (the pool lights exactly those dice, `CostDice.Offered`);
+  - **what stays:** a character's actions `character-action-<id>` (the option's only picture when its Characters row
+    offers none — after Change, after a new revision took the chosen action away, in a restored draft); a Council token's
+    entry cost (`entry-token-*`); the table cards' removals' dice and Rings (`cost-<die>`, `No Ring`, `ring-cost-*`: on
+    this branch only Orthanc's, Denethor's and a protection's dice glow in the pool, `CostDice`, so the Palantír of
+    Barad-dûr's, Lore's, Welcome's and the Gates' lists are their dice's only picture); and `ExpansionChoices`' dice,
+    kings, Dismay and Council lists, whose pool and portrait pictures (UI-268, UI-274, UI-276) are the expansions'.
+
+Branches: the expansions commit's Narya and kings' lists (`ExpansionChoices`) and its open owner questions (the Council
+token's travel picker, UI-377, and the Kings corruption draw, UI-423, neither on this branch) stay on `expansions`.
+Screenshots on this branch are `c432-*`.
+
+Playtest (owner's checklist):
+- [ ] Black Breath — seeded `shadow-black-breath` (the Shadow). Expect: no Keep all; the battle window's Skip effect "Skip
+  Black Breath · Eliminate no Leader or Companion", the console's Pass the same with "Pass · " and lit; either sends.
+- [ ] Heroic Death / Andúril — seeded `heroic`, `anduril` (the Free Peoples). Expect: Keep hits stays, Keep all / Keep misses
+  gone; Skip effect names Heroic Death / Andúril (and that Aragorn still forfeits his Leadership).
+- [ ] Worn with Sorrow and Toil — seeded `shadow-worn` (the Shadow). Expect: no list in the Hunt window; the Effects tab lit,
+  the four Free Peoples cards red ("Discard … because of Worn with Sorrow and Toil: a Companion was taken as a casualty");
+  the Free Peoples card counter in the top bar red and pulsing ("Discard a random card · …"); the Hunt window's Skip
+  effect "Skip Worn with Sorrow and Toil · Discard no Free Peoples Character card". A red card's click discards it; in a new
+  session the counter's click discards a random card; in another, Skip effect keeps the cards.
+- [ ] Scouts — seeded `strategy-scouts` (the Free Peoples). Expect: no Withdraw into siege button; Helm's Deep and Fords of
+  Isen lit; the Helm's Deep army's tooltip leads with "Withdraw into siege · Click to withdraw into the stronghold because
+  of Scouts"; the hint "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat"; Helm's Deep's click
+  withdraws (the next decision is the Shadow's advance).
+- [ ] A king stays home — seeded `ui59-awaken` (Dáin). Expect: in the Sovereigns panel no Stay here, the Back in the route
+  row; Erebor lit; its click awakens Dáin there.
+- [ ] Far-sighted — seeded `ui22-separate`. Expect: no Standard / Far-sighted buttons in the Fellowship panel; with the Ruler
+  die, Thranduil's Far-sighted component starts the separation, named "Far-sighted · Range +1"; a companion's portrait with
+  the die starts the standard one.
+
+Tests: EditMode `BoardRuleDeclinesTests` (the four declines' Skip effect and Pass tooltips and their payload — Fateful
+Strike's Keep Minions has no seeded match, as the server offers it only without a Nazgûl in the battle, so this is its
+command-equality proof; Worn's offers, hint, Hunt window and counter; Scouts' region, tooltip, hint and the battle region's
+payload), `WindowListsTests` (the Fellowship tray's remaining buttons and its Far-sighted label; the origin's click and an
+empty plan against Stay here and Stay all; no die list for an unsent Discard die, no deck or die for a draw),
+`BattleObjectChoicesTests`, `SovereignPanelTests` (the king's home region is reachable, the Back in the route row); PlayMode
+`BoardRuleDeclineTests` (on a real server, each object's payload JSON-equal to its old button's: Black Breath's, Heroic
+Death's and Andúril's Skip effect, Worn's red table card, red hand counter and Skip effect — three runs —, Scouts' battle
+region, a king's home region; screenshots `c432-*-1366-1.00.png`), `FarSightedObjectTests` (Thranduil's component and the
+plain gesture against the old Far-sighted and Standard buttons, each in its own run), `SovereignPanelNetworkTests` and
+`UI63SiegeNetworkTests` (the awakening stays by the region's click), `Shadow02LayoutTests`, `Shadow03NetworkTests`,
+`Strategy01NetworkTests`, `Strategy01LayoutTests`, `CardPack02NetworkTests`, `ExpansionTokenNetworkTests`, the Fellowship
+tray tests (`FellowshipNetworkTests`, `FellowshipLayoutTests`, `CharacterNetworkTests`, `CompanionJourneyMapTests`).

@@ -6,6 +6,10 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // UI-432 (owner's rule, UI-430): a character's actions (character-action-*) stay here as the fallback for the moments its
+    // Characters row and the board offer none — after Change, a choice reconciled away by a new revision, a restored draft
+    // (the rows offer actions only before a draft starts) — while the dice it pays with are its dice in the pool, so no
+    // die is listed.
     public sealed class CharacterChoices
     {
         private readonly List<Action> refresh = new List<Action>();
@@ -39,7 +43,7 @@ namespace Wotr.Client
                     change.name = "change-character-action";
                     portraits.Add(change);
                 }
-                AddCosts(portraits, view, draft, current, edit);
+                CouncilCosts(portraits, draft, current, edit);
                 // UI-131: the figures of a ruler's muster or the Balrog's companion are chosen in Reinforcements.
                 if (current.Recruitment.Count > 0)
                 {
@@ -82,19 +86,11 @@ namespace Wotr.Client
         // One die, or dice of one kind, are chosen for the player; only different dice are a choice worth a button.
         public static bool DiceChoice(PlayerView view, CharacterActionOption choice) => CharacterDraft.UniformDie(view, choice).Length == 0;
 
-        private void AddCosts(VisualElement root, PlayerView view, TurnDraft draft, CharacterActionOption choice, Action<Action> edit)
+        // UI-248: different dice are chosen in the own dice pool, where they glow (CostDice); UI-432: so the dice list, which
+        // was always empty (the pool offers exactly the dice it would have listed), is gone. A Council token's entry cost
+        // stays here.
+        private void CouncilCosts(VisualElement root, TurnDraft draft, CharacterActionOption choice, Action<Action> edit)
         {
-            // UI-248: different dice are chosen in the own dice pool, where they glow (CostDice); none is listed here.
-            foreach (var id in DiceChoice(view, choice) && !CostDice.InPool(view, draft) ? choice.Dice : Enumerable.Empty<string>())
-            {
-                var die = view.Dice.Single(d => d.Id == id);
-                var button = BoardScreen.Button(ExpansionLabels.DieCost(view, draft, die) + (ExpansionLabels.Special(die) ? " · " + ExpansionLabels.DieSource(die) : ""),
-                    () => edit(() => draft.Change(p => p.DieId = id)));
-                button.name = "cost-" + id;
-                button.tooltip = ExpansionLabels.DieDetail(die);
-                root.Add(button);
-                refresh.Add(() => button.EnableInClassList("selected", draft.Payload.DieId == id));
-            }
             if (choice.CouncilTokens.Count == 0)
                 return;
             if (!choice.RequiresCouncilToken)

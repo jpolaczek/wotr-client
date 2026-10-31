@@ -19,8 +19,6 @@ namespace Wotr.Client
         public event Action<CommandKind> DirectChosen;
         public event Action<string> DieChosen;
         public event Action<string> RingChosen;
-        public event Action<string> CardOrDieToggled;
-        public event Action<string> DeckChosen;
         public event Action<string> CardInspected;
         // UI-116: the second click on an armed Combat tile plays it through the same path as a double-click.
         public event Action<DraftToken> CardFinalized;
@@ -135,6 +133,9 @@ namespace Wotr.Client
                     : CharacterChoices.RegionHint(view, draft) is { Length: > 0 } entry ? entry
                     // UI-430: The Nazgûl Strike!'s red table cards, Hunt Box and ✓; There Is Another Way's track and ✓.
                     : NazgulStrikeChoice.Hint(view, draft) is { Length: > 0 } strike ? strike
+                    // UI-432: Worn with Sorrow and Toil's red table cards and hand counter; Scouts' battle region.
+                    : WornDiscardChoice.DecisionHint(view, draft) is { Length: > 0 } worn ? worn
+                    : ScoutsShelter.Hint(view, draft, RegionName(view.Battle?.RegionId)) is { Length: > 0 } shelter ? shelter
                     : FellowshipCardActions.Guidance(view) is { Length: > 0 } another ? another
                     // UI-431: a region's forces, the Black Captain's Nazgûl, Lure of the Ring's portrait and marker.
                     : RegionForceChoices.Hint(view, draft) is { Length: > 0 } forces ? forces
@@ -223,8 +224,10 @@ namespace Wotr.Client
             }
             // UI-423 (owner's playtest pattern, like UI-419): the battle and Hunt windows skip the player's own reaction
             // window (a table card's or a Guide's Hunt response, the White Rider) with Skip effect; Pass still declines.
-            if (SkipHost(view) && ReactionSkip.Option(view) != null)
-                footer.Add(SkipEffect(view));
+            // UI-432 (owner's rule, UI-430): they skip a card's optional decline the same way (Keep all, Keep Minions, Keep
+            // misses, Keep cards), which no button repeats.
+            if (SkipHost(view) && Skippable(view, draft))
+                footer.Add(SkipEffect(view, draft));
             if (!ContextualHunt && !CompanionSetupPresentation.Owns(view) && !(ResourcePresentation.OwnsDecision(view, draft) && view.Decision.Kind is not (DecisionKind.Action or DecisionKind.EffectChoice)) &&
                 !FellowshipDraft.SingleRoute(draft.Kind) && !FellowshipActions.Immediate(draft.Kind) && !(FellowshipHost && FellowshipActions.SentOnClick(draft.Kind)) &&
                 (view.Decision.Kind is DecisionKind.Action or DecisionKind.ArmyEvent ||
@@ -232,8 +235,9 @@ namespace Wotr.Client
             {
                 var back = IconButton.Create("back", "Back · Undo the last unsent step", () => Cancel?.Invoke());
                 back.name = "decision-back";
+                // A king's awakening keeps the Back in its route row (UI-432: where Stay here stood, beside the summary).
                 var route = draft.Kind == CommandKind.AwakenSovereign && SovereignPresentation.OwnsDecision(view, draft)
-                    ? root.Q<Button>("travel-stay")?.parent : null;
+                    ? root.Q<Label>("travel-summary")?.parent : null;
                 (route ?? footer).Add(back);
             }
             // UI-291: a reaction window is declined with the console's Pass, not a Decline button here (UI-423: the battle
@@ -276,18 +280,23 @@ namespace Wotr.Client
         }
 
         // UI-423 (owner's playtest pattern, like UI-419): the window's Skip effect sends the console's Pass; its tooltip
-        // names each response it skips.
-        private Button SkipEffect(PlayerView view)
+        // names each response it skips, or (UI-432) the effect an optional decline skips and what skipping does.
+        private Button SkipEffect(PlayerView view, TurnDraft draft)
         {
             var button = BoardScreen.Button("Skip effect", () => Skip?.Invoke());
             button.name = view.Battle != null ? "battle-skip-effect" : "hunt-skip-effect";
-            button.tooltip = ReactionSkip.SkipTooltip(view);
+            button.tooltip = ReactionSkip.Option(view) != null ? ReactionSkip.SkipTooltip(view) : OptionalDecline.SkipTooltip(view, draft);
             return button;
         }
 
         // UI-423: the windows whose footer offers Skip effect — the battle window and the Hunt window. A reaction the
         // console hosts alone keeps the console's Pass.
         private bool SkipHost(PlayerView view) => view.Battle != null || ContextualHunt;
+
+        // The console's Pass declines this step, as TurnConsoleInteraction.Pass decides: the player's own reaction window
+        // (UI-291) or a card's optional decline (UI-432).
+        private static bool Skippable(PlayerView view, TurnDraft draft) =>
+            ReactionSkip.Option(view) != null || OptionalDecline.Option(view, draft) is { Enabled: true };
 
         // UI-208: a battle's decision buttons stand on the player's side: the attacker's on the left, the defender's on the right.
         private static void PlayerSide(VisualElement footer, PlayerView view) =>
@@ -559,7 +568,12 @@ namespace Wotr.Client
                     row.Add(ring);
                 }
             }
-            foreach (var id in CostDice.InPool(view, draft) ? new List<string>() : option.EligibleDice)
+            // UI-432 (owner's rule, UI-430): an unsent Discard die lists no die: its die in the own pool, always beside the
+            // console, is the same click (ChooseDie, as this list's DieChosen); a draw never reaches here (DirectCard). The
+            // table cards' removals keep their dice and Rings: only Orthanc's, Denethor's and a protection's dice glow in the
+            // pool (CostDice) on this branch.
+            foreach (var id in CostDice.InPool(view, draft) || option.Kind is CommandKind.DiscardDie or CommandKind.DrawCard
+                ? new List<string>() : option.EligibleDice)
             {
                 var die = view.Dice.Single(d => d.Id == id);
                 var conversion = option.DrawCosts.Any(c => c.DieId == id && c.AbilityId == CardDrawDraft.Palantir);
@@ -570,29 +584,8 @@ namespace Wotr.Client
                 button.userData = new DraftToken(DraftObject.Die, id);
                 row.Add(button);
             }
-            if (option.Kind == CommandKind.AllocateHunt && !ContextualHunt)
-                HuntDice(row, draft, option);
-            foreach (var deck in option.Kind == CommandKind.DrawCard ? option.Targets : new List<string>())
-            {
-                var button = Choice(deck == "character" ? "Character deck" : "Strategy deck", () => draft.Payload.Deck == deck, () => DeckChosen?.Invoke(deck));
-                button.name = "deck-" + deck;
-                button.userData = new DraftToken(DraftObject.Deck, deck, option.Kind);
-                row.Add(button);
-            }
-        }
-
-        private void HuntDice(VisualElement row, TurnDraft draft, ActionOption option)
-        {
-            foreach (var id in option.EligibleIds)
-            {
-                var button = Choice("·", () => draft.Payload.Ids.Contains(id), () => CardOrDieToggled?.Invoke(id), "Allocate this die to the Hunt");
-                button.name = "select-" + id;
-                refreshChoices.Add(() => button.text = draft.Payload.Ids.Contains(id) ? "Eye" : "·");
-                row.Add(button);
-            }
-            var count = new Label();
-            refreshChoices.Add(() => count.text = $"{draft.Payload.Ids.Count} selected · {(option.Minimum == option.Maximum ? $"choose {option.Minimum}" : $"choose {option.Minimum}–{option.Maximum}")}");
-            root.Add(count);
+            // UI-432: no deck list (a draw is the hand's decks, DirectCard, so DrawCard never reaches here) and no Hunt dice
+            // (the allocation is made at the dice and the Hunt Box, so AllocateHunt never reaches here either).
         }
 
         private Button Choice(string label, Func<bool> selected, Action action, string tooltip = "")
@@ -604,6 +597,8 @@ namespace Wotr.Client
         }
 
         public static string CardLabel(string id) => CardLibrary.Title(id);
+
+        private string RegionName(string id) => id != null && data.Regions.TryGetValue(id, out var region) ? region.Name : "";
 
         internal static string Title(DecisionKind kind, CommandKind? action) => ExpansionDecision.Title(kind).Length > 0 ? ExpansionDecision.Title(kind)
             : action.HasValue && ExpansionDecision.Label(action.Value).Length > 0 ? ExpansionDecision.Label(action.Value)

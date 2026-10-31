@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,8 +85,6 @@ namespace Wotr.Client
             tray.DraftEdited += EditChoice;
             tray.ChoiceCompleted += CompleteChoice;
             tray.RingChosen += id => EditChoice(() => draft.Change(p => p.RingId = id));
-            tray.CardOrDieToggled += id => Edit(() => draft.Toggle(id));
-            tray.DeckChosen += deck => Edit(() => draft.Change(p => p.Deck = deck));
             tray.Cancel += Back;
             tray.Confirm += Confirm;
             tray.ReinforcementsRequested += board.Reinforcements.Show;
@@ -133,7 +132,7 @@ namespace Wotr.Client
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption);
             console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
-                ChooseConsoleOption, ChooseComponent, ChooseRing, () => reinforcements.Planning);
+                ChooseDecline, ChooseConsoleOption, ChooseComponent, ChooseRing, () => reinforcements.Planning);
             tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
@@ -597,6 +596,21 @@ namespace Wotr.Client
                 CompleteChoice(() => EffectChoiceDraft.Choose(draft, option, choice.Id, choice.Region.Length > 0 ? choice.Region : null));
         }
 
+        // UI-432 (owner's rule, UI-430): the console's Pass (and a window's Skip effect) sends a card's optional decline:
+        // the decline's effect choice alone (a partial selection of the same step is dropped, as passing answers the
+        // whole step, the way the old exclusive button dropped it).
+        private void ChooseDecline(ConsoleOption decline)
+        {
+            if (SelectionBusy || view?.Decision == null)
+                return;
+            CompleteChoice(() =>
+            {
+                if (draft.Kind != CommandKind.ChooseEffect)
+                    DraftGesture.Choose(draft, view, CommandKind.ChooseEffect);
+                CardDraft.Choose(draft, decline.Id);
+            });
+        }
+
         private void Choose(CommandKind kind)
         {
             if (!CanChoose(kind))
@@ -809,6 +823,15 @@ namespace Wotr.Client
             }
         }
 
+        // UI-431: the Black Captain's Nazgûl lead their tooltips with his order; UI-432: so do the forces in Scouts'
+        // battle region, whose click withdraws into siege.
+        private IReadOnlyDictionary<string, string> ForceOffers()
+        {
+            if (captainOrder.Offers.Count > 0)
+                return captainOrder.Offers;
+            return SelectionBusy ? null : ScoutsShelter.Offers(view, draft);
+        }
+
         private bool RefreshContexts()
         {
             context.Refresh(view, draft);
@@ -827,7 +850,7 @@ namespace Wotr.Client
             components.Refresh(view, draft, !SelectionBusy);
             // UI-431: after the armies' contexts, whose map sources The Black Captain Commands' order replaces while it waits.
             captainOrder.Refresh(view, draft);
-            board.Map.OfferForces(captainOrder.Offers);
+            board.Map.OfferForces(ForceOffers());
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             board.CompanionSetup.Context(view);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||

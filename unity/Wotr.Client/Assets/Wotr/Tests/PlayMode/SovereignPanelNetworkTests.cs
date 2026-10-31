@@ -55,8 +55,12 @@ namespace Wotr.PlayTests
             Assert.AreEqual(id, board.Sovereigns.Selected);
             Assert.AreEqual(pan, board.Map.Camera.Pan);
             await SovereignPanelLayoutChecks.Layout(room, room.Fp, variant ? "awaken-variant" : "awaken");
-            await Ready(room, board.Tray.Q<Button>("travel-stay"));
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("travel-stay"));
+            // UI-432 (owner's rule, UI-430): the king stays by the click on his lit home region, which sends what Stay here
+            // sent (BoardRuleDeclineTests).
+            var home = option.Travel.Single(t => t.Id == id).Origin;
+            Assert.IsNull(board.Tray.Q<Button>("travel-stay"));
+            await room.Until(() => board.Map.DraftOverlay.Targets.Contains(home));
+            MapContourProbe.ClickRegion(board.Map, home);
             await room.At(revision + 1);
             foreach (var client in new[] { room.Fp, room.Sh })
             {

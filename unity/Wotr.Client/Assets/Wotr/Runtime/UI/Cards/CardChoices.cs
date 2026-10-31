@@ -81,18 +81,11 @@ namespace Wotr.Client
             // (CardFigureDraft), never in the tray.
             if (view.Decision?.Presentation is "ArmyFigure" or "ArmyFigures" or "CompanionDestination")
                 return;
-            if (view.Decision?.Presentation == "RegionOrShelter")
-            {
-                var shelter = option.EffectChoices.FirstOrDefault(c => c.Id == "scouts.shelter");
-                if (shelter != null)
-                    root.Add(EffectButton(option, shelter));
-                BoardChoice(root, option);
-                return;
-            }
-            if (view.Decision?.Presentation is "Region" or "ActionDie")
+            if (view.Decision?.Presentation is "Region" or "ActionDie" or ScoutsShelter.Presentation)
             {
                 // UI-431: a region's two forces are chosen on its region panel's glowing sections (RegionForceChoices), not
-                // on buttons here or in the console.
+                // on buttons here or in the console. UI-432: Scouts' Withdraw into siege is the battle's own region on the
+                // map, beside the lit regions it may retreat to (ScoutsShelter).
                 BoardChoice(root, option);
                 return;
             }
@@ -104,6 +97,11 @@ namespace Wotr.Client
                 // Breaking of the Fellowship on its portrait in the Hunt panel; UI-247: a battle reaction on its portrait.
                 if (BattleObjectChoices.Offered(view, id) || FellowshipActions.RosterChoice(view, id) ||
                     BattleReactions.OnPortrait(view, id))
+                    continue;
+                // UI-432 (owner's rule, UI-430): an optional decline is the console's Pass and the window's Skip effect;
+                // Worn with Sorrow and Toil's table cards are red in the Effects panel and its random hand card is the
+                // opponent's red card counter.
+                if (OptionalDecline.Declines(view, id) || WornDiscardChoice.OnObject(view, id))
                     continue;
                 // UI-285: a table card's Hunt response is a card object in the Hunt window's response row; UI-360: so is
                 // a Guide's response.
@@ -195,7 +193,7 @@ namespace Wotr.Client
                 button.tooltip = TooltipText.Parts(TooltipText.Unit(compactUnit.Nation, compactUnit.Kind), choice.Detail);
                 button.AddToClassList("effect-companion");
             }
-            if (reaction || view.Decision?.Presentation is "NazgulStrike" or "CharacterCardDiscard" or "InspectedHand" or "TableCards" or "SmeagolCorruption")
+            if (reaction || view.Decision?.Presentation is "NazgulStrike" or "InspectedHand" or "TableCards" or "SmeagolCorruption")
                 InspectSource(button, choice, reaction);
             if (reaction && view.Hunt != null)
             {

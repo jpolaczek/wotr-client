@@ -221,7 +221,9 @@ namespace Wotr.EditorTests
             choices.Refresh();
             Assert.IsNull(root.Q<Button>("cost-cost"));
             Assert.IsNull(root.Q<Button>("sovereign-choice-king"));
-            Assert.IsTrue(root.Q<Button>("travel-stay").enabledSelf);
+            // UI-432: staying is the click on the king's own lit region (TravelDraft.RouteTo), not a Stay here button.
+            Assert.IsNull(root.Q<Button>("travel-stay"));
+            Assert.IsTrue(TravelDraft.Reachable(draft, view, BoardPresentation.Load()).Contains("erebor"));
             Assert.IsFalse(draft.Ready(DraftOptions.For(view, draft)));
             var text = SovereignPresentation.Consequence(view, draft);
             StringAssert.Contains("Return all attached tiles", text);
@@ -234,7 +236,8 @@ namespace Wotr.EditorTests
             var tray = new VisualElement();
             var decision = new DecisionTray(tray);
             decision.Render(view, draft, false, false);
-            Assert.AreSame(tray.Q<Button>("travel-stay").parent, tray.Q<Button>("decision-back").parent);
+            Assert.AreSame(tray.Q<Label>("travel-summary").parent, tray.Q<Button>("decision-back").parent,
+                "The Back keeps its place in the route row.");
             Assert.IsEmpty(FellowshipDraft.Hint(draft, view));
             // UI-105: the destination click places the sovereign; no route is drawn.
             StringAssert.Contains("Click a highlighted destination", tray.Q<Label>("travel-summary").tooltip);

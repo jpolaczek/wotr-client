@@ -492,7 +492,10 @@ Grey)" since UI-420; several responses are listed) (`ReactionSkip`). The separat
 "Decline"/"Skip" buttons are gone, so the console keeps its hint ("… · or Pass to skip it."), and three object-less
 responses now fit the console. The opponent's window never enables it. Tests: `CardConsoleOptionsTests`,
 `ReactionSourcesTests`, `HuntLayoutTests`, `HuntAftermathNetworkTests`, `BoardCompletionHostTests`,
-`CardPack04NetworkTests`.
+`CardPack04NetworkTests`. UI-432 (2026-10-31, owner's rule of UI-430): the Pass also sends the base cards' optional
+declines — Black Breath's and Heroic Death's "Keep all", Fateful Strike's "Keep Minions", Andúril's "Keep misses" and
+Worn with Sorrow and Toil's "Keep cards" — its tooltip naming the card and what passing does, the hint ending "Or Pass
+to …", and the battle and Hunt windows' Skip effect sends the same Pass (`OptionalDecline`, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)).
 
 ## The status plaque lights only when its click opens something — UI-292 (2026-10-20)
 

@@ -8,7 +8,8 @@ namespace Wotr.Client
     // UI-160: feeds the turn console from the projection and the draft, and routes its permanent actions through the
     // tray's own paths: Back, Confirm (Check result), finishing a multi-step action, the Pass and discard
     // components and the Elven Ring choice. The decision window opens only while the docked tray offers choices.
-    // UI-430 (owner): the ✓ also sends a card's Finish (FinishingOption), the way its old console button did.
+    // UI-430 (owner): the ✓ also sends a card's Finish (FinishingOption), the way its old console button did. UI-432
+    // (owner's rule, UI-430): the Pass also sends a card's optional decline (OptionalDecline).
     public sealed class TurnConsoleInteraction : IDisposable
     {
         private readonly BoardScreen board;
@@ -17,6 +18,7 @@ namespace Wotr.Client
         private readonly Action confirm;
         private readonly Action finish;
         private readonly Action decline;
+        private readonly Action<ConsoleOption> declineOption;
         private readonly Action<ConsoleOption> finishOption;
         private readonly Action<ComponentAction> component;
         private readonly Action<string> ring;
@@ -31,10 +33,11 @@ namespace Wotr.Client
 
         // reinforcing: a card or ability recruitment plan is under way; the Reinforcements panel holds its choices
         // and its own ✓, so the decision window stays closed and the status opens that panel. finishOption: the path a
-        // card's console option took (UI-214), which the ✓ takes for the card's Finish.
+        // card's console option took (UI-214), which the ✓ takes for the card's Finish; declineOption: the path the Pass
+        // takes for a card's optional decline (UI-432).
         public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action confirm, Action finish,
-            Action decline, Action<ConsoleOption> finishOption, Action<ComponentAction> component, Action<string> ring,
-            Func<bool> reinforcing)
+            Action decline, Action<ConsoleOption> declineOption, Action<ConsoleOption> finishOption,
+            Action<ComponentAction> component, Action<string> ring, Func<bool> reinforcing)
         {
             this.board = board;
             this.tray = tray;
@@ -42,6 +45,7 @@ namespace Wotr.Client
             this.confirm = confirm;
             this.finish = finish;
             this.decline = decline;
+            this.declineOption = declineOption;
             this.finishOption = finishOption;
             this.component = component;
             this.ring = ring;
@@ -95,11 +99,13 @@ namespace Wotr.Client
             var components = ComponentActions.For(view, draft).ToList();
             var pass = components.FirstOrDefault(c => c.Kind == CommandKind.Pass);
             var discard = components.FirstOrDefault(c => c.Kind == CommandKind.DiscardDie);
-            // UI-291: in the player's own reaction window Pass declines it and names what it skips.
+            // UI-291: in the player's own reaction window Pass declines it and names what it skips; UI-432: so it does
+            // for a card's optional decline.
             var skip = ReactionSkip.Option(view) != null;
-            var passable = idle && (skip || pass?.Enabled == true);
+            var optional = skip ? null : OptionalDecline.Option(view, draft);
+            var passable = idle && (skip || optional?.Enabled == true || pass?.Enabled == true);
             ConsoleActions.Set(actions.Pass, passable, skip ? ReactionSkip.Tooltip(view)
-                : Tooltip("Pass", ConsoleActions.PassDetail, CommandKind.Pass, pass));
+                : optional != null ? optional.Tooltip : Tooltip("Pass", ConsoleActions.PassDetail, CommandKind.Pass, pass));
             actions.Invite(actions.Pass, passable);
             ConsoleActions.Set(actions.Discard, idle && discard?.Enabled == true,
                 Tooltip("Discard", DiscardDetail(), CommandKind.DiscardDie, discard));
@@ -180,15 +186,21 @@ namespace Wotr.Client
             var own = trayHint.Length > 0;
             var text = own ? trayHint : fallback;
             var progress = view != null && draft != null && CardDecisions.Owns(view, draft) ? CardDecisions.Progress(view, draft) : "";
-            board.Console.Status.SetHint(WithFinish(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallback);
+            board.Console.Status.SetHint(WithDecline(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallback);
         }
 
-        // UI-430: a step whose Finish is the console's ✓ says so while the ✓ can send it, unless its hint already names the ✓.
-        private string WithFinish(string text)
+        // UI-432: a step whose decline is the console's Pass says so, unless its hint already names Pass; UI-430: a step
+        // whose Finish is the console's ✓ likewise, only while the ✓ can send it.
+        private string WithDecline(string text)
         {
+            var decline = view != null && draft != null ? OptionalDecline.Hint(view, draft) : "";
             var finish = idle && view != null && draft != null ? FinishingOption.Hint(view, draft) : "";
-            return finish.Length == 0 || text.Contains("✓") ? text : (text.Length > 0 ? text + " " : "") + finish;
+            return Append(Append(text, decline, "Pass"), finish, "✓");
         }
+
+        // The sentence joins the hint unless the hint already names its control.
+        private static string Append(string text, string sentence, string control) =>
+            sentence.Length == 0 || text.Contains(control) ? text : (text.Length > 0 ? text + " " : "") + sentence;
 
         private bool Finishing() => view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Owner == view.You;
 
@@ -232,11 +244,16 @@ namespace Wotr.Client
         private bool Allocating() => HuntActions.Allocation(view) is { } option && draft.Kind == CommandKind.AllocateHunt &&
             draft.Ready(option);
 
-        // The console's Pass; UI-423: also the battle and Hunt windows' Skip effect.
+        // The console's Pass; UI-423: also the battle and Hunt windows' Skip effect. UI-432: it sends a card's optional
+        // decline too.
         public void Pass()
         {
-            if (view != null && idle && ReactionSkip.Option(view) != null)
+            if (view == null || !idle)
+                return;
+            if (ReactionSkip.Option(view) != null)
                 decline();
+            else if (OptionalDecline.Option(view, draft) is { Enabled: true } optional)
+                declineOption(optional);
             else
                 Choose(CommandKind.Pass);
         }
