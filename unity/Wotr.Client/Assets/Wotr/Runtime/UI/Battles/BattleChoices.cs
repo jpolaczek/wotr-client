@@ -56,6 +56,8 @@ namespace Wotr.Client
                         figure.userData = new DraftToken(DraftObject.Figure, id, action: draft.Kind);
                 }
                 refresh.Add(grid.Refresh);
+                if (draft.Kind == CommandKind.ExtendSiege)
+                    OfferSiegeFigures(grid);
             }
             if (draft.Kind == CommandKind.RetreatBattle)
             {
@@ -101,6 +103,24 @@ namespace Wotr.Client
                 IconButton.SetIcon(toggle, all ? "deselect-all" : "select-all");
                 toggle.EnableInClassList("all-selected", all);
                 toggle.tooltip = all ? "Deselect all · Every figure stays" : "Select all · Every figure that can advance";
+            });
+        }
+
+        // UI-434 (owner, after UI-433): "Click a highlighted figure to extend the siege with it" — one click extends, so no
+        // figure is chosen before it, and the grid drew every figure dimmed as one left behind. Each figure the extension may
+        // take wears the shared gold ChoiceGlow instead and breathes with the grid's pulse.
+        private void OfferSiegeFigures(FigureGrid grid)
+        {
+            var pulse = new ChoicePulse(grid.Root);
+            refresh.Add(() =>
+            {
+                var figures = grid.Root.Query<Button>(className: "figure").ToList();
+                foreach (var figure in figures)
+                {
+                    figure.RemoveFromClassList("left-behind");
+                    ChoiceGlow.Apply(figure, figure.enabledSelf);
+                }
+                pulse.Run(figures.Count > 0);
             });
         }
 

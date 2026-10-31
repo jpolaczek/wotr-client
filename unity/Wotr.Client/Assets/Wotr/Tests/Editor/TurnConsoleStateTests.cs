@@ -94,8 +94,11 @@ namespace Wotr.EditorTests
             view.Options.Add(new ActionOption { Kind = CommandKind.DeclareFellowship, Enabled = true });
             view.Options.Add(new ActionOption { Kind = CommandKind.EnterMordor, Enabled = true });
             var guidance = TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Guidance;
-            StringAssert.StartsWith("Declare: click the glowing Fellowship figure on the map · Enter Mordor: click the glowing gate", guidance);
-            StringAssert.EndsWith("or continue to the Hunt.", guidance);
+            // UI-434: both share one clause that says the gate is the map's, within the console's two lines.
+            Assert.AreEqual("Declare or enter Mordor: click the glowing figure or gate on the map · or continue to the Hunt.", guidance);
+            view.Options.RemoveAll(o => o.Kind == CommandKind.DeclareFellowship);
+            Assert.AreEqual("Enter Mordor: click the glowing gate on the map · or continue to the Hunt.",
+                TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), Region).Guidance);
         }
 
         [Test]

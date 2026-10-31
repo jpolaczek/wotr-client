@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UIElements;
 
 namespace Wotr.Client
@@ -40,6 +42,48 @@ namespace Wotr.Client
             }
             tick.Pause();
             host.RemoveFromClassList(pulseClass);
+        }
+    }
+
+    // UI-434 (owner, after UI-433): the dice a choice offers in a pool wear the shared gold glow and pulse with the pool,
+    // wherever the pool stands (the console's own pool, the top bar's opponent pool). Several interactions offer dice in
+    // the same pool (an Elven Ring's die, a payment, a resource decision); each names its own and the pool lights their
+    // union, so one interaction's refresh never puts out another's. Anything else in the pool that glows (a Council
+    // medallion) breathes with the same pulse.
+    public sealed class PoolChoiceGlow
+    {
+        private readonly VisualElement pool;
+        private readonly ChoicePulse pulse;
+        private readonly Dictionary<object, HashSet<string>> offers = new Dictionary<object, HashSet<string>>();
+
+        public PoolChoiceGlow(VisualElement pool)
+        {
+            this.pool = pool;
+            pulse = new ChoicePulse(pool);
+        }
+
+        public void Offer(object source, IEnumerable<string> dice)
+        {
+            offers[source] = new HashSet<string>(dice);
+            Apply();
+        }
+
+        // An interaction that ends takes its dice back.
+        public void Withdraw(object source)
+        {
+            if (offers.Remove(source))
+                Apply();
+        }
+
+        public bool Offers(string die) => offers.Values.Any(dice => dice.Contains(die));
+
+        // Lights the offered dice and runs the pulse while anything in the pool glows.
+        public void Apply()
+        {
+            foreach (var button in pool.Query<Button>().ToList())
+                if (button.userData is DraftToken { Object: DraftObject.Die } token)
+                    ChoiceGlow.Apply(button, Offers(token.Id));
+            pulse.Run(pool.Query(className: ChoiceGlow.ClassName).ToList().Count > 0);
         }
     }
 }

@@ -39,6 +39,21 @@ namespace Wotr.Client
         public static bool CouncilEntry(PlayerView view, string token) => view.Options.Any(o => o.Enabled &&
             o.Kind == CommandKind.EnterCharacter && o.CharacterActions.Any(c => c.CouncilTokens.Contains(token) && c.Dice.Count > 0));
 
+        // UI-434: the Council medallion a hint asks for glows in gold — the token the Council's choice offers ("Click the
+        // glowing Council token you want"), or one a chosen Chieftain's entry may pay with while it waits for its region
+        // (CharacterChoices.RegionHint: "Click a glowing Council token to pay the entry").
+        public static bool CouncilAsked(PlayerView view, TurnDraft draft, string token) =>
+            CouncilTokenSlots.Offered(view, token) || EntryAsksCouncil(view, draft, token);
+
+        private static bool EntryAsksCouncil(PlayerView view, TurnDraft draft, string token)
+        {
+            if (draft?.Kind != CommandKind.EnterCharacter || draft.Payload.RegionId.Length > 0 || draft.Payload.CouncilTokenId.Length > 0)
+                return false;
+            var option = DraftOptions.For(view, draft);
+            var selected = option == null ? null : CharacterDraft.Selected(draft, option);
+            return selected != null && selected.Recruitment.Count == 0 && selected.CouncilTokens.Contains(token);
+        }
+
         public static CouncilClick Clicked(PlayerView view, TurnDraft draft, string token)
         {
             if (!CanSelectCouncil(view, token))
@@ -66,12 +81,13 @@ namespace Wotr.Client
                 return "";
             var token = draft.Payload.CouncilTokenId;
             // UI-423 (owner's playtest pattern, like UI-374): the hint names what glows — a Shadow nation's token and its
-            // arrow (no station glows, UI-410) — and the figures the travel offers, Minions among them (UI-416).
+            // arrow (no station glows, UI-410) — and the figures the travel offers, Minions among them (UI-416). UI-434: both
+            // places fit the console's two lines (the longer hint lost "in Politics" to its ellipsis at 1366 × 768).
             var use = CouncilUse(view, draft, token) == null ? ""
-                : token == ExpansionDraft.CouncilPolitics ? ", or a glowing Shadow nation's token or its → arrow in Politics for its printed use"
-                : ", or the " + CouncilTravel.Subject(view, draft) + " above the token and their destination for its printed use";
-            return "Click a lit Chieftain's row in the Characters panel to enter him with this token" + use +
-                ". An entry also spends the die you select; a click on the token releases it.";
+                : token == ExpansionDraft.CouncilPolitics ? ", or a glowing Shadow nation's token or → in Politics"
+                : ", or the " + CouncilTravel.Subject(view, draft) + " above the token, then their destination";
+            return use.Length > 0 ? "Click a lit Chieftain's row in Characters to enter him" + use + "."
+                : "Click a lit Chieftain's row in Characters to enter him with this token; the entry also spends a die.";
         }
 
         public static IEnumerable<string> CouncilDice(PlayerView view, TurnDraft draft)
@@ -101,12 +117,25 @@ namespace Wotr.Client
         {
             DecisionKind.SpecialDieChoice => "Click a highlighted die to keep it. Your other special dice wait for the next turn.",
             DecisionKind.RulerDiscard => "Click a highlighted die to set it aside until Recover. It cannot be used this turn.",
-            // UI-433: the Ruler die Dismay rerolls is the opponent's, in the top bar.
-            DecisionKind.Dismay => "Click the glowing Ruler die in the top bar to reroll it with Dismay.",
+            DecisionKind.Dismay => DismayHint(view),
             DecisionKind.CouncilToken => "Click the glowing Council token you want; you use it later in an action, without a die.",
-            DecisionKind.KeepActionDie => "Click the glowing Vilya to keep the die that paid for this action, or Pass to spend the die and keep Vilya.",
+            // UI-434: Vilya is a socket in the console (Lords also has a Vilya die), so the hint says where.
+            DecisionKind.KeepActionDie => "Click the glowing Vilya in the console to keep the die that paid, or Pass to spend the die and keep Vilya.",
             _ => "Choose the exact die and its new face. Changing the face does not use the die."
         };
+
+        // UI-433, UI-434: the hint names where the Ruler die Dismay rerolls stands — the Free Peoples' in the top bar, the
+        // Shadow's own in its pool beside the console.
+        private static string DismayHint(PlayerView view)
+        {
+            var offered = DismayChoice.Option(view)?.EligibleDice.ToHashSet() ?? new HashSet<string>();
+            var dice = view.Dice.Where(d => offered.Contains(d.Id)).ToList();
+            var own = dice.Any(d => d.Owner == view.You);
+            var opponent = dice.Any(d => d.Owner != view.You);
+            var die = own && opponent ? "a glowing Ruler die, yours or the top bar's,"
+                : own ? "your glowing Ruler die" : "the glowing Ruler die in the top bar";
+            return "Click " + die + " to reroll it with Dismay.";
+        }
 
         // UI-420 (owner): each explanation starts with its title, so they follow one another without a blank line.
         public static string Explain(PlayerView view, string subject)

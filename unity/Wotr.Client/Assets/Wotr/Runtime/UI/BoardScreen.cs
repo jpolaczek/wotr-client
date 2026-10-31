@@ -21,6 +21,9 @@ namespace Wotr.Client
         public VisualElement OwnDice { get; } = new VisualElement { name = "own-dice" };
         public VisualElement Hand { get; } = new VisualElement { name = "hand" };
         public VisualElement OpponentDice { get; } = new VisualElement { name = "opponent-dice" };
+        // UI-434: the dice a choice offers glow in gold in their own pool and pulse with it (PoolChoiceGlow).
+        public PoolChoiceGlow OwnDiceChoices { get; }
+        public PoolChoiceGlow OpponentDiceChoices { get; }
         public Label Phase { get; } = new Label();
         public Label Connection { get; } = new Label();
         public Label Tracks { get; } = new Label();
@@ -157,6 +160,8 @@ namespace Wotr.Client
             Presentation = BoardPresentation.Load();
             Presentation.ClearGameState();
             Root.AddToClassList("board-screen");
+            OwnDiceChoices = new PoolChoiceGlow(OwnDice);
+            OpponentDiceChoices = new PoolChoiceGlow(OpponentDice);
             Escape = new BoardEscape(this);
             Root.RegisterCallback<GeometryChangedEvent>(e =>
                 Root.EnableInClassList("short-viewport", e.newRect.height > 0 && e.newRect.height < 700));

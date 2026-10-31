@@ -23,12 +23,13 @@ namespace Wotr.Client
         private readonly string[] shown = new string[Count];
         private readonly Side?[] owners = new Side?[Count];
         private bool applied;
-        private readonly ChoicePulse litArt;
+        // UI-434: the sockets a decision asks for glow in gold and pulse in the shared rhythm.
+        private readonly ChoicePulse pulse;
 
         public ConsoleRings()
         {
             Root.AddToClassList("console-rings");
-            litArt = new ChoicePulse(Root, ChoiceGlow.LitArtPulseClass);
+            pulse = new ChoicePulse(Root);
             for (var index = 0; index < Count; index++)
             {
                 var position = index;
@@ -60,14 +61,14 @@ namespace Wotr.Client
             IReadOnlyCollection<string> chosen = null)
         {
             var ordered = view.Rings.OrderBy(r => NamedRings.Place(r.Id)).ThenBy(r => r.Id, StringComparer.Ordinal).ToList();
-            var keeperOffered = false;
+            var asked = false;
             for (var index = 0; index < Count; index++)
             {
                 var ring = index < ordered.Count ? ordered[index] : null;
                 shown[index] = ring?.Id ?? "";
                 var keeper = enabled && ring != null && ring.Owner == view.You && NamedRings.KeeperReady(view, ring.Id);
-                keeperOffered |= keeper;
                 var usable = keeper || enabled && ring != null && option is { Enabled: true } && option.EligibleIds.Contains(ring.Id);
+                var picked = ring != null && chosen?.Contains(ring.Id) == true;
                 // A card may recover a Ring the Shadow holds or one out of play, so its socket answers too.
                 ids[index] = ring != null && (ring.Owner == view.You || usable) ? ring.Id : "";
                 var socket = sockets[index];
@@ -78,15 +79,22 @@ namespace Wotr.Client
                 socket.EnableInClassList("ring-free", ring?.Owner == Side.FreePeoples);
                 socket.EnableInClassList("ring-captured", ring?.Owner == Side.Shadow);
                 socket.EnableInClassList("ring-removed", ring?.Owner == null);
-                socket.EnableInClassList("selected", ring != null && (ring.Id == armed || chosen?.Contains(ring.Id) == true));
+                socket.EnableInClassList("selected", picked || ring != null && ring.Id == armed);
                 socket.EnableInClassList("legal-target", usable);
+                var glows = Asked(keeper, usable, kind) && !picked;
+                ChoiceGlow.Apply(socket, glows);
+                asked |= glows;
                 socket.SetEnabled(usable);
                 socket.tooltip = keeper ? Name(ring) + "\n" + NamedRings.UseNow(ring.Id) : Tooltip(view, ring, usable, option, kind);
             }
             applied = true;
-            // UI-345 (D6): a Keeper Ring offered now pulses on its lit socket.
-            litArt.Run(keeperOffered);
+            pulse.Run(asked);
         }
+
+        // UI-434 (owner, after UI-433): a socket a hint asks for — a Keeper Ring offered now (Nenya's tile, Vilya's keep, UI-268),
+        // a card's recovery (UI-272), a removal's Ring payment — wears the gold ChoiceGlow over its lit art, which alone read
+        // as unlit (UI-345's lit art and its pulse). A Ring the chosen die may use (UseRing) keeps its bright art only.
+        private static bool Asked(bool keeper, bool usable, CommandKind kind) => keeper || usable && kind != CommandKind.UseRing;
 
         // UI-268: the socket's art follows its named ring; keeper-ready lights it.
         private static void Name(Button socket, string key, bool keeper)

@@ -388,7 +388,10 @@ The Fellowship panel has no Declare position or Enter Mordor button. In the Fell
   click starts the route on the map (`MapFellowshipMarker.DeclareRequested`);
 - the glowing gate (or step 0) of the Mordor track enters Mordor (UI-155);
 - the console names both: "Declare: click the Fellowship figure · Enter Mordor: click the glowing gate · … or continue
-  to the Hunt." (`TurnConsoleState`).
+  to the Hunt." (`TurnConsoleState`). Since UI-434 (2026-10-31,
+  [UX_SPEC](UX_SPEC.md#every-object-a-hint-asks-to-click-visibly-glows--ui-434)) the offered gate wears the gold
+  ChoiceGlow on the map, and the hint names the map's gate in one clause with the declaration: "Declare or enter Mordor:
+  click the glowing figure or gate on the map · or continue to the Hunt."
 
 Finish phase stays in the panel; the Guide is chosen on its portrait (UI-249). Tests: `TurnConsoleStateTests.FellowshipPhaseNamesTheFigureAndTheGate`,
 the PlayMode gestures `FellowshipGestures.Declare` and `FellowshipGestures.EnterMordor`.

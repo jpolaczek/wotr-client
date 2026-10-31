@@ -331,7 +331,9 @@
 
 /* UI-345 (EXP-15 D6): the expansions' lit art — special, Lore and Council dice (resource-candidate), Keeper Ring
    sockets (keeper-ready), Council medallions and the Spear's deck — keeps its art and dims a little and back in the
-   shared 750 ms rhythm while its host's ticker runs (ChoicePulse with lit-art-pulse). Reduced motion keeps it still. */
+   shared 750 ms rhythm while its host's ticker runs (ChoicePulse with lit-art-pulse). Reduced motion keeps it still.
+   UI-434: an offered die, an asked medallion, a Keeper socket and an asked deck wear the gold ChoiceGlow instead (below);
+   only a usable medallion no hint asks for still fades its lit art. */
 .motion-enabled #board-screen .die.resource-candidate,
 .motion-enabled #board-screen .council-token.legal-target,
 .motion-enabled #board-screen .card-deck.spear-deck {
@@ -345,9 +347,7 @@
     transition-timing-function: ease-in-out-sine;
 }
 .motion-enabled #board-screen .lit-art-pulse .die.resource-candidate,
-.motion-enabled #board-screen .lit-art-pulse .council-token.legal-target,
-.motion-enabled #board-screen .lit-art-pulse .console-ring-socket.keeper-ready,
-.motion-enabled #board-screen .card-decks.lit-art-pulse .card-deck.spear-deck {
+.motion-enabled #board-screen .lit-art-pulse .council-token.legal-target {
     opacity: 0.7;
 }
 /* UI-345: a Council medallion whose state changed flashes its art instead of growing (ValuePulse's scale): the pool's
@@ -360,6 +360,83 @@
 .motion-enabled #board-screen .council-token.value-pulse {
     scale: 1 1;
     -unity-background-image-tint-color: rgb(255, 236, 170);
+}
+
+/* UI-434 (owner, after UI-433): every object a hint asks to click glows where it stands. The own pool's dice a resource
+   decision offers wear the dice panel's ChoiceGlow (PoolChoiceGlow), so their lit art's own fading stops and the rim
+   breathes instead. Placed after UI-345's lit-art rules, so these transitions win. */
+.motion-enabled #board-screen .lit-art-pulse .die.resource-candidate.choice-glow { opacity: 1; }
+/* A pool's row has no room for a larger die (its dice may not overlap, ExpansionMatrixLayoutTests.ResourcesFit), so an
+   offered die breathes in rim and plate only, in both pools. */
+.motion-enabled #board-screen .dice-panel.choice-glow-pulse .die.choice-glow,
+.motion-enabled #board-screen #opponent-dice.choice-glow-pulse .die.choice-glow { scale: 1 1; }
+.motion-enabled #board-screen .die.resource-candidate.choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+/* The Council medallion a hint asks for (the Council's offer, a Chieftain's entry cost): a gold rim on a warm plate round
+   the medallion, breathing with its pool — rim and plate only, as the row has no room for a larger medallion. */
+#board-screen .dice-panel .pool-tokens .council-token.choice-glow {
+    border-width: 3px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled #board-screen .council-token.choice-glow {
+    transition-property: opacity, border-color, background-color, -unity-background-image-tint-color;
+    transition-duration: 750ms, 750ms, 750ms, 0.16s;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .dice-panel.choice-glow-pulse .pool-tokens .council-token.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+}
+/* The console's Elven Ring a hint asks for (a Keeper Ring offered now, a card's recovery, a removal's Ring payment): a
+   round gold rim on a warm plate inside the fixed socket, its picture kept in place; rim and plate breathe, the console's
+   size stays. */
+#board-screen .console-ring-socket.choice-glow,
+#board-screen .console-ring-socket.choice-glow:hover:enabled {
+    border-width: 3px;
+    border-radius: 17px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+#board-screen .console-ring-socket.choice-glow > .console-ring-image { left: -2px; top: -2px; }
+.motion-enabled #board-screen .console-ring-socket.choice-glow {
+    transition-property: border-color, background-color, scale, opacity;
+    transition-duration: 750ms, 750ms, 0.18s, 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .console-rings.choice-glow-pulse .console-ring-socket.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+}
+/* A deck a hint asks for (a deck choice, a reaction's draw): the thick gold rim round its back, breathing in rim only
+   (the two decks share their row). The die's pale halo (UI-136), drawn over the rim, steps aside for it. */
+#board-screen .edge-cards .card-decks .card-deck.choice-glow { border-width: 3px; border-color: rgb(255, 214, 112); }
+#board-screen .card-deck.choice-glow > .die-option-glow { display: none; }
+.motion-enabled #board-screen .card-deck.choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .edge-cards .card-decks.choice-glow-pulse .card-deck.choice-glow { border-color: rgba(255, 214, 112, 0.4); scale: 1 1; }
+/* The Mordor gate the Fellowship may enter by: the gold rim on a warm plate round the gate on the map, breathing. */
+.map .mordor-gate.choice-glow,
+.map .mordor-gate.choice-glow:hover {
+    border-width: 3px;
+    border-radius: 10px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled .map .mordor-gate.choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms, 750ms, 0.35s;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .map .choice-glow-pulse .mordor-gate.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
 }
 
 /* UI-345: the sovereign's attempt button and its tiles show their ChoiceGlow (their art has no border of its own),

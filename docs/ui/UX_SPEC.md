@@ -1043,9 +1043,10 @@ The 2026-10-12 application: “Do not add a new move button when moving the ring
   movement. When the motion is activated, the glow pulsates gently; the reduced motion leaves a
   constant glow.
 - Tooltip gives the effect, and the hint of the panel indicates “Click the shining track symbol”.
-- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the
-  declaration the Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing
-  portrait (UI-249); none of them is a panel button.
+- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the declaration the
+  Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing portrait (UI-249);
+  none of them is a panel button. Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434) (2026-10-31)
+  the offered gate wears the gold ChoiceGlow on the map and the hint names the map's gate.
 
 <a id="proste-powiadomienia-i-pergaminowe-karty--ui-106"></a>
 ## Simple notifications and parchment card — UI-106
@@ -1426,12 +1427,15 @@ Owner decision 2026-10-19: the kings' decisions are made on their objects, and n
   opens and closes with a fade, its rows fade in and out, a value of the same king that changes pulses (another king's
   values do not), and a newly attached tile fades in. A lit portrait, attempt button or tile pulses with the Characters
   roster in its one rhythm (`CharacterRosterPanel.OfferSovereigns`); the attempt button and the tiles show their
-  ChoiceGlow rim. The Dice & tokens panel (deleted in UI-276), its tab and the Council's choices fade; a new Ruler or Dismay token arrives
-  in the pool and a Council medallion whose state changes flashes its art (it does not grow: the pool's row has no room
-  beside it). The expansions' tray choices (`ExpansionChoices`) and the version card not chosen glow and pulse (the
-  version card in its rim and plate only, as it fills the tray's width). Per D6 the lit art — special, Lore and Council dice, Keeper Ring sockets
-  offered now, Council medallions, the Spear's deck — keeps its art and dims and back in the shared 750 ms rhythm
-  (`ChoiceGlow.LitArtPulseClass`, a ticker per host that runs only while something is lit).
+  ChoiceGlow rim. The Dice & tokens panel (deleted in UI-276), its tab and the Council's choices fade; a new Ruler or
+  Dismay token arrives in the pool and a Council medallion whose state changes flashes its art (it does not grow: the
+  pool's row has no room beside it). The expansions' tray choices (`ExpansionChoices`) and the version card not chosen
+  glow and pulse (the version card in its rim and plate only, as it fills the tray's width). Per D6 the lit art —
+  special, Lore and Council dice, Keeper Ring sockets offered now, Council medallions, the Spear's deck — keeps its art
+  and dims and back in the shared 750 ms rhythm (`ChoiceGlow.LitArtPulseClass`, a ticker per host that runs only while
+  something is lit). Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434) (2026-10-31) an offered
+  die, a Keeper socket, a medallion a hint asks for and an asked deck also wear the gold ChoiceGlow and breathe with it,
+  since the lit art alone read as unlit; only a usable medallion no hint names keeps the lit art's fading alone.
 
 This supersedes UI-59's decision host and UI-101's hiding of portraits. Tests: `SovereignPanelTests`,
 `SovereignMapTests`, `DecisionRoutesTests`, `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests`,
@@ -1645,15 +1649,17 @@ human-friendly names" (a Log entry read `base.sh.character.04: base.hunt.special
 The owner's decisions EXP-15 D7 and D18–D20 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)); the Dice & tokens panel is
 deleted, since no resource decision is made in it any more (UI-264's plan).
 
-- **Dismay (D20, D7).** After the roll the Shadow spends Dismay by clicking a glowing Ruler die alone — the Free Peoples'
-  in the opponent's pool, or the Shadow's own: it pulses with the expansions' lit art (UI-433, 2026-10-31, owner's report
-  "nothing is lit": in the top bar the lit art alone read as unlit, so the opponent's offered die also wears the shared
-  gold ChoiceGlow and pulses, and the hint reads "Click the glowing Ruler die in the top bar to reroll it with
-  Dismay."), and its tooltip names the token
-  it spends ("Click to spend Théoden's Dismay token and re-roll this Ruler die"). Which token is spent makes no
-  difference (KINGS, `Kings/KingsDismay.cs`), so the first one offered is picked (`DismayChoice`); the log names it.
-  The Dismay tokens in the Shadow's pool are information. Keeping the tokens is the console's Pass ("Pass · Keep your
-  Dismay tokens"), and the console's hint ends with it; no button, panel or window remains.
+- **Dismay (D20, D7).** After the roll the Shadow spends Dismay by clicking a glowing Ruler die alone — the Free
+  Peoples' in the opponent's pool, or the Shadow's own: it pulses with the expansions' lit art (UI-433, 2026-10-31,
+  owner's report "nothing is lit": in the top bar the lit art alone read as unlit, so the opponent's offered die also
+  wears the shared gold ChoiceGlow and pulses, and the hint reads "Click the glowing Ruler die in the top bar to reroll
+  it with Dismay."; [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434), 2026-10-31: the Shadow's own die
+  glows in its pool too, and the hint names where each offered die stands — "Click a glowing Ruler die, yours or the top
+  bar's, to reroll it with Dismay." when both are offered), and its tooltip names the token it
+  spends ("Click to spend Théoden's Dismay token and re-roll this Ruler die"). Which token is spent makes no difference
+  (KINGS, `Kings/KingsDismay.cs`), so the first one offered is picked (`DismayChoice`); the log names it. The Dismay
+  tokens in the Shadow's pool are information. Keeping the tokens is the console's Pass ("Pass · Keep your Dismay
+  tokens"), and the console's hint ends with it; no button, panel or window remains.
 - **Ruler tokens (D19).** A Ruler token is a crowned coin (`graphicalassets/ui/src/tokens/ruler-token.svg`, replaceable
   art) with its king's nation emblem: blue while the Free Peoples hold it and lit while a die can use it, red for the
   Shadow's Dismay tokens. The usable token stands in the dice pool; the king who holds it wears it as a small badge on
@@ -1835,13 +1841,15 @@ Owner reports from the Kings Ruler token scenarios:
 - UI-390 — a deck choice is made on its decks. After Denethor's token (or Ruler die) pays for an Event, the Palantír of
   Anárion's extra card asks for a deck, with no Skip while his token is spent. Before, the console said "Resolve the
   played card" beside the played card's chip, the decks beside the hand kept only a thin rim (an expanded hand card
-  could cover it), the console's plaque and the notice opened the army window in Minas Tirith where Denethor stands,
-  and his window showed an Open decision that led back there. Now the decks wear the same halo as a die's draw, the
-  console and the notice read "Denethor · Choose a deck" and "Click a glowing deck beside your hand to draw its top
-  card" (with Pass named when the draw may be skipped), the notice leads to the hand (`DecisionContext.Hand`) — the
-  docked hand shows its decks already, so the plaque has nothing to open — a floating hand drawer opens once for the
-  step, and the character keeps no Open decision link (`DeckChoice`). Tests: `DeckChoiceTests`, `DeckChoiceMenuTests`
-  (Horn of Gondor with Denethor's token from the test menu).
+  could cover it), the console's plaque and the notice opened the army window in Minas Tirith where Denethor stands, and
+  his window showed an Open decision that led back there. Now the decks wear the same halo as a die's draw, the console
+  and the notice read "Denethor · Choose a deck" and "Click a glowing deck beside your hand to draw its top card" (with
+  Pass named when the draw may be skipped), the notice leads to the hand (`DecisionContext.Hand`) — the docked hand
+  shows its decks already, so the plaque has nothing to open — a floating hand drawer opens once for the step, and the
+  character keeps no Open decision link (`DeckChoice`). Tests: `DeckChoiceTests`, `DeckChoiceMenuTests` (Horn of Gondor
+  with Denethor's token from the test menu). Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434)
+  (2026-10-31) the offered decks also wear the thick gold ChoiceGlow rim and breathe: the halo and the thin rim alone
+  read as unlit.
 
 ## Abilities on their rows, recruitment from the map, a lifted figure — UI-391 to UI-397 (2026-10-29)
 
@@ -2317,3 +2325,157 @@ battle region; screenshots `ui432-*-1366-1.00.png`), `FarSightedObjectTests` (Th
 against the old Far-sighted and Standard buttons, each in its own run), `Shadow02LayoutTests`, `Shadow03NetworkTests`,
 `Strategy01NetworkTests`, `Strategy01LayoutTests`, `CardPack02NetworkTests`, `ExpansionTokenNetworkTests`, the Fellowship
 tray tests (`FellowshipNetworkTests`, `FellowshipLayoutTests`, `CharacterNetworkTests`, `CompanionJourneyMapTests`).
+
+<a id="every-object-a-hint-asks-to-click-visibly-glows--ui-434"></a>
+## Every object a hint asks to click visibly glows — UI-434 (2026-10-31)
+
+The owner, after UI-433 (Dismay's Ruler die read as unlit in the top bar): audit every effect whose hint or tooltip asks
+the player to click a glowing, lit, highlighted, red or pulsing object, and make sure that object visibly glows where it
+stands (UI-430's rule: objects signal options by glowing and pulsing). An object is **strong** when it wears the shared
+gold ChoiceGlow (a rim of at least 2 points on a warm plate) or the legal-target rim in a pulsing host, the red discard
+look, or the map's choice glow, and stands on screen; **weak** with its lit art alone, a thin rim, a colour change only,
+or no pulse where others pulse; **hidden** inside a closed panel whose tab does not light, under a window or the
+console, off the map's view, or in a place the hint does not name.
+
+- **The pools' dice.** Every die a resource decision offers wears the gold ChoiceGlow and breathes with its pool — the
+  console's own pool as the top bar's (UI-433) — through one `PoolChoiceGlow` per pool (`BoardScreen.OwnDiceChoices`,
+  `OpponentDiceChoices`): each interaction names its dice (an Elven Ring's die and a payment's, `RingInteraction`; the
+  special-die choice, the Ruler discard, Dismay, Vilya's paid die, Lore and a Council entry's dice,
+  `ResourceContextInteraction`), and the pool lights their union, so one interaction's refresh never puts out another's.
+  The lit art stays under the rim; its own fading stops while the rim and plate breathe (no larger die: a pool's dice
+  may not overlap, so the Elven Ring's die of UI-238 no longer grows either).
+- **Dismay names the die's pool.** The Shadow may reroll either Ruler die (both seeded matches offer both), and the
+  Shadow's own stands in its pool, not the top bar: "Click a glowing Ruler die, yours or the top bar's, to reroll it
+  with Dismay." ("Click your glowing Ruler die …" or "Click the glowing Ruler die in the top bar …" when only one is
+  offered).
+- **The Council medallion a hint asks for** — the Council's offer ("Click the glowing Council token you want") and a
+  Chieftain's entry cost ("· Click a glowing Council token to pay the entry", "· Or click a glowing Council token to
+  enter with it"; `ResourcePresentation.CouncilAsked`) — wears a gold rim on a warm plate round the medallion and
+  breathes with its pool, rim and plate only (the row has no room for a larger medallion). A usable medallion no hint
+  asks for keeps UI-345's lit art and its fading. The marked token's hint keeps both places within the console's two
+  lines (the longer one lost "in Politics" to its ellipsis at 1366×768): "Click a lit Chieftain's row in Characters to
+  enter him, or a glowing Shadow nation's token or → in Politics." (Travel: "…, or the Nazgûl above the token, then
+  their destination.")
+- **The console's Elven Rings a hint asks for** — a Keeper Ring offered now (Nenya's tile, Vilya's keep, UI-268), a
+  card's recovery (Three Rings for the Elven-Kings, UI-272) and a removal's Ring payment ("Click a lit Elven Ring …") —
+  wear a round gold rim on a warm plate inside the fixed socket, the picture kept in place, and breathe (rim and plate:
+  the console keeps its size). A Ring a card's step already picked is selected instead; a Ring the chosen die may merely
+  use (the base Elven Ring use) keeps its bright picture. Lords also has a Vilya die, so Vilya's hint names the console:
+  "Click the glowing Vilya in the console to keep the die that paid, or Pass to spend the die and keep Vilya."
+- **The decks a hint asks for** — a deck choice (the Palantír of Anárion's extra card, UI-390), the Spear of Terror and
+  Gandalf the Grey's draw (UI-431) — wear the thick gold rim round the back, breathing in rim only; the die's pale halo,
+  drawn over the rim, steps aside, and UI-345's lit-art fading of the Spear's deck is gone with it.
+- **The Mordor gate.** The gate the Fellowship may enter by wears the gold rim on a warm plate on the map and breathes;
+  its "gate-next" art alone (a faint green halo at 34 points) read as unlit. The Fellowship panel's Mordor track symbol
+  is a gate too, so the hint says the map's, in one clause with the declaration so that it keeps to two lines: "Declare
+  or enter Mordor: click the glowing figure or gate on the map · or continue to the Hunt." ("Enter Mordor: click the
+  glowing gate on the map" alone).
+- **A siege extension's figures.** "Click a highlighted figure to extend the siege with it": one click extends, so no
+  figure is chosen before it, and the battle window drew every figure dimmed at half opacity as one left behind. Each
+  figure the extension may take now wears the gold ChoiceGlow and breathes with its grid (`BattleChoices`).
+- **Off the map's view.** `MapCanvas.Reveal` (UI-134) counts as visible only the free map — the map minus what covers it
+  (the top bar, the console, open panels and windows; `SafeMapArea`, as a presentation frames its cues) — so the Black
+  Captain's Nazgûl no longer stay under the console (UI-431's noted limit), and the Reserve's settlements and Monsters
+  Roused's halves come out from under the HUD too. Two more decisions bring their lit objects into view once, as those
+  do: the Fellowship phase that offers Mordor's gate (its region, with the figure beside it,
+  `FellowshipContextInteraction`) and a card's Nazgûl flight (the lit Nazgûl, `NazgulFlightInteraction`) — at 1920×1080
+  at 125 % both lay beyond the screen's edge or under the hand.
+
+Click paths and payloads are unchanged: every fix is a class, a pulse, a camera move or a hint's words; no CSS filter,
+no size change beyond the shared pulse, no layout write in a geometry callback.
+
+Inventory (verdict before UI-434; Audit = PlayMode `GlowingHintAuditTests` on the seeded match named, at 1366×768 at 100
+% and 1920×1080 at 125 %, screenshots `ui434-<case>-<width>-<scale>.png`; Classes = EditMode `GlowingHintClassesTests`):
+
+| Case (hint) | Branch | Object | Where | Verdict | Fix · test |
+| --- | --- | --- | --- | --- | --- |
+| "Click a highlighted die to keep it" / "An Eye must be kept: click a highlighted Eye" (`SpecialDice`) — special-die choice | expansions (Lords) | the special dice | own pool beside the console | WEAK: lit art alone, the candidate rim off | ChoiceGlow + the pool's pulse (`PoolChoiceGlow`) · Audit `ui267-tie` |
+| "Click a glowing die to discard it" (`RulerDice`) — Ruler discard | expansions (Kings) | the standard dice and the Ruler die | own pool | WEAK: 2 pt candidate rim beside the dice's own rims; the Ruler die's lit art | ChoiceGlow + pulse · Audit `ui09-dice` |
+| "Click … Ruler die … to reroll it with Dismay" (`ResourcePresentation.DismayHint`) | expansions (Kings) | the Free Peoples' Ruler die; the Shadow's own Ruler die | top bar; own pool | the top bar's STRONG since UI-433; the own pool's WEAK (lit art) and HIDDEN (the hint said "in the top bar") | ChoiceGlow + pulse; the hint names "your", "in the top bar" or both · Audit `ui09-dismay`, `ui58-dismay-before-lore`; Classes |
+| "Click the glowing Vilya …" (`KeepActionDie`) | expansions (Lords) | Vilya's socket; the paid die | console; own pool | WEAK: the socket's lit art and fading; ambiguous with the Vilya die | socket and die ChoiceGlow + pulse; the hint says "in the console" · Audit `ui09-vilya`; Classes |
+| "Nenya can replace this Eye tile: click the glowing Nenya in the console" (Hunt window tray) | expansions (Lords) | Nenya's socket | console | WEAK: lit art and fading | ChoiceGlow + pulse · Audit `t34-nenya`; Classes |
+| "Click N glowing Rings in the console to recover them" (`RingRecovery`) — Three Rings for the Elven-Kings | expansions (Lords) | the Rings' sockets | console | WEAK: a brighter picture only | ChoiceGlow + pulse; a picked Ring selected · Audit `ui272-three-rings`; Classes |
+| "Click a lit Elven Ring to give it to the Shadow with this die" (`CostDice.RingHint`) — Lore, Palantíri removals | expansions (Lords, Kings) | the Rings' sockets | console | WEAK: a brighter picture only | ChoiceGlow + pulse · Audit `lords-lore-remove`; Classes |
+| "Click a lit die to change its result with Lore" (`LoreChoice`) | expansions (Lords) | the dice Lore may change | own pool's row | WEAK: 2 pt rim beside the dice's own rims | ChoiceGlow + pulse · Audit `lords-lore-choice` |
+| "Click the glowing Council token you want" (Council's choice) | expansions (Lords) | a Council medallion | own pool | WEAK: lit art and fading | ChoiceGlow (rim and plate) + pulse · Classes (no one-step seed: `ui09-council` reaches it after the versions and homelands) |
+| "… · Click a glowing Council token to pay the entry" / "· Or click a glowing Council token to enter with it" (`CharacterChoices.RegionHint`) | expansions (Lords + Kings) | a Council medallion | own pool | WEAK: lit art | ChoiceGlow + pulse (`ResourcePresentation.CouncilAsked`) · Classes (the seeded `ui09-entry` enters with the die or with the token, never both open) |
+| "Click a lit Chieftain's row in Characters to enter him, or a glowing Shadow nation's token or → in Politics." (`CouncilHint`) | expansions (Lords + Kings) | the Chieftain's row; Shadow nations' tokens | Characters and Politics panels, closed; their tabs lit | STRONG objects, HIDDEN place: the long hint lost "in Politics" to the console's ellipsis at 1366×768 | shorter hint naming both panels · Audit `ui09-council-politics` (tabs lit, then each panel) |
+| "Click a glowing deck beside your hand …" (`DeckChoice`), Spear of Terror, Gandalf the Grey's draw (`ReactionDecks`) | expansions (Kings, Lords); base (Grey) | the decks | hand drawer, opened once | WEAK: a 2 pt rim under the die's pale halo, no pulse; the Spear's lit art | ChoiceGlow (3 pt rim, the halo steps aside) + pulse · Audit `ui348-anarion`; Classes |
+| "Enter Mordor: click the glowing gate" (`TurnConsoleState`) — Fellowship phase | base | the Mordor gate | map's Mordor track | WEAK: "gate-next" art alone, a faint halo at 34 pt; ambiguous with the panel's gate symbol; HIDDEN at 1920×1080 at 125 % (under the hand) | ChoiceGlow + pulse; "… gate on the map", one clause with Declare; the view comes to it once · Audit `ui34-mordor-morannon-True`; Classes |
+| "Click a highlighted figure to extend the siege with it" (`BattleDraft`) | base | the figures that may extend it | battle window, the side's column | WEAK: drawn dimmed at half opacity, as figures left behind | ChoiceGlow + pulse, not dimmed · Audit `siege`; Classes |
+| "Declare: click the glowing Fellowship figure on the map", "The glowing Fellowship figure moves/hides …", `HideHint`, `MoveHint` | base | the Fellowship figure; its track marker | map; Fellowship panel (corner tab lit) | STRONG (ChoiceGlow + pulse, UI-280/UI-293); beside Mordor off view at 1920×1080 at 125 % | the gate's reveal brings it too · Audit `ui34-mordor-morannon-True` (the figure) |
+| "Click the glowing Mordor track symbol", "Move: click the glowing track" (There Is Another Way) | base | the track symbol | Fellowship panel (corner tab lit) | STRONG: the gilt halo breathing (UI-110) | — · `MordorNetworkTests`, `FellowshipCardActionsTests` |
+| "Click a glowing companion in the Fellowship panel to make it the Guide", "Click the Guide's glowing portrait …", "Click a glowing companion …, then a lit homeland" | base; Council homelands expansions (Lords) | companions' portraits; homelands | Fellowship panel (opens for its decision, corner tab lit); map | STRONG | — · `FellowshipGuideNetworkTests`, `MultiUseDiceNetworkTests`, `CouncilHomelandPanelNetworkTests` |
+| "Click Gimli's red portrait …, or the Fellowship's corruption marker" (`LureChoice`) | base | red portrait; marker | Fellowship panel, opened | STRONG (UI-431) | — · Audit `shadow-lure` |
+| "Discard: red card in Effects · Roll: Hunt Box · ✓ finishes" (`NazgulStrikeChoice`), "Click a red table card in Effects" (`TableDiscardText`) | base | Hunt Box; red table cards | console; Effects panel (tab lit) | STRONG (UI-430) | — · Audit `shadow-strike` |
+| "… Random card: red hand counter …" (`WornDiscardChoice`) | base | the Free Peoples' card counter | top bar | STRONG (UI-432) | — · Audit `shadow-worn` |
+| "Click a red-marked card to discard it face down", inspected Shadow hand, We Won't Go Back's "glowing Character card in your hand" | base; We Won't Go Back expansions (Lords) | hand cards | hand drawer | STRONG: red parchment (UI-222) | — · Audit `ui31-discard` |
+| "Click a glowing Nazgûl in the Reserve …, or a glowing Nazgûl on the map …" (`BlackCaptainOrder`), "a glowing figure of … in the Reserve" (`KingsCardChoices`), reserve tooltips "… a highlighted settlement" | base; Kings | Reserve tokens; the map's Nazgûl; settlements | Reinforcements panel (tab lit); map | STRONG objects; the map's Nazgûl HIDDEN under the console at the fitted view (UI-431's noted limit) | `MapCanvas.Reveal` counts only the free map · Audit `shadow-captain` (Reserve token, then the map's force) |
+| "Click a lit Nazgûl, then where it flies" (`NazgulFlightDraft`) | base | the lit Nazgûl | map | STRONG glow; HIDDEN at 1920×1080 at 125 % (Barad-dûr beyond the screen's edge) | the view comes to them once (`NazgulFlightInteraction`) · Audit `shadow-strike` |
+| The other map figures ("Balrog's glowing army", "a lit army", "a lit companion", "a lit figure") | base; Balrog expansions (Lords) | army and character stands | map | STRONG: the map's choice glow and pulse | — · `LordsCharacterNetworkTests`, `CompanionJourneyMapTests`, `BoardDrawnOptionsTests` |
+| "Choose/click a highlighted/lit region, destination, settlement", red attack regions, Work of the Enemy's lit region, Monsters Roused's halves | base; Kings, Fate | regions | map | STRONG: the map's target glow pulsing | — · Audit `kings-enemy-army`, `fate-monsters` |
+| "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat" (`ScoutsShelter`), "Choose a highlighted retreat region." | base | the battle region; the retreat regions | map, beside the battle window | STRONG at 1366×768; HIDDEN at 1920×1080 at 125 % (under the battle window) | left: see the limits · Audit `strategy-scouts` at 1366×768 |
+| "Click the glowing field army or garrison in the region's panel", "Click a lit region, then its lit figure(s)" | base; Kings | force sections; figures | region panel | STRONG (UI-251, UI-431) | — · `BoardDrawnOptionsTests` |
+| "Click a glowing tile beside the king", "Click the glowing king …", "Click a glowing king, by his portrait or on the map / in the battle window's army", "Click the attempt button beside a king in the Characters panel" | expansions (Kings) | portraits, attempt buttons, tiles; map markers; battle kings | Characters panel (tab lit, UI-380); map; battle window | STRONG (UI-274, UI-345, UI-411) | — · `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests` |
+| "Click a glowing nation token in Politics", "a glowing nation token to activate and advance it" (`KingsCardChoices`) | expansions (Kings) | Shadow or Free nations' tokens | Politics panel (tab lit) | STRONG (UI-423) | — · `KingsBranchNetworkTests`; Audit `ui09-council-politics` (same tokens) |
+| "Choose a highlighted card, or No card." (`BattleDraft`), combat card targets, replacement arms, kings in the army | base; arms expansions | combat cards; dice, portraits, stacks; chips | battle window | STRONG: the playable parchment (cards never pulse; No card glows when alone, UI-279); ChoiceGlow + pulse | — · `BattleWindowNetworkTests`, `LordsBattleNetworkTests` |
+| "Click a glowing Guide response in the Hunt window …", "Use a glowing response, or Pass …" (`ReactionSkip`), Hunt card responses | base; Lords | response objects | Hunt window (opens for both) | STRONG (UI-285, UI-360, UI-423) | — · `HuntResponseNetworkTests` |
+| "Click a highlighted die to change its result" (Elven Ring), a payment's dice, "Click, then a glowing Muster die" (Palantír of Barad-dûr) | base; Kings | dice | own pool | STRONG (UI-238, UI-248) | through `PoolChoiceGlow`, unchanged look · Audit `lords-lore-remove` (payment dice) |
+| "Click the glowing ✓ in the console to check its result." | base | ✓ | console | STRONG (ChoiceGlow + pulse) | — |
+| "Choose what this die acts on: the highlighted map, cards and panels", "Choose a highlighted object …", "Select the highlighted …, then confirm" (`DecisionObjects`) | base | a die's uses; a window's choices | each object's family | per family (UI-136, UI-389) | — |
+
+Limits left as they are:
+- *A floating window over a lit region.* At 1920×1080 at 125 % the battle window's default place covers Helm's Deep,
+  which Scouts asks to click, and the console the rest of it; the map cannot pan its west edge past the screen to clear
+  it, so a camera move does not help. At 1366×768 the region shows below the window. The window moves by its header and
+  closes, as before; placing windows away from lit regions is a layout change of its own.
+- *A window's generic console line.* While a decision lives in a window (the siege extension, Nenya's tile), the console
+  reads "Select the highlighted choices, then confirm." and the window's tray names the object; both objects glow.
+- *A hand card over the decks.* A hand card that slid under the pointer stands expanded over the decks until the pointer
+  leaves the hand (UI-390); the decks glow as soon as it does.
+- *No one-step seed:* the Council's token offer (`ui09-council` reaches it after the versions and homelands) and a
+  Chieftain's entry that may pay with the token or a die (the seeded `ui09-entry` offers them as separate entries) are
+  checked by `GlowingHintClassesTests`.
+
+Branches: the Mordor gate, its guidance and reveal, the siege extension's figures, the Nazgûl flight's reveal, the free
+map of `MapCanvas.Reveal`, Gandalf the Grey's drawn deck and `PoolChoiceGlow` with `RingInteraction` (the Elven Ring's
+die, a payment's dice) are base game; the special dice, the Ruler discard, Dismay, Vilya, Nenya, Three Rings, Lore, the
+Ring payments, the Council medallions and hint, and the deck choice are expansions. The base port (ability-chips) takes
+`PoolChoiceGlow` with `RingInteraction` only, the gate, its guidance and reveal, the flight's reveal, the free map and
+the siege figures; there the drawn deck lights with `legal-target` and the gold ChoiceGlow (no Spear, no lit-art pulse).
+
+Playtest (owner's checklist):
+- [ ] Special dice — seeded `ui267-tie` (the Free Peoples). Expect: Vilya and Nenya in the pool beside the console with
+  a thick gold rim, breathing; "Click a highlighted die to keep it"; a click keeps one.
+- [ ] Dismay — seeded `ui09-dismay` (the Shadow). Expect: both Ruler dice glowing gold, the Free Peoples' in the top bar
+  and the Shadow's in its own pool; "Click a glowing Ruler die, yours or the top bar's, to reroll it with Dismay."
+- [ ] Vilya, Nenya, Three Rings — seeded `ui09-vilya`, `t34-nenya`, `ui272-three-rings`. Expect: the named Ring's socket
+  in the console with a round gold rim, breathing; the hints name the console.
+- [ ] A deck choice — seeded `ui348-anarion` (the Free Peoples). Expect: both decks beside the hand with a thick gold
+  rim, breathing, no pale halo.
+- [ ] Mordor — seeded `ui34-mordor-morannon-True` (the Free Peoples), in a small window. Expect: the view comes to
+  Morannon; its gate glowing gold and breathing, the figure glowing; "Declare or enter Mordor: click the glowing figure
+  or gate on the map".
+- [ ] A siege extension — seeded `siege` (the Shadow). Expect: the figures in the battle window's column glowing gold,
+  not dimmed; one click extends.
+- [ ] The Black Captain — seeded `shadow-captain` (the Shadow). Expect: Osgiliath's Nazgûl brought out from under the
+  console, glowing.
+
+Tests: EditMode `GlowingHintClassesTests` (the pool's union across interactions, Dismay's three hints, Vilya's hint, the
+sockets a hint asks for and the base Ring use that does not glow, a Keeper Ring, the deck choice, the Council's offer
+and entry cost, the Mordor gate, the siege figures), `TurnConsoleStateTests` (the Fellowship phase's clause),
+`ResourcePanelTests` (the Council hint), `NamedRingsTests`; PlayMode `GlowingHintAuditTests` (21 cases, each on its own
+seeded match, all in one run: the special dice, the Ruler discard, Dismay in both seeds, Vilya, Nenya, Three Rings,
+Lore, a Ring payment, the decks, the Mordor gate and figure, the Council's Characters row and Politics tokens behind
+their lit tabs, the Strike's flight, Hunt Box and red table cards, Worn's red hand counter, Lure's portrait and marker,
+the Black Captain's Reserve token and map Nazgûl, Work of the Enemy's and Monsters Roused's regions, the hand's red
+cards, Scouts' regions, the siege extension's figures) with the reusable checks
+`GlowingTargetChecks.AssertVisiblyOffered` (shown, inside the screen, uncovered at its centre, a strong glow, its host
+pulsing), `AssertTabLit` and `AssertRegionOffered`; `ResourcePanelNetworkTests` (UI-433's Dismay, now naming both dice),
+`ExpansionTokenNetworkTests` (the Council hint); unchanged and still passing with the new glows, pulses and reveals:
+`SpecialDiceNetworkTests`, `ExpansionDecisionNetworkTests` and the Council tests'
+`ExpansionMatrixLayoutTests.ResourcesFit` (a pool's dice may not overlap, hence the rim-only pulse),
+`ExpansionWindowNetworkTests`, `LordsCardNetworkTests`, `LordsShadowNetworkTests`, `KingsDecisionNetworkTests`,
+`Shadow02NetworkTests`, `Shadow04NetworkTests`, `StrongholdNetworkTests`, `FateCardsNetworkTests`, `MordorNetworkTests`,
+`DeckChoiceMenuTests`, `MusterNetworkTests`, `FellowshipNetworkTests`, `BattleLayoutTests` and `BoardDrawnOptionsTests`'
+reveals (the map's Nazgûl, the eastern half, the Reserve's Nazgûl).

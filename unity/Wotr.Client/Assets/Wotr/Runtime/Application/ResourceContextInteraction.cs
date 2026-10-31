@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -7,13 +8,14 @@ namespace Wotr.Client
 {
     public sealed class ResourceContextInteraction : IDisposable
     {
+        // UI-270: a Council medallion's slot in the pool is named after its token.
+        private const string CouncilSlotPrefix = "pool-council.";
         private readonly BoardScreen board;
         private readonly Action<Action, bool> edit;
         private readonly Func<bool> busy;
         private readonly Action<ComponentAction> select;
+        // UI-345 (D6): a usable Council medallion no hint asks for keeps its lit art and pulses it.
         private readonly ChoicePulse litArt;
-        // UI-433: the opponent's die a choice offers (Dismay's Ruler die) glows in gold in the top bar and pulses.
-        private readonly ChoicePulse opponentGlow;
         private PlayerView view;
         private TurnDraft draft;
 
@@ -25,7 +27,6 @@ namespace Wotr.Client
             this.busy = busy;
             this.select = select;
             litArt = new ChoicePulse(board.OwnDice, ChoiceGlow.LitArtPulseClass);
-            opponentGlow = new ChoicePulse(board.OpponentDice);
             board.Sovereigns.Activate = Sovereign;
             board.CouncilTokenSelected += Council;
         }
@@ -42,45 +43,73 @@ namespace Wotr.Client
 
         private void HighlightCandidates()
         {
+            HighlightCouncilTokens();
+            // UI-433, UI-434 (owner's reports): the lit art alone reads as unlit — at 29 points in the top bar, and beside
+            // the plain dice of the own pool — so every die a resource decision offers wears the shared gold glow and
+            // pulses with its pool.
+            var offered = OfferedDice();
+            board.OwnDiceChoices.Offer(this, HighlightDice(board.OwnDice, offered));
+            board.OpponentDiceChoices.Offer(this, HighlightDice(board.OpponentDice, offered));
+        }
+
+        // The dice the open resource decision offers: a Council entry's, or the pool decision's and Lore's.
+        private HashSet<string> OfferedDice()
+        {
+            var offered = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
             var option = DraftOptions.For(view, draft);
-            var choosing = (ResourcePresentation.PoolDecision(view) || LoreChoice.Active(view)) && option?.Enabled == true;
-            var councilDice = ResourcePresentation.CouncilDice(view, draft).ToHashSet();
-            var councilToken = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
-            var lit = false;
-            var litOpponent = false;
-            foreach (var pool in new[] { board.OwnDice, board.OpponentDice })
-                foreach (var button in pool.Query<Button>().ToList())
-                {
-                    if (button.name.StartsWith("pool-council."))
-                    {
-                        button.EnableInClassList("selected", button.name == "pool-" + councilToken);
-                        continue;
-                    }
-                    if (button.userData is not DraftToken token || token.Object != DraftObject.Die)
-                        continue;
-                    var eligible = councilDice.Contains(token.Id) || choosing && (option.EligibleDice.Contains(token.Id) ||
-                        view.Decision.Presentation == "DieAndResult" && option.EligibleIds.Contains(token.Id));
-                    button.EnableInClassList("resource-candidate", eligible);
-                    lit |= eligible && pool == board.OwnDice;
-                    litOpponent |= eligible && pool == board.OpponentDice;
-                    // UI-433 (owner's report): in the top bar the lit art alone reads as unlit at 29 points, so the
-                    // offered die wears the shared gold glow there.
-                    if (pool == board.OpponentDice)
-                        ChoiceGlow.Apply(button, eligible);
-                    // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does; every other die keeps
-                    // the pool's own tooltip (a Lords die set aside says so).
-                    if (pool == board.OpponentDice && view.Dice.FirstOrDefault(d => d.Id == token.Id) is { } die &&
-                        DismayChoice.Token(view, die.Id).Length > 0)
-                        button.tooltip = DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id);
-                    if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
-                        button.SetEnabled(true);
-                    SpecialCandidate(button, token.Id, eligible);
-                }
-            // UI-345 (D6): the lit dice and Council medallions pulse in the shared rhythm.
-            lit |= board.OwnDice.Query<Button>(className: ActionPoolView.CouncilTokenClass).ToList()
-                .Any(button => button.ClassListContains("legal-target"));
-            litArt.Run(lit);
-            opponentGlow.Run(litOpponent);
+            if (!(ResourcePresentation.PoolDecision(view) || LoreChoice.Active(view)) || option?.Enabled != true)
+                return offered;
+            offered.UnionWith(option.EligibleDice);
+            if (view.Decision.Presentation == "DieAndResult")
+                offered.UnionWith(option.EligibleIds);
+            return offered;
+        }
+
+        // The pool's offered dice: each is marked and enabled, and its id returned.
+        private List<string> HighlightDice(VisualElement pool, HashSet<string> offeredDice)
+        {
+            var offered = new List<string>();
+            foreach (var button in pool.Query<Button>().ToList())
+            {
+                if (button.userData is not DraftToken token || token.Object != DraftObject.Die)
+                    continue;
+                var eligible = offeredDice.Contains(token.Id);
+                button.EnableInClassList("resource-candidate", eligible);
+                if (eligible)
+                    offered.Add(token.Id);
+                if (pool == board.OpponentDice)
+                    DismayTooltip(button, token.Id);
+                if (eligible && view.Decision.Kind == DecisionKind.KeepActionDie)
+                    button.SetEnabled(true);
+                SpecialCandidate(button, token.Id, eligible);
+            }
+            return offered;
+        }
+
+        // UI-276 (D20): the opponent's Ruler die says what the Shadow's click on it does; every other die keeps the pool's
+        // own tooltip (a Lords die set aside says so).
+        private void DismayTooltip(Button button, string id)
+        {
+            if (view.Dice.FirstOrDefault(d => d.Id == id) is { } die && DismayChoice.Token(view, die.Id).Length > 0)
+                button.tooltip = DieDescriptions.Tooltip(die) + "\n" + DismayChoice.Offer(view, die.Id);
+        }
+
+        // UI-270, UI-347: the Council medallions. UI-434: the one a hint asks for — the Council's offer, a Chieftain's
+        // entry cost — wears the gold glow and pulses with the pool; any other usable one keeps its lit art's own pulse
+        // (UI-345, D6).
+        private void HighlightCouncilTokens()
+        {
+            var marked = draft.Kind == CommandKind.UseCouncilToken ? draft.Payload.AbilityId : draft.Payload.CouncilTokenId;
+            var litArtOnly = false;
+            foreach (var button in board.OwnDice.Query<Button>().ToList().Where(b => b.name.StartsWith(CouncilSlotPrefix)))
+            {
+                var id = button.name.Substring("pool-".Length);
+                var asked = ResourcePresentation.CouncilAsked(view, draft, id);
+                button.EnableInClassList("selected", id == marked);
+                ChoiceGlow.Apply(button, asked);
+                litArtOnly |= !asked && button.ClassListContains("legal-target");
+            }
+            litArt.Run(litArtOnly);
         }
 
         // UI-267: during the special-die choice a die an Eye rules out is disabled (its tooltip, DieHints, says why).

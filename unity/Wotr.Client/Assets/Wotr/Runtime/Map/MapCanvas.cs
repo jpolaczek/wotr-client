@@ -465,7 +465,9 @@ namespace Wotr.Client
             FocusOn(Data.MordorTrack.Bounds.center, Mathf.Max(Camera.Zoom, FitZoom * MapMarkerVisibility.FiguresFrom * 1.1f));
 
         // UI-134: brings regions into view without selecting them. Nothing moves while every anchor is visible;
-        // otherwise the camera centres them and zooms out only as far as needed to hold them all.
+        // otherwise the camera centres them and zooms out only as far as needed to hold them all. UI-434: visible means in
+        // the free map — the map minus what covers it (the top bar, the console, open panels and windows), as a
+        // presentation frames its cues (SafeMapArea) — so a lit object under the console counts as off view.
         public void Reveal(IEnumerable<string> regions)
         {
             const float margin = 72;
@@ -473,9 +475,10 @@ namespace Wotr.Client
             foreach (var id in regions)
                 if (Data.Shapes.TryGetValue(id, out var shape))
                     anchors.Add(new Vector2(shape.Anchor[0], shape.Anchor[1]));
-            if (anchors.Count == 0 || contentRect.width <= 2 * margin || contentRect.height <= 2 * margin)
+            var free = FreeArea();
+            if (anchors.Count == 0 || free.width <= 2 * margin || free.height <= 2 * margin)
                 return;
-            var view = new Rect(margin, margin, contentRect.width - 2 * margin, contentRect.height - 2 * margin);
+            var view = new Rect(free.xMin + margin, free.yMin + margin, free.width - 2 * margin, free.height - 2 * margin);
             if (anchors.TrueForAll(anchor => view.Contains(Camera.ToScreen(anchor))))
                 return;
             var min = anchors[0];
@@ -488,9 +491,13 @@ namespace Wotr.Client
             var span = Vector2.Max(max - min, Vector2.one);
             var holding = Mathf.Min(view.width / span.x, view.height / span.y);
             Camera.Zoom = Mathf.Max(FitZoom, Mathf.Min(Camera.Zoom, holding));
-            Camera.Pan = contentRect.center - (min + max) / 2 * Camera.Zoom;
+            Camera.Pan = free.center - (min + max) / 2 * Camera.Zoom;
             Refresh();
         }
+
+        // The largest part of the map that nothing covers, in map-local points (SafeMapArea).
+        private Rect FreeArea() =>
+            SafeMapArea.Largest(new Rect(Vector2.zero, contentRect.size), Occlusions?.Invoke() ?? Enumerable.Empty<Rect>());
 
         public void Select(string id)
         {
