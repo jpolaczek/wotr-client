@@ -65,6 +65,10 @@ namespace Wotr.Client
                 var waiting = RegionForceChoices.Waiting(view, draft);
                 if (waiting.Length > 0 && waiting == draft.Payload.RegionId)
                     ChosenRegions.Add(waiting);
+                // UI-432: Scouts' withdrawal into siege is the battle's own region, lit with the regions it may retreat to.
+                var shelter = ScoutsShelter.Region(view, draft);
+                if (shelter.Length > 0)
+                    Targets.Add(shelter);
             }
             if (draft.Kind == CommandKind.ChooseEffect)
                 Targets.UnionWith(view.Options.Where(o => o.Kind == draft.Kind)

@@ -7,11 +7,12 @@ namespace Wotr.Client
     // UI-245: a combat card's choice whose id is a battle die or a figure in the battle is made on that object in the
     // Battle window — a miss in the dice strip, a portrait or a figure stack in a force column — not in a list of
     // named buttons. The server's ids, limits and previews stay as they are; an exclusive outcome without an object
-    // (Keep misses, Keep Minions) keeps its button.
+    // (Keep misses, Keep Minions) is not one of them: since UI-432 (owner's rule, UI-430) such a decline is the console's
+    // Pass and the battle window's Skip effect (OptionalDecline).
     // UI-246: a choice that belongs to an object without being one sits on it: a Nazgûl Leadership point beside the
     // figure that forfeits it (the choice's SourceId) and a Heroic Death hit amount on the incoming hits. Keep hits
-    // (zero) and Keep all keep their buttons. UI-347 (EXP-15 D10): Orderly Withdrawal's cancelled hit is a "−1" pip there
-    // too; Keep the hit is the console's Pass (OptionalDecline).
+    // (zero) keeps its button; Keep all is the Pass and Skip effect (UI-432). UI-347 (EXP-15 D10): Orderly Withdrawal's
+    // cancelled hit is a "−1" pip there too; Keep the hit is the console's Pass (OptionalDecline).
     public static class BattleObjectChoices
     {
         public const string LeadershipPresentation = "NazgulLeadership";

@@ -35,7 +35,8 @@ Click to use (UI-369) elsewhere: the region panel's ability pictures use at thei
 object (remove them where C1–C11 move the use onto the object, otherwise select first); the king's hover inspector
 lists abilities as text and never glows (give it the same chips); Narya's ring socket never glows and its Activate ✓
 stands beside the token (fold it into the nation adapter); the Ruler coins select first but their use's object must
-glow after the selection (C10–C11); the Fellowship tray still builds Standard/Far-sighted buttons (D18 says none).
+glow after the selection (C10–C11); the Fellowship tray still builds Standard/Far-sighted buttons (D18 says none; removed by UI-432, 2026-10-31 —
+[UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)).
 These stay as they are by earlier decisions: Gothmog's Reserve tokens, Council medallions (D13), nation tokens and
 arrows, table cards, the kings' portraits and tiles, figures with an ability, Ring sockets, Hunt responses, battle
 portraits and chips, decks and dice (a first click completes, UI-142), hand cards (already select-first).

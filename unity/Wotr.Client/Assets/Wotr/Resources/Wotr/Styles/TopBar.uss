@@ -176,6 +176,26 @@
 .summary-icon-dismay { background-image: resource("Wotr/Art/UI/tokens/ruler-token-shadow"); }
 .summary-icon-council { background-image: resource("Wotr/Art/UI/tokens/council-politics-council"); }
 .summary-text { flex-direction: column; justify-content: center; }
+/* UI-432 (owner's rule, UI-430): the Free Peoples card counter Worn with Sorrow and Toil may discard a random card from
+   wears the red of a card to discard (UI-222, UI-430): a red rim on a red plate, breathing with the summary's pulse. Its
+   rim takes the place of its padding, so the counter keeps its size and the bar does not move; no filter. */
+#board-screen .opponent-summary .summary-chip.discard-target {
+    padding: 0 3px;
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(236, 72, 48);
+    background-color: rgba(128, 26, 20, 0.55);
+}
+.motion-enabled #board-screen .opponent-summary .summary-chip.discard-target {
+    transition-property: border-color, background-color;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .opponent-summary.choice-glow-pulse .summary-chip.discard-target {
+    border-color: rgba(236, 72, 48, 0.4);
+    background-color: rgba(80, 18, 14, 0.3);
+}
+#board-screen .opponent-summary .summary-chip.discard-target.pressed { translate: 0 1px; }
 .summary-caption {
     display: none;
     height: 13px;
@@ -242,6 +262,7 @@
 /* Narrow bars keep icons, values and plaques; spacing tightens and the dice owner label gives way. */
 .topbar-compact .summary-chip { padding: 0 3px; }
 .topbar-compact .summary-icon { margin-right: 2px; }
+#board-screen .topbar-compact .opponent-summary .summary-chip.discard-target { padding: 0 1px; }
 .topbar-compact #opponent-dice .opponent-side { display: none; }
 .topbar-compact > .muted { margin: 0 5px; }
 .topbar-compact { padding-left: 28px; }

@@ -8,7 +8,8 @@ namespace Wotr.Client
     // UI-214 (CARD_CHOICES_UX): a card's object-less options and a reaction's responses as buttons in the console, and
     // The Nazgûl Strike's table cards in the Effects panel. A click that completes the decision sends it. UI-430 (owner):
     // the table cards are red and their tiles' click discards them, and The Nazgûl Strike!'s Hunt roll is the console's
-    // glowing Hunt Box; each sends what its old console button sent.
+    // glowing Hunt Box; each sends what its old console button sent. UI-432: Worn with Sorrow and Toil's table cards are red
+    // there too, and its random hand card is the opponent's red card counter in the top bar.
     public sealed class ConsoleOptionsInteraction : IDisposable
     {
         private readonly BoardScreen board;
@@ -28,6 +29,7 @@ namespace Wotr.Client
             board.TableEffects.UseChosen += CardUse;
             board.Hunt.OfferChosen += HuntRoll;
             board.Hover.Panel.ForceChosen += Force;
+            board.TopBar.Opponent.CardsChosen += RandomHandCard;
         }
 
         public void Refresh(PlayerView view, TurnDraft draft, bool enabled)
@@ -47,6 +49,7 @@ namespace Wotr.Client
             board.TableEffects.Offer(TableOffers(view, draft), enabled);
             board.TableEffects.Uses(enabled ? CardUses(view, draft) : new Dictionary<string, string>());
             OfferHuntRoll(enabled ? NazgulStrikeChoice.Roll(view, draft) : null);
+            board.TopBar.Opponent.OfferCards(enabled ? WornDiscardChoice.RandomCard(view, draft) : "");
         }
 
         // UI-430: the Hunt Box glows and pulses while its click rolls for the Hunt (The Nazgûl Strike!).
@@ -68,15 +71,23 @@ namespace Wotr.Client
             return uses;
         }
 
-        // The Nazgûl Strike's table cards and, outside a battle or the Hunt, a table card's own reaction (UI-247).
-        private static IReadOnlyDictionary<string, string> TableOffers(PlayerView view, TurnDraft draft)
+        // The Nazgûl Strike's table cards, Worn with Sorrow and Toil's (UI-432) and, outside a battle or the Hunt, a table
+        // card's own reaction (UI-247).
+        private static IReadOnlyDictionary<string, string> TableOffers(PlayerView view, TurnDraft draft) =>
+            Merge(Merge(CardConsoleOptions.TableCards(view, draft), WornDiscardChoice.TableCards(view, draft)),
+                CardConsoleOptions.ReactionTableCards(view));
+
+        // Both offers, the second winning a shared card; an empty side returns the other as it is.
+        private static IReadOnlyDictionary<string, string> Merge(IReadOnlyDictionary<string, string> first,
+            IReadOnlyDictionary<string, string> second)
         {
-            var reactions = CardConsoleOptions.ReactionTableCards(view);
-            if (reactions.Count == 0)
-                return CardConsoleOptions.TableCards(view, draft);
-            var offers = new Dictionary<string, string>(CardConsoleOptions.TableCards(view, draft));
-            foreach (var reaction in reactions)
-                offers[reaction.Key] = reaction.Value;
+            if (second.Count == 0)
+                return first;
+            if (first.Count == 0)
+                return second;
+            var offers = new Dictionary<string, string>(first);
+            foreach (var offer in second)
+                offers[offer.Key] = offer.Value;
             return offers;
         }
 
@@ -89,6 +100,7 @@ namespace Wotr.Client
             ChoiceGlow.Apply(reopen, board.GameEnd.Replay is ReplaySaveState.Ready or ReplaySaveState.Failed);
             board.TableEffects.Offer(CardConsoleOptions.TableCards(view, draft), false);
             OfferHuntRoll(null);
+            board.TopBar.Opponent.OfferCards("");
         }
 
         private void Chosen(ConsoleOption option)
@@ -110,6 +122,9 @@ namespace Wotr.Client
             if (huntRoll != null)
                 choose(huntRoll);
         }
+
+        // UI-432: the red hand counter discards a random Free Peoples card for Worn with Sorrow and Toil.
+        private void RandomHandCard() => choose(new ConsoleOption { Id = WornDiscardChoice.RandomHand, Kind = ConsoleOptionKind.Effect });
 
         // UI-272: the Lore card's click starts Lore before Dismay; UI-278: the Palantír's converts a Muster die.
         private void CardUse(string id)
@@ -135,6 +150,7 @@ namespace Wotr.Client
             board.TableEffects.UseChosen -= CardUse;
             board.Hunt.OfferChosen -= HuntRoll;
             board.Hover.Panel.ForceChosen -= Force;
+            board.TopBar.Opponent.CardsChosen -= RandomHandCard;
         }
     }
 }

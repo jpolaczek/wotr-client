@@ -487,7 +487,8 @@ eligible companion starts a group and companions from the same place join it; a 
 companion once the current group has its route, starts the next group; clicking a member of another planned group
 selects that group for editing (its portrait stays in the roster, dimmed with a blue rim); a group whose last member
 is clicked away disappears. "Group 2 / 3" in the route row shows the plan's progress and its tooltip lists every
-group with its destination. Stay all remains the explicit legal no-move choice, the shared Back undoes the last
+group with its destination. Stay all remains the explicit legal no-move choice (UI-432, 2026-10-31: the ✓ with an empty
+plan is that choice now, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)), the shared Back undoes the last
 gesture, and the plan keeps its one confirmation. Required groups stay locked. A companion picked on the map for an
 ordinary Character-die move starts over from that source, as before. Test:
 `CompanionGroupGestureTests`, `TravelActionTests`;
@@ -615,7 +616,8 @@ Foes!, Gwaihir the Windlord, We Prove the Swifter, and a Shadow's journey alike)
 painted portraits with their short names under them, as on the Fellowship panel, instead of name buttons; a Nazgûl shows
 its figure. A portrait that can still be chosen glows with the shared ChoiceGlow, pulsing its rim and plate only (the
 row fills its width, so it does not swell); a chosen one shows its selection. Destinations stay region clicks on the
-map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250). Tests:
+map, and "Stay all" and "Stay here" stay (approved exceptions, UI-250; UI-432, 2026-10-31: both are gone — Stay here is
+the lit origin region's click, Stay all the console's ✓ with an empty plan, [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Tests:
 `CompanionJourneyPortraitTests.TheJourneysCompanionsArePortraitsThatGlowUntilChosen`,
 `Strategy01NetworkTests.BookMovesIndependentGroupsAndSurvivesReconnect`,
 `Strategy01LayoutTests.ProtectionBookAndScoutsFitWithoutScrolling`.
@@ -705,7 +707,9 @@ The owner's decision, after the inventory of the panel's buttons (UI-297):
   without a drawn route has nothing to clear.
 
 Undo step and Cancel of a drawn route, Stay, the ruler's travel modes, the more-than-three reaction buttons, Locate and
-× stay. Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
+× stay (UI-432, 2026-10-31: Stay and the ruler's travel modes are gone — the origin region's click and Thranduil's
+Far-sighted picture, as UI-276 D18 decided; Undo step and Cancel stay, as the console's ↶ is off in the panel —
+[UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Tests: `FellowshipPanelControlsTests`, `CharacterNetworkTests` (the forced separation's Cancel is disabled),
 `BoardCompletionHostTests`, and the Fellowship recovery flows (`FellowshipPanelNetworkTests`, `FellowshipGuideNetworkTests`,
 `MordorNetworkTests`, `FellowshipRoutesNetworkTests`) through `PendingRecovery`.
 

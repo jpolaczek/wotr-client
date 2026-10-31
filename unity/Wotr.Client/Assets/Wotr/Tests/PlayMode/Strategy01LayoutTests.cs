@@ -52,8 +52,13 @@ namespace Wotr.PlayTests
                                 Assert.IsFalse(client.Board.DecisionWindow.IsOpen);
                                 Assert.IsTrue(client.Board.Map.PlannedJourneys.Regions.Contains("lossarnach"));
                             }
+                            // UI-432 (owner's rule, UI-430): Withdraw into siege is the battle's own region, lit with the
+                            // retreat regions; no button repeats it.
                             if (mode == "scouts")
-                                MatchTestRoom.Click(client, "effect-choice-scouts.shelter");
+                            {
+                                Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-scouts.shelter"));
+                                Assert.IsTrue(client.Board.Map.DraftOverlay.Targets.Contains(view.Battle.RegionId));
+                            }
                             for (var frame = 0; frame < 5; frame++)
                                 yield return null;
                             LayoutTests.Save(target, $"strategy01-{mode}-{width}-{scale:0.00}.png");

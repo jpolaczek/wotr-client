@@ -17,9 +17,6 @@ namespace Wotr.Client
         public event Action<Action> ChoiceCompleted;
         public event Action<CommandKind> ActionChosen;
         public event Action<CommandKind> DirectChosen;
-        public event Action<string> DieChosen;
-        public event Action<string> CardOrDieToggled;
-        public event Action<string> DeckChosen;
         public event Action<string> CardInspected;
         // UI-116: the second click on an armed Combat tile plays it through the same path as a double-click.
         public event Action<DraftToken> CardFinalized;
@@ -177,6 +174,8 @@ namespace Wotr.Client
             if (replacement.Length > 0)
                 return replacement;
             var objectHint = ObjectHint(view, draft);
+            if (objectHint.Length == 0)
+                objectHint = ScoutsShelter.Hint(view, draft, RegionName(view.Battle?.RegionId));
             if (objectHint.Length > 0)
                 return objectHint;
             var destination = TravelDraft.DestinationHint(view, draft);
@@ -206,6 +205,8 @@ namespace Wotr.Client
             {
                 CharacterChoices.RegionHint(view, draft), CostDice.RingHint(view, draft), LoreChoice.Hint(view, draft),
                 SovereignPresentation.Hint(view, draft), NazgulStrikeChoice.Hint(view, draft), TableDiscardText.DecisionHint(view, draft),
+                // UI-432: Worn with Sorrow and Toil's red table cards and hand counter.
+                WornDiscardChoice.DecisionHint(view, draft),
                 FellowshipCardActions.Guidance(view),
                 // UI-431: a region's forces, the Black Captain's Nazgûl, Lure of the Ring's objects, Monsters Roused's regions.
                 RegionForceChoices.Hint(view, draft), BlackCaptainOrder.Hint(view), LureChoice.Hint(view), MonstersHalves.Hint(view),
@@ -529,8 +530,10 @@ namespace Wotr.Client
                 else if (draft.Kind == CommandKind.Recruit)
                     root.Add(ReinforcementsButton());
             }
-            else
-                Choices(view, draft, option);
+            // UI-432 (owner's rule, UI-430): the other kinds list nothing. A die (Discard die's unsent step) is its die in the
+            // own pool, always beside the console, whose click (TurnInteraction.ChooseDie) is what the old cost-<die> button
+            // sent; a deck is its deck in the hand (DrawCard never reaches here: DirectCard); the Hunt's dice are allocated in
+            // the Hunt window (AllocateHunt never reaches here either).
         }
 
         // In a card decision the console confirms (UI-211), so its Confirm is no choice of the window. UI-297: the
@@ -609,57 +612,9 @@ namespace Wotr.Client
             }
         }
 
-        private void Choices(PlayerView view, TurnDraft draft, ActionOption option)
-        {
-            var row = BoardScreen.Row();
-            root.Add(row);
-            // UI-248: a table card's removal takes its Ring on the Ring itself and its die in the pool (UI-272: Lore;
-            // UI-278: Welcome and the Palantír of Barad-dûr), so the tray lists neither.
-            foreach (var id in CostDice.InPool(view, draft) || CostDice.Removal(draft.Kind) ? new List<string>() : option.EligibleDice)
-            {
-                var die = view.Dice.Single(d => d.Id == id);
-                var conversion = option.DrawCosts.Any(c => c.DieId == id && c.AbilityId == CardDrawDraft.Palantir);
-                var label = ExpansionLabels.DieCost(view, draft, die) + (conversion ? " → E" : "");
-                var detail = conversion ? "Palantír of Barad-dûr · Muster as Event · Once this turn" : DieDescriptions.Face(die.Face);
-                var button = Choice(label, () => draft.Payload.DieId == id, () => DieChosen?.Invoke(id), detail);
-                button.name = "cost-" + id;
-                button.userData = new DraftToken(DraftObject.Die, id);
-                row.Add(button);
-            }
-            if (option.Kind == CommandKind.AllocateHunt && !ContextualHunt)
-                HuntDice(row, draft, option);
-            foreach (var deck in option.Kind == CommandKind.DrawCard ? option.Targets : new List<string>())
-            {
-                var button = Choice(deck == "character" ? "Character deck" : "Strategy deck", () => draft.Payload.Deck == deck, () => DeckChosen?.Invoke(deck));
-                button.name = "deck-" + deck;
-                button.userData = new DraftToken(DraftObject.Deck, deck, option.Kind);
-                row.Add(button);
-            }
-        }
-
-        private void HuntDice(VisualElement row, TurnDraft draft, ActionOption option)
-        {
-            foreach (var id in option.EligibleIds)
-            {
-                var button = Choice("·", () => draft.Payload.Ids.Contains(id), () => CardOrDieToggled?.Invoke(id), "Allocate this die to the Hunt");
-                button.name = "select-" + id;
-                refreshChoices.Add(() => button.text = draft.Payload.Ids.Contains(id) ? "Eye" : "·");
-                row.Add(button);
-            }
-            var count = new Label();
-            refreshChoices.Add(() => count.text = $"{draft.Payload.Ids.Count} selected · {(option.Minimum == option.Maximum ? $"choose {option.Minimum}" : $"choose {option.Minimum}–{option.Maximum}")}");
-            root.Add(count);
-        }
-
-        private Button Choice(string label, Func<bool> selected, Action action, string tooltip = "")
-        {
-            var button = BoardScreen.Button(label, action);
-            refreshChoices.Add(() => button.EnableInClassList("selected", selected()));
-            button.tooltip = tooltip;
-            return button;
-        }
-
         public static string CardLabel(string id) => CardLibrary.Title(id);
+
+        private string RegionName(string id) => id != null && data.Regions.TryGetValue(id, out var region) ? region.Name : "";
 
         internal static string Title(DecisionKind kind, CommandKind? action) => ExpansionDecision.Title(kind).Length > 0 ? ExpansionDecision.Title(kind)
             : action.HasValue && ExpansionDecision.Label(action.Value).Length > 0 ? ExpansionDecision.Label(action.Value)

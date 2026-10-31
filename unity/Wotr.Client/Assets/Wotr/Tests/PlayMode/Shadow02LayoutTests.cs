@@ -48,11 +48,14 @@ namespace Wotr.PlayTests
                             }
                             if (mode == "black")
                             {
-                                // UI-245/UI-289: the figures are chosen on the Battle window; the tray keeps Keep all.
+                                // UI-245/UI-289: the figures are chosen on the Battle window. UI-432 (owner's rule, UI-430): Keep
+                                // all is the window's Skip effect, which names Black Breath; no button repeats it.
                                 FellowshipLayoutTests.Check(client.Board);
-                                var decline = client.Board.Tray.Q<Button>("effect-choice-black-breath.decline");
-                                var size = decline.MeasureTextSize(decline.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
-                                Assert.LessOrEqual(size.x, decline.contentRect.width + 1, "Keep all fits its button.");
+                                Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-black-breath.decline"));
+                                var skip = client.Board.Tray.Q<Button>("battle-skip-effect");
+                                Assert.AreEqual("Skip Black Breath · Eliminate no Leader or Companion", skip.tooltip);
+                                var size = skip.MeasureTextSize(skip.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
+                                Assert.LessOrEqual(size.x, skip.contentRect.width + 1, "Skip effect fits its button.");
                             }
                             // UI-430 (owner): The Nazgûl Strike!'s options are its objects, so the console has no option strip.
                             if (mode == "strike")

@@ -577,7 +577,9 @@ expansions — Vilya's "Spend the die", Lore's "Keep results", Wind's and the Ba
 Withdrawal's "Keep the hit", We Won't Go Back's "No Corruption", "Keep card effects" (Brand, the Chieftains) and
 Dismay's "Keep tokens" become the console's Pass, its tooltip naming what it skips (UI-276, UI-277, UI-347, UI-348;
 UI-430, 2026-10-30: Wind's and the Balrog card's "Finish" end the card, so they are the console's ✓ instead — [UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430));
-UI-278 adds the kings' "Keep tiles" after an inspection or a political cleanse. D8
+UI-278 adds the kings' "Keep tiles" after an inspection or a political cleanse. UI-432 (2026-10-31, owner's rule of UI-430)
+adds the base game's battle declines — Black Breath's and Heroic Death's "Keep all", Fateful Strike's "Keep Minions",
+Andúril's "Keep misses" — and Worn with Sorrow and Toil's "Keep cards" ([UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). D8
 keeps forced single steps (one legal region or plan) resolved by the server without a click, the result named in the
 effect trail and the log. Checks: [EXPANSIONS_DECISIONS_PLAYTEST](EXPANSIONS_DECISIONS_PLAYTEST.md).
 

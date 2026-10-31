@@ -6,6 +6,11 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
+    // UI-432 (owner's rule, UI-430): the tray keeps only the buttons no object draws. Stay here is the click on the group's
+    // lit origin region (TravelDraft.RouteTo), Stay all the console's ✓ with an empty plan, and Far-sighted Thranduil's
+    // ability picture (UI-276, D18) — the standard move its plain gesture — so none of them is a button. Undo step and
+    // Cancel of a drawn route stay: the console's ↶ is off while the tray is in the Fellowship panel, and a step back is
+    // not always an Undo step (the first step adds the origin too), so no object does what they do.
     public sealed class FellowshipChoices
     {
         private readonly List<Action> refresh = new List<Action>();
@@ -24,13 +29,13 @@ namespace Wotr.Client
             this.data = data;
             this.contextual = contextual;
             option = DraftOptions.For(view, draft);
-            if (header == null && (option.RulerTravel != null || TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1))
+            if (header == null && (FarSighted() || TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1))
             {
                 header = BoardScreen.Row();
                 root.Add(header);
             }
-            if (option.RulerTravel != null)
-                RulerMode(header);
+            if (FarSighted())
+                header.Add(new Label(FarSightedLabel) { name = "travel-far-sighted" });
             if (TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1)
                 Groups(header);
             if (draft.Kind == CommandKind.SeparateCompanions)
@@ -41,19 +46,12 @@ namespace Wotr.Client
                 Route(root);
         }
 
-        private void RulerMode(VisualElement root)
-        {
-            var label = option.RulerTravel.HuntDiceReduction > 0 ? "Far-sighted · Hunt −1" : "Far-sighted · Range +1";
-            if (draft.Payload.RulerTokenId.Length > 0)
-            {
-                root.Add(new Label(label));
-                return;
-            }
-            root.Add(Choice("Standard", "travel-standard", () => draft.Payload.AbilityId.Length == 0,
-                () => ExpansionDraft.TravelMode(draft, option, false)));
-            root.Add(Choice(label, "travel-ruler", () => draft.Payload.AbilityId == option.RulerTravel.AbilityId,
-                () => ExpansionDraft.TravelMode(draft, option, true)));
-        }
+        // UI-432: a move that uses Far-sighted (Thranduil's picture or his Ruler token) names it; the standard one shows
+        // nothing.
+        private bool FarSighted() => option.RulerTravel != null &&
+            (draft.Payload.RulerTokenId.Length > 0 || draft.Payload.AbilityId == option.RulerTravel.AbilityId);
+
+        private string FarSightedLabel => option.RulerTravel.HuntDiceReduction > 0 ? "Far-sighted · Hunt −1" : "Far-sighted · Range +1";
 
         // UI-298: in the Fellowship panel its roster already offers the Fellowship's own companions; the tray repeats none of
         // them and shows only the rest (a Guide outside the roster, such as Gollum).
@@ -143,13 +141,6 @@ namespace Wotr.Client
             root.Add(progress);
         }
 
-        private void GroupActions(VisualElement root)
-        {
-            if (option.AllowEmptySelection)
-                root.Add(Choice("Stay all", "travel-stay-all", () => draft.Payload.CompanionMoves.Count == 0,
-                    () => draft.Change(p => { p.CompanionMoves.Clear(); draft.CompanionFocus = -1; })));
-        }
-
         private void Route(VisualElement root)
         {
             if (FellowshipDraft.LocationRoute(draft.Kind))
@@ -157,19 +148,6 @@ namespace Wotr.Client
                     ? "Declare position · Remain hidden" : "Reveal position · Become revealed") { name = "fellowship-route-effect" });
             var row = BoardScreen.Row("travel-summary");
             root.Add(row);
-            if (TravelDraft.IsGrouped(draft.Kind) && option.MaximumGroups != 1)
-                GroupActions(row);
-            if (!contextual || TravelDraft.IsGrouped(draft.Kind))
-            {
-                var stay = Choice("Stay here", "travel-stay", () => TravelDraft.Route(draft)?.Count == 1, () => TravelDraft.Stay(draft, option));
-                refresh.Add(() =>
-                {
-                    var travel = TravelDraft.Travel(draft, option);
-                    stay.SetEnabled(travel != null && travel.Targets.Contains(travel.Origin));
-                    stay.tooltip = StayTooltip(travel);
-                });
-                row.Add(stay);
-            }
             var summary = new Label { name = "travel-summary" };
             row.Add(summary);
             refresh.Add(() =>
@@ -205,10 +183,6 @@ namespace Wotr.Client
         }
 
         private string Prompt => TravelDraft.TargetRoute(draft.Kind) ? "Choose a destination" : "Choose a route";
-
-        // UI-420 (owner): Stay here names the region the figures keep.
-        private string StayTooltip(TravelOption travel) =>
-            travel == null ? "Stay here · Choose a group first" : "Stay here · Remain in " + Region(travel.Origin);
 
         private string Region(string id) => data.Regions.TryGetValue(id, out var region) ? region.Name : id;
         private Button Choice(string label, string name, Func<bool> selected, Action change)

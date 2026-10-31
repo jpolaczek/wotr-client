@@ -364,7 +364,8 @@ with the choice's title and detail (the cost, e.g. the forfeited Leadership). A 
 an adjustable set (Aragorn's two misses, Mighty Attack's Companion and miss) keeps its one confirmation. Identical
 figures of one nation and kind are equivalent, so a stack's click takes its next eligible figure. An exclusive
 outcome without an object — Keep misses, Keep Minions — keeps its button, and the list no longer repeats the dice
-and figures. Test: `BattleObjectChoicesTests`.
+and figures (UI-432, 2026-10-31: Keep misses and Keep Minions are the window's Skip effect and the console's Pass now,
+their tooltips naming the card and what passing does — [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)). Test: `BattleObjectChoicesTests`.
 
 ## Leadership points and Heroic Death on their objects — UI-246 (2026-10-17)
 
@@ -376,7 +377,8 @@ pip takes it back so the source can change before the one confirmation, and spen
 Death (`SacrificeAndHits`) takes the sacrificed Leader or Companion on its portrait or stack (UI-245) and the
 cancelled hits as pips (●) on the opponent's roll heading beside its hit count; an amount opens only after a figure
 that can cancel it is chosen, the chosen amount fills from the left, and a smaller pip replaces a larger one. Keep
-hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons; the confirmation sends the figure
+hits (zero hits, a legal costly choice for a Companion) and Keep all stay buttons (UI-432, 2026-10-31: Keep all is the
+window's Skip effect and the console's Pass; Keep hits stays — [UX_SPEC](UX_SPEC.md#declines-and-window-lists-follow-the-board-rule--ui-432)); the confirmation sends the figure
 and the amount together. Pips keep fixed sizes (14 px, 11 px in short viewports) and never move the figures. Test:
 `BattleObjectChoicesTests`.
 

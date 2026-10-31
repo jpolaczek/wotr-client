@@ -34,7 +34,14 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
      Corruption because of Lure of the Ring · …`, a Monsters Roused force `East of the mountains · Click to recruit east of
      the mountains because of Monsters Roused · …`, a response's deck `Draw matching card · Click to draw a Strategy card
      because of Gandalf the Grey`, and an army event's ✓ `Finish · End The Black Captain Commands without moving or
-     attacking`;
+     attacking`; UI-432 (2026-10-31): a battle card's decline on the Skip effect and the Pass `Skip Black Breath · Eliminate
+     no Leader or Companion` (`Skip Heroic Death · Eliminate no figure and take every hit`, `Skip Andúril · Convert no miss;
+     Aragorn still forfeits his Leadership`, `Skip Fateful Strike · Eliminate no Minion`), Worn with Sorrow and Toil's red
+     table card `Discard Mithril Coat and Sting · Click to discard it because of Worn with Sorrow and Toil: a Companion was
+     taken as a casualty`, its red hand counter `Discard a random card · Click to discard a random card from the Free
+     Peoples hand because of Worn with Sorrow and Toil · …`, its Skip effect `Skip Worn with Sorrow and Toil · Discard no
+     Free Peoples Character card`, and Scouts' battle region's forces `Withdraw into siege · Click to withdraw into the
+     stronghold because of Scouts · End this battle before the Combat roll.`;
    - the battle window's direct steps name the region (`Continue battle · Fight another Combat round in Osgiliath`,
      `Retreat inside · Withdraw into the Minas Tirith stronghold`, `Stay · No figure advances into Osgiliath`), and Apply
      losses lists them (`Remove 1 Gondor Regular, downgrade 1 Gondor Elite in Lossarnach (2 hits)`);
@@ -69,7 +76,8 @@ Hunt steps) and informational tooltips (map, characters, Effects, Politics, dice
   "Ready" fillers.
 - `Presentation/OptionalDecline.cs`, `ReactionSkip.cs` — what Pass and Skip effect skip; UI-430: `FinishingOption.cs`
   (what the ✓'s Finish leaves undone), `NazgulStrikeChoice.cs` (the Hunt Box), `TableDiscardText.cs` (red table cards);
-  UI-431: `RegionForceChoices.cs`, `BlackCaptainOrder.cs`, `LureChoice.cs`, `MonstersHalves.cs`, `ReactionDecks.cs`.
+  UI-431: `RegionForceChoices.cs`, `BlackCaptainOrder.cs`, `LureChoice.cs`, `MonstersHalves.cs`, `ReactionDecks.cs`;
+  UI-432: `OptionalDecline.cs` (the battle declines and Keep cards), `WornDiscardChoice.cs`, `ScoutsShelter.cs`.
 - `UI/Battles/BattleChoices.cs` (`DirectTooltip`), `BattleForceText.cs` (one statistic per medallion, `Composition`).
 - `Presentation/FellowshipActions.cs` (`HideTooltip`, `MoveTooltip`), `PoliticalActions.cs` (`Distance`,
   `AdvanceTooltip`), `HuntTileText.cs`, `HuntWindowState.cs` (`HuntAllocationText.Confirm`), `ArmyMarkerText.Composition`.

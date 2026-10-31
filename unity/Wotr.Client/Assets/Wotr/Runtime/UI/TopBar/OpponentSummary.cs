@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -6,10 +7,16 @@ namespace Wotr.Client
 {
     // Opponent counters in the top bar cartouche. Chips are built once; Apply rewrites only changed values. UI-344 (owner's
     // decision EXP-15 D3): the expansions' tokens have fixed chips too — the Free Peoples' Ruler tokens, the Shadow's
-    // Dismay and Council tokens — shown for the whole game when its modules use them.
+    // Dismay and Council tokens — shown for the whole game when its modules use them. UI-432 (owner's rule, UI-430): while
+    // Worn with Sorrow and Toil may discard a random card from the Free Peoples hand, the card counter is that choice.
     public sealed class OpponentSummary
     {
+        public const string DiscardTargetClass = "discard-target";
         public VisualElement Root { get; } = new VisualElement { name = "opponent-summary" };
+        // UI-432: the click on the offered card counter.
+        public event Action CardsChosen;
+        public VisualElement Cards => cards.Root;
+        public bool CardsOffered { get; private set; }
         private readonly SummaryChip cards = new SummaryChip("cards", "Cards", "Cards in hand");
         private readonly SummaryChip rings = new SummaryChip("rings", "Rings", "Elven Rings");
         private readonly SummaryChip spent = new SummaryChip("spent", "Spent", "Action dice used this turn");
@@ -17,10 +24,17 @@ namespace Wotr.Client
         private readonly SummaryChip ruler = new SummaryChip("ruler", "Ruler", "Ruler tokens");
         private readonly SummaryChip dismay = new SummaryChip("dismay", "Dismay", "Dismay tokens");
         private readonly SummaryChip council = new SummaryChip("council", "Council", "Council tokens");
+        private readonly ChoicePulse pulse;
 
         public OpponentSummary()
         {
             Root.AddToClassList("opponent-summary");
+            pulse = new ChoicePulse(Root);
+            cards.Root.AddManipulator(new Clickable(() =>
+            {
+                if (CardsOffered)
+                    CardsChosen?.Invoke();
+            }));
             // UI-98: the Hunt Box has its own plaque at the right end of the bar.
             var chips = new[] { cards, rings, spent, removed, ruler, dismay, council };
             for (var i = 0; i < chips.Length; i++)
@@ -75,6 +89,21 @@ namespace Wotr.Client
                 chip.Show(count, chip.Describe(owner, count));
         }
 
+        // UI-432 (owner's rule, UI-430): the offered counter wears the red of a card to discard, breathes in the shared pulse,
+        // presses like a button and leads its tooltip with what its click does; "" withdraws the offer.
+        public void OfferCards(string offer)
+        {
+            var offered = offer.Length > 0;
+            if (offered == CardsOffered && cards.Lead == offer)
+                return;
+            CardsOffered = offered;
+            cards.Root.EnableInClassList(DiscardTargetClass, offered);
+            cards.Root.EnableInClassList(PressFeedback.PressableClass, offered);
+            cards.Root.focusable = offered;
+            cards.Lead = offer;
+            pulse.Run(offered);
+        }
+
         // The local fixture has no projection, so it must not show invented counts.
         public void Hide() => Root.style.display = DisplayStyle.None;
 
@@ -92,6 +121,18 @@ namespace Wotr.Client
             private readonly Label value = new Label { pickingMode = PickingMode.Ignore };
             private readonly string description;
             private string shown;
+            private string lead = "";
+
+            // UI-432: what a click on the counter does now, before its description; "" when it is a picture only.
+            public string Lead
+            {
+                get => lead;
+                set
+                {
+                    lead = value;
+                    Root.tooltip = TooltipText.Lines(lead, shown ?? "");
+                }
+            }
 
             public SummaryChip(string key, string caption, string description)
             {
@@ -120,7 +161,7 @@ namespace Wotr.Client
                     return;
                 shown = tooltip;
                 ValuePulse.Set(value, count.ToString());
-                Root.tooltip = tooltip;
+                Root.tooltip = TooltipText.Lines(lead, tooltip);
             }
         }
     }

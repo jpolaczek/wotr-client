@@ -84,8 +84,17 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("shadow-worn", ScenarioKind.CardPack))
             {
-                Click(room.Sh, "effect-choice-base.fp.character.05");
-                await room.Confirm(room.Sh);
+                // UI-432 (owner's rule, UI-430): the table card is red in the Effects panel; its tile's click discards it.
+                await room.Settle();
+                if (!room.Sh.Board.TableEffects.Pinned)
+                    PointerGestureEvents.ClickAt(room.Sh.Board.TableEffects.Tab);
+                var tile = room.Sh.Board.TableEffects.Root.Q<Button>("effect-source-base.fp.character.05");
+                await room.Until(() => tile.enabledInHierarchy && tile.worldBound.width > 0);
+                await room.Settle();
+                Assert.IsTrue(tile.ClassListContains(TableEffectsView.DiscardClass));
+                var revision = room.Sh.Board.View.Revision;
+                PointerGestureEvents.ClickAt(tile);
+                await room.At(revision + 1);
                 Assert.IsFalse(room.Fp.Board.View.Effects.Any(e => e.SourceId == "base.fp.character.05"));
                 Assert.IsTrue(room.Sh.Board.View.Effects.Any(e => e.SourceId == "base.sh.character.15"));
                 Assert.AreEqual(1, room.Sh.Board.View.Fellowship.Corruption);

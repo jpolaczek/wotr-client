@@ -124,9 +124,12 @@ namespace Wotr.PlayTests
             using (var room = await Connect("strategy-scouts", ScenarioKind.CardPack))
             {
                 Assert.IsEmpty(room.Fp.Board.View.Battle.Attacker.Dice);
-                Click(room.Fp, "effect-choice-scouts.shelter");
+                // UI-432 (owner's rule, UI-430): Withdraw into siege is the battle's own region on the map, not a button.
+                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("effect-choice-scouts.shelter"));
                 await Reconnect(room, room.Fp);
-                await room.Confirm(room.Fp);
+                var revision = room.Fp.Board.View.Revision;
+                MapContourProbe.ClickRegion(room.Fp.Board.Map, room.Fp.Board.View.Battle.RegionId);
+                await room.At(revision + 1);
                 Assert.AreEqual(DecisionKind.BattleAdvance, room.Sh.Board.View.Decision.Kind);
                 await room.SelectAllAdvancing(room.Sh);
                 Assert.IsTrue(room.Fp.Board.View.Units.Single(u => u.Location == "helms-deep" && u.Nation == "rohan").Garrison);

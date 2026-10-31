@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,12 +96,9 @@ namespace Wotr.Client
             tray.ActionChosen += Choose;
             tray.RulerTokenChosen += ChooseRulerToken;
             tray.DirectChosen += DirectBattleChoice;
-            tray.DieChosen += ChooseDie;
             tray.CardInspected += id => { if (view?.Battle != null) board.Cards.ShowCombat(id); else board.Cards.Show(id, true); };
             tray.DraftEdited += EditChoice;
             tray.ChoiceCompleted += CompleteChoice;
-            tray.CardOrDieToggled += id => Edit(() => draft.Toggle(id));
-            tray.DeckChosen += deck => Edit(() => draft.Change(p => p.Deck = deck));
             tray.Cancel += Back;
             tray.Confirm += Confirm;
             tray.ReinforcementsRequested += board.Reinforcements.Show;
@@ -1000,6 +998,17 @@ namespace Wotr.Client
             }
         }
 
+        // UI-431: the forces whose click makes a card's choice (the Black Captain's Nazgûl, Monsters Roused's regions) lead
+        // their tooltips with it; UI-432: so do the forces in Scouts' battle region, whose click withdraws into siege.
+        private IReadOnlyDictionary<string, string> ForceOffers()
+        {
+            if (captainOrder.Offers.Count > 0)
+                return captainOrder.Offers;
+            if (monsters.Offers.Count > 0)
+                return monsters.Offers;
+            return SelectionBusy ? null : ScoutsShelter.Offers(view, draft);
+        }
+
         private bool RefreshContexts()
         {
             branchCarry.Expire(view);
@@ -1023,7 +1032,7 @@ namespace Wotr.Client
             // UI-431: after the components and the figures' abilities, whose map owners the Black Captain's order replaces.
             captainOrder.Refresh(view, draft);
             monsters.Refresh(view, draft);
-            board.Map.OfferForces(captainOrder.Offers.Count > 0 ? captainOrder.Offers : monsters.Offers);
+            board.Map.OfferForces(ForceOffers());
             lore.Refresh(view, draft);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||

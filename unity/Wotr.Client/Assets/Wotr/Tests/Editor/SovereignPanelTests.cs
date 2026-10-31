@@ -299,7 +299,9 @@ namespace Wotr.EditorTests
             choices.Refresh();
             Assert.IsNull(root.Q<Button>("cost-cost"));
             Assert.IsNull(root.Q<Button>("sovereign-choice-king"));
-            Assert.IsTrue(root.Q<Button>("travel-stay").enabledSelf);
+            // UI-432: staying is the click on the king's own lit region (TravelDraft.RouteTo), not a Stay here button.
+            Assert.IsNull(root.Q<Button>("travel-stay"));
+            Assert.IsTrue(TravelDraft.Reachable(draft, view, BoardPresentation.Load()).Contains("erebor"));
             Assert.IsFalse(draft.Ready(DraftOptions.For(view, draft)));
             var text = SovereignPresentation.Consequence(view, draft);
             StringAssert.Contains("Return all attached tiles", text);

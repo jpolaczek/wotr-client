@@ -103,8 +103,9 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(BattleObjectChoices.PointsOf(view, new[] { "witch-king", "nazgul-a" }));
         }
 
-        // UI-246: Heroic Death takes the figure in its column and the cancelled hits on the incoming hits; zero hits and
-        // Keep all stay buttons, and the amount is open only once a figure that can cancel it is chosen.
+        // UI-246: Heroic Death takes the figure in its column and the cancelled hits on the incoming hits; zero hits stays a
+        // button, and the amount is open only once a figure that can cancel it is chosen. UI-432 (owner's rule, UI-430): Keep
+        // all is the console's Pass and the battle window's Skip effect, no object and no button.
         [Test]
         public void HeroicDeathTakesTheFigureAndTheCancelledHitsOnTheirIndicators()
         {
@@ -112,7 +113,8 @@ namespace Wotr.EditorTests
             Assert.IsTrue(BattleObjectChoices.Offered(view, "gimli"));
             Assert.IsTrue(BattleObjectChoices.Offered(view, "heroic-death.hits.2"));
             Assert.IsFalse(BattleObjectChoices.Offered(view, "heroic-death.hits.0"), "Keep hits stays a button.");
-            Assert.IsFalse(BattleObjectChoices.Offered(view, "heroic-death.decline"), "Keep all stays a button.");
+            Assert.IsFalse(BattleObjectChoices.Offered(view, "heroic-death.decline"), "Keep all is no object of the window.");
+            Assert.IsTrue(OptionalDecline.Declines(view, "heroic-death.decline"), "Keep all is the Pass and Skip effect.");
             var draft = new TurnDraft();
             Assert.IsFalse(BattleObjectChoices.CanChoose(view, draft, "heroic-death.hits.1"), "The hits wait for the figure.");
 

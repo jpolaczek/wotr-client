@@ -11,10 +11,17 @@ namespace Wotr.Client
     // card and a Combat card replacement's Keep card effects (Brand, the Dark Chieftains), whose ids are generic and count
     // only in their own steps. UI-276: Dismay's Keep tokens. UI-278: the kings' Keep tiles after an inspection (Wisdom of
     // Elrond, It Is Not So Dark Here) and after a political cleanse. UI-430 (owner): Wind from the West's Finish ends the
-    // card, so it is the console's ✓ (FinishingOption), no longer the Pass.
+    // card, so it is the console's ✓ (FinishingOption), no longer the Pass. UI-432 (owner's rule, UI-430): the base battle
+    // cards' declines — Black Breath's and Heroic Death's Keep all, Fateful Strike's Keep Minions, Andúril's Keep misses —
+    // and Worn with Sorrow and Toil's Keep cards are the Pass and the battle and Hunt windows' Skip effect, not buttons.
     public static class OptionalDecline
     {
         public const string WithdrawalKeep = "withdrawal.decline";
+        public const string BlackBreathKeep = "black-breath.decline";
+        public const string FatefulStrikeKeep = "fateful-strike.decline";
+        public const string HeroicDeathKeep = "heroic-death.decline";
+        public const string AndurilKeep = "anduril.keep-misses";
+        public const string WornKeep = "worn.decline";
         private const string VilyaSkip = "spend the die and keep Vilya";
         private const string DismaySkip = "keep your Dismay tokens";
 
@@ -23,7 +30,13 @@ namespace Wotr.Client
         {
             [LoreChoice.Keep] = "keep your dice as they are",
             [WithdrawalKeep] = "keep the hit and fight on",
-            [HuntCardResponses.NoCorruption] = "take no Corruption and keep your cards"
+            [HuntCardResponses.NoCorruption] = "take no Corruption and keep your cards",
+            [BlackBreathKeep] = "eliminate no Leader or Companion",
+            [FatefulStrikeKeep] = "eliminate no Minion",
+            [HeroicDeathKeep] = "eliminate no figure and take every hit",
+            // The server still forfeits Aragorn's Leadership when he converts no miss (AndurilStep), so passing says so.
+            [AndurilKeep] = "convert no miss; Aragorn still forfeits his Leadership",
+            [WornKeep] = "discard no Free Peoples Character card"
         };
 
         // Declines with a generic id, by the presentation of their step.
