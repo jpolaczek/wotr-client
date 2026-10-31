@@ -39,12 +39,15 @@ namespace Wotr.Client
         private readonly MordorTrackGeometry geometry;
         private readonly Button[] steps = new Button[MordorTrackGeometry.LastStep + 1];
         private readonly Dictionary<string, Button> gates = new Dictionary<string, Button>();
+        // UI-434: the gate the Fellowship may enter by glows in gold and pulses in the shared rhythm.
+        private readonly ChoicePulse gatePulse;
 
         public MapMordorTrack(MapCanvas map)
         {
             this.map = map;
             geometry = map.Data.MordorTrack;
             Root.StretchToParentSize();
+            gatePulse = new ChoicePulse(Root);
             for (var step = 0; step <= MordorTrackGeometry.LastStep; step++)
                 steps[step] = Step(step);
             foreach (var entrance in geometry.Entrances)
@@ -102,8 +105,12 @@ namespace Wotr.Client
             {
                 var offered = gate.Key == OfferedGate;
                 gate.Value.EnableInClassList(NextClass, offered);
+                // UI-434 (owner, after UI-433): "Enter Mordor: click the glowing gate" — the gate's lit art alone (a faint
+                // halo at 34 points) read as unlit, so the offered gate wears the shared gold ChoiceGlow.
+                ChoiceGlow.Apply(gate.Value, offered);
                 gate.Value.tooltip = MordorTrackState.GateTooltip(gate.Key) + (offered ? "\nClick to enter Mordor." : "");
             }
+            gatePulse.Run(OfferedGate.Length > 0);
         }
 
         public void Layout()

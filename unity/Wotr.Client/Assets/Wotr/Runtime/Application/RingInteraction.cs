@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -12,9 +13,9 @@ namespace Wotr.Client
     {
         public const string CandidateClass = "ring-candidate";
         public const string MutedClass = "ring-muted";
-        // UI-238: the dice panel while the Ring waits for its die; its candidates pulse with the shared ChoiceGlow.
+        // UI-238: the dice panel while the Ring waits for its die; its candidates pulse with the shared ChoiceGlow (UI-434:
+        // through the pool's PoolChoiceGlow).
         public const string ChoosingClass = "ring-choosing";
-        private readonly ChoicePulse pulse;
         private readonly BoardScreen board;
         private readonly Action<DieFace> choose;
         private readonly Action cancel;
@@ -30,7 +31,6 @@ namespace Wotr.Client
             board.RingPicker.Chosen += Choose;
             board.Root.RegisterCallback<PointerDownEvent>(PressElsewhere, TrickleDown.TrickleDown);
             board.Root.RegisterCallback<GeometryChangedEvent>(Follow);
-            pulse = new ChoicePulse(board.OwnDice);
         }
 
         public void Refresh(PlayerView latest, TurnDraft current, bool canEdit)
@@ -50,15 +50,17 @@ namespace Wotr.Client
             // UI-248: a payment's alternative dice glow in the same rhythm (CostDice).
             var paying = CostDice.InPool(view, draft);
             board.OwnDice.EnableInClassList(ChoosingClass, choosing);
-            pulse.Run(choosing || paying);
+            var glowing = new List<string>();
             foreach (var button in board.OwnDice.Query<Button>().ToList())
             {
                 if (button.userData is not DraftToken token || token.Object != DraftObject.Die)
                     continue;
                 button.EnableInClassList(CandidateClass, armed && dice.Contains(token.Id));
-                ChoiceGlow.Apply(button, choosing && dice.Contains(token.Id) || paying && CostDice.Glows(view, draft, token.Id));
+                if (choosing && dice.Contains(token.Id) || paying && CostDice.Glows(view, draft, token.Id))
+                    glowing.Add(token.Id);
                 button.EnableInClassList(MutedClass, armed && !dice.Contains(token.Id));
             }
+            board.OwnDiceChoices.Offer(this, glowing);
         }
 
         private void ShowPicker()
@@ -95,7 +97,7 @@ namespace Wotr.Client
             board.RingPicker.Chosen -= Choose;
             board.Root.UnregisterCallback<PointerDownEvent>(PressElsewhere, TrickleDown.TrickleDown);
             board.Root.UnregisterCallback<GeometryChangedEvent>(Follow);
-            pulse.Run(false);
+            board.OwnDiceChoices.Withdraw(this);
             board.OwnDice.RemoveFromClassList(ChoosingClass);
             board.RingPicker.Hide();
         }

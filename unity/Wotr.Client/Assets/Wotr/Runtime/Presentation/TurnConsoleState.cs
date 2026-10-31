@@ -92,15 +92,21 @@ namespace Wotr.Client
         private static string FellowshipGuidance(PlayerView view)
         {
             var steps = new List<string>();
-            if (Offered(view, CommandKind.DeclareFellowship))
-                steps.Add("Declare: click the glowing Fellowship figure on the map");
-            if (Offered(view, CommandKind.EnterMordor))
-                steps.Add("Enter Mordor: click the glowing gate");
+            var map = MapGuidance(Offered(view, CommandKind.DeclareFellowship), Offered(view, CommandKind.EnterMordor));
+            if (map.Length > 0)
+                steps.Add(map);
             if (Offered(view, CommandKind.SelectGuide))
                 steps.Add("Guide: click a glowing companion");
             steps.Add(steps.Count == 0 ? "Continue to the Hunt." : "or continue to the Hunt.");
             return string.Join(" · ", steps);
         }
+
+        // UI-434: the gate that enters is the one on the map (the Fellowship panel's Mordor track symbol is a gate too), so
+        // the hint says where; the figure and the gate together share one clause, so the hint keeps to the console's two lines.
+        private static string MapGuidance(bool declare, bool enter) =>
+            declare && enter ? "Declare or enter Mordor: click the glowing figure or gate on the map"
+            : declare ? "Declare: click the glowing Fellowship figure on the map"
+            : enter ? "Enter Mordor: click the glowing gate on the map" : "";
 
         private static bool Offered(PlayerView view, CommandKind kind) => view.Options.Any(o => o.Kind == kind && o.Enabled);
 

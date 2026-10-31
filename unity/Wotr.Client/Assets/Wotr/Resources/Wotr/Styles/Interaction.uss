@@ -306,6 +306,33 @@
     scale: 1 1;
 }
 
+/* UI-434 (owner, after UI-433): every object a hint asks to click glows where it stands. The own pool's dice a choice
+   offers (PoolChoiceGlow: an Elven Ring's die, a payment's dice) breathe in rim and plate only: a pool's row has no room
+   for a larger die. */
+.motion-enabled #board-screen .dice-panel.choice-glow-pulse .die.choice-glow { scale: 1 1; }
+/* A deck a hint asks for (a deck choice, a reaction's draw): the thick gold rim round its back, breathing in rim only
+   (the two decks share their row). The die's pale halo (UI-136), drawn over the rim, steps aside for it. */
+#board-screen .edge-cards .card-decks .card-deck.choice-glow { border-width: 3px; border-color: rgb(255, 214, 112); }
+#board-screen .card-deck.choice-glow > .die-option-glow { display: none; }
+.motion-enabled #board-screen .edge-cards .card-decks.choice-glow-pulse .card-deck.choice-glow { border-color: rgba(255, 214, 112, 0.4); scale: 1 1; }
+/* The Mordor gate the Fellowship may enter by: the gold rim on a warm plate round the gate on the map, breathing. */
+.map .mordor-gate.choice-glow,
+.map .mordor-gate.choice-glow:hover {
+    border-width: 3px;
+    border-radius: 10px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.55);
+}
+.motion-enabled .map .mordor-gate.choice-glow {
+    transition-property: border-color, background-color, scale;
+    transition-duration: 750ms, 750ms, 0.35s;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled .map .choice-glow-pulse .mordor-gate.choice-glow {
+    border-color: rgba(255, 214, 112, 0.4);
+    background-color: rgba(70, 52, 18, 0.3);
+}
+
 /* UI-250: a member of another planned group stays in the roster, dimmed with a blue rim; its click selects that group. */
 /* UI-378: a planned group's portrait dims with a faint gold rim, no pale blue. */
 #board-screen .companion-portrait.planned-group { opacity: 0.7; border-color: rgba(255, 214, 112, 0.55); }

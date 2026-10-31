@@ -962,9 +962,10 @@ The 2026-10-12 application: “Do not add a new move button when moving the ring
   movement. When the motion is activated, the glow pulsates gently; the reduced motion leaves a
   constant glow.
 - Tooltip gives the effect, and the hint of the panel indicates “Click the shining track symbol”.
-- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the
-  declaration the Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing
-  portrait (UI-249); none of them is a panel button.
+- Without legal movement, the icon is a simple, non-clip symbol. Hiding is the Ring icon (UI-232), the declaration the
+  Fellowship's map figure and entry to Mordor the track's gate (UI-236), and the Guide its glowing portrait (UI-249);
+  none of them is a panel button. Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434) (2026-10-31)
+  the offered gate wears the gold ChoiceGlow on the map and the hint names the map's gate.
 
 <a id="proste-powiadomienia-i-pergaminowe-karty--ui-106"></a>
 ## Simple notifications and parchment card — UI-106
@@ -1441,6 +1442,8 @@ Base-game parts of the owner's reports on the Kings branch (Ruler tokens, the Pa
   deck" and "Click a glowing deck beside your hand to draw its top card", the notice leads to the hand
   (`DecisionContext.Hand`; the docked hand shows its decks already, so the plaque has nothing to open), a floating
   hand drawer opens once for the step, and the source character keeps no Open decision link. Test: `DeckChoiceTests`.
+  Since [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434) (2026-10-31) the offered decks also wear the
+  thick gold ChoiceGlow rim and breathe: the halo and the thin rim alone read as unlit.
 
 ## Abilities on their rows, a lifted figure, equal battle sides — UI-391, UI-393, UI-394 (2026-10-29)
 
@@ -1688,10 +1691,10 @@ forces standing there carry the tooltip.
   Witch-king among them, because of The Black Captain Commands` (`MapCanvas.OfferForces`, composed where the markers'
   tooltips are set); a click on one (force or region) chooses Move Nazgûl and arms that stack in the flight that follows,
   so the next click is its destination (`CaptainOrderInteraction`). The view moves once to the lit Nazgûl when they lie
-  off the map's view (`MapCanvas.Reveal`; a force under the console's bottom row still counts as in view, a limit of
-  `Reveal` left as it is). **What stays:** with no Nazgûl in the reserve the recruit has no object, so it keeps its
-  console button, lit and named after the card (UI-418). Hint: "Click a glowing Nazgûl in the Reserve to recruit, or a
-  glowing Nazgûl on the map to move them".
+  off the map's view (`MapCanvas.Reveal`; a force under the console's bottom row still counted as in view, a limit of
+  `Reveal` lifted by [UI-434](#every-object-a-hint-asks-to-click-visibly-glows--ui-434)). **What stays:** with no
+  Nazgûl in the reserve the recruit has no object, so it keeps its console button, lit and named after the card
+  (UI-418). Hint: "Click a glowing Nazgûl in the Reserve to recruit, or a glowing Nazgûl on the map to move them".
 - **Lure of the Ring** (`lure.eliminate` / `lure.corruption`; the Free Peoples choose). The Fellowship panel opens once for
   the choice. The companion's portrait glows red (`eliminate-target`: red rim on a red plate, the roster's pulse, no size
   change, no filter) — `Eliminate · Click to eliminate Gimli because of Lure of the Ring · <detail>` — and its click
@@ -1847,3 +1850,114 @@ plain gesture against the old Far-sighted and Standard buttons, each in its own 
 `UI63SiegeNetworkTests` (the awakening stays by the region's click), `Shadow02LayoutTests`, `Shadow03NetworkTests`,
 `Strategy01NetworkTests`, `Strategy01LayoutTests`, `CardPack02NetworkTests`, `ExpansionTokenNetworkTests`, the Fellowship
 tray tests (`FellowshipNetworkTests`, `FellowshipLayoutTests`, `CharacterNetworkTests`, `CompanionJourneyMapTests`).
+
+<a id="every-object-a-hint-asks-to-click-visibly-glows--ui-434"></a>
+## Every object a hint asks to click visibly glows — UI-434, base parts (2026-10-31)
+
+The owner, after UI-433 (on `expansions`, Dismay's Ruler die read as unlit in the top bar): audit every effect whose
+hint or tooltip asks the player to click a glowing, lit, highlighted, red or pulsing object, and make sure that object
+visibly glows where it stands (UI-430's rule: objects signal options by glowing and pulsing). An object is **strong**
+when it wears the shared gold ChoiceGlow (a rim of at least 2 points on a warm plate) or the legal-target rim in a
+pulsing host, the red discard look, or the map's choice glow, and stands on screen; **weak** with its art alone, a thin
+rim, a colour change only, or no pulse where others pulse; **hidden** inside a closed panel whose tab does not light,
+under a window or the console, off the map's view, or in a place the hint does not name.
+
+- **The own pool's dice.** The dice the Elven Ring's die choice (UI-238) and a payment's alternative dice (UI-248) offer
+  wear the gold ChoiceGlow through one `PoolChoiceGlow` on the pool (`BoardScreen.OwnDiceChoices`): `RingInteraction`
+  names its dice, and the pool lights the union of what its interactions name, so one refresh never puts out another's.
+  They breathe in rim and plate only — a pool's row has no room for a larger die, so the Ring's die no longer grows.
+- **The decks a hint asks for** — the deck choice (the Palantír of Orthanc's draw, UI-390: "Click a glowing deck beside
+  your hand …") and Gandalf the Grey's draw (UI-431) — wear the thick gold rim round the back and breathe in rim only;
+  the die's pale halo, drawn over the rim, steps aside. A die's ordinary draw keeps its legal-target rim and halo.
+- **The Mordor gate.** The gate the Fellowship may enter by wears the gold rim on a warm plate on the map and breathes;
+  its "gate-next" art alone (a faint green halo at 34 points) read as unlit. The Fellowship panel's Mordor track symbol
+  is a gate too, so the hint says the map's, in one clause with the declaration so that it keeps to two lines: "Declare
+  or enter Mordor: click the glowing figure or gate on the map · or continue to the Hunt." ("Enter Mordor: click the
+  glowing gate on the map" alone).
+- **A siege extension's figures.** "Click a highlighted figure to extend the siege with it": one click extends, so no
+  figure is chosen before it, and the battle window drew every figure dimmed at half opacity as one left behind. Each
+  figure the extension may take now wears the gold ChoiceGlow and breathes with its grid (`BattleChoices`).
+- **Off the map's view.** `MapCanvas.Reveal` (UI-134) counts as visible only the free map — the map minus what covers it
+  (the top bar, the console, open panels and windows; `SafeMapArea`, as a presentation frames its cues) — so the Black
+  Captain's Nazgûl no longer stay under the console (UI-431's noted limit), and the Reserve's settlements come out from
+  under the HUD too. Two more decisions bring their lit objects into view once, as those do: the Fellowship phase that
+  offers Mordor's gate (its region, with the figure beside it, `FellowshipContextInteraction`) and a card's Nazgûl
+  flight (the lit Nazgûl, `NazgulFlightInteraction`) — at 1920×1080 at 125 % both lay beyond the screen's edge or under
+  the hand.
+
+Click paths and payloads are unchanged: every fix is a class, a pulse, a camera move or a hint's words; no CSS filter,
+no size change beyond the shared pulse, no layout write in a geometry callback.
+
+Inventory of this branch's hints (verdict before UI-434, as found on `expansions`, which draws these objects the same
+way; Audit = PlayMode `GlowingHintAuditTests` on the seeded match named, at 1366×768 at 100 % and 1920×1080 at 125 %,
+screenshots `c434-<case>-<width>-<scale>.png`; Classes = EditMode `GlowingHintClassesTests`):
+
+| Case (hint) | Object | Where | Verdict | Fix · test |
+| --- | --- | --- | --- | --- |
+| "Click a glowing deck beside your hand …" (`DeckChoice`, the Palantír of Orthanc), Gandalf the Grey's draw (`ReactionDecks`) | the decks | hand drawer, opened once | WEAK: a 2 pt rim under the die's pale halo, no pulse | ChoiceGlow (3 pt rim, the halo steps aside) + pulse · Audit `shadow-palantir-draw`; Classes (the Grey draw has no seed) |
+| "Enter Mordor: click the glowing gate" (`TurnConsoleState`) — Fellowship phase | the Mordor gate | map's Mordor track | WEAK: "gate-next" art alone, a faint halo at 34 pt; ambiguous with the panel's gate symbol; HIDDEN at 1920×1080 at 125 % (under the hand) | ChoiceGlow + pulse; "… gate on the map", one clause with Declare; the view comes to it once · Audit `ui34-mordor-morannon-True`; Classes |
+| "Click a highlighted figure to extend the siege with it" (`BattleDraft`) | the figures that may extend it | battle window, the side's column | WEAK: drawn dimmed at half opacity, as figures left behind | ChoiceGlow + pulse, not dimmed · Audit `siege`; Classes |
+| "Declare: click the glowing Fellowship figure on the map", "The glowing Fellowship figure moves/hides …", `HideHint`, `MoveHint` | the Fellowship figure; its track marker | map; Fellowship panel (corner tab lit) | STRONG (ChoiceGlow + pulse, UI-280/UI-293); beside Mordor off view at 1920×1080 at 125 % | the gate's reveal brings it too · Audit `ui34-mordor-morannon-True` (the figure) |
+| "Click the glowing Mordor track symbol", "Move: click the glowing track" (There Is Another Way) | the track symbol | Fellowship panel (corner tab lit) | STRONG: the gilt halo breathing (UI-110) | — · `MordorNetworkTests`, `FellowshipCardActionsTests` |
+| "Click a glowing companion in the Fellowship panel to make it the Guide", "Click the Guide's glowing portrait …" | companions' portraits | Fellowship panel (opens for its decision, corner tab lit) | STRONG | — · `FellowshipGuideNetworkTests`, `MultiUseDiceNetworkTests` |
+| "Click Gimli's red portrait …, or the Fellowship's corruption marker" (`LureChoice`) | red portrait; marker | Fellowship panel, opened | STRONG (UI-431) | — · Audit `shadow-lure` |
+| "Discard: red card in Effects · Roll: Hunt Box · ✓ finishes" (`NazgulStrikeChoice`), "Click a red table card in Effects" (`TableDiscardText`) | Hunt Box; red table cards | console; Effects panel (tab lit) | STRONG (UI-430) | — · Audit `shadow-strike` |
+| "… Random card: red hand counter …" (`WornDiscardChoice`) | the Free Peoples' card counter | top bar | STRONG (UI-432) | — · Audit `shadow-worn` |
+| "Click a red-marked card to discard it face down", the inspected Shadow hand | hand cards | hand drawer | STRONG: red parchment (UI-222) | — · Audit `ui31-discard` |
+| "Click a glowing Nazgûl in the Reserve …, or a glowing Nazgûl on the map …" (`BlackCaptainOrder`), reserve tooltips "… a highlighted settlement" | Reserve tokens; the map's Nazgûl; settlements | Reinforcements panel (tab lit); map | STRONG objects; the map's Nazgûl HIDDEN under the console at the fitted view (UI-431's noted limit) | `MapCanvas.Reveal` counts only the free map · Audit `shadow-captain` (Reserve token, then the map's force) |
+| "Click a lit Nazgûl, then where it flies" (`NazgulFlightDraft`) | the lit Nazgûl | map | STRONG glow; HIDDEN at 1920×1080 at 125 % (Barad-dûr beyond the screen's edge) | the view comes to them once (`NazgulFlightInteraction`) · Audit `shadow-strike` |
+| The other map figures ("a lit army", "a lit companion", "a lit figure") | army and character stands | map | STRONG: the map's choice glow and pulse | — · `CompanionJourneyMapTests`, `BoardDrawnOptionsTests` |
+| "Choose/click a highlighted/lit region, destination, settlement", red attack regions, Dreadful Spells' and Work of the Enemy's lit region | regions | map | STRONG: the map's target glow pulsing | — · Audit `kings-enemy-army` |
+| "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat" (`ScoutsShelter`), "Choose a highlighted retreat region." | the battle region; the retreat regions | map, beside the battle window | STRONG at 1366×768; HIDDEN at 1920×1080 at 125 % (under the battle window) | left: see the limits · Audit `strategy-scouts` at 1366×768 |
+| "Click the glowing field army or garrison in the region's panel", "Click a lit region, then its lit figure(s)" | force sections; figures | region panel | STRONG (UI-251, UI-431) | — · `BoardDrawnOptionsTests` |
+| "Choose a highlighted card, or No card." (`BattleDraft`), combat card targets | combat cards; dice, portraits, stacks | battle window | STRONG: the playable parchment (cards never pulse; No card glows when alone, UI-279); ChoiceGlow + pulse | — · `BattleWindowNetworkTests` |
+| "Click a glowing Guide response in the Hunt window …", "Use a glowing response, or Pass …" (`ReactionSkip`), Hunt card responses | response objects | Hunt window (opens for both) | STRONG (UI-285, UI-423) | — · `HuntResponseNetworkTests` |
+| "Click a highlighted die to change its result" (the Elven Ring, `RingChoice`), a payment's dice | dice | own pool | STRONG (UI-238, UI-248) | through `PoolChoiceGlow`, breathing in rim and plate · `RingUseNetworkTests`; Classes |
+| "Click the glowing ✓ in the console to check its result." | ✓ | console | STRONG (ChoiceGlow + pulse) | — |
+| "Choose what this die acts on: the highlighted map, cards and panels", "Choose a highlighted object …", "Select the highlighted …, then confirm" (`DecisionObjects`) | a die's uses; a window's choices | each object's family | per family (UI-136, UI-389) | — |
+
+Limits left as they are:
+- *A floating window over a lit region.* At 1920×1080 at 125 % the battle window's default place covers Helm's Deep,
+  which Scouts asks to click, and the console the rest of it; the map cannot pan its west edge past the screen to clear
+  it, so a camera move does not help. At 1366×768 the region shows below the window. The window moves by its header and
+  closes, as before; placing windows away from lit regions is a layout change of its own.
+- *A window's generic console line.* While a decision lives in a window (the siege extension), the console reads "Select
+  the highlighted choices, then confirm." and the window's tray names the object; both objects glow.
+- *A hand card over the decks.* A hand card that slid under the pointer stands expanded over the decks until the pointer
+  leaves the hand (UI-390); the decks glow as soon as it does.
+- *No seed:* Gandalf the Grey's draw on its deck (the server offers it only while he is the Guide, so his portrait holds
+  it, UI-431) is checked by `GlowingHintClassesTests`.
+
+Branches: these are the base game's parts of the expansions commit. The special dice, the Ruler discard, Dismay, Vilya,
+Nenya, Three Rings, Lore, the Ring payments, the Council medallions and hint, the Palantír of Anárion's deck choice, the
+Spear's deck and Monsters Roused stay on `expansions` (the older resource panel this branch still carries for the
+expansions' dice is left as it is). This branch has no offer in the opponent's pool, so only the own pool has a
+`PoolChoiceGlow`; no lit-art pulse (UI-345), so the decks and the gate gain the gold rim and the pulse alone; and no
+kings' halo or map character glow, so `GlowingTargetChecks` reads this branch's glows only. Work of the Enemy, the Kings
+card this branch carries (UI-431), keeps its audit case.
+
+Playtest (owner's checklist):
+- [ ] Mordor — seeded `ui34-mordor-morannon-True` (the Free Peoples), in a small window. Expect: the view comes to
+  Morannon; its gate glowing gold and breathing, the figure glowing; "Declare or enter Mordor: click the glowing figure
+  or gate on the map"; the gate's click enters.
+- [ ] A siege extension — seeded `siege` (the Shadow). Expect: the figures in the battle window's column glowing gold,
+  not dimmed; one click extends.
+- [ ] A deck choice — seeded `shadow-palantir-draw` (the Shadow). Expect: both decks beside the hand with a thick gold
+  rim, breathing, no pale halo; a deck's click draws.
+- [ ] A Nazgûl flight — seeded `shadow-strike` (the Shadow), at 1920×1080 at 125 %. Expect: the view comes to the lit
+  Nazgûl of Barad-dûr.
+- [ ] The Black Captain — seeded `shadow-captain` (the Shadow). Expect: Osgiliath's Nazgûl brought out from under the
+  console, glowing.
+
+Tests: EditMode `GlowingHintClassesTests` (the pool's union across offers, the deck choice's decks, Gandalf the Grey's
+drawn deck, the Mordor gate, the siege figures), `TurnConsoleStateTests` (the Fellowship phase's clause); PlayMode
+`GlowingHintAuditTests` (10 cases, each on its own seeded match, all in one run: the deck choice's decks, the Mordor
+gate and figure, the Strike's flight, Hunt Box and red table cards, Worn's red hand counter, Lure's portrait and marker,
+the Black Captain's Reserve token and map Nazgûl, Work of the Enemy's region, the hand's red cards, Scouts' regions, the
+siege extension's figures) with the reusable checks `GlowingTargetChecks.AssertVisiblyOffered` (shown, inside the
+screen, uncovered at its centre, a strong glow, its host pulsing), `AssertTabLit` and `AssertRegionOffered`; unchanged
+and still passing with the new glows, pulses and reveals (the tests of one seed in separate runs): `MordorNetworkTests`,
+`FellowshipNetworkTests`, `RingUseNetworkTests`, `T22TurnNetworkTests`, `Shadow02NetworkTests`, `Shadow02LayoutTests`,
+`Shadow04NetworkTests` (the Palantír of Orthanc's draw), `StrongholdNetworkTests`, `BattleLayoutTests`,
+`MusterNetworkTests`, `CharacterNetworkTests` and `BoardDrawnOptionsTests`' reveals (the map's Nazgûl, the Reserve's
+Nazgûl).

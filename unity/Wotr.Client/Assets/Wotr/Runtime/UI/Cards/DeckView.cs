@@ -11,9 +11,12 @@ namespace Wotr.Client
         public VisualElement Root { get; } = BoardScreen.Row("card-decks");
         public event Action<string> Selected;
         private readonly Dictionary<string, Button> buttons = new Dictionary<string, Button>();
+        // UI-434: the decks a hint asks for glow in gold and pulse in the shared rhythm.
+        private readonly ChoicePulse pulse;
 
         public DeckView()
         {
+            pulse = new ChoicePulse(Root);
             foreach (var id in new[] { "character", "strategy" })
             {
                 var button = BoardScreen.Button("", () => Selected?.Invoke(id));
@@ -32,6 +35,7 @@ namespace Wotr.Client
         public void Refresh(PlayerView view, TurnDraft draft, ActionDieContext context, bool busy)
         {
             var counts = view.Players.FirstOrDefault(p => p.Side == view.You)?.DeckCounts;
+            var asked = false;
             foreach (var entry in buttons)
             {
                 var count = counts != null && counts.TryGetValue(entry.Key, out var n) ? n : 0;
@@ -39,11 +43,18 @@ namespace Wotr.Client
                 var draw = ReactionDecks.Draw(view, entry.Key).Length > 0;
                 var available = draw || CardActions.CanDraw(view, draft, context, entry.Key);
                 entry.Value.EnableInClassList("legal-target", available);
+                // UI-434 (owner, after UI-433): a deck a hint asks for — a deck choice (UI-390, the Palantír of Orthanc's
+                // draw), a reaction's draw — wears the gold ChoiceGlow; its thin rim and its halo alone read as unlit beside
+                // the hand.
+                var glows = draw || DeckChoice.Offers(view, entry.Key);
+                ChoiceGlow.Apply(entry.Value, glows);
+                asked |= glows;
                 entry.Value.EnableInClassList("empty-deck", count == 0);
                 ValuePulse.Set(entry.Value.Q<Label>("deck-count"), count.ToString());
                 entry.Value.SetEnabled(available && !busy);
                 entry.Value.tooltip = draw ? ReactionDecks.Tooltip(view) + "\n" + DeckState(entry.Key, count) : DeckTooltip(entry.Key, count, available);
             }
+            pulse.Run(asked);
         }
 
         // UI-420 (owner): "Character deck · 12 cards · Click to draw", "Character deck · Empty".

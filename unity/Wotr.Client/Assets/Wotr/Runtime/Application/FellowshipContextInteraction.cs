@@ -17,6 +17,8 @@ namespace Wotr.Client
         private bool entering;
         // UI-431: the Lure of the Ring decision whose objects the panel was opened for.
         private string lureShown = "";
+        // UI-434: the decision whose Mordor gate the view was brought to.
+        private string gateRevealed = "";
 
         public FellowshipContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -78,9 +80,22 @@ namespace Wotr.Client
             var enter = !busy() && Offered(CommandKind.EnterMordor);
             var move = !busy() && step < MordorTrackGeometry.LastStep && Offered(CommandKind.MoveFellowship);
             board.Map.MordorTrack.Offer(enter ? 0 : move ? step.Value + 1 : -1, enter ? fellowship.RegionId : "");
+            if (enter)
+                RevealGate(fellowship.RegionId);
             board.Map.FellowshipMarker.OfferHide(!busy() && !fellowship.Hidden && Offered(CommandKind.HideFellowship));
             board.Map.FellowshipMarker.OfferMove(!busy() && !step.HasValue && fellowship.Hidden && Offered(CommandKind.MoveFellowship));
             board.Map.FellowshipMarker.OfferDeclare(!busy() && !step.HasValue && draft.Kind == null && Offered(CommandKind.DeclareFellowship));
+        }
+
+        // UI-434 (owner, after UI-433): "Enter Mordor: click the glowing gate on the map" — the gate and the figure beside it
+        // may lie off the map's view or under the console and the hand: the view moves to the gate's region once for the
+        // decision, as for the Black Captain's Nazgûl (UI-431).
+        private void RevealGate(string region)
+        {
+            if (gateRevealed == view.Decision?.Id || board.Map.contentRect.width <= 0)
+                return;
+            gateRevealed = view.Decision.Id;
+            board.Map.Reveal(new[] { region });
         }
 
         private bool Offered(CommandKind kind) => FellowshipActions.Option(view, board.ActionDie, kind, draft) != null ||
