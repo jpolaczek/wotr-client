@@ -29,6 +29,9 @@ namespace Wotr.EditorTests
             // UI-423: the window's own Skip effect, beside the console's Pass.
             StringAssert.EndsWith("Or click Skip effect (or Pass) to skip it.", button.tooltip);
             Assert.AreSame(FigureArtwork.Sprite(FigureAppearances.Character(Merry, Side.FreePeoples)), button.Q<Image>().sprite);
+            // UI-439: the figure keeps the Guide recognisable; the response's ability wears its own icon as a badge.
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "guide-separate-to-reduce-hunt-one"),
+                button.Q(HuntResponsesView.AbilityBadgeName).style.backgroundImage.value.texture);
             Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), "A usable response glows.");
 
             responses.Context(view, new TurnDraft(), false);
@@ -42,7 +45,10 @@ namespace Wotr.EditorTests
             var view = GuideWindow(Gollum, GollumReveal, "Reveal · Reduce damage", "Reveal the Fellowship to reduce Hunt damage by one.");
             var responses = new HuntResponsesView();
             responses.Context(view, new TurnDraft(), true);
-            Assert.IsNotNull(responses.Root.Q<Button>("effect-choice-" + GollumReveal));
+            var reveal = responses.Root.Q<Button>("effect-choice-" + GollumReveal);
+            Assert.IsNotNull(reveal);
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "voluntary-reveal-to-reduce-hunt-one"),
+                reveal.Q(HuntResponsesView.AbilityBadgeName).style.backgroundImage.value.texture, "UI-439: Gollum's reveal, not his Guide.");
             Assert.AreEqual("Click Gollum's glowing response in the Hunt window to use Reveal · Reduce damage · or Pass to skip it.",
                 TurnConsoleState.For(view, new TurnDraft(), new ActionDieContext(), id => id).Guidance);
         }

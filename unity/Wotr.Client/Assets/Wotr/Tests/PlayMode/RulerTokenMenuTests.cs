@@ -211,6 +211,10 @@ namespace Wotr.PlayTests
             Assert.That(guard.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
             Assert.That(guard.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
             LayoutTests.Save(client.Panel.targetTexture, "ui391-roster-icons.png");
+            // UI-439: each icon is its ability's own (AbilityArt).
+            Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.Folder + "iron-guard"), guard.Q("icon-glyph").style.backgroundImage.value.texture);
+            Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.Folder + "dwarvenking"), king.Q("icon-glyph").style.backgroundImage.value.texture);
+            LayoutTests.Save(client.Panel.targetTexture, "ui439-roster-dain.png");
             PointerGestureEvents.ClickAt(guard);
             await Task.Delay(800, token);
             Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Iron Guard started: its settlements glow on the map.");

@@ -43,7 +43,8 @@ namespace Wotr.PlayTests
                 var chip = client.Board.Tray.Q(own).Q<Button>("battle-replacement-replace");
                 Assert.IsNotNull(chip, "The chip stands beside the own Combat card.");
                 Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName));
-                Assert.IsTrue(chip.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
+                // UI-439: the chip shows the ability's own icon (Heir of Bard, or Shadows in the North for a Corrupted Brand).
+                Assert.AreEqual(AbilityIcon(owner == Side.FreePeoples ? "heir-of-bard" : "shadows-in-the-north"), Icon(chip));
                 StringAssert.StartsWith(owner == Side.FreePeoples ? "Click to use Heir of Bard · Cancels" : "Click to use Shadows in the North · Cancels",
                     chip.tooltip);
                 StringAssert.DoesNotContain("no card", chip.tooltip, "UI-420 (owner): a side without a card is not named \"no card\".");
@@ -55,6 +56,10 @@ namespace Wotr.PlayTests
                 var opponent = owner == Side.FreePeoples ? battle.Defender : battle.Attacker;
                 Assert.IsTrue(opponent.CardCancelled, "The opponent's card is cancelled at initiative 0.");
                 await Applied(room, own);
+                var marker = client.Board.Tray.Q(own).Q("battle-replacement-applied");
+                Assert.AreEqual(AbilityIcon(owner == Side.FreePeoples ? "heir-of-bard" : "shadows-in-the-north"), Icon(marker));
+                await room.Settle();
+                LayoutTests.Save(client.Viewport, "ui439-replacement-applied-" + scenario + ".png");
                 watch.NeverOpened();
             }
         }
@@ -97,7 +102,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(KeepTheCard("Red Wrath"), client.Board.Console.Actions.Pass.tooltip);
                 var chip = client.Board.Tray.Q("battle-defender").Q<Button>("battle-replacement-kings.character.black-serpent");
                 Assert.IsNotNull(chip, "The chip stands beside the Shadow's own card.");
-                Assert.IsTrue(chip.Q("battle-replacement-arms").ClassListContains("nation-emblem-southrons"));
+                Assert.AreEqual(AbilityIcon("red-wrath"), Icon(chip), "UI-439: Red Wrath's own icon.");
                 StringAssert.StartsWith("Click to use The Black Serpent instead of ", chip.tooltip);
                 await Layout(room, client, "ui277-chieftain", "ui277");
                 var revision = client.Board.View.Revision;
@@ -144,6 +149,12 @@ namespace Wotr.PlayTests
         }
 
         // Both players see the applied replacement beside the replaced card.
+        private static UnityEngine.Texture2D AbilityIcon(string ability) =>
+            UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + ability);
+
+        private static UnityEngine.Texture2D Icon(VisualElement chip) =>
+            chip.Q(BattleContext.ReplacementAbilityName).style.backgroundImage.value.texture;
+
         private static async Task Applied(MatchTestRoom room, string column)
         {
             foreach (var client in new[] { room.Fp, room.Sh })

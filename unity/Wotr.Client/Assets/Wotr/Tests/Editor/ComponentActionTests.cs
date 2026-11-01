@@ -104,8 +104,13 @@ namespace Wotr.EditorTests
                 StringAssert.StartsWith("Saruman · ", button.tooltip);
                 StringAssert.EndsWith("Select an eligible die to use it", button.tooltip);
             }
-            Assert.AreEqual(Picture(AbilityPictures.Muster), recruit.Q("icon-glyph").style.backgroundImage.value.texture);
-            Assert.AreEqual(Picture(AbilityPictures.Upgrade), upgrade.Q("icon-glyph").style.backgroundImage.value.texture);
+            // UI-439: both show the Voice's own icon; a badge tells the recruit from the upgrade.
+            var voice = Picture(AbilityArt.Folder + "muster-each-isengard-settlement-or-upgrade-two");
+            Assert.IsNotNull(voice);
+            foreach (var button in new[] { recruit, upgrade })
+                Assert.AreEqual(voice, button.Q("icon-glyph").style.backgroundImage.value.texture, button.name);
+            Assert.AreEqual(Picture(AbilityBadges.Muster), recruit.Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
+            Assert.AreEqual(Picture(AbilityBadges.Upgrade), upgrade.Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
 
             draft.Change(p => p.DieId = "muster");
             buttons.Apply(ComponentActions.For(view, draft), true);
@@ -120,19 +125,58 @@ namespace Wotr.EditorTests
             Assert.IsFalse(recruit.ClassListContains(ChoiceGlow.ClassName), "A busy board invites no click.");
         }
 
+        // UI-439: every component button that uses an ability shows the ability's own icon (AbilityArt) — a character's
+        // action, the Mouth of Sauron's movement cost, the Balrog's — with a badge where one ability has several commands;
+        // an entry keeps the board pin, and Narya shows Narya's icon.
         [Test]
-        public void AbilityPicturesShowWhatTheAbilityDoes()
+        public void AbilityButtonsShowTheAbilitysOwnIcon()
         {
-            Assert.AreEqual(AbilityPictures.Politics, AbilityPictures.For(CommandKind.UseCharacterAbility, "politics-dwarves-at-erebor"));
-            Assert.AreEqual(AbilityPictures.Politics, AbilityPictures.For(CommandKind.UseCharacterAbility, "messenger-dwarves"),
-                "UI-349: Messenger of the Dwarves activates and advances the Dwarves.");
-            Assert.AreEqual(AbilityPictures.Move, AbilityPictures.For(CommandKind.MoveArmies, "muster-as-army-once-per-turn"));
-            Assert.AreEqual(AbilityPictures.Attack, AbilityPictures.For(CommandKind.AttackArmy, "muster-as-army-once-per-turn"));
-            Assert.AreEqual(AbilityPictures.Entry, AbilityPictures.For(CommandKind.EnterCharacter, ""));
-            Assert.AreEqual(AbilityPictures.Ability, AbilityPictures.For(CommandKind.UseCharacterAbility, "activate-balrog"));
-            foreach (var picture in new[] { AbilityPictures.Muster, AbilityPictures.Upgrade, AbilityPictures.Politics,
-                         AbilityPictures.Move, AbilityPictures.Attack, AbilityPictures.Entry, AbilityPictures.Ability })
-                Assert.IsNotNull(Picture(picture), picture);
+            var view = View();
+            view.Characters.Add(new CharacterView { Id = "base.character.mouth-of-sauron", Location = "barad-dur", Side = Side.Shadow });
+            view.Characters.Add(new CharacterView { Id = "balrog", DefinitionId = "lords.character.balrog", Location = "moria", Side = Side.Shadow });
+            foreach (var kind in new[] { CommandKind.MoveArmies, CommandKind.AttackArmy })
+            {
+                var move = new ActionOption { Kind = kind, EligibleDice = { "muster" } };
+                move.MovementCosts.Add(new MovementCostOption { DieId = "muster", Face = DieFace.Army, AbilityId = "muster-as-army-once-per-turn" });
+                view.Options.Add(move);
+            }
+            var ability = new ActionOption { Kind = CommandKind.UseCharacterAbility, EligibleDice = { "muster" } };
+            ability.CharacterActions.Add(new CharacterActionOption { CharacterId = "balrog", AbilityId = "activate-balrog", Title = "Activate", Dice = { "muster" } });
+            view.Options.Add(ability);
+            var entry = new ActionOption { Kind = CommandKind.EnterCharacter, EligibleDice = { "muster" } };
+            entry.CharacterActions.Add(new CharacterActionOption { CharacterId = "lords.character.gothmog", Title = "Gothmog", Dice = { "muster" } });
+            view.Options.Add(entry);
+            view.Options.Add(new ActionOption { Kind = CommandKind.UseNarya, EligibleDice = { "muster" } });
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "muster");
+            var actions = ComponentActions.For(view, draft).ToDictionary(a => a.Key);
+            var mouth = AbilityArt.Folder + "muster-as-army-once-per-turn";
+            Assert.AreEqual(mouth, actions["MoveArmies-muster-as-army-once-per-turn"].Picture);
+            Assert.AreEqual(AbilityBadges.Move, actions["MoveArmies-muster-as-army-once-per-turn"].Badge);
+            Assert.AreEqual(mouth, actions["AttackArmy-muster-as-army-once-per-turn"].Picture);
+            Assert.AreEqual(AbilityBadges.Attack, actions["AttackArmy-muster-as-army-once-per-turn"].Badge);
+            var balrog = actions["character-balrog-activate-balrog"];
+            Assert.AreEqual(AbilityArt.Folder + "balrog-activation", balrog.Picture, "The Balrog's command names his printed ability.");
+            Assert.AreEqual("", balrog.Badge, "One command of its ability at a time needs no badge.");
+            Assert.AreEqual(ComponentActions.EntryPicture, actions["character-lords.character.gothmog-"].Picture, "An entry uses no ability.");
+            Assert.AreEqual(AbilityArt.Folder + "narya", actions["narya"].Picture);
+            Assert.AreEqual("Narya · Put the nation of Gandalf’s Settlement at war\nClick to use",
+                TooltipOf(actions["narya"]), "Narya's picture names the ring once.");
+            var buttons = new ComponentActionView();
+            buttons.Apply(actions.Values, true);
+            foreach (var item in actions.Values)
+            {
+                var button = buttons.Root.Q<Button>("component-" + item.Key);
+                Assert.AreEqual(Picture(item.Picture), button.Q("icon-glyph").style.backgroundImage.value.texture, item.Key);
+                Assert.AreEqual(item.Badge.Length > 0, button.Q(className: IconButton.BadgeClass) != null, item.Key);
+            }
+        }
+
+        private static string TooltipOf(ComponentAction item)
+        {
+            var buttons = new ComponentActionView();
+            buttons.Apply(new[] { item }, true);
+            return buttons.Root.Q<Button>("component-" + item.Key).tooltip;
         }
 
         private static UnityEngine.Texture2D Picture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
@@ -228,7 +272,8 @@ namespace Wotr.EditorTests
             Assert.IsEmpty(ComponentActions.For(view, draft).Where(c => c.Key.StartsWith("far-sighted")), "No die, no picture.");
             draft.Change(p => p.DieId = "ruler");
             var picture = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
-            Assert.AreEqual(AbilityPictures.Move, picture.Picture);
+            Assert.AreEqual(AbilityArt.Folder + "far-sighted", picture.Picture, "UI-439: Far-sighted's own icon, prefix dropped.");
+            Assert.AreEqual("", picture.Badge, "Far-sighted's buttons all move; their tooltips tell them apart.");
             Assert.AreEqual("kings.sovereign.thranduil", picture.OwnerId);
         }
 

@@ -501,7 +501,10 @@ The owner's decisions EXP-15 D10 and D12 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AU
   (`EvilKnowledgeChoice`, `BattleContext.EvilKnowledgeSource`): the portrait glows, its tooltip says the siege goes on
   one round without downgrading an Elite, and its click sends `UseEvilKnowledge`. The button beside Extend / Stop is
   gone, also from the option row the tray shows when Extend is disabled (no Elite to downgrade, so the portrait is the
-  only way on); it comes back only if no portrait carries the ability (`EvilKnowledgeChoice.OnPortrait`).
+  only way on); it comes back only if no portrait carries the ability (`EvilKnowledgeChoice.OnPortrait`). Since UI-439
+  the glowing portrait wears Evil Knowledge's own icon on its rim (as the White Rider's and the Sorcerer's portraits
+  wear theirs), and the button, when it comes back, carries that icon instead of `battle/evil-knowledge`
+  ([UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)).
 
 Tests: `BattleObjectChoicesTests.OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass`,
 `LordsBattleNetworkTests` (the pip, the Pass, the Mouth's portrait), `ExpansionWindowNetworkTests` (the portrait with
@@ -513,7 +516,9 @@ The owner's decision EXP-15 D17 ([EXPANSIONS_UI_AUDIT](EXPANSIONS_UI_AUDIT.md)):
 (Brand Awakened, Free Peoples) and Shadows in the North (Brand Corrupted, Shadow) — and a Dark Chieftain's substitution
 (UI-277) — are a gilt chip beside the player's own Combat card (`CombatReplacementChoice`,
 `BattleContext.ReplacementChip`). The chip wears its source's arms (the nation emblem — the North for Brand, the
-Chieftain's nation — stands in until their own art exists), glows and pulses with the window's choices, and its tooltip
+Chieftain's nation — stands in until their own art exists; since UI-439 it shows the ability's own icon, Heir of Bard,
+Shadows in the North, Red Wrath, Lord of the Bats or I Command, `CombatReplacementChoice.Icon` —
+[UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)), glows and pulses with the window's choices, and its tooltip
 names the card it cancels ("Click to use Heir of Bard · Cancels Valinor at initiative 0; …'s effects are given up · Once
 per battle"); its click sends the replacement. The card and the chip share a row only during that step. "Keep card
 effects" is the console's Pass (`OptionalDecline`, a decline that counts only in its own step since its id is generic);

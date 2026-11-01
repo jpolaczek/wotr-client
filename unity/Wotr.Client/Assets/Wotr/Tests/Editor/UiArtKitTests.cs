@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using Wotr.Client;
 
 namespace Wotr.EditorTests
 {
@@ -175,10 +177,14 @@ namespace Wotr.EditorTests
         private static readonly string[] Repeating = { "surfaces/topbar-plate", "battle/scene-field", "battle/scene-siege", "battle/scene-sortie", "battle/scene-relief",
             "hunt/scene-hunt", "hunt/scene-mordor" };
 
+        // UI-439: one 28-point icon per ability of the content (graphicalassets/abilities), keyed as AbilityArt keys them.
+        private static IEnumerable<(string Key, int Width, int Height, bool Alpha)> Kit =>
+            Artwork.Concat(AbilityArt.Keys.Select(key => ("abilities/" + key, 28, 28, true)));
+
         [Test]
         public void ArtworkIsRenderedAtTwiceItsLogicalSizeWithUiImportSettings()
         {
-            foreach (var art in Artwork)
+            foreach (var art in Kit)
             {
                 var texture = Resources.Load<Texture2D>(ArtRoot + art.Key);
                 Assert.IsNotNull(texture, art.Key);
@@ -203,7 +209,7 @@ namespace Wotr.EditorTests
         [Test]
         public void EveryTextureInTheKitIsCoveredByTheContract()
         {
-            var listed = Artwork.Select(art => "Assets/Wotr/Resources/" + ArtRoot + art.Key + ".png").ToHashSet();
+            var listed = Kit.Select(art => "Assets/Wotr/Resources/" + ArtRoot + art.Key + ".png").ToHashSet();
             var present = AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets/Wotr/Resources/Wotr/Art/UI" })
                 .Select(AssetDatabase.GUIDToAssetPath).ToList();
             CollectionAssert.IsEmpty(present.Where(path => !listed.Contains(path)), "Unlisted kit textures");

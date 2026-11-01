@@ -124,6 +124,10 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(Visibility.Visible, activate.resolvedStyle.visibility);
                 Assert.IsTrue(activate.enabledInHierarchy);
                 StringAssert.Contains("transfer Narya", activate.tooltip);
+                // UI-439: the activation is Narya's, so it shows Narya's own icon.
+                Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "narya"),
+                    activate.Q("icon-glyph").style.backgroundImage.value.texture);
+                LayoutTests.Save(room.Fp.Viewport, "ui439-narya-activation.png");
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
                 PointerGestureEvents.ClickAt(activate);
                 await room.At(revision + 1);

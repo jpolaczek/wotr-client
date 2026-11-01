@@ -73,7 +73,11 @@ namespace Wotr.PlayTests
                 var portrait = client.Board.Tray.Q<VisualElement>("portrait-" + mouth.Id);
                 Assert.IsTrue(portrait.ClassListContains(ChoiceGlow.ClassName), "The Mouth's portrait glows.");
                 StringAssert.StartsWith(EvilKnowledgeChoice.Offer, portrait.tooltip);
+                // UI-439: the portrait wears Evil Knowledge's own icon while its click uses it.
+                Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "evil-knowledge"),
+                    portrait.Q(BattleContext.OfferedAbilityName).style.backgroundImage.value.texture);
                 await Layout(room, client, "evil-knowledge", "ui347");
+                LayoutTests.Save(client.Viewport, "ui439-evil-knowledge.png");
                 var round = client.Board.View.Battle.Round;
                 var revision = client.Board.View.Revision;
                 PointerGestureEvents.ClickAt(client.Board.Tray.Q<VisualElement>("portrait-" + mouth.Id));

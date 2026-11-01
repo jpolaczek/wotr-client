@@ -82,6 +82,7 @@ namespace Wotr.Client
         {
             var id = choice.Id;
             var figure = HuntGuideResponses.Figure(view, choice);
+            var shown = Shown(view, figure);
             var button = BoardScreen.Button("", () => GuideResponse?.Invoke(id));
             button.name = "effect-choice-" + id;
             button.AddToClassList("hunt-response-object");
@@ -91,14 +92,32 @@ namespace Wotr.Client
             var portrait = new VisualElement { name = "hunt-response-art", pickingMode = PickingMode.Ignore };
             portrait.AddToClassList("hunt-response-icon");
             portrait.AddToClassList("hunt-guide-portrait");
-            portrait.Add(FigureArtwork.Image(FigureAppearances.Character(Shown(view, figure), Side.FreePeoples)));
-            header.Add(portrait);
+            portrait.Add(FigureArtwork.Image(FigureAppearances.Character(shown, Side.FreePeoples)));
+            header.Add(GuideFigure(portrait, AbilityArt.Find(shown, id)));
             header.Add(new Label(CharacterLibrary.ShortName(view, figure)) { name = "hunt-response-name", pickingMode = PickingMode.Ignore });
             button.Add(header);
             button.Add(new Label(HuntGuideResponses.Consequence(choice))
                 { name = "hunt-response-consequence", pickingMode = PickingMode.Ignore });
             button.tooltip = HuntGuideResponses.Tooltip(view, choice);
             return button;
+        }
+
+        // UI-439: the Guide stays recognisable by his figure; the response's ability (Merry's Guide, Gollum's reveal) is its
+        // own icon (AbilityArt) as a badge on the figure's lower right, outside the round portrait's clip.
+        public const string AbilityBadgeName = "hunt-response-ability";
+
+        private static VisualElement GuideFigure(VisualElement portrait, string ability)
+        {
+            var figure = new VisualElement { name = "hunt-response-figure", pickingMode = PickingMode.Ignore };
+            figure.AddToClassList("hunt-response-figure");
+            figure.Add(portrait);
+            if (ability.Length == 0)
+                return figure;
+            var badge = new VisualElement { name = AbilityBadgeName, pickingMode = PickingMode.Ignore };
+            badge.AddToClassList(AbilityBadgeName);
+            badge.style.backgroundImage = IconButton.Background(ability);
+            figure.Add(badge);
+            return figure;
         }
 
         // UI-285: the table cards' responses as response objects: a small card, its name and what using it does; they

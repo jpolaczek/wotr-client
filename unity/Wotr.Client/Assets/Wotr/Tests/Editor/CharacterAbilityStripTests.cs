@@ -26,23 +26,32 @@ namespace Wotr.EditorTests
                 StringAssert.StartsWith(ability.Title + "\n" + ability.Text + "\n", icon.tooltip);
                 StringAssert.DoesNotContain("\n\n", icon.tooltip);
                 Assert.IsFalse(icon.ClassListContains(ChoiceGlow.ClassName), "Nothing can be used yet.");
+                // UI-439: each icon is the ability's own.
+                Assert.AreEqual(Texture(AbilityArt.Folder + ability.Id), Glyph(icon), ability.Id);
             }
-            Assert.AreEqual("Wotr/Art/UI/actions/battle", AbilityIcons.For("combat-strength-plus-one"), "Captain of the West is a battle.");
-            Assert.AreEqual(AbilityPictures.Politics, AbilityIcons.For("politics-dwarves-at-erebor"));
-            Assert.AreEqual(AbilityPictures.Muster, AbilityIcons.For("kings.iron-guard"), "An expansion's prefix is dropped.");
-            Assert.AreEqual(AbilityPictures.Ability, AbilityIcons.For("an-unknown-ability"));
             var slots = strip.Root.Query<Button>(className: CharacterAbilityStrip.IconClass).ToList();
             Assert.AreEqual(4, slots.Count, "Four slots for the most abilities a card prints.");
             Assert.AreEqual(2, slots.Count(slot => slot.style.display.value == DisplayStyle.Flex));
         }
 
-        // UI-408: an icon whose art is missing shows an empty frame on the row.
+        // UI-439: a Dark Chieftain's row shows his own form of the shared ability (AbilityArt's card form), and a row
+        // that changes card changes its icons.
         [Test]
-        public void EveryAbilityIconsArtExists()
+        public void ARowShowsItsCardsOwnFormOfAnAbility()
         {
-            foreach (var picture in AbilityIcons.Pictures)
-                Assert.IsNotNull(UnityEngine.Resources.Load<UnityEngine.Texture2D>(picture), picture);
+            const string serpent = "kings.character.black-serpent";
+            var strip = new CharacterAbilityStrip(serpent);
+            strip.Apply(serpent);
+            var chieftain = strip.Root.Q<Button>("roster-ability-" + serpent + "-not-minion-for-gandalf-white");
+            Assert.AreEqual(Texture(AbilityArt.Folder + AbilityArt.DarkChieftain), Glyph(chieftain));
+            strip.Apply("lords.character.gothmog");
+            var entry = strip.Root.Q<Button>("roster-ability-" + serpent + "-not-minion-for-gandalf-white");
+            Assert.AreEqual(Texture(AbilityArt.Folder + "not-minion-for-gandalf-white"), Glyph(entry), "Gothmog prints Gandalf the White entry.");
         }
+
+        private static UnityEngine.Texture2D Texture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
+
+        private static UnityEngine.Texture2D Glyph(Button icon) => icon.Q("icon-glyph").style.backgroundImage.value.texture;
 
         [Test]
         public void AUsableAbilityGlowsAndItsClickStartsIt()

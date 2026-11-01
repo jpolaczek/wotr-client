@@ -185,7 +185,7 @@ namespace Wotr.Client
         }
 
         // UI-436: the chip says what the ability does — the gist of its text under its title — and shows its icon, the one
-        // its roster row shows (AbilityIcons); set only when the chip's card or ability changes.
+        // its roster row shows (UI-439: AbilityArt); set only when the chip's card or ability changes.
         private void Words(int slot, CharacterAbilityText ability)
         {
             var key = version + "#" + ability.Id;
@@ -194,7 +194,7 @@ namespace Wotr.Client
             shownWords[slot] = key;
             var chip = chips[slot];
             chip.Q<Label>(className: TitleClass).text = Line(version, ability);
-            var picture = Resources.Load<Texture2D>(AbilityIcons.For(ability.Id));
+            var picture = Resources.Load<Texture2D>(AbilityArt.For(version, ability.Id));
             chip.Q(className: IconClass).style.backgroundImage = picture == null ? new StyleBackground(StyleKeyword.Null) : new StyleBackground(picture);
         }
 

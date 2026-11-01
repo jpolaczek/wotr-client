@@ -154,12 +154,14 @@ namespace Wotr.Client
         {
             var button = BoardScreen.Button(title, () => direct(kind));
             button.name = name;
-            // UI-116/UI-119: a framed direct choice carries its icon; the width lives in Battle.uss per button.
+            // UI-116/UI-119: a framed direct choice carries its icon; the width lives in Battle.uss per button. UI-439: a
+            // choice that uses an ability (Evil Knowledge) carries the ability's own icon.
             var icon = name == "battle-no-card" ? "no-card" : name == "battle-stay" ? "hold" : IconFor(kind);
-            if (icon.Length > 0)
+            var ability = AbilityArt.For(kind);
+            if (icon.Length > 0 || ability.Length > 0)
             {
                 button.AddToClassList("battle-direct");
-                button.Add(DirectIcon(icon));
+                button.Add(ability.Length > 0 ? AbilityIcon(ability) : DirectIcon(icon));
             }
             button.tooltip = DirectTooltip(kind);
             root.Add(button);
@@ -173,6 +175,17 @@ namespace Wotr.Client
             icon.AddToClassList("battle-direct-icon");
             if (kind.Length > 0)
                 icon.AddToClassList("battle-direct-icon-" + kind);
+            return icon;
+        }
+
+        // UI-439: a direct choice's icon that is an ability's own (AbilityArt), in the same place and size.
+        public const string AbilityIconClass = "battle-direct-icon-ability";
+
+        public static VisualElement AbilityIcon(string resource)
+        {
+            var icon = DirectIcon();
+            icon.AddToClassList(AbilityIconClass);
+            icon.style.backgroundImage = IconButton.Background(resource);
             return icon;
         }
 
@@ -221,7 +234,6 @@ namespace Wotr.Client
             CommandKind.RetreatBattle or CommandKind.RetreatIntoSiege => "retreat",
             CommandKind.AdvanceBattle => "advance",
             CommandKind.ExtendSiege => "extend-siege",
-            CommandKind.UseEvilKnowledge => "evil-knowledge",
             _ => ""
         };
 

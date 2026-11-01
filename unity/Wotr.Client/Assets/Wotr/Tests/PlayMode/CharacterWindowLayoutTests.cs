@@ -110,6 +110,20 @@ namespace Wotr.PlayTests
             Assert.AreEqual(ruler.xMin, window.worldBound.xMin, 1, "A character's window stands where the rulers' does: " + label);
             Assert.AreEqual(ruler.width, window.worldBound.width, 1, "One width for every character's window: " + label);
             LayoutTests.Save(current, $"ui436-character-{label}.png");
+            CheckAbilityIcons(board, window, label);
+        }
+
+        // UI-439: every ability line shows its ability's own icon (AbilityArt), on the window's card.
+        private static void CheckAbilityIcons(BoardScreen board, VisualElement window, string label)
+        {
+            var definition = board.Characters.Inspector.DefinitionId;
+            var chips = window.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
+                .Where(chip => chip.resolvedStyle.display == DisplayStyle.Flex).ToList();
+            Assert.IsNotEmpty(chips, label);
+            foreach (var chip in chips)
+                Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.For(definition, chip.userData as string)),
+                    chip.Q(className: CharacterAbilityChips.IconClass).style.backgroundImage.value.texture, chip.name + " · " + label);
+            LayoutTests.Save(current, $"ui439-character-{label}.png");
         }
 
         // UI-436: the window stands just right of where the Characters panel unrolls, level with the Characters tab (or

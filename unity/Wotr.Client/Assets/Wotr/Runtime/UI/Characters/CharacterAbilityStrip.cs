@@ -5,14 +5,14 @@ using UnityEngine.UIElements;
 
 namespace Wotr.Client
 {
-    // UI-391 (owner): a character's printed abilities as small thematic icons (AbilityIcons) on its roster row, the third
-    // line of its text: up to four icons on a line of fixed height, so every row keeps one size. An icon is a button inside
-    // the row's button: its press stops at the icon, so the row's own click (its window, an entry) does not follow. An
-    // icon's tooltip names the ability and its text. An ability usable now glows, and its click starts it as the chip's
-    // Click to use does (UI-369); another icon's click opens the character's window with that ability unrolled. The
-    // window keeps its chips. UI-408: the four slots stand in two lines of two (LineClass): side by side they make the
-    // text's third line, one above the other the 2x2 block beside the text when two characters stand a line. The block
-    // never wraps, so its form does not depend on the UI scale.
+    // UI-391 (owner): a character's printed abilities as small icons on its roster row (UI-439: each ability's own icon,
+    // AbilityArt), the third line of its text: up to four icons on a line of fixed height, so every row keeps one size. An
+    // icon is a button inside the row's button: its press stops at the icon, so the row's own click (its window, an
+    // entry) does not follow. An icon's tooltip names the ability and its text. An ability usable now glows, and its click
+    // starts it as the chip's Click to use does (UI-369); another icon's click opens the character's window with that
+    // ability unrolled. The window keeps its chips. UI-408: the four slots stand in two lines of two (LineClass): side by
+    // side they make the text's third line, one above the other the 2x2 block beside the text when two characters stand a
+    // line. The block never wraps, so its form does not depend on the UI scale.
     public sealed class CharacterAbilityStrip
     {
         public const string ClassName = "roster-abilities";
@@ -41,7 +41,7 @@ namespace Wotr.Client
             for (var index = 0; index < Slots; index++)
             {
                 var slot = index;
-                icons[index] = IconButton.Picture(AbilityPictures.Ability, "Ability", () => Click(slot));
+                icons[index] = IconButton.Picture(AbilityArt.Unknown, "Ability", () => Click(slot));
                 icons[index].AddToClassList(IconClass);
             }
             for (var first = 0; first < Slots; first += SlotsPerLine)
@@ -91,7 +91,7 @@ namespace Wotr.Client
                 icon.userData = shown ? abilities[index].Id : null;
                 icon.name = shown ? "roster-ability-" + figure + "-" + abilities[index].Id : "";
                 if (shown)
-                    IconButton.SetPicture(icon, AbilityIcons.For(abilities[index].Id));
+                    IconButton.SetPicture(icon, AbilityArt.For(version, abilities[index].Id));
             }
         }
 

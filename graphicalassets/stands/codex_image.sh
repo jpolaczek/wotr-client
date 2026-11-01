@@ -4,7 +4,7 @@
 PROMPT="$1"
 OUT="$2"
 MARK=$(mktemp $(dirname "$0")/codex-mark.XXXXXX)
-codex exec --skip-git-repo-check -s read-only \
+codex exec --ephemeral --skip-git-repo-check -s read-only \
   "Use your built-in image generation tool to create exactly one image, then stop. Do not write any files or run commands. Image: $PROMPT" \
   > "$OUT.log" 2>&1
 NEWEST=$(find "$HOME/.codex/generated_images" -type f -name '*.png' -newer "$MARK" | head -1)

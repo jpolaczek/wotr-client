@@ -422,7 +422,8 @@ seeded match by its name, so each test has its own); test-menu group "Lords · D
   the deck step, whose id is generic): the decks stay the draw, no button remains in the tray.
 - **The Kings abilities have their pictures** (`AbilityPictures`): the Ruler die's recruitments (Call to Arms, Iron
   Guard, Mustering of the Mark) the muster, the sovereigns' upgrades (Dwarvenking, Stewardship, Elvenking) the level,
-  the Palantír of Anárion the card draw, Far-sighted the move — none falls back to the generic scroll.
+  the Palantír of Anárion the card draw, Far-sighted the move — none falls back to the generic scroll. Since UI-439
+  each shows its own ability icon instead (`AbilityArt`, [UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)).
 - **The tray's corruption fallbacks are gone** (`CorruptionAttemptChoices`, `CorruptionInspectionChoices`): the kings'
   portraits, attempt buttons and tiles host the attempt and the inspection (UI-274), so the tray never built them; the
   one-frame draw counter of UI-345's audit went with them.

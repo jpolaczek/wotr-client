@@ -5,12 +5,12 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // UI-348 (EXP-15 D17, owner's decision): a Combat card's replacement after the reveal — Brand's Heir of Bard, Shadows
-    // in the North for a Corrupted Brand, a Dark Chieftain's substitution (UI-277) — is a gilt chip with the arms of its
-    // source beside the player's own Combat card in the Battle window; its tooltip names the card it cancels and its click
-    // makes the replacement. Keep card effects is the console's Pass (OptionalDecline) and, since UI-396 (owner), a button
-    // in the battle window's footer too. UI-277: once made, the replacement
-    // stands as the same gilt marker beside the replaced card for both players (CombatReplacements); the opponent's card
-    // stays unnamed until the reveal.
+    // in the North for a Corrupted Brand, a Dark Chieftain's substitution (UI-277) — is a gilt chip with the ability's own
+    // icon (UI-439, AbilityArt; its source's arms stood in for it before) beside the player's own Combat card in the
+    // Battle window; its tooltip names the card it cancels and its click makes the replacement. Keep card effects is the
+    // console's Pass (OptionalDecline) and, since UI-396 (owner), a button in the battle window's footer too. UI-277: once
+    // made, the replacement stands as the same gilt marker beside the replaced card for both players (CombatReplacements);
+    // the opponent's card stays unnamed until the reveal.
     public static class CombatReplacementChoice
     {
         public const string Presentation = "CombatReplacement";
@@ -38,19 +38,24 @@ namespace Wotr.Client
         public static bool Skippable(PlayerView view) => Option(view)?.EligibleIds.Contains(Keep) == true;
 
         // UI-396: what the battle window's footer says: the chip's click or the skip. UI-423 (owner's playtest pattern, like
-        // UI-416): with several chips (two Dark Chieftains) it names every source — "Click The Black Serpent's or The Shadow
-        // of Mirkwood's arms" — not only the first.
+        // UI-416): with several chips (two Dark Chieftains) it names every source — "Click The Black Serpent's Red Wrath or
+        // The Shadow of Mirkwood's Lord of the Bats" — not only the first. UI-439: the chip shows the ability's icon, so the
+        // hint names the ability (it named the source's arms before).
         public static string Hint(PlayerView view)
         {
             var chips = Chips(view);
             if (chips.Count == 0)
                 return "";
-            var names = Either(chips.Select(chip => SourceName(view, chip.SourceId)).Distinct().Select(name => name + "'s").ToList());
+            var names = Either(chips.Select(chip => SourceAbility(view, chip.SourceId)).Distinct().ToList());
             var card = CardTitle(view, view.You);
             var place = card == NoCard ? "your Combat card's place" : card;
-            return "Click " + names + " arms beside " + place + " to use " + (chips.Count == 1 ? "the ability" : "an ability") +
+            return "Click " + names + " beside " + place + " to use " + (chips.Count == 1 ? "the ability" : "an ability") +
                 (Skippable(view) ? ", or Skip effect to fight on as usual." : ".");
         }
+
+        // "Brand's Heir of Bard"; "Brand's ability" when the catalogue names none.
+        private static string SourceAbility(PlayerView view, string source) =>
+            SourceName(view, source) + "'s " + (Ability(view, source)?.Title ?? "ability");
 
         // UI-423: the printed abilities of every chip offered now — "Red Wrath or Lord of the Bats" — or null when none is
         // named, for the skip's and Pass's tooltips (OptionalDecline).
@@ -71,15 +76,11 @@ namespace Wotr.Client
         // The choice is a chip, so the decision's lists leave it out.
         public static bool OnChip(PlayerView view, string id) => Chips(view).Any(c => c.Id == id);
 
-        // The nation whose arms the chip wears: the sovereign's, or the Chieftain's.
-        public static string Nation(PlayerView view, EffectChoiceView choice) => Nation(view, choice.SourceId);
-
-        public static string Nation(PlayerView view, string source)
+        // UI-439: the icon the chip and the marker show: the ability's own (AbilityArt), on its source's card.
+        public static string Icon(PlayerView view, string source)
         {
-            var sovereign = view.Sovereigns.FirstOrDefault(s => s.Id == source);
-            if (sovereign != null)
-                return sovereign.Nation;
-            return CharacterLibrary.Find(Definition(view, source))?.NationIcon ?? "";
+            var ability = Ability(view, source);
+            return ability == null ? AbilityArt.Unknown : AbilityArt.For(Card(view, source), ability.Id);
         }
 
         // The replacement made for this side's card this round, or null.
@@ -107,6 +108,10 @@ namespace Wotr.Client
             }
             return CharacterAbilityLibrary.For(Definition(view, source)).FirstOrDefault(ability => Replacing.Contains(ability.Id));
         }
+
+        // The card that prints the source's ability: the sovereign's current one, or the character's version.
+        private static string Card(PlayerView view, string source) =>
+            view.Sovereigns.FirstOrDefault(s => s.Id == source)?.DefinitionId ?? Definition(view, source);
 
         // "The Black Serpent — Chieftain of the Haradrim" reads "The Black Serpent" in a tooltip.
         private static string Short(string title)

@@ -255,6 +255,7 @@ namespace Wotr.Client
             if (reaction == null)
                 return null;
             portrait.pickingMode = PickingMode.Position;
+            OfferedAbility(portrait, AbilityArt.Find(character.DefinitionId, reaction.Id));
             var tooltip = TooltipText.Lines(BattleReactions.Offer(reaction), portrait.tooltip);
             refresh.Add(() =>
             {
@@ -264,8 +265,22 @@ namespace Wotr.Client
             return () => complete(() => BattleReactions.Choose(draft, reaction.Id));
         }
 
-        // UI-348 (D17): a Combat card's replacement (Brand, a Dark Chieftain) is a gilt chip with its source's arms beside
-        // the player's own card; its tooltip names the card it cancels and its click sends the replacement.
+        // UI-439: a portrait whose click uses an ability now (a reaction, Evil Knowledge) wears that ability's icon.
+        public const string OfferedAbilityName = "portrait-ability";
+
+        private static void OfferedAbility(VisualElement portrait, string icon)
+        {
+            if (icon.Length == 0)
+                return;
+            var badge = new VisualElement { name = OfferedAbilityName, pickingMode = PickingMode.Ignore };
+            badge.AddToClassList(OfferedAbilityName);
+            badge.style.backgroundImage = IconButton.Background(icon);
+            portrait.Add(badge);
+        }
+
+        // UI-348 (D17): a Combat card's replacement (Brand, a Dark Chieftain) is a gilt chip beside the player's own card,
+        // with the ability's own icon since UI-439; its tooltip names the card it cancels and its click sends the
+        // replacement.
         private Button ReplacementChip(PlayerView view, TurnDraft draft, EffectChoiceView choice)
         {
             var chip = new Button(() => complete(() => BattleObjectChoices.Choose(view, draft, choice.Id)))
@@ -273,12 +288,7 @@ namespace Wotr.Client
                 name = "battle-replacement-" + choice.Id
             };
             chip.AddToClassList("battle-replacement-chip");
-            var arms = new VisualElement { name = "battle-replacement-arms", pickingMode = PickingMode.Ignore };
-            arms.AddToClassList("battle-replacement-arms");
-            var nation = CombatReplacementChoice.Nation(view, choice);
-            if (nation.Length > 0)
-                arms.AddToClassList("nation-emblem-" + nation);
-            chip.Add(arms);
+            chip.Add(ReplacementAbility(view, choice.SourceId));
             chip.tooltip = CombatReplacementChoice.Tooltip(view, choice);
             ChoiceGlow.Apply(chip, true);
             return chip;
@@ -290,14 +300,19 @@ namespace Wotr.Client
             var marker = new VisualElement { name = "battle-replacement-applied" };
             marker.AddToClassList("battle-replacement-chip");
             marker.AddToClassList("battle-replacement-applied");
-            var arms = new VisualElement { name = "battle-replacement-arms", pickingMode = PickingMode.Ignore };
-            arms.AddToClassList("battle-replacement-arms");
-            var nation = CombatReplacementChoice.Nation(view, applied.SourceId);
-            if (nation.Length > 0)
-                arms.AddToClassList("nation-emblem-" + nation);
-            marker.Add(arms);
+            marker.Add(ReplacementAbility(view, applied.SourceId));
             marker.tooltip = CombatReplacementChoice.AppliedTooltip(view, applied);
             return marker;
+        }
+
+        public const string ReplacementAbilityName = "battle-replacement-ability";
+
+        private static VisualElement ReplacementAbility(PlayerView view, string source)
+        {
+            var icon = new VisualElement { name = ReplacementAbilityName, pickingMode = PickingMode.Ignore };
+            icon.AddToClassList(ReplacementAbilityName);
+            icon.style.backgroundImage = IconButton.Background(CombatReplacementChoice.Icon(view, source));
+            return icon;
         }
 
         // UI-347 (D12): the Mouth of Sauron's Evil Knowledge is his glowing portrait while the siege may go on; its click
@@ -307,6 +322,7 @@ namespace Wotr.Client
             if (draft == null || direct == null || !EvilKnowledgeChoice.On(view, character))
                 return null;
             portrait.pickingMode = PickingMode.Position;
+            OfferedAbility(portrait, AbilityArt.For(CommandKind.UseEvilKnowledge));
             var tooltip = TooltipText.Lines(EvilKnowledgeChoice.Offer, portrait.tooltip);
             refresh.Add(() =>
             {

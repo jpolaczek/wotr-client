@@ -38,13 +38,29 @@ namespace Wotr.Client
         }
 
         // UI-346: the printed title of an ability id, from the first card that prints it, or null.
-        public static string Title(string abilityId)
+        public static string Title(string abilityId) => Titles.TryGetValue(abilityId ?? "", out var title) ? title : null;
+
+        private static IReadOnlyDictionary<string, string> Titles
         {
-            Load();
-            titles ??= cards.Values.SelectMany(abilities => abilities).GroupBy(ability => ability.Id)
-                .ToDictionary(group => group.Key, group => group.First().Title);
-            return titles.TryGetValue(abilityId, out var title) ? title : null;
+            get
+            {
+                Load();
+                return titles ??= cards.Values.SelectMany(abilities => abilities).GroupBy(ability => ability.Id)
+                    .ToDictionary(group => group.Key, group => group.First().Title);
+            }
         }
+
+        // UI-439: every card of the catalog (base game and expansions), and every printed ability id once.
+        public static IReadOnlyCollection<string> CardIds
+        {
+            get
+            {
+                Load();
+                return cards.Keys.ToList();
+            }
+        }
+
+        public static IReadOnlyCollection<string> AbilityIds => Titles.Keys.ToList();
 
         private static void Load() =>
             cards ??= JsonConvert.DeserializeObject<Catalog>(Resources.Load<TextAsset>("character-ability-text").text)

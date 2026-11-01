@@ -207,8 +207,8 @@
 }
 
 /* Abilities: the chosen one unrolls its text on parchment. UI-436: each ability is a line of the window's width — its icon
-   (AbilityIcons, the roster row's), its title and the gist of its text — so the window says what it does without a
-   hover; a click still unrolls the printed text. */
+   (UI-439: the ability's own, AbilityArt, as on the roster row), its title and the gist of its text — so the window says
+   what it does without a hover; a click still unrolls the printed text. */
 .character-abilities { flex-direction: row; flex-wrap: wrap; align-items: center; }
 /* The words stand in a column at the chip's width, the icon in the chip's left padding; the chip is as tall as its words
    in every layout (the short viewport's fixed height of an inspector's buttons does not apply to it). */

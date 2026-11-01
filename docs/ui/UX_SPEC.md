@@ -1542,6 +1542,10 @@ ability and says "Click to use" or "Select an eligible die to use it". The contr
 (`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
 text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
 `ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
+Since [UI-439](#every-ability-has-its-own-icon--ui-439) the picture is the ability's own icon (`AbilityArt`; an entry
+keeps the board pin), and one ability's several commands side by side (Voice · recruit and upgrade, the Mouth's move and
+attack) differ by a small badge (`AbilityBadges`); `AbilityPictures` and its test are gone
+(`ComponentActionTests.AbilityButtonsShowTheAbilitysOwnIcon`).
 
 ## Unreachable tray fallbacks removed — UI-289 (2026-10-19)
 
@@ -1931,7 +1935,9 @@ Owner requests and reports from the Kings and Lords test scenarios:
   The block holds two lines of two icons one above the other and never wraps, so its form does not depend on the UI
   scale; every icon stays inside its row (`CharacterRosterLayoutTests`).
   Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
-  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists`.
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists` (since
+  [UI-439](#every-ability-has-its-own-icon--ui-439) each icon is the ability's own, `AbilityArt`, and `AbilityIcons` with
+  that test is gone: `AbilityArtTests`).
 - UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
   offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
   with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
@@ -2618,10 +2624,10 @@ rulers' tab, in the same place."
   apply", "Out of play · Nothing more can happen to him"). "After awakening · Abilities" with a tooltip is now his
   abilities under "Abilities once awakened" or "Weaknesses while corrupted", as the character window's lines.
 - **Abilities say what they do** — in every character's window too. An ability chip (`CharacterAbilityChips`) is a line
-  of the window's width: the ability's icon (the roster row's, `AbilityIcons`), its title in gold and the gist of its
-  text ("Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular there"); its tooltip is
-  the printed text and page, its click still unrolls the printed text (UI-139) and a usable one still glows and carries
-  Click to use (UI-369).
+  of the window's width: the ability's icon (the roster row's; its own since UI-439, `AbilityArt`), its title in gold
+  and the gist of its text ("Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular
+  there"); its tooltip is the printed text and page, its click still unrolls the printed text (UI-139) and a usable one
+  still glows and carries Click to use (UI-369).
 - **The character window** keeps every control (pin, close, version tabs, ability lines and pages, Click to use, the
   entry, the decision host); its place row is the picture and, beside it, a line saying what being there means ("On the
   board", "Travels with the Fellowship", "Not entered yet", "Eliminated; may return as Gandalf the White") over the
@@ -2667,3 +2673,109 @@ ability lines (`CharacterAbilityChips`), the character-window styles, the export
 king's picture is unused there), and their EditMode tests; the kings' window (`SovereignInspector`,
 `SovereignPanel.Position`, `SovereignPresentation`, `CharacterInspector.RefreshRuler`) and `CharacterWindowLayoutTests`
 are expansions-only.
+
+<a id="every-ability-has-its-own-icon--ui-439"></a>
+## Every ability has its own icon, wherever a button stands for it — UI-439 (2026-11-01)
+
+The owner's playtest (expansions 80df28fd): "make better pictures for the characters' skills. Now they are very simple,
+they repeat, they sometimes recycle existing icons. They are small and need not be very complicated, but they should
+show the skill's character better. The Balrog has three skills with the same icon; each should be a little different.
+Then use the same icons every time a button stands for that skill — for every character, for every skill."
+
+- **The art.** One icon per printed ability of every character card — base game, Lords of Middle-earth (with the
+  Council's companions), Kings of Middle-earth and The Fate of Erebor: 76 printed ability ids and one card form, the
+  Dark Chieftains' *Dark Chieftain* (their print of `not-minion-for-gandalf-white`, which the Balrog, Gothmog and the
+  Witch-king print as *Gandalf the White entry*), 77 icons in all, no two alike (the Balrog's: a horned head of shadow
+  and flame, a sword of fire, a whip of fire, a crossed-out white staff). Codex art keyed to alpha, 28 points (56 × 56
+  px, the UI kit's import settings) in `Resources/Wotr/Art/UI/abilities/<key>.png`; the pipeline, prompts, rounds and
+  the twelve icons waiting for a later Codex round (same paths) are in
+  [graphicalassets/abilities](../../graphicalassets/abilities/README.md), every ability and where it was shown in its
+  [INVENTORY](../../graphicalassets/abilities/INVENTORY.md). They replace the 22 pictures borrowed from the rest of the
+  kit (a battle's crossed swords for twelve abilities, the Politics map for nine…), the character window's one scroll
+  for every ability, and the two maps that disagreed (`AbilityIcons` on the roster, `AbilityPictures` on the component
+  buttons), both removed.
+- **One map** (`AbilityArt`). An ability's icon is `Art/UI/abilities/<printed ability id>`. A command, reaction or
+  decision that carries its own id names the printed ability it uses first: the Kings' Ruler abilities drop their
+  prefix (`kings.call-to-arms`); `activate-balrog`, `deactivate-balrog` and `use-balrog` are Balrog Activation;
+  `gothmog-recruit`/`-upgrade` Fling Them into the Fray; `voice-recruit`/`-upgrade` Saruman's Voice; `lords.nenya.replace`
+  Nenya; `lords.chief.spear-of-terror` and `lords.chief.he-sees-he-knows` the Chief's own; the characters' reactions
+  (`character.grey-draw`, `character.white-rider`, `character.sorcerer`, the Hobbits', the Council companions' and
+  Fate's Gimli's Guide separations, Gollum's reveal, the Council Hobbits' cancel) their printed abilities; Use Narya,
+  Use or Decline Vilya and Evil Knowledge by their command kinds. A card's own form comes before the shared one, keyed
+  `"<card id>#<ability id>"` as `character-ability-summaries.json` keys the gists. An id that names no printed ability
+  shows the ability scroll (a button) or no badge.
+- **Where the icons stand** — every place a button, chip or marker stands for an ability:
+  - the Characters roster row's ability icons (15–19 points, `CharacterAbilityStrip`), on the row's card;
+  - the character window's ability lines (18 points, `CharacterAbilityChips`), the king's window's too;
+  - the component action buttons (24-point glyph on the 32-point frame, `ComponentActions`/`ComponentActionView`) in
+    the decision dock, a region's window and the character window: a character's ability, the Mouth of Sauron's Muster
+    die moving or attacking, the Balrog's moves, Thranduil's Far-sighted, Narya in Gandalf's window. Where one ability
+    has several commands side by side that do different things (Saruman's Voice and Gothmog's Fling recruit or upgrade,
+    the Mouth's Muster die — or Great Sorcery's — moves an army or attacks), each button keeps the ability's icon and
+    wears a 13-point badge on its lower right corner of what it does (`AbilityBadges`: the Muster face, the level star,
+    the boot, the crossed swords), so no two side by side look alike. Far-sighted's buttons all move (the Fellowship, a
+    separation, the companions) and keep no badge, as before their tooltips tell them apart. An entry keeps the board
+    pin: it enters a character and uses no ability;
+  - Narya's activation in the Politics panel (`NationTrackRow`, where the generic confirm stood);
+  - in the battle window: Evil Knowledge's framed choice when it stands in the footer (`BattleChoices`), the combat
+    replacement's chip and applied marker (Heir of Bard, Shadows in the North, Red Wrath, Lord of the Bats, I Command;
+    the source's nation arms stood in for them, `CombatReplacementChoice.Icon`), and a portrait whose click uses an
+    ability now — the Mouth of Sauron's Evil Knowledge, the White Rider, the Witch-king's Sorcerer — wears that
+    ability's icon (18 points, 14 on a short viewport) on its upper right rim while the offer lasts;
+  - the Hunt window's Guide responses (`HuntResponsesView`): the Guide stays recognisable by his figure, and his
+    response's ability (Guide · separate, Gollum's reveal, the Council Hobbits' cancel) is a 17-point badge on the
+    figure's lower right, outside the round portrait's clip (14 points on a short viewport). The response's name,
+    consequence and tooltip are unchanged.
+
+  The console's ring sockets and the starting Guide's crown keep their own art: they show the ring and the Guide role,
+  not an ability; so does the Politics panel's advance arrow (the nation's step; a political ability is named in its
+  tooltip). The "Click to use" button keeps its action icon. Text-only buttons (the tray's fallback lists, the
+  character choice fallback, the Fellowship panel's glowing Guide portrait for Gandalf's draw, Gothmog's Reserve row)
+  are unchanged. Hints that named the replacement chip's arms name its ability now: "Click Brand's Heir of Bard beside
+  your Combat card's place to use the ability", "Click The Black Serpent's Red Wrath or The Shadow of Mirkwood's Lord of
+  the Bats beside…". The battle kit's `battle/evil-knowledge` picture is no longer shown.
+
+Tests: EditMode `AbilityArtTests` (every ability of every card of the four catalogues resolves to an existing icon of
+its own, never the scroll; each card's icons differ; 77 icons, no two files alike; the Balrog's four; the card forms;
+every command, reaction and command kind above resolves to its ability's icon; an unknown id; the character window's
+lines and Narya's activation use the map), `UiArtKitTests` (the 77 icons are in the kit's contract at 28 points with
+its import settings), `CharacterAbilityStripTests` (each roster icon is its ability's; a Dark Chieftain's form),
+`ComponentActionTests` (Voice's two buttons share the icon and differ by badge; the Mouth's move and attack, the
+Balrog's command, an entry, Narya; Far-sighted), `KingsCards02Tests` (the replacement chip and marker, the hints),
+`BattleArtTests` (Evil Knowledge's framed choice), `ReactionSourcesTests` (the White Rider's portrait),
+`HuntGuideResponsesTests` (Merry's and Gollum's badges); PlayMode `RulerTokenMenuTests` (Dáin's row, `ui439-roster-dain`),
+`CharacterWindowLayoutTests` (every line's icon in four layouts, `ui439-character-*`), `FarSightedObjectTests`
+(Thranduil's button, no badge, `ui439-component-far-sighted-*`), `KingsDecisionNetworkTests` (the chips and the applied
+marker, `ui439-replacement-applied-*`), `LordsBattleNetworkTests` (the Mouth's portrait, `ui439-evil-knowledge`),
+`HuntAftermathNetworkTests` (Merry's response, `ui439-hunt-merry-guide`), `T22AbilityNetworkTests` (Saruman's Voice
+buttons and their badges, `ui439-voice-recruit`, `ui439-voice-upgrade`), `ExpansionDecisionNetworkTests` (Narya's
+activation, `ui439-narya-activation`).
+
+Playtest (owner's checklist):
+- [ ] The roster and the window — Testing catalog `kings-ruler-token-dain` (Free Peoples). Click Dáin's Ruler token,
+  open Characters. Expect: Dáin's row shows Iron Guard's and Dwarvenking's own icons, Iron Guard glowing. Click
+  Dwarvenking: his window opens with each ability's line showing the same icon as the row.
+- [ ] Saruman's Voice — a game with Saruman in Orthanc and a Muster die (the Shadow). Click the die, then Orthanc. Expect:
+  two buttons with the same Voice icon, one badged with the Muster face (recruit), one with the level star (upgrade).
+- [ ] The Balrog — Testing catalog with the Balrog (Lords). Open his window. Expect: four different icons; the
+  activation's button on his figure's window shows the Activation icon.
+- [ ] A replacement — `ui348-brand-heir`. Expect: beside your Combat card a gilt chip with Heir of Bard's icon (not the
+  North's arms); after the click the marker shows it for both players.
+- [ ] Evil Knowledge — `ui347-evil-knowledge` (the Shadow). Expect: the Mouth's glowing portrait wears Evil Knowledge's
+  icon on its rim.
+- [ ] A Guide's response — a Hunt with Merry as Guide taking damage. Expect: Merry's figure in the Hunt window with the
+  Guide-separation icon as a badge.
+
+Port to `ability-chips` (base game): `AbilityArt` (its base entries: the Voice's and the characters' reactions),
+`AbilityBadges`, the `IconButton` badge, the roster, character window and component button changes, the battle
+portrait badge and the Hunt Guide response badge, with their styles and tests (`AbilityArtTests` asserts the four
+catalogues and 77 icons there; on base it holds for the base cards and their 22 icons); the 22 base icons are
+`add-gollum-when-no-companions`, `cannot-leave-orthanc`, `combat-strength-plus-one`,
+`draw-after-first-round-combat-card`, `enter-and-guide-when-no-companions`, `entry-activates-all-free-peoples`,
+`forfeit-leadership-to-cancel-nazgul-for-battle`, `guide-draw-after-event-die-card`, `guide-hide-with-any-action-die`,
+`guide-separate-to-reduce-hunt-one`, `ignore-standard-numbered-reveal`, `isengard-elites-have-leadership`,
+`may-transform-to-aragorn`, `may-transform-to-white`, `move-four-alone-or-with-one-hobbit`,
+`muster-as-army-once-per-turn`, `muster-each-isengard-settlement-or-upgrade-two`, `politics-dwarves-at-erebor`,
+`politics-elves-at-stronghold`, `politics-gondor-at-city-or-stronghold`,
+`return-after-fellowship-elimination-except-mordor`, `voluntary-reveal-to-reduce-hunt-one`. Narya's activation, Evil
+Knowledge, the combat replacements, Far-sighted, the card forms and the other 55 icons are expansions-only.

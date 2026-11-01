@@ -136,7 +136,7 @@ namespace Wotr.EditorTests
             Assert.IsTrue(SovereignPresentation.OwnsDecision(view, new TurnDraft()), "The inspected tiles stand beside the king.");
         }
 
-        // UI-348 (EXP-15 D17): Brand's Heir of Bard is a gilt chip with the North's arms beside the own card, its tooltip
+        // UI-348 (EXP-15 D17): Brand's Heir of Bard is a gilt chip (UI-439: its own icon) beside the own card, its tooltip
         // naming the Shadow card it cancels; Keep card effects is the console's Pass. A Chieftain's substitution names
         // his effect instead.
         [Test]
@@ -170,7 +170,8 @@ namespace Wotr.EditorTests
             Assert.AreEqual("replace", chip.Id);
             Assert.IsTrue(CombatReplacementChoice.OnChip(view, "replace"));
             Assert.IsFalse(CombatReplacementChoice.OnChip(view, "keep"));
-            Assert.AreEqual("north", CombatReplacementChoice.Nation(view, chip));
+            // UI-439: the chip shows Heir of Bard's own icon, where the North's arms stood in before.
+            Assert.AreEqual(AbilityArt.Folder + "heir-of-bard", CombatReplacementChoice.Icon(view, chip.SourceId));
             // UI-420 (owner): without cards on the table the chip names neither as "no card".
             StringAssert.StartsWith("Click to use Heir of Bard · Cancels the Shadow Combat card at initiative 0\n", CombatReplacementChoice.Tooltip(view, chip));
             // UI-397 (owner): the chip ends with the ability's printed text. UI-420 (owner): it names the ability once.
@@ -182,7 +183,7 @@ namespace Wotr.EditorTests
             StringAssert.DoesNotContain("no card", tooltip);
             // UI-396 (owner): the battle window names the chip and its skip.
             Assert.IsTrue(CombatReplacementChoice.Skippable(view));
-            Assert.AreEqual("Click Brand's arms beside your Combat card's place to use the ability, or Skip effect to fight on as usual.",
+            Assert.AreEqual("Click Brand's Heir of Bard beside your Combat card's place to use the ability, or Skip effect to fight on as usual.",
                 CombatReplacementChoice.Hint(view));
             var pass = OptionalDecline.Option(view, new TurnDraft());
             Assert.AreEqual("keep", pass.Id);
@@ -202,7 +203,7 @@ namespace Wotr.EditorTests
             Assert.IsNotNull(button, "The chip stands in the own column.");
             Assert.IsNull(root.Q("battle-attacker").Q<Button>("battle-replacement-replace"));
             Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName));
-            Assert.IsTrue(button.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
+            Assert.AreEqual(Texture("heir-of-bard"), Icon(button));
 
             view.Decision.Presentation = "Region";
             Assert.IsNull(OptionalDecline.Option(view, new TurnDraft()), "A generic keep counts only in its own step.");
@@ -218,7 +219,7 @@ namespace Wotr.EditorTests
                 new BattleContext(root, view.Battle, view, new TurnDraft(), edit => edit(), _ => { }, complete: action => action()).Refresh();
                 var marker = root.Q("battle-defender").Q("battle-replacement-applied");
                 Assert.IsNotNull(marker, side + " sees the replacement beside the Free Peoples' card.");
-                Assert.IsTrue(marker.Q("battle-replacement-arms").ClassListContains("nation-emblem-north"));
+                Assert.AreEqual(Texture("heir-of-bard"), Icon(marker), "The marker shows the ability too.");
                 // UI-397 (owner): the marker names the ability and gives its printed text.
                 StringAssert.StartsWith("Brand · Heir of Bard\nOnce per battle", marker.tooltip);
                 StringAssert.EndsWith("\nThis round it replaces the Combat card's effects.", marker.tooltip);
@@ -226,9 +227,10 @@ namespace Wotr.EditorTests
             }
         }
 
-        // UI-277 (D17): a Dark Chieftain's substitution names his effect instead of the card's and wears his nation's arms.
+        // UI-277 (D17): a Dark Chieftain's substitution names his effect instead of the card's; UI-439: its chip shows his
+        // ability's own icon (his nation's arms before).
         [Test]
-        public void AChieftainsSubstitutionIsAChipWithHisArms()
+        public void AChieftainsSubstitutionIsAChipWithHisAbility()
         {
             var view = new PlayerView
             {
@@ -256,7 +258,7 @@ namespace Wotr.EditorTests
                 }
             };
             var chip = CombatReplacementChoice.Chips(view).Single();
-            Assert.AreEqual("southrons", CombatReplacementChoice.Nation(view, chip));
+            Assert.AreEqual(AbilityArt.Folder + "red-wrath", CombatReplacementChoice.Icon(view, chip.SourceId));
             StringAssert.StartsWith("Click to use The Black Serpent instead of ", CombatReplacementChoice.Tooltip(view, chip));
             StringAssert.Contains("Take one hit before reveal", CombatReplacementChoice.Tooltip(view, chip));
             // UI-397 (owner): the Black Serpent's chip and marker name Red Wrath and give its printed text.
@@ -266,8 +268,16 @@ namespace Wotr.EditorTests
             Assert.AreEqual("keep", OptionalDecline.Option(view, new TurnDraft()).Id);
             var root = new VisualElement();
             new BattleContext(root, view.Battle, view, new TurnDraft(), edit => edit(), _ => { }, complete: action => action()).Refresh();
-            Assert.IsNotNull(root.Q("battle-defender").Q<Button>("battle-replacement-kings.character.black-serpent"));
+            var serpentChip = root.Q("battle-defender").Q<Button>("battle-replacement-kings.character.black-serpent");
+            Assert.IsNotNull(serpentChip);
+            Assert.AreEqual(Texture("red-wrath"), Icon(serpentChip), "UI-439: Red Wrath's own icon.");
         }
+
+        private static UnityEngine.Texture2D Texture(string ability) =>
+            UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + ability);
+
+        private static UnityEngine.Texture2D Icon(VisualElement chip) =>
+            chip.Q(BattleContext.ReplacementAbilityName).style.backgroundImage.value.texture;
 
         // UI-423 (owner's playtest pattern, like UI-416): with two Chieftains in one battle the footer, the skip and Pass name
         // both chips, not only the first.
@@ -305,8 +315,8 @@ namespace Wotr.EditorTests
                 }
             };
             Assert.AreEqual(2, CombatReplacementChoice.Chips(view).Count);
-            Assert.AreEqual("Click The Black Serpent's or The Shadow of Mirkwood's arms beside your Combat card's place to use an ability, " +
-                "or Skip effect to fight on as usual.", CombatReplacementChoice.Hint(view));
+            Assert.AreEqual("Click The Black Serpent's Red Wrath or The Shadow of Mirkwood's Lord of the Bats beside your Combat card's " +
+                "place to use an ability, or Skip effect to fight on as usual.", CombatReplacementChoice.Hint(view));
             Assert.AreEqual("Red Wrath or Lord of the Bats", CombatReplacementChoice.AbilityNames(view));
             Assert.AreEqual("Skip Red Wrath or Lord of the Bats · Keep your card's effects", OptionalDecline.SkipTooltip(view, new TurnDraft()));
             Assert.AreEqual("Pass · Skip Red Wrath or Lord of the Bats · Keep your card's effects", OptionalDecline.Option(view, new TurnDraft()).Tooltip);
@@ -334,16 +344,14 @@ namespace Wotr.EditorTests
             Assert.IsFalse(OptionalDecline.Declines(view, "character"));
         }
 
-        // UI-348: every Kings ability shown as a picture has one of its own, not the generic scroll.
+        // UI-348: every Kings ability shown as a picture has one of its own, not the generic scroll; UI-439: the printed
+        // ability's own icon, the command's prefix dropped.
         [Test]
         public void KingsAbilitiesHaveTheirPictures()
         {
-            Assert.AreEqual(AbilityPictures.Muster, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.mustering-of-the-mark"));
-            Assert.AreEqual(AbilityPictures.Upgrade, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.dwarvenking"));
-            Assert.AreEqual(AbilityPictures.Draw, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.palantir-of-anarion"));
-            Assert.AreEqual(AbilityPictures.Move, AbilityPictures.For(CommandKind.UseCharacterAbility, "kings.far-sighted"));
-            foreach (var ability in new[] { "kings.call-to-arms", "kings.iron-guard", "kings.stewardship", "kings.elvenking" })
-                Assert.AreNotEqual(AbilityPictures.Ability, AbilityPictures.For(CommandKind.UseCharacterAbility, ability), ability);
+            foreach (var ability in new[] { "mustering-of-the-mark", "dwarvenking", "palantir-of-anarion", "far-sighted", "call-to-arms",
+                         "iron-guard", "stewardship", "elvenking" })
+                Assert.AreEqual(AbilityArt.Folder + ability, AbilityArt.For("kings." + ability), ability);
         }
     }
 }

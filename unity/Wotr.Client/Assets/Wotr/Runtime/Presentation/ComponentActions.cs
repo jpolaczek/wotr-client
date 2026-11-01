@@ -63,7 +63,8 @@ namespace Wotr.Client
                         Owner = OwnerName(view, character.CharacterId),
                         OwnerId = character.CharacterId,
                         Symbol = CharacterSymbol(option.Kind, character.AbilityId),
-                        Picture = AbilityPictures.For(option.Kind, character.AbilityId),
+                        Picture = CharacterPicture(view, option.Kind, character),
+                        Badge = option.Kind == CommandKind.EnterCharacter ? "" : AbilityBadges.For(option.Kind, character.AbilityId),
                         Detail = TooltipText.Parts(character.Title, character.Detail),
                         Character = character, Enabled = character.Dice.Contains(die)
                     };
@@ -74,7 +75,8 @@ namespace Wotr.Client
                     Owner = CharacterLibrary.ShortName(cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron"),
                     OwnerId = cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron",
                     Symbol = option.Kind == CommandKind.AttackArmy ? "⚔" : "→",
-                    Picture = AbilityPictures.For(option.Kind, cost.AbilityId),
+                    Picture = AbilityArt.For(cost.AbilityId),
+                    Badge = AbilityBadges.For(option.Kind, cost.AbilityId),
                     Detail = (CharacterAbilityLibrary.Title(cost.AbilityId) ?? FigureGrid.Name(cost.AbilityId)) + " · " + TravelLabel(option.Kind),
                     AbilityId = cost.AbilityId, Movement = cost, Enabled = true
                 };
@@ -85,7 +87,8 @@ namespace Wotr.Client
                     OwnerId = "kings.sovereign.thranduil",
                     Symbol = option.Kind == CommandKind.MoveFellowship ? "◇→" : option.Kind == CommandKind.SeparateCompanions ? "♟↗" : "♟→",
                     // UI-276 (D18): Thranduil's ability picture, glowing with an eligible die; the standard move is not using it.
-                    Picture = AbilityPictures.For(option.Kind, option.RulerTravel.AbilityId),
+                    Picture = AbilityArt.For(option.RulerTravel.AbilityId),
+                    Badge = AbilityBadges.For(option.Kind, option.RulerTravel.AbilityId),
                     Detail = "Far-sighted · " + TravelLabel(option.Kind),
                     AbilityId = option.RulerTravel.AbilityId, Enabled = true
                 };
@@ -99,8 +102,9 @@ namespace Wotr.Client
             if (option.Kind == CommandKind.UseNarya)
                 yield return new ComponentAction
                 {
-                    Key = "narya", Owner = "Narya", Symbol = "○★", Detail = "Narya · Put the nation of Gandalf’s Settlement at war",
-                    Enabled = option.EligibleDice.Contains(die)
+                    // UI-439: Narya's own icon; its tooltip names the ring once.
+                    Key = "narya", Owner = "Narya", Symbol = "○★", Picture = AbilityArt.For(CommandKind.UseNarya),
+                    Detail = "Put the nation of Gandalf’s Settlement at war", Enabled = option.EligibleDice.Contains(die)
                 };
             if (option.Kind is CommandKind.Pass or CommandKind.DiscardDie)
                 yield return new ComponentAction
@@ -165,6 +169,14 @@ namespace Wotr.Client
             CommandKind.MoveFellowship => "Move the Fellowship", CommandKind.SeparateCompanions => "Separate companions",
             _ => "Move characters"
         };
+
+        // UI-286: an entry is the board pin (it enters the character, it uses no ability); UI-439: an ability's action shows
+        // the ability's own icon, on the card of the version that uses it.
+        public const string EntryPicture = "Wotr/Art/UI/characters/on-board";
+
+        private static string CharacterPicture(PlayerView view, CommandKind kind, CharacterActionOption character) =>
+            kind == CommandKind.EnterCharacter ? EntryPicture
+                : AbilityArt.For(CharacterLibrary.Version(view, character.CharacterId), character.AbilityId);
 
         private static string CharacterSymbol(CommandKind kind, string ability) => kind == CommandKind.EnterCharacter ? "↑" : ability switch
         {
