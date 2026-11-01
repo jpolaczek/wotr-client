@@ -9,25 +9,46 @@ namespace Wotr.Client
     // Inspection only. Entry permission and dynamic values remain server-owned.
     public static class CharacterRosterPresentation
     {
+        // UI-438 (owner): one row per character, as the server lists them — the Mouth of Sauron's and the Witch-king's
+        // base and Lords cards included; like Strider/Aragorn, the row shows one version and its window switches between
+        // them (ShownVersion, CharacterInspector's version tabs).
         public static IEnumerable<CharacterRosterView> Rows(PlayerView view) =>
             (view?.OwnCharacterRoster ?? new List<CharacterRosterView>()).Where(row => row.Side == view.You &&
                 row.Identity != "gollum" && row.Identity != "smeagol" &&
-                (row.Lifecycle != CharacterRosterLifecycle.InFellowship || row.FutureVersions.Count > 0))
-                .SelectMany(CharacterRosterVersions.Split);
+                (row.Lifecycle != CharacterRosterLifecycle.InFellowship || row.FutureVersions.Count > 0));
+
+        // UI-438: the version a row shows. In play, the version in play; otherwise the version the offered entry brings in,
+        // or the first that may enter, or the first.
+        public static string ShownVersion(CharacterRosterView row, string offered = "")
+        {
+            if (Section(row) != CharacterRosterSection.NotInPlay)
+                return row.CurrentDefinitionId;
+            var future = row.FutureVersions.FirstOrDefault(v => v.DefinitionId == offered) ?? Enterable(row) ?? row.FutureVersions.FirstOrDefault();
+            return future?.DefinitionId ?? row.CurrentDefinitionId;
+        }
+
+        // UI-438: a character not in play with more than one version that may enter (both Mouths of Sauron).
+        public static bool HasAlternatives(CharacterRosterView row) =>
+            Section(row) == CharacterRosterSection.NotInPlay && row.FutureVersions.Count > 1;
 
         // UI-240: what a click on an enterable row does: a character in play changes into its next version (Strider
-        // into Aragorn), one not in play comes into play.
-        public static string EntryOffer(CharacterRosterView row)
+        // into Aragorn), one not in play comes into play. UI-438: version names the version the click brings in.
+        public static string EntryOffer(CharacterRosterView row, string version = "")
         {
-            var future = row.FutureVersions.FirstOrDefault(v => v.Entry.CanAct || v.CouncilEntry?.CanAct == true) ?? row.FutureVersions.FirstOrDefault();
+            var future = row.FutureVersions.FirstOrDefault(v => v.DefinitionId == version) ?? Enterable(row) ?? row.FutureVersions.FirstOrDefault();
             var target = CharacterLibrary.FullName(future?.DefinitionId ?? row.CurrentDefinitionId);
-            var inPlay = row.Lifecycle is CharacterRosterLifecycle.OnBoard or CharacterRosterLifecycle.InFellowship ||
-                CharacterRosterVersions.Switches(row);
+            var inPlay = row.Lifecycle is CharacterRosterLifecycle.OnBoard or CharacterRosterLifecycle.InFellowship;
             return inPlay && !string.IsNullOrEmpty(row.CurrentDefinitionId) && future != null &&
                 future.DefinitionId != row.CurrentDefinitionId
                 ? "Click to turn " + CharacterLibrary.FullName(row.CurrentDefinitionId) + " into " + target
                 : "Click to bring " + target + " into play";
         }
+
+        // UI-438: a row whose versions may each enter now opens its window, where the version is chosen.
+        public const string ChooseVersionOffer = "Click to choose which version comes into play";
+
+        private static CharacterEntryVersionView Enterable(CharacterRosterView row) =>
+            row.FutureVersions.FirstOrDefault(v => v.Entry.CanAct || v.CouncilEntry?.CanAct == true);
 
         public static CharacterRosterSection Section(CharacterRosterView row) => row.Lifecycle switch
         {
@@ -36,10 +57,10 @@ namespace Wotr.Client
             _ => CharacterRosterSection.NotInPlay
         };
 
-        public static string Title(CharacterRosterView row)
+        // UI-438: a row with versions not in play is named by the version it shows ("The Mouth of Sauron, Black Númenórean").
+        public static string Title(CharacterRosterView row, string version = "")
         {
-            var version = CharacterRosterVersions.Version(row.FigureId);
-            if (version.Length > 0)
+            if (HasAlternatives(row) && version.Length > 0)
                 return CharacterLibrary.FullName(version);
             return (row.Lifecycle is CharacterRosterLifecycle.InFellowship or CharacterRosterLifecycle.EliminatedWithReplacement) &&
                 row.FutureVersions.Count > 0 ? row.FutureVersions[0].Title : row.Title;
@@ -47,8 +68,6 @@ namespace Wotr.Client
 
         public static string State(CharacterRosterView row)
         {
-            if (CharacterRosterVersions.Switches(row))
-                return "May replace the version in play";
             return row.Lifecycle switch
             {
                 CharacterRosterLifecycle.OnBoard => row.Garrison ? "On board · Garrison" : "On board",

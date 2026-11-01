@@ -80,8 +80,8 @@ namespace Wotr.PlayTests
         public static async Task Enter(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice)
         {
             var board = client.Board;
-            // UI-271: an alternative version (the Lords Mouth of Sauron or Witch-king) has a row of its own.
-            var figure = CharacterRosterVersions.RowKey(board.View, CharacterRosterActions.Figure(board.View, choice.CharacterId), choice.CharacterId);
+            // UI-438 (owner): every version enters from its character's one row.
+            var figure = CharacterRosterActions.Figure(board.View, choice.CharacterId);
             board.Characters.Open();
             await room.Settle();
             var row = board.Characters.Root.Q<Button>("character-roster-" + figure);

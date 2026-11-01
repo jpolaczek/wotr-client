@@ -77,9 +77,14 @@ namespace Wotr.Client
             "lords.character.mouth-of-sauron" => "Númenórean",
             "base.character.witch-king" => "Black Captain",
             "lords.character.witch-king" => "Chief",
+            // UI-438: Fate's alternate Gimli (UI-270) told apart from Fate's standard one in his window's version tabs.
+            "fate.character.gimli-dwarven-lord" => "Dwarven Lord",
             _ => ""
         };
         public static string FullName(string id) => Epithet(id).Length > 0 ? Name(id) + ", " + Epithet(id) : Name(id);
+        // UI-438: a version's tab in the character's window: "Strider", "Aragorn", and for one character's alternative
+        // cards their epithets ("Lieutenant", "Númenórean").
+        public static string VersionName(string id) => ShortEpithet(id).Length > 0 ? ShortEpithet(id) : ShortName(id);
         public static string Symbol(string id)
         {
             var words = Name(id).Replace('-', ' ').Split(' ').Where(w => w.Length > 0 && w.ToLowerInvariant() != "the" && w.ToLowerInvariant() != "of").ToArray();

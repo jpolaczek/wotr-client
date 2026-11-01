@@ -96,3 +96,8 @@ Follow-up (2026-10-30): two PlayMode tests still read the pre-audit wording and 
 the figure as printed (`Sauron Regular · 6 in reserve`, rule 4). Gothmog's second line names the figure again
 (`Click to recruit a Sauron Regular in Minas Morgul · Gothmog`) because his token's click uses the ability at once, and
 an action names its object (rule 1).
+Follow-up (2026-11-01, UI-438): the one Characters row of a character with alternative versions (the Mouth of Sauron,
+the Witch-king) names the version its click brings in (`Click to bring The Mouth of Sauron, Black Númenórean into play`,
+rule 1); when two versions may enter for one die, its tooltip says the click opens the choice (`Click to choose which
+version comes into play`). UI-437: a battle character's short name stands under its medallion; the medallion's tooltip
+keeps the full name.

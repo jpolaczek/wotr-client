@@ -106,6 +106,13 @@ namespace Wotr.Client
             .Where(item => item.Enabled && item.Kind == CommandKind.EnterCharacter && CharacterRosterActions.Row(view, item) == id)
             .ToList();
 
+        // UI-438: the versions of this row's character that may enter now (both Mouths of Sauron with one Muster die).
+        public IReadOnlyList<string> EntryVersions(string id) => Entries(id)
+            .Select(item => item.Character?.CharacterId ?? "").Where(version => version.Length > 0).Distinct().ToList();
+
+        // UI-438: the version whose entry waits for its region, shown on the character's one row.
+        public string EnteringVersion => EnteringFigure.Length > 0 ? draft.Payload.CharacterId : "";
+
         private string EntryLabel(ComponentAction item) => view?.OwnCharacterRoster
             .SelectMany(row => row.FutureVersions).FirstOrDefault(version => version.DefinitionId == item.Character?.CharacterId)?.Mode switch
         {
@@ -127,6 +134,7 @@ namespace Wotr.Client
             var inspector = panel.Inspector;
             var active = DecisionFigure.Length > 0 && inspector.FigureId == DecisionFigure &&
                 inspector.DefinitionId == decisionVersion;
+            inspector.OfferVersions(enabled && draft?.Kind == null ? EntryVersions(inspector.FigureId) : Array.Empty<string>());
             panel.DecisionHost.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
             inspector.SetDecisionContext(active);
             var choices = (view == null || draft?.Kind != null ? Enumerable.Empty<ComponentAction>() :

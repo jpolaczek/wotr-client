@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
@@ -36,6 +37,7 @@ namespace Wotr.Client
         private PlayerView view;
         private string version = "";
         private string status = "";
+        private HashSet<string> offeredVersions = new HashSet<string>();
 
         public CharacterInspector(BoardPresentation data, Action<string> focus, Action close, Action pin)
         {
@@ -88,9 +90,10 @@ namespace Wotr.Client
                 return false;
             view = latest;
             row = current;
+            // UI-438: a window opened on another character starts on the version its row shows.
             if (FigureId != id)
                 version = CharacterRosterPresentation.Section(row) == CharacterRosterSection.NotInPlay
-                    ? row.FutureVersions.FirstOrDefault()?.DefinitionId ?? "" : "";
+                    ? CharacterRosterPresentation.ShownVersion(row) : "";
             FigureId = id;
             if (version != row.CurrentDefinitionId && row.FutureVersions.All(v => v.DefinitionId != version))
                 version = row.CurrentDefinitionId;
@@ -112,7 +115,7 @@ namespace Wotr.Client
             var future = row.FutureVersions.FirstOrDefault(v => v.DefinitionId == version);
             stats.Apply(CharacterCardFacts.For(row, version, future == null));
             abilities.Apply(version);
-            var explanation = row.Side == view.You ? ResourcePresentation.Explain(view, CharacterRosterVersions.Figure(row.FigureId)) : "";
+            var explanation = row.Side == view.You ? ResourcePresentation.Explain(view, row.FigureId) : "";
             limits.text = explanation.Length > 0 ? "Limits" : "";
             limits.tooltip = explanation;
             ShowLimits(explanation.Length > 0);
@@ -138,6 +141,18 @@ namespace Wotr.Client
         private static string CouncilTerms(ActionAvailabilityView council) => council == null ? "" : TooltipText.Lines(
             TooltipText.Parts("Or with a Council token", CharacterRosterPresentation.Cost(council)),
             CharacterRosterPresentation.Requirements(council));
+
+        // UI-438: while more than one version of the shown character may enter now, the other versions' tabs glow; the
+        // shown version's entry is its Enter button.
+        public void OfferVersions(IReadOnlyCollection<string> enterable)
+        {
+            var next = enterable.Count > 1 ? new HashSet<string>(enterable) : new HashSet<string>();
+            if (next.SetEquals(offeredVersions))
+                return;
+            offeredVersions = next;
+            if (row != null)
+                RefreshVersions();
+        }
 
         public void SelectVersion(string id)
         {
@@ -183,7 +198,7 @@ namespace Wotr.Client
             if (!buttons.Select(b => b.userData as string).SequenceEqual(ids))
             {
                 versions.Clear();
-                var names = ids.Select(CharacterLibrary.ShortName).ToList();
+                var names = ids.Select(CharacterLibrary.VersionName).ToList();
                 var alike = names.Distinct().Count() < names.Count;
                 for (var index = 0; index < ids.Count; index++)
                 {
@@ -203,7 +218,10 @@ namespace Wotr.Client
             }
             versions.style.display = ids.Count > 1 ? DisplayStyle.Flex : DisplayStyle.None;
             foreach (var button in versions.Children().OfType<Button>())
+            {
                 button.EnableInClassList("selected", (string)button.userData == version);
+                ChoiceGlow.Apply(button, offeredVersions.Contains((string)button.userData) && (string)button.userData != version);
+            }
             if (focusedVersion != null)
             {
                 var replacement = ids.Count > 1 ? versions.Children().OfType<Button>()

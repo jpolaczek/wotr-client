@@ -69,24 +69,26 @@ namespace Wotr.Client
 
         public static string NationName(string nation) => TooltipText.Nation(nation);
 
-        public static CharacterStatus Status(CharacterRosterView row, string region)
+        // UI-438: version is the one a roster row shows; a row of a character whose versions are not in play names it.
+        public static CharacterStatus Status(CharacterRosterView row, string region, string version = "")
         {
             var state = CharacterRosterPresentation.State(row);
             if (region.Length > 0)
                 return new CharacterStatus { Key = "on-board", Text = region + (row.Garrison ? " · Garrison" : ""), Short = region,
                     Tooltip = state + " · " + region };
-            var (key, words) = StatusWords(row);
+            var (key, words) = StatusWords(row, version);
             // Beside the ring a roster row needs no "In".
             var brief = key == "fellowship" ? "Fellowship" : words;
             return new CharacterStatus { Key = key, Text = words, Short = brief, Tooltip = state };
         }
 
-        // UI-271: a version row names its version, as both rows show the same character.
-        private static (string Key, string Words) StatusWords(CharacterRosterView row)
+        // UI-271/UI-438: the one row of a character with versions not in play names the version it shows (Lieutenant,
+        // Númenórean), which switches to the version an offered entry brings in.
+        private static (string Key, string Words) StatusWords(CharacterRosterView row, string version)
         {
-            var version = CharacterRosterVersions.Version(row.FigureId);
-            if (version.Length > 0)
-                return ("waiting", CharacterLibrary.ShortEpithet(version));
+            var epithet = CharacterRosterPresentation.HasAlternatives(row) ? CharacterLibrary.ShortEpithet(version) : "";
+            if (epithet.Length > 0)
+                return ("waiting", epithet);
             return row.Lifecycle switch
             {
                 CharacterRosterLifecycle.OnBoard => ("on-board", "On board"),

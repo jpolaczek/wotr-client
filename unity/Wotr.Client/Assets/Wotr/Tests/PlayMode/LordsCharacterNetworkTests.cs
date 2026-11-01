@@ -11,8 +11,8 @@ using static Wotr.PlayTests.KingsCardNetworkChecks;
 
 namespace Wotr.PlayTests
 {
-    // UI-271: the Lords characters act on their objects: entries from their rows in the Characters panel (the Mouth's and
-    // the Witch-king's versions as rows of their own), the Chief's reactions at the Character deck and at his figure, and
+    // UI-271: the Lords characters act on their objects: entries from their rows in the Characters panel (UI-438: the Mouth's
+    // and the Witch-king's versions inside one row each), the Chief's reactions at the Character deck and at his figure, and
     // the Balrog card's order on his figure and his army (UI-347, D11) with his walk on the map. No decision window opens.
     public class LordsCharacterNetworkTests
     {
@@ -23,8 +23,8 @@ namespace Wotr.PlayTests
         private const string Balrog = "lords.character.balrog";
 
         [UnityTest] public IEnumerator ElrondEntersFromHisRowAndGaladrielsRowIsLit() => Wait(Keepers());
-        [UnityTest] public IEnumerator TheLordsMouthEntersFromItsOwnVersionRow() => Wait(Minions());
-        [UnityTest] public IEnumerator TheChiefsRowTurnsTheBlackCaptainInPlace() => Wait(Switch());
+        [UnityTest] public IEnumerator TheLordsMouthEntersFromTheMouthsOneRow() => Wait(Minions());
+        [UnityTest] public IEnumerator TheWitchKingsRowTurnsTheBlackCaptainInPlace() => Wait(Switch());
         [UnityTest] public IEnumerator SpearOfTerrorDrawsFromTheCharacterDeck() => Wait(Spear());
         [UnityTest] public IEnumerator HeSeesMovesTheChiefFromHisFigure() => Wait(HeSees());
         [UnityTest] public IEnumerator TheBalrogsCardMovesHimAloneAlongHisPath() => Wait(BalrogAlone());
@@ -46,55 +46,143 @@ namespace Wotr.PlayTests
             }
         }
 
-        // Both Mouths and both Witch-kings stand as rows of their own, named by their version; the Lords Mouth enters from
-        // its row and the Mouth's rows become his one row on the board.
+        // UI-438 (owner): the Mouth of Sauron and the Witch-king have one row each, like Strider/Aragorn, and their windows
+        // switch between the base and the Lords version. Every Free Peoples nation is at war here, so one Muster die may bring
+        // in either version of each: the row's click opens the window (UI-108's explicit choice), the other version's tab
+        // glows, and the shown version's Enter sends the same entry the version's own row sent. The Mouth's row stays his
+        // one row on the board.
         private static async Task Minions()
         {
             using (var room = await Connect("ui271-entries-sh", ScenarioKind.CardPack))
             using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var client = room.Sh;
+                client.Board.Characters.Open();
+                await room.Settle();
+                OneRowEach(client);
+                await Versions(room, client, Mouth, (Mouth, "Lieutenant"), (LordsMouth, "Númenórean"));
+                await Versions(room, client, WitchKing, (WitchKing, "Black Captain"), (Chief, "Chief"));
                 var choice = Entry(client, LordsMouth);
+                Assert.IsTrue(Entry(client, Mouth).Dice.Contains(choice.Dice[0]), "One Muster die may bring in either Mouth.");
                 await ComponentGestures.Cost(room, client, choice.Dice[0]);
                 client.Board.Characters.Open();
                 await room.Settle();
-                Assert.AreEqual("Lieutenant", Detail(client, CharacterRosterVersions.Key(Mouth, Mouth)));
-                Assert.AreEqual("Númenórean", Detail(client, CharacterRosterVersions.Key(Mouth, LordsMouth)));
-                Assert.AreEqual("Black Captain", Detail(client, CharacterRosterVersions.Key(WitchKing, WitchKing)));
-                Assert.AreEqual("Chief", Detail(client, CharacterRosterVersions.Key(WitchKing, Chief)));
-                foreach (var row in new[] { CharacterRosterVersions.Key(Mouth, LordsMouth), "lords.character.gothmog", Balrog })
+                OneRowEach(client);
+                foreach (var figure in new[] { Mouth, WitchKing })
+                {
+                    var row = Row(client, figure);
+                    Assert.IsFalse(row.ClassListContains(CharacterRosterPanel.EntryClass), figure + ": its click opens the window");
+                    Assert.IsTrue(row.ClassListContains(ChoiceGlow.ClassName), figure);
+                    StringAssert.StartsWith(CharacterRosterPresentation.ChooseVersionOffer, CharacterRowTooltip.Plain(row.tooltip), figure);
+                }
+                foreach (var row in new[] { "lords.character.gothmog", Balrog })
                     Assert.IsTrue(Row(client, row).ClassListContains(CharacterRosterPanel.EntryClass), row);
-                await Layout(room, client, "shadow-entries", "ui271");
-                await Enter(room, client, choice, "barad-dur");
+                await Layout(room, client, "shadow-entries", "ui438");
+                await EnterFromWindow(room, client, Mouth, choice, "barad-dur");
                 var mouth = room.Fp.Board.View.Characters.Single(c => c.Id == Mouth);
                 Assert.AreEqual((LordsMouth, "barad-dur"), (mouth.DefinitionId, mouth.Location));
                 await room.Settle();
-                Assert.IsNotNull(Row(client, Mouth));
-                Assert.IsNull(client.Board.Characters.Root.Q<Button>("character-roster-" + CharacterRosterVersions.Key(Mouth, Mouth)));
+                Assert.AreEqual("characters-section-OnBoard", Row(client, Mouth).parent.parent.name);
+                OneRowEach(client);
                 watch.NeverOpened();
             }
         }
 
+        // The row opens the window; the version's glowing tab shows it, and its Enter starts the version's entry.
+        private static async Task EnterFromWindow(MatchTestRoom room, MountedMatchClient client, string figure, CharacterActionOption choice,
+            string region)
+        {
+            var revision = client.Board.View.Revision;
+            PointerGestureEvents.ClickAt(Row(client, figure));
+            await room.Settle();
+            var inspector = client.Board.Characters.Inspector;
+            Assert.AreEqual(figure, inspector.FigureId);
+            var tab = inspector.Root.Q<Button>("character-version-" + choice.CharacterId);
+            Assert.IsTrue(tab.ClassListContains(ChoiceGlow.ClassName), "The other version that may enter glows.");
+            PointerGestureEvents.ClickAt(tab);
+            await room.Settle();
+            Assert.AreEqual(choice.CharacterId, inspector.DefinitionId);
+            await Shot(room, client, "ui438-mouth-choice-window.png");
+            var enter = inspector.Actions.Query<Button>().ToList().Single(button => button.name.StartsWith("component-character-" + choice.CharacterId));
+            PointerGestureEvents.ClickAt(enter);
+            if (choice.Targets.Count > 1)
+            {
+                await room.Settle();
+                client.Board.Map.Select(region);
+            }
+            await room.At(revision + 1);
+        }
+
+        // UI-438: with the Black Captain in play his one row turns him into the Chief in place; his window switches between
+        // the two versions.
         private static async Task Switch()
         {
             using (var room = await Connect("ui271-witch-king-switch", ScenarioKind.CardPack))
             using (var watch = new GenericWindowWatch(room.Fp, room.Sh))
             {
                 var client = room.Sh;
+                client.Board.Characters.Open();
+                await room.Settle();
+                await Versions(room, client, WitchKing, (WitchKing, "Black Captain"), (Chief, "Chief"));
                 var choice = Entry(client, Chief);
                 await ComponentGestures.Cost(room, client, choice.Dice[0]);
                 client.Board.Characters.Open();
                 await room.Settle();
-                var chief = Row(client, CharacterRosterVersions.Key(WitchKing, Chief));
-                Assert.AreEqual("characters-section-NotInPlay", chief.parent.parent.name);
-                StringAssert.StartsWith("Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the Ringwraiths", CharacterRowTooltip.Plain(chief.tooltip));
-                Assert.IsFalse(Row(client, WitchKing).ClassListContains(CharacterRosterPanel.EntryClass),
-                    "The Black Captain's own row inspects him; the Chief's row changes him.");
+                OneRowEach(client);
+                var row = Row(client, WitchKing);
+                Assert.AreEqual("characters-section-OnBoard", row.parent.parent.name);
+                StringAssert.StartsWith("Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the Ringwraiths",
+                    CharacterRowTooltip.Plain(row.tooltip));
+                await Layout(room, client, "witch-king-switch", "ui438");
                 await Enter(room, client, choice, "minas-morgul");
                 var witchKing = room.Fp.Board.View.Characters.Single(c => c.Id == WitchKing);
                 Assert.AreEqual((Chief, "minas-morgul"), (witchKing.DefinitionId, witchKing.Location));
                 watch.NeverOpened();
             }
+        }
+
+        // No character has two rows in the Characters panel.
+        private static void OneRowEach(MountedMatchClient client)
+        {
+            var roster = client.Board.View.OwnCharacterRoster;
+            var identities = client.Board.Characters.Root.Query<Button>(className: "character-roster-row").ToList()
+                .Select(row => roster.Single(c => "character-roster-" + c.FigureId == row.name).Identity).ToList();
+            CollectionAssert.AllItemsAreUnique(identities);
+            Assert.AreEqual(1, identities.Count(identity => identity == "mouth-of-sauron"));
+            Assert.AreEqual(1, identities.Count(identity => identity == "witch-king"));
+        }
+
+        // A click on the character's row opens his window, whose tabs name his versions and switch the card it shows.
+        private static async Task Versions(MatchTestRoom room, MountedMatchClient client, string figure, params (string Id, string Name)[] versions)
+        {
+            PointerGestureEvents.ClickAt(Row(client, figure));
+            await room.Settle();
+            var inspector = client.Board.Characters.Inspector;
+            Assert.AreEqual(figure, inspector.FigureId);
+            foreach (var (id, name) in versions)
+            {
+                var tab = inspector.Root.Q<Button>("character-version-" + id);
+                Assert.IsNotNull(tab, id);
+                Assert.AreEqual(name, tab.text);
+                PointerGestureEvents.ClickAt(tab);
+                await room.Settle();
+                Assert.AreEqual(id, inspector.DefinitionId);
+            }
+            await Shot(room, client, $"ui438-{figure}-window.png");
+            CardNetworkTests.Click(inspector.Root.Q<Button>("close-character"));
+            await room.Settle();
+        }
+
+        private static async Task Shot(MatchTestRoom room, MountedMatchClient client, string file)
+        {
+            var target = new UnityEngine.RenderTexture(1920, 1080, 24);
+            target.Create();
+            client.Panel.targetTexture = target;
+            await room.Settle();
+            LayoutTests.Save(target, file);
+            client.Panel.targetTexture = client.Viewport;
+            target.Release();
+            UnityEngine.Object.Destroy(target);
         }
 
         private static async Task Spear()

@@ -65,8 +65,8 @@ namespace Wotr.PlayTests
             if (Visible(removed) && !removed.value)
                 await Press(room, removed.Q<Toggle>());
 
-            // UI-271: an alternative version of a Shadow character has a row of its own.
-            var expected = board.View.OwnCharacterRoster.SelectMany(CharacterRosterVersions.Split).Select(row => row.FigureId).ToArray();
+            // UI-438 (owner): one row per character, its versions switching inside its window.
+            var expected = CharacterRosterPresentation.Rows(board.View).Select(row => row.FigureId).ToArray();
             var rows = characters.Root.Query<Button>().ToList()
                 .Where(button => button.name.StartsWith("character-roster-")).ToArray();
             CollectionAssert.AreEquivalent(expected.Select(id => "character-roster-" + id), rows.Select(row => row.name));

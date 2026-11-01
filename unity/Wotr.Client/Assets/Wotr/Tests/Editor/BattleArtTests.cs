@@ -86,7 +86,11 @@ namespace Wotr.Client.Tests
             StringAssert.Contains("cancelled", gimliMedallion.tooltip);
             Assert.IsFalse(portraits.Q("portrait-boromir").ClassListContains(PortraitMedallion.CancelledClass));
             Assert.AreEqual("B", portraits.Q("portrait-boromir").Q<Label>("portrait-initial").text);
-            StringAssert.Contains("⦸ Gimli", root.Q<Label>("battle-characters").text, "The names line keeps the cancelled mark.");
+            // UI-437 (owner): each name stands under its medallion, in the force row with the figures.
+            Assert.AreEqual("⦸ Gimli", root.Q("battle-character-gimli").Q<Label>("battle-character-name").text, "The name keeps the cancelled mark.");
+            Assert.AreEqual("Boromir", root.Q("battle-character-boromir").Q<Label>("battle-character-name").text);
+            Assert.AreSame(root.Q("battle-attacker").Q("battle-force-row"), portraits.parent, "The characters stand in the force row.");
+            Assert.AreSame(portraits.parent, root.Q("battle-attacker").Q("battle-composition").parent, "Beside the figures.");
         }
 
         [Test]

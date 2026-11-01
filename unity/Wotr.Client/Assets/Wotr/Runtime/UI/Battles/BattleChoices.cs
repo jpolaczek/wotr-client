@@ -135,6 +135,8 @@ namespace Wotr.Client
             if (column == null)
                 return root;
             column.AddToClassList("battle-force-choosing");
+            // UI-437: while a column chooses, both keep their rows at the top instead of levelling them (Battle.uss).
+            column.parent?.AddToClassList("battle-forces-choosing");
             return column;
         }
 

@@ -175,13 +175,16 @@ namespace Wotr.Client
             {
                 var chosen = row.Key == Actions.EnteringFigure;
                 var entry = Enterable(row.Key) && !chosen;
-                offered |= entry;
+                // UI-438: several versions that may enter now are chosen in the character's window.
+                var versions = !entry && !chosen && Actions.EntryVersions(row.Key).Count > 1;
+                offered |= entry || versions;
                 available |= Actions.Available(row.Key);
+                row.Value.ShowVersion(OfferedVersion(row.Key, chosen, entry));
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
                 row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
                 abilities |= row.Value.Abilities.Offered;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
-                row.Value.Offer(entry);
+                row.Value.Offer(entry, versions);
                 row.Value.Choose(chosen);
             }
             rosterOffered = offered;
@@ -189,6 +192,14 @@ namespace Wotr.Client
             abilitiesOffered = abilities;
             pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered);
             RefreshTab();
+        }
+
+        // UI-438: the version a row shows while its entry is chosen or offered; empty for the row's own choice.
+        private string OfferedVersion(string figure, bool chosen, bool entry)
+        {
+            if (chosen)
+                return Actions.EnteringVersion;
+            return entry ? Actions.Entry(figure)?.Character?.CharacterId ?? "" : "";
         }
 
         // UI-380 (owner): the Characters tab glows while the roster offers something — an entry, an action on a row, a

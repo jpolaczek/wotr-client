@@ -32,68 +32,116 @@ namespace Wotr.Client
             var row = BoardScreen.Row("battle-forces");
             row.name = "battle-forces";
             root.Add(row);
-            Force(row, battle.Attacker, "attacker", battle, view, draft, edit, inspect, cards);
-            Force(row, battle.Defender, "defender", battle, view, draft, edit, inspect, cards);
+            var rows = new BattleRowPlan(battle, view, draft, edit);
+            Force(row, battle.Attacker, "attacker", battle, view, draft, edit, inspect, cards, rows);
+            Force(row, battle.Defender, "defender", battle, view, draft, edit, inspect, cards, rows);
             // UI-245: the dice and figures a combat card may choose pulse together.
             var pulse = new ChoicePulse(row);
             refresh.Add(() => pulse.Run(row.Query(className: ChoiceGlow.ClassName).ToList().Count > 0));
         }
 
+        // UI-437: every column holds the same rows in the same order — heading, force, statistics, the ledge when either
+        // side has one, card, roll — so a row of one side stands level with the other side's (BattleRowPlan).
         private void Force(VisualElement root, BattleForceView force, string role, BattleView battle, PlayerView view, TurnDraft draft,
-            Action<Action> edit, Action<string> inspect, CardInspector cards)
+            Action<Action> edit, Action<string> inspect, CardInspector cards, BattleRowPlan rows)
+        {
+            var column = Column(force, role, battle);
+            root.Add(column);
+            column.Add(ForceRow(force, battle, view, draft, edit));
+            column.Add(Spacer());
+            column.Add(Statistics(force, battle, view));
+            if (rows.Shelf)
+                column.Add(Shelf(force, battle, view, rows.ShelfOf(force, battle)));
+            AddCard(column, force, role, battle, view, draft, inspect, cards);
+            var dice = new BattleDiceStrip(column, force, battle, view, draft, edit, rows);
+            refresh.Add(dice.Refresh);
+        }
+
+        private static VisualElement Column(BattleForceView force, string role, BattleView battle)
         {
             var column = new VisualElement { name = "battle-" + role };
             column.AddToClassList("battle-force");
             column.AddToClassList(force.Side == Side.FreePeoples ? "fp" : "sh");
-            root.Add(column);
             var heading = new Label((role == "attacker" ? "ATTACKER" : "DEFENDER") + " · " + BoardScreen.SideName(force.Side).ToUpperInvariant() +
                 (force.Garrison ? " · GARRISON" : "")) { name = role + "-strength", enableRichText = false };
             heading.AddToClassList("battle-force-heading");
             heading.tooltip = BattleForceText.Notes(force, battle);
             column.Add(heading);
-            if (force.Characters.Count > 0)
-                Characters(column, force, view, draft, edit);
-            column.Add(Composition(force, battle, view, draft, edit));
-            column.Add(Statistics(force, battle, view));
-            var outside = draft == null ? "" : BattleForceText.Nonparticipants(force, battle, view);
-            if (outside.Length > 0)
-                column.Add(Shelf(outside, BattleForceText.NonparticipantDetails(force, battle, view)));
-            var chips = draft != null && complete != null && force.Side == view.You ? CombatReplacementChoice.Chips(view) : NoChips;
-            var applied = chips.Count == 0 ? CombatReplacementChoice.Applied(view, force.Side) : null;
-            var cardHost = chips.Count > 0 || applied != null ? BoardScreen.Row("battle-card-row") : column;
-            if (cardHost != column)
-                column.Add(cardHost);
-            Card(cardHost, force, role, inspect, force.Side != Side.FreePeoples ? "" :
-                battle.DenethorBlocksCards ? "Denethor · No card" :
-                battle.CompanionRequiredForCard && force.Characters.Count == 0 ? "No Companion · No card this round" : "", cards);
-            foreach (var choice in chips)
-                cardHost.Add(ReplacementChip(view, draft, choice));
-            if (applied != null)
-                cardHost.Add(AppliedReplacement(view, applied));
-            var dice = new BattleDiceStrip(column, force, battle, view, draft, edit);
-            refresh.Add(dice.Refresh);
+            return column;
         }
 
-        // Medallions first, then the names on one small line; the historical version of a character stays.
-        private void Characters(VisualElement column, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
+        // UI-437 (owner): a character stands in the force row beside the figures, as the other side's figures do, rather than
+        // in a row of his own above them. The portraits stay outside the composition, which a figure choice hides (UI-208).
+        private VisualElement ForceRow(BattleForceView force, BattleView battle, PlayerView view, TurnDraft draft, Action<Action> edit)
+        {
+            var row = BoardScreen.Row("battle-force-row");
+            row.name = "battle-force-row";
+            if (force.Characters.Count > 0)
+                row.Add(Characters(force, view, draft, edit));
+            row.Add(Composition(force, battle, view, draft, edit));
+            return row;
+        }
+
+        // UI-437: the room under a force row that is shorter than the other side's, so the rows below stand level; while a
+        // column chooses figures it takes none (Battle.uss).
+        private static VisualElement Spacer()
+        {
+            var spacer = new VisualElement { name = "battle-force-spacer", pickingMode = PickingMode.Ignore };
+            spacer.AddToClassList("battle-force-spacer");
+            return spacer;
+        }
+
+        // The Combat card; beside it, in a row of the card's height, a replacement's chip (UI-348) or the replacement made
+        // (UI-277).
+        private void AddCard(VisualElement column, BattleForceView force, string role, BattleView battle, PlayerView view, TurnDraft draft,
+            Action<string> inspect, CardInspector cards)
+        {
+            var chips = draft != null && complete != null && force.Side == view.You ? CombatReplacementChoice.Chips(view) : NoChips;
+            var applied = chips.Count == 0 ? CombatReplacementChoice.Applied(view, force.Side) : null;
+            var host = chips.Count > 0 || applied != null ? BoardScreen.Row("battle-card-row") : column;
+            if (host != column)
+                column.Add(host);
+            Card(host, force, role, inspect, CardProhibition(force, battle), cards);
+            foreach (var choice in chips)
+                host.Add(ReplacementChip(view, draft, choice));
+            if (applied != null)
+                host.Add(AppliedReplacement(view, applied));
+        }
+
+        private static string CardProhibition(BattleForceView force, BattleView battle) => force.Side != Side.FreePeoples ? "" :
+            battle.DenethorBlocksCards ? "Denethor · No card" :
+            battle.CompanionRequiredForCard && force.Characters.Count == 0 ? "No Companion · No card this round" : "";
+
+        // UI-437: medallions with their names under them, as a figure has its count; the historical version of a character
+        // stays. More characters than a row holds named keep their medallions alone (their tooltips name them).
+        private VisualElement Characters(BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             var portraits = BoardScreen.Row("battle-portraits");
             portraits.name = "battle-portraits";
+            portraits.EnableInClassList(CrowdedClass, force.Characters.Count > NamedCharacters);
             foreach (var character in force.Characters)
-            {
-                var portrait = new PortraitMedallion(character, CharacterLibrary.Name(character.DefinitionId),
-                    CharacterLibrary.ShortName(view, character.Id), force.CancelledAbilities.Contains(character.Id));
-                // One click handler per portrait; a reaction or Leadership points refresh after the choice target.
-                Action other = null;
-                ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => other?.Invoke());
-                other = ReactionSource(portrait, character, view, draft) ?? EvilKnowledgeSource(portrait, character, view, draft) ??
-                    Points(portrait, view, draft, edit, new[] { character.Id });
-                portraits.Add(portrait);
-            }
-            column.Add(portraits);
-            AddLine(column, string.Join(", ", force.Characters.Select(c =>
-                (force.CancelledAbilities.Contains(c.Id) ? "⦸ " : "") + CharacterLibrary.ShortName(view, c.Id))),
-                "battle-characters", string.Join("\n", force.Characters.Select(c => CharacterLibrary.Name(c.DefinitionId))));
+                portraits.Add(Character(character, force, view, draft, edit));
+            return portraits;
+        }
+
+        private VisualElement Character(CharacterView character, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
+        {
+            var cancelled = force.CancelledAbilities.Contains(character.Id);
+            var cell = new VisualElement { name = "battle-character-" + character.Id, pickingMode = PickingMode.Ignore };
+            cell.AddToClassList("battle-character");
+            var portrait = new PortraitMedallion(character, CharacterLibrary.Name(character.DefinitionId),
+                CharacterLibrary.ShortName(view, character.Id), cancelled);
+            // One click handler per portrait; a reaction or Leadership points refresh after the choice target.
+            Action other = null;
+            ChoiceTarget(portrait, view, draft, edit, () => character.Id, otherwise: () => other?.Invoke());
+            other = ReactionSource(portrait, character, view, draft) ?? EvilKnowledgeSource(portrait, character, view, draft) ??
+                Points(portrait, view, draft, edit, new[] { character.Id });
+            cell.Add(portrait);
+            var name = new Label((cancelled ? "⦸ " : "") + CharacterLibrary.ShortName(view, character.Id))
+                { name = "battle-character-name", pickingMode = PickingMode.Ignore, enableRichText = false };
+            name.AddToClassList("battle-character-name");
+            cell.Add(name);
+            return cell;
         }
 
         private VisualElement Composition(BattleForceView force, BattleView battle, PlayerView view, TurnDraft draft, Action<Action> edit)
@@ -322,25 +370,39 @@ namespace Wotr.Client
             return row;
         }
 
-        private static VisualElement Shelf(string text, string details)
+        // UI-437: a side without figures outside the fight keeps the other side's ledge as an empty, unseen row.
+        private static VisualElement Shelf(BattleForceView force, BattleView battle, PlayerView view, string text)
         {
+            if (text.Length == 0)
+                return ReservedShelf();
             var shelf = BoardScreen.Row("battle-garrison-shelf");
             shelf.name = "battle-garrison-shelf";
             var icon = new VisualElement { name = "battle-garrison-icon", pickingMode = PickingMode.Ignore };
             icon.AddToClassList("battle-garrison-icon");
             shelf.Add(icon);
+            var details = BattleForceText.NonparticipantDetails(force, battle, view);
             var label = new Label(text) { name = "battle-nonparticipants", tooltip = details, enableRichText = false };
             label.AddToClassList("battle-nonparticipants");
             shelf.Add(label);
             return shelf;
         }
 
-        private static void AddLine(VisualElement root, string text, string name, string tooltip)
+        private static VisualElement ReservedShelf()
         {
-            var label = new Label(text) { name = name, tooltip = tooltip, enableRichText = false };
-            label.AddToClassList(name);
-            root.Add(label);
+            var shelf = BoardScreen.Row("battle-garrison-shelf");
+            shelf.name = "battle-garrison-shelf-reserved";
+            shelf.pickingMode = PickingMode.Ignore;
+            shelf.AddToClassList(ReservedClass);
+            var label = new Label(" ") { name = "battle-nonparticipants-reserved", pickingMode = PickingMode.Ignore };
+            label.AddToClassList("battle-nonparticipants");
+            shelf.Add(label);
+            return shelf;
         }
+
+        // UI-437: a row kept only so both columns hold the same rows; it takes its room and shows nothing.
+        public const string ReservedClass = "battle-row-reserved";
+        public const string CrowdedClass = "battle-portraits-crowded";
+        public const int NamedCharacters = 4;
 
         private static void Card(VisualElement root, BattleForceView force, string role, Action<string> inspect, string prohibition, CardInspector cards)
         {

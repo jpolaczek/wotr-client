@@ -12,11 +12,18 @@ namespace Wotr.Client
         // The heading's controls outlive a page switch, which rebuilds only the dice.
         private readonly List<Action> headingRefresh = new List<Action>();
 
-        public BattleDiceStrip(VisualElement root, BattleForceView force, BattleView battle, PlayerView view, TurnDraft draft, Action<Action> edit)
+        // UI-437: rows (both columns' plan) keeps this roll level with the other side's: an empty roll's room while only the
+        // other side rolled, and an unseen copy of the pager or hit buttons only the other side's heading shows.
+        public BattleDiceStrip(VisualElement root, BattleForceView force, BattleView battle, PlayerView view, TurnDraft draft, Action<Action> edit,
+            BattleRowPlan rows = null)
         {
             var pages = Pages(force, battle);
             if (pages.Count == 0)
+            {
+                if (rows?.Roll == true)
+                    root.Add(Reserved(rows));
                 return;
+            }
             var selected = Math.Max(0, pages.FindLastIndex(p => p.Source == battle.LossSource && battle.LossSource != "combat"));
             var row = new VisualElement();
             root.Add(row);
@@ -25,12 +32,14 @@ namespace Wotr.Client
             heading.Add(source);
             row.Add(heading);
             var content = BoardScreen.Row("battle-dice");
-            var switcher = IconButton.Create("next", "Show next roll", null);
-            switcher.name = "battle-roll-page-" + force.Side;
-            switcher.AddToClassList("battle-roll-page");
-            HitCancels(heading, force, view, draft, edit);
+            var switcher = Pager("battle-roll-page-" + force.Side);
+            var cancels = HitCancels(heading, force, view, draft, edit);
+            if (!cancels && rows?.CancelsHits == true)
+                heading.Add(ReservedHitCancels());
             if (pages.Count > 1)
                 heading.Add(switcher);
+            else if (rows?.Paged == true)
+                heading.Add(Reserve(Pager("battle-roll-page-reserved")));
             row.Add(content);
             void Show()
             {
@@ -91,14 +100,15 @@ namespace Wotr.Client
 
         // UI-246: Heroic Death cancels the opponent's hits on their own indicator: one button per amount it may cancel
         // (−1, −2, …); the chosen amount is selected. Keep hits (zero) stays a button with Keep all. UI-347 (D10): Orderly
-        // Withdrawal's one hit is the same "−1"; its click sends it, and the console's Pass keeps the hit.
-        private void HitCancels(VisualElement heading, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
+        // Withdrawal's one hit is the same "−1"; its click sends it, and the console's Pass keeps the hit. Returns whether the
+        // heading shows them.
+        private bool HitCancels(VisualElement heading, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             if (draft == null || edit == null || force.Side == view.You)
-                return;
+                return false;
             var amounts = BattleObjectChoices.HitAmounts(view);
             if (amounts.Count == 0)
-                return;
+                return false;
             var row = BoardScreen.Row("battle-hit-cancels");
             row.name = "battle-hit-cancels";
             // UI-419 (owner): a pip a click may choose pulses, as the board's choices do.
@@ -113,7 +123,58 @@ namespace Wotr.Client
             headingRefresh.Add(() => pulse.Run(amounts.Any(choice => BattleObjectChoices.CanChoose(view, draft, choice.Item1) &&
                 BattleObjectChoices.ChosenHits(view, draft) != choice.Item2)));
             heading.Add(row);
+            return true;
         }
+
+        private static Button Pager(string name)
+        {
+            var pager = IconButton.Create("next", "Show next roll", null);
+            pager.name = name;
+            pager.AddToClassList("battle-roll-page");
+            return pager;
+        }
+
+        // UI-437: an unseen heading and row of one die, so the other side's roll stands level with nothing moved.
+        private static VisualElement Reserved(BattleRowPlan rows)
+        {
+            var slot = new VisualElement { name = "battle-roll-reserved", pickingMode = PickingMode.Ignore };
+            slot.AddToClassList(BattleContext.ReservedClass);
+            var heading = BoardScreen.Row("battle-roll-heading");
+            heading.Add(new Label(" ") { name = "battle-roll-source-reserved", pickingMode = PickingMode.Ignore });
+            if (rows.CancelsHits)
+                heading.Add(ReservedHitCancels());
+            if (rows.Paged)
+                heading.Add(Reserve(Pager("battle-roll-page-reserved")));
+            slot.Add(heading);
+            var dice = BoardScreen.Row("battle-dice");
+            var die = Reserve(new Button { name = "battle-die-reserved" });
+            die.AddToClassList("battle-die");
+            dice.Add(die);
+            slot.Add(dice);
+            return slot;
+        }
+
+        private static VisualElement ReservedHitCancels()
+        {
+            var row = BoardScreen.Row("battle-hit-cancels");
+            row.name = "battle-hit-cancels-reserved";
+            row.Add(Reserve(BattleChoicePip.Create("battle-hit-cancel-reserved", "−1", null)));
+            return row;
+        }
+
+        // An inert, unseen copy of a control only the other side's roll shows: it takes the control's room in every layout.
+        private static T Reserve<T>(T control) where T : VisualElement
+        {
+            control.pickingMode = PickingMode.Ignore;
+            control.focusable = false;
+            control.SetEnabled(false);
+            control.AddToClassList(BattleContext.ReservedClass);
+            return control;
+        }
+
+        // Whether this side shows a roll (its Combat dice or a special attack's) and whether it has more than one page.
+        public static bool Rolled(BattleForceView force, BattleView battle) => Pages(force, battle).Count > 0;
+        public static bool Paged(BattleForceView force, BattleView battle) => Pages(force, battle).Count > 1;
 
         private static List<RollPage> Pages(BattleForceView force, BattleView battle)
         {

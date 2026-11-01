@@ -325,7 +325,8 @@ The user's application from 2026-10-16: the reroll and hit chapter is to be on t
   the player column. Since UI-394 (owner, 2026-10-28) this column keeps the other column's width:
   its figures wrap into a second row inside it rather than widening it (`.loss-figures`); on a short
   viewport its loss figures take the compact size (42 × 46) and the names under its portraits give
-  way (the portraits and their tooltips keep them), so two rows stay above the console. The block
+  way (the portraits and their tooltips keep them), so two rows stay above the console. Since UI-437 (2026-11-01) the
+  names give way in a choosing column in every viewport ([rows](#rows--ui-437)). The block
   header of the loss block will be wrapped in the column width. The losses of the event remain in
   the tray.
 - dice to the reroll are in the player column (so far).
@@ -533,7 +534,8 @@ The owner's decisions EXP-15 D7 and D17 for the Kings Dark Chieftains:
   instead of Deadly Strife's effects · Take one hit before reveal…"). Keep card effects is the console's Pass. The Free
   Peoples see neither the choice nor the Shadow card (server privacy, `KingsChieftainCombatTests`).
 - **Once made**, a replacement — Brand's or a Chieftain's — stands as the same gilt marker, solid and without a click,
-  beside the replaced card for both players (`BattleContext.AppliedReplacement`, from `CombatReplacements`); its tooltip
+  beside the replaced card for both players (`BattleContext.AppliedReplacement`, from `CombatReplacements`; since UI-437
+  in a row of the card's height, so both sides' rows stay level — [rows](#rows--ui-437)); its tooltip
   names the source, and the opponent's card stays unnamed until the reveal ("The Black Serpent replaces the Combat
   card's effects this round").
 - **Entry.** A Chieftain enters from his Characters row (UI-108): with a Council token the medallion marks it and lights
@@ -557,3 +559,16 @@ Tests: `KingsCardChoicesTests.AKingWhoTakesPartInTheBattleIsChosenInItsArmy`,
 `KingsCards02NetworkTests.HopeChoosesWhichInitialSovereignAwakensDuringBattle`,
 `KingsBranchNetworkTests.HisPowerWaxesFindsTheDefendingKingInHisArmy`; seeder scenario `ui278-power-defender`;
 test-menu scenarios `kings-card-hope`, `kings-card-power-waxes`.
+
+<a id="rows--ui-437"></a>
+## Both sides' rows stand level — UI-437 (2026-11-01)
+
+Owner, after the Black Serpent's Red Wrath: the Serpent's portrait stood in a row of its own above his force and the
+Shadow's statistics, card, roll and dice stood lower than the Free Peoples'. Now a character stands in the force row
+beside the figures, his short name under his medallion as a figure has its count (no names line; more than four
+characters, or a column choosing figures, keep the medallions alone). Both columns hold the same rows — heading, force
+row, statistics, the ledge when either side has one, card, roll — and a row or control only one side shows (the ledge,
+a roll, its pager, Heroic Death's or Orderly Withdrawal's hit buttons) keeps an unseen copy on the other; the spacer
+under the shorter force row takes the difference, so the rows below line up whatever an ability adds. A replacement's
+chip or marker keeps the card's row height, its top on the card's. Cause, fix and tests:
+[UX_SPEC](UX_SPEC.md#both-sides-rows-stand-level--ui-437).

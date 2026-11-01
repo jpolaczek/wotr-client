@@ -25,7 +25,10 @@ namespace Wotr.Client
         private CharacterRowTooltip.Parts description = new CharacterRowTooltip.Parts();
         private CharacterRosterView shown;
         private bool offered;
+        private bool versionOffered;
         private bool chosen;
+        private string offeredVersion = "";
+        private BoardPresentation data;
         private string statusText = "";
         // UI-243: the chosen row while its entry waits for a region: solid gold and a short instruction.
         public const string ChosenClass = "entry-chosen";
@@ -65,9 +68,26 @@ namespace Wotr.Client
 
         public void Apply(CharacterRosterView entry, BoardPresentation data)
         {
+            this.data = data;
+            Render(entry);
+        }
+
+        // UI-438: the row of a character not in play shows the version its offered entry (or the chosen entry) brings in;
+        // without one, the first that may enter. The row changes only when that version does.
+        public void ShowVersion(string version)
+        {
+            if (version == offeredVersion)
+                return;
+            offeredVersion = version;
+            if (shown != null)
+                Render(shown);
+        }
+
+        private void Render(CharacterRosterView entry)
+        {
+            var definition = CharacterRosterPresentation.ShownVersion(entry, offeredVersion);
             var candidate = CharacterRosterPresentation.Section(entry) == CharacterRosterSection.NotInPlay
-                ? entry.FutureVersions.FirstOrDefault() : null;
-            var definition = candidate?.DefinitionId ?? entry.CurrentDefinitionId;
+                ? entry.FutureVersions.FirstOrDefault(v => v.DefinitionId == definition) : null;
             Definition = definition;
             Abilities.Apply(definition);
             title.text = CharacterLibrary.ShortName(definition);
@@ -77,7 +97,7 @@ namespace Wotr.Client
             alternate.style.display = entry.Side == Side.FreePeoples && CompanionSetupPresentation.Alternate(entry.FigureId, definition)
                 ? DisplayStyle.Flex : DisplayStyle.None;
             var location = data.Regions.TryGetValue(entry.RegionId, out var region) ? region.Name : "";
-            var state = CharacterCardFacts.Status(entry, location);
+            var state = CharacterCardFacts.Status(entry, location, definition);
             statusText = state.Short;
             detail.text = chosen ? ChosenHint : statusText;
             statusIcon.RemoveFromClassList("character-status-" + status);
@@ -93,7 +113,7 @@ namespace Wotr.Client
             shown = entry;
             description = new CharacterRowTooltip.Parts
             {
-                Name = CharacterRosterPresentation.Title(entry), Edition = edition, State = fullLocation,
+                Name = CharacterRosterPresentation.Title(entry, definition), Edition = edition, State = fullLocation,
                 Stats = CharacterCardFacts.Summary(facts), Entry = candidate?.Entry,
                 Abilities = CharacterAbilitySummaries.Lines(definition)
             };
@@ -111,10 +131,12 @@ namespace Wotr.Client
         }
 
         // UI-240: a row whose click enters a character, or changes one into its next version, glows and pulses
-        // (ChoiceGlow), and its tooltip starts with what the click does.
-        public void Offer(bool entry)
+        // (ChoiceGlow), and its tooltip starts with what the click does. UI-438: so does a row whose versions may each
+        // enter now; its click opens the window where the version is chosen.
+        public void Offer(bool entry, bool chooseVersion = false)
         {
             offered = entry;
+            versionOffered = chooseVersion && !entry;
             ShowOffer();
         }
 
@@ -128,8 +150,17 @@ namespace Wotr.Client
 
         private void ShowOffer()
         {
-            ChoiceGlow.Apply(Root, offered);
-            Root.tooltip = CharacterRowTooltip.Format(offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) : "", description);
+            ChoiceGlow.Apply(Root, offered || versionOffered);
+            Root.tooltip = CharacterRowTooltip.Format(OfferText(), description);
+        }
+
+        private string OfferText()
+        {
+            if (shown == null)
+                return "";
+            if (offered)
+                return CharacterRosterPresentation.EntryOffer(shown, offeredVersion.Length > 0 ? offeredVersion : Definition);
+            return versionOffered ? CharacterRosterPresentation.ChooseVersionOffer : "";
         }
     }
 }

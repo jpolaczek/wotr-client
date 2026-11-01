@@ -458,7 +458,9 @@
 
 /* UI-348 (EXP-15 D17): a Combat card's replacement is a gilt chip with its source's arms (the nation emblem stands in for
    Brand's or the Chieftain's arms until their own art exists) beside the player's own card, which shares its row. */
-#board-screen .battle-card-row { flex-direction: row; align-items: center; }
+/* UI-437: the chip's top on the card's; the row keeps the plain card's height (33 px and its margin), so the rows under it
+   stay level with the other side's. */
+#board-screen .battle-card-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; }
 #board-screen .battle-card-row > .battle-card { width: auto; flex-grow: 1; flex-shrink: 1; }
 #board-screen .battle-replacement-chip {
     width: 40px;

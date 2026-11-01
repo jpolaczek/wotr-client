@@ -1360,11 +1360,12 @@ screenshot of Erebor), `ConfigurationLayoutTests` (all 93 configurations in four
 Every Lords character ability is used on its object; no ability button stands in the region panel or the inspector:
 
 - **Entries** start from the character's row in the Characters panel, as the base characters do (UI-240). The Mouth
-  of Sauron and the Witch-king, whose Lords cards are alternatives to the base ones, list each version not in play as
-  a row of its own (`CharacterRosterVersions`, key `figure@version`), its second line naming the version
-  (Lieutenant / Númenórean, Black Captain / Chief). With the Black Captain in play, the Chief's row (under Not in play)
-  turns him in place: "Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the
-  Ringwraiths"; his own row keeps inspecting him. An entry waiting for its region offers no Change button (which
+  of Sauron and the Witch-king, whose Lords cards are alternatives to the base ones, listed each version not in play as
+  a row of its own (`CharacterRosterVersions`, key `figure@version`). Superseded by
+  [UI-438](#one-marker-per-character--ui-438) (2026-11-01): one row each, like Strider/Aragorn, its second line naming
+  the version it shows (Lieutenant / Númenórean, Black Captain / Chief) and its window switching between them. With the Black Captain in play, his
+  one row turns him in place: "Click to turn The Witch-king, the Black Captain into The Witch-king, Chief of the
+  Ringwraiths" (before UI-438 the Chief's own row under Not in play did). An entry waiting for its region offers no Change button (which
   opened the generic window): another lit row changes it. Elrond, Galadriel, Gothmog and the Balrog enter from their
   rows; the Balrog's optional reserve figure is chosen in the Reserve panel, which now unrolls when that plan begins
   after the Muster die (`ReinforcementsPanel.Follow`).
@@ -1813,7 +1814,9 @@ Owner reports from the Kings test scenarios (Brand's Call to Arms, Dáin's Iron 
 - UI-387 (owner) — a character's versions are tabs right under the window's title, not large framed buttons below its
   abilities: a low strip on a thin gilt line, the shown version with a gold underline and gold text, the others muted
   until hovered; each tab reads the version's name ("Strider", "Aragorn"), with its edition only where two names are
-  alike ("Base · Boromir", "Lords · Boromir"); the tooltip names the card and its edition.
+  alike ("Base · Boromir", "Lords · Boromir"); the tooltip names the card and its edition. UI-438 (2026-11-01): one
+  character's alternative cards read their epithets ("Lieutenant", "Númenórean"; "Black Captain", "Chief"; Fate's
+  "Dwarven Lord"), `CharacterLibrary.VersionName`.
 - UI-388 (owner) — a token with several uses opens no panel and lights them all. A Council token a Kings Chieftain can
   enter with (UI-347 D13) lights, at its one click, the Chieftain's row (and the Characters tab) for the entry and its
   printed use's objects: the glowing Shadow nations' steps (and the Politics tab) for Politics, the Nazgûl above the
@@ -2479,3 +2482,84 @@ pulsing), `AssertTabLit` and `AssertRegionOffered`; `ResourcePanelNetworkTests` 
 `Shadow02NetworkTests`, `Shadow04NetworkTests`, `StrongholdNetworkTests`, `FateCardsNetworkTests`, `MordorNetworkTests`,
 `DeckChoiceMenuTests`, `MusterNetworkTests`, `FellowshipNetworkTests`, `BattleLayoutTests` and `BoardDrawnOptionsTests`'
 reveals (the map's Nazgûl, the eastern half, the Reserve's Nazgûl).
+
+<a id="both-sides-rows-stand-level--ui-437"></a>
+## Both sides' rows stand level in the battle window — UI-437 (2026-11-01)
+
+The owner's playtest (expansions 80df28fd): after the Black Serpent's Red Wrath "the battle window fell apart" — the
+defending Black Serpent's portrait stood alone in a row above his force (one figure ×1), the card row carried the gilt
+replacement marker, and the Shadow's statistics, card, "Combat · Hits 1" and dice no longer lined up with the attacker's.
+
+- **Cause.** The two columns were independent stacks: a force with characters added a row of medallions and a line of
+  names above its figures, which no other ability's addition matched on the other side; so did the ledge of figures
+  outside the fight, a special attack's pager (20 px against an 18 px heading) and the hit buttons Heroic Death and
+  Orderly Withdrawal add to one side's roll heading (33 px). Red Wrath only made it visible: the Serpent is a character
+  in his force, and the replacement marker sits beside the card. Reproduced on the seeded match `ui277-chieftain`
+  (`ui277-ui277-chieftain-*.png` before, `ui437-*.png` after).
+- **Characters stand in the force row** (`battle-force-row`, `BattleContext.ForceRow`): each medallion with its short
+  name under it, as a figure has its count, beside the nation groups; a force of more than four characters keeps the
+  medallions without names (`BattleContext.NamedCharacters`; the tooltips name them), and a column that chooses
+  figures (losses, an advance, a siege extension; UI-208) hides the names, as UI-394 did on a short viewport. The
+  portraits stay outside `battle-composition`, which a figure choice hides, so a choice made on a portrait (Evil
+  Knowledge during the extension) keeps its object.
+- **Both columns hold the same rows** (`BattleRowPlan`): heading, force row, a spacer, statistics, the ledge when either
+  side has one, the card (a replacement's chip or marker in a row of the card's height, its top on the card's), the
+  roll. A row or control only one side shows keeps an unseen, inert copy on the other (`battle-row-reserved`,
+  `visibility: hidden`): the ledge, a roll with one die's room, the roll's pager, a hit button. The spacer under the
+  shorter force row takes the difference (`flex-grow`), so everything under it stands level whatever either army holds.
+  While a column chooses figures both keep their rows at the top (`battle-forces-choosing`), as before.
+- Pure layout: no layout write in a geometry callback, no measuring; click paths, payloads and hit targets unchanged.
+
+Tests: PlayMode `BattleRowsNetworkTests.RedWrathKeepsBothSidesRowsLevel` (seed `ui277-chieftain`: the Shadow clicks the
+Black Serpent's chip, takes Red Wrath's hit, both armies roll; in 1366×768 and 1920×1080 at 100 % and 125 % the force
+rows, statistics, cards, roll headings and dice rows of both sides start level, the marker is no taller than the card,
+and the Serpent stands on his figures' line; screenshots `ui437-red-wrath-*`, `ui437-rolled-shadow-*`,
+`ui437-rolled-free-peoples-*`), `BattleLayoutTests.WhatAnAbilityAddsToOneSideKeepsBothSidesRowsLevel` (nine Companions
+whose figures wrap to a second line, a rear guard, Heroic Death's hit buttons, a special attack's pager and the Black
+Serpent's marker on one side; four layouts; `ui437-abilities-*`) with the shared checks `BattleRowChecks.Level`;
+`BattleLayoutTests` (all windows above the console, the losses' column), EditMode `BattleArtTests` (names under the
+medallions, in the force row).
+Port to `ability-chips` (base game): the force row, `BattleRowPlan`, the spacer, the reserved ledge, roll, pager and hit
+button, the CSS in `Battle.uss`, `BattleRowChecks` and the fixture test without the replacement marker. Expansions only:
+the card row's alignment (`Interaction.uss`, `.battle-card-row`), the replacement marker's checks and the Red Wrath test.
+
+<a id="one-marker-per-character--ui-438"></a>
+## One marker per character, its versions inside — UI-438 (2026-11-01)
+
+The owner's playtest: "two different versions of the Mouth are shown separately, unlike Aragorn, who has one marker and
+switches inside; fix it and make sure every character behaves like Aragorn/Strider".
+
+- **Cause.** UI-271 split a Shadow character whose Lords card is an alternative to the base one into a row per version
+  not in play (`CharacterRosterVersions`): "Mouth · Lieutenant" and "Mouth · Númenórean", the Witch-king's "Black
+  Captain" and "Chief". The server already lists one row per character (identity) with its versions; the client split it.
+- **Audit** of every character with more than one version in the content: Free Peoples — Gimli (base, Lords, Fate,
+  Fate's Dwarven Lord), Boromir, Legolas, Merry, Pippin (base, Lords), Gandalf (the Grey base and Lords, the White),
+  Strider/Aragorn (base and Lords Strider, Aragorn); Shadow — the Mouth of Sauron and the Witch-king (base, Lords). The
+  kings' Awakened and Corrupted cards belong to different sides (the Corrupted ones are not roster characters), the
+  Chieftains have one card each. Only the two Shadow characters were split; the others already had one row.
+- **One row per character** in every section (On board, Not in play, Removed) — `CharacterRosterPresentation.Rows`
+  keeps the server's rows. The row shows one version (`ShownVersion`): in play, the version in play; otherwise the
+  version an offered entry brings in, or the first that may enter. Its second line names that version
+  ("Lieutenant", "Númenórean") and changes to the version the chosen die's entry brings in; the tooltip opens with
+  "Click to bring The Mouth of Sauron, Black Númenórean into play".
+- **Its window switches** between the versions with the UI-387 tabs, which read the epithets of one character's
+  alternative cards (`CharacterLibrary.VersionName`); a map figure (the Witch-king in play) opens the same window with
+  both versions.
+- **Click paths and payloads.** One version that may enter for the chosen cost enters at the row's click, as the
+  version's own row did, with the same entry (`EnterCharacter` with that version). With the Black Captain in play, his
+  one row turns him into the Chief in place. Two versions that may both enter for one die (both Mouths with a Muster die)
+  are the existing explicit choice (UI-108): the row glows and says "Click to choose which version comes into play", its
+  click opens the window, the other version's tab glows and the shown version's Enter sends it.
+
+Tests: EditMode `CharacterRosterVersionsTests` (over the base, Lords, Kings and Fate content: every side's characters
+not entered, on board, in the Fellowship and removed have one row each and one window tab per version, the tabs told
+apart; the Mouth's row shows and sends the entry's version; two enterable versions are chosen in the window; the
+Witch-king's row turns him in place), `CharacterRosterPanelTests` (eight Shadow rows); PlayMode
+`LordsCharacterNetworkTests` (`ui271-entries-sh`: one Mouth row and one Witch-king row and their windows' tabs; every
+Free Peoples nation is at war there, so one Muster die may bring in either version of each — the rows glow and open the
+window, and the Lords Mouth enters from his glowing tab's Enter with the same entry as before; `ui271-witch-king-switch`:
+the Black Captain's row turns him; screenshots `ui438-shadow-entries-*`, `ui438-witch-king-switch-*`,
+`ui438-<figure>-window.png`, `ui438-mouth-choice-window.png`), `BoardCompletionLayoutTests`,
+`CharacterRosterPanelNetworkTests`, `CharacterRosterLayoutTests`.
+Port to `ability-chips`: nothing — it has no version split (`CharacterRosterVersions` is expansions-only); the tab names
+apply only to the expansions' alternative cards.
