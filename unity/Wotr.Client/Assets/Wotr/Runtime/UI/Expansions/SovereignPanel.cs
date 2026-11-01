@@ -7,9 +7,9 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // UI-101: the portraits live in the Characters panel (Root is its Sovereigns section); the inspector
-    // opens beside the portrait, or beside the Characters tab while the panel is rolled up. UI-274: every sovereign keeps
-    // a fixed slot (SovereignPortrait) in every state, and the decisions about the kings are made on the portraits, their
+    // UI-101: the portraits live in the Characters panel (Root is its Sovereigns section). UI-436: the inspector opens at
+    // one place beside the Characters tab for every king (CharacterWindowPlace). UI-274: every sovereign keeps a fixed
+    // slot (SovereignPortrait) in every state, and the decisions about the kings are made on the portraits, their
     // attempt buttons and tiles; the inspector only informs and hosts no decision.
     public sealed class SovereignPanel
     {
@@ -25,6 +25,9 @@ namespace Wotr.Client
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         public Func<IEnumerable<Rect>> FixedOcclusions { get; set; }
         public Func<VisualElement> FallbackAnchor { get; set; }
+        public CharacterWindowPlace Place { get; set; }
+        // The window's size before its first layout (USS .ruler-window).
+        public static readonly Vector2 WindowSize = new Vector2(380, 288);
         public bool HasShownPortraits => portraits.Count > 0;
         // UI-274: a portrait's choice in the current decision (a card's king, the cleanse) and the objects' clicks.
         public Func<string, SovereignChoice> Choice { get; set; } = _ => null;
@@ -222,26 +225,13 @@ namespace Wotr.Client
             positionUpdate.ExecuteLater(0);
         }
 
+        // UI-436 (owner): every king's window at one place beside the Characters tab (CharacterWindowPlace), whichever
+        // portrait or map object opened it; a window the player dragged keeps its own place.
         public void Position()
         {
             if (!IsOpen || Inspector.parent == null || Window?.Restore() == true)
                 return;
-            var bounds = Inspector.parent.contentRect;
-            if (bounds.width <= 0 || bounds.height <= 0)
-                return;
-            var width = Inspector.layout.width > 0 ? Inspector.layout.width : 440;
-            var height = Inspector.layout.height > 0 ? Inspector.layout.height : 330;
-            var anchor = Source(selected).worldBound;
-            var point = Inspector.parent.WorldToLocal(anchor.center);
-            var occupied = (Occlusions?.Invoke() ?? new[] { Root.worldBound })
-                .Select(rect => new Rect(Inspector.parent.WorldToLocal(rect.position), rect.size));
-            var fixedOccupied = (FixedOcclusions?.Invoke() ?? new[] { Root.worldBound })
-                .Select(rect => new Rect(Inspector.parent.WorldToLocal(rect.position), rect.size));
-            var placement = SovereignPlacement.Near(point, new Vector2(width, height), bounds, occupied, fixedOccupied);
-            if (Inspector.style.left.keyword != StyleKeyword.Undefined || Mathf.Abs(Inspector.style.left.value.value - placement.x) > .25f)
-                Inspector.style.left = placement.x;
-            if (Inspector.style.top.keyword != StyleKeyword.Undefined || Mathf.Abs(Inspector.style.top.value.value - placement.y) > .25f)
-                Inspector.style.top = placement.y;
+            Place?.Apply(Inspector, WindowSize);
         }
     }
 }

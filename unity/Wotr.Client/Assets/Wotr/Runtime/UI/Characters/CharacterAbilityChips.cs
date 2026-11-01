@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Wotr.Client
@@ -9,11 +10,13 @@ namespace Wotr.Client
     // in the tooltip. A click unrolls the full text under the chips; nothing is unrolled by default. Three chips per
     // page, as in UI-66. UI-369: a chip whose ability can be used now glows; selected, its unrolled text carries
     // Click to use, whose click uses the ability. A second click on the selected chip changes nothing (owner, so the
-    // window never shrinks under the pointer); another chip or another page changes the selection.
+    // window never shrinks under the pointer); another chip or another page changes the selection. UI-436: a chip is a
+    // line of the window's width with the ability's icon, title and gist, so the window says what each ability does.
     public sealed class CharacterAbilityChips
     {
         public const string ChipClass = "character-ability";
         public const string TitleClass = "character-ability-title";
+        public const string IconClass = "character-ability-icon";
         public const string UseClass = "character-ability-use-action";
         public const string UsableNow = "Usable now · Click it, then Click to use below";
         private const int PageSize = 3;
@@ -30,6 +33,7 @@ namespace Wotr.Client
         public VisualElement Pages { get; } = BoardScreen.Row("character-ability-pages");
         public Label Text { get; } = new Label { name = "character-ability-text", enableRichText = false };
         private readonly Button[] chips = new Button[PageSize];
+        private readonly string[] shownWords = new string[PageSize];
         private readonly Button previous, next;
         // The parchment under the chips: the text and, for a usable ability, Click to use below it. The label has no
         // children, so it measures its text.
@@ -52,10 +56,11 @@ namespace Wotr.Client
                 var slot = index;
                 chips[index] = BoardScreen.Button("", () => Open(slot));
                 chips[index].AddToClassList(ChipClass);
-                // Symbol and title are children: a button with children is not sized by its own text.
+                // Symbol and words are children: a button with children is not sized by its own text. UI-436: the words
+                // are the title in gold and the gist of the text (our own catalogue's text, so rich text is safe).
                 var icon = new VisualElement { pickingMode = PickingMode.Ignore };
-                icon.AddToClassList("character-ability-icon");
-                var title = new Label { pickingMode = PickingMode.Ignore, enableRichText = false };
+                icon.AddToClassList(IconClass);
+                var title = new Label { pickingMode = PickingMode.Ignore, enableRichText = true };
                 title.AddToClassList(TitleClass);
                 chips[index].Add(icon);
                 chips[index].Add(title);
@@ -160,7 +165,7 @@ namespace Wotr.Client
                 var ability = entries[entry];
                 chip.name = "character-ability-" + ability.Id;
                 chip.userData = ability.Id;
-                chip.Q<Label>(className: TitleClass).text = ability.Title;
+                Words(index, ability);
                 var ready = editable && usable[ability.Id].Any(action => action.Enabled);
                 // UI-420 (owner): the chip shows the title, so its tooltip starts with the text, without blank lines.
                 chip.tooltip = TooltipText.Lines(ability.Text, ability.Source, ready ? UsableNow : "");
@@ -178,6 +183,30 @@ namespace Wotr.Client
             previous.SetEnabled(page > 0);
             next.SetEnabled((page + 1) * PageSize < entries.Count);
         }
+
+        // UI-436: the chip says what the ability does — the gist of its text under its title — and shows its icon, the one
+        // its roster row shows (AbilityIcons); set only when the chip's card or ability changes.
+        private void Words(int slot, CharacterAbilityText ability)
+        {
+            var key = version + "#" + ability.Id;
+            if (shownWords[slot] == key)
+                return;
+            shownWords[slot] = key;
+            var chip = chips[slot];
+            chip.Q<Label>(className: TitleClass).text = Line(version, ability);
+            var picture = Resources.Load<Texture2D>(AbilityIcons.For(ability.Id));
+            chip.Q(className: IconClass).style.backgroundImage = picture == null ? new StyleBackground(StyleKeyword.Null) : new StyleBackground(picture);
+        }
+
+        // "Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular there", the title in gold. A
+        // colour, not bold: the window's font has no bold face, and a synthesized one is measured shorter than it is drawn.
+        public static string Line(string definitionId, CharacterAbilityText ability)
+        {
+            var gist = CharacterAbilitySummaries.Summary(definitionId, ability.Id);
+            return "<color=" + TitleColour + ">" + ability.Title + "</color>" + (gist.Length > 0 ? TooltipText.Separator + gist : "");
+        }
+
+        private const string TitleColour = "#F3D48A";
 
         // One Click to use per action of the unrolled ability (Saruman's Voice has two); rebuilt only when they change.
         private void ShowUse(IReadOnlyList<ComponentAction> actions)

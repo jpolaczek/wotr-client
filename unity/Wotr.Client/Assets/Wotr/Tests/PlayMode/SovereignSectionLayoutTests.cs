@@ -95,7 +95,13 @@ namespace Wotr.PlayTests
             var tab = board.Characters.Tab.worldBound;
             Inside(inspector, board.Root.worldBound, "inspector");
             Assert.IsFalse(inspector.Overlaps(tab), "The inspector leaves the tab readable.");
-            Assert.Less(Mathf.Max(0, inspector.xMin - tab.xMax), 160, "The inspector stands beside the Characters tab.");
+            // UI-436: at the one place of the rulers' windows, beside where the Characters panel unrolls, level with its tab.
+            var slot = board.Root.Q("characters-panel-slot").worldBound;
+            Assert.That(inspector.xMin, Is.InRange(slot.xMax, slot.xMax + 10), "The inspector stands beside the Characters panel's place.");
+            var stage = board.Sovereigns.Inspector.parent.worldBound;
+            var raised = inspector.yMin < tab.yMin && stage.yMax - inspector.yMax <= CharacterWindowPlace.BottomMargin + 2;
+            Assert.IsTrue(Mathf.Abs(inspector.yMin - tab.yMin) <= 1 || raised,
+                "The inspector stands level with the Characters tab, raised only to stay above the bottom: " + inspector + " / " + tab);
         }
 
         private static bool Visible(VisualElement element)

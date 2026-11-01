@@ -13,8 +13,21 @@ namespace Wotr.Client
             var characters = board.Characters;
             characters.Actions.OpenReaction = board.Notice.Open;
             stage.Add(characters.Tab);
+            // UI-436: where the panel unrolls, so the characters' and rulers' windows stand beside it at one place.
+            var slot = CharacterWindowPlace.Slot();
+            stage.Add(slot);
             stage.Add(characters.Root);
             stage.Add(characters.Inspector.Root);
+            var place = new CharacterWindowPlace(slot, characters.Tab);
+            characters.Place = place;
+            board.Sovereigns.Place = place;
+            void PlaceAgain(GeometryChangedEvent _)
+            {
+                board.Sovereigns.RequestPosition();
+                characters.Inspector.Root.schedule.Execute(characters.PositionInspector);
+            }
+            slot.RegisterCallback<GeometryChangedEvent>(PlaceAgain);
+            characters.Tab.RegisterCallback<GeometryChangedEvent>(PlaceAgain);
             characters.AddSovereigns(board.Sovereigns.Root);
             board.Sovereigns.FallbackAnchor = () => characters.Tab;
             board.Sovereigns.Applied += () => characters.ShowSovereigns(board.Sovereigns.HasShownPortraits);

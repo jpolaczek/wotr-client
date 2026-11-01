@@ -101,3 +101,12 @@ the Witch-king) names the version its click brings in (`Click to bring The Mouth
 rule 1); when two versions may enter for one die, its tooltip says the click opens the choice (`Click to choose which
 version comes into play`). UI-437: a battle character's short name stands under its medallion; the medallion's tooltip
 keeps the full name.
+Follow-up (2026-11-01, UI-436): a character's or a king's place is a picture captioned with its name; its tooltip names
+the place and what its click does (`Minas Tirith` then `Click to show this region on the map`), or, off the map, what
+being there means (`The Fellowship · Travels with the Fellowship · Not on the map`). A window's bare "Unavailable" and
+"Limits" are gone: each action reads as two short lines (`Awaken · Muster or Ruler die`, then `Available now` or what it
+still needs, `His nation must be active`), and only the tooltip lists the full cost, every condition with ✓ or ○, the
+timing and the rules page (rule 2: the lines do not repeat the tooltip's title). Every window's ability chip reads its
+title and gist (`Dwarvenking · With Dáin in Erebor, a Muster die upgrades a Dwarven Regular there`), a king's under a
+heading saying when they apply (`Abilities once awakened`, `Weaknesses while corrupted`); the chip's tooltip stays the
+printed text and page (rule 2 as UI-420 set it: it does not repeat the title).

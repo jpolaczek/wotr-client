@@ -26,7 +26,12 @@ namespace Wotr.EditorTests
             Assert.IsFalse(CharacterRosterPresentation.Rows(view).Any(r => r.Identity is "gollum" or "smeagol"));
             panel.Show("base.character.gandalf-grey", true);
             Assert.IsNull(panel.Inspector.Root.Q<Button>("enter-character"));
-            Assert.AreEqual(DisplayStyle.None, panel.Inspector.Root.Q<Button>("locate-character").style.display.value);
+            // UI-436: off the map the place's picture keeps its slot, disabled, and says where he is and what it means.
+            var place = panel.Inspector.Root.Q<Button>("locate-character");
+            Assert.IsFalse(place.enabledSelf);
+            Assert.AreEqual("Removed", panel.Inspector.Place.Caption);
+            Assert.AreEqual("removed-free-peoples", panel.Inspector.Place.Place.Key);
+            Assert.AreEqual("Eliminated; may return as Gandalf the White", panel.Inspector.Root.Q<Label>("character-state").text);
         }
 
         [Test]
@@ -49,7 +54,9 @@ namespace Wotr.EditorTests
             Assert.AreEqual("characters-section-OnBoard", button.parent.parent.name);
             Assert.IsTrue(panel.InspectorPinned);
             Assert.AreEqual(id, panel.Inspector.FigureId);
-            Assert.AreEqual(DisplayStyle.Flex, panel.Inspector.Root.Q<Button>("locate-character").style.display.value);
+            Assert.IsTrue(panel.Inspector.Root.Q<Button>("locate-character").enabledSelf, "On the map his place's picture locates it.");
+            Assert.AreEqual("Fangorn", panel.Inspector.Place.Caption);
+            Assert.AreEqual("fangorn", panel.Inspector.Place.Place.RegionId);
         }
 
         [Test]
@@ -120,7 +127,8 @@ namespace Wotr.EditorTests
             Assert.IsTrue(inspector.Apply(view, "base.character.gimli"));
             Assert.AreEqual("Gimli", inspector.Root.Q<Label>(className: "title").text);
             Assert.AreEqual("Fate", inspector.Root.Q<Label>("character-edition").text);
-            Assert.IsTrue(inspector.Root.Q("character-status-icon").ClassListContains("character-status-on-board"));
+            Assert.AreEqual("iron-hills", inspector.Place.Place.Key, "UI-436: his place is the picture of his region.");
+            Assert.AreEqual("On the board", inspector.Root.Q<Label>("character-state").text);
             var facts = inspector.Root.Query(className: CharacterFactStrip.ItemClass).ToList()
                 .Where(item => item.style.display.value != DisplayStyle.None).ToList();
             Assert.GreaterOrEqual(facts.Count, 4);

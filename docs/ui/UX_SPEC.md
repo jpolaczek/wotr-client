@@ -492,6 +492,8 @@ UI-54 is a collective acceptance H01–H14: the cost and RNG still on the server
 The Charters tab next to the Politics shares the rules of hower and pin with other previews. Own roster and public portrait on the map lead to one card; the same works Awakened with the sovereign bar. Short signatures do not replace the full inspection. The capacity name is focussable and has a full description of the action and the sources in the tooltip. cost/conditions future version is read from the server; the inspection does not pay itself or selects action.
 
 pinned card is protected from swapping by the hiver. The disappearance of the future version button after the change retains focus in the common inspector. The location appears only for the real region; the opening or update itself does not move the map. UI-66.
+Since [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) the
+location is the picture of the figure's place, enabled only for a region.
 
 <a id="ui-61--pomoc-kontekstowa-i-wyjaśnienia-dostępności"></a>
 ## UI-61 — Contextual assistance and accessibility clarifications
@@ -772,6 +774,8 @@ UI-274 replaces the hiding rules below: every sovereign keeps a fixed slot in ev
 - The panel is developed until the window opened from it the ruler is visible.
 - The master window stands next to the button. When the panel is rolled up, for example, the
   decision opened the window itself, it stands next to the Characters tab.
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) replaces
+  this: every ruler's window opens at one place beside the Characters tab, with one size.
 - When the ruler is a legitimate goal (e.g. waking up after the dice selection), the Characters tab
   has an award for the target also in a rolled-up state.
 - The context of the saved action ruler and Esc indicate the Characters tab.
@@ -1402,7 +1406,9 @@ Owner decision 2026-10-19: the kings' decisions are made on their objects, and n
   (an Initial king shows his awakened portrait, dimmed), a status badge (initial, awakened, corrupted, removed), his
   name, a corruption meter with a pip per point of resistance (filled for known corruption, hatched for hidden tiles;
   only while Initial) and a row for the tiles of an attempt or an inspection. An unlit portrait's click opens the
-  inspector, which only informs.
+  inspector, which only informs (since
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) a compact
+  window at one place beside the Characters tab, his place as a picture).
 - **Corruption attempt.** For the Shadow a graphic button stands at the top right of each Initial king's portrait. It
   keeps its place, disabled with its reason in the tooltip, when no attempt is possible. Its click pays an eligible Eye
   from the Hunt Box: a standard Eye, else a Ruler die; a Lords special Eye only when the player clicked it first. When
@@ -1709,7 +1715,10 @@ Owner requests of 2026-10-27:
 - UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
   the roster moves; switching an ability's text or a page keeps its top-left and only pulls it back inside the board
   (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`). A version a decision selects is not the player's
-  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve.
+  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve. Since
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) this holds for
+  a window opened from a region's window; one opened from the Characters tab, its panel or a ruler stands at one place
+  beside the tab (`CharacterWindowPlace`), clear of every left panel.
 - UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
   the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
   the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
@@ -2563,3 +2572,98 @@ the Black Captain's row turns him; screenshots `ui438-shadow-entries-*`, `ui438-
 `CharacterRosterPanelNetworkTests`, `CharacterRosterLayoutTests`.
 Port to `ability-chips`: nothing — it has no version split (`CharacterRosterVersions` is expansions-only); the tab names
 apply only to the expansions' alternative cards.
+
+<a id="a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436"></a>
+## A character's window is compact, shows its place as a picture and opens in one place — UI-436 (2026-11-01)
+
+The owner's playtest (expansions 80df28fd), about "Denethor · ♙ Initial" with its "Minas Tirith" button, "Corruption
+0/3" and "After awakening · Abilities  Unavailable": "the window is too big, the information is vague; the Minas Tirith
+button should be a picture of the place where he is; apply it to all characters and make sure every place any
+character can be has its picture; the window opens in a different place for each ruler — always show it beside the
+rulers' tab, in the same place."
+
+- **One window form.** The king's window (`SovereignInspector`) is framed like a character's window
+  (`.character-window`, 380 points wide in every layout, as the character window now is). From the top: the header —
+  his name, his status badge (its icon and word, its tooltip what the state means: "Initial · Not yet awakened: he leads
+  his force as a Leader"), and Close; the place row; his action in words; his abilities. An attempt's progress and a
+  decision's consequence add their lines below, as before; the window still hosts no decision (UI-274).
+- **The place is a picture** (`PlacePicture`, 128×80 points) captioned with the place's name, in place of the king's
+  "Minas Tirith" text button and of the character window's status line with its Locate button. A region's picture is
+  enabled, its tooltip "Minas Tirith · Click to show this region on the map", and its click sends what the old button
+  sent (`Map.Focus(region)`). A place off the map keeps the picture's slot, disabled, its tooltip naming the place and
+  what being there means ("The Fellowship · Travels with the Fellowship · Not on the map"). `PlacePresentation` maps
+  every roster lifecycle and every king's status to a place: a region on the board; the Fellowship (in it, or leaving
+  it to be placed); not in play (not entered, returning, unknown — a picture per side); removed (eliminated, or
+  eliminated and able to return as Gandalf the White — per side); out of play (a removed king).
+- **Every place has its picture** (`scripts/export_place_pictures.py`, deterministic with `--check`, the pinned
+  Pillow/NumPy/SciPy of the map scripts; report `docs/sources/UI-436-PLACE-PICTURES.json`). 111 replaceable JPEGs of
+  256×160 px (2 MB) in `Resources/Wotr/Art/Places/<place>.jpg`: each of the 105 regions is a crop of the map canvas art
+  round it (the MAP-14/MAP-18 terrain over the UI-102 margins, the painted landmarks and the land borders), its outline
+  in gold, the land round it dimmed and its own landmark kept bright; the six places off the map are painted from the
+  board figures on the bare paper of the margins — the Fellowship's miniature, a ghosted Companion or Minion over an
+  empty stand (not in play), a figure laid down (removed) and the Ruler figure laid down (a removed king). No character
+  stands on the Mordor track (only the Fellowship does, its Companions inside it), and every king's home is a region.
+- **Each line says what it means.** Beside the picture: "Corruption 1/4" on a small meter (a pip per point of
+  resistance, filled for known corruption, hatched for hidden tiles), then "Corrupted when his tiles reach 4"
+  (CorruptionRules: a king is corrupted when his tiles reach his resistance); a Corrupted king reads "Corruption
+  resolved · He now serves the Shadow", a removed one "Out of play · Removed from play"; then "In the stronghold's
+  garrison" or "Corruption attempted this turn", and his attached tiles. The bare "Unavailable" (and the character
+  window's "Limits") is now the action in words (`AvailabilityLines`, `AvailabilityRows`): "Awaken · Muster or Ruler
+  die", then "Available now" in gold or what it still needs ("His nation must be active", "No Muster or Ruler die
+  available", "No region he can reach", "Needs 2 Eyes in the Hunt Box", "Already attempted this turn", "The Free Peoples
+  have no unused die"; another condition as the server words it); the tooltip keeps the server's full cost, every
+  condition with ✓ or ○, the timing and the rules page. An action of another state (Awaken for a Corrupted king) and the
+  tile return outside its moment are left out; without an action of his own the line says what his state means ("Not
+  yet awakened · The Free Peoples may awaken him, the Shadow corrupt him", "Serves the Shadow · His weaknesses below
+  apply", "Out of play · Nothing more can happen to him"). "After awakening · Abilities" with a tooltip is now his
+  abilities under "Abilities once awakened" or "Weaknesses while corrupted", as the character window's lines.
+- **Abilities say what they do** — in every character's window too. An ability chip (`CharacterAbilityChips`) is a line
+  of the window's width: the ability's icon (the roster row's, `AbilityIcons`), its title in gold and the gist of its
+  text ("Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular there"); its tooltip is
+  the printed text and page, its click still unrolls the printed text (UI-139) and a usable one still glows and carries
+  Click to use (UI-369).
+- **The character window** keeps every control (pin, close, version tabs, ability lines and pages, Click to use, the
+  entry, the decision host); its place row is the picture and, beside it, a line saying what being there means ("On the
+  board", "Travels with the Fellowship", "Not entered yet", "Eliminated; may return as Gandalf the White") over the
+  statistics. An Awakened king's character window has the rows of every king's window: his action line ("Awakened · A
+  Companion with the abilities below" when he has no action of his own) and "Abilities" over his ability lines.
+- **One place** (`CharacterWindowPlace`). Every ruler's window, and every character's window opened from the Characters
+  tab, its panel or a ruler, stands just right of where the Characters panel unrolls — a hidden slot with the panel's
+  classes (`characters-panel-slot`), laid out while the panel is rolled up, so the panel never covers the window and the
+  window never moves when the panel opens or closes — its top level with the Characters tab, raised only as far as it
+  must to stay whole above the bottom of the board. Every left panel (Politics, Reserve, Effects) is narrower, so none
+  covers it. A ruler's window has one size at rest (`.ruler-window`, 380×288 points: the same rows for an Initial, a
+  Corrupted or an Awakened king, the shorter gists leaving at most a line free); an unrolled ability text or a decision
+  makes it taller. A character opened from a region's window stands beside that window, its own panel, as
+  before (UI-371); a window the player dragged keeps its place while pinned (`FloatingWindow.Restore`).
+
+Tests: EditMode `PlacePictureTests` (every one of the 105 regions and every place off the map has its 256×160 picture;
+every roster lifecycle of both sides and every king's status leads to one), `AvailabilityLinesTests`,
+`CharacterWindowPlaceTests`, `SovereignPanelTests` (`TheWindowSaysWhatEachLineMeans`,
+`AvailabilityExplainsOnlyProjectedOwnConditionsWithoutGrantingAnAction`), `CharacterRosterPanelTests`; PlayMode
+`CharacterWindowLayoutTests` (the five Initial kings' sovereign windows of ui101-sovereigns and the five Awakened kings'
+character windows of ui66-full, the Free Peoples at 1366×768 and 1920×1080 at 100 and 125 %, the Shadow at 1366×768 at
+125 %: every king's window has the ruler size and one rect beside the Characters panel's place, level with the tab; a
+king opened with the panel rolled up stands in the same rect; a character's window opened from his row stands at the
+same place; the picture's click selects the king's region; nothing is sent; screenshots `ui436-initial-*`,
+`ui436-awakened-*`, `ui436-rolled-up-*`, `ui436-character-*`), `SovereignSectionLayoutTests`,
+`CharacterRosterPanelNetworkTests`, `CharacterRosterActionNetworkTests`, `LordsCharacterNetworkTests`,
+`BoardCompletionLayoutTests` (each ability line equals `CharacterAbilityChips.Line` and shows its whole text in four
+layouts; the short viewport's fixed 32-point height of an inspector's buttons no longer applies to a line), `ReturnListTests`
+(the king's place picture locates his region).
+
+Playtest (owner's checklist):
+- [ ] The kings' window — Testing catalog `kings-fp-ruler-token` (play the Free Peoples). Open Characters and click each
+  king's portrait in turn. Expect: one compact window, the same size at the same place beside the Characters panel for
+  every king; his place as a picture named under it; "Corruption n/r" on a meter and when he is corrupted; his action
+  in words ("Awaken · Muster or Ruler die" and what it still needs); his abilities in lines. Click the picture: the map
+  shows his region. Roll the panel up and open a king from his force on the map: the window opens at the same place.
+- [ ] A character's window — the same game: click a companion's row. Expect: the window at the same place, his region's
+  picture (or the Fellowship's, "Not in play", "Removed") with what it means beside it, and his statistics.
+
+Port to `ability-chips` (base game): `PlacePresentation` (characters), `PlacePicture`, `AvailabilityLines`,
+`AvailabilityRows`, `CharacterWindowPlace` and its slot, the `CharacterInspector` and `CharacterRosterPanel` changes, the
+ability lines (`CharacterAbilityChips`), the character-window styles, the export script and its pictures (the removed
+king's picture is unused there), and their EditMode tests; the kings' window (`SovereignInspector`,
+`SovereignPanel.Position`, `SovereignPresentation`, `CharacterInspector.RefreshRuler`) and `CharacterWindowLayoutTests`
+are expansions-only.

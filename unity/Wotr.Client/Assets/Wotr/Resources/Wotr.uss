@@ -710,7 +710,6 @@
 .expansion-inspector .action { height: 32px; min-height: 32px; margin: 0 4px 3px 0; padding: 0 6px; font-size: 13px; }
 .expansion-inspector .unity-label { margin-top: 0; margin-bottom: 2px; font-size: 13px; }
 .corruption-tile { width: 32px; min-width: 32px; height: 32px; background-color: rgb(67, 64, 59); -unity-text-align: middle-center; margin-right: 4px; }
-.sovereign-ability { white-space: normal; }
 
 /* Saved games and optional return summaries share the gateway, outside the decision tray. */
 .saved-games-panel {
@@ -1241,30 +1240,12 @@
 .sovereign-context .dice-panel .own-resource-columns { flex-direction: row; align-items: flex-start; }
 .sovereign-context .dice-panel .own-resource-columns > .available-dice { width: 210px; }
 .sovereign-context .dice-panel .own-resource-reserves { flex-grow: 1; flex-basis: 0; margin-left: 8px; }
-.sovereign-inspector { width: 440px; padding: 7px; }
-.sovereign-inspector .unity-label { white-space: normal; }
-.sovereign-inspector #sovereign-state { flex-grow: 1; }
-.sovereign-inspector #sovereign-cost { margin-right: 8px; -unity-text-align: middle-right; }
-.sovereign-inspector #sovereign-ability, .sovereign-inspector #sovereign-availability { color: rgb(198, 191, 169); font-size: 12px; }
+/* UI-436: the sovereign's window is a character window (Styles/Characters.uss); these are its attempt's lines. */
+.sovereign-inspector #sovereign-cost { flex-shrink: 0; margin: 0 6px 0 0; font-size: 12px; -unity-text-align: middle-right; }
 .sovereign-inspector #sovereign-attempt, .sovereign-inspector #sovereign-cost { color: rgb(231, 193, 107); }
-.sovereign-inspector #sovereign-consequence { font-size: 12px; margin-top: 3px; }
-.sovereign-inspector .tray { flex-basis: auto; flex-grow: 0; flex-shrink: 0; position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; min-width: 0; max-width: none; padding: 5px 0 0; margin: 4px 0 0; border-top-width: 1px; border-top-color: rgb(125, 102, 62); background-color: rgba(0, 0, 0, 0); }
-.sovereign-inspector .tray > .title { display: none; }
-.sovereign-inspector .decision-choice-footer { flex-wrap: nowrap; align-items: center; }
-.sovereign-inspector .decision-choice-footer > .draft-status { flex-basis: 0; flex-grow: 1; font-size: 12px; margin-right: 6px; }
-.sovereign-inspector .effect-choices, .sovereign-inspector #corruption-attempt { flex-wrap: wrap; }
-.sovereign-inspector .corruption-tile { min-width: 32px; min-height: 29px; margin: 2px 3px 2px 0; }
-
-.sovereign-inspector #sovereign-decision-host { flex-shrink: 0; }
-.sovereign-status { flex-direction: row; flex-wrap: wrap; align-items: center; }
-.sovereign-status #sovereign-location { flex-grow: 0; min-width: 100px; }
-.sovereign-status .sovereign-tiles { flex-shrink: 0; }
-.sovereign-details { flex-direction: row; flex-wrap: wrap; }
-.sovereign-details .unity-label { margin-right: 10px; }
+.sovereign-inspector #sovereign-consequence { font-size: 12px; margin-top: 3px; white-space: normal; }
 .sovereign-progress { flex-direction: row; flex-wrap: wrap; align-items: center; }
-.sovereign-progress .unity-label { margin-right: 12px; }
-.sovereign-inspector .travel-summary > .unity-label { flex-grow: 1; }
-.sovereign-inspector #corruption-attempt { flex-shrink: 0; }
+.sovereign-progress .unity-label { margin-right: 12px; font-size: 12px; }
 .sovereign-strip .inspected-sovereign { border-width: 2px; border-color: rgb(231, 193, 107); }
 /* Reserve the left rail and a pinned card at the smallest supported scale. */
 .edge-board .board-information { left: 102px; width: 460px; }
@@ -1291,12 +1272,12 @@
    10-point Alegreya 14. */
 .character-roster-title { font-size: 12px; height: 17px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .character-roster-detail { font-size: 10px; height: 14px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.character-inspector { position: absolute; width: 420px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
-.short-viewport .character-inspector { width: 400px; }
+/* UI-436: the characters' and the sovereigns' windows share one width in every layout (Styles/Characters.uss). */
+.character-window { position: absolute; width: 380px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
 .character-inspector .unity-label { white-space: normal; flex-shrink: 0; }
-.character-inspector .character-header { flex-wrap: nowrap; }
-.character-inspector .character-header .title { min-width: 0; flex-shrink: 1; }
-.character-inspector .character-header .action { flex-shrink: 0; }
+.character-window .character-header { flex-wrap: nowrap; }
+.character-window .character-header .title { min-width: 0; flex-shrink: 1; }
+.character-window .character-header .action { flex-shrink: 0; }
 .short-viewport .character-inspector .unity-label { margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
 .short-viewport .character-inspector .action { min-height: 32px; height: 32px; margin-top: 1px; margin-bottom: 1px; }
 /* UI-387 (owner): a character's versions are tabs under the title: a low strip on a thin gilt line; the shown version
@@ -1331,24 +1312,23 @@
 }
 .short-viewport .character-inspector #character-statistics { margin-top: 2px; margin-bottom: 2px; }
 .short-viewport .character-inspector #character-abilities .unity-label { min-height: 20px; margin-top: 2px; margin-bottom: 2px; }
-#character-state { flex-grow: 1; flex-shrink: 1; font-size: 12px; }
+
 #character-statistics { font-size: 13px; margin-top: 4px; margin-bottom: 4px; }
 #character-abilities { font-size: 13px; }
-#character-limits, #character-entry { font-size: 12px; color: rgb(223, 208, 168); }
+#character-entry { font-size: 12px; color: rgb(223, 208, 168); }
 .character-ability-pages { flex-direction: row; justify-content: flex-end; }
 .character-ability-pages .action { width: 32px; min-width: 32px; min-height: 32px; margin: 0 2px; }
 
 .dice-header { flex-direction: row; align-items: center; flex-shrink: 0; height: 22px; }
 .dice-header > .title { flex-grow: 1; flex-shrink: 1; font-size: 16px; margin: 0; }
 .sovereign-context .dice-panel .dice-header { width: 210px; }
-.sovereign-inspector .information-heading > .title { flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sovereign-inspector #sovereign-availability { height: 16px; min-height: 16px; margin: 0 10px 0 0; }
 
 /* UI-67 Character actions */
 .character-decision-active #character-statistics,
 .character-decision-active #character-abilities,
 .character-decision-active .character-ability-pages,
-.character-decision-active #character-limits { display: none; }
+.character-decision-active #character-limits,
+.character-decision-active #character-ability-heading { display: none; }
 .character-inspector #character-decision-host .tray { padding: 0; min-height: 0; flex-basis: auto; flex-grow: 0; flex-shrink: 0; }
 .character-inspector #character-decision-host .title { font-size: 14px; margin: 2px 0; }
 .character-inspector #character-decision-host .action { height: 33px; min-height: 33px; flex-shrink: 0; margin: 1px 2px; }

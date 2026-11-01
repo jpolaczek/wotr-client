@@ -46,7 +46,9 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.IsTrue(board.Characters.InspectorPinned);
-            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Button>("locate-character").resolvedStyle.display);
+            // UI-436: off the map his place is a picture that keeps its slot, disabled.
+            Assert.IsFalse(board.Characters.Inspector.Root.Q<Button>("locate-character").enabledSelf);
+            Assert.AreEqual("Removed", board.Characters.Inspector.Place.Caption);
             // UI-387 (owner): the versions are tabs right under the title, low and named by the version.
             var white = board.Characters.Inspector.Root.Q<Button>("character-version-base.character.gandalf-white");
             var tabs = white.parent;
@@ -69,7 +71,8 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.Characters.InspectorPinned);
             Assert.AreSame(board.Characters.Inspector.Root.Q<Button>("locate-character"),
                 board.Root.panel.focusController.focusedElement, "A disappearing version control keeps focus in the inspector.");
-            StringAssert.Contains("Fangorn", board.Characters.Inspector.Root.Q<Label>("character-state").text);
+            Assert.AreEqual("Fangorn", board.Characters.Inspector.Place.Caption, "UI-436: his place's picture is named.");
+            Assert.AreEqual("On the board", board.Characters.Inspector.Root.Q<Label>("character-state").text);
             Assert.AreEqual(1, room.Sh.Board.View.Characters.Count(c => c.Id == id));
             Assert.IsFalse(room.Sh.Board.View.OwnCharacterRoster.Any(c => c.FigureId == id));
             await KingsCardNetworkChecks.Reconnect(room, room.Fp);
@@ -102,8 +105,9 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.AreEqual(id, board.Characters.Inspector.FigureId);
-            StringAssert.Contains("Removed", board.Characters.Inspector.Root.Q<Label>("character-state").text);
-            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Button>("locate-character").resolvedStyle.display);
+            Assert.AreEqual("Removed", board.Characters.Inspector.Place.Caption);
+            Assert.AreEqual("removed-shadow", board.Characters.Inspector.Place.Place.Key);
+            Assert.IsFalse(board.Characters.Inspector.Root.Q<Button>("locate-character").enabledSelf);
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Label>("character-entry").resolvedStyle.display);
             Assert.AreEqual(revision, board.View.Revision);
         }

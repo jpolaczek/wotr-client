@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Wotr.Contracts;
 
@@ -81,6 +82,70 @@ namespace Wotr.Client
             SovereignStatus.Awakened => "★ Awakened",
             SovereignStatus.Corrupted => "◉ Corrupted",
             _ => "× Removed"
+        };
+
+        // UI-436: the window's status badge reads the word beside its icon, and its tooltip what the state means
+        // (KINGS p. 8–13: an Initial sovereign is a Free Peoples Leader, an Awakened one a Companion).
+        public static string StatusWord(SovereignStatus status) => status switch
+        {
+            SovereignStatus.Initial => "Initial",
+            SovereignStatus.Awakened => "Awakened",
+            SovereignStatus.Corrupted => "Corrupted",
+            _ => "Removed"
+        };
+
+        public static string StatusMeaning(SovereignStatus status) => status switch
+        {
+            SovereignStatus.Initial => "Initial · Not yet awakened: he leads his force as a Leader",
+            SovereignStatus.Awakened => "Awakened · A Companion with the abilities of his card",
+            SovereignStatus.Corrupted => "Corrupted · He serves the Shadow and his weaknesses apply",
+            _ => "Removed · Out of play"
+        };
+
+        // UI-436: the window's corruption line and what it means, one short line each — an Initial king is corrupted when
+        // his tiles reach his resistance (CorruptionRules); UI-383: a corrupted or removed king has no count left.
+        public static string WindowCorruption(SovereignView king) => king.Status switch
+        {
+            SovereignStatus.Initial or SovereignStatus.Awakened => Corruption(king),
+            SovereignStatus.Corrupted => "Corruption resolved",
+            _ => "Out of play"
+        };
+
+        public static string CorruptionMeaning(SovereignView king) => king.Status switch
+        {
+            SovereignStatus.Initial => "Corrupted when his tiles reach " + king.Resistance,
+            SovereignStatus.Corrupted => "He now serves the Shadow",
+            SovereignStatus.Awakened => "Awakened: no longer corrupted",
+            _ => "Removed from play"
+        };
+
+        public static string Flags(SovereignView king) => TooltipText.Parts(
+            king.Garrison ? "In the stronghold's garrison" : "",
+            king.AttemptedThisTurn && king.Status == SovereignStatus.Initial ? "Corruption attempted this turn" : "");
+
+        // UI-436: when the abilities listed under the window's heading apply.
+        public static string AbilityHeading(SovereignStatus status) => status switch
+        {
+            SovereignStatus.Initial => "Abilities once awakened",
+            SovereignStatus.Corrupted => "Weaknesses while corrupted",
+            SovereignStatus.Awakened => "Abilities",
+            _ => "Out of play: no abilities"
+        };
+
+        // UI-436: the king's actions for this player in words (AvailabilityLines); without one, what his state means.
+        public static IReadOnlyList<AvailabilityLine> Actions(PlayerView view, SovereignView king)
+        {
+            var lines = AvailabilityLines.For(view, king.Id);
+            return lines.Count > 0 ? lines : new[] { Standing(king) };
+        }
+
+        public static AvailabilityLine Standing(SovereignView king) => king.Status switch
+        {
+            SovereignStatus.Initial => new AvailabilityLine { Title = "Not yet awakened",
+                State = "The Free Peoples may awaken him, the Shadow corrupt him" },
+            SovereignStatus.Awakened => new AvailabilityLine { Title = "Awakened", State = "A Companion with the abilities below" },
+            SovereignStatus.Corrupted => new AvailabilityLine { Title = "Serves the Shadow", State = "His weaknesses below apply" },
+            _ => new AvailabilityLine { Title = "Out of play", State = "Nothing more can happen to him" }
         };
 
         // UI-383 (owner): a corrupted king's tiles are resolved and a removed one is out of play (T28, KINGS p. 12–13), so

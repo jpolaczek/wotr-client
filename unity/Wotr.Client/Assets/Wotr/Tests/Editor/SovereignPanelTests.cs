@@ -332,11 +332,79 @@ namespace Wotr.EditorTests
                 Conditions = { new AvailabilityConditionView { Description = "Already attempted this turn", Met = false } } });
             var panel = Panel(view);
             panel.Show("king");
-            StringAssert.Contains("Already attempted", panel.Inspector.Q<Label>("sovereign-availability").tooltip);
+            // UI-436: the action reads in words, not as a bare "Unavailable"; the tooltip keeps the full conditions.
+            Assert.AreEqual("Attempt corruption", panel.Inspector.Q<Label>("sovereign-actions-0-title").text);
+            Assert.AreEqual("Already attempted this turn", panel.Inspector.Q<Label>("sovereign-actions-0-state").text);
+            StringAssert.Contains("○ Already attempted", panel.Inspector.Q("sovereign-actions-0").tooltip);
             Assert.IsNull(ExpansionActions.Sovereign(view, new TurnDraft(), "king"));
             panel.Show("other");
-            Assert.AreEqual(DisplayStyle.None, panel.Inspector.Q<Label>("sovereign-availability").style.display.value);
-            Assert.IsEmpty(panel.Inspector.Q<Label>("sovereign-availability").tooltip);
+            Assert.AreEqual("Not yet awakened", panel.Inspector.Q<Label>("sovereign-actions-0-title").text,
+                "Without an action of his own, the line says what his state means.");
+            Assert.IsEmpty(panel.Inspector.Q("sovereign-actions-0").tooltip);
+        }
+
+        // UI-436 (owner: "the window is too big, the information is vague"): the king's window names his status, shows his
+        // place as a picture that locates it, his corruption on a meter with what it means, and his abilities in lines
+        // under a heading saying when they apply.
+        [Test]
+        public void TheWindowSaysWhatEachLineMeans()
+        {
+            var view = View();
+            view.Decision = null;
+            view.CorruptionAttempt = null;
+            view.You = Side.FreePeoples;
+            view.Sovereigns[0].DefinitionId = "kings.character.dain.awakened";
+            view.Sovereigns[0].Corruption = 1;
+            view.Availability.Add(new ActionAvailabilityView
+            {
+                SubjectId = "king", ActionId = "awaken", Title = "Awaken", Cost = "One Muster result, or any available Ruler result.",
+                Conditions =
+                {
+                    new AvailabilityConditionView { Category = "Condition", Code = "initial", Met = true },
+                    new AvailabilityConditionView { Category = "Condition", Code = "nation", Description = "Dáin Ironfoot's nation is active.", Met = false }
+                }
+            });
+            var focused = "";
+            var panel = new SovereignPanel(BoardPresentation.Load(), region => focused = region);
+            panel.Apply(view);
+            panel.Show("king");
+            var inspector = panel.Inspector;
+            Assert.AreEqual("Dáin", inspector.Q<Label>(className: "title").text);
+            Assert.AreEqual("Initial", inspector.Q<Label>("sovereign-window-status-text").text);
+            StringAssert.Contains("Not yet awakened", inspector.Q("sovereign-window-status").tooltip);
+            var place = inspector.Q<Button>("sovereign-location");
+            Assert.IsTrue(place.ClassListContains(PlacePicture.ClassName), "The place is a picture, not a text button.");
+            Assert.AreEqual("Erebor", place.Q<Label>("place-picture-caption").text);
+            Assert.IsNotNull(place.Q("place-picture-image").style.backgroundImage.value.texture, "Erebor has its picture.");
+            Assert.IsTrue(place.enabledSelf, "The picture shows his region on the map, as the text button did (PlayMode clicks it).");
+            Assert.AreEqual("", focused, "Opening the window never moves the camera.");
+            Assert.AreEqual("Corruption 1/4", inspector.Q<Label>("sovereign-state").text);
+            Assert.AreEqual(4, inspector.Q("sovereign-window-meter").childCount);
+            Assert.AreEqual("Corrupted when his tiles reach 4", inspector.Q<Label>("sovereign-meaning").text);
+            Assert.AreEqual("Awaken · Muster or Ruler die", inspector.Q<Label>("sovereign-actions-0-title").text);
+            Assert.AreEqual("His nation must be active", inspector.Q<Label>("sovereign-actions-0-state").text);
+            Assert.AreEqual("Abilities once awakened", inspector.Q<Label>("sovereign-ability").text);
+            var lines = inspector.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
+                .Where(l => l.style.display != DisplayStyle.None).ToList();
+            Assert.AreEqual(2, lines.Count, "One line per printed ability, as in a character's window.");
+            var words = lines[0].Q<Label>(className: CharacterAbilityChips.TitleClass).text;
+            StringAssert.StartsWith("<color=#F3D48A>Dwarvenking</color> · ", words);
+            StringAssert.Contains("a Muster die upgrades a Dwarven Regular", words);
+            view.Sovereigns[0].Status = SovereignStatus.Corrupted;
+            view.Sovereigns[0].DefinitionId = "kings.character.dain.corrupted";
+            view.Availability[0].Conditions[0].Met = false;
+            panel.Apply(view);
+            Assert.AreEqual("Weaknesses while corrupted", inspector.Q<Label>("sovereign-ability").text);
+            Assert.AreEqual("He now serves the Shadow", inspector.Q<Label>("sovereign-meaning").text);
+            Assert.AreEqual("Serves the Shadow", inspector.Q<Label>("sovereign-actions-0-title").text,
+                "Awaken belongs to an Initial king and leaves the window.");
+            view.Sovereigns[0].Status = SovereignStatus.Removed;
+            view.Sovereigns[0].RegionId = "";
+            panel.Apply(view);
+            Assert.AreEqual("Out of play", place.Q<Label>("place-picture-caption").text);
+            Assert.IsFalse(place.enabledSelf, "Off the map the picture keeps its slot, disabled.");
+            Assert.IsNotNull(place.Q("place-picture-image").style.backgroundImage.value.texture, "A removed king has his picture.");
+            StringAssert.Contains("Not on the map", place.tooltip);
         }
 
         // UI-345: a sovereign's changed status and corruption pulse on his slot; his first values never do.

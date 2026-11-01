@@ -7,7 +7,10 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // One instance serves the roster, public map figures and awakened sovereigns. UI-139: the card speaks in
-    // symbols (status, statistics, ability chips) with tooltips; the full ability text unrolls on a click.
+    // symbols (statistics, ability chips) with tooltips; the full ability text unrolls on a click. UI-436 (owner): where
+    // the figure is is a picture of the place captioned with its name (clicked, a region shows on the map, as Locate
+    // did), beside a line saying what being there means and the statistics; the window's actions read in words
+    // (AvailabilityRows) instead of a bare "Limits". An awakened ruler's window has the size of every ruler's window.
     public sealed class CharacterInspector
     {
         public VisualElement Root { get; } = new VisualElement { name = "character-inspector" };
@@ -21,29 +24,29 @@ namespace Wotr.Client
         // UI-371: the player is about to change the window's content (an ability's text, a page). A version the decision
         // selects is not such a change: the window still moves clear of the panels the decision opens.
         public event Action ContentChanging;
+        public PlacePicture Place { get; }
+        public AvailabilityRows Limits { get; } = new AvailabilityRows("character-limits");
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
         private readonly Label edition = Text("character-edition");
-        private readonly VisualElement statusIcon = new VisualElement { name = "character-status-icon" };
         private readonly Label state = Text("character-state");
+        private readonly Label abilityHeading = Text("character-ability-heading");
         private readonly CharacterFactStrip stats = new CharacterFactStrip();
         private readonly CharacterAbilityChips abilities = new CharacterAbilityChips();
-        private readonly Label limits = Text("character-limits");
-        private readonly VisualElement limitsRow = BoardScreen.Row("character-limits-row");
         private readonly Label entry = Text("character-entry");
         private readonly VisualElement versions = BoardScreen.Row();
-        private readonly Button locate;
         private CharacterRosterView row;
         private PlayerView view;
         private string version = "";
-        private string status = "";
         private HashSet<string> offeredVersions = new HashSet<string>();
 
         public CharacterInspector(BoardPresentation data, Action<string> focus, Action close, Action pin)
         {
             this.data = data;
+            Root.AddToClassList("character-window");
             Root.AddToClassList("character-inspector");
             Root.style.display = DisplayStyle.None;
+            Place = new PlacePicture("locate-character", focus);
             var header = BoardScreen.Row("character-header");
             FloatingWindow.MarkHandle(header);
             header.Add(title);
@@ -60,27 +63,31 @@ namespace Wotr.Client
             // UI-387 (owner): the versions are tabs right under the title, switching the card the window shows.
             versions.AddToClassList("character-version-tabs");
             Root.Add(versions);
-            var location = BoardScreen.Row("character-status");
-            statusIcon.AddToClassList("character-status-icon");
-            location.Add(statusIcon);
-            location.Add(state);
-            locate = IconButton.Create("locate", "Show on the map", () => focus(row.RegionId));
-            locate.name = "locate-character";
-            location.Add(locate);
-            Root.Add(location);
-            Root.Add(stats.Root);
+            Root.Add(PlaceRow());
+            Limits.Root.AddToClassList("character-window-actions");
+            Root.Add(Limits.Root);
+            abilityHeading.AddToClassList("ability-lines-heading");
+            Root.Add(abilityHeading);
             abilities.Changing += () => ContentChanging?.Invoke();
             Root.Add(abilities.Root);
             Root.Add(abilities.Pages);
-            limits.AddToClassList("character-limits");
-            var limitsIcon = new VisualElement { pickingMode = PickingMode.Ignore };
-            limitsIcon.AddToClassList("character-limits-icon");
-            limitsRow.Add(limitsIcon);
-            limitsRow.Add(limits);
-            Root.Add(limitsRow);
             Root.Add(entry);
             Root.Add(Actions);
             Root.Add(DecisionHost);
+        }
+
+        // UI-436: the place's picture, and beside it what being there means and the card's statistics.
+        private VisualElement PlaceRow()
+        {
+            var place = BoardScreen.Row("character-place-row");
+            place.Add(Place.Root);
+            var facts = new VisualElement { name = "character-place-facts" };
+            facts.AddToClassList("character-place-facts");
+            state.AddToClassList("character-place-meaning");
+            facts.Add(state);
+            facts.Add(stats.Root);
+            place.Add(facts);
+            return place;
         }
 
         public bool Apply(PlayerView latest, string id)
@@ -109,16 +116,13 @@ namespace Wotr.Client
             edition.text = version.Length > 0 ? CharacterLibrary.Edition(version) : "";
             edition.tooltip = edition.text.Length > 0 ? "Card version · " + edition.text : "";
             edition.style.display = edition.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            var region = data.Regions.TryGetValue(row.RegionId, out var definition) ? definition.Name : "";
-            RefreshStatus(CharacterCardFacts.Status(row, region));
-            locate.style.display = region.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            var place = PlacePresentation.For(row, data.Regions);
+            Place.Apply(place);
+            state.text = place.Meaning;
             var future = row.FutureVersions.FirstOrDefault(v => v.DefinitionId == version);
             stats.Apply(CharacterCardFacts.For(row, version, future == null));
             abilities.Apply(version);
-            var explanation = row.Side == view.You ? ResourcePresentation.Explain(view, row.FigureId) : "";
-            limits.text = explanation.Length > 0 ? "Limits" : "";
-            limits.tooltip = explanation;
-            ShowLimits(explanation.Length > 0);
+            RefreshRuler(view.Sovereigns.FirstOrDefault(s => s.Id == row.FigureId));
             RefreshVersions();
             entry.text = future == null ? "" : EntryText(future);
             entry.tooltip = future == null ? "" : EntryTooltip(future);
@@ -165,27 +169,24 @@ namespace Wotr.Client
         public void SetDecisionContext(bool active)
         {
             Root.EnableInClassList("character-decision-active", active);
-            ShowLimits(!active && !string.IsNullOrEmpty(limits.text));
+            ShowLimits(!active && Limits.Count > 0);
             abilities.Pages.style.display = !active && abilities.Paged ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
-        private void ShowLimits(bool shown)
-        {
-            var display = shown ? DisplayStyle.Flex : DisplayStyle.None;
-            limitsRow.style.display = display;
-            limits.style.display = display;
-        }
+        private void ShowLimits(bool shown) => Limits.Root.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
 
-        private void RefreshStatus(CharacterStatus next)
+        // UI-436: an awakened ruler's window has the rows of every ruler's window — his action in words (or what being
+        // awakened means) and his abilities under their heading — and the same size; another character's window shows
+        // its own actions only when it has some.
+        private void RefreshRuler(SovereignView ruler)
         {
-            statusIcon.RemoveFromClassList("character-status-" + status);
-            statusIcon.AddToClassList("character-status-" + next.Key);
-            status = next.Key;
-            // UI-420 (owner): a state whose tooltip only repeats its words ("Not entered") has none.
-            var tooltip = next.Tooltip == next.Text ? "" : next.Tooltip;
-            statusIcon.tooltip = tooltip;
-            state.text = next.Text;
-            state.tooltip = tooltip;
+            Root.EnableInClassList(SovereignInspector.RulerWindowClass, ruler != null);
+            var lines = ruler != null ? SovereignPresentation.Actions(view, ruler)
+                : row.Side == view.You ? AvailabilityLines.For(view, row.FigureId) : new List<AvailabilityLine>();
+            Limits.Apply(lines);
+            ShowLimits(Limits.Count > 0);
+            abilityHeading.text = ruler != null ? SovereignPresentation.AbilityHeading(ruler.Status) : "";
+            abilityHeading.style.display = ruler != null ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void RefreshVersions()
@@ -226,7 +227,7 @@ namespace Wotr.Client
             {
                 var replacement = ids.Count > 1 ? versions.Children().OfType<Button>()
                     .FirstOrDefault(b => (string)b.userData == focusedVersion) : null;
-                (replacement ?? (locate.style.display.value != DisplayStyle.None ? locate : Root.Q<Button>("pin-character"))).Focus();
+                (replacement ?? (Place.Root.enabledSelf ? Place.Root : Root.Q<Button>("pin-character"))).Focus();
             }
         }
 
