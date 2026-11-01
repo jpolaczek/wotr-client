@@ -28,6 +28,7 @@ namespace Wotr.Client
         public event Action Opening;
         public event Action Inspecting;
         public Func<VisualElement, bool> IsRegionSource { get; set; }
+        public CharacterWindowPlace Place { get; set; }
         public Func<IEnumerable<Rect>> Occlusions { get; set; }
         public Func<IEnumerable<Rect>> FixedOcclusions { get; set; }
         private readonly DrawerHover hover;
@@ -238,11 +239,15 @@ namespace Wotr.Client
             Window?.Refresh();
         }
 
-        // UI-371 (owner): one window in one place. It is placed beside its source; after the player changes its content
-        // (another ability's text, a page) it keeps its top-left and is only pulled back inside the board.
+        // UI-436 (owner): a window opened from the Characters tab, its panel or a ruler stands at the one place beside the
+        // tab (CharacterWindowPlace); one opened from a region's window stands beside that window, its own panel.
+        // UI-371 (owner): there, after the player changes its content (another ability's text, a page) it keeps its
+        // top-left and is only pulled back inside the board.
         public void PositionInspector()
         {
             if (Inspector.Root.style.display.value == DisplayStyle.None || Inspector.Root.parent == null || InspectorWindow?.Restore() == true || source == null)
+                return;
+            if (Place != null && IsRegionSource?.Invoke(source) != true && Place.Apply(Inspector.Root, CharacterWindowPlace.FallbackSize))
                 return;
             var viewport = Inspector.Root.parent;
             var size = Inspector.Root.layout.size;

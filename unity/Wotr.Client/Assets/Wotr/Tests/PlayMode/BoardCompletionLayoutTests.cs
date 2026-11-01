@@ -109,7 +109,9 @@ namespace Wotr.PlayTests
                 {
                     var ability = expected[read++];
                     Assert.AreEqual("character-ability-" + ability.Id, chip.name);
-                    Assert.AreEqual(ability.Title, chip.Q<Label>(className: CharacterAbilityChips.TitleClass).text);
+                    // UI-436: the chip reads its title and the gist of its text.
+                    Assert.AreEqual(CharacterAbilityChips.Line(inspector.DefinitionId, ability),
+                        chip.Q<Label>(className: CharacterAbilityChips.TitleClass).text);
                     // UI-420: the chip shows its title; the tooltip holds the text and its source.
                     Assert.AreEqual(ability.Text + "\n" + ability.Source, chip.tooltip);
                     await ReadTooltip(room, client, chip);

@@ -86,7 +86,11 @@ namespace Wotr.Client.Tests
             StringAssert.Contains("cancelled", gimliMedallion.tooltip);
             Assert.IsFalse(portraits.Q("portrait-boromir").ClassListContains(PortraitMedallion.CancelledClass));
             Assert.AreEqual("B", portraits.Q("portrait-boromir").Q<Label>("portrait-initial").text);
-            StringAssert.Contains("⦸ Gimli", root.Q<Label>("battle-characters").text, "The names line keeps the cancelled mark.");
+            // UI-437 (owner): each name stands under its medallion, in the force row with the figures.
+            Assert.AreEqual("⦸ Gimli", root.Q("battle-character-gimli").Q<Label>("battle-character-name").text, "The name keeps the cancelled mark.");
+            Assert.AreEqual("Boromir", root.Q("battle-character-boromir").Q<Label>("battle-character-name").text);
+            Assert.AreSame(root.Q("battle-attacker").Q("battle-force-row"), portraits.parent, "The characters stand in the force row.");
+            Assert.AreSame(portraits.parent, root.Q("battle-attacker").Q("battle-composition").parent, "Beside the figures.");
         }
 
         [Test]
@@ -188,9 +192,12 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("retreat", BattleChoices.IconFor(CommandKind.RetreatIntoSiege));
             Assert.AreEqual("advance", BattleChoices.IconFor(CommandKind.AdvanceBattle));
             Assert.AreEqual("extend-siege", BattleChoices.IconFor(CommandKind.ExtendSiege));
+            // UI-439: Evil Knowledge's button carries the ability's own icon (AbilityArt), not a battle icon.
+            Assert.AreEqual("", BattleChoices.IconFor(CommandKind.UseEvilKnowledge));
             Assert.AreEqual("", BattleChoices.IconFor(CommandKind.CommitCombatCard), "Only decisions with art get an icon.");
 
             var view = BattleScreenFixture.Create(CommandKind.ContinueBattle, mode: BattleMode.Sortie);
+            view.Options.Add(new ActionOption { Kind = CommandKind.UseEvilKnowledge });
             var draft = new TurnDraft();
             draft.Choose(CommandKind.ContinueBattle);
             var root = new VisualElement();
@@ -200,6 +207,12 @@ namespace Wotr.Client.Tests
             Assert.IsNotNull(stop);
             Assert.IsTrue(stop.ClassListContains("battle-direct"));
             Assert.IsTrue(stop.Q("battle-direct-icon").ClassListContains("battle-direct-icon-stop"));
+            var evil = footer.Q<Button>("action-UseEvilKnowledge");
+            Assert.IsTrue(evil.ClassListContains("battle-direct"), "Evil Knowledge is a framed choice.");
+            var icon = evil.Q("battle-direct-icon");
+            Assert.IsTrue(icon.ClassListContains(BattleChoices.AbilityIconClass));
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "evil-knowledge"),
+                icon.style.backgroundImage.value.texture);
             Assert.AreEqual("Stop battle", stop.text, "The text stays the control; the icon only decorates it.");
             // UI-420 (owner): a direct choice says what its click does and names the battle's region.
             Assert.AreEqual("Stop battle · End the attack on Lossarnach; your army stays in Minas Tirith", stop.tooltip);

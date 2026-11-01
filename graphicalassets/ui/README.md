@@ -63,6 +63,9 @@ Mirror output to `src/`: `unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/<k
   level of combat (crossed swords), ability (stairs with seal), emblem of all Free Peoples and
   states: on board (pine), outside the game (the hourglass), removed (the broken sword), possible
   return (the rising sun). Leadership uses `battle/leadership`, Fellowship `icons/fellowship`.
+- `abilities/` (UI-439): one icon per printed character ability, named by its ability id (28 pt, 56 px),
+  painted with Codex and keyed in [graphicalassets/abilities](../abilities/README.md), not drawn from an SVG
+  here; the same import settings, with path-derived GUIDs.
 - `frames/glow` (UI-136) is a green glow 9-slice (16 pt) drawn 7 px outside the control that can be
   used by the selected die action; the medium remains transparent and the control does not change
   its own graphics.

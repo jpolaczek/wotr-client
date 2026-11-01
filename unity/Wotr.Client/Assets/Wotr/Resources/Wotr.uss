@@ -530,6 +530,10 @@
 .hunt-response-random { background-image: resource("Wotr/Art/UI/hunt/choice-random"); }
 .hunt-guide-portrait { overflow: hidden; background-color: rgb(65, 62, 57); border-color: rgb(231, 209, 160); border-width: 1px; border-radius: 14px; }
 .hunt-guide-portrait > .figure-art-image { position: absolute; left: 1px; right: 1px; top: 1px; bottom: 0; }
+/* UI-439: a Guide's response keeps his figure and wears the response's ability icon on its lower right edge. */
+.hunt-response-figure { flex-shrink: 0; margin-right: 9px; }
+.hunt-response-figure > .hunt-response-icon { margin-right: 0; }
+.hunt-response-figure > .hunt-response-ability { position: absolute; right: -7px; bottom: -4px; width: 17px; height: 17px; -unity-background-scale-mode: scale-to-fit; }
 .hunt-response-object #hunt-response-name { margin: 0; padding: 0; font-size: 13px; }
 .hunt-response-object #hunt-response-consequence { margin: 1px 0 0 0; padding: 0; font-size: 12px; white-space: pre; -unity-text-align: middle-center; }
 .hunt-panel #hunt-guide-order { margin: 1px 0; padding: 0; font-size: 12px; color: rgb(231, 209, 160); }
@@ -1026,6 +1030,20 @@
 .component-actions > .action.icon-button.ability-icon,
 .region-hover .component-actions > .action.icon-button.ability-icon { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding: 0; margin: 2px 4px 2px 0; }
 .component-actions > .ability-icon > .icon-glyph { max-width: 24px; max-height: 24px; }
+/* UI-439: the ability's own icon; an ability with several commands (Voice recruits or upgrades, a Muster die moves or
+   attacks) badges each button on its lower right corner, over the frame, with what this one does. */
+.component-actions > .ability-icon > .icon-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 13px;
+    height: 13px;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: rgb(231, 196, 112);
+    background-color: rgba(28, 22, 14, 0.92);
+    -unity-background-scale-mode: scale-to-fit;
+}
 
 .recruit-palette .reserve-piece { width: 30px; min-width: 30px; margin-right: 1px; }
 
@@ -1289,12 +1307,12 @@
    10-point Alegreya 14. */
 .character-roster-title { font-size: 12px; height: 17px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .character-roster-detail { font-size: 10px; height: 14px; margin: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.character-inspector { position: absolute; width: 420px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
-.short-viewport .character-inspector { width: 400px; }
+/* UI-436: a character's window has one width in every layout (Styles/Characters.uss). */
+.character-window { position: absolute; width: 380px; padding: 6px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
 .character-inspector .unity-label { white-space: normal; flex-shrink: 0; }
-.character-inspector .character-header { flex-wrap: nowrap; }
-.character-inspector .character-header .title { min-width: 0; flex-shrink: 1; }
-.character-inspector .character-header .action { flex-shrink: 0; }
+.character-window .character-header { flex-wrap: nowrap; }
+.character-window .character-header .title { min-width: 0; flex-shrink: 1; }
+.character-window .character-header .action { flex-shrink: 0; }
 .short-viewport .character-inspector .unity-label { margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
 .short-viewport .character-inspector .action { min-height: 32px; height: 32px; margin-top: 1px; margin-bottom: 1px; }
 /* UI-387 (owner): a character's versions are tabs under the title: a low strip on a thin gilt line; the shown version
@@ -1329,10 +1347,9 @@
 }
 .short-viewport .character-inspector #character-statistics { margin-top: 2px; margin-bottom: 2px; }
 .short-viewport .character-inspector #character-abilities .unity-label { min-height: 20px; margin-top: 2px; margin-bottom: 2px; }
-#character-state { flex-grow: 1; flex-shrink: 1; font-size: 12px; }
 #character-statistics { font-size: 13px; margin-top: 4px; margin-bottom: 4px; }
 #character-abilities { font-size: 13px; }
-#character-limits, #character-entry { font-size: 12px; color: rgb(223, 208, 168); }
+#character-entry { font-size: 12px; color: rgb(223, 208, 168); }
 .character-ability-pages { flex-direction: row; justify-content: flex-end; }
 .character-ability-pages .action { width: 32px; min-width: 32px; min-height: 32px; margin: 0 2px; }
 

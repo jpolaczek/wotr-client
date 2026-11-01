@@ -53,6 +53,10 @@ namespace Wotr.PlayTests
             // UI-360: Merry's response is his portrait in the Hunt window's response row, not a tray choice.
             var merry = board.Hunt.Responses.Root.Q<Button>("effect-choice-character.merry-guide");
             Assert.IsTrue(merry.ClassListContains(ChoiceGlow.ClassName), "Merry's response glows.");
+            // UI-439: Merry's figure wears his Guide ability's own icon.
+            Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.Folder + "guide-separate-to-reduce-hunt-one"),
+                merry.Q(HuntResponsesView.AbilityBadgeName).style.backgroundImage.value.texture);
+            LayoutTests.Save(room.Fp.Viewport, "ui439-hunt-merry-guide.png");
             Assert.IsNull(board.Tray.Q<Button>("effect-choice-character.merry-guide"), "The tray lists no Guide response.");
             StringAssert.StartsWith("Click Merry's glowing response in the Hunt window", board.Console.Status.Hint.text);
             await Click(room, merry);

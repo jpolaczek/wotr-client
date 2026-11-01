@@ -157,7 +157,7 @@ namespace Wotr.PlayTests
             await Inspect(room, room.Fp, "kings.sovereign.theoden");
             await Ability(room, room.Fp, "character-kings.sovereign.theoden-kings.mustering-of-the-mark");
             Assert.AreSame(board.Characters.DecisionHost, board.Tray.parent);
-            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q<Label>("character-limits").resolvedStyle.display);
+            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q("character-limits").resolvedStyle.display);
             var revision = board.View.Revision;
             foreach (var region in new[] { "edoras", "helms-deep", "edoras" })
             {

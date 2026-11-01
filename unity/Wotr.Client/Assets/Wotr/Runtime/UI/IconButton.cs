@@ -38,6 +38,17 @@ namespace Wotr.Client
                 glyph.style.backgroundImage = Background(resource);
         }
 
+        // UI-439: a small badge in the frame's corner says what this button does with its picture (AbilityBadges).
+        public const string BadgeClass = "icon-badge";
+
+        public static void AddBadge(Button button, string resource)
+        {
+            var badge = new VisualElement { name = "icon-badge", pickingMode = PickingMode.Ignore };
+            badge.AddToClassList(BadgeClass);
+            badge.style.backgroundImage = Background(resource);
+            button.Add(badge);
+        }
+
         public static void SetIcon(Button button, string icon)
         {
             var glyph = button.Q("icon-glyph");
@@ -63,7 +74,8 @@ namespace Wotr.Client
             return button;
         }
 
-        private static StyleBackground Background(string resource)
+        // A picture of Art/UI by its full resource path, loaded once (UI-439: also an ability's icon on a chip or badge).
+        public static StyleBackground Background(string resource)
         {
             if (!Icons.TryGetValue(resource, out var texture))
             {

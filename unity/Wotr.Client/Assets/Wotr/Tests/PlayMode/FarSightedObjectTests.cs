@@ -46,7 +46,10 @@ namespace Wotr.PlayTests
             var die = client.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples).Id;
             await ComponentGestures.Cost(room, client, die);
             if (farSighted)
+            {
+                await FarSightedIcon(room, client);
                 await ComponentGestures.Select(client, "far-sighted-SeparateCompanions");
+            }
             FellowshipGestures.Portrait(client, Companion);
             await room.Settle();
             foreach (var name in new[] { "travel-standard", "travel-ruler", "travel-stay" })
@@ -65,6 +68,18 @@ namespace Wotr.PlayTests
             Assert.AreEqual(CommandKind.SeparateCompanions, sent[0].Kind);
             Assert.AreEqual(farSighted ? OldFarSighted : OldStandard, JsonConvert.SerializeObject(sent[0].Payload),
                 "The object sends what the old button sent.");
+        }
+
+        // UI-439: Thranduil's picture is Far-sighted's own icon (AbilityArt).
+        private static async Task FarSightedIcon(MatchTestRoom room, MountedMatchClient client)
+        {
+            var button = await ComponentGestures.Show(client, "far-sighted-SeparateCompanions");
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "far-sighted"),
+                button.Q("icon-glyph").style.backgroundImage.value.texture);
+            Assert.IsNull(button.Q(className: IconButton.BadgeClass), "Far-sighted's buttons all move; no badge.");
+            using var viewport = new BoardCompletionLayoutTests.LayoutViewport(client, 1366, 1f);
+            await room.Settle();
+            LayoutTests.Save(viewport.Texture, "ui439-component-far-sighted-1366-1.00.png");
         }
     }
 }

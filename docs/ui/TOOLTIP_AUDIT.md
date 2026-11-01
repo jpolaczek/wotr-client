@@ -88,6 +88,15 @@ Combat card replacements, crowned army leaders, the Lords dice's explained Remov
 "Remove rune" mark), the Council's travel ✓, Evil Knowledge's portrait and the kings' lit hints. The Sovereign panel's
 portrait reads `SovereignPresentation.Describe`.
 
+Follow-up (2026-11-01, UI-437): a battle character's short name stands under its medallion; the medallion's tooltip
+keeps the full name. UI-436: a character's place is a picture captioned with its name; its tooltip names the place and
+what its click does (`Fangorn` then `Click to show this region on the map`), or, off the map, what being there means
+(`The Fellowship · Travels with the Fellowship · Not on the map`). The window's bare "Limits" is gone: each of the
+player's own actions reads as two short lines (what it is and takes, then `Available now` or what it still needs), and
+only the tooltip lists the full cost, every condition with ✓ or ○, the timing and the rules page (rule 2: the lines do
+not repeat the tooltip's title). Every window's ability chip reads its title and gist (`Captain of the West · …`); the
+chip's tooltip stays the printed text and page. The kings' window keeps its base form on this line.
+
 ## Tests
 
 EditMode: `TooltipTextTests` (parts, units, nations, a card choice's ✓, moves and recruits), `BattleArtTests`

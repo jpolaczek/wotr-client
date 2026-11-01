@@ -69,7 +69,8 @@ namespace Wotr.Client
             Advance.name = "nation-advance-" + id;
             Advance.AddToClassList("nation-advance");
             column.Add(Advance);
-            Activation = IconButton.Create("confirm", "Activate", () => { if (activating) activate(id); });
+            // UI-439: the activation is Narya's, so it shows Narya's icon (AbilityArt).
+            Activation = IconButton.Picture(AbilityArt.For(CommandKind.UseNarya), "Activate", () => { if (activating) activate(id); });
             Activation.name = "nation-activate-" + id;
             Activation.AddToClassList("nation-activate");
             Activation.userData = id;

@@ -143,7 +143,7 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(room.Sh.Board.Tray.Q("portrait-base.character.gimli"));
                 await room.Confirm(room.Sh);
                 Assert.Contains("base.character.gimli", room.Fp.Board.View.Battle.Defender.CancelledAbilities);
-                Assert.IsTrue(room.Fp.Board.Tray.Query<Label>("battle-characters").ToList().Any(label => label.text.Contains("⦸ Gimli")));
+                Assert.IsTrue(room.Fp.Board.Tray.Query<Label>("battle-character-name").ToList().Any(label => label.text.Contains("⦸ Gimli")));
                 Assert.AreEqual(3, room.Sh.Board.View.Battle.Defender.Leadership);
             }
         }

@@ -27,6 +27,9 @@ namespace Wotr.EditorTests
             var portrait = root.Q("portrait-gandalf");
             Assert.IsTrue(portrait.ClassListContains(ChoiceGlow.ClassName), "The source glows.");
             StringAssert.StartsWith("Click to use White Rider", portrait.tooltip);
+            // UI-439: the portrait wears the White Rider's own icon while its click uses it.
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "forfeit-leadership-to-cancel-nazgul-for-battle"),
+                portrait.Q(BattleContext.OfferedAbilityName).style.backgroundImage.value.texture);
 
             var draft = new TurnDraft();
             BattleReactions.Choose(draft, "character.white-rider");

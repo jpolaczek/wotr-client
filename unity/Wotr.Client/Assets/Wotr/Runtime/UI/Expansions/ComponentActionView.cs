@@ -6,7 +6,8 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // Stable controls preserve focus while the chosen die changes their availability. UI-286: a character's ability is
-    // a small picture that glows and pulses only while a click can use it.
+    // a small picture that glows and pulses only while a click can use it; UI-439: the ability's own icon, with a badge
+    // when the ability has several commands.
     public sealed class ComponentActionView
     {
         public VisualElement Root { get; } = BoardScreen.Row("component-actions");
@@ -65,6 +66,8 @@ namespace Wotr.Client
                 return BoardScreen.Button("", select);
             var button = IconButton.Picture(item.Picture, Tooltip(item), select);
             button.AddToClassList("ability-icon");
+            if (item.Badge.Length > 0)
+                IconButton.AddBadge(button, item.Badge);
             return button;
         }
 

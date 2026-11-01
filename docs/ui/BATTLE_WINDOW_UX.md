@@ -325,7 +325,8 @@ The user's application from 2026-10-16: the reroll and hit chapter is to be on t
   the player column. Since UI-394 (owner, 2026-10-28) this column keeps the other column's width:
   its figures wrap into a second row inside it rather than widening it (`.loss-figures`); on a short
   viewport its loss figures take the compact size (42 × 46) and the names under its portraits give
-  way (the portraits and their tooltips keep them), so two rows stay above the console. The block
+  way (the portraits and their tooltips keep them), so two rows stay above the console. Since UI-437 (2026-11-01) the
+  names give way in a choosing column in every viewport ([rows](#rows--ui-437)). The block
   header of the loss block will be wrapped in the column width. The losses of the event remain in
   the tray.
 - dice to the reroll are in the player column (so far).
@@ -388,7 +389,8 @@ A character's reaction in a battle is used on its portrait in the force column (
 White's White Rider at the start of the battle and the Witch-king's Sorcerer draw when the first round closes. The
 portrait glows and pulses, its tooltip starts with "Click to use White Rider · …", and one click sends the reaction
 (no Respond step, no list). Decline stays the tray's button. A character with more than one reaction at once keeps
-the list. Test: `ReactionSourcesTests`.
+the list. Since UI-439 the glowing portrait wears its reaction's own ability icon on its upper right rim while the offer
+lasts ([UX_SPEC](UX_SPEC.md#every-ability-has-its-own-icon--ui-439)). Test: `ReactionSourcesTests`.
 
 ## Event losses are a region's losses — UI-251 (2026-10-17)
 
@@ -486,3 +488,16 @@ Regular or kill a Regular, each server-committed decision shown separately."
 - Only committed facts play (`Facts.LossDetails`, in the order of the decision); a decision of several losses plays them
   one after another. The player's own committed casualties play the same way (a shared battle resolution, UI-303).
 - Reduced motion keeps the flash, the ring and the fade without movement; Skip animations shows the latest state at once.
+
+<a id="rows--ui-437"></a>
+## Both sides' rows stand level — UI-437, base parts (2026-11-01)
+
+Owner, after the Black Serpent's Red Wrath on the expansions branch: the Serpent's portrait stood in a row of its own
+above his force and the Shadow's statistics, card, roll and dice stood lower than the Free Peoples'. This branch built
+its columns the same way. Now a character stands in the force row beside the figures, his short name under his
+medallion as a figure has its count (no names line; more than four characters, or a column choosing figures, keep the
+medallions alone). Both columns hold the same rows — heading, force row, statistics, the ledge when either side has one,
+card, roll — and a row or control only one side shows (the ledge, a roll, its pager, Heroic Death's hit buttons) keeps
+an unseen copy on the other; the spacer under the shorter force row takes the difference, so the rows below line up
+whatever an ability adds. This branch has no Combat card replacement, so its chip's and marker's row stays on
+`expansions`. Cause, fix and tests: [UX_SPEC](UX_SPEC.md#both-sides-rows-stand-level--ui-437).

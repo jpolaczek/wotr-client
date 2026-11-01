@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Wotr.Client;
 using Wotr.Contracts;
 using static Wotr.PlayTests.MatchTestRoom;
 
@@ -125,12 +126,31 @@ namespace Wotr.PlayTests
             var choice = client.Board.View.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility)
                 .CharacterActions.Single(c => c.CharacterId == character && c.AbilityId == ability);
             var revision = client.Board.View.Revision;
+            await AbilityIcon(room, client, choice);
             await ComponentGestures.Select(client, ComponentGestures.Character(choice));
             if (choice.Targets.Count == choice.TargetCount)
                 await room.At(revision + 1);
             else
                 await room.Settle();
         }
+
+        // UI-439: an ability's button shows the ability's own icon — both of Saruman's Voice buttons the Voice's, the recruit
+        // badged with the Muster face and the upgrade with the level star; Gimli's his Dwarf of Erebor's, without a badge.
+        private static async Task AbilityIcon(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice)
+        {
+            var button = await ComponentGestures.Show(client, ComponentGestures.Character(choice));
+            Assert.AreEqual(Texture(AbilityArt.For(choice.AbilityId)), button.Q("icon-glyph").style.backgroundImage.value.texture);
+            var badge = AbilityBadges.For(CommandKind.UseCharacterAbility, choice.AbilityId);
+            Assert.AreEqual(choice.AbilityId.StartsWith("voice-"), badge.Length > 0, choice.AbilityId);
+            if (badge.Length > 0)
+                Assert.AreEqual(Texture(badge), button.Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
+            else
+                Assert.IsNull(button.Q(className: IconButton.BadgeClass), choice.AbilityId);
+            await room.Settle();
+            LayoutTests.Save(client.Viewport, "ui439-" + choice.AbilityId + ".png");
+        }
+
+        private static UnityEngine.Texture2D Texture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
 
         private static async Task Reconnect(MatchTestRoom room, MountedMatchClient client)
         {

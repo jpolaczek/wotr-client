@@ -481,6 +481,8 @@ UI-54 is a collective acceptance H01–H14: the cost and RNG still on the server
 The Charters tab next to the Politics shares the rules of hower and pin with other previews. Own roster and public portrait on the map lead to one card; the same works Awakened with the sovereign bar. Short signatures do not replace the full inspection. The capacity name is focussable and has a full description of the action and the sources in the tooltip. cost/conditions future version is read from the server; the inspection does not pay itself or selects action.
 
 pinned card is protected from swapping by the hiver. The disappearance of the future version button after the change retains focus in the common inspector. The location appears only for the real region; the opening or update itself does not move the map. UI-66.
+Since [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) the
+location is the picture of the figure's place, enabled only for a region.
 
 <a id="ui-61--pomoc-kontekstowa-i-wyjaśnienia-dostępności"></a>
 ## UI-61 — Contextual assistance and accessibility clarifications
@@ -1290,6 +1292,10 @@ ability and says "Click to use" or "Select an eligible die to use it". The contr
 (`component-<key>`), so a click works as before; Pass and Discard stay action icons and other components keep their
 text. Tests: `ComponentActionTests.SarumansVoiceIsTwoPicturesThatGlowOnlyWhileTheirDieIsChosen`,
 `ComponentActionTests.AbilityPicturesShowWhatTheAbilityDoes`, `T22AbilityNetworkTests`, `CharacterLayoutTests`.
+Since [UI-439](#every-ability-has-its-own-icon--ui-439) the picture is the ability's own icon (`AbilityArt`; an entry
+keeps the board pin), and one ability's several commands side by side (Voice · recruit and upgrade, the Mouth's move and
+attack) differ by a small badge (`AbilityBadges`); `AbilityPictures` and its test are gone
+(`ComponentActionTests.AbilityButtonsShowTheAbilitysOwnIcon`).
 
 ## Unreachable tray fallbacks removed — UI-289 (2026-10-19)
 
@@ -1401,7 +1407,10 @@ Owner requests of 2026-10-27:
 - UI-371 — a character's window is one window in one place: it is placed beside its source when a figure is opened or
   the roster moves; switching an ability's text or a page keeps its top-left and only pulls it back inside the board
   (`CharacterRosterPanel.PositionInspector`, `KeepInspectorInView`). A version a decision selects is not the player's
-  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve.
+  change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve. Since
+  [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) this holds for
+  a window opened from a region's window; one opened from the Characters tab, its panel or a king's portrait stands at
+  one place beside the tab (`CharacterWindowPlace`), clear of every left panel.
 - UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
   the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
   the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
@@ -1478,7 +1487,9 @@ Base-game parts of the owner's requests on the Kings branch:
   The base-game branch also gains the Guide's crown, the version and the corrupted ruler's art that UI-391's icons
   named without the files (empty frames on Gandalf's or the Balrog's row).
   Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
-  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists`.
+  `CharacterRosterLayoutTests`, `LeftRailLayoutTests`, `CharacterAbilityStripTests.EveryAbilityIconsArtExists` (since
+  [UI-439](#every-ability-has-its-own-icon--ui-439) each icon is the ability's own, `AbilityArt`, and `AbilityIcons`
+  with that test is gone: `AbilityArtTests`).
 - UI-409 (owner) — a roster row's tooltip reads in clear parts without growing (`CharacterRowTooltip`): the click's
   offer in bright gold, the name in bold gold with its edition, the state dim, the statistics plain, the entry in gold
   with its cost on the same line and its conditions dim under it (✓ met in green, ○ open), the source small and faint,
@@ -1961,3 +1972,191 @@ and still passing with the new glows, pulses and reveals (the tests of one seed 
 `Shadow04NetworkTests` (the Palantír of Orthanc's draw), `StrongholdNetworkTests`, `BattleLayoutTests`,
 `MusterNetworkTests`, `CharacterNetworkTests` and `BoardDrawnOptionsTests`' reveals (the map's Nazgûl, the Reserve's
 Nazgûl).
+
+<a id="both-sides-rows-stand-level--ui-437"></a>
+## Both sides' rows stand level in the battle window — UI-437, base parts (2026-11-01)
+
+The owner's playtest (expansions 80df28fd): after the Black Serpent's Red Wrath "the battle window fell apart" — the
+defending Black Serpent's portrait stood alone in a row above his force, and the Shadow's statistics, card, roll and
+dice no longer lined up with the attacker's. This branch built the two columns the same way, as independent stacks: a
+force with characters added a row of medallions and a line of names above its figures that the other side did not
+have, and so did the ledge of figures outside the fight, a special attack's pager (20 px against an 18 px heading) and
+Heroic Death's hit buttons on one side's roll heading (33 px).
+
+- **Characters stand in the force row** (`battle-force-row`, `BattleContext.ForceRow`): each medallion with its short
+  name under it, as a figure has its count, beside the nation groups; a force of more than four characters keeps the
+  medallions without names (`BattleContext.NamedCharacters`; the tooltips name them), and a column that chooses figures
+  (losses, an advance, a siege extension; UI-208) hides the names, as UI-394 did on a short viewport. The portraits stay
+  outside `battle-composition`, which a figure choice hides.
+- **Both columns hold the same rows** (`BattleRowPlan`): heading, force row, a spacer, statistics, the ledge when either
+  side has one, the card, the roll. A row or control only one side shows keeps an unseen, inert copy on the other
+  (`battle-row-reserved`, `visibility: hidden`): the ledge, a roll with one die's room, the roll's pager, a hit button.
+  The spacer under the shorter force row takes the difference (`flex-grow`), so everything under it stands level
+  whatever either army holds. While a column chooses figures both keep their rows at the top (`battle-forces-choosing`).
+- Pure layout: no layout write in a geometry callback, no measuring; click paths, payloads and hit targets unchanged.
+
+Tests: PlayMode `BattleLayoutTests.WhatAnAbilityAddsToOneSideKeepsBothSidesRowsLevel` (nine Companions whose figures
+wrap to a second line, a rear guard, Heroic Death's hit buttons and a special attack's pager on one side; 1366×768 and
+1920×1080 at 100 % and 125 %: the force rows, statistics, ledges, cards, roll headings and dice rows of both sides start
+level; screenshots `ui437-abilities-*`) with the shared checks `BattleRowChecks.Level`; `BattleLayoutTests` (all
+windows above the console, the losses' column), `BattleWindowNetworkTests` and `Shadow03NetworkTests` (the names under
+the medallions, Gimli's cancelled mark), EditMode `BattleArtTests` (names under the medallions, in the force row).
+
+Branches: this branch has no Combat card replacement (Brand's Heir of Bard and the Dark Chieftains' substitution,
+UI-348 and UI-277), so the card row's alignment for its chip and marker (`Interaction.uss`, `.battle-card-row`), the
+marker's row checks and the Red Wrath test (`BattleRowsNetworkTests`, seed `ui277-chieftain`) stay on `expansions`.
+
+Playtest (owner's checklist):
+- [ ] A battle with a rear guard — seeded `ui44-window` (the Free Peoples attack Lossarnach from Minas Tirith with a
+  rear guard). Expect: the attacker's characters stand beside its figures, each name under its medallion; the ledge
+  naming the rear guard on the attacker's side and an empty row of its height on the defender's; both sides' statistics,
+  cards and rolls level.
+
+<a id="a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436"></a>
+## A character's window shows its place as a picture and opens in one place — UI-436, base parts (2026-11-01)
+
+The owner's playtest (expansions 80df28fd), about "Denethor · ♙ Initial" with its "Minas Tirith" button: "the window is
+too big, the information is vague; the Minas Tirith button should be a picture of the place where he is; apply it to
+all characters and make sure every place any character can be has its picture; the window opens in a different place
+for each ruler — always show it beside the rulers' tab, in the same place."
+
+- **The place is a picture** (`PlacePicture`, 128×80 points) captioned with the place's name, in place of the character
+  window's status line with its Locate button. A region's picture is enabled, its tooltip "Fangorn · Click to show this
+  region on the map", and its click sends what Locate sent (`Map.Focus(region)`). A place off the map keeps the
+  picture's slot, disabled, its tooltip naming the place and what being there means ("The Fellowship · Travels with the
+  Fellowship · Not on the map"). `PlacePresentation` maps every roster lifecycle to a place: a region on the board; the
+  Fellowship (in it, or leaving it to be placed); not in play (not entered, returning, unknown — a picture per side);
+  removed (eliminated, or eliminated and able to return as Gandalf the White — per side).
+- **Every place has its picture** (`scripts/export_place_pictures.py`, deterministic with `--check`, the pinned
+  Pillow/NumPy/SciPy of the map scripts; report `docs/sources/UI-436-PLACE-PICTURES.json`). 111 replaceable JPEGs of
+  256×160 px (2 MB) in `Resources/Wotr/Art/Places/<place>.jpg`, the same files as `expansions`: each of the 105 regions
+  is a crop of the map canvas art round it (the MAP-14/MAP-18 terrain over the UI-102 margins, the painted landmarks and
+  the land borders), its outline in gold, the land round it dimmed and its own landmark kept bright; the places off the
+  map are painted from the board figures on the bare paper of the margins — the Fellowship's miniature, a ghosted
+  Companion or Minion over an empty stand (not in play), a figure laid down (removed). The script also paints a removed
+  king's place (`removed-sovereign`, the Ruler figure laid down), which this branch's kings' window does not show. No
+  character stands on the Mordor track (only the Fellowship does, its Companions inside it).
+- **Each line says what it means.** Beside the picture a line saying what being there means ("On the board", "On the
+  board · In the stronghold's garrison", "Travels with the Fellowship", "Not entered yet", "Eliminated; may return as
+  Gandalf the White") over the statistics. The bare "Limits" with its tooltip is now the player's own actions in words
+  (`AvailabilityLines`, `AvailabilityRows`): per action a line naming it and what it takes, then "Available now" in gold
+  or what it still needs (another condition as the server words it); the tooltip keeps the server's full cost, every
+  condition with ✓ or ○, the timing and the rules page. A window shows them only when it has some, and not while a
+  decision runs in it (UI-67).
+- **Abilities say what they do.** An ability chip (`CharacterAbilityChips`) is a line of the window's width: the
+  ability's icon (its own since UI-439, `AbilityArt`), its title in gold and the gist of its text ("Captain of the West
+  · +1 Combat Strength in battle (max 5 dice)"); its tooltip is the printed text and page, its click still unrolls the
+  printed text (UI-139) and a usable one still glows and carries Click to use (UI-369). This branch's gists cover the
+  base game's abilities (`character-ability-summaries.json`), so an expansion card's line keeps its title alone.
+- **The window** is 380 points wide in every layout (`.character-window`) and keeps every control (pin, close, version
+  tabs, ability lines and pages, Click to use, the entry, the decision host).
+- **One place** (`CharacterWindowPlace`). Every character's window opened from the Characters tab, its panel or a king's
+  portrait (an awakened king listed as a character) stands just right of where the Characters panel unrolls — a hidden
+  slot with the panel's classes (`characters-panel-slot`), laid out while the panel is rolled up, so the panel never
+  covers the window and the window never moves when the panel opens or closes — its top level with the Characters tab,
+  raised only as far as it must to stay whole above the bottom of the board. A character opened from a region's window
+  stands beside that window, its own panel, as before (UI-371); a window the player dragged keeps its place while pinned
+  (`FloatingWindow.Restore`).
+
+Tests: EditMode `PlacePictureTests` (every one of the 105 regions and the five places off the map a character can be has
+its 256×160 picture; every roster lifecycle of both sides leads to one), `AvailabilityLinesTests`,
+`CharacterWindowPlaceTests`, `CharacterRosterPanelTests`; PlayMode `CharacterWindowLayoutTests` (`ui66-full`: the
+windows of the first three roster rows at one place and width beside the Characters panel's place, level with the tab,
+for the Free Peoples at 1366×768 and 1920×1080 at 100 and 125 % and for the Shadow at 1366×768 at 125 %; the picture's
+click selects the character's region; nothing is sent; screenshots `ui436-character-*`, `ui439-character-*`),
+`CharacterRosterPanelNetworkTests`, `CharacterRosterActionNetworkTests`, `BoardCompletionLayoutTests` (each ability
+line equals `CharacterAbilityChips.Line` and shows its whole text in four layouts).
+
+Branches: this branch's kings' window (`SovereignInspector`) is the older form that still hosts the kings' decisions
+(the awakening's route, a corruption attempt's tiles; before UI-274 moved them onto the kings' portraits), held to 216
+points at most while it does on a short viewport and placed clear of the corner tabs (`SovereignPanelLayoutChecks`,
+`SovereignPlacement`) — rules the expansions' compact ruler window (380×288 at rest) and its fixed place do not keep. So
+the kings' window form (its status badge, place picture, corruption meter, action and ability lines), its place beside
+the Characters tab (`SovereignPanel.Position`), `SovereignPresentation`'s window lines, the awakened king's ruler-size
+character window (`CharacterInspector.RefreshRuler`) and their tests (`CharacterWindowLayoutTests`' kings,
+`SovereignSectionLayoutTests`, `SovereignPanelTests`) stay on `expansions` until this branch's kings follow UI-274; so
+does the gist of a card's own form of an ability (ART-04).
+
+Playtest (owner's checklist):
+- [ ] A character's window — seeded `ui66-full` (the Free Peoples). Open Characters and click three companions' rows in
+  turn. Expect: every window at the same place just right of the panel, level with the Characters tab; his place's
+  picture (his region, or the Fellowship's, "Not in play", "Removed") named under it, what it means beside it, his
+  statistics, and his abilities as lines with their icons. Click a region's picture: the map shows that region.
+
+<a id="every-ability-has-its-own-icon--ui-439"></a>
+## Every ability has its own icon, wherever a button stands for it — UI-439, base parts (2026-11-01)
+
+The owner's playtest (expansions 80df28fd): "make better pictures for the characters' skills. Now they are very simple,
+they repeat, they sometimes recycle existing icons. They are small and need not be very complicated, but they should
+show the skill's character better. The Balrog has three skills with the same icon; each should be a little different.
+Then use the same icons every time a button stands for that skill — for every character, for every skill."
+
+- **The art.** This branch's catalogue (`character-ability-text.json`) carries every character card of the base game,
+  Lords of Middle-earth (with the Council's companions), Kings of Middle-earth and The Fate of Erebor, as `expansions`
+  does — 43 cards, 76 printed ability ids — so it takes all 77 icons: one per printed ability and one card form, the
+  Dark Chieftains' *Dark Chieftain* (their print of `not-minion-for-gandalf-white`, which the Balrog, Gothmog and the
+  Witch-king print as *Gandalf the White entry*), no two alike. Codex art keyed to alpha, 28 points (56 × 56 px, the UI
+  kit's import settings) in `Resources/Wotr/Art/UI/abilities/<key>.png`, the same files as `expansions`; the pipeline,
+  prompts, rounds and the twelve icons waiting for a later Codex round are in
+  [graphicalassets/abilities](../../graphicalassets/abilities/README.md), every ability in its
+  [INVENTORY](../../graphicalassets/abilities/INVENTORY.md). They replace the pictures borrowed from the rest of the kit
+  and the two maps that disagreed (`AbilityIcons` on the roster, `AbilityPictures` on the component buttons), both
+  removed.
+- **One map** (`AbilityArt`), as on `expansions`: an ability's icon is `Art/UI/abilities/<printed ability id>`; a
+  command, reaction or decision that carries its own id names the printed ability it uses first (the Kings' Ruler
+  abilities drop their prefix; `voice-recruit`/`-upgrade` are Saruman's Voice; the Balrog's and Gothmog's commands,
+  `lords.nenya.replace` — named by its id, this branch has no `NamedRings` — and the Chief's; the characters' reactions:
+  `character.grey-draw`, `character.white-rider`, `character.sorcerer`, the Hobbits' Guide separations, Gollum's reveal,
+  the Council's and Fate's); Use Narya, Use or Decline Vilya and Evil Knowledge by their command kinds. A card's own
+  form comes before the shared one (`"<card id>#<ability id>"`). An id that names no printed ability shows the ability
+  scroll (a button) or no badge.
+- **Where the icons stand** on this branch:
+  - the Characters roster row's ability icons (`CharacterAbilityStrip`), on the row's card;
+  - the character window's ability lines (18 points, `CharacterAbilityChips`);
+  - the component action buttons (24-point glyph on the 32-point frame, `ComponentActions`/`ComponentActionView`): a
+    character's ability, the Mouth of Sauron's Muster die moving or attacking, and Thranduil's Far-sighted and Narya,
+    which were text buttons on this branch ("♟↗ Thranduil", "○★ Narya") and are now their abilities' pictures, glowing
+    and pulsing while a click can use them as every ability picture does (UI-286); Narya's tooltip names the ring once
+    ("Narya · Activate the nation of Gandalf’s settlement"). Saruman's Voice's two buttons and the Mouth's move and
+    attack keep the ability's icon and wear a 13-point badge on the lower right corner of what each does
+    (`AbilityBadges`: the Muster face, the level star, the boot, the crossed swords); Far-sighted's buttons all move and
+    keep no badge. An entry keeps the board pin: it enters a character and uses no ability;
+  - Narya's activation in the Politics panel (`NationTrackRow`, where the generic confirm stood);
+  - in the battle window: Evil Knowledge's framed choice in the footer (`BattleChoices`; this branch offers it only
+    there), and a portrait whose click uses an ability now — the White Rider, the Witch-king's Sorcerer — wears that
+    ability's icon (18 points, 14 on a short viewport) on its upper right rim while the offer lasts;
+  - the Hunt window's Guide responses (`HuntResponsesView`): the Guide stays recognisable by his figure, and his
+    response's ability (Merry's and Pippin's Guide · separate, Gollum's reveal) is a 17-point badge on the figure's
+    lower right, outside the round portrait's clip (14 points on a short viewport).
+
+  The console's ring sockets and the starting Guide's crown keep their own art, as does the Politics panel's advance
+  arrow; the "Click to use" button keeps its action icon; text-only buttons are unchanged.
+
+Tests: EditMode `AbilityArtTests` (every ability of every card of the four catalogues resolves to an existing icon of
+its own, never the scroll; each card's icons differ; 77 icons, no two files alike; the Balrog's four; the card forms;
+every command, reaction and command kind above resolves to its ability's icon; an unknown id; the character window's
+lines and Narya's activation use the map), `UiArtKitTests` (the 77 icons are in the kit's contract at 28 points with its
+import settings), `CharacterAbilityStripTests` (each roster icon is its ability's; a Dark Chieftain's form),
+`ComponentActionTests` (Voice's two buttons share the icon and differ by badge; the Mouth's move and attack, the
+Balrog's command, an entry, Narya; Far-sighted), `BattleArtTests` (Evil Knowledge's framed choice),
+`ReactionSourcesTests` (the White Rider's portrait), `HuntGuideResponsesTests` (Merry's and Gollum's badges); PlayMode
+`CharacterWindowLayoutTests` (every line's icon in four layouts, `ui439-character-*`), `FarSightedObjectTests`
+(Thranduil's button, no badge, `ui439-component-far-sighted-*`), `HuntAftermathNetworkTests` (Merry's response,
+`ui439-hunt-merry-guide`), `T22AbilityNetworkTests` (Saruman's Voice buttons and their badges, `ui439-voice-recruit`,
+`ui439-voice-upgrade`), `ExpansionDecisionNetworkTests` (Narya's activation, `ui439-narya-activation`).
+
+Branches: the Combat card replacements' chip and marker (Heir of Bard, Shadows in the North, Red Wrath, Lord of the
+Bats, I Command; UI-348, UI-277) and Evil Knowledge on the Mouth's portrait (UI-347) are not on this branch, so those
+abilities' icons stand where this branch shows the abilities (the roster, the window, Evil Knowledge's framed choice);
+`KingsCards02Tests`' chips, `KingsDecisionNetworkTests`, `LordsBattleNetworkTests`, `RulerTokenMenuTests` and the Codex
+helper's `--ephemeral` change in `graphicalassets/stands` stay on `expansions`.
+
+Playtest (owner's checklist):
+- [ ] The roster and the window — any game (the Free Peoples). Open Characters. Expect: each row's ability icons its
+  abilities' own (Strider's Guide, Captain of the West and Heir to Isildur differ). Click a companion's row: his
+  window's ability lines show the same icons as the row.
+- [ ] Saruman's Voice — seeded `ability-voice-recruit-…` (the Shadow, a Muster die). Click the die, then Orthanc.
+  Expect: two buttons with the same Voice icon, one badged with the Muster face (recruit), one with the level star
+  (upgrade).
+- [ ] A Guide's response — seeded `ui52-hunt-aftermath` (a Hunt with Merry as Guide taking damage). Expect: Merry's
+  figure in the Hunt window with the Guide-separation icon as a badge.
