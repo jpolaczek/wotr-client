@@ -98,7 +98,8 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   since UI-222 every discard from the hand is made by clicking red-marked cards
   in the hand and is sent once the selection is complete. Since UI-389 (user decision), a
   click on any die or token lights all of its available uses at once (a token with several
-  uses opens no panel, UI-388), and a second click releases it. UI-421 (owner, 2026-10-28)
+  uses opens no panel, UI-388), and a second click releases it; since UI-443 (owner) nothing that
+  needs a die lights or acts before a die or token is chosen, even when one die alone could pay. UI-421 (owner, 2026-10-28)
   plans units and characters as tabletop miniatures that a click lifts and a drag carries, a drop
   sending exactly what the target click sends (docs/ui/TABLETOP_FIGURES_UX.md, UI-400–UI-407);
   since UI-405 they can also be carried: a press on the player's own legal (or chosen) figure that

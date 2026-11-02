@@ -187,10 +187,10 @@ namespace Wotr.EditorTests
             Assert.AreEqual(1, used.Count);
         }
 
-        // UI-440 (owner, decision 7): before any die is chosen, an ability one die (or identical dice) can pay is clickable
-        // without its glow, its tooltip naming that die; two different dice leave it waiting for the choice.
+        // UI-443 (owner, reversing UI-440's decision 7): before any die is chosen, an ability that one die alone could pay
+        // waits for that die like any other: read only, unlit, its tooltip asking for the die, its click using nothing.
         [Test]
-        public void AnAbilityWithOneEligibleDieTakesItFromTheClick()
+        public void AnAbilityWithOneEligibleDieWaitsForTheDie()
         {
             var view = Read("CharacterRosterWire.json");
             view.Dice.Clear();
@@ -204,19 +204,19 @@ namespace Wotr.EditorTests
             inspector.Abilities.Use += used.Add;
             inspector.Abilities.Usable(new[] { politics }, true, view);
             var chip = inspector.Root.Q<Button>("character-ability-" + printed.Id);
-            // UI-441: the click uses the skill now, so the icon glows (and its character with it), no die chosen yet.
-            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "The one die that can pay lights the icon.");
-            Assert.IsFalse(ReadOnlyControl.Is(chip), "The one die that can pay makes the click useful.");
+            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "Nothing glows before the player's choice of die.");
+            Assert.IsTrue(ReadOnlyControl.Is(chip), "The click waits for the die.");
+            StringAssert.EndsWith("\n" + SkillUse.ChooseDie, SkillTooltip.Plain(chip.tooltip));
+            Assert.IsFalse(inspector.Abilities.Choose(chip.name), "The click uses nothing.");
+            CollectionAssert.IsEmpty(used);
+
+            var paid = Politics(printed.Id, true);
+            paid.DieId = "muster";
+            inspector.Abilities.Usable(new[] { paid }, true, view);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "With its die chosen the icon glows.");
             StringAssert.EndsWith("\nClick to use your Muster die: Move the Dwarves one step toward war.", SkillTooltip.Plain(chip.tooltip));
             Assert.IsTrue(inspector.Abilities.Choose(chip.name));
-            CollectionAssert.AreEqual(new[] { politics }, used);
-
-            view.Dice.Add(new DieView { Id = "army", Owner = Side.FreePeoples, Face = DieFace.Army, Source = "standard", Location = DieLocation.Available });
-            politics.Character.Dice.Add("army");
-            inspector.Abilities.Usable(new[] { politics }, true, view);
-            Assert.IsTrue(ReadOnlyControl.Is(chip), "Two different dice leave the choice to the player.");
-            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "Nothing glows before the player's choice of die.");
-            StringAssert.EndsWith("\n" + SkillUse.ChooseDie, SkillTooltip.Plain(chip.tooltip));
+            CollectionAssert.AreEqual(new[] { paid }, used);
         }
 
         private static ComponentAction Politics(string ability, bool enabled) => new ComponentAction

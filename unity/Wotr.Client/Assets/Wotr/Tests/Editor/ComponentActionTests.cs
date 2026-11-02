@@ -293,10 +293,10 @@ namespace Wotr.EditorTests
             Assert.AreEqual("kings.sovereign.thranduil", picture.OwnerId);
         }
 
-        // UI-440 (owner, decision 7): an ability's icon clicked before any die takes the one die (or identical dice) that can
-        // pay for it, and the action is the one that die offers; two different dice leave it as it was.
+        // UI-443 (owner, reversing UI-440's decision 7): before any die is chosen an ability is not selected, even when one
+        // die alone could pay for it; with that die chosen it is.
         [Test]
-        public void AnAbilityClickedBeforeItsDieTakesTheOneDieThatCanPay()
+        public void AnAbilityIsNotSelectedBeforeItsDieEvenWhenOneDieCouldPay()
         {
             var view = View();
             view.Dice.Add(new DieView { Id = "muster", Owner = Side.Shadow, Face = DieFace.Muster, Source = "standard", Location = DieLocation.Available });
@@ -311,19 +311,13 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             var waiting = ComponentActions.For(view, draft).Single();
             Assert.IsFalse(waiting.Enabled, "No die is chosen yet.");
-            var paid = ComponentActions.WithUniformDie(view, draft, waiting);
+            Assert.IsFalse(ComponentActions.Select(view, draft, waiting), "The one die that could pay is not taken.");
+            Assert.AreEqual("", draft.Payload.DieId);
+            draft.Change(p => p.DieId = "muster");
+            var paid = ComponentActions.For(view, draft).Single();
             Assert.IsTrue(paid.Enabled);
-            Assert.AreEqual("muster", paid.DieId);
-            Assert.AreEqual("muster", draft.Payload.DieId);
             Assert.IsTrue(ComponentActions.Select(view, draft, paid));
             Assert.AreEqual("voice-upgrade", draft.Payload.AbilityId);
-
-            view.Dice.Add(new DieView { Id = "event", Owner = Side.Shadow, Face = DieFace.Event, Source = "standard", Location = DieLocation.Available });
-            option.CharacterActions[0].Dice.Add("event");
-            var open = new TurnDraft();
-            var choice = ComponentActions.For(view, open).Single();
-            Assert.AreSame(choice, ComponentActions.WithUniformDie(view, open, choice), "Two different dice leave the choice to the player.");
-            Assert.AreEqual("", open.Payload.DieId);
         }
 
         private static PlayerView View() => new PlayerView

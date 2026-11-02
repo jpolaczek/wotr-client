@@ -127,20 +127,6 @@ namespace Wotr.Client
                 };
         }
 
-        // UI-440 (owner): a skill's icon clicked before any die is chosen, when one die (or identical dice) can pay for it
-        // (CharacterDraft.UniformDie, UI-239), takes that die; the action is then the one that die offers. Any other action
-        // stays as it is.
-        public static ComponentAction WithUniformDie(PlayerView view, TurnDraft draft, ComponentAction item)
-        {
-            if (item.Enabled || item.Character == null || draft.Payload.DieId.Length > 0)
-                return item;
-            var die = CharacterDraft.UniformDie(view, item.Character);
-            if (die.Length == 0)
-                return item;
-            draft.Change(p => p.DieId = die);
-            return For(view, draft).FirstOrDefault(current => current.Enabled && current.Key == item.Key) ?? item;
-        }
-
         public static bool Select(PlayerView view, TurnDraft draft, ComponentAction item)
         {
             item = For(view, draft).FirstOrDefault(current => current.Enabled && current.Key == item.Key && current.DieId == item.DieId && current.TokenId == item.TokenId);

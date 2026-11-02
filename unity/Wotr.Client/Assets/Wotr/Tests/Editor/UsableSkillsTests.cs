@@ -31,16 +31,15 @@ namespace Wotr.EditorTests
             CollectionAssert.IsEmpty(Skills(view, "muster"), "A die that cannot pay lights nothing.");
         }
 
+        // UI-443 (owner): before a die is chosen no skill is usable, even when one die alone could pay for it.
         [Test]
-        public void BeforeAnyDieIsChosenOnlyTheOneDieThatCanPayMakesASkillUsable()
+        public void BeforeAnyDieIsChosenNoSkillIsUsableEvenWhenOneDieCouldPay()
         {
             var view = ActionView(Side.FreePeoples, Row(Gimli, Side.FreePeoples, "gimli"));
             Die(view, "army", DieFace.Army);
             Ability(view, Gimli, "politics-dwarves-at-erebor", "army");
-            Assert.IsTrue(Skills(view, "").ContainsKey(Gimli), "The one die that can pay is the icon's click.");
-            Die(view, "muster", DieFace.Muster);
-            view.Options[0].CharacterActions[0].Dice.Add("muster");
-            CollectionAssert.IsEmpty(Skills(view, ""), "Two different dice wait for the player's choice: no icon lights.");
+            CollectionAssert.IsEmpty(Skills(view, ""), "The one die that could pay waits to be chosen.");
+            Assert.IsTrue(Skills(view, "army").ContainsKey(Gimli), "Chosen, it lights the skill.");
         }
 
         // The variants of one skill (Saruman's Voice: recruit and upgrade) light their character once, by the skill's name.
@@ -71,7 +70,8 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "Fling Them into the Fray" }, skills[Gothmog].Names);
         }
 
-        // The window's icons light exactly for the rule's characters: the same condition, the one-die icon included.
+        // The window's icons light exactly for the rule's characters: the same condition, with the die and (UI-443) not
+        // before it.
         [Test]
         public void TheWindowsIconsLightExactlyWhileTheRuleNamesTheCharacter()
         {
@@ -86,8 +86,9 @@ namespace Wotr.EditorTests
                 chips.Usable(components, true, view);
                 var icon = chips.Root.Q<Button>("character-ability-fling-them-into-the-fray-gothmog-recruit");
                 Assert.IsNotNull(icon, string.Join(", ", chips.Icons.Select(item => item.name)));
-                Assert.IsTrue(icon.ClassListContains(ChoiceGlow.ClassName), "Die '" + die + "': the icon lights.");
-                Assert.IsTrue(UsableSkills.Characters(view, Draft(die), components, true).ContainsKey(Gothmog), "Die '" + die + "'.");
+                var lit = die.Length > 0;
+                Assert.AreEqual(lit, icon.ClassListContains(ChoiceGlow.ClassName), "Die '" + die + "': the icon.");
+                Assert.AreEqual(lit, UsableSkills.Characters(view, Draft(die), components, true).ContainsKey(Gothmog), "Die '" + die + "'.");
             }
         }
 

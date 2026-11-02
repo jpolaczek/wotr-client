@@ -11,12 +11,11 @@ namespace Wotr.Client
     // bare icon (SkillIcon, AbilityArt) in one row, in printed order; an ability whose commands differ shows one badged icon
     // per variant (AbilityVariants), side by side in one group, its slots fixed. A lit icon (its ability usable now) uses it
     // at once with one click, through the component path (Use → ComponentActions.Select): a one-click skill sends, a
-    // click-then-choose skill starts its choice on the board. Before any die is chosen, an icon whose one die (or identical
-    // dice) can pay is clickable too and takes that die (CharacterDraft.UniformDie). Every other icon is read only — a
-    // passive, triggered, reaction or entry ability, or one waiting for its die — and only explains itself: the formatted
-    // tooltip (SkillTooltip) names the ability, gives its gist, printed text and source, and says what a click does now,
-    // what it waits for or where the ability is used (AbilityUsePlaces). UI-441: an icon glows exactly while its click uses
-    // the ability now — the one-die icon too — the condition UsableSkills shares, so its character lights with it.
+    // click-then-choose skill starts its choice on the board. Every other icon is read only — a passive, triggered,
+    // reaction or entry ability, or one waiting for its die (UI-443: also when one die alone could pay) — and only explains
+    // itself: the formatted tooltip (SkillTooltip) names the ability, gives its gist, printed text and source, and says what
+    // a click does now, what it waits for or where the ability is used (AbilityUsePlaces). UI-441: an icon glows exactly
+    // while its click uses the ability now, the condition UsableSkills shares, so its character lights with it.
     public sealed class CharacterAbilityChips
     {
         public const string ChipClass = "character-ability";
@@ -144,29 +143,25 @@ namespace Wotr.Client
             pulse?.Run(Lit);
         }
 
-        // A usable icon glows and takes clicks — UI-441: one that can take its one die too; any other is read only, a
-        // variant among them dimmed in its slot.
+        // A usable icon glows and takes clicks; any other is read only, a variant among them dimmed in its slot.
         private void RefreshIcon(Icon icon)
         {
             var actions = editable ? offered[icon.Slot.Key].ToList() : new List<ComponentAction>();
-            var ready = actions.FirstOrDefault(action => action.Enabled);
-            var payable = ready == null ? actions.FirstOrDefault(action => UniformDie(action).Length > 0) : null;
-            icon.Action = ready ?? payable;
+            icon.Action = actions.FirstOrDefault(UsableSkills.Usable);
             var button = icon.Button;
             ReadOnlyControl.Apply(button, icon.Action != null);
             button.EnableInClassList(IdleClass, icon.Action == null && AbilityVariants.Grouped(icon.Slot.Ability.Id));
             ChoiceGlow.Apply(button, icon.Action != null);
-            var tooltip = Tooltip(icon.Slot, State(icon.Slot, actions, ready, payable), icon.Action != null);
+            var tooltip = Tooltip(icon.Slot, State(icon.Slot, actions, icon.Action), icon.Action != null);
             if (button.tooltip != tooltip)
                 button.tooltip = tooltip;
         }
 
-        private string State(CharacterAbilitySlots.Slot slot, IReadOnlyList<ComponentAction> actions, ComponentAction ready, ComponentAction payable)
+        // UI-443: an ability its die has not been chosen for waits for it, even when one die alone could pay.
+        private string State(CharacterAbilitySlots.Slot slot, IReadOnlyList<ComponentAction> actions, ComponentAction ready)
         {
             if (ready != null)
                 return SkillUse.Ready(ready, DieName(ready.DieId));
-            if (payable != null)
-                return SkillUse.Ready(payable, DieName(UniformDie(payable)));
             return actions.Count > 0 ? SkillUse.ChooseDie : AbilityUsePlaces.For(slot.Ability.Id);
         }
 
@@ -178,9 +173,6 @@ namespace Wotr.Client
             parts.Ready = usable;
             return SkillTooltip.Format(parts);
         }
-
-        // UI-440: before any die is chosen, the one die (or identical dice) that can pay for a character's ability.
-        private string UniformDie(ComponentAction action) => UsableSkills.UniformDie(view, action);
 
         private string DieName(string die) => DieUse.Name(view, die);
     }

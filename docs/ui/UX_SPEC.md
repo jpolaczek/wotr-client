@@ -2864,10 +2864,9 @@ kept place (nothing on the window changes size any more).
   a one-click ability (the political steps, the messengers, Dwarvenking, Stewardship, Elvenking, Narya, Voice's upgrade)
   sends at once; a click-then-choose one (Call to Arms, Iron Guard, Mustering of the Mark, a variant's move or attack)
   starts its choice on the board, confirmed with the console's ✓ (UI-381). Before any die is chosen, an icon whose one
-  die (or identical dice) can pay (`CharacterDraft.UniformDie`) is clickable (since
-  [UI-441](#usable-skills-light-their-character--ui-441) it glows too), its tooltip naming that
-  die, and its click takes the die and uses the skill (`ComponentActions.WithUniformDie`); with two different dice that
-  could pay, the tooltip says "Choose an eligible die first". Every other icon is read only and its click does nothing: a
+  die (or identical dice) could pay was clickable and took that die (`ComponentActions.WithUniformDie`) until
+  [UI-443](#nothing-lights-before-its-die--ui-443) retired it: before a die every icon with die-paid actions says "Choose
+  an eligible die first". Every other icon is read only and its click does nothing: a
   passive ability, a triggered one (Take Them Alive!, Art of Disappearing), a reaction (used on the object that offers
   it, UI-247/UI-271) and a change of version (from the Characters row). A king's window shows his abilities read only (an
   Awakened king's character window uses them as above). Nothing unrolls: the parchment and Click to use are gone.
@@ -2960,16 +2959,16 @@ the roster, which left such abilities out, never lit him.)
   its window (`CharacterAbilityChips`): an action of the turn that uses one of the printed abilities of its current card
   — its own command or a variant of it (`AbilityVariants`: Saruman's Voice, Gothmog's Fling, the Balrog's activation), a
   Muster die's move or attack, Far-sighted, Narya; an ability used on its own object included (Gothmog's Reserve tokens,
-  the Balrog's figure) — offered with the chosen die or token, or, before any die is chosen, payable by the one die (or
-  identical dice) that can pay for it (`CharacterDraft.UniformDie`, `UsableSkills.UniformDie`). A reaction of the
+  the Balrog's figure) — offered with the chosen die or token (before
+  [UI-443](#nothing-lights-before-its-die--ui-443) also, before any die, payable by the one die that could pay). A reaction of the
   character's offered to this player now counts too (a battle portrait's White Rider or Sorcerer, a Guide's Hunt
   response — its Guide's when it names no source —, Gandalf the Grey's draw on his Guide portrait or its deck, Spear of
   Terror, Nenya, He Sees, He Knows), named by the printed ability it uses (`AbilityArt.Printed`). Nothing counts while
   another action is drafted, while a command is being sent, for an entry, for another version's ability or for the
   opponent's characters.
-- **The window's icons follow the same rule.** UI-440 left an icon whose one die can pay clickable but dark; it now
-  glows (its click uses the skill), so the icon and its character light together, before any die is chosen as after.
-  The roster row's icons take the one die too and use the abilities used on their own objects, as the window's do. A
+- **The window's icons follow the same rule**, so the icon and its character light together. (UI-441 lit the one-die
+  icon before any die; UI-443 put it out again.) The roster row's icons use the abilities used on their own objects, as
+  the window's do. A
   reaction's icon stays read only (UI-440): its character lights while the reaction is offered.
 - **Where the character lights**, each in its own pulse, with the shared light (no CSS filter; the pulses change
   colours and opacity only; nothing is laid out in a geometry callback):
@@ -2989,8 +2988,8 @@ the roster, which left such abilities out, never lit him.)
   - its **window's header** — a gilt rim on a warm plate behind the plate art and title (`character-header-glow`), shown
     while the window shows the version in play, breathing in the window's one pulse with the lit icons (opacity only).
   The light goes out with the last usable skill; every other light and colour is unchanged.
-- **Before any die is chosen** a character whose skill one die can pay is lit already, and so is the Characters tab: a
-  released die puts out the tabs it lit (UI-386), but the Characters tab stays lit while such a skill remains — Brand's
+- **Before any die is chosen** nothing that needs a die is lit (UI-443; UI-441 had lit a skill one die could pay, and
+  the Characters tab with it): a released die puts out every tab it lit (UI-386), the Characters tab included — Brand's
   Call to Arms with the Ruler die as its only payer (`RulerTokenMenuTests.EveryLitTabGlowsAlike`).
 
 Tests: EditMode `UsableSkillsTests` (a one-click skill with its die, a die that pays nothing, the one die before any die
@@ -3136,3 +3135,36 @@ deck (`GlowingHintClassesTests`), a reserve figure lifted as its own icon in `Bo
 Strike's payload and hint checks (`ObjectFirstChoicesTests`, `Shadow02NetworkTests`), and the base playtest items of
 UI-430, UI-434, UI-437 and UI-439. The "Port to `ability-chips`" and "base parts" notes record history; new work branches
 from the one line.
+
+<a id="nothing-lights-before-its-die--ui-443"></a>
+## Nothing lights before its die — UI-443 (2026-11-02)
+
+The owner, reversing UI-440's decision 7 and UI-441's one-die light: "without a chosen die we do not light the options
+available with only one die, which in theory makes choosing it unnecessary". Dice establish context: the player chooses
+the die (or token), and its uses light (UI-389).
+
+- **The rule** (`UsableSkills.Usable`): a character's ability lights — its icon in the character's window and on the
+  roster row, the character's row, map miniature, Fellowship and king's portraits, the window's header and the
+  Characters tab — and its icon's click uses it only while it is offered with the chosen die or token
+  (`ComponentAction.Enabled`). Before a die is chosen an icon with die-paid actions is read only, unlit, and its tooltip
+  ends "Choose an eligible die first"; its click does nothing. `ComponentActions.WithUniformDie` and
+  `UsableSkills.UniformDie` are gone.
+- **Unchanged:** a die's or token's click lights all its uses (UI-389); a Ruler token takes its only Ruler die (UI-380);
+  Vilya's socket answers with its one die (UI-268); a chosen character action takes its cost from one die or identical
+  dice (UI-239, `CharacterDraft.UniformDie`); reactions offered now need no die and still light their character (UI-441).
+
+Playtest (owner's checklist):
+- [ ] Gimli — seeded `ability-gimli` (the Free Peoples). Before any die: Gimli's row, miniature and the Characters tab are
+  dark; his window's Dwarf of Erebor icon is unlit and says "Choose an eligible die first". Click a die that can pay:
+  Gimli and the icon light; the icon's click moves the Dwarves. Release the die: everything goes dark.
+- [ ] Brand — Testing catalog `kings-brand-call-to-arms` (the Free Peoples). Click the Ruler die: Politics, Reserve and
+  Characters light. Click it again: all three go dark, the Characters tab too.
+- [ ] Théoden — `kings-ruler-token-theoden`. Before the token nothing of his lights; his Ruler token's click lights
+  Mustering of the Mark; a second click puts it out.
+
+Tests: EditMode `UsableSkillsTests.BeforeAnyDieIsChosenNoSkillIsUsableEvenWhenOneDieCouldPay`,
+`UsableSkillsTests.TheWindowsIconsLightExactlyWhileTheRuleNamesTheCharacter` (lit with the die, dark before it),
+`CharacterRosterPanelTests.AnAbilityWithOneEligibleDieWaitsForTheDie`,
+`ComponentActionTests.AnAbilityIsNotSelectedBeforeItsDieEvenWhenOneDieCouldPay`; PlayMode `UsableSkillLightNetworkTests`
+(on real seeds nothing is lit before a die or token and after its release) and `RulerTokenMenuTests.EveryLitTabGlowsAlike`
+(the Characters tab goes dark with the released Ruler die).

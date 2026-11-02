@@ -181,7 +181,7 @@ namespace Wotr.Client
                 available |= Actions.Available(row.Key);
                 row.Value.ShowVersion(OfferedVersion(row.Key, chosen, entry));
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
-                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die), view);
+                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
                 abilities |= row.Value.Abilities.Offered;
                 row.Value.ShowSkill(Actions.Skill(row.Key));
                 skills |= row.Value.SkillLit;

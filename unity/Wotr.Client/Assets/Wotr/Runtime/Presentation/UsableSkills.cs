@@ -9,8 +9,8 @@ namespace Wotr.Client
     // usable now — the very condition that lights a skill icon in the character's window (CharacterAbilityChips):
     // - an action of the turn that uses one of the printed abilities of the character's current card (its own command or a
     //   variant of it, a Muster die's move or attack, Far-sighted, Narya), an ability used on its own object included
-    //   (Gothmog's Reserve tokens, the Balrog's figure), offered with the chosen die or token, or — before any die is
-    //   chosen — payable by the one die (or identical dice) that can pay for it (CharacterDraft.UniformDie);
+    //   (Gothmog's Reserve tokens, the Balrog's figure), offered with the chosen die or token. UI-443 (owner): before a
+    //   die is chosen nothing that needs one lights, even when one die alone could pay for it;
     // - a reaction of the character offered to this player now (a battle portrait, a Hunt response, a Guide portrait, a
     //   deck, a Ring's socket), used on the object that offers it (SkillReactionPlaces).
     // Every place that draws the character lights it from this set: its Characters row and the Characters tab, its map
@@ -49,13 +49,8 @@ namespace Wotr.Client
             return found.Skills();
         }
 
-        // A skill icon's click uses this action now: offered with its die or token, or payable by its one die.
-        public static bool Usable(PlayerView view, ComponentAction action) => action.Enabled || UniformDie(view, action).Length > 0;
-
-        // UI-440: before any die is chosen, the one die (or identical dice) that can pay for a character's ability; "".
-        public static string UniformDie(PlayerView view, ComponentAction action) =>
-            view != null && !action.Enabled && action.Character != null && action.DieId.Length == 0
-                ? CharacterDraft.UniformDie(view, action.Character) : "";
+        // A skill icon's click uses this action now: offered with the chosen die or token (UI-443: never before one).
+        public static bool Usable(ComponentAction action) => action.Enabled;
 
         // TOOLTIP_AUDIT rule 1: why the character glows and what to click — "Usable now: Fling Them into the Fray · Click
         // its glowing icon"; a reaction names the object that offers it instead of the icon.
@@ -87,7 +82,7 @@ namespace Wotr.Client
             var cards = new Dictionary<string, PrintedAbilities>();
             foreach (var action in components)
             {
-                if (action.Kind == CommandKind.EnterCharacter || !Usable(view, action))
+                if (action.Kind == CommandKind.EnterCharacter || !Usable(action))
                     continue;
                 // CharacterRosterActions.For: an action belongs to its owner's row; Narya to Gandalf's.
                 var figure = action.Kind == CommandKind.UseNarya ? gandalf : CharacterRosterActions.Row(view, action);

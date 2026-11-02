@@ -14,8 +14,8 @@ namespace Wotr.Client
     // (LineClass): side by side they make the text's third line, one above the other the 2x2 block beside the text when two
     // characters stand a line. The block never wraps, so its form does not depend on the UI scale. UI-440 (owner): an icon
     // is the bare skill icon (SkillIcon), without the small gilt frame, and its tooltip the skill's formatted description
-    // (SkillTooltip), as in the window. UI-441: an icon whose one die can pay before any die is chosen glows and uses it,
-    // as the window's does (UsableSkills).
+    // (SkillTooltip), as in the window. UI-441: it glows exactly while the window's icon does (UsableSkills); UI-443: never
+    // before a die is chosen, even when one die alone could pay.
     public sealed class CharacterAbilityStrip
     {
         public const string ClassName = "roster-abilities";
@@ -31,7 +31,6 @@ namespace Wotr.Client
         private ILookup<string, ComponentAction> usable = Enumerable.Empty<ComponentAction>().ToLookup(action => "");
         private IReadOnlyList<CharacterAbilityText> abilities = Array.Empty<CharacterAbilityText>();
         private Func<string, string> dieName;
-        private PlayerView view;
         private bool editable;
         private string version = "";
 
@@ -74,16 +73,14 @@ namespace Wotr.Client
             Refresh();
         }
 
-        // The figure's actions that use one of its printed abilities light that ability's icon. latest: the view whose dice
-        // may pay for an ability before any die is chosen.
-        public void Offer(IEnumerable<ComponentAction> actions, bool enabled, Func<string, string> dieNames, PlayerView latest = null)
+        // The figure's actions that use one of its printed abilities light that ability's icon.
+        public void Offer(IEnumerable<ComponentAction> actions, bool enabled, Func<string, string> dieNames)
         {
             var printed = abilities.Select(ability => ability.Id).ToHashSet();
             usable = actions.Where(action => CharacterAbilitySlots.PrintedOf(action, printed).Length > 0)
                 .ToLookup(action => CharacterAbilitySlots.PrintedOf(action, printed));
             editable = enabled;
             dieName = dieNames;
-            view = latest;
             Refresh();
         }
 
@@ -123,15 +120,10 @@ namespace Wotr.Client
             return SkillTooltip.Format(parts);
         }
 
-        // The actions a click can start now — offered with the chosen die, or else payable by their one die; several
+        // The actions a click can start now — offered with the chosen die or token (UI-443: never before one); several
         // (Saruman's Voice) are chosen in the window.
-        private List<ComponentAction> Ready(string ability)
-        {
-            if (!editable)
-                return new List<ComponentAction>();
-            var ready = usable[ability].Where(action => action.Enabled).ToList();
-            return ready.Count > 0 ? ready : usable[ability].Where(action => UsableSkills.UniformDie(view, action).Length > 0).ToList();
-        }
+        private List<ComponentAction> Ready(string ability) =>
+            editable ? usable[ability].Where(UsableSkills.Usable).ToList() : new List<ComponentAction>();
 
         private string UseText(string ability, IReadOnlyList<ComponentAction> ready)
         {
@@ -145,12 +137,8 @@ namespace Wotr.Client
             return place.Length > 0 ? place : SkillUse.OpenWindow;
         }
 
-        // The chosen die's name, or the one die's that the click takes.
-        private string DieName(ComponentAction action)
-        {
-            var die = action.Enabled ? action.DieId : UsableSkills.UniformDie(view, action);
-            return dieName?.Invoke(die) ?? "";
-        }
+        // The chosen die's name.
+        private string DieName(ComponentAction action) => dieName?.Invoke(action.DieId) ?? "";
 
         private void Click(int slot) => Choose(icons[slot].userData as string ?? "");
 

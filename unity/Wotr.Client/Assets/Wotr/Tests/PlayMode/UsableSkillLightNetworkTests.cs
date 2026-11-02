@@ -14,7 +14,8 @@ namespace Wotr.PlayTests
     // sure the character always lights up whenever its skill can be used at that moment". On real seeds, the character's
     // Characters row, its map figure (its miniature, or the force an Initial king leads), the Characters tab, its window's
     // header and its portraits glow exactly while its skill icon does — or, for a reaction (its icon read only), while the
-    // reaction is offered — and go out with it (GlowingTargetChecks). Each test plays its own seed once.
+    // reaction is offered — and go out with it (GlowingTargetChecks). UI-443 (owner): before a die or token is chosen no
+    // skill that needs one lights, even when one die alone could pay. Each test plays its own seed once.
     public sealed class UsableSkillLightNetworkTests
     {
         [UnityTest] public IEnumerator GothmogsFlingThemIntoTheFrayLightsHimWhileItsIconGlows() => Wait(Gothmog());
@@ -103,14 +104,14 @@ namespace Wotr.PlayTests
                 Room = room, Client = client, Figure = "kings.sovereign.theoden", Icon = "character-ability-mustering-of-the-mark",
                 Shots = "theoden", Skill = "Mustering of the Mark"
             };
-            await AssertConsistent(c, "before the token");
+            await AssertLights(c, false, "before the token");
             var token = client.Board.OwnDice.Q<Button>("ruler-token-kings.token.theoden");
             PointerGestureEvents.ClickAt(token);
             await room.Settle();
             await Pictured(c, () => AssertLights(c, true, "after his Ruler token"));
             PointerGestureEvents.ClickAt(token);
             await room.Settle();
-            await AssertConsistent(c, "after the token's release");
+            await AssertLights(c, false, "after the token's release");
         }
 
         // A reaction on the Guide's portrait (UI-247): Gandalf in the Fellowship has no map figure; his Fellowship portrait,
@@ -141,11 +142,11 @@ namespace Wotr.PlayTests
             await AssertConsistent(c, "after the White Rider");
         }
 
-        // The skill's die lights the character with its icon; a die that pays none of its skills puts both out; released,
-        // the die leaves them as the icon shows (the one die that can pay keeps it lit).
+        // The skill's die lights the character with its icon; a die that pays none of its skills puts both out; before a
+        // die and once it is released nothing is lit (UI-443).
         private static async Task AbilityByDie(Case c, string die, System.Func<Task> whileLit = null)
         {
-            await AssertConsistent(c, "before a die");
+            await AssertLights(c, false, "before a die");
             await ComponentGestures.Cost(c.Room, c.Client, die);
             await Pictured(c, () => AssertLights(c, true, "with its die"));
             if (whileLit != null)
@@ -160,7 +161,7 @@ namespace Wotr.PlayTests
             else
                 T22NetworkActions.Die(c.Client, die);
             await c.Room.Settle();
-            await AssertConsistent(c, "with no die chosen");
+            await AssertLights(c, false, "with no die chosen");
         }
 
         // Whatever the icon shows now, the character agrees.
