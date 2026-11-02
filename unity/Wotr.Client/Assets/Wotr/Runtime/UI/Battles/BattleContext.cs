@@ -278,41 +278,31 @@ namespace Wotr.Client
             portrait.Add(badge);
         }
 
-        // UI-348 (D17): a Combat card's replacement (Brand, a Dark Chieftain) is a gilt chip beside the player's own card,
-        // with the ability's own icon since UI-439; its tooltip names the card it cancels and its click sends the
-        // replacement.
+        // UI-348 (D17): a Combat card's replacement (Brand, a Dark Chieftain) stands beside the player's own card, with the
+        // ability's own icon since UI-439; its tooltip names the card it cancels and its click sends the replacement.
+        // UI-440 (owner): it is the bare skill icon (SkillIcon), glowing while it can be used, no gilt chip.
+        public const string ReplacementClass = "battle-replacement-chip";
+
         private Button ReplacementChip(PlayerView view, TurnDraft draft, EffectChoiceView choice)
         {
-            var chip = new Button(() => complete(() => BattleObjectChoices.Choose(view, draft, choice.Id)))
-            {
-                name = "battle-replacement-" + choice.Id
-            };
-            chip.AddToClassList("battle-replacement-chip");
-            chip.Add(ReplacementAbility(view, choice.SourceId));
-            chip.tooltip = CombatReplacementChoice.Tooltip(view, choice);
+            var chip = SkillIcon.Create(CombatReplacementChoice.Icon(view, choice.SourceId), CombatReplacementChoice.Tooltip(view, choice),
+                () => complete(() => BattleObjectChoices.Choose(view, draft, choice.Id)));
+            chip.name = "battle-replacement-" + choice.Id;
+            chip.AddToClassList(ReplacementClass);
             ChoiceGlow.Apply(chip, true);
             return chip;
         }
 
-        // UI-277: a replacement already made stands as the same gilt marker beside the replaced card, for both players.
+        // UI-277: a replacement already made stands in the same place beside the replaced card, for both players; UI-440:
+        // the same bare icon, marked as chosen.
         private static VisualElement AppliedReplacement(PlayerView view, CombatReplacementView applied)
         {
-            var marker = new VisualElement { name = "battle-replacement-applied" };
-            marker.AddToClassList("battle-replacement-chip");
+            var marker = SkillIcon.Marker(CombatReplacementChoice.Icon(view, applied.SourceId));
+            marker.name = "battle-replacement-applied";
+            marker.AddToClassList(ReplacementClass);
             marker.AddToClassList("battle-replacement-applied");
-            marker.Add(ReplacementAbility(view, applied.SourceId));
             marker.tooltip = CombatReplacementChoice.AppliedTooltip(view, applied);
             return marker;
-        }
-
-        public const string ReplacementAbilityName = "battle-replacement-ability";
-
-        private static VisualElement ReplacementAbility(PlayerView view, string source)
-        {
-            var icon = new VisualElement { name = ReplacementAbilityName, pickingMode = PickingMode.Ignore };
-            icon.AddToClassList(ReplacementAbilityName);
-            icon.style.backgroundImage = IconButton.Background(CombatReplacementChoice.Icon(view, source));
-            return icon;
         }
 
         // UI-347 (D12): the Mouth of Sauron's Evil Knowledge is his glowing portrait while the siege may go on; its click

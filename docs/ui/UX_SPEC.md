@@ -1722,7 +1722,9 @@ Owner requests of 2026-10-27:
   change: the window still moves clear of the panels that decision opens, such as a Ruler's Reserve. Since
   [UI-436](#a-characters-window-is-compact-shows-its-place-as-a-picture-and-opens-in-one-place--ui-436) this holds for
   a window opened from a region's window; one opened from the Characters tab, its panel or a ruler stands at one place
-  beside the tab (`CharacterWindowPlace`), clear of every left panel.
+  beside the tab (`CharacterWindowPlace`), clear of every left panel. Since [UI-440](#skill-icons--ui-440) (2026-11-02)
+  no click on an ability changes the window's content (no text unrolls), so the kept place and `KeepInspectorInView`
+  are gone.
 - UI-372 — every choice and legal target uses one highlight, the ChoiceGlow gold (the tabs, the Fellowship's portraits,
   the map's units): the old pale blue (mint) `.legal-target` border and its copies (playable hand cards and effects,
   the playable preview, Hunt candidates, decks, the Hunt tab, the opponent's dice, the roster grid, the Reserve rows)
@@ -1882,7 +1884,9 @@ Owner requests and reports from the Kings and Lords test scenarios:
   pulses with the roster; its click starts it as the chip's Click to use does (UI-369), with the same die or token, so
   Dáin's Iron Guard starts from his row after his token. Two usable actions of one ability (Saruman's Voice), or an
   ability not usable now, open the character's window with that ability unrolled. The window keeps its chips
-  (`CharacterAbilityStrip`). Tests: `CharacterAbilityStripTests`,
+  (`CharacterAbilityStrip`). Since [UI-440](#skill-icons--ui-440) (2026-11-02) the icons are bare, their tooltip is the
+  skill's formatted description, and the window opens with that ability's icon focused (its description shown) instead
+  of unrolled. Tests: `CharacterAbilityStripTests`,
   `RulerTokenMenuTests.DainsIronGuardStartsFromItsIconInTheCharactersTab`.
 - UI-392 (owner) — a king's recruitment (Iron Guard, Call to Arms, Mustering of the Mark) starts on the map: the
   Reserve does not open by itself; its tab glows and can be opened by hand, and the target settlements glow green. A
@@ -2627,7 +2631,9 @@ rulers' tab, in the same place."
   of the window's width: the ability's icon (the roster row's; its own since UI-439, `AbilityArt`), its title in gold
   and the gist of its text ("Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular
   there"); its tooltip is the printed text and page, its click still unrolls the printed text (UI-139) and a usable one
-  still glows and carries Click to use (UI-369).
+  still glows and carries Click to use (UI-369). Since [UI-440](#skill-icons--ui-440) (2026-11-02) the lines, their
+  pages, the unrolled parchment and Click to use are gone: each ability is its bare icon in one row, its gist and text
+  in its formatted tooltip, and a lit icon's click uses it.
 - **The character window** keeps every control (pin, close, version tabs, ability lines and pages, Click to use, the
   entry, the decision host); its place row is the picture and, beside it, a line saying what being there means ("On the
   board", "Travels with the Fellowship", "Not entered yet", "Eliminated; may return as Gandalf the White") over the
@@ -2639,8 +2645,9 @@ rulers' tab, in the same place."
   window never moves when the panel opens or closes — its top level with the Characters tab, raised only as far as it
   must to stay whole above the bottom of the board. Every left panel (Politics, Reserve, Effects) is narrower, so none
   covers it. A ruler's window has one size at rest (`.ruler-window`, 380×288 points: the same rows for an Initial, a
-  Corrupted or an Awakened king, the shorter gists leaving at most a line free); an unrolled ability text or a decision
-  makes it taller. A character opened from a region's window stands beside that window, its own panel, as
+  Corrupted or an Awakened king, the shorter gists leaving at most a line free; 380×252 since
+  [UI-440](#skill-icons--ui-440), the abilities a row of icons); an unrolled ability text or a decision makes it taller.
+  A character opened from a region's window stands beside that window, its own panel, as
   before (UI-371); a window the player dragged keeps its place while pinned (`FloatingWindow.Restore`).
 
 Tests: EditMode `PlacePictureTests` (every one of the 105 regions and every place off the map has its 256×160 picture;
@@ -2704,7 +2711,9 @@ Then use the same icons every time a button stands for that skill — for every 
   Use or Decline Vilya and Evil Knowledge by their command kinds. A card's own form comes before the shared one, keyed
   `"<card id>#<ability id>"` as `character-ability-summaries.json` keys the gists. An id that names no printed ability
   shows the ability scroll (a button) or no badge.
-- **Where the icons stand** — every place a button, chip or marker stands for an ability:
+- **Where the icons stand** — every place a button, chip or marker stands for an ability (since
+  [UI-440](#skill-icons--ui-440), 2026-11-02, every such button is the bare icon, without frame, plate or words, and a
+  skill's variants each carry a badge, Far-sighted's and the Balrog's moves included):
   - the Characters roster row's ability icons (15–19 points, `CharacterAbilityStrip`), on the row's card;
   - the character window's ability lines (18 points, `CharacterAbilityChips`), the king's window's too;
   - the component action buttons (24-point glyph on the 32-point frame, `ComponentActions`/`ComponentActionView`) in
@@ -2779,3 +2788,129 @@ catalogues and 77 icons there; on base it holds for the base cards and their 22 
 `politics-elves-at-stronghold`, `politics-gondor-at-city-or-stronghold`,
 `return-after-fellowship-elimination-except-mordor`, `voluntary-reveal-to-reduce-hunt-one`. Narya's activation, Evil
 Knowledge, the combat replacements, Far-sighted, the card forms and the other 55 icons are expansions-only.
+
+<a id="skill-icons--ui-440"></a>
+## A skill is its icon: a click uses it, the tooltip describes it — UI-440 (2026-11-02)
+
+The owner, about the character window's ability lines ("[icon] Terror on entering play · Entering play activates…"):
+"the skill buttons are still not right: a button must not be a rectangular button with text and a picture, it must be
+ONLY THE ICON". Then, the same day, after a feasibility analysis of the 77 abilities: "I changed my mind: let's apply
+your suggestions so that a click simply uses the skill, with the skill's variants where needed; the skill descriptions
+in nicely formatted tooltips", and "make sure a skill's variants stand together, in one row". This supersedes UI-139's
+and UI-369's "select the chip, then Click to use" for abilities, UI-436's ability lines and their pages, and UI-371's
+kept place (nothing on the window changes size any more).
+
+- **The look** (`SkillIcon`, `Styles/SkillIcons.uss`). A skill button is the skill's icon (`AbilityArt`) alone: no frame,
+  plate or words in any state (resolved border 0, no picture of its own; the icon is its glyph, so
+  `IconButton.SetPicture` and `AddBadge` serve it). Its box is its hit target. While the skill is usable (ChoiceGlow) a
+  rimless gilt light (`ornaments/skill-glow`, a texture — no CSS filter, UI-322) glows behind it and breathes in its
+  host's 750 ms ChoicePulse (Reduced motion keeps it bright and still); the icon keeps its size. Hover brightens it (a
+  faint light); a press sinks and darkens it (UI-113); keyboard focus rings it (`KeyboardFocusRing`: a click focuses it
+  too, but leaves no ring) and opens its tooltip at once. An icon a click does not use now is read only
+  (`ReadOnlyControl`: no light, no press, still focusable for its tooltip). A variant not offered now is dimmed in its
+  fixed slot. An applied replacement is the same icon with a short gold underline.
+- **Where.** The character window's and the king's window's abilities (32-point icons, 28-point pictures); the roster
+  row's icons (15–19 points); the component action buttons of the decision dock and a region's window (32 points; an
+  entry keeps the board pin on its frame, as it uses no ability); Evil Knowledge's choice in the battle footer (lit and
+  pulsing on its own while usable; its tooltip leads with its name); the combat replacement beside the own Combat card
+  and its applied marker (Heir of Bard, Shadows in the North, Red Wrath, Lord of the Bats, I Command); Narya's
+  activation in the Politics panel (26 points, lit while usable). Unchanged: the Hunt window's Guide responses (the Guide
+  is the button, the ability a badge), the battle portraits' ability badges, the console's ring sockets, the tray's text
+  fallbacks and the Council setup labels.
+- **One row per card, variants together** (`CharacterAbilitySlots`, `AbilityVariants`). The window's icons stand in one
+  row in printed order. An ability whose commands do different things shows one icon per variant, side by side as one
+  group — 4 points apart over a thin shared gilt line, abilities 14 apart — each badged with what it does
+  (`AbilityBadges`): Saruman's Voice (recruit: the Muster face; upgrade: the level star), Gothmog's Fling Them into the
+  Fray (the same), the Mouth of Sauron's Muster die and Great Sorcery (move: the boot; attack: the crossed swords), the
+  Balrog's Activation (activate or deactivate, one slot, no badge; move an army, attack, move alone: the board pin) and
+  Thranduil's Far-sighted (the Fellowship: the Ring; companions: the group; a separation: the board pin — the component
+  buttons carry these badges too). The slots are fixed per card, so nothing shifts while a variant comes or goes; a group
+  never wraps. The Balrog's seven icons are the most any card shows; they fit the 380-point window in every layout. The
+  window's former Actions row of the same abilities (Narya, the Muster die's move and attack, Great Sorcery, the Balrog's
+  commands, Far-sighted) is merged into the row; only an entry (several versions) keeps its own button. A ruler's
+  window at rest is now 380×252 points (`.ruler-window`, `SovereignPanel.WindowSize`; UI-436's 288 held the lines), every
+  king's window still of one size.
+- **A click uses the skill.** A lit icon (its ability usable now with the chosen die or token) uses it with one click,
+  through the component path (`ComponentActions.Select`, `TurnInteraction.ChooseComponent`) exactly as Click to use did:
+  a one-click ability (the political steps, the messengers, Dwarvenking, Stewardship, Elvenking, Narya, Voice's upgrade)
+  sends at once; a click-then-choose one (Call to Arms, Iron Guard, Mustering of the Mark, a variant's move or attack)
+  starts its choice on the board, confirmed with the console's ✓ (UI-381). Before any die is chosen, an icon whose one
+  die (or identical dice) can pay (`CharacterDraft.UniformDie`) is clickable without the glow, its tooltip naming that
+  die, and its click takes the die and uses the skill (`ComponentActions.WithUniformDie`); with two different dice that
+  could pay, the tooltip says "Choose an eligible die first". Every other icon is read only and its click does nothing: a
+  passive ability, a triggered one (Take Them Alive!, Art of Disappearing), a reaction (used on the object that offers
+  it, UI-247/UI-271) and a change of version (from the Characters row). A king's window shows his abilities read only (an
+  Awakened king's character window uses them as above). Nothing unrolls: the parchment and Click to use are gone.
+- **The roster row** keeps its click: one ready action of the ability starts it; otherwise the character's window opens
+  with that ability's icon focused, so its description shows.
+- **The description is the tooltip** (`SkillTooltip`, rich text, `RuntimeTooltip.FormattedClass`), one form wherever a
+  skill's icon stands (the windows, the roster row, a component button): the name in bold gold (then its variant and, on
+  a component button, its owner), the gist dim on the second line (`CharacterAbilitySummaries`), a thin gap, the printed
+  text as a paragraph, the source small and faint, a thin gap, then the state — what a click does now in bright gold
+  ("Click to use your Muster die: Move the Dwarves one step toward war"; `SkillUse`), or dim: "Choose an eligible die
+  first", "Usable with an eligible die or token", where a reaction is used (`AbilityUsePlaces`: "Offered in battle: click
+  his portrait", "Offered in the Hunt window: click this Guide's response", "Offered after your action: click Vilya on the
+  console", "Used from his Characters row with a Will of the West die"…) or, on the roster, "Click to open the
+  character's window". The tooltip keeps its 360-point width; the longest printed text (Emissary from the West, 381
+  characters) fits 1366×768 at 125 %.
+
+Tests: EditMode `SkillIconTests` (the parts, the name required, the glow and mark), `CharacterRosterPanelTests`
+(`InspectorShowsStatusStatisticsAndAbilityChipsWithoutUnrolledText`: bare, read only, formatted, no unrolled text;
+`AUsableAbilityGlowsAndItsClickUsesIt`: the click raises the very action Click to use raised;
+`AnAbilityWithOneEligibleDieTakesItFromTheClick`; `AVariantAbilityShowsOneBadgedIconPerVariantSideBySide`;
+`EveryCardsVariantsStandTogetherInOneRow`: for every card of the four catalogues each ability's icons stand together in
+printed order and the widest card fits one row), `CharacterAbilityStripTests`, `ComponentActionTests` (bare icons, the
+entry's frame, Narya's and Voice's formatted tooltips, Far-sighted's badge), `SovereignPanelTests`, `AbilityArtTests`,
+`KingsCards02Tests` (the replacement icon and marker), `BattleArtTests` (Evil Knowledge's bare footer choice),
+`UiArtKitTests` (`ornaments/skill-glow`); PlayMode (resolved styles through `SkillIconChecks`: border 0, no plate, no
+words, the light exactly while usable, at least 28 points in the windows) `CharacterWindowLayoutTests` (the kings' and a
+character's windows in four layouts: one row, a read-only click changes nothing and leaves no ring, keyboard focus rings
+the icon and shows the formatted description whole, the longest — Emissary from the West, 381 characters — included;
+`ui440-king-*`, `ui440-character-*`, `ui440-longest-tooltip-*`),
+`CharacterRosterActionNetworkTests` (Fate Gimli's Messenger of the Dwarves sends at one click a payload JSON-equal to the
+old Click to use path's; Théoden's Mustering of the Mark starts its choice; the Balrog's seven icons in one row in four
+layouts and his move alone from its badged variant; `ui440-usable-*`, `ui440-widest-balrog-*`),
+`CharacterRosterPanelNetworkTests` (the roster icon bare; Gimli's passive icon's formatted tooltip and read-only click;
+`ui440-roster-*`), `RulerTokenMenuTests` (Iron Guard starts from its icon, Dwarvenking read only; Dáin's roster icons),
+`T22AbilityNetworkTests` (Gimli's Dwarf of Erebor and Voice's upgrade variant sent at one click from the window's icons,
+each payload JSON-equal to the old component path's on the same die; Voice's bare badged buttons, `ui440-component-*`),
+`FarSightedObjectTests`,
+`KingsDecisionNetworkTests`, `ExpansionDecisionNetworkTests` (Narya), `BoardCompletionLayoutTests` (every card's icons and
+formatted tooltips in four layouts, inside the board; `MeasureTextSize` measures rich text a line taller than its layout
+draws it, so the formatted descriptions are not measured against it).
+
+Playtest (owner's checklist):
+- [ ] A one-click skill — Testing catalog `ui67-fate` (Free Peoples): open Gimli's window. Expect: his abilities as bare
+  icons in one row, no lines, no text. Hover each: a formatted description (gold name, gist, text, source, state). Click
+  the die Messenger of the Dwarves needs: its icon glows. Click the icon: the Dwarves activate at once, no Click to use.
+- [ ] A click-then-choose skill — `kings-ruler-token-dain`: click Dáin's Ruler token, open his window. Expect: Iron
+  Guard glowing, Dwarvenking read only (no light under the pointer, the click does nothing). Click Iron Guard: his
+  settlements light on the map; place the figures; confirm with the console's ✓.
+- [ ] Variants together — the Balrog (`ui67-balrog`, Shadow): choose the Character die, open his window. Expect: seven
+  icons in one row; Balrog Activation's four (activate, move an army, attack, move alone) side by side over a thin gilt
+  line, each move badged; the move alone glows. Click it, then the Balrog's destination: he moves.
+- [ ] Saruman's Voice — a game with Saruman in Orthanc (Shadow): open his window before choosing a die. Expect: Voice's
+  recruit and upgrade side by side, dimmed; hover: "Choose an eligible die first" (or, with one Muster die only, "Click
+  to use your Muster die: …" — a click then takes that die).
+- [ ] A reaction — open the Witch-king's or Galadriel's window. Expect: Sorcerer or Nenya read only, its tooltip saying
+  where it is used ("Offered in battle: click his portrait", "… click Nenya on the console").
+- [ ] Keyboard — Tab to an icon. Expect: a thin gold ring and the description at once; a mouse click leaves no ring.
+
+Port to `ability-chips` (base game; UI-436/UI-439 at 164d87d9, where the kings' window kept its older form): `SkillIcon`,
+`KeyboardFocusRing`, `Styles/SkillIcons.uss` (and its import), `ornaments/skill-glow` (svg, `assets.json`,
+`manifest.json`, PNG and meta, `UiArtKitTests`), `IconButton.GlyphName`, `RichText` (and `CharacterRowTooltip` on it),
+`SkillTooltip`, `SkillUse`, `AbilityUsePlaces` (its base entries: the Grey's Guide draw, the White Rider, the Sorcerer,
+the Guides' separation, Gollum's reveal, Take Them Alive!, the two changes of version), `CharacterAbilityLibrary.Find`,
+`CharacterAbilitySlots`, `AbilityVariants` (on base only Voice and the Mouth's Muster die appear; the table may move
+whole), `AbilityBadges` (the new kinds), `ComponentAction.Definition`, `ComponentActions.WithUniformDie` and the
+`Definition`s, `TurnInteraction.ChooseComponent`, `CharacterAbilityChips`, `CharacterAbilityStrip`, `CharacterInspector`,
+`CharacterRosterContext`, `CharacterRosterPanel` (the kept place removed, `Present`), `ComponentActionView`, the
+character-window and roster rules of `Characters.uss` and the component rules of `Wotr.uss`, with their tests
+(`SkillIconTests`, both `SkillIconChecks`, `CharacterRosterPanelTests`, `CharacterAbilityStripTests`,
+`ComponentActionTests` without Narya and Far-sighted, `AbilityArtTests`' window test on a base card,
+`CharacterRosterPanelNetworkTests`, `BoardCompletionLayoutTests`, `T22AbilityNetworkTests`). Expansions-only: the king's
+window (`SovereignInspector`), Evil Knowledge's footer choice (`BattleChoices`, `Battle.uss`), the combat replacement's
+icon and marker (`BattleContext`, `Interaction.uss`), Narya's activation (`NationTrackRow`, its `Wotr.uss` rule), and
+`KingsCards02Tests`, `KingsDecisionNetworkTests`, `FarSightedObjectTests`, `ExpansionDecisionNetworkTests`,
+`RulerTokenMenuTests`, `CharacterWindowLayoutTests`, `BattleArtTests`' Evil Knowledge part and the Fate, Ruler and Balrog
+parts of `CharacterRosterActionNetworkTests`.

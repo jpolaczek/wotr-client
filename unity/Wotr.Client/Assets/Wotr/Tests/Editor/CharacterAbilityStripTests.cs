@@ -23,11 +23,17 @@ namespace Wotr.EditorTests
             {
                 var icon = strip.Root.Q<Button>("roster-ability-" + Gimli + "-" + ability.Id);
                 Assert.IsNotNull(icon, ability.Id);
-                StringAssert.StartsWith(ability.Title + "\n" + ability.Text + "\n", icon.tooltip);
+                // UI-440 (owner): the skill's formatted description, as in the window: its name first, then its text.
+                var plain = SkillTooltip.Plain(icon.tooltip);
+                StringAssert.StartsWith(ability.Title + "\n", plain);
+                StringAssert.Contains(ability.Text, plain);
+                StringAssert.EndsWith("\n" + SkillUse.OpenWindow, plain);
+                Assert.IsTrue(icon.ClassListContains(RuntimeTooltip.FormattedClass));
                 StringAssert.DoesNotContain("\n\n", icon.tooltip);
                 Assert.IsFalse(icon.ClassListContains(ChoiceGlow.ClassName), "Nothing can be used yet.");
-                // UI-439: each icon is the ability's own.
+                // UI-439: each icon is the ability's own; UI-440 (owner): bare, without the small gilt frame.
                 Assert.AreEqual(Texture(AbilityArt.Folder + ability.Id), Glyph(icon), ability.Id);
+                SkillIconChecks.Bare(icon, AbilityArt.Folder + ability.Id);
             }
             var slots = strip.Root.Query<Button>(className: CharacterAbilityStrip.IconClass).ToList();
             Assert.AreEqual(4, slots.Count, "Four slots for the most abilities a card prints.");
@@ -73,7 +79,7 @@ namespace Wotr.EditorTests
             Assert.IsTrue(icon.ClassListContains(ChoiceGlow.ClassName), "A usable ability's icon glows.");
             Assert.IsTrue(strip.Offered);
             // UI-420: one line says the click, the die and the effect, without a blank line before it.
-            StringAssert.EndsWith("\nClick to use your Muster die: Move the Dwarves one step toward war.", icon.tooltip);
+            StringAssert.EndsWith("\nClick to use your Muster die: Move the Dwarves one step toward war.", SkillTooltip.Plain(icon.tooltip));
             StringAssert.DoesNotContain("\n\n", icon.tooltip);
             strip.Choose(politics);
             CollectionAssert.AreEqual(new[] { action }, used, "Its click starts the ability.");

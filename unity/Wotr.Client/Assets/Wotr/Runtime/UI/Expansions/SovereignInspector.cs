@@ -10,9 +10,9 @@ namespace Wotr.Client
     // UI-436 (owner: "the window is too big, the information is vague"): a compact card framed like a character's window.
     // Under the title and status badge, the picture of his place (clicked, it shows the region on the map) beside his
     // corruption on a small meter and what it means; then his action in words (what it takes, available now or what it
-    // still needs); then his abilities under a heading saying when they apply, as the character window's lines (icon,
-    // title, gist; a click unrolls the printed text). Every king's window has the same size at rest; an attempt's
-    // progress and a decision's consequence add their lines below.
+    // still needs); then his abilities under a heading saying when they apply, as the character window's (UI-440: a row
+    // of bare skill icons named in their tooltips; a click unrolls the printed text). Every king's window has the same
+    // size at rest; an attempt's progress and a decision's consequence add their lines below.
     public sealed class SovereignInspector
     {
         public const string RulerWindowClass = "ruler-window";
@@ -54,7 +54,6 @@ namespace Wotr.Client
             abilityHeading.AddToClassList("ability-lines-heading");
             Root.Add(abilityHeading);
             Root.Add(Abilities.Root);
-            Root.Add(Abilities.Pages);
             var progress = BoardScreen.Row("sovereign-progress");
             progress.Add(attempt);
             progress.Add(revealed);
@@ -122,7 +121,6 @@ namespace Wotr.Client
         {
             abilityHeading.text = SovereignPresentation.AbilityHeading(sovereign.Status);
             Abilities.Apply(sovereign.Status == SovereignStatus.Removed ? "" : sovereign.DefinitionId);
-            Abilities.Pages.style.display = Abilities.Paged ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         // The status badge: its icon and word, and in its tooltip what that state means.

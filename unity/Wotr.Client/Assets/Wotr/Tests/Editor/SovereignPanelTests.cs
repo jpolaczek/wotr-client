@@ -386,10 +386,15 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Abilities once awakened", inspector.Q<Label>("sovereign-ability").text);
             var lines = inspector.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
                 .Where(l => l.style.display != DisplayStyle.None).ToList();
-            Assert.AreEqual(2, lines.Count, "One line per printed ability, as in a character's window.");
-            var words = lines[0].Q<Label>(className: CharacterAbilityChips.TitleClass).text;
-            StringAssert.StartsWith("<color=#F3D48A>Dwarvenking</color> · ", words);
-            StringAssert.Contains("a Muster die upgrades a Dwarven Regular", words);
+            Assert.AreEqual(2, lines.Count, "One icon per printed ability, as in a character's window.");
+            // UI-440 (owner): each is the ability's bare icon, read only in the king's window; its formatted tooltip names it
+            // and gives its gist.
+            Assert.AreEqual("character-ability-dwarvenking", lines[0].name);
+            SkillIconChecks.Bare(lines[0], AbilityArt.For(view.Sovereigns[0].DefinitionId, "dwarvenking"));
+            Assert.IsTrue(ReadOnlyControl.Is(lines[0]));
+            var plain = SkillTooltip.Plain(lines[0].tooltip);
+            StringAssert.StartsWith("Dwarvenking\n", plain);
+            StringAssert.Contains("a Muster die upgrades a Dwarven Regular", plain);
             view.Sovereigns[0].Status = SovereignStatus.Corrupted;
             view.Sovereigns[0].DefinitionId = "kings.character.dain.corrupted";
             view.Availability[0].Conditions[0].Met = false;

@@ -98,31 +98,23 @@ namespace Wotr.PlayTests
         private static async Task InspectAbilities(MatchTestRoom room, MountedMatchClient client)
         {
             var inspector = client.Board.Characters.Inspector;
-            var expected = CharacterAbilityLibrary.For(inspector.DefinitionId);
-            var read = 0;
-            while (true)
+            var expected = CharacterAbilitySlots.For(inspector.DefinitionId);
+            CheckPanel(inspector.Root, client.Board.Map.parent.worldBound);
+            var chips = inspector.Root.Q("character-abilities").Query<Button>(className: CharacterAbilityChips.ChipClass)
+                .ToList().Where(Visible).ToArray();
+            // UI-440 (owner): every ability (each of its variants) is a bare icon in one row, in printed order; its formatted
+            // tooltip names it and shows whole.
+            Assert.AreEqual(expected.Count, chips.Length, inspector.DefinitionId);
+            for (var index = 0; index < chips.Length; index++)
             {
-                CheckPanel(inspector.Root, client.Board.Map.parent.worldBound);
-                var chips = inspector.Root.Q("character-abilities").Query<Button>(className: CharacterAbilityChips.ChipClass)
-                    .ToList().Where(Visible).ToArray();
-                Assert.LessOrEqual(chips.Length, 3);
-                foreach (var chip in chips)
-                {
-                    var ability = expected[read++];
-                    Assert.AreEqual("character-ability-" + ability.Id, chip.name);
-                    // UI-436: the chip reads its title and the gist of its text.
-                    Assert.AreEqual(CharacterAbilityChips.Line(inspector.DefinitionId, ability),
-                        chip.Q<Label>(className: CharacterAbilityChips.TitleClass).text);
-                    // UI-420: the chip shows its title; the tooltip holds the text and its source.
-                    Assert.AreEqual(ability.Text + "\n" + ability.Source, chip.tooltip);
-                    await ReadTooltip(room, client, chip);
-                }
-                var next = inspector.Root.Q<Button>("character-abilities-next");
-                if (!Visible(next) || !next.enabledInHierarchy)
-                    break;
-                await Press(room, next);
+                var slot = expected[index];
+                var chip = chips[index];
+                Assert.AreEqual(slot.Name, chip.name);
+                SkillIconChecks.Bare(chip, AbilityArt.For(inspector.DefinitionId, slot.Ability.Id), 28f);
+                Assert.AreEqual(chips[0].worldBound.yMin, chip.worldBound.yMin, 0.5f, "One row: " + chip.name);
+                StringAssert.StartsWith(slot.Ability.Title, SkillTooltip.Plain(chip.tooltip));
+                await ReadTooltip(room, client, chip);
             }
-            Assert.AreEqual(expected.Count, read, inspector.DefinitionId);
             inspector.Root.Focus();
             await room.Settle();
         }

@@ -1,252 +1,182 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
+using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // UI-139: the abilities of a character card as chips: a scroll symbol and the ability's title, its full text
-    // in the tooltip. A click unrolls the full text under the chips; nothing is unrolled by default. Three chips per
-    // page, as in UI-66. UI-369: a chip whose ability can be used now glows; selected, its unrolled text carries
-    // Click to use, whose click uses the ability. A second click on the selected chip changes nothing (owner, so the
-    // window never shrinks under the pointer); another chip or another page changes the selection. UI-436: a chip is a
-    // line of the window's width with the ability's icon, title and gist, so the window says what each ability does.
+    // UI-139/UI-369/UI-436 gave a card's abilities chips, then lines that unrolled their text and offered Click to use.
+    // UI-440 (owner: "the click simply uses the skill; the descriptions in nicely formatted tooltips"): each ability is its
+    // bare icon (SkillIcon, AbilityArt) in one row, in printed order; an ability whose commands differ shows one badged icon
+    // per variant (AbilityVariants), side by side in one group, its slots fixed. A lit icon (its ability usable now) uses it
+    // at once with one click, through the component path (Use → ComponentActions.Select): a one-click skill sends, a
+    // click-then-choose skill starts its choice on the board. Before any die is chosen, an icon whose one die (or identical
+    // dice) can pay is clickable too and takes that die (CharacterDraft.UniformDie). Every other icon is read only — a
+    // passive, triggered, reaction or entry ability, or one waiting for its die — and only explains itself: the formatted
+    // tooltip (SkillTooltip) names the ability, gives its gist, printed text and source, and says what a click does now,
+    // what it waits for or where the ability is used (AbilityUsePlaces).
     public sealed class CharacterAbilityChips
     {
         public const string ChipClass = "character-ability";
-        public const string TitleClass = "character-ability-title";
-        public const string IconClass = "character-ability-icon";
-        public const string UseClass = "character-ability-use-action";
-        public const string UsableNow = "Usable now · Click it, then Click to use below";
-        private const int PageSize = 3;
-        // A command's ability id where it differs from the printed ability it uses.
-        private static readonly IReadOnlyDictionary<string, string> CommandChips = new Dictionary<string, string>
-        {
-            ["voice-recruit"] = "muster-each-isengard-settlement-or-upgrade-two",
-            ["voice-upgrade"] = "muster-each-isengard-settlement-or-upgrade-two"
-        };
+        public const string GroupClass = "character-ability-group";
+        public const string VariantsClass = "character-ability-variants";
+        // A variant that cannot be used now is dimmed in its fixed slot.
+        public const string IdleClass = "skill-icon-idle";
         public event Action<ComponentAction> Use;
-        // UI-371: a click changes the unrolled text or the page; the window keeps its place for it.
-        public event Action Changing;
         public VisualElement Root { get; } = new VisualElement { name = "character-abilities" };
-        public VisualElement Pages { get; } = BoardScreen.Row("character-ability-pages");
-        public Label Text { get; } = new Label { name = "character-ability-text", enableRichText = false };
-        private readonly Button[] chips = new Button[PageSize];
-        private readonly string[] shownWords = new string[PageSize];
-        private readonly Button previous, next;
-        // The parchment under the chips: the text and, for a usable ability, Click to use below it. The label has no
-        // children, so it measures its text.
-        private readonly VisualElement sheet = new VisualElement { name = "character-ability-sheet" };
-        private readonly VisualElement use = new VisualElement { name = "character-ability-use" };
+        private readonly List<Icon> icons = new List<Icon>();
         private readonly ChoicePulse pulse;
-        private ILookup<string, ComponentAction> usable = Enumerable.Empty<ComponentAction>().ToLookup(ChipOf);
+        private ILookup<string, ComponentAction> offered = Enumerable.Empty<ComponentAction>().ToLookup(action => "");
         private bool editable;
-        private Func<string, string> dieName;
-        private string shownUse = "";
-        private string version = "";
-        private string opened = "";
-        private int page;
+        private PlayerView view;
+        private string version;
+
+        // One icon: its slot, its button, and the action its click uses now (none while it is read only).
+        private sealed class Icon
+        {
+            public Icon(CharacterAbilitySlots.Slot slot) => Slot = slot;
+
+            public CharacterAbilitySlots.Slot Slot { get; }
+            public Button Button { get; set; }
+            public ComponentAction Action { get; set; }
+        }
 
         public CharacterAbilityChips()
         {
             Root.AddToClassList("character-abilities");
-            for (var index = 0; index < chips.Length; index++)
-            {
-                var slot = index;
-                chips[index] = BoardScreen.Button("", () => Open(slot));
-                chips[index].AddToClassList(ChipClass);
-                // Symbol and words are children: a button with children is not sized by its own text. UI-436: the words
-                // are the title in gold and the gist of the text (our own catalogue's text, so rich text is safe).
-                var icon = new VisualElement { pickingMode = PickingMode.Ignore };
-                icon.AddToClassList(IconClass);
-                var title = new Label { pickingMode = PickingMode.Ignore, enableRichText = true };
-                title.AddToClassList(TitleClass);
-                chips[index].Add(icon);
-                chips[index].Add(title);
-                Root.Add(chips[index]);
-            }
-            previous = IconButton.Create("back", "More abilities", () => Turn(-1));
-            next = IconButton.Create("next", "More abilities", () => Turn(1));
-            previous.name = "character-abilities-previous";
-            next.name = "character-abilities-next";
-            Pages.Add(previous);
-            Pages.Add(next);
-            // Inside the chips' row, on a line of its own: a decision context hides both together.
-            Text.AddToClassList("character-ability-text");
-            Text.style.display = DisplayStyle.None;
-            sheet.AddToClassList("character-ability-sheet");
-            sheet.style.display = DisplayStyle.None;
-            use.AddToClassList("character-ability-use");
-            sheet.Add(Text);
-            sheet.Add(use);
-            Root.Add(sheet);
             pulse = new ChoicePulse(Root);
         }
 
-        public bool Paged => CharacterAbilityLibrary.For(version).Count > PageSize;
-
+        // The card's icons, built once per card.
         public void Apply(string definition)
         {
             if (definition != version)
             {
                 version = definition;
-                page = 0;
-                opened = "";
+                Build();
             }
             Refresh();
         }
 
-        // UI-369: the figure's actions that use a chip's ability light that chip; the others are returned, for their
-        // own buttons.
-        public IReadOnlyList<ComponentAction> Usable(IEnumerable<ComponentAction> actions, bool enabled, Func<string, string> dieNames = null)
+        // UI-369: the figure's actions that use one of the card's printed abilities light their icons (UI-440: an action of
+        // the window's former Actions row too — Narya, a Muster die's move or attack, Far-sighted); the others are returned,
+        // for their own buttons.
+        public IReadOnlyList<ComponentAction> Usable(IEnumerable<ComponentAction> actions, bool enabled, PlayerView latest = null)
         {
-            dieName = dieNames;
-            var printed = CharacterAbilityLibrary.For(version).Select(ability => ability.Id).ToHashSet();
+            view = latest;
+            var printed = CharacterAbilityLibrary.For(version ?? "").Select(ability => ability.Id).ToHashSet();
             var all = actions.ToList();
-            usable = all.Where(action => printed.Contains(ChipOf(action, printed))).ToLookup(action => ChipOf(action, printed));
+            offered = all.Where(action => CharacterAbilitySlots.KeyOf(action, printed).Length > 0)
+                .ToLookup(action => CharacterAbilitySlots.KeyOf(action, printed));
             editable = enabled;
             Refresh();
-            return all.Where(action => !printed.Contains(ChipOf(action, printed))).ToList();
+            return all.Where(action => CharacterAbilitySlots.KeyOf(action, printed).Length == 0).ToList();
         }
 
-        // UI-380: an expansion's command names the ability with its prefix ("kings.call-to-arms"); its chip has the
-        // printed id ("call-to-arms"). UI-391: the roster's icons map their actions the same way.
-        internal static string ChipOf(ComponentAction action, ISet<string> printed)
+        // Shows one ability's description: its first icon takes the focus, so its tooltip opens at once.
+        public void Present(string abilityId)
         {
-            var chip = ChipOf(action);
-            var bare = chip.Substring(chip.IndexOf('.') + 1);
-            return printed.Contains(chip) || !printed.Contains(bare) ? chip : bare;
+            var icon = icons.FirstOrDefault(item => item.Slot.Ability.Id == abilityId)?.Button;
+            icon?.schedule.Execute(() => icon.Focus());
         }
 
-        // The chip a character action uses; entries and other actions have none.
-        public static string ChipOf(ComponentAction action)
+        public IEnumerable<Button> Icons => icons.Select(icon => icon.Button);
+
+        private void Build()
         {
-            var ability = action.Character?.AbilityId ?? "";
-            return CommandChips.TryGetValue(ability, out var chip) ? chip : ability;
+            Root.Clear();
+            icons.Clear();
+            foreach (var group in CharacterAbilitySlots.For(version).GroupBy(slot => slot.Ability.Id))
+                Root.Add(Group(group.Key, group));
         }
 
-        // Unrolls one chip's text, as its click does.
-        public void Select(string abilityId)
+        // UI-440 (owner): an ability's icons stand together, one group that never splits across rows.
+        private VisualElement Group(string ability, IEnumerable<CharacterAbilitySlots.Slot> slots)
         {
-            opened = abilityId ?? "";
-            Refresh();
+            var group = new VisualElement { name = "character-ability-group-" + ability, pickingMode = PickingMode.Ignore };
+            group.AddToClassList(GroupClass);
+            group.EnableInClassList(VariantsClass, AbilityVariants.Grouped(ability));
+            foreach (var slot in slots)
+                group.Add(Create(slot));
+            return group;
         }
 
-        private void Turn(int step)
+        private Button Create(CharacterAbilitySlots.Slot slot)
         {
-            Changing?.Invoke();
-            page += step;
-            opened = "";
-            Refresh();
+            var icon = new Icon(slot);
+            icon.Button = SkillIcon.Create(AbilityArt.For(version, slot.Ability.Id), slot.Ability.Title, () => Click(icon));
+            icon.Button.name = slot.Name;
+            icon.Button.userData = slot.Ability.Id;
+            icon.Button.AddToClassList(ChipClass);
+            icon.Button.AddToClassList(RuntimeTooltip.FormattedClass);
+            if (slot.Variant.Badge.Length > 0)
+                IconButton.AddBadge(icon.Button, slot.Variant.Badge);
+            icons.Add(icon);
+            return icon.Button;
         }
 
-        private void Open(int slot)
+        // An icon's click, by the icon's name: uses its action when it has one; false for a read-only icon.
+        public bool Choose(string iconName)
         {
-            var id = chips[slot].userData as string ?? "";
-            if (id == opened)
-                return;
-            Changing?.Invoke();
-            opened = id;
-            Refresh();
+            var icon = icons.FirstOrDefault(item => item.Button.name == iconName);
+            return icon != null && Click(icon);
+        }
+
+        private bool Click(Icon icon)
+        {
+            if (icon.Action == null)
+                return false;
+            Use?.Invoke(icon.Action);
+            return true;
         }
 
         private void Refresh()
         {
-            var entries = CharacterAbilityLibrary.For(version);
-            page = Math.Max(0, Math.Min(page, Math.Max(0, (entries.Count - 1) / PageSize)));
-            for (var index = 0; index < chips.Length; index++)
-            {
-                var chip = chips[index];
-                var entry = page * PageSize + index;
-                chip.style.display = entry < entries.Count ? DisplayStyle.Flex : DisplayStyle.None;
-                if (entry >= entries.Count)
-                    continue;
-                var ability = entries[entry];
-                chip.name = "character-ability-" + ability.Id;
-                chip.userData = ability.Id;
-                Words(index, ability);
-                var ready = editable && usable[ability.Id].Any(action => action.Enabled);
-                // UI-420 (owner): the chip shows the title, so its tooltip starts with the text, without blank lines.
-                chip.tooltip = TooltipText.Lines(ability.Text, ability.Source, ready ? UsableNow : "");
-                chip.EnableInClassList("selected", opened == ability.Id);
-                ChoiceGlow.Apply(chip, ready);
-            }
-            var open = entries.FirstOrDefault(a => a.Id == opened);
-            Text.text = open == null ? "" : open.Text + "\n" + open.Source;
-            Text.style.display = open == null ? DisplayStyle.None : DisplayStyle.Flex;
-            sheet.style.display = Text.style.display;
-            ShowUse(open == null ? new List<ComponentAction>() : usable[open.Id].ToList());
-            pulse.Run(chips.Any(chip => chip.ClassListContains(ChoiceGlow.ClassName)) ||
-                use.Children().Any(button => button.ClassListContains(ChoiceGlow.ClassName)));
-            Pages.style.display = entries.Count > PageSize ? DisplayStyle.Flex : DisplayStyle.None;
-            previous.SetEnabled(page > 0);
-            next.SetEnabled((page + 1) * PageSize < entries.Count);
+            foreach (var icon in icons)
+                RefreshIcon(icon);
+            pulse.Run(icons.Any(icon => icon.Button.ClassListContains(ChoiceGlow.ClassName)));
         }
 
-        // UI-436: the chip says what the ability does — the gist of its text under its title — and shows its icon, the one
-        // its roster row shows (UI-439: AbilityArt); set only when the chip's card or ability changes.
-        private void Words(int slot, CharacterAbilityText ability)
+        // A usable icon glows and takes clicks; one that can take its one die is clickable without the glow; any other
+        // is read only, a variant among them dimmed in its slot.
+        private void RefreshIcon(Icon icon)
         {
-            var key = version + "#" + ability.Id;
-            if (shownWords[slot] == key)
-                return;
-            shownWords[slot] = key;
-            var chip = chips[slot];
-            chip.Q<Label>(className: TitleClass).text = Line(version, ability);
-            var picture = Resources.Load<Texture2D>(AbilityArt.For(version, ability.Id));
-            chip.Q(className: IconClass).style.backgroundImage = picture == null ? new StyleBackground(StyleKeyword.Null) : new StyleBackground(picture);
+            var actions = editable ? offered[icon.Slot.Key].ToList() : new List<ComponentAction>();
+            var ready = actions.FirstOrDefault(action => action.Enabled);
+            var payable = ready == null ? actions.FirstOrDefault(action => UniformDie(action).Length > 0) : null;
+            icon.Action = ready ?? payable;
+            var button = icon.Button;
+            ReadOnlyControl.Apply(button, icon.Action != null);
+            button.EnableInClassList(IdleClass, icon.Action == null && AbilityVariants.Grouped(icon.Slot.Ability.Id));
+            ChoiceGlow.Apply(button, ready != null);
+            var tooltip = Tooltip(icon.Slot, State(icon.Slot, actions, ready, payable), icon.Action != null);
+            if (button.tooltip != tooltip)
+                button.tooltip = tooltip;
         }
 
-        // "Stewardship · With Denethor in Minas Tirith, a Muster die upgrades a Gondor Regular there", the title in gold. A
-        // colour, not bold: the window's font has no bold face, and a synthesized one is measured shorter than it is drawn.
-        public static string Line(string definitionId, CharacterAbilityText ability)
+        private string State(CharacterAbilitySlots.Slot slot, IReadOnlyList<ComponentAction> actions, ComponentAction ready, ComponentAction payable)
         {
-            var gist = CharacterAbilitySummaries.Summary(definitionId, ability.Id);
-            return "<color=" + TitleColour + ">" + ability.Title + "</color>" + (gist.Length > 0 ? TooltipText.Separator + gist : "");
+            if (ready != null)
+                return SkillUse.Ready(ready, DieName(ready.DieId));
+            if (payable != null)
+                return SkillUse.Ready(payable, DieName(UniformDie(payable)));
+            return actions.Count > 0 ? SkillUse.ChooseDie : AbilityUsePlaces.For(slot.Ability.Id);
         }
 
-        private const string TitleColour = "#F3D48A";
-
-        // One Click to use per action of the unrolled ability (Saruman's Voice has two); rebuilt only when they change.
-        private void ShowUse(IReadOnlyList<ComponentAction> actions)
+        private string Tooltip(CharacterAbilitySlots.Slot slot, string state, bool usable)
         {
-            use.style.display = actions.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            var key = string.Join("|", actions.Select(action => action.Key + ":" + action.Enabled)) + "/" + editable;
-            if (key == shownUse)
-                return;
-            shownUse = key;
-            use.Clear();
-            foreach (var action in actions)
-                use.Add(UseButton(action, actions.Count > 1));
+            var parts = SkillTooltip.Of(version, slot.Ability.Id);
+            parts.Variant = slot.Variant.Name;
+            parts.State = state;
+            parts.Ready = usable;
+            return SkillTooltip.Format(parts);
         }
 
-        private Button UseButton(ComponentAction action, bool named)
-        {
-            var button = BoardScreen.Button("", () => Use?.Invoke(action));
-            button.name = "character-ability-use-" + (action.Character?.AbilityId ?? action.Key);
-            button.AddToClassList(UseClass);
-            var icon = new VisualElement { pickingMode = PickingMode.Ignore };
-            icon.AddToClassList("character-ability-use-icon");
-            button.Add(icon);
-            var label = named ? "Click to use · " + (action.Character?.Title ?? action.Owner) : "Click to use";
-            var title = new Label(label) { pickingMode = PickingMode.Ignore };
-            title.AddToClassList("character-ability-use-title");
-            button.Add(title);
-            button.SetEnabled(editable && action.Enabled);
-            // UI-372: a usable Click to use glows like every other choice.
-            ChoiceGlow.Apply(button, editable && action.Enabled);
-            button.tooltip = UseTooltip(action);
-            return button;
-        }
+        // UI-440: before any die is chosen, the one die (or identical dice) that can pay for a character's ability.
+        private string UniformDie(ComponentAction action) =>
+            view != null && action.Character != null && action.DieId.Length == 0 ? CharacterDraft.UniformDie(view, action.Character) : "";
 
-        // UI-373: "Use your Event die: <what the ability does>".
-        private string UseTooltip(ComponentAction action)
-        {
-            if (!action.Enabled)
-                return "Select an eligible die to use it.";
-            var effect = action.Detail.Length > 0 ? action.Detail : "Use this ability.";
-            return DieUse.Tooltip(dieName?.Invoke(action.DieId) ?? "", effect);
-        }
+        private string DieName(string die) => DieUse.Name(view, die);
     }
 }

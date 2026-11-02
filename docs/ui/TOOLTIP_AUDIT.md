@@ -110,3 +110,13 @@ timing and the rules page (rule 2: the lines do not repeat the tooltip's title).
 title and gist (`Dwarvenking · With Dáin in Erebor, a Muster die upgrades a Dwarven Regular there`), a king's under a
 heading saying when they apply (`Abilities once awakened`, `Weaknesses while corrupted`); the chip's tooltip stays the
 printed text and page (rule 2 as UI-420 set it: it does not repeat the title).
+Follow-up (2026-11-02, UI-440): a skill button is its bare icon, so its words move into its tooltip, one formatted form
+wherever the skill's icon stands — the character and king windows, the roster row, a component button (`SkillTooltip`,
+rich text through `RuntimeTooltip.FormattedClass`, `RichText` shared with the roster row's tooltip): the name in bold gold
+(then the variant, `Saruman's Voice · Recruit`, and on a component button the owner), the gist dim on the second line, a
+thin gap, the printed text, the source small and faint, a thin gap, and the state (rule 1): what a click does now in
+bright gold (`Click to use your Muster die: Move the Dwarves one step toward war`, `SkillUse`), or dim — `Choose an
+eligible die first`, `Usable with an eligible die or token`, where a reaction is used (`AbilityUsePlaces`: `Offered in
+battle: click his portrait`), or on the roster `Click to open the character's window`. The name now leads (rule 2: the
+icon shows no words to repeat). Evil Knowledge's direct choice leads with its name too (`Evil Knowledge · Click to extend
+the siege by one round without downgrading an Elite · Once per action`); the portrait's offer is unchanged.

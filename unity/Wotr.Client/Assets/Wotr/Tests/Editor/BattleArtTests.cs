@@ -194,11 +194,11 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("extend-siege", BattleChoices.IconFor(CommandKind.ExtendSiege));
             // UI-439: Evil Knowledge's button carries the ability's own icon (AbilityArt), not a battle icon.
             Assert.AreEqual("", BattleChoices.IconFor(CommandKind.UseEvilKnowledge));
-            StringAssert.StartsWith("Click to extend the siege", BattleChoices.DirectTooltip(CommandKind.UseEvilKnowledge));
+            StringAssert.StartsWith("Evil Knowledge · Click to extend the siege", BattleChoices.DirectTooltip(CommandKind.UseEvilKnowledge));
             Assert.AreEqual("", BattleChoices.IconFor(CommandKind.CommitCombatCard), "Only decisions with art get an icon.");
 
             var view = BattleScreenFixture.Create(CommandKind.ContinueBattle, mode: BattleMode.Sortie);
-            view.Options.Add(new ActionOption { Kind = CommandKind.UseEvilKnowledge });
+            view.Options.Add(new ActionOption { Kind = CommandKind.UseEvilKnowledge, Enabled = true });
             var draft = new TurnDraft();
             draft.Choose(CommandKind.ContinueBattle);
             var root = new VisualElement();
@@ -208,12 +208,14 @@ namespace Wotr.Client.Tests
             Assert.IsNotNull(stop);
             Assert.IsTrue(stop.ClassListContains("battle-direct"));
             Assert.IsTrue(stop.Q("battle-direct-icon").ClassListContains("battle-direct-icon-stop"));
+            // UI-440 (owner): without the Mouth's portrait, Evil Knowledge is its bare skill icon — no frame, no words —
+            // glowing while usable and named in its tooltip; its click sends the same command.
             var evil = footer.Q<Button>("action-UseEvilKnowledge");
-            Assert.IsTrue(evil.ClassListContains("battle-direct"), "Without the Mouth's portrait Evil Knowledge is a framed choice.");
-            var icon = evil.Q("battle-direct-icon");
-            Assert.IsTrue(icon.ClassListContains(BattleChoices.AbilityIconClass));
-            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "evil-knowledge"),
-                icon.style.backgroundImage.value.texture);
+            Assert.IsTrue(evil.ClassListContains(BattleChoices.SkillChoiceClass));
+            Assert.IsFalse(evil.ClassListContains("battle-direct"));
+            Wotr.EditorTests.SkillIconChecks.Bare(evil, AbilityArt.Folder + "evil-knowledge");
+            Assert.IsTrue(evil.ClassListContains(ChoiceGlow.ClassName));
+            StringAssert.StartsWith("Evil Knowledge · ", evil.tooltip);
             Assert.AreEqual("Stop battle", stop.text, "The text stays the control; the icon only decorates it.");
             // UI-420 (owner): a direct choice says what its click does and names the battle's region.
             Assert.AreEqual("Stop battle · End the attack on Lossarnach; your army stays in Minas Tirith", stop.tooltip);
@@ -238,7 +240,7 @@ namespace Wotr.Client.Tests
             Assert.AreEqual("Stay · No figure advances into Lossarnach", BattleChoices.DirectTooltip(view, CommandKind.AdvanceBattle, data));
             view.Battle.Attacker.RegionId = view.Battle.RegionId;
             Assert.AreEqual("Stop battle · End the attack; your army stays in Lossarnach", BattleChoices.DirectTooltip(view, CommandKind.StopBattle, data));
-            StringAssert.StartsWith("Click to extend the siege", BattleChoices.DirectTooltip(view, CommandKind.UseEvilKnowledge, data));
+            StringAssert.StartsWith("Evil Knowledge · Click to extend the siege", BattleChoices.DirectTooltip(view, CommandKind.UseEvilKnowledge, data));
 
             var draft = new TurnDraft();
             draft.Choose(CommandKind.RetreatBattle);

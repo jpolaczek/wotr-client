@@ -19,6 +19,8 @@ namespace Wotr.Client
         private readonly Button reaction;
         private readonly Button resume;
         private List<ComponentAction> components = new List<ComponentAction>();
+        // UI-440: every action of the turn, an ability used on its own object included: the window's icons use it too.
+        private List<ComponentAction> offered = new List<ComponentAction>();
         private PlayerView view;
         private TurnDraft draft;
         private VisualElement tray, dock;
@@ -61,7 +63,8 @@ namespace Wotr.Client
             view = latest;
             draft = selection;
             // UI-271: an ability used on its own object is not repeated as an inspector button.
-            components = choices.Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
+            offered = choices.ToList();
+            components = offered.Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
             enabled = canEdit;
             DecisionFigure = CharacterRosterActions.OwnsDecision(view, draft)
                 ? CharacterRosterActions.DecisionFigure(view, draft) : "";
@@ -138,10 +141,12 @@ namespace Wotr.Client
             panel.DecisionHost.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
             inspector.SetDecisionContext(active);
             var choices = (view == null || draft?.Kind != null ? Enumerable.Empty<ComponentAction>() :
-                CharacterRosterActions.For(view, inspector.FigureId, inspector.DefinitionId, components))
+                CharacterRosterActions.For(view, inspector.FigureId, inspector.DefinitionId, offered))
                 .Where(item => item.Kind != CommandKind.EnterCharacter || Entries(inspector.FigureId).Count > 1).ToList();
-            // UI-369: an ability with a chip is used from its chip; only the other actions keep a button.
-            var buttons = inspector.Abilities.Usable(choices, enabled, id => DieUse.Name(view, id));
+            // UI-369/UI-440: an action that uses one of the card's abilities is used from its icon; only the others (an
+            // entry) keep a button, and never one used on its own object (UI-271).
+            var buttons = inspector.Abilities.Usable(choices, enabled, view)
+                .Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
             actions.Apply(buttons, enabled);
             Present(actions.Root, buttons.Count > 0);
             Present(resume, DecisionFigure.Length > 0 && !active);

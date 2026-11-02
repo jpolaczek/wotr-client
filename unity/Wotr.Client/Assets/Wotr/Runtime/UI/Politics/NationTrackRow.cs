@@ -20,8 +20,8 @@ namespace Wotr.Client
         public Button Activation { get; private set; }
         public NationView Nation { get; private set; }
         public bool Own { get; private set; }
-        // UI-423: the token wears the shared ChoiceGlow, so the panel's ticker pulses it.
-        public bool Glowing => Token.ClassListContains(ChoiceGlow.ClassName);
+        // UI-423: the token wears the shared ChoiceGlow, so the panel's ticker pulses it; UI-440: so does Narya's icon.
+        public bool Glowing => Token.ClassListContains(ChoiceGlow.ClassName) || Activation.ClassListContains(ChoiceGlow.ClassName);
         private const float GlowScale = 1.45f;
         private readonly Label label = new Label();
         private readonly VisualElement glow;
@@ -69,8 +69,8 @@ namespace Wotr.Client
             Advance.name = "nation-advance-" + id;
             Advance.AddToClassList("nation-advance");
             column.Add(Advance);
-            // UI-439: the activation is Narya's, so it shows Narya's icon (AbilityArt).
-            Activation = IconButton.Picture(AbilityArt.For(CommandKind.UseNarya), "Activate", () => { if (activating) activate(id); });
+            // UI-439: the activation is Narya's, so it shows Narya's icon (AbilityArt); UI-440: the bare skill icon.
+            Activation = SkillIcon.Create(AbilityArt.For(CommandKind.UseNarya), "Activate", () => { if (activating) activate(id); });
             Activation.name = "nation-activate-" + id;
             Activation.AddToClassList("nation-activate");
             Activation.userData = id;
@@ -190,6 +190,7 @@ namespace Wotr.Client
             Activation.style.visibility = actions.ActivationOffered ? Visibility.Visible : Visibility.Hidden;
             Activation.SetEnabled(activating);
             Activation.EnableInClassList("legal-target", activating);
+            ChoiceGlow.Apply(Activation, activating);
             Activation.tooltip = actions.ActivationHint;
         }
 

@@ -77,7 +77,7 @@ namespace Wotr.Client
             foreach (var choice in view.Options.Where(o => o.Kind != draft.Kind && BattleDraft.IsImmediate(o.Kind) &&
                          !(o.Kind == CommandKind.UseEvilKnowledge && EvilKnowledgeChoice.OnPortrait(view))))
             {
-                var button = AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct);
+                var button = AddDirect(footer, DecisionTray.Label(choice.Kind), "action-" + choice.Kind, choice.Kind, direct, choice.Enabled);
                 button.tooltip = DirectTooltip(view, choice.Kind, data);
             }
         }
@@ -150,22 +150,49 @@ namespace Wotr.Client
                 : "Click to fight this round without a Combat card";
         }
 
-        internal static Button AddDirect(VisualElement root, string title, string name, CommandKind kind, Action<CommandKind> direct)
+        internal static Button AddDirect(VisualElement root, string title, string name, CommandKind kind, Action<CommandKind> direct,
+            bool usable = true)
         {
-            var button = BoardScreen.Button(title, () => direct(kind));
-            button.name = name;
-            // UI-116/UI-119: a framed direct choice carries its icon; the width lives in Battle.uss per button. UI-439: a
-            // choice that uses an ability (Evil Knowledge) carries the ability's own icon.
-            var icon = name == "battle-no-card" ? "no-card" : name == "battle-stay" ? "hold" : IconFor(kind);
             var ability = AbilityArt.For(kind);
-            if (icon.Length > 0 || ability.Length > 0)
-            {
-                button.AddToClassList("battle-direct");
-                button.Add(ability.Length > 0 ? AbilityIcon(ability) : DirectIcon(icon));
-            }
-            button.tooltip = DirectTooltip(kind);
+            var button = ability.Length > 0 ? SkillChoice(ability, kind, direct, usable) : FramedChoice(title, name, kind, direct);
+            button.name = name;
             root.Add(button);
             return button;
+        }
+
+        // UI-116/UI-119: a framed direct choice carries its icon; the width lives in Battle.uss per button.
+        private static Button FramedChoice(string title, string name, CommandKind kind, Action<CommandKind> direct)
+        {
+            var button = BoardScreen.Button(title, () => direct(kind));
+            var icon = name == "battle-no-card" ? "no-card" : name == "battle-stay" ? "hold" : IconFor(kind);
+            if (icon.Length > 0)
+            {
+                button.AddToClassList("battle-direct");
+                button.Add(DirectIcon(icon));
+            }
+            button.tooltip = DirectTooltip(kind);
+            return button;
+        }
+
+        // UI-440 (owner): a choice that uses an ability (Evil Knowledge, UI-439's icon) is the ability's bare icon, without
+        // the frame and the words; its tooltip names it. While usable it glows and pulses on its own (the footer hosts no
+        // pulse); otherwise it is read only and its click sends nothing.
+        public const string SkillChoiceClass = "battle-skill-choice";
+
+        private static Button SkillChoice(string ability, CommandKind kind, Action<CommandKind> direct, bool usable)
+        {
+            var button = SkillIcon.Create(ability, DirectTooltip(kind), () => SendSkill(kind, direct, usable));
+            button.AddToClassList(SkillChoiceClass);
+            ReadOnlyControl.Apply(button, usable);
+            ChoiceGlow.Apply(button, usable);
+            new ChoicePulse(button).Run(usable);
+            return button;
+        }
+
+        private static void SendSkill(CommandKind kind, Action<CommandKind> direct, bool usable)
+        {
+            if (usable)
+                direct(kind);
         }
 
         // UI-116: a framed direct choice may carry an icon; the text stays the control.
@@ -178,21 +205,11 @@ namespace Wotr.Client
             return icon;
         }
 
-        // UI-439: a direct choice's icon that is an ability's own (AbilityArt), in the same place and size.
-        public const string AbilityIconClass = "battle-direct-icon-ability";
-
-        public static VisualElement AbilityIcon(string resource)
-        {
-            var icon = DirectIcon();
-            icon.AddToClassList(AbilityIconClass);
-            icon.style.backgroundImage = IconButton.Background(resource);
-            return icon;
-        }
-
-        // UI-271: the Mouth of Sauron's Evil Knowledge says what its click does, as the label names only the ability.
+        // UI-271: the Mouth of Sauron's Evil Knowledge says what its click does. UI-440: its name leads, as a direct
+        // choice's label leads its tooltip, now that its button is the bare icon.
         public static string DirectTooltip(CommandKind kind) => kind switch
         {
-            CommandKind.UseEvilKnowledge => "Click to extend the siege by one round without downgrading an Elite · Evil Knowledge, once per action",
+            CommandKind.UseEvilKnowledge => "Evil Knowledge · Click to extend the siege by one round without downgrading an Elite · Once per action",
             _ => ""
         };
 

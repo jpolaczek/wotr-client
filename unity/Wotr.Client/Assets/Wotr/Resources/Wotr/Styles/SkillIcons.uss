@@ -1,0 +1,103 @@
+/* UI-440 (owner, 2026-11-02): a skill button is the skill's icon alone (Runtime/UI/SkillIcon.cs): no frame, plate or
+   text in any state. The button is the icon's box and its hit target; the picture fills it but for a 2-point margin.
+   - Usable (.choice-glow): a soft gilt light (ornaments/skill-glow, a texture: no CSS filter, UI-322) glows behind the
+     icon and breathes in the shared 750 ms rhythm of its host's ChoicePulse (or its own, .choice-glow-pulse on the icon);
+     Reduced motion keeps it bright and still. The icon keeps its size.
+   - Chosen (.selected: an applied replacement): a short gold underline under the icon.
+   - Hover brightens (a faint light behind the icon); a press sinks the icon a point and darkens it (UI-113,
+     .pressed); keyboard focus rings it (.keyboard-focus, KeyboardFocusRing) and shows its tooltip.
+   - Read only (.read-only, a click uses nothing now): no light and no press; a variant not offered now is also dimmed
+     in its fixed slot (.skill-icon-idle). Disabled: dimmed.
+   Context sheets only size the box (Characters.uss, Wotr.uss, Interaction.uss, Battle.uss). */
+#board-screen .skill-icon,
+#board-screen .skill-icon:hover,
+#board-screen .skill-icon:active,
+#board-screen .skill-icon:focus,
+#board-screen .skill-icon:disabled,
+#board-screen .skill-icon.legal-target,
+#board-screen .skill-icon.choice-glow,
+#board-screen .skill-icon.selected,
+#board-screen .skill-icon.pressed {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: none;
+    overflow: visible;
+}
+#board-screen .skill-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+}
+#board-screen .skill-icon:disabled { opacity: 0.45; }
+/* A variant that cannot be used now stays in its fixed slot, dimmed (CharacterAbilityChips.IdleClass). */
+#board-screen .skill-icon.skill-icon-idle > .skill-icon-glyph { opacity: 0.5; }
+
+.skill-icon > .skill-icon-glyph {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+#board-screen .skill-icon.pressed > .skill-icon-glyph { -unity-background-image-tint-color: rgb(196, 184, 160); }
+
+.skill-icon > .skill-icon-halo {
+    position: absolute;
+    left: -30%;
+    top: -30%;
+    right: -30%;
+    bottom: -30%;
+    display: none;
+    background-image: resource("Wotr/Art/UI/ornaments/skill-glow");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+#board-screen .skill-icon.choice-glow > .skill-icon-halo { display: flex; opacity: 1; }
+#board-screen .skill-icon:hover > .skill-icon-halo,
+#board-screen .skill-icon.keyboard-focus > .skill-icon-halo { display: flex; opacity: 0.3; }
+#board-screen .skill-icon.choice-glow:hover > .skill-icon-halo,
+#board-screen .skill-icon.choice-glow.keyboard-focus > .skill-icon-halo { opacity: 1; }
+/* UI-440: an icon a click does not use (ReadOnlyControl: a passive, triggered, reaction or entry ability, or one waiting for
+   its die) only explains itself: no light under the pointer, no press; its tooltip and its focus ring stay. */
+#board-screen .skill-icon.read-only:hover > .skill-icon-halo,
+#board-screen .skill-icon.read-only.keyboard-focus > .skill-icon-halo { display: none; }
+.motion-enabled #board-screen .skill-icon > .skill-icon-halo {
+    transition-property: opacity, scale;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .choice-glow-pulse .skill-icon.choice-glow > .skill-icon-halo,
+.motion-enabled #board-screen .skill-icon.choice-glow.choice-glow-pulse > .skill-icon-halo {
+    opacity: 0.45;
+    scale: 0.86 0.86;
+}
+
+.skill-icon > .skill-icon-mark {
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    bottom: -4px;
+    height: 2px;
+    display: none;
+    border-radius: 1px;
+    background-color: rgb(255, 214, 112);
+}
+#board-screen .skill-icon.selected > .skill-icon-mark { display: flex; }
+
+.skill-icon > .skill-icon-ring {
+    position: absolute;
+    left: -3px;
+    top: -3px;
+    right: -3px;
+    bottom: -3px;
+    display: none;
+    border-width: 1px;
+    border-radius: 50%;
+    border-color: rgba(255, 226, 150, 0.9);
+}
+#board-screen .skill-icon.keyboard-focus > .skill-icon-ring { display: flex; }

@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
@@ -131,7 +133,10 @@ namespace Wotr.PlayTests
             await ComponentGestures.Cost(room, room.Sh, cost.DieId);
             await Inspect(room, room.Sh, cost.RequiredCharacterId);
             Assert.IsFalse(Picked(room.Sh, cost.RequiredCharacterId), "The portrait must not choose Use Balrog automatically.");
-            await Ability(room, room.Sh, "MoveShadowCharacters-use-balrog");
+            // UI-440 (owner): the window's former Actions row stands in the icon row: Balrog Activation's variants side by side,
+            // the move alone lit; the widest row of any card stays one row in every layout.
+            await Widest(room, room.Sh);
+            await UseVariant(room, room.Sh, "character-ability-balrog-activation-MoveShadowCharacters");
             board.Characters.Close();
             await Pick(room, room.Sh, cost.RequiredCharacterId);
             var nazgul = board.View.Units.Single(u => u.Location == "moria" && u.Kind == UnitKind.Nazgul).Id;
@@ -156,8 +161,7 @@ namespace Wotr.PlayTests
             await ComponentGestures.Cost(room, room.Fp, die);
             await Inspect(room, room.Fp, "kings.sovereign.theoden");
             // UI-380: the token's ability stands on its chip (the command's "kings." prefix matches the printed id).
-            await UseChip(room, room.Fp, "mustering-of-the-mark", "character-kings.sovereign.theoden-kings.mustering-of-the-mark",
-                "kings.mustering-of-the-mark");
+            await UseChip(room, room.Fp, "mustering-of-the-mark", "character-kings.sovereign.theoden-kings.mustering-of-the-mark", "theoden");
             Assert.AreSame(board.Characters.DecisionHost, board.Tray.parent);
             Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q("character-limits").resolvedStyle.display);
             var revision = board.View.Revision;
@@ -241,8 +245,14 @@ namespace Wotr.PlayTests
             Assert.AreEqual("Gimli", board.Characters.Inspector.Root.Q<Label>(className: "title").text);
             Assert.AreEqual("Fate", board.Characters.Inspector.Root.Q<Label>("character-edition").text);
             var revision = board.View.Revision;
-            await UseChip(room, room.Fp, choice.AbilityId, ComponentGestures.Character(choice));
+            // UI-440: the icon's one click sends what Click to use sent (the same component path on the same die).
+            var expected = OldPayload(board.View, choice.Dice[0], ComponentGestures.Character(choice));
+            var sent = new List<GameCommand>();
+            room.Fp.Interaction.CommandAnswered += (command, receipt, _) => sent.Add(command);
+            await UseChip(room, room.Fp, choice.AbilityId, ComponentGestures.Character(choice), "gimli");
             await room.At(revision + 1);
+            Assert.AreEqual(CommandKind.UseCharacterAbility, sent.Single().Kind);
+            Assert.AreEqual(expected, JsonConvert.SerializeObject(sent.Single().Payload), "The icon sends the old payload.");
             var nation = room.Sh.Board.View.Nations.Single(n => n.Id == "dwarves");
             Assert.IsTrue(nation.Active);
             Assert.AreEqual(1, nation.StepsToWar);
@@ -282,40 +292,74 @@ namespace Wotr.PlayTests
         private static string Location(MountedMatchClient client, string id) =>
             client.Board.View.Characters.Single(c => c.Id == id).Location;
 
-        private static async Task Ability(MatchTestRoom room, MountedMatchClient client, string key)
+        // UI-369: an ability with a chip has no separate button: its chip glows, and once selected its Click to use uses it.
+        // UI-440 (owner): the ability's bare icon glows while it can be used, its formatted tooltip names it and says what
+        // the click does; one click uses it (no unrolled text, no Click to use): a one-click ability sends, a click-then-choose
+        // one starts its choice on the board. shots: the four layouts' screenshots' name.
+        private static async Task UseChip(MatchTestRoom room, MountedMatchClient client, string ability, string key, string shots)
         {
             await room.Settle();
-            var button = client.Board.Characters.Inspector.Actions.Q<Button>("component-" + key);
-            Assert.IsNotNull(button, key);
-            Assert.IsTrue(button.enabledInHierarchy, key);
+            var inspector = client.Board.Characters.Inspector;
+            Assert.IsNull(inspector.Actions.Q<Button>("component-" + key), "An ability with an icon has no separate button.");
+            var chip = inspector.Root.Q<Button>("character-ability-" + ability);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), ability + " glows while it can be used.");
+            var title = CharacterAbilityLibrary.For(inspector.DefinitionId).Single(item => item.Id == ability).Title;
+            var plain = SkillTooltip.Plain(chip.tooltip);
+            StringAssert.StartsWith(title + "\n", plain);
+            StringAssert.Contains("\nClick to use your ", plain);
+            SkillIconChecks.Bare(chip, AbilityArt.For(inspector.DefinitionId, ability), 28f);
+            Assert.IsFalse(ReadOnlyControl.Is(chip));
+            await SkillIconLayouts.Capture(room, client, "usable-" + shots);
+            PointerGestureEvents.ClickAt(chip);
+            await room.Settle();
+            Assert.IsFalse(chip.ClassListContains(KeyboardFocusRing.ClassName), "A click leaves no focus ring round the icon.");
+            Assert.IsNull(inspector.Root.Q("character-ability-sheet"), "No text unrolls; the tooltip describes.");
+            LayoutTests.Save(client.Viewport, "ui440-used-" + shots + ".png");
+        }
+
+        // UI-440 (owner): a variant's icon is used like any other: lit, its click starts the variant's choice on the board.
+        private static async Task UseVariant(MatchTestRoom room, MountedMatchClient client, string icon)
+        {
+            var inspector = client.Board.Characters.Inspector;
+            Assert.IsEmpty(inspector.Actions.Query<Button>().ToList().Where(button => button.name.StartsWith("component-")),
+                "No separate ability button stands in the window.");
+            var button = inspector.Root.Q<Button>(icon);
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), icon);
+            Assert.IsNotNull(button.Q(className: IconButton.BadgeClass), "A variant wears its badge.");
             PointerGestureEvents.ClickAt(button);
             await room.Settle();
         }
 
-        // UI-369: an ability with a chip has no separate button: its chip glows, and once selected its Click to use uses it.
-        // use: the command's ability id, which names Click to use (an expansion's carries its prefix); the chip's by default.
-        private static async Task UseChip(MatchTestRoom room, MountedMatchClient client, string ability, string key, string use = null)
+        // UI-440 (owner, 2026-11-02): the Balrog's seven icons (Balrog Activation's four variants with his three other
+        // abilities) stand in one row, each ability's icons adjacent in its group, in four layouts.
+        private static async Task Widest(MatchTestRoom room, MountedMatchClient client)
         {
-            use ??= ability;
-            await room.Settle();
             var inspector = client.Board.Characters.Inspector;
-            Assert.IsNull(inspector.Actions.Q<Button>("component-" + key), "An ability with a chip has no separate button.");
-            var chip = inspector.Root.Q<Button>("character-ability-" + ability);
-            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), ability + " glows while it can be used.");
-            Assert.IsNull(inspector.Root.Q<Button>("character-ability-use-" + use), "Click to use waits for the chip to be selected.");
-            PointerGestureEvents.ClickAt(chip);
-            await room.Settle();
-            var button = inspector.Root.Q<Button>("character-ability-use-" + use);
-            Assert.IsNotNull(button, use);
-            Assert.IsTrue(button.enabledInHierarchy, use);
-            var sheet = inspector.Root.Q("character-ability-sheet");
-            Assert.IsTrue(sheet.worldBound.Contains(button.worldBound.center), "Click to use stands on the parchment.");
-            Assert.IsFalse(button.worldBound.Overlaps(inspector.Root.Q("character-ability-text").worldBound), "It covers no text.");
-            Assert.IsTrue(inspector.Root.worldBound.Contains(new UnityEngine.Vector2(sheet.worldBound.center.x, sheet.worldBound.yMax - 1)),
-                "The window holds the whole parchment.");
-            LayoutTests.Save(client.Viewport, "ui369-click-to-use.png");
-            PointerGestureEvents.ClickAt(button);
-            await room.Settle();
+            Assert.AreEqual(7, inspector.Abilities.Icons.Count(), "The most icons a card shows.");
+            await SkillIconLayouts.Capture(room, client, "widest-balrog", () => OneRow(inspector));
+        }
+
+        private static void OneRow(CharacterInspector inspector)
+        {
+            var icons = inspector.Abilities.Icons.ToList();
+            foreach (var icon in icons)
+            {
+                Assert.AreEqual(icons[0].worldBound.yMin, icon.worldBound.yMin, 0.5f, "One row: " + icon.name);
+                Assert.LessOrEqual(icon.worldBound.xMax, inspector.Root.worldBound.xMax, icon.name + " stands inside the window.");
+            }
+            for (var index = 1; index < icons.Count; index++)
+                Assert.Greater(icons[index].worldBound.xMin, icons[index - 1].worldBound.xMax, "In printed order, side by side.");
+        }
+
+        // UI-440: the payload the old Click to use sent for this action — the same component path (ComponentActions.Select)
+        // on the chosen die — to compare with what the icon's click sends.
+        private static string OldPayload(PlayerView view, string die, string key)
+        {
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = die);
+            var action = ComponentActions.For(view, draft).Single(item => item.Key == key);
+            Assert.IsTrue(ComponentActions.Select(view, draft, action), key);
+            return JsonConvert.SerializeObject(draft.Payload);
         }
 
         private static Button Row(BoardScreen board, string id) => board.Characters.Root.Q<Button>("character-roster-" + id);

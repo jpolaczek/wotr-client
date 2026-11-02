@@ -29,7 +29,7 @@ namespace Wotr.Client
         }
 
         private static IReadOnlyDictionary<string, IReadOnlyList<CharacterAbilityText>> cards;
-        private static IReadOnlyDictionary<string, string> titles;
+        private static IReadOnlyDictionary<string, CharacterAbilityText> first;
 
         public static IReadOnlyList<CharacterAbilityText> For(string definitionId)
         {
@@ -38,15 +38,22 @@ namespace Wotr.Client
         }
 
         // UI-346: the printed title of an ability id, from the first card that prints it, or null.
-        public static string Title(string abilityId) => Titles.TryGetValue(abilityId ?? "", out var title) ? title : null;
+        public static string Title(string abilityId) => Find(abilityId)?.Title;
 
-        private static IReadOnlyDictionary<string, string> Titles
+        // UI-440: an ability as one card prints it, or as the first card that prints it when that card does not; null for
+        // an id no card prints.
+        public static CharacterAbilityText Find(string definitionId, string abilityId) =>
+            For(definitionId ?? "").FirstOrDefault(ability => ability.Id == abilityId) ?? Find(abilityId);
+
+        public static CharacterAbilityText Find(string abilityId) => First.TryGetValue(abilityId ?? "", out var ability) ? ability : null;
+
+        private static IReadOnlyDictionary<string, CharacterAbilityText> First
         {
             get
             {
                 Load();
-                return titles ??= cards.Values.SelectMany(abilities => abilities).GroupBy(ability => ability.Id)
-                    .ToDictionary(group => group.Key, group => group.First().Title);
+                return first ??= cards.Values.SelectMany(abilities => abilities).GroupBy(ability => ability.Id)
+                    .ToDictionary(group => group.Key, group => group.First());
             }
         }
 
@@ -60,7 +67,7 @@ namespace Wotr.Client
             }
         }
 
-        public static IReadOnlyCollection<string> AbilityIds => Titles.Keys.ToList();
+        public static IReadOnlyCollection<string> AbilityIds => First.Keys.ToList();
 
         private static void Load() =>
             cards ??= JsonConvert.DeserializeObject<Catalog>(Resources.Load<TextAsset>("character-ability-text").text)

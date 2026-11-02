@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -133,56 +134,147 @@ namespace Wotr.EditorTests
                 .Where(item => item.style.display.value != DisplayStyle.None).ToList();
             Assert.GreaterOrEqual(facts.Count, 4);
             Assert.IsTrue(facts.All(item => item.tooltip.Length > 0));
-            var chips = inspector.Root.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
-                .Where(chip => chip.style.display.value != DisplayStyle.None).ToList();
-            Assert.IsNotEmpty(chips);
-            // UI-420: the chip shows its title, so its tooltip starts with the text and has no blank line.
+            var chips = inspector.Abilities.Icons.ToList();
             var printed = CharacterAbilityLibrary.For(inspector.DefinitionId);
-            Assert.IsTrue(chips.All(chip => chip.tooltip.Length > 0 && !chip.tooltip.Contains("\n\n") &&
-                !chip.tooltip.StartsWith(chip.Q<Label>(className: CharacterAbilityChips.TitleClass).text + "\n")));
-            Assert.IsTrue(chips.All(chip => printed.Any(ability => chip.tooltip == ability.Text + "\n" + ability.Source)));
-            Assert.AreEqual(DisplayStyle.None, inspector.Root.Q<Label>("character-ability-text").style.display.value,
-                "The full ability text unrolls only after a click.");
+            Assert.AreEqual(printed.Count, chips.Count, "One icon per printed ability, in one row.");
+            for (var index = 0; index < printed.Count; index++)
+            {
+                // UI-440 (owner): the chip is the ability's bare icon; its formatted tooltip names the ability, then gives its
+                // gist, printed text and source; nothing can be used, so the icon is read only.
+                SkillIconChecks.Bare(chips[index], AbilityArt.For(inspector.DefinitionId, printed[index].Id));
+                var plain = SkillTooltip.Plain(chips[index].tooltip);
+                StringAssert.StartsWith(printed[index].Title + "\n", plain);
+                StringAssert.Contains(printed[index].Text, plain);
+                StringAssert.Contains(printed[index].Source, plain);
+                Assert.IsTrue(chips[index].ClassListContains(RuntimeTooltip.FormattedClass));
+                Assert.IsTrue(ReadOnlyControl.Is(chips[index]), "A click does nothing while the ability cannot be used.");
+                Assert.IsFalse(inspector.Abilities.Choose(chips[index].name));
+            }
+            Assert.IsNull(inspector.Root.Q<Label>("character-ability-text"), "UI-440: no text unrolls; the tooltip describes.");
         }
 
-        // UI-369: a usable ability's chip glows; selected, it offers Click to use; an action without a chip keeps its button.
+        // UI-440 (owner): a lit icon's click uses its ability at once, as Click to use did (the same action, so the same
+        // command); one waiting for its die is read only and says so; an action of none of the card's abilities (an entry)
+        // keeps its own button.
         [Test]
-        public void AUsableAbilityGlowsAndOffersClickToUseOnlyOnceSelected()
+        public void AUsableAbilityGlowsAndItsClickUsesIt()
         {
             var view = Read("CharacterRosterWire.json");
             var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
             Assert.IsTrue(inspector.Apply(view, "base.character.gimli"));
-            var ability = CharacterAbilityLibrary.For(inspector.DefinitionId).First().Id;
-            var politics = new ComponentAction
-            {
-                Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility, Enabled = true, Detail = "Move the Dwarves one step toward war.",
-                Character = new CharacterActionOption { CharacterId = "base.character.gimli", AbilityId = ability, Title = "Dwarf of Erebor" }
-            };
+            var printed = CharacterAbilityLibrary.For(inspector.DefinitionId).First();
+            var politics = Politics(printed.Id, true);
             var entry = new ComponentAction { Key = "entry", Kind = CommandKind.EnterCharacter, Enabled = true, Character = new CharacterActionOption() };
+            var used = new List<ComponentAction>();
+            inspector.Abilities.Use += used.Add;
             var buttons = inspector.Abilities.Usable(new[] { politics, entry }, true);
-            CollectionAssert.AreEqual(new[] { entry }, buttons, "Only an action without a chip keeps its own button.");
-            var chip = inspector.Root.Q<Button>("character-ability-" + ability);
-            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "A usable ability's chip glows.");
-            Assert.IsNull(inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass), "Click to use waits for the chip to be selected.");
-            Assert.AreEqual(DisplayStyle.None, inspector.Root.Q<Label>("character-ability-text").style.display.value);
-            inspector.Abilities.Select(ability);
-            Assert.AreEqual(DisplayStyle.Flex, inspector.Root.Q<Label>("character-ability-text").style.display.value);
-            inspector.Abilities.Select(ability);
-            Assert.AreEqual(DisplayStyle.Flex, inspector.Root.Q<Label>("character-ability-text").style.display.value,
-                "Selecting the selected chip again keeps its text unrolled.");
-            var use = inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass);
-            Assert.IsNotNull(use, "The selected usable chip offers Click to use.");
-            Assert.AreEqual("Click to use", use.Q<Label>().text);
-            Assert.IsTrue(use.enabledSelf);
-            inspector.Abilities.Usable(new[] { new ComponentAction { Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility,
-                Character = politics.Character } }, true);
-            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "A disabled action does not light its chip.");
-            Assert.IsFalse(inspector.Root.Q<Button>(className: CharacterAbilityChips.UseClass).enabledSelf,
-                "Its Click to use stays in place, disabled.");
-            Assert.AreEqual("muster-each-isengard-settlement-or-upgrade-two", CharacterAbilityChips.ChipOf(new ComponentAction
+            CollectionAssert.AreEqual(new[] { entry }, buttons, "Only an action without an icon keeps its own button.");
+            var chip = inspector.Root.Q<Button>("character-ability-" + printed.Id);
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "A usable ability's icon glows.");
+            Assert.IsFalse(ReadOnlyControl.Is(chip));
+            var plain = SkillTooltip.Plain(chip.tooltip);
+            StringAssert.StartsWith(printed.Title + "\n", plain);
+            StringAssert.EndsWith("\nClick to use · Move the Dwarves one step toward war.", plain);
+            Assert.IsTrue(inspector.Abilities.Choose(chip.name));
+            CollectionAssert.AreEqual(new[] { politics }, used, "The click uses the very action Click to use used.");
+            Assert.IsNull(inspector.Root.Q<Button>("character-ability-use-" + printed.Id), "No Click to use any more.");
+
+            inspector.Abilities.Usable(new[] { Politics(printed.Id, false) }, true);
+            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "A disabled action does not light its icon.");
+            Assert.IsTrue(ReadOnlyControl.Is(chip));
+            StringAssert.EndsWith("\n" + SkillUse.ChooseDie, SkillTooltip.Plain(chip.tooltip));
+            Assert.IsFalse(inspector.Abilities.Choose(chip.name), "Without its die the click uses nothing.");
+            Assert.AreEqual(1, used.Count);
+        }
+
+        // UI-440 (owner, decision 7): before any die is chosen, an ability one die (or identical dice) can pay is clickable
+        // without its glow, its tooltip naming that die; two different dice leave it waiting for the choice.
+        [Test]
+        public void AnAbilityWithOneEligibleDieTakesItFromTheClick()
+        {
+            var view = Read("CharacterRosterWire.json");
+            view.Dice.Clear();
+            view.Dice.Add(new DieView { Id = "muster", Owner = Side.FreePeoples, Face = DieFace.Muster, Source = "standard", Location = DieLocation.Available });
+            var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
+            Assert.IsTrue(inspector.Apply(view, "base.character.gimli"));
+            var printed = CharacterAbilityLibrary.For(inspector.DefinitionId).First();
+            var politics = Politics(printed.Id, false);
+            politics.Character.Dice.Add("muster");
+            var used = new List<ComponentAction>();
+            inspector.Abilities.Use += used.Add;
+            inspector.Abilities.Usable(new[] { politics }, true, view);
+            var chip = inspector.Root.Q<Button>("character-ability-" + printed.Id);
+            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "No die is chosen: nothing glows.");
+            Assert.IsFalse(ReadOnlyControl.Is(chip), "The one die that can pay makes the click useful.");
+            StringAssert.EndsWith("\nClick to use your Muster die: Move the Dwarves one step toward war.", SkillTooltip.Plain(chip.tooltip));
+            Assert.IsTrue(inspector.Abilities.Choose(chip.name));
+            CollectionAssert.AreEqual(new[] { politics }, used);
+
+            view.Dice.Add(new DieView { Id = "army", Owner = Side.FreePeoples, Face = DieFace.Army, Source = "standard", Location = DieLocation.Available });
+            politics.Character.Dice.Add("army");
+            inspector.Abilities.Usable(new[] { politics }, true, view);
+            Assert.IsTrue(ReadOnlyControl.Is(chip), "Two different dice leave the choice to the player.");
+            StringAssert.EndsWith("\n" + SkillUse.ChooseDie, SkillTooltip.Plain(chip.tooltip));
+        }
+
+        private static ComponentAction Politics(string ability, bool enabled) => new ComponentAction
+        {
+            Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility, Enabled = enabled, Detail = "Move the Dwarves one step toward war.",
+            Character = new CharacterActionOption { CharacterId = "base.character.gimli", AbilityId = ability, Title = "Dwarf of Erebor" }
+        };
+
+        // UI-440 (owner): Saruman's Voice stands as its two variants side by side in one group, each badged; the one offered
+        // now glows, the other stays dimmed in its slot; a command maps to its printed ability's variant.
+        [Test]
+        public void AVariantAbilityShowsOneBadgedIconPerVariantSideBySide()
+        {
+            var chips = new CharacterAbilityChips();
+            chips.Apply("base.character.saruman");
+            const string voice = "muster-each-isengard-settlement-or-upgrade-two";
+            var group = chips.Root.Q("character-ability-group-" + voice);
+            Assert.IsTrue(group.ClassListContains(CharacterAbilityChips.VariantsClass));
+            CollectionAssert.AreEqual(new[] { "character-ability-" + voice + "-voice-recruit", "character-ability-" + voice + "-voice-upgrade" },
+                group.Children().Select(icon => icon.name));
+            Assert.AreEqual(Resources.Load<Texture2D>(AbilityBadges.Muster), group[0].Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
+            Assert.AreEqual(Resources.Load<Texture2D>(AbilityBadges.Upgrade), group[1].Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
+            var recruit = new ComponentAction
+            {
+                Key = "voice-recruit", Kind = CommandKind.UseCharacterAbility, Enabled = true,
+                Character = new CharacterActionOption { CharacterId = "base.character.saruman", AbilityId = "voice-recruit", Title = "Voice" }
+            };
+            Assert.IsEmpty(chips.Usable(new[] { recruit }, true));
+            Assert.IsTrue(group[0].ClassListContains(ChoiceGlow.ClassName));
+            Assert.IsTrue(group[1].ClassListContains(CharacterAbilityChips.IdleClass), "The variant not offered now is dimmed in its slot.");
+            Assert.IsTrue(ReadOnlyControl.Is(group[1]));
+            StringAssert.StartsWith(CharacterAbilityLibrary.Title(voice) + " · Recruit\n", SkillTooltip.Plain(((Button)group[0]).tooltip));
+            Assert.AreEqual(voice, CharacterAbilitySlots.PrintedOf(new ComponentAction
             {
                 Character = new CharacterActionOption { AbilityId = "voice-upgrade" }
-            }), "Saruman's two Voice commands use his printed ability's chip.");
+            }, new HashSet<string> { voice }), "Saruman's two Voice commands use his printed ability.");
+        }
+
+        // UI-440 (owner, 2026-11-02): on every card each ability's icons (its variants) stand together in one group, in
+        // printed order, and the most icons a card shows fit the window's one row (380 points, 12 of padding a side).
+        [Test]
+        public void EveryCardsVariantsStandTogetherInOneRow()
+        {
+            const float icon = 36f, group = 10f, row = 356f;
+            var widest = 0f;
+            foreach (var card in CharacterAbilityLibrary.CardIds)
+            {
+                var chips = new CharacterAbilityChips();
+                chips.Apply(card);
+                var groups = chips.Root.Children().ToList();
+                var abilities = CharacterAbilityLibrary.For(card);
+                CollectionAssert.AreEqual(abilities.Select(ability => "character-ability-group-" + ability.Id), groups.Select(g => g.name), card);
+                for (var index = 0; index < abilities.Count; index++)
+                {
+                    Assert.AreEqual(AbilityVariants.For(abilities[index].Id).Count, groups[index].childCount, card + " · " + abilities[index].Id);
+                    Assert.IsTrue(groups[index].Children().All(child => (string)child.userData == abilities[index].Id), card);
+                }
+                widest = Mathf.Max(widest, chips.Icons.Count() * icon + groups.Count * group);
+            }
+            Assert.LessOrEqual(widest, row, "The card with the most icons fits one row.");
         }
 
         // UI-366: a die that pays for a character's political ability lights Politics (not Characters), names the nation,
@@ -384,9 +476,11 @@ namespace Wotr.EditorTests
             var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
             Assert.IsTrue(inspector.Apply(view, "public-gimli"));
             var ability = inspector.Root.Q<Button>("character-ability-combat-strength-plus-one");
-            StringAssert.Contains("Captain of the West", ability.Q<Label>(className: CharacterAbilityChips.TitleClass).text);
-            StringAssert.Contains("participat", ability.tooltip.ToLowerInvariant());
-            StringAssert.Contains("5 combat dice", ability.tooltip.ToLowerInvariant());
+            // UI-440: the icon's formatted tooltip names the ability and explains participation and the limit.
+            var text = SkillTooltip.Plain(ability.tooltip).ToLowerInvariant();
+            StringAssert.StartsWith("captain of the west\n", text);
+            StringAssert.Contains("participat", text);
+            StringAssert.Contains("5 combat dice", text);
             Assert.IsTrue(ability.focusable);
         }
 

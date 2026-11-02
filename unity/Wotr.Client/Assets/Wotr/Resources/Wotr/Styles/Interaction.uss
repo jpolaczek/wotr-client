@@ -456,37 +456,13 @@
    showed, so it also grows a little in the same rhythm (the roster's rows do the same). Reduced motion keeps it lit. */
 .motion-enabled #board-screen .edge-left-panel .choice-glow-pulse .sovereign-tiles > .sovereign-tile.choice-glow { scale: 1.12 1.12; }
 
-/* UI-348 (EXP-15 D17): a Combat card's replacement is a gilt chip beside the player's own card, which shares its row;
-   UI-439: it shows the ability's own icon (Heir of Bard, Red Wrath…), where the nation emblem stood in before. */
-/* UI-437: the chip's top on the card's; the row keeps the plain card's height (33 px and its margin), so the rows under it
+/* UI-348 (EXP-15 D17): a Combat card's replacement stands beside the player's own card, which shares its row; UI-439: it
+   shows the ability's own icon (Heir of Bard, Red Wrath…), where the nation emblem stood in before. UI-440 (owner): it is
+   the bare skill icon (SkillIcon, Styles/SkillIcons.uss) in a 33-point box, glowing while it can be used; UI-277's applied
+   replacement is the same icon with the selected skill's gold underline, for both players. */
+/* UI-437: the icon's top on the card's; the row keeps the plain card's height (33 px and its margin), so the rows under it
    stay level with the other side's. */
 #board-screen .battle-card-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; }
 #board-screen .battle-card-row > .battle-card { width: auto; flex-grow: 1; flex-shrink: 1; }
-#board-screen .battle-replacement-chip {
-    width: 40px;
-    min-width: 40px;
-    height: 33px;
-    min-height: 33px;
-    margin: 0 0 0 4px;
-    padding: 0;
-    border-width: 2px;
-    border-radius: 6px;
-    border-color: rgb(255, 214, 112);
-    background-color: rgba(120, 88, 24, 0.9);
-    flex-shrink: 0;
-}
-#board-screen .battle-replacement-ability {
-    position: absolute;
-    left: 6px;
-    right: 6px;
-    top: 2px;
-    bottom: 2px;
-    -unity-background-scale-mode: scale-to-fit;
-}
-.motion-enabled #board-screen .choice-glow-pulse .battle-replacement-chip.choice-glow { border-color: rgba(255, 214, 112, 0.45); }
-/* UI-277: a replacement already made: the same gilt chip, solid as a chosen control, for both players. */
-#board-screen .battle-replacement-chip.battle-replacement-applied {
-    background-color: rgb(214, 170, 70);
-    border-color: rgb(255, 236, 170);
-}
+#board-screen .battle-card-row > .skill-icon.battle-replacement-chip { width: 33px; height: 33px; margin: 0 2px 0 6px; }
 

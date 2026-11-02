@@ -127,6 +127,9 @@ namespace Wotr.PlayTests
                 // UI-439: the activation is Narya's, so it shows Narya's own icon.
                 Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "narya"),
                     activate.Q("icon-glyph").style.backgroundImage.value.texture);
+                // UI-440 (owner): Narya's activation is its bare skill icon, lit while usable, no square frame.
+                SkillIconChecks.Bare(activate, AbilityArt.Folder + "narya", 22f);
+                Assert.IsTrue(activate.ClassListContains(ChoiceGlow.ClassName));
                 LayoutTests.Save(room.Fp.Viewport, "ui439-narya-activation.png");
                 Assert.AreEqual(revision, room.Fp.Board.View.Revision);
                 PointerGestureEvents.ClickAt(activate);

@@ -602,7 +602,8 @@
 .regional-battle .tray #action-FightFieldBattle { width: 140px; min-width: 140px; }
 .regional-battle .tray #action-RetreatIntoSiege { width: 144px; min-width: 144px; }
 .regional-battle .tray #action-ExtendSiege { width: 138px; min-width: 138px; }
-.regional-battle .tray #action-UseEvilKnowledge { width: 150px; min-width: 150px; }
+/* UI-440 (owner): Evil Knowledge, an ability, is its bare skill icon (SkillIcon), centred in the footer's 33-point row. */
+#board-screen .regional-battle .tray .battle-choice-footer .skill-icon.battle-skill-choice { width: 32px; height: 32px; margin: 0 6px; align-self: center; }
 .regional-battle .tray #battle-stay { width: 96px; min-width: 96px; }
 /* UI-146: the advance's select/deselect-all toggle keeps the square icon frame inside the gilt footer. */
 .regional-battle .tray .battle-choice-footer #battle-select-all {

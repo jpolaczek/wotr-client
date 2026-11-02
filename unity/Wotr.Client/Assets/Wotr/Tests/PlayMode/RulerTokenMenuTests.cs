@@ -55,13 +55,23 @@ namespace Wotr.PlayTests
                 "The ability's action stands on its chip, not as a separate button.");
             var chip = inspector.Q<Button>("character-ability-" + ability);
             Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "The usable ability's chip glows.");
-            PointerGestureEvents.ClickAt(inspector.Q<Button>("character-ability-" + other));
+            // UI-440 (owner): the chip is the ability's bare icon, lit, named first in its formatted tooltip; the other ability
+            // cannot be used now, so its icon is read only and its click changes nothing; the lit one's click starts the
+            // ability's choice on the board at once (its settlements light), with no Click to use between.
+            SkillIconChecks.Bare(chip, AbilityArt.Folder + ability, 28f);
+            StringAssert.StartsWith(CharacterAbilityLibrary.Title(ability) + "\n", SkillTooltip.Plain(chip.tooltip));
+            var passive = inspector.Q<Button>("character-ability-" + other);
+            Assert.IsTrue(ReadOnlyControl.Is(passive));
+            PointerGestureEvents.ClickAt(passive);
             await Task.Delay(400, token);
-            Assert.IsFalse(Shown(inspector.Q<Button>("character-ability-use-kings." + ability)), "The other ability shows no button.");
+            Assert.AreNotSame(board.Characters.DecisionHost, board.Tray.parent, "A read-only icon starts nothing.");
             PointerGestureEvents.ClickAt(chip);
-            await Task.Delay(400, token);
-            Assert.IsTrue(Shown(inspector.Q<Button>("character-ability-use-kings." + ability)), "The open ability offers Click to use.");
+            await Task.Delay(600, token);
+            Assert.AreSame(board.Characters.DecisionHost, board.Tray.parent, "The icon's click started " + ability + " in his window.");
+            Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Its places glow on the map.");
+            Assert.IsNull(inspector.Q("character-ability-sheet"), "No text unrolls.");
             LayoutTests.Save(client.Panel.targetTexture, "ui380-" + king + "-ability.png");
+            LayoutTests.Save(client.Panel.targetTexture, "ui440-" + king + "-" + ability + "-started.png");
         }
 
         // UI-384 (owner): the Ruler die's Muster lights Politics, Reserve and Characters, and every lit tab glows alike.
@@ -201,8 +211,9 @@ namespace Wotr.PlayTests
             Assert.IsNotNull(king, "Dwarvenking is an icon on Dáin's row.");
             Assert.IsTrue(guard.ClassListContains(ChoiceGlow.ClassName), "The usable Iron Guard glows.");
             Assert.IsFalse(king.ClassListContains(ChoiceGlow.ClassName), "Dwarvenking cannot be used now.");
-            StringAssert.StartsWith("Iron Guard\n", guard.tooltip);
-            StringAssert.Contains("Click to use", guard.tooltip);
+            // UI-440: the skill's formatted description, its name first, what the click does last.
+            StringAssert.StartsWith("Iron Guard\n", SkillTooltip.Plain(guard.tooltip));
+            StringAssert.Contains("\nClick to use", SkillTooltip.Plain(guard.tooltip));
             var row = board.Characters.Root.Q<Button>("character-roster-" + dain);
             Assert.IsTrue(row.Contains(guard), "The icons stand on Dáin's row.");
             // UI-408 (owner): a short roster stands two a line, its icons larger, beside the text.
@@ -214,7 +225,12 @@ namespace Wotr.PlayTests
             // UI-439: each icon is its ability's own (AbilityArt).
             Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.Folder + "iron-guard"), guard.Q("icon-glyph").style.backgroundImage.value.texture);
             Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.Folder + "dwarvenking"), king.Q("icon-glyph").style.backgroundImage.value.texture);
+            // UI-440 (owner): the row's icons are bare, Iron Guard lit behind it, both named first in their tooltips.
+            SkillIconChecks.Bare(guard, AbilityArt.Folder + "iron-guard", 15f);
+            SkillIconChecks.Bare(king, AbilityArt.Folder + "dwarvenking", 15f);
+            StringAssert.StartsWith("Dwarvenking\n", SkillTooltip.Plain(king.tooltip));
             LayoutTests.Save(client.Panel.targetTexture, "ui439-roster-dain.png");
+            LayoutTests.Save(client.Panel.targetTexture, "ui440-roster-dain.png");
             PointerGestureEvents.ClickAt(guard);
             await Task.Delay(800, token);
             Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Iron Guard started: its settlements glow on the map.");

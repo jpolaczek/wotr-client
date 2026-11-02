@@ -61,8 +61,9 @@
 
 /* UI-436: the place as a picture (Art/Places, 128x80 points) captioned with its name, and beside it the facts. Every
    ruler's window has one size at rest: the sovereign's rows keep fixed heights and an awakened ruler's character window
-   is at least as tall. */
-#board-screen .character-window.ruler-window { min-height: 288px; }
+   is at least as tall. UI-440: with the abilities one row of icons (no lines), an Initial king's rows need 244 points;
+   252 keeps one size with little empty space. */
+#board-screen .character-window.ruler-window { min-height: 252px; }
 .character-place-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; min-height: 82px; margin: 0 0 4px 0; }
 #board-screen .character-window .place-picture {
     width: 128px;
@@ -206,76 +207,44 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
 
-/* Abilities: the chosen one unrolls its text on parchment. UI-436: each ability is a line of the window's width — its icon
-   (UI-439: the ability's own, AbilityArt, as on the roster row), its title and the gist of its text — so the window says
-   what it does without a hover; a click still unrolls the printed text. */
-.character-abilities { flex-direction: row; flex-wrap: wrap; align-items: center; }
-/* The words stand in a column at the chip's width, the icon in the chip's left padding; the chip is as tall as its words
-   in every layout (the short viewport's fixed height of an inspector's buttons does not apply to it). */
-#board-screen .character-window .character-ability {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    height: auto;
-    min-height: 28px;
-    margin: 0 0 2px 0;
-    padding: 3px 8px 2px 30px;
-    flex-shrink: 0;
-}
-.character-ability-icon { width: 18px; height: 18px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("Wotr/Art/UI/characters/ability"); }
-#board-screen .character-window .character-ability > .character-ability-icon { position: absolute; left: 7px; top: 4px; }
-#board-screen .character-window #character-abilities .character-ability-title {
-    min-height: 0;
-    margin: 0;
-    padding: 0 0 1px 0;
-    flex-shrink: 0;
-    font-size: 12px;
-    white-space: normal;
-    -unity-text-align: upper-left;
-    color: rgb(236, 224, 190);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
-}
-/* UI-369: the parchment is the sheet; the text and Click to use stand on it. */
-#board-screen .character-window .character-ability-sheet {
-    width: 100%;
-    margin: 3px 0 4px 0;
-    padding: 7px 10px 8px 10px;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/cards/parchment");
-    -unity-slice-top: 28;
-    -unity-slice-right: 28;
-    -unity-slice-bottom: 28;
-    -unity-slice-left: 28;
-    -unity-slice-scale: 0.5px;
-}
-#board-screen .character-window .character-ability-text {
-    margin: 0;
-    padding: 0;
-    font-size: 12px;
-    color: rgb(52, 36, 22);
-    white-space: normal;
-}
-#board-screen .character-window .character-ability-pages .action { width: 28px; min-width: 28px; height: 26px; min-height: 26px; }
-/* UI-369: a usable ability's Click to use stands on the parchment, right under its text. */
-.character-ability-use { flex-direction: row; justify-content: flex-end; margin-top: 5px; }
-#board-screen .character-window .character-ability-use .action {
+/* UI-440 (owner): each ability is its bare icon (SkillIcon, Styles/SkillIcons.uss; UI-439: the ability's own, AbilityArt,
+   as on the roster row), one row in printed order, 32 points each (a 28-point picture); its description is the formatted
+   tooltip, a lit icon's click uses it. An ability's variants (AbilityVariants) stand as one group, 4 points apart over a
+   thin shared gilt line, while abilities stand 14 apart; a group never wraps, and the most icons a card shows (the Balrog's
+   seven) fit the window's width. The row keeps one height in every layout, with room for the light behind a lit icon.
+   (USS has no :last-child, so each icon keeps 2 points on either side.) The groups stand top-aligned, so a variant
+   group's line never shifts its icons from the row at a fractional scale. */
+.character-abilities { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+#board-screen .character-window .character-abilities > .character-ability-group {
     flex-direction: row;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
     align-items: center;
-    height: 26px;
-    min-height: 26px;
-    margin: 0 0 0 4px;
-    padding: 0 9px 0 6px;
+    margin: 4px 10px 6px 0;
+    padding: 0 0 2px 0;
 }
-.character-ability-use-icon { width: 14px; height: 14px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("Wotr/Art/UI/actions/confirm"); }
-#board-screen .character-window .character-ability-use-title {
-    margin: 0;
-    padding: 0;
-    font-size: 12px;
-    white-space: nowrap;
-    color: rgb(241, 227, 181);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+#board-screen .character-window .character-abilities > .character-ability-group.character-ability-variants {
+    padding: 0 0 1px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(214, 178, 98, 0.45);
+}
+#board-screen .character-window .character-ability-group > .skill-icon.character-ability {
+    width: 32px;
+    height: 32px;
+    margin: 0 2px;
+}
+/* A variant's badge sits on its icon's lower right corner, as on the component buttons. */
+#board-screen .character-window .character-ability > .icon-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 13px;
+    height: 13px;
+    border-width: 1px;
+    border-radius: 7px;
+    border-color: rgb(231, 196, 112);
+    background-color: rgba(28, 22, 14, 0.92);
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 /* Roster row: the level on the portrait, a status symbol beside the region or short state. */
@@ -312,46 +281,22 @@
 
 
 /* UI-391 (owner): the third line of a roster row holds up to four 15-point ability icons, right-aligned away from the
-   portrait's level star, on a line of fixed height: the ability's picture on the small gilt frame, its text in the
-   tooltip; one usable now wears the shared gold rim and pulses with the roster. Title (17) + status line (12) + icons
-   (15) fill the row's 44 inner points. On a short
-   viewport (40-point rows) the icons take the status line's place; the row's tooltip keeps the state and region. The
-   selectors outrank the rows' (.character-roster-grid .action), so the icons keep their own size and frame. */
+   portrait's level star, on a line of fixed height, their text in the tooltip; one usable now glows and pulses with the
+   roster. Title (17) + status line (12) + icons (15) fill the row's 44 inner points. On a short viewport (40-point rows)
+   the icons take the status line's place; the row's tooltip keeps the state and region. UI-440 (owner): an icon is the
+   bare skill icon (SkillIcon, Styles/SkillIcons.uss), its picture filling its box, no small gilt frame. The selectors
+   outrank the rows' (.character-roster-grid .action), so the icons keep their own size. */
 .roster-abilities { flex-direction: row; justify-content: flex-end; height: 15px; min-height: 15px; margin: 0; }
 .roster-ability-line { flex-direction: row; justify-content: flex-end; flex-shrink: 0; }
 .short-viewport .roster-compact .character-roster-text > .character-roster-line { display: none; }
-#board-screen .character-roster-grid .roster-abilities .action.roster-ability,
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability,
-#board-screen.short-viewport .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability {
+#board-screen .character-roster-grid .roster-abilities .skill-icon.roster-ability,
+#board-screen .edge-left-panel .character-roster-grid .roster-abilities .skill-icon.roster-ability,
+#board-screen.short-viewport .edge-left-panel .character-roster-grid .roster-abilities .skill-icon.roster-ability {
     width: 15px;
-    min-width: 15px;
     height: 15px;
-    min-height: 15px;
-    padding: 0;
     margin: 0 0 0 2px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.25px;
-    border-width: 0;
-    border-radius: 0;
 }
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability:hover,
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability:focus {
-    background-image: resource("Wotr/Art/UI/frames/button-square-hover");
-}
-#board-screen .edge-left-panel .character-roster-grid .roster-abilities .action.roster-ability.choice-glow {
-    border-width: 1px;
-    border-color: rgb(255, 214, 112);
-    background-color: rgba(120, 88, 24, 0.75);
-}
-.roster-abilities .roster-ability > .icon-glyph { width: 12px; height: 12px; max-width: 12px; max-height: 12px; }
+.roster-abilities .roster-ability > .skill-icon-glyph { left: 0; top: 0; right: 0; bottom: 0; }
 
 /* UI-408 (owner): two characters a line, each row about twice as wide: the portrait, the name and region, and beside them a
    2x2 block of 19-point ability icons (17 on a short viewport). A roster too tall for the board in this form keeps three
@@ -370,19 +315,14 @@
     justify-content: center;
     align-items: flex-end;
 }
-#board-screen .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .action.roster-ability {
+#board-screen .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .skill-icon.roster-ability {
     width: 19px;
-    min-width: 19px;
     height: 19px;
-    min-height: 19px;
     margin: 1px 0 1px 2px;
 }
-.characters-panel.roster-wide .roster-abilities .roster-ability > .icon-glyph { width: 15px; height: 15px; max-width: 15px; max-height: 15px; }
 #board-screen.short-viewport .characters-panel.roster-wide .character-roster-row > .roster-abilities { width: 40px; min-width: 40px; height: 36px; min-height: 36px; }
-#board-screen.short-viewport .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .action.roster-ability {
+#board-screen.short-viewport .edge-left-panel.roster-wide .character-roster-grid .roster-abilities .skill-icon.roster-ability {
     width: 17px;
-    min-width: 17px;
     height: 17px;
-    min-height: 17px;
     margin: 0 0 1px 2px;
 }

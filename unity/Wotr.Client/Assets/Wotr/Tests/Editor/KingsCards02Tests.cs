@@ -204,6 +204,8 @@ namespace Wotr.EditorTests
             Assert.IsNull(root.Q("battle-attacker").Q<Button>("battle-replacement-replace"));
             Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName));
             Assert.AreEqual(Texture("heir-of-bard"), Icon(button));
+            // UI-440 (owner): the replacement is Heir of Bard's bare skill icon, no gilt chip.
+            SkillIconChecks.Bare(button, AbilityArt.Folder + "heir-of-bard");
 
             view.Decision.Presentation = "Region";
             Assert.IsNull(OptionalDecline.Option(view, new TurnDraft()), "A generic keep counts only in its own step.");
@@ -220,6 +222,8 @@ namespace Wotr.EditorTests
                 var marker = root.Q("battle-defender").Q("battle-replacement-applied");
                 Assert.IsNotNull(marker, side + " sees the replacement beside the Free Peoples' card.");
                 Assert.AreEqual(Texture("heir-of-bard"), Icon(marker), "The marker shows the ability too.");
+                // UI-440: the same bare icon, marked as the chosen one.
+                Assert.IsTrue(marker.ClassListContains(SkillIcon.ClassName) && marker.ClassListContains(SkillIcon.SelectedClass));
                 // UI-397 (owner): the marker names the ability and gives its printed text.
                 StringAssert.StartsWith("Brand · Heir of Bard\nOnce per battle", marker.tooltip);
                 StringAssert.EndsWith("\nThis round it replaces the Combat card's effects.", marker.tooltip);
@@ -277,7 +281,7 @@ namespace Wotr.EditorTests
             UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + ability);
 
         private static UnityEngine.Texture2D Icon(VisualElement chip) =>
-            chip.Q(BattleContext.ReplacementAbilityName).style.backgroundImage.value.texture;
+            SkillIcon.Glyph(chip).style.backgroundImage.value.texture;
 
         // UI-423 (owner's playtest pattern, like UI-416): with two Chieftains in one battle the footer, the skip and Pass name
         // both chips, not only the first.

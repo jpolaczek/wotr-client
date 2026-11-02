@@ -790,6 +790,10 @@
       "role": "Soft gilt halo behind the Fellowship track symbol while a click on it moves the Fellowship (UI-110)."
     },
     {
+      "source": "ornaments/skill-glow.svg",
+      "role": "Rimless gilt light behind a bare skill icon while the skill is usable; it breathes with the choice pulse (UI-440)."
+    },
+    {
       "source": "dice/medallion.svg",
       "role": "Round action die in the enamel of its side; a face glyph from dice/faces sits on top.",
       "variants": [

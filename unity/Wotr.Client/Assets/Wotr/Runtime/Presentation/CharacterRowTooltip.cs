@@ -21,13 +21,12 @@ namespace Wotr.Client
             public IReadOnlyList<string> Abilities = new List<string>();
         }
 
-        private const string Gold = "#F2D488";
-        private const string Bright = "#FFD670";
-        private const string Dim = "#BEB49A";
-        private const string Faint = "#8E8672";
-        private const string Met = "#8FD18B";
-        // A thin empty line between parts: a few points high, so the tooltip hardly grows.
-        private const string Gap = "<size=5> </size>";
+        private const string Gold = RichText.Gold;
+        private const string Bright = RichText.Bright;
+        private const string Dim = RichText.Dim;
+        private const string Faint = RichText.Faint;
+        private const string Met = RichText.Met;
+        private const string Gap = RichText.Gap;
 
         public static string Format(string offer, Parts parts)
         {
@@ -74,11 +73,10 @@ namespace Wotr.Client
             return split < 0 ? Text(line) : Bold(Text(line.Substring(0, split))) + Text(line.Substring(split));
         }
 
-        private static string Bold(string text) => "<b>" + text + "</b>";
+        private static string Bold(string text) => RichText.Bold(text);
 
-        private static string Color(string text, string color) => "<color=" + color + ">" + text + "</color>";
+        private static string Color(string text, string color) => RichText.Color(text, color);
 
-        // Game text never carries a tag; a stray '<' is shown as a guillemet rather than read as one.
-        private static string Text(string text) => (text ?? "").Replace("<", "‹");
+        private static string Text(string text) => RichText.Text(text);
     }
 }

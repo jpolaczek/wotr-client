@@ -45,6 +45,8 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName));
                 // UI-439: the chip shows the ability's own icon (Heir of Bard, or Shadows in the North for a Corrupted Brand).
                 Assert.AreEqual(AbilityIcon(owner == Side.FreePeoples ? "heir-of-bard" : "shadows-in-the-north"), Icon(chip));
+                // UI-440 (owner): the replacement is the ability's bare icon, lit, no gilt chip.
+                SkillIconChecks.Bare(chip, AbilityArt.Folder + (owner == Side.FreePeoples ? "heir-of-bard" : "shadows-in-the-north"), 28f);
                 StringAssert.StartsWith(owner == Side.FreePeoples ? "Click to use Heir of Bard · Cancels" : "Click to use Shadows in the North · Cancels",
                     chip.tooltip);
                 StringAssert.DoesNotContain("no card", chip.tooltip, "UI-420 (owner): a side without a card is not named \"no card\".");
@@ -153,7 +155,7 @@ namespace Wotr.PlayTests
             UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + ability);
 
         private static UnityEngine.Texture2D Icon(VisualElement chip) =>
-            chip.Q(BattleContext.ReplacementAbilityName).style.backgroundImage.value.texture;
+            SkillIcon.Glyph(chip).style.backgroundImage.value.texture;
 
         private static async Task Applied(MatchTestRoom room, string column)
         {

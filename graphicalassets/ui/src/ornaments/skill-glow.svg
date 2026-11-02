@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
+  <!-- UI-440: a soft gilt light behind a bare skill icon while the skill is usable; it fades out with no rim, so the
+       icon glows rather than standing on a plate. -->
+  <defs>
+    <radialGradient id="skill-glow-light" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" style="stop-color: var(--gilt-highlight)" stop-opacity="0.92"/>
+      <stop offset="0.45" style="stop-color: var(--gilt-light)" stop-opacity="0.72"/>
+      <stop offset="0.75" style="stop-color: var(--gilt-mid)" stop-opacity="0.24"/>
+      <stop offset="1" style="stop-color: var(--gilt-mid)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="22" cy="22" r="22" fill="url(#skill-glow-light)"/>
+</svg>

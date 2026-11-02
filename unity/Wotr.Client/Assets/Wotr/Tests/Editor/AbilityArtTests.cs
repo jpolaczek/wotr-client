@@ -122,15 +122,15 @@ namespace Wotr.EditorTests
             Assert.IsNotNull(Resources.Load<Texture2D>(AbilityArt.Unknown));
         }
 
-        // The character window's lines show the icon of their card's ability, on every page.
+        // The character window's icons show the icon of their card's ability; UI-440: all four of the Balrog's in one row.
         [Test]
         public void TheCharacterWindowsLinesUseTheMap()
         {
             var chips = new CharacterAbilityChips();
             chips.Apply(Balrog);
-            Assert.IsTrue(chips.Paged, "Four abilities stand on two pages.");
-            var first = CharacterAbilityLibrary.For(Balrog).Take(3).ToList();
-            foreach (var ability in first)
+            var abilities = CharacterAbilityLibrary.For(Balrog);
+            Assert.AreEqual(4, abilities.Count, "The Balrog prints the most abilities a card has.");
+            foreach (var ability in abilities)
                 Assert.AreEqual(Texture(AbilityArt.For(Balrog, ability.Id)), ChipIcon(chips, ability.Id), ability.Id);
             const string serpent = "kings.character.black-serpent";
             chips.Apply(serpent);
@@ -150,12 +150,22 @@ namespace Wotr.EditorTests
             });
             var activate = panel.Drawer.Q<Button>("nation-activate-north");
             Assert.AreEqual(Texture(AbilityArt.Folder + "narya"), activate.Q("icon-glyph").style.backgroundImage.value.texture);
+            // UI-440 (owner): Narya's activation is its bare skill icon, without the square frame.
+            Assert.IsTrue(activate.ClassListContains(SkillIcon.ClassName));
+            Assert.IsFalse(activate.ClassListContains(IconButton.ClassName));
+            Assert.AreEqual("", activate.text);
         }
 
         private static Texture2D Texture(string resource) => Resources.Load<Texture2D>(resource);
 
-        private static Texture2D ChipIcon(CharacterAbilityChips chips, string ability) =>
-            chips.Root.Q<Button>("character-ability-" + ability).Q(className: CharacterAbilityChips.IconClass).style.backgroundImage.value.texture;
+        // UI-440: every icon of the ability (each of its variants) shows the ability's own icon.
+        private static Texture2D ChipIcon(CharacterAbilityChips chips, string ability)
+        {
+            var icons = chips.Icons.Where(icon => (string)icon.userData == ability).Select(icon => SkillIcon.Glyph(icon).style.backgroundImage.value.texture)
+                .Distinct().ToList();
+            Assert.AreEqual(1, icons.Count, ability);
+            return icons[0];
+        }
 
         private static string Digest(string resource)
         {
