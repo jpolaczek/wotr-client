@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using UnityEngine.UIElements;
 using Wotr.Client;
 using Wotr.Contracts;
 
@@ -10,6 +13,7 @@ namespace Wotr.EditorTests
     public sealed class ObjectFirstChoicesTests
     {
         private const string Strike = "base.sh.character.11";
+        private const string AnotherWay = "base.fp.character.10";
         private const string Staff = "base.fp.character.08";
         private const string Mithril = "base.fp.character.05";
 
@@ -32,7 +36,7 @@ namespace Wotr.EditorTests
 
         private static PlayerView StrikeDecision(params string[] tableCards)
         {
-            var ids = new System.Collections.Generic.List<string>(tableCards) { NazgulStrikeChoice.HuntRoll, FinishingOption.StrikeFinish };
+            var ids = new List<string>(tableCards) { NazgulStrikeChoice.HuntRoll, FinishingOption.StrikeFinish };
             var view = Decision(NazgulStrikeChoice.Presentation, Strike, ids.ToArray());
             view.Dice.Add(new DieView { Id = "eye-1", Owner = Side.Shadow, Location = DieLocation.Hunt, Face = DieFace.Eye });
             view.Dice.Add(new DieView { Id = "eye-2", Owner = Side.Shadow, Location = DieLocation.Hunt, Face = DieFace.Eye });
@@ -46,6 +50,14 @@ namespace Wotr.EditorTests
             draft.Choose(CommandKind.ChooseEffect);
             return draft;
         }
+
+        // The payload the old console buttons ("Roll for the Hunt", "Finish") and the table card's × sent, recorded from those
+        // buttons on a real server at c7d38fd5 (the shadow-strike match; the option's id, every other field at its default).
+        internal static string RecordedPayload(string option) =>
+            "{\"Stepwise\":false,\"DieId\":\"\",\"RingId\":\"\",\"RulerTokenId\":\"\",\"CouncilTokenId\":\"\",\"Deck\":\"\",\"Face\":null," +
+            "\"Ids\":[\"" + option + "\"],\"NationId\":\"\",\"Placements\":[],\"MovementCost\":1,\"Moves\":[],\"CardId\":\"\",\"CardCost\":4," +
+            "\"ReactionId\":\"\",\"GuideId\":\"\",\"Route\":[],\"CompanionMoves\":[],\"HuntResponse\":0,\"Losses\":[],\"RegionId\":\"\"," +
+            "\"AutoDecision\":null,\"CharacterId\":\"\",\"AbilityId\":\"\"}";
 
         [Test]
         public void TheRegistryHoldsTheFinishesThatEndACardAndNoDecline()
@@ -116,6 +128,61 @@ namespace Wotr.EditorTests
                 "Only The Nazgûl Strike! rolls from the Hunt Box.");
         }
 
+        // The console's interaction lights the Hunt Box while the Strike offers its roll and puts it out afterwards.
+        [Test]
+        public void TheHuntBoxGlowsOnlyWhileTheStrikeOffersItsRoll()
+        {
+            var board = new BoardScreen();
+            var sent = new List<ConsoleOption>();
+            using var interaction = new ConsoleOptionsInteraction(board, sent.Add, () => { });
+            var view = StrikeDecision(Staff);
+            interaction.Refresh(view, Draft(), true);
+            Assert.IsTrue(board.Hunt.Offered);
+            Assert.IsTrue(board.Hunt.Tab.ClassListContains(ChoiceGlow.ClassName), "The Hunt Box glows.");
+            Assert.AreEqual(NazgulStrikeChoice.RollTooltip(view), board.Hunt.Tab.tooltip);
+            interaction.Refresh(view, Draft(), false);
+            Assert.IsFalse(board.Hunt.Offered, "No offer while the board takes no input.");
+            Assert.IsFalse(board.Hunt.Tab.ClassListContains(ChoiceGlow.ClassName));
+            Assert.AreEqual(HuntPanel.PlaqueTooltip, board.Hunt.Tab.tooltip);
+            interaction.Refresh(Decision("CaptainOrder", Strike, "captain.fly"), Draft(), true);
+            Assert.IsFalse(board.Hunt.Offered, "Another card's choice leaves the Hunt Box as it was.");
+            CollectionAssert.IsEmpty(sent, "Lighting sends nothing.");
+        }
+
+        // The Hunt Box and the ✓ send through TurnInteraction.ChooseConsoleOption, the path of the old console buttons: the
+        // command each builds equals the old button's, and its payload is the one recorded from that button on a real server.
+        [Test]
+        public void TheHuntBoxAndTheConfirmSendTheOldButtonsCommands()
+        {
+            var view = StrikeDecision(Staff);
+            AssertSendsTheOldButtonsCommand(view, NazgulStrikeChoice.Roll(view, Draft()), NazgulStrikeChoice.HuntRoll);
+            AssertSendsTheOldButtonsCommand(view, FinishingOption.Option(view, Draft()), FinishingOption.StrikeFinish);
+        }
+
+        private static void AssertSendsTheOldButtonsCommand(PlayerView view, ConsoleOption choice, string id)
+        {
+            // The old console button: CardConsoleOptions' effect option before UI-430.
+            var button = new ConsoleOption { Id = id, Name = "effect-choice-" + id, Kind = ConsoleOptionKind.Effect };
+            var sent = Command(view, choice);
+            var old = Command(view, button);
+            Assert.AreEqual(CommandKind.ChooseEffect, sent.Kind);
+            Assert.AreEqual(old.DecisionId, sent.DecisionId);
+            Assert.AreEqual(JsonConvert.SerializeObject(old.Payload), JsonConvert.SerializeObject(sent.Payload), id + ": the old button's payload.");
+            Assert.AreEqual(RecordedPayload(id), JsonConvert.SerializeObject(sent.Payload), id + ": the payload recorded on a real server.");
+        }
+
+        // What TurnInteraction.ChooseConsoleOption sends for a card's effect option (UI-214): the id chosen on the
+        // ChooseEffect draft, which completes the decision, so it is sent at once.
+        private static GameCommand Command(PlayerView view, ConsoleOption choice)
+        {
+            Assert.AreEqual(ConsoleOptionKind.Effect, choice.Kind, "The path of a card's effect option.");
+            var draft = Draft();
+            var option = DraftOptions.For(view, draft);
+            CardDraft.Choose(draft, option, choice.Id);
+            Assert.IsTrue(draft.Ready(option), "The choice completes the decision.");
+            return draft.Command(view);
+        }
+
         [Test]
         public void ARedTableCardNamesTheEffectThatOffersItsDiscard()
         {
@@ -141,6 +208,30 @@ namespace Wotr.EditorTests
             Assert.IsNotNull(FinishingOption.Option(bare, Draft()), "The ✓ finishes.");
             Assert.AreEqual("Click the glowing Hunt Box to roll · ✓ finishes", NazgulStrikeChoice.Hint(bare, Draft()));
             Assert.AreEqual("", NazgulStrikeChoice.Hint(Decision("CaptainOrder", Strike, "captain.fly"), Draft()));
+        }
+
+        // The base tray's hint names the lit objects (the console shows it), and so does the console's own guidance.
+        [Test]
+        public void TheTrayAndTheConsoleNameTheLitObjects()
+        {
+            var strike = StrikeDecision(Staff);
+            Assert.AreEqual("Discard: red card in Effects · Roll: Hunt Box · ✓ finishes", TrayHint(strike));
+            Assert.AreEqual("Discard: red card in Effects · Roll: Hunt Box · ✓ finishes",
+                TurnConsoleState.For(strike, Draft(), new ActionDieContext(), id => id).Guidance);
+            var anotherWay = Decision(FellowshipCardActions.Presentation, AnotherWay, FinishingOption.AnotherWayStay, FellowshipCardActions.Hide);
+            anotherWay.You = Side.FreePeoples;
+            anotherWay.DecisionOwner = Side.FreePeoples;
+            anotherWay.Fellowship = new FellowshipView { RegionId = "rivendell", Guide = "base.character.gollum" };
+            Assert.AreEqual("Hide: click the Fellowship's glowing marker on its track · ✓ finishes after healing", TrayHint(anotherWay));
+        }
+
+        private static string TrayHint(PlayerView view)
+        {
+            var hint = "";
+            var tray = new DecisionTray(new VisualElement());
+            tray.HintChanged += (text, detail) => hint = text;
+            tray.Render(view, Draft(), false, false);
+            return hint;
         }
     }
 }

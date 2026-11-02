@@ -2139,11 +2139,19 @@ Playtest (owner's checklist):
   lit "Finish · End Wind from the West without inspecting the Shadow hand", the Pass unlit; the ✓ ends the card.
 - [ ] A table card's reaction — base Balrog of Moria when the Fellowship is revealed or declared beside Moria (no catalog
   scenario yet; PlayMode `Shadow03NetworkTests`). Expect: no "Use a table card"; the card red in Effects; its click uses the reaction.
+- [ ] The Strike in a base game — seeded `shadow-strike` (PlayMode `Shadow02NetworkTests`, the Shadow). Expect: as in the
+  catalog case; a red card's click discards it, in a new game the Hunt Box's click starts the Hunt roll, in another the
+  ✓ finishes.
+- [ ] There is Another Way — Gollum as Guide (`CardPack02NetworkTests`, match `another-way`). Expect: no Stay button,
+  the ✓ lit "Finish · End There is Another Way without moving or hiding the Fellowship"; the ✓ ends the card.
 
 Tests: `ObjectFirstChoicesTests` (the registry, the ✓'s, Hunt Box's and red cards' tooltips, the hints with and without
-table cards), `CardConsoleOptionsTests`, `FellowshipCardActionsTests`, `LordsCardChoicesTests`; PlayMode
+table cards, the tray's and the console's hints, the Hunt Box lit only during the offer, and the command the Hunt Box and
+the ✓ build equal to the old buttons' and to the payload recorded from them on a real server; from the base-game line,
+EXP-17), `CardConsoleOptionsTests`, `FellowshipCardActionsTests`, `LordsCardChoicesTests`; PlayMode
 `NazgulStrikeObjectTests` (on a real server, a red table card's tile, the Hunt Box and the ✓ each send the `ChooseEffect`
-payload the old button sent, recorded from the buttons at 7ddddb8e), `Shadow02NetworkTests`, `Shadow02LayoutTests`,
+payload the old button sent, recorded from the buttons at 7ddddb8e), `Shadow02NetworkTests` (on a real server the red
+tile sends the payload the old × sent, recorded at c7d38fd5; EXP-17), `Shadow02LayoutTests`,
 `CardPack02NetworkTests`, `Shadow03NetworkTests`, `LordsCardNetworkTests`, `LayoutStressScenarioTests` (the Strike's
 scenario, `layout-console-options`, now checks the objects instead of three buttons; screenshots `ui430-strike-*`).
 
@@ -2481,8 +2489,10 @@ Playtest (owner's checklist):
   and the Shadow's in its own pool; "Click a glowing Ruler die, yours or the top bar's, to reroll it with Dismay."
 - [ ] Vilya, Nenya, Three Rings — seeded `ui09-vilya`, `t34-nenya`, `ui272-three-rings`. Expect: the named Ring's socket
   in the console with a round gold rim, breathing; the hints name the console.
-- [ ] A deck choice — seeded `ui348-anarion` (the Free Peoples). Expect: both decks beside the hand with a thick gold
-  rim, breathing, no pale halo.
+- [ ] A deck choice — seeded `ui348-anarion` (the Free Peoples), and the base game's `shadow-palantir-draw` (the Shadow).
+  Expect: both decks beside the hand with a thick gold rim, breathing, no pale halo; a deck's click draws.
+- [ ] A Nazgûl flight — seeded `shadow-strike` (the Shadow), at 1920×1080 at 125 %. Expect: the view comes to the lit
+  Nazgûl of Barad-dûr.
 - [ ] Mordor — seeded `ui34-mordor-morannon-True` (the Free Peoples), in a small window. Expect: the view comes to
   Morannon; its gate glowing gold and breathing, the figure glowing; "Declare or enter Mordor: click the glowing figure
   or gate on the map".
@@ -2493,10 +2503,10 @@ Playtest (owner's checklist):
 
 Tests: EditMode `GlowingHintClassesTests` (the pool's union across interactions, Dismay's three hints, Vilya's hint, the
 sockets a hint asks for and the base Ring use that does not glow, a Keeper Ring, the deck choice, the Council's offer
-and entry cost, the Mordor gate, the siege figures), `TurnConsoleStateTests` (the Fellowship phase's clause),
-`ResourcePanelTests` (the Council hint), `NamedRingsTests`; PlayMode `GlowingHintAuditTests` (21 cases, each on its own
+and entry cost, Gandalf the Grey's drawn deck (EXP-17), the Mordor gate, the siege figures), `TurnConsoleStateTests` (the Fellowship phase's clause),
+`ResourcePanelTests` (the Council hint), `NamedRingsTests`; PlayMode `GlowingHintAuditTests` (22 cases, each on its own
 seeded match, all in one run: the special dice, the Ruler discard, Dismay in both seeds, Vilya, Nenya, Three Rings,
-Lore, a Ring payment, the decks, the Mordor gate and figure, the Council's Characters row and Politics tokens behind
+Lore, a Ring payment, the decks of Anárion and of the Palantír of Orthanc (EXP-17), the Mordor gate and figure, the Council's Characters row and Politics tokens behind
 their lit tabs, the Strike's flight, Hunt Box and red table cards, Worn's red hand counter, Lure's portrait and marker,
 the Black Captain's Reserve token and map Nazgûl, Work of the Enemy's and Monsters Roused's regions, the hand's red
 cards, Scouts' regions, the siege extension's figures) with the reusable checks
@@ -2536,6 +2546,14 @@ replacement marker, and the Shadow's statistics, card, "Combat · Hits 1" and di
   shorter force row takes the difference (`flex-grow`), so everything under it stands level whatever either army holds.
   While a column chooses figures both keep their rows at the top (`battle-forces-choosing`), as before.
 - Pure layout: no layout write in a geometry callback, no measuring; click paths, payloads and hit targets unchanged.
+
+Playtest (owner's checklist):
+- [ ] A battle with a rear guard — seeded `ui44-window` (the Free Peoples attack Lossarnach from Minas Tirith with a
+  rear guard). Expect: the attacker's characters stand beside its figures, each name under its medallion; the ledge
+  naming the rear guard on the attacker's side and an empty row of its height on the defender's; both sides' statistics,
+  cards and rolls level.
+- [ ] Red Wrath — seeded `ui277-chieftain` (the Shadow). Click the Black Serpent's chip, take Red Wrath's hit, roll both
+  armies. Expect: both columns' rows stay level.
 
 Tests: PlayMode `BattleRowsNetworkTests.RedWrathKeepsBothSidesRowsLevel` (seed `ui277-chieftain`: the Shadow clicks the
 Black Serpent's chip, takes Red Wrath's hit, both armies roll; in 1366×768 and 1920×1080 at 100 % and 125 % the force
@@ -2769,6 +2787,9 @@ buttons and their badges, `ui439-voice-recruit`, `ui439-voice-upgrade`), `Expans
 activation, `ui439-narya-activation`).
 
 Playtest (owner's checklist):
+- [ ] The roster and the window in a base game — any game (the Free Peoples). Open Characters. Expect: each row's
+  ability icons its abilities' own (Strider's Guide, Captain of the West and Heir to Isildur differ). Click a
+  companion's row: his window's ability lines show the same icons as the row.
 - [ ] The roster and the window — Testing catalog `kings-ruler-token-dain` (Free Peoples). Click Dáin's Ruler token,
   open Characters. Expect: Dáin's row shows Iron Guard's and Dwarvenking's own icons, Iron Guard glowing. Click
   Dwarvenking: his window opens with each ability's line showing the same icon as the row.
@@ -2780,8 +2801,8 @@ Playtest (owner's checklist):
   North's arms); after the click the marker shows it for both players.
 - [ ] Evil Knowledge — `ui347-evil-knowledge` (the Shadow). Expect: the Mouth's glowing portrait wears Evil Knowledge's
   icon on its rim.
-- [ ] A Guide's response — a Hunt with Merry as Guide taking damage. Expect: Merry's figure in the Hunt window with the
-  Guide-separation icon as a badge.
+- [ ] A Guide's response — seeded `ui52-hunt-aftermath` (a Hunt with Merry as Guide taking damage). Expect: Merry's
+  figure in the Hunt window with the Guide-separation icon as a badge.
 
 Port to `ability-chips` (base game): `AbilityArt` (its base entries: the Voice's and the characters' reactions),
 `AbilityBadges`, the `IconButton` badge, the roster, character window and component button changes, the battle
@@ -3102,3 +3123,16 @@ Playtest (owner's checklist):
   row); hovering the tile unrolls its text above the tile.
 - [ ] Payment — a game where the Shadow may remove A Power too Great: choose a die, open Effects and click its ×.
   Expect: the details stand inside the panel above the cost and the payment, as before.
+
+<a id="one-release-line--exp-17"></a>
+## One release line: the expansions and the base-game UI — EXP-17 (2026-11-02)
+
+The owner: "let's merge everything into one branch, we want to make a release and work on everything at once —
+expansions and the UI changes". `release/0.10.0-rc.1` is `expansions` with `ability-chips` merged in, recorded only:
+every `ability-chips` change was already on `expansions`, equal or a superset (the base ports above, "Port to
+`ability-chips`"), so the tree is the expansions one. What only the base-game line held is carried: the Palantír of
+Orthanc's deck choice (`DeckChoiceTests`, `GlowingHintAuditTests`' `shadow-palantir-draw` case), Gandalf the Grey's drawn
+deck (`GlowingHintClassesTests`), a reserve figure lifted as its own icon in `BoardInteractionTests`' drag (UI-393), the
+Strike's payload and hint checks (`ObjectFirstChoicesTests`, `Shadow02NetworkTests`), and the base playtest items of
+UI-430, UI-434, UI-437 and UI-439. The "Port to `ability-chips`" and "base parts" notes record history; new work branches
+from the one line.

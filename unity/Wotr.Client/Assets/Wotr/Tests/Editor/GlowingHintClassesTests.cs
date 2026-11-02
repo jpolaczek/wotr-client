@@ -9,7 +9,8 @@ namespace Wotr.EditorTests
 {
     // UI-434 (owner, after UI-433): every object a hint asks the player to click wears the shared gold ChoiceGlow where it
     // stands. These are the classes of the fixed cases, including those no seeded match reaches (the Council's token
-    // offer, a deck choice's plain draw, a Ring the die merely may use); GlowingHintAuditTests checks them on real seeds.
+    // offer, a deck choice's plain draw, a Ring the die merely may use, Gandalf the Grey's draw on its deck);
+    // GlowingHintAuditTests checks them on real seeds.
     public sealed class GlowingHintClassesTests
     {
         // Two interactions offer dice in one pool; the pool lights their union, and one's refresh never puts out another's.
@@ -148,6 +149,26 @@ namespace Wotr.EditorTests
             Assert.IsTrue(ResourcePresentation.CouncilAsked(view, draft, token), "A Chieftain's entry may pay with it.");
             draft.Change(p => p.CouncilTokenId = token);
             Assert.IsFalse(ResourcePresentation.CouncilAsked(view, draft, token), "Paid, it is chosen rather than asked for.");
+        }
+
+        // Gandalf the Grey's draw, whenever his portrait cannot hold it (UI-431), is the deck of the Event card just resolved:
+        // that deck glows, the other does not. No seeded match reaches it (the server offers it only while he is the Guide).
+        [Test]
+        public void TheDeckGandalfTheGreysDrawTakesGlows()
+        {
+            var respond = new ActionOption { Kind = CommandKind.RespondEffect, Enabled = true, EligibleIds = { ReactionDecks.GreyDraw } };
+            respond.EffectChoices.Add(new EffectChoiceView { Id = ReactionDecks.GreyDraw, SourceId = "base.character.gandalf-grey", Title = "Draw matching card" });
+            var view = new PlayerView
+            {
+                You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "grey", Kind = DecisionKind.Reaction, Window = "event.completed", SourceId = "base.fp.strategy.12" },
+                Options = { respond, new ActionOption { Kind = CommandKind.DeclineReaction, Enabled = true } }
+            };
+            var deck = CardLibrary.Cards["base.fp.strategy.12"].Deck;
+            var decks = new DeckView();
+            decks.Refresh(view, new TurnDraft(), new ActionDieContext(), false);
+            Assert.IsTrue(decks.Root.Q<Button>("deck-" + deck).ClassListContains(ChoiceGlow.ClassName), "The drawn deck glows.");
+            Assert.IsFalse(decks.Root.Q<Button>("deck-" + (deck == "strategy" ? "character" : "strategy")).ClassListContains(ChoiceGlow.ClassName));
         }
 
         // The gate the Fellowship may enter by glows on the map's Mordor track; the other gate does not.

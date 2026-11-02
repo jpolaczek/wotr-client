@@ -30,7 +30,10 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator TheRingsThreeRingsRecoversGlowInTheConsole() => Wait(ThreeRings());
         [UnityTest] public IEnumerator TheDiceLoreMayChangeGlowInTheOwnPool() => Wait(Lore());
         [UnityTest] public IEnumerator TheRingsARemovalMayPayWithGlowInTheConsole() => Wait(RingPayment());
-        [UnityTest] public IEnumerator TheDecksADeckChoiceOffersGlowBesideTheHand() => Wait(Decks());
+        [UnityTest] public IEnumerator TheDecksADeckChoiceOffersGlowBesideTheHand() =>
+            Wait(Decks("ui348-anarion", Side.FreePeoples, "decks"));
+        [UnityTest] public IEnumerator TheDecksThePalantirOfOrthancsDrawOffersGlowBesideTheHand() =>
+            Wait(Decks("shadow-palantir-draw", Side.Shadow, "orthanc-decks"));
         [UnityTest] public IEnumerator TheMordorGateAndTheFellowshipFigureGlowInTheFellowshipPhase() => Wait(MordorGate());
         [UnityTest] public IEnumerator TheChieftainsRowAndTheShadowNationsGlowBehindTheirLitTabs() => Wait(CouncilPolitics());
         [UnityTest] public IEnumerator TheNazgulStrikesHuntBoxAndRedTableCardsGlow() => Wait(NazgulStrike());
@@ -152,13 +155,14 @@ namespace Wotr.PlayTests
             await Audit(room, client, "ring-payment", "Click a lit Elven Ring", () => Sockets(client, rings));
         }
 
-        // Kings Palantír of Anárion: the decks the extra card may come from glow beside the hand, in the opened drawer.
-        private static async Task Decks()
+        // A deck choice (UI-390) — Kings Palantír of Anárion's extra card, the base Palantír of Orthanc's draw: the decks the
+        // card may come from glow beside the hand, in the opened drawer.
+        private static async Task Decks(string seed, Side side, string name)
         {
-            using var room = await Connect("ui348-anarion", ScenarioKind.CardPack, openPanels: false);
-            var client = room.Fp;
+            using var room = await Connect(seed, ScenarioKind.CardPack, openPanels: false);
+            var client = side == Side.Shadow ? room.Sh : room.Fp;
             Assert.AreEqual(DeckChoice.Presentation, client.Board.View.Decision.Presentation);
-            await Audit(room, client, "decks", "Click a glowing deck beside your hand", async () =>
+            await Audit(room, client, name, "Click a glowing deck beside your hand", async () =>
             {
                 foreach (var deck in new[] { "character", "strategy" }.Where(id => DeckChoice.Offers(client.Board.View, id)))
                     await GlowingTargetChecks.AssertVisiblyOffered(client.Board, client.Board.Decks.Root.Q<Button>("deck-" + deck), deck + " deck");
