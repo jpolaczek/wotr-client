@@ -682,7 +682,7 @@ Notification 2026-10-10 with the user's choice "View on the how card “ Hover o
 <a id="treść-karty-w-panelu-effects--ui-94"></a>
 ## Content of card in the Effects Panel — UI-94
 
-Notification 2026-10-11 with screen: all information from a separate window card display at the bottom of the Effects panel. Source click- card selects them, and under the ranges and term appears a small parchment as developed card in the hands: the icon of the type of event, type (e.g. " STRATEGY CARD · MUSTER EVENT ), full text of the event and the fight section (initiative, title, text). The title is once, in the heading of the detail; card (Free Peoples · In play or "Effect ended", then parchment is extinguished) replaces the window footer. The Effects entry no longer opens a floating preview card ; the capacity of the form and source without card They don't have parchment. card range does not repeat the shortcut of effect (says it card ) Location buttons and expiration date are in one row. When text would push the panel under the bottom pass (e.g. 768 px at 125% ), panel expands like an old window card at most to 55% width board , and the sources entries have one line; the new source or change of window returns to the width of the bar. When paying for the removal of parchment is hidden, because the place is the decision. The content is located above the bottom pass in four systems without changing.
+Notification 2026-10-11 with screen: all information from a separate window card display at the bottom of the Effects panel. Source click- card selects them, and under the ranges and term appears a small parchment as developed card in the hands: the icon of the type of event, type (e.g. " STRATEGY CARD · MUSTER EVENT ), full text of the event and the fight section (initiative, title, text). The title is once, in the heading of the detail; card (Free Peoples · In play or "Effect ended", then parchment is extinguished) replaces the window footer. The Effects entry no longer opens a floating preview card ; the capacity of the form and source without card They don't have parchment. card range does not repeat the shortcut of effect (says it card ) Location buttons and expiration date are in one row. When text would push the panel under the bottom pass (e.g. 768 px at 125% ), panel expands like an old window card at most to 55% width board , and the sources entries have one line; the new source or change of window returns to the width of the bar. When paying for the removal of parchment is hidden, because the place is the decision. The content is located above the bottom pass in four systems without changing. Since UI-424 (2026-11-02) the panel never widens: the details open on their own card beside the panel ([UI-424](#the-effects-panel-keeps-every-source-and-its-width--ui-424)).
 
 <a id="płynny-ruch-drużyny--ui-95"></a>
 ## Liquid movement Fellowship — UI-95
@@ -3041,3 +3041,64 @@ Playtest (owner's checklist):
   with the attempt; no choice and no Draw tiles.
 - [ ] Sequential — `kings-variant-sequential-corruption`: the same clicks. Expect: one tile beside the king and the
   console's Draw again; the latest tile's click keeps it, as before.
+
+<a id="the-effects-panel-keeps-every-source-and-its-width--ui-424"></a>
+## The Effects panel keeps every source and its width — UI-424 (2026-11-02)
+
+Found by TEST-15's `layout-effects-sources` (the panel with 18 sources reached 592.6 points against the bottom row at
+474.4 at 1366×768 and 125 %; the same defect failed `EffectsLayoutTests.MultipleSources`), and reported by the owner with
+two screenshots of that scenario: "czesc nazw efektow nie miesci sie w swoich okienkach" — long names (Mithril Coat and
+Sting, The Power of Tom Bombadil, The Lore of the Elven Rings, The Palantír of Barad-dûr, Threats and Promises, Worn with
+Sorrow and Toil) wrapped out of their parchment tiles — and "przy wybraniu pewnych skilli layout effects sie rozjezdza":
+clicking a source (Captain of Despair) widened the whole panel to almost the screen's width (UI-94's reading width).
+
+- **The grid's arrangement is chosen before layout** (`EffectsGridArrangement`) from the number of sources and the fixed
+  height a docked panel has between the rail's top and the bottom row (518 points at 100 %, 364 at 125 %, the same at
+  1366×768 and 1920×1080). The narrowest grid whose rows fit wins: two columns before three before four, regular rows
+  (42-point tiles, type 12 points, 50-point pitch) before dense ones (38-point tiles, type 11 points, 45-point pitch);
+  every title stays a 32-point target and nothing scrolls or hides behind "more". Each column count has one panel width
+  (two 353, three 506, four 637 points), so a source's details, its × or a lit state never change the panel's width or
+  columns. The arrangement changes only when the source count changes or when the stage takes another size (after
+  layout); the panel's own geometry never changes it, which TEST-15's three-column attempt did ("Layout update failed to
+  stabilize"). The owner's 18 sources: two columns at 100 %, three at 125 %; 22 sources: three at 100 %, four at 125 %.
+- **Every name fits inside its tile** (`EffectTitleFit`): the parchment's frame is drawn finer (about 4 points) and a
+  title's text keeps 4 points inside the tile's top and bottom, so two lines stand inside the frame. The title's runs of
+  words are measured once per name, outside layout callbacks; it keeps the arrangement's size when its wrap at the tile's
+  fixed text width (less the card symbol, the owner label and the ×) fits that height, and otherwise takes the largest
+  smaller size that does, keeping two points of the height for the rounding of a large screen's pixels (not below 8
+  points): a long two-line name takes 11.5 points in a regular tile; with a × in three or four columns the longest names
+  of the catalogue take 9–10 points. A title measured before its style was resolved is measured again. An entry's border
+  is always 2 points (gilt when selected), so selecting a source moves no title.
+- **A source's details open on their own card beside the panel** (`EffectDetailsPlace`, 288 points wide on the panel's
+  frame): the state ("Shadow · In play"), the scopes with their Locate buttons and expiry, and the card's text parchment
+  wrap inside the card, which stands level with the panel's top and moves up only as far as it must to end above the
+  bottom row. The grid neither moves nor widens; UI-94's reading width (up to 55 % of the board) and QUAL-19's compact
+  panel are gone. While a removal is paid the details stand inside the panel above the payment, as before. The card's
+  name and state each stand on one line; when the panel closes the card goes at once, so it covers nothing (a Hunt
+  window's response) while the panel fades out. The tiles' tooltips say "beside the list" instead of "below".
+- **The hover unroll (UI-221)** stays under its tile for a tile in the board's upper half; a tile in the lower half
+  unrolls its text upward from above the tile, so the text no longer runs under the bottom row.
+- **What stays:** the sources' order, their tooltips' actions, the click that shows a source (or discards a red tile,
+  UI-430, or uses a lit card, UI-272), the header with only its close button (UI-429).
+
+Tests: EditMode `EffectsGridArrangementTests` (the arrangement for 0–28 sources at both heights, the narrowest first,
+one width per column count, the details card's place) and `EffectTitleFitTests`; PlayMode `EffectsLayoutTests`
+(`MultipleSources…` and the new `ManySourcesAndTheLongestCardTextFitWithoutWideningThePanel`: 22 cards with the
+catalogue's longest names, four with ×, and Dead Men of Dunharrow's text, four layouts, screenshots `ui424-many-*`),
+`LayoutStressScenarioTests.TheFullestEffectsPanelFits` (the UI-424 warning is an assertion; titles inside their tiles,
+the panel and the longest text's details above the bottom row, the same width and columns with the details open;
+screenshots `ui424-effects-sources-*`, `ui424-effects-details-*`), `InGameDenseLayoutTests` (titles inside their tiles),
+`EffectsNetworkTests` (the card text in the details beside the panel). Shared checks: `EffectsPanelChecks`.
+
+Playtest (owner's checklist):
+- [ ] Names — `layout-effects-sources` (Free Peoples), Interface scale 100 % and then 125 %: open the Effects tab.
+  Expect: every source in view, two columns at 100 % and three at 125 %, every name (Mithril Coat and Sting, The Lore of
+  the Elven Rings with its ×, Worn with Sorrow and Toil) inside its parchment, the panel's bottom above the dice row.
+- [ ] Details — the same panel: click Captain of Despair, then The Gates are Closed. Expect: the details card opens to
+  the right of the panel with "Shadow · In play", the expiry and the card's text; the panel keeps its width and its
+  columns, no tile moves, and the card ends above the dice row.
+- [ ] Few sources — `fp-army-event` (Free Peoples): play A Power too Great with the Army die, open Effects and click it.
+  Expect: a two-column panel level with its tab, the details card beside it (moved up only if it would pass the dice
+  row); hovering the tile unrolls its text above the tile.
+- [ ] Payment — a game where the Shadow may remove A Power too Great: choose a die, open Effects and click its ×.
+  Expect: the details stand inside the panel above the cost and the payment, as before.

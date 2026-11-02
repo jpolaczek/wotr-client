@@ -1163,12 +1163,11 @@
 /* UI-57 Effects */
 .effects-tab { position: absolute; left: 0; top: 106px; width: 94px; min-width: 94px; height: 34px; min-height: 34px; padding: 0 3px; margin: 0; font-size: 12px; }
 .effects-panel { position: absolute; left: 98px; top: 56px; width: 420px; padding: 6px 8px; background-color: rgb(34, 32, 29); border-width: 1px; border-color: rgb(112, 135, 132); border-radius: 5px; }
-.effects-panel.compact-effects { width: 500px; left: 98px; top: 8px; }
 .effects-panel > .window-header { flex-direction: row; align-items: center; height: 28px; margin-bottom: 3px; }
 .effects-panel .window-header > .title { flex-grow: 1; }
 .effects-panel #close-effects { width: 28px; min-width: 28px; height: 26px; min-height: 26px; padding: 0; margin: 0; }
 #effects-sources { flex-direction: row; flex-wrap: wrap; }
-.effect-entry { flex-direction: row; align-items: center; width: 49%; min-height: 43px; margin: 1px 1px 3px 0; padding: 3px; background-color: rgb(51, 48, 45); border-width: 1px; border-color: rgb(88, 84, 78); border-radius: 3px; }
+.effect-entry { flex-direction: row; align-items: center; flex-shrink: 0; margin: 0 2px 2px 0; padding: 1px 3px; background-color: rgb(51, 48, 45); border-width: 1px; border-color: rgb(88, 84, 78); border-radius: 3px; }
 .effect-entry.shadow-effect { background-color: rgb(55, 39, 44); border-color: rgb(100, 70, 75); }
 .effect-entry.selected-effect { border-color: rgb(228, 197, 127); }
 .effect-entry > Label { font-size: 10px; width: 20px; white-space: normal; color: rgb(175, 193, 190); }
@@ -1177,17 +1176,15 @@
 #effects-source-details { margin-top: 3px; padding-top: 3px; border-top-width: 1px; border-top-color: rgb(95, 113, 110); }
 #effects-source-details Label { white-space: normal; font-size: 12px; }
 #effect-detail-title { -unity-font-style: bold; }
+/* UI-424: the name and the state each stand on one line (the longest fit the details card), so rounding a measured width
+   to pixels never wraps a last word under a one-line box; the state moves to the next row when both do not fit. */
+#effects-source-details #effect-detail-title, #effects-source-details #effect-detail-state { white-space: nowrap; flex-shrink: 0; }
 .effect-detail-heading { flex-direction: row; align-items: center; flex-wrap: wrap; }
 .effect-detail-heading #effect-detail-title { margin-right: 10px; }
 #effect-detail-state { color: rgb(160, 180, 175); font-size: 11px; }
 .effect-scope { margin-top: 2px; padding: 3px 5px; border-left-width: 2px; border-left-color: rgb(161, 177, 165); background-color: rgba(90, 110, 110, .1); }
-.compact-effects .effect-scopes, .preparing-effect-removal .effect-scopes { flex-direction: row; flex-wrap: wrap; }
-.compact-effects .effect-scope, .preparing-effect-removal .effect-scope { width: 49%; margin-right: 1%; }
-/* QUAL-19: a compact panel spends no spare space between rows; a source keeps its 32-point button (32 + 2 × 3 padding
-   + 2 × 1 border = 40). */
-.compact-effects .effect-entry { min-height: 40px; margin-bottom: 1px; }
-.compact-effects #effects-source-details { margin-top: 1px; padding-top: 2px; }
-.compact-effects #effect-removal-cost { margin-top: 2px; }
+.preparing-effect-removal .effect-scopes { flex-direction: row; flex-wrap: wrap; }
+.preparing-effect-removal .effect-scope { width: 49%; margin-right: 1%; }
 .effect-targets { flex-direction: row; flex-wrap: wrap; align-items: center; }
 .effect-targets .action { min-height: 23px; height: 23px; margin: 1px 4px 1px 0; padding: 2px 5px; font-size: 11px; }
 .effect-targets Label { color: rgb(193, 199, 173); }

@@ -375,8 +375,8 @@
    in dark ink. A source a click can use now takes the hand's playable parchment. */
 #board-screen .effects-panel .effect-source.effect-card-tile,
 #board-screen .effects-panel .effect-source.effect-card-tile:hover {
-    margin: 0 2px 0 0;
-    padding: 1px 5px 1px 21px;
+    margin: 0;
+    padding: 4px 7px 4px 21px;
     color: rgb(59, 36, 18);
     text-shadow: 0 0 0 rgba(0, 0, 0, 0);
     -unity-text-align: middle-left;
@@ -385,7 +385,8 @@
     -unity-slice-right: 28;
     -unity-slice-bottom: 28;
     -unity-slice-left: 28;
-    -unity-slice-scale: 0.5px;
+    /* UI-424: a finer frame (about 4 points), so two lines of a long name stand inside it. */
+    -unity-slice-scale: 0.25px;
 }
 #board-screen .effects-panel .effect-source.effect-card-tile:hover { -unity-background-image-tint-color: rgb(255, 244, 214); }
 #board-screen .effects-panel .effect-source.effect-card-tile.legal-target { background-image: resource("Wotr/Art/UI/cards/parchment-playable"); }
@@ -400,7 +401,8 @@
 #board-screen .effects-panel .effect-card-tile > .action-symbol { left: 5px; top: 50%; width: 13px; height: 13px; margin-top: -6px; }
 
 /* UI-94: a selected card source shows its complete text on the parchment of an unrolled hand card
-   (graphicalassets/ui/src/cards), under the source's scopes. The title stays in the details heading. */
+   (graphicalassets/ui/src/cards), under the source's scopes; UI-424: on the details card beside the panel. The title
+   stays in the details heading. */
 #board-screen #effects-source-details #effect-card, #board-screen #effect-unroll #effect-card {
     margin: 5px 0 0 0;
     padding: 7px 10px 8px 10px;
@@ -416,11 +418,6 @@
 /* Above the card text a scope keeps only its targets and expiry, on one wrapping row. */
 #board-screen #effects-source-details .effect-scope-compact { padding: 2px 5px; }
 #board-screen #effects-source-details .effect-targets > .effect-expiry { flex-shrink: 1; margin: 1px 0 1px 2px; font-size: 11px; color: rgb(214, 205, 180); }
-/* EffectsReadingWidth widens the panel only when a card's text would pass the bottom bar; the wider
-   entries then hold their titles on one line. */
-#board-screen .edge-left-panel.effects-wide-reading .effect-entry { min-height: 30px; margin-bottom: 2px; }
-#board-screen .edge-left-panel.effects-wide-reading .effect-source { min-height: 24px; }
-#board-screen .edge-left-panel.effects-wide-reading .effect-entry > Label { width: 36px; }
 /* While a removal is being paid the decision needs the room; the payment layout stays as before UI-94. */
 #board-screen .preparing-effect-removal #effects-source-details #effect-card { display: none; }
 #board-screen #effect-card .effect-card-heading { flex-direction: row; align-items: center; margin: 0 0 4px 0; }
@@ -429,10 +426,6 @@
 #board-screen #effects-source-details #effect-card #effect-card-kind, #board-screen #effect-unroll #effect-card #effect-card-kind { flex-shrink: 1; font-size: 9px; letter-spacing: 1.2px; color: rgb(122, 74, 30); }
 #board-screen #effects-source-details #effect-card #effect-card-event, #board-screen #effect-unroll #effect-card #effect-card-event { font-size: 11.5px; }
 #board-screen #effect-card #effect-card-combat { margin: 6px 0 0 0; padding: 4px 0 0 0; border-top-width: 1px; border-top-color: rgba(140, 106, 51, 0.7); }
-/* QUAL-19: a compact Effects panel docked under the rail keeps its whole card readable above the console with less
-   vertical spacing. */
-#board-screen .effects-panel.edge-left-panel.compact-effects { padding-top: 4px; padding-bottom: 5px; }
-#board-screen .compact-effects #effect-card #effect-card-combat { margin-top: 3px; padding-top: 3px; }
 #board-screen #effects-source-details #effect-card #effect-card-combat-heading, #board-screen #effect-unroll #effect-card #effect-card-combat-heading { margin: 0 0 2px 0; font-size: 9px; letter-spacing: 1.2px; -unity-font-style: bold; color: rgb(122, 26, 16); }
 #board-screen #effects-source-details #effect-card #effect-card-combat-text, #board-screen #effect-unroll #effect-card #effect-card-combat-text { font-size: 11px; }
 
@@ -469,4 +462,43 @@
     -unity-slice-bottom: 28;
     -unity-slice-left: 28;
     -unity-slice-scale: 0.5px;
+}
+
+/* UI-424: the Effects grid stands in one arrangement per source count and layout (EffectsGridArrangement), which sets the
+   panel's width, each entry's width and height and each title's height and type inline. These rules hold the paddings,
+   borders and gaps it counts, alike in every viewport; an entry's border is always 2 points (gilt when selected), so
+   selecting a source moves no title. */
+#board-screen .effects-panel.edge-left-panel { padding: 6px 8px 7px 8px; }
+#board-screen .effects-panel.edge-left-panel .panel-header { margin-bottom: 4px; }
+#board-screen .effects-panel #effects-sources { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+#board-screen .edge-left-panel .effect-entry { flex-shrink: 0; margin: 0 2px 2px 0; padding: 1px 3px; border-width: 2px; border-color: rgba(0, 0, 0, 0); }
+#board-screen .effects-panel .effect-entry > Label { width: 18px; min-width: 18px; margin: 0 2px 0 0; padding: 0; flex-shrink: 0; }
+#board-screen .effects-panel .effect-source { min-height: 0; padding: 4px 4px; }
+#board-screen .effects-panel .effect-remove { margin: 0 0 0 2px; flex-shrink: 0; }
+/* UI-424: a source's details (state, expiry, the card's text) open on their own card beside the panel, level with its top
+   and moved up only as far as they must to end above the bottom row (EffectDetailsPlace), so the panel keeps its width and
+   its grid stays where it is. While a removal is paid they stand inside the panel above the payment, as before. */
+#board-screen .effects-panel > #effects-source-details {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 288px;
+    margin: 0 0 0 6px;
+    padding: 8px 10px 10px 10px;
+    border-top-width: 0;
+    background-image: resource("Wotr/Art/UI/frames/panel");
+    -unity-slice-top: 44;
+    -unity-slice-right: 44;
+    -unity-slice-bottom: 44;
+    -unity-slice-left: 44;
+    -unity-slice-scale: 0.5px;
+}
+#board-screen .effects-panel.preparing-effect-removal > #effects-source-details {
+    position: relative;
+    left: 0;
+    width: auto;
+    margin: 3px 0 0 0;
+    padding: 3px 0 0 0;
+    border-top-width: 1px;
+    background-image: none;
 }

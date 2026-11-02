@@ -115,6 +115,9 @@ namespace Wotr.PlayTests
             CollectionAssert.AreEqual(new[] { "close-effects" }, board.TableEffects.Root.Q(className: "window-header")
                 .Query<Button>().ToList().Select(button => button.name).ToArray());
             Assert.AreEqual(6, Sources(board));
+            // UI-424: every title within its tile (Mithril Coat and Sting spilled out of its parchment), the panel above the row.
+            EffectsPanelChecks.TitlesInsideTiles(board, $"{board.View.You} {width} {scale:0.00}");
+            EffectsPanelChecks.PanelAboveBottomRow(board, $"{board.View.You} {width} {scale:0.00}");
             SovereignTargets(board);
             LayoutTests.Save(target, $"ui63-dense-effects-{board.View.You}-{width}-{scale:0.00}.png");
             Press(board.TableEffects.Root.Q<Button>("close-effects"));

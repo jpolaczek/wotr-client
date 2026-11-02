@@ -32,7 +32,7 @@ The audit (2026-10-29) listed the features whose layout is at risk and whether a
 | `layout-council-travel` | Shadow | The Council token's travel with twelve movable figures in several regions. |
 | `layout-white-rider` | Free Peoples | The White Rider's chip at a battle's start, with Pass. |
 | `layout-all-resources` | Free Peoples | The special, Ruler and Keeper dice, three Ruler tokens, two Council and two Dismay tokens, the three Elven Rings. |
-| `layout-effects-sources` | Free Peoples | The Effects panel with 22 entries: six Free Peoples and eight Shadow table cards and three corrupted kings. |
+| `layout-effects-sources` | Free Peoples | The Effects panel with 18 sources: six Free Peoples and eight Shadow table cards and the corrupted kings' four abilities. Open the Effects tab, then a long card such as The Gates are Closed. |
 | `layout-console-options` | Shadow | The Nazgûl Strike!'s three console options beside Pass, with four table cards lit in the Effects panel. Since UI-430 (2026-10-30) the Strike has no console options: open the Effects tab and look at the four red table cards, the glowing Hunt Box and the lit ✓ (the server's title still says "three console options"). |
 
 The Witch-king's Sorcerer is not in the White Rider scenario: its window opens only after the first round. A long trail of
@@ -58,6 +58,12 @@ task.
   UI-430 (owner, 2026-10-30): the Strike's options are its objects now, so `LayoutStressScenarioTests.TheNazgulStrikesObjectsFit`
   checks no option strip, the red cards in the open Effects panel, the glowing Hunt Box and the lit ✓ in the four layouts.
 - **The Effects panel reaches past the bottom row** (`layout-effects-sources`) with 18 sources at 1366×768 and 125 %
-  (592.6 against 474.4 points) — the defect behind the earlier `EffectsLayoutTests.MultipleSources` failure. Its own task
-  is UI-424; until then the stress test logs it as a warning and keeps the screenshot.
+  (592.6 against 474.4 points) — the defect behind the earlier `EffectsLayoutTests.MultipleSources` failure. Fixed by
+  UI-424 (2026-11-02, [UX_SPEC](UX_SPEC.md#the-effects-panel-keeps-every-source-and-its-width--ui-424)): the grid's
+  arrangement is chosen from the source count and the height above the bottom row (three columns for these 18 sources at
+  125 %, two at 100 %), every name fits inside its tile, and a source's details open on their own card beside the panel,
+  which keeps its width. The warning is now an assertion: `TheFullestEffectsPanelFits` checks in the four layouts that
+  the panel and the details of the card with the longest text end above the bottom row, that every title stays inside its
+  tile, and that opening the details changes neither the panel's width nor its columns (screenshots
+  `ui424-effects-sources-*` and `ui424-effects-details-*`).
 - Every other scenario keeps its windows, panels and buttons on the screen with their whole text in the four layouts.

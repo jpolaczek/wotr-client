@@ -160,7 +160,8 @@ namespace Wotr.PlayTests
                     if (client.Board.TableEffects.IsOpen && effectCard != null)
                     {
                         Assert.LessOrEqual(effectCard.worldBound.yMax, client.Board.Root.worldBound.yMax + 1, "UI-94: card text stays on screen");
-                        Assert.LessOrEqual(effectCard.worldBound.yMax, client.Board.TableEffects.Root.worldBound.yMax + 1);
+                        // UI-424: the card text stands in the details card beside the panel.
+                        Assert.LessOrEqual(effectCard.worldBound.yMax, client.Board.TableEffects.Details.worldBound.yMax + 1);
                     }
                     LayoutTests.Save(target, $"lords03-{name}-{width}-{scale:0.00}.png");
                     client.Panel.targetTexture = client.Viewport;

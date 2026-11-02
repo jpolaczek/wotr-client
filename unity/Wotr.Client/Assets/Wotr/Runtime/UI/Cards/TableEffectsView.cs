@@ -16,6 +16,11 @@ namespace Wotr.Client
         public VisualElement DecisionHost { get; } = new VisualElement { name = "effects-decision-host" };
         public FloatingWindow Window { get; set; }
         public bool Docked { get; set; }
+        // UI-424: the left rail, whose top is the highest place a docked panel may take (BoardEdgeLayout.PlaceBesideTab).
+        public VisualElement Rail { get; set; }
+        // UI-424: a source's details stand on their own card beside the panel (EffectDetailsPlace).
+        public VisualElement Details => details.Root;
+        public EffectsGridArrangement Arrangement { get; private set; } = EffectsGridArrangement.Regular;
         public bool Pinned => hover.Pinned;
         public bool IsOpen => hover.Visible;
         public string SelectedSource => selected?.SourceId ?? "";
@@ -27,7 +32,6 @@ namespace Wotr.Client
         public event Action<string> UseChosen;
         private readonly DrawerHover hover;
         private readonly EffectSourceDetails details;
-        private readonly EffectsReadingWidth reading;
         private readonly VisualElement list = new VisualElement { name = "effects-sources" };
         private readonly Label empty = new Label("No active effects") { name = "effects-empty" };
         private readonly Label cost = new Label { name = "effect-removal-cost" };
@@ -43,6 +47,11 @@ namespace Wotr.Client
         private EffectSource selected;
         private VisualElement tray, dock, obstruction, viewport;
         private bool shown, ended, sourcePinned, preparing;
+        // UI-424: a new stage size rearranges the grid and a new details size moves its card, both after layout.
+        private readonly IVisualElementScheduledItem rearrange;
+        private readonly IVisualElementScheduledItem placeDetails;
+        // The rail's top below the stage's top (LeftRail.uss .board-left-tabs) until the rail is laid out.
+        private const float DefaultCeiling = 58;
 
         public TableEffectsView(VisualElement surface, MapCanvas map)
         {
@@ -62,26 +71,31 @@ namespace Wotr.Client
             Root.Add(empty);
             Root.Add(list);
             details = new EffectSourceDetails(map.Focus);
-            reading = new EffectsReadingWidth(Root);
-            details.Rebuilt += ReadingChanged;
+            details.Rebuilt += DetailsRebuilt;
             Root.Add(details.Root);
             Root.Add(cost);
             Root.Add(DecisionHost);
             Root.Add(unroll.Root);
             hover = new DrawerHover(surface, Tab, Root, _ => false, RefreshVisibility);
+            rearrange = Root.schedule.Execute(Arrange);
+            rearrange.Pause();
+            placeDetails = Root.schedule.Execute(PlaceDetails);
+            placeDetails.Pause();
             Root.RegisterCallback<AttachToPanelEvent>(e =>
             {
                 if (e.target == Root)
-                    Root.parent.RegisterCallback<GeometryChangedEvent>(UpdateCompactLayout);
+                    Root.parent.RegisterCallback<GeometryChangedEvent>(StageChanged);
             });
             Root.RegisterCallback<DetachFromPanelEvent>(e =>
             {
                 if (e.target == Root)
-                    Root.parent?.UnregisterCallback<GeometryChangedEvent>(UpdateCompactLayout);
+                    Root.parent?.UnregisterCallback<GeometryChangedEvent>(StageChanged);
             });
             Root.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             Root.RegisterCallback<PointerUpEvent>(e => e.StopPropagation());
             Root.RegisterCallback<GeometryChangedEvent>(OwnGeometryChanged);
+            details.Root.RegisterCallback<GeometryChangedEvent>(_ => placeDetails.ExecuteLater(0));
+            ApplyArrangement();
         }
 
         public void Attach(VisualElement decisionTray, VisualElement decisionDock)
@@ -154,11 +168,13 @@ namespace Wotr.Client
                 if (!entries.TryGetValue(source.Key, out var entry))
                 {
                     entry = new EffectEntry(source, Select, Remove, Hover, Use);
+                    entry.Arrange(Arrangement);
                     entries.Add(source.Key, entry);
                     list.Add(entry.Root);
                 }
                 entry.Apply(source);
             }
+            Arrange();
             if (selected != null && current.TryGetValue(selected.Key, out var updated))
             {
                 selected = updated;
@@ -236,7 +252,7 @@ namespace Wotr.Client
             preparing = source != null;
             Root.EnableInClassList("preparing-effect-removal", preparing);
             if (wasPreparing != preparing)
-                ReadingChanged();
+                DetailsMoved();
             if (preparing)
             {
                 if (tray.parent != DecisionHost)
@@ -306,31 +322,96 @@ namespace Wotr.Client
                 unroll.Hide();
         }
 
-        private const float CompactBelow = 400;
-
-        private void UpdateCompactLayout(GeometryChangedEvent e)
+        // UI-424: a new stage size (another window size or interface scale) rearranges the grid once layout is done; the
+        // panel's own geometry never does.
+        private void StageChanged(GeometryChangedEvent e)
         {
-            RefreshCompact();
             if (e.oldRect.size != e.newRect.size)
-                ReadingChanged();
+                rearrange.ExecuteLater(0);
         }
 
-        // QUAL-19: the docked panel's own place is known only after its layout, so its geometry also decides.
         private void OwnGeometryChanged(GeometryChangedEvent e)
         {
             Position();
-            RefreshCompact();
+            placeDetails.ExecuteLater(0);
         }
 
-        private void RefreshCompact() =>
-            Root.EnableInClassList("compact-effects", Root.parent != null && AvailableHeight() < CompactBelow);
+        // UI-424: the grid for this many sources in the height a docked panel has between the rail's top and the bottom
+        // row, read outside layout callbacks; nothing is written while the arrangement stays.
+        private void Arrange()
+        {
+            var next = EffectsGridArrangement.Choose(sources.Count, AvailableHeight());
+            if (next == Arrangement)
+                return;
+            Arrangement = next;
+            ApplyArrangement();
+        }
 
-        // QUAL-19: a panel docked at the left rail starts below the rail's top, so its space is shorter than the stage;
-        // a floating panel moves up when compact, so it is measured against the whole stage.
-        private float AvailableHeight() => Root.parent.contentRect.height - (Docked ? Root.layout.y : 0);
+        private void ApplyArrangement()
+        {
+            foreach (var arrangement in EffectsGridArrangement.All)
+                Root.EnableInClassList(arrangement.ClassName, arrangement == Arrangement);
+            Root.style.width = Arrangement.PanelWidth;
+            Root.style.maxWidth = StyleKeyword.None;
+            foreach (var entry in entries.Values)
+                entry.Arrange(Arrangement);
+        }
 
-        // A card's text is hidden while a removal is being paid, so only reading may widen the panel.
-        private void ReadingChanged() => reading.Read(details.ShowsCard && !preparing);
+        // A docked panel stands between the rail's top and the bottom margin; a floating one between both margins.
+        private float AvailableHeight()
+        {
+            var stage = Root.parent;
+            if (stage == null || float.IsNaN(stage.contentRect.height) || stage.contentRect.height <= 0)
+                return float.NaN;
+            var top = Docked ? Ceiling(stage) : EffectsGridArrangement.BottomMargin;
+            return stage.contentRect.height - EffectsGridArrangement.BottomMargin - top;
+        }
+
+        private float Ceiling(VisualElement stage) => Rail?.panel != null && Rail.worldBound.height > 0
+            ? stage.WorldToLocal(Rail.worldBound.position).y
+            : DefaultCeiling;
+
+        // New details stay hidden until their card is placed, so the card never shows first where it will not stay.
+        private void DetailsRebuilt()
+        {
+            if (!preparing)
+                details.Root.style.visibility = Visibility.Hidden;
+            placeDetails.ExecuteLater(0);
+        }
+
+        // While a removal is being paid the details stand inside the panel, above the payment (LeftRail.uss).
+        private void DetailsMoved()
+        {
+            if (preparing)
+                DetailsInPanel();
+            placeDetails.ExecuteLater(0);
+        }
+
+        // UI-424: the details card beside the panel stands level with the panel's top, moved up only as far as it must to
+        // end above the bottom row. Only its top is written, which changes no size, so the layout settles at once.
+        private void PlaceDetails()
+        {
+            var stage = Root.parent;
+            if (preparing || stage == null)
+            {
+                DetailsInPanel();
+                return;
+            }
+            var height = details.Root.layout.height;
+            if (float.IsNaN(height) || height <= 0 || float.IsNaN(Root.layout.y))
+                return;
+            var offset = EffectDetailsPlace.Offset(Root.layout.y, height, stage.contentRect.height);
+            var top = details.Root.style.top;
+            if (top.keyword != StyleKeyword.Undefined || Mathf.Abs(top.value.value - offset) > .25f)
+                details.Root.style.top = offset;
+            details.Root.style.visibility = StyleKeyword.Null;
+        }
+
+        private void DetailsInPanel()
+        {
+            details.Root.style.top = StyleKeyword.Null;
+            details.Root.style.visibility = StyleKeyword.Null;
+        }
 
         public void Open() => hover.Open();
         public void Close() => hover.Close();
@@ -345,14 +426,25 @@ namespace Wotr.Client
                 {
                     Opening?.Invoke();
                     Root.BringToFront();
+                    Arrange();
+                    placeDetails.ExecuteLater(0);
                 }
                 Appearance.Display(Root, shown);
                 Tab.EnableInClassList("selected", shown);
                 if (!shown)
-                    unroll.Hide();
+                    Rollback();
             }
             Position();
             Window?.Refresh();
+        }
+
+        // UI-424: a closing panel's details card and hovered text go at once, so while the panel fades out (UI-322) they
+        // cover nothing beside it; the card shows again where it stands once the panel reopens (PlaceDetails).
+        private void Rollback()
+        {
+            unroll.Hide();
+            if (!preparing)
+                details.Root.style.visibility = Visibility.Hidden;
         }
     }
 }

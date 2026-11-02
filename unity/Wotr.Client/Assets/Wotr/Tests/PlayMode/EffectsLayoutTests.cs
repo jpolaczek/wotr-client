@@ -36,6 +36,10 @@ namespace Wotr.PlayTests
                     yield return Frames();
                     Assert.AreEqual("Effects · 6", board.TableEffects.Tab.text);
                     Assert.IsEmpty(board.TableEffects.Root.Query<ScrollView>().ToList());
+                    var layout = $"{width} {scale:0.00}";
+                    EffectsPanelChecks.TitlesInsideTiles(board, layout);
+                    var panelWidth = board.TableEffects.Root.layout.width;
+                    var grid = EffectsPanelChecks.Grid(board);
                     var openings = 0;
                     System.Action opened = () => openings++;
                     board.Cards.Opening += opened;
@@ -44,12 +48,16 @@ namespace Wotr.PlayTests
                     yield return Frames();
                     Assert.AreEqual(0, openings, "UI-94: a source click opens no separate card window.");
                     LayoutTests.Save(target, $"ui94-multiple-{width}-{scale:0.00}.png");
+                    // UI-424: the details open beside the panel, which keeps its width and its grid.
+                    Assert.That(board.TableEffects.Root.layout.width, Is.EqualTo(panelWidth).Within(.5f), "The panel keeps its width · " + layout);
+                    Assert.That(panelWidth, Is.EqualTo(board.TableEffects.Arrangement.PanelWidth).Within(1f), layout);
+                    EffectsPanelChecks.SameGrid(grid, EffectsPanelChecks.Grid(board), layout);
                     Check(board);
                     Assert.AreEqual(2, board.TableEffects.Root.Query<Label>().ToList().Count(l => l.name.StartsWith("effect-expiry-")));
                     Assert.AreEqual(3, board.TableEffects.Root.Query<Button>().ToList().Count(b => b.name.StartsWith("effect-locate-")));
-                    Assert.AreEqual(CardLibrary.Cards[Protection].Event, board.TableEffects.Root.Q<Label>("effect-card-event").text);
-                    Assert.AreEqual(CardLibrary.Cards[Protection].Combat, board.TableEffects.Root.Q<Label>("effect-card-combat-text").text);
-                    TextFits(board.TableEffects.Root.Q("effect-card"));
+                    Assert.AreEqual(CardLibrary.Cards[Protection].Event, board.TableEffects.Details.Q<Label>("effect-card-event").text);
+                    Assert.AreEqual(CardLibrary.Cards[Protection].Combat, board.TableEffects.Details.Q<Label>("effect-card-combat-text").text);
+                    TextFits(board.TableEffects.Details.Q("effect-card"));
                     board.TableEffects.Root.Q<Button>("effect-locate-lorien").Focus();
                     view.Effects.First(e => e.Id == "lorien").ExpiryDescription = "At the end of this battle.";
                     view.Revision++;
@@ -75,6 +83,9 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(DisplayStyle.Flex, unroll.resolvedStyle.display);
                     Assert.Greater(unroll.worldBound.height, 20);
                     Assert.AreEqual(PickingMode.Ignore, unroll.pickingMode, "The unrolled text takes no pointer.");
+                    // UI-424: a tile low on the board unrolls upward, so its text stays above the bottom row.
+                    Assert.GreaterOrEqual(unroll.worldBound.yMin + 1, board.TableEffects.Root.parent.worldBound.yMin, "unrolled text on the board · " + layout);
+                    Assert.LessOrEqual(unroll.worldBound.yMax - 1, EffectsPanelChecks.BottomRow(board), "unrolled text above the bottom row · " + layout);
                     foreach (var source in visibleSources)
                         Inside(source.worldBound, board.TableEffects.Root.worldBound);
                     board.TableEffects.Inspect("kings.character.theoden.corrupted");
@@ -82,7 +93,7 @@ namespace Wotr.PlayTests
                     Check(board);
                     Assert.AreEqual("Shadow-controlled Helm’s Deep is an Isengard stronghold.",
                         board.TableEffects.Root.Q<Label>("effect-description-ability").text);
-                    Assert.IsNull(board.TableEffects.Root.Q("effect-card"), "An ability has no card text.");
+                    Assert.IsNull(board.TableEffects.Details.Q("effect-card"), "An ability has no card text.");
                     LayoutTests.Save(target, $"ui57-ability-{width}-{scale:0.00}.png");
                     board.TableEffects.Close();
                     board.Hover.Open("lorien");
@@ -107,7 +118,7 @@ namespace Wotr.PlayTests
                     Assert.AreEqual("Effect ended", board.TableEffects.Root.Q<Label>("effect-detail-state").text);
                     Assert.IsNull(board.Map.Q("map-effects-lorien"));
                     Check(board);
-                    TextFits(board.TableEffects.Root.Q("effect-card"));
+                    TextFits(board.TableEffects.Details.Q("effect-card"));
                     LayoutTests.Save(target, $"ui94-empty-ended-{width}-{scale:0.00}.png");
                     board.TableEffects.Close();
                     client.Panel.targetTexture = client.Viewport;
@@ -204,16 +215,99 @@ namespace Wotr.PlayTests
 
         private static void Check(BoardScreen board)
         {
-            Inside(board.TableEffects.Root.worldBound, board.Map.worldBound);
+            var panel = board.TableEffects.Root;
+            var details = board.TableEffects.Details;
+            Inside(panel.worldBound, board.Map.worldBound);
             // UI-94: the stage ends where the bottom bar starts; nothing of the panel may hide under it.
-            Inside(board.TableEffects.Root.worldBound, board.TableEffects.Root.parent.worldBound);
-            Assert.IsEmpty(board.TableEffects.Root.Query<ScrollView>().ToList());
-            foreach (var element in board.TableEffects.Root.Query<VisualElement>().ToList())
-                if (element.visible && element.worldBound.width > 0 && element.worldBound.height > 0)
+            Inside(panel.worldBound, panel.parent.worldBound);
+            Assert.IsEmpty(panel.Query<ScrollView>().ToList());
+            // UI-424: outside a payment a source's details stand on their own card beside the panel; a hovered source's
+            // unrolled text lies over the panel and the board (UI-221) and is checked where it is hovered.
+            var beside = !panel.ClassListContains("preparing-effect-removal") && details.resolvedStyle.display == DisplayStyle.Flex;
+            var unroll = panel.Q("effect-unroll");
+            foreach (var element in panel.Query<VisualElement>().ToList())
+                if (element.visible && element.worldBound.width > 0 && element.worldBound.height > 0 &&
+                    !(beside && (element == details || details.Contains(element))) && element != unroll && !unroll.Contains(element))
                 {
-                    Assert.LessOrEqual(element.worldBound.yMax, board.TableEffects.Root.worldBound.yMax + 1, element.name + " " + string.Join(" ", element.GetClasses()));
-                    Inside(element.worldBound, board.TableEffects.Root.worldBound);
+                    Assert.LessOrEqual(element.worldBound.yMax, panel.worldBound.yMax + 1, element.name + " " + string.Join(" ", element.GetClasses()));
+                    Inside(element.worldBound, panel.worldBound);
                 }
+            if (beside)
+                EffectsPanelChecks.DetailsBesideThePanel(board, "beside");
+        }
+
+        // UI-424: twenty-two table cards with the catalogue's longest names, four of them removable (×), and the longest card
+        // text: every title inside its tile, the panel above the bottom row in its arrangement's width, and the longest
+        // text's details beside it without changing the panel's width or columns.
+        [UnityTest]
+        public IEnumerator ManySourcesAndTheLongestCardTextFitWithoutWideningThePanel()
+        {
+            var longest = CardLibrary.Cards.Values.OrderByDescending(card => card.Event.Length + card.Combat.Length).ThenBy(card => card.Id).First();
+            foreach (var width in new[] { 1366, 1920 })
+                foreach (var scale in new[] { 1f, 1.25f })
+                {
+                    var layout = $"{width} {scale:0.00}";
+                    var view = ManySources(longest.Id, $"effects-many-{width}-{scale:0.00}");
+                    using var client = new MountedMatchClient("http://localhost", view.MatchId);
+                    var target = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                    target.Create();
+                    client.Panel.targetTexture = target;
+                    client.Panel.scale = scale;
+                    client.Apply(view);
+                    client.SetOnline();
+                    yield return Frames();
+                    var board = client.Board;
+                    PointerGestureEvents.ClickAt(board.TableEffects.Tab);
+                    yield return Frames();
+                    Assert.AreEqual("Effects · 22", board.TableEffects.Tab.text);
+                    Assert.AreEqual(22, EffectsPanelChecks.Sources(board).Count, "Every source is in view · " + layout);
+                    Assert.AreEqual(4, board.TableEffects.Root.Query<Button>(className: "effect-remove").ToList()
+                        .Count(button => button.resolvedStyle.display == DisplayStyle.Flex), layout);
+                    EffectsPanelChecks.TitlesInsideTiles(board, layout);
+                    EffectsPanelChecks.PanelAboveBottomRow(board, layout);
+                    Assert.IsEmpty(board.TableEffects.Root.Query<ScrollView>().ToList());
+                    var panelWidth = board.TableEffects.Root.layout.width;
+                    Assert.That(panelWidth, Is.EqualTo(board.TableEffects.Arrangement.PanelWidth).Within(1f), layout);
+                    var grid = EffectsPanelChecks.Grid(board);
+                    LayoutTests.Save(target, $"ui424-many-{width}-{scale:0.00}.png");
+                    PointerGestureEvents.ClickAt(board.TableEffects.Root.Q<Button>("effect-source-" + longest.Id));
+                    CardGestures.Move(board.TableEffects.Root.Q(className: "panel-header"));
+                    yield return Frames();
+                    Assert.AreEqual(longest.Event, board.TableEffects.Details.Q<Label>("effect-card-event").text);
+                    Assert.That(board.TableEffects.Root.layout.width, Is.EqualTo(panelWidth).Within(.5f), "The panel keeps its width · " + layout);
+                    EffectsPanelChecks.SameGrid(grid, EffectsPanelChecks.Grid(board), layout);
+                    EffectsPanelChecks.DetailsBesideThePanel(board, layout);
+                    EffectsPanelChecks.PanelAboveBottomRow(board, layout);
+                    TextFits(board.TableEffects.Details.Q("effect-card"));
+                    LayoutTests.Save(target, $"ui424-many-details-{width}-{scale:0.00}.png");
+                    board.TableEffects.Close();
+                    client.Panel.targetTexture = client.Viewport;
+                    target.Release();
+                    Object.Destroy(target);
+                }
+        }
+
+        // The catalogue's longest card names on both sides' tables, with the card of the longest text among them.
+        private static PlayerView ManySources(string longest, string match)
+        {
+            var view = new BoardFixture().View;
+            view.MatchId = match;
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            view.Options.Clear();
+            var cards = CardLibrary.Cards.Values.Where(card => card.Id != longest).OrderByDescending(card => card.Title.Length)
+                .ThenBy(card => card.Id).Select(card => card.Id).Take(21).Append(longest).ToList();
+            var free = new PlayerSummary { Side = Side.FreePeoples };
+            free.TableCards.AddRange(cards.Where(id => id.Contains(".fp.")));
+            var shadow = new PlayerSummary { Side = Side.Shadow };
+            shadow.TableCards.AddRange(cards.Where(id => !id.Contains(".fp.")));
+            view.Players.Add(free);
+            view.Players.Add(shadow);
+            view.Dice.Add(new DieView { Id = "cost", Owner = Side.FreePeoples, Face = DieFace.Muster, Location = DieLocation.Available });
+            var removal = new ActionOption { Kind = CommandKind.DiscardProtection, Minimum = 2, Maximum = 2, EligibleDice = { "cost" } };
+            removal.Targets.AddRange(shadow.TableCards.Take(4));
+            view.Options.Add(removal);
+            return view;
         }
 
         // Every line of the card text is visible: no label is clipped by the parchment or the panel.
