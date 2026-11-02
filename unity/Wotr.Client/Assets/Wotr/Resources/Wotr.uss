@@ -1286,8 +1286,13 @@
 .short-viewport .characters-panel { padding: 4px 6px; }
 .short-viewport .character-roster-grid .action { height: 40px; min-height: 40px; }
 #board-screen.short-viewport .characters-panel.edge-left-panel { width: 462px; }
+/* UI-445: a roster too tall even compact takes one more column of 110-point rows (and the window's slot with it); the
+   left panels' 45 % cap (LeftRail.uss) would take that column away again. */
+#board-screen .characters-panel.edge-left-panel.roster-dense { width: 462px; max-width: none; }
+#board-screen.short-viewport .characters-panel.edge-left-panel.roster-dense { width: 572px; max-width: none; }
 /* QUAL-19: a section title is as tall as its text (14 points → 20, 12 points → 18). */
-.short-viewport .characters-panel > #characters-section-OnBoard > .unity-label, .short-viewport .characters-panel > #characters-section-NotInPlay > .unity-label { height: 18px; margin-top: 0; margin-bottom: 0; font-size: 12px; }
+.short-viewport .characters-panel > #characters-section-OnBoard > .unity-label, .short-viewport .characters-panel > #characters-section-NotInPlay > .unity-label,
+.short-viewport .characters-panel > #characters-section-Sovereigns > .unity-label { height: 18px; margin-top: 0; margin-bottom: 0; font-size: 12px; }
 .character-roster-portrait { width: 26px; min-width: 26px; height: 30px; margin: 0; padding: 0; border-radius: 13px; -unity-text-align: middle-center; font-size: 13px; background-color: rgb(75, 71, 66); color: rgb(237, 223, 176); }
 .character-roster-portrait.shadow { background-color: rgb(81, 42, 43); }
 .character-roster-text { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-left: 3px; }

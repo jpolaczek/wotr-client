@@ -1942,7 +1942,8 @@ Owner requests and reports from the Kings and Lords test scenarios:
   viewport; UI-391's were 15 points on the text's third line). A roster that two a line would make taller than the
   board area — the full Kings roster on a 1366 x 768 screen — keeps three a line with UI-391's icons
   (`roster-compact`); the panel tries two a line again only when the roster or the room for it changes, so the form
-  never flips back and forth. (First registered as UI-400, a number another session's registration took over.)
+  never flips back and forth. Since [UI-445](#the-full-expansions-roster-fits--ui-445) a roster too tall even then takes
+  one more column (`roster-dense`). (First registered as UI-400, a number another session's registration took over.)
   The block holds two lines of two icons one above the other and never wraps, so its form does not depend on the UI
   scale; every icon stays inside its row (`CharacterRosterLayoutTests`).
   Tests: `CharacterRosterPanelNetworkTests` (two a line, icons of 17+ points; `RulerTokenMenuTests` with Kings),
@@ -3181,3 +3182,31 @@ Playtest (owner's checklist):
 - [ ] `fp-army-move` (the Free Peoples). Choose an army, carry it to each edge of the screen and hold it there: the map
   pans, the army shows whole, a little inside the edge, above the top bar, the console and the rails; dropped on a lit
   region it moves as its click would; Esc puts it back.
+
+<a id="the-full-expansions-roster-fits--ui-445"></a>
+## The full expansions roster fits — UI-445 (2026-11-02)
+
+The owner (layout audit item 2): fix the Characters panel that reached under the console at 1366 × 768 at 125 %. Since
+the expansions joined (EXP-14) a Kings roster — 13 characters on board, one not in play, five Sovereigns — was 409
+points tall in UI-408's compact form (four a line on a short viewport) with 374.6 points of room under the rail's top
+(`CharacterRosterLayoutTests`: the panel's bottom at 508.8 against 475.4).
+
+- **One more column** (`CharacterRosterPanel`, `roster-dense`): a roster still too tall in the compact form takes one
+  more 110-point row a line — the panel 572 points wide on a short viewport (five a line), 462 otherwise (four) — the
+  rows and their icons as in compact. The step follows UI-408's rule: taken when the panel reaches past the board area,
+  tried again from two a line only when the roster's size or the room changes, so the form never flips. The left
+  panels' 45 % cap does not apply to it.
+- **The window still stands beside it**: the window's slot (`CharacterWindowPlace.Widen`) takes the same width, so a
+  character's or ruler's window opens just right of the wider panel (UI-436).
+- **The Sovereigns label** is 18 points on a short viewport, as "On board" and "Not in play" are.
+- No scrolling, no smaller rows; nothing moves above the rail's top.
+
+Playtest (owner's checklist):
+- [ ] A Kings game with every character in play — 1366 × 768 at 125 % (Windowed, Interface size 125 %). Open Characters:
+  five characters a line, the Sovereigns whole above the console; click a row: its window opens beside the panel.
+  At 1920 × 1080 the panel keeps two a line.
+
+Tests: PlayMode `CharacterRosterLayoutTests` (both seats, 1366 and 1920, 100 % and 125 %: the panel and its window
+inside the board, apart, every button whole and uncovered; `ui66-roster-*`), `CharacterRosterPanelNetworkTests`,
+`CharacterWindowLayoutTests`, `LeftRailLayoutTests`, `LayoutStressScenarioTests`, `RulerTokenMenuTests` (two a line
+where they fit).

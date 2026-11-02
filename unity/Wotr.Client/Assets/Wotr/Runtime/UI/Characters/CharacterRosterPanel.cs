@@ -44,9 +44,17 @@ namespace Wotr.Client
         private bool skillsOffered;
         private bool rosterAvailable;
         // UI-408: two rows a line unless the roster is too tall for the board in that form; decided per roster size and room.
+        // UI-445: a roster too tall even compact takes one more column (DenseClass), the panel one row wider.
         public const string WideClass = "roster-wide";
         public const string CompactClass = "roster-compact";
-        private bool wide = true;
+        public const string DenseClass = "roster-dense";
+        private enum RosterForm
+        {
+            Wide,
+            Compact,
+            Dense
+        }
+        private RosterForm form = RosterForm.Wide;
         private string fitted = "";
         private PlayerView view;
         private VisualElement source;
@@ -149,7 +157,7 @@ namespace Wotr.Client
                 var id = entry.FigureId;
                 // UI-105: a row only inspects; figures are selected in their region's panel on the map.
                 row = new CharacterRosterRow(id);
-                row.Wide(wide);
+                row.Wide(Wide);
                 rows.Add(id, row);
                 ObserveRow(row.Root, id);
                 ObserveAbilities(row, id);
@@ -306,8 +314,9 @@ namespace Wotr.Client
         }
 
         // UI-408 (owner): two characters a line give each its larger icons; a roster that would then reach past the board
-        // area keeps three a line. A new roster size or a new room tries two a line again, so the form never flips back and
-        // forth while both stay the same.
+        // area keeps three a line (four on a short viewport). UI-445: one that still reaches past it takes one more column.
+        // A new roster size or a new room tries two a line again, so the form never flips back and forth while both stay
+        // the same.
         private void FitRows()
         {
             if (Root.panel == null || Root.parent == null || Root.resolvedStyle.display == DisplayStyle.None)
@@ -316,26 +325,32 @@ namespace Wotr.Client
             if (key != fitted)
             {
                 fitted = key;
-                if (!wide)
+                if (form != RosterForm.Wide)
                 {
-                    SetWide(true);
+                    SetForm(RosterForm.Wide);
                     return;
                 }
             }
-            if (wide && Root.worldBound.yMax > Root.parent.worldBound.yMax + 0.5f)
-                SetWide(false);
+            if (form != RosterForm.Dense && Root.worldBound.yMax > Root.parent.worldBound.yMax + 0.5f)
+                SetForm(form + 1);
         }
 
-        private void SetWide(bool value)
+        private void SetForm(RosterForm next)
         {
-            wide = value;
-            Root.EnableInClassList(WideClass, value);
-            Root.EnableInClassList(CompactClass, !value);
+            form = next;
+            Root.EnableInClassList(WideClass, next == RosterForm.Wide);
+            Root.EnableInClassList(CompactClass, next != RosterForm.Wide);
+            Root.EnableInClassList(DenseClass, next == RosterForm.Dense);
+            // UI-436: the window stands beside the panel, so its slot takes the panel's width.
+            Place?.Widen(next == RosterForm.Dense);
             foreach (var row in rows.Values)
-                row.Wide(value);
+                row.Wide(next == RosterForm.Wide);
         }
 
-        public bool Wide => wide;
+        public bool Wide => form == RosterForm.Wide;
+
+        // UI-445: one more column than compact.
+        public bool Dense => form == RosterForm.Dense;
 
         // UI-391: a usable ability's icon starts it, as the window's icon does; another opens the window at that ability (UI-440:
         // its icon takes the focus, so its formatted description shows).

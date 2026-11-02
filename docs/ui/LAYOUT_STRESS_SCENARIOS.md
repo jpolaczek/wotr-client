@@ -14,7 +14,7 @@ The audit (2026-10-29) listed the features whose layout is at risk and whether a
 
 | Feature at risk | Evidence | Before TEST-15 |
 | --- | --- | --- |
-| The Characters tab and window with every version, kings and minions | `CharacterRosterLayoutTests` 1366×768 at 125 % too tall | none with everything at once |
+| The Characters tab and window with every version, kings and minions | `CharacterRosterLayoutTests` 1366×768 at 125 % fits since UI-445 (one more column) | none with everything at once |
 | The Effects panel with many sources | `EffectsLayoutTests.MultipleSources` 1366×768 at 125 % | `kings-corrupted-recruitment` (six sources) |
 | A battle window crowded with expansion objects | several Chieftain chips, Skip effect, kings in the force column | each feature alone |
 | The Hunt window with several responses | Council Guide, table cards, Nenya | single responses only |

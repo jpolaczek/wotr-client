@@ -35,6 +35,9 @@ namespace Wotr.Client
 
         public bool Ready => slot.panel != null && tab.panel != null && slot.worldBound.width > 0 && tab.worldBound.height > 0;
 
+        // UI-445: the slot takes the Characters panel's width when its roster takes one more column.
+        public void Widen(bool dense) => slot.EnableInClassList(CharacterRosterPanel.DenseClass, dense);
+
         // Writes the window's place; false while the slot or the tab are not laid out yet.
         public bool Apply(VisualElement window, Vector2 fallbackSize)
         {
