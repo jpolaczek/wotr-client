@@ -6,7 +6,8 @@ namespace Wotr.Client
 {
     // UI-274 (UX_SPEC): the kings' decisions on their objects in the Characters panel: a portrait's choice in a card's
     // step or the cleanse, the attempt button beside an Initial king, the tiles beside a king. Nothing is sent without a
-    // click (UI-279): a draw that is the only legal step waits for the console's Draw tiles, a last tile for its click.
+    // click (UI-279): Sequential corruption's draw waits for the console's Draw again. Since UI-442 a standard attempt's
+    // click draws all its tiles and the server places a single one itself (EXP-15 D8); two or more wait for a tile's click.
     public sealed class SovereignInteraction : IDisposable
     {
         private readonly BoardScreen board;

@@ -83,7 +83,9 @@ namespace Wotr.PlayTests
                 await Layout(room, room.Sh, "west-target");
                 await ChooseKing(room, room.Sh, "kings.sovereign.dain");
                 Assert.AreEqual(2, room.Sh.Board.View.Dice.Count(d => d.Location == DieLocation.Hunt && d.Face == DieFace.Eye));
-                Assert.AreEqual(1, room.Sh.Board.View.CorruptionAttempt.DrawnCount);
+                // UI-442: the king's click draws both of the event's tiles at once; the private choice waits.
+                await AtTileChoice(room, room.Sh, 2);
+                Assert.AreEqual(2, room.Fp.Board.View.CorruptionAttempt.DrawnCount);
                 Assert.IsNull(room.Fp.Board.View.Decision);
             }
         }
@@ -92,9 +94,8 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("kings-west-draw", ScenarioKind.CardPack))
             {
-                // UI-279: each draw is the console's Draw tiles; nothing is drawn by itself.
-                await DrawTiles(room, room.Sh);
-                Assert.AreEqual(2, room.Sh.Board.View.CorruptionAttempt.OwnChoices.Count);
+                // UI-442: the event's choice of Dáin drew both tiles; the seed waits at the private choice.
+                await AtTileChoice(room, room.Sh, 2);
                 var choices = room.Sh.Board.View.CorruptionAttempt.OwnChoices;
                 await room.Until(() => room.Fp.Board.View.Revision == room.Sh.Board.View.Revision);
                 Assert.IsEmpty(room.Fp.Board.View.CorruptionAttempt.OwnChoices);

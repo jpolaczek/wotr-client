@@ -32,16 +32,15 @@ namespace Wotr.PlayTests
                 var king = attempt.CharacterActions.Count > 0 ? attempt.CharacterActions[0].CharacterId : attempt.EligibleIds[0];
                 var eye = attempt.EligibleDice.Count > 0 ? attempt.EligibleDice[0]
                     : sh.Board.View.Dice.First(d => d.Location == DieLocation.Hunt && d.Face == DieFace.Eye).Id;
-                await Step(session, sh, CommandKind.AttemptCorruption, new CommandPayload { CharacterId = king, DieId = eye });
-                while (!sh.Board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile))
-                    await Step(session, sh, CommandKind.DrawCorruptionTile, new CommandPayload());
-                var tile = sh.Board.View.Options.First(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile).EligibleIds[0];
-                await session.Send(Side.Shadow, CommandKind.ChooseCorruptionTile, new CommandPayload { Ids = { tile } });
+                // UI-442 (EXP-15 D8): two Eyes draw one tile, which the attempt's own command places on the king.
+                await session.Send(Side.Shadow, CommandKind.AttemptCorruption, new CommandPayload { CharacterId = king, DieId = eye });
                 await Seen(() => fp.Playback.Holding && fp.Board.Root.Q(SovereignPresenter.PlateName) != null,
                     "The tile's meter stands at the king's force before the release.");
                 Assert.AreEqual(DisplayStyle.None, fp.Board.Characters.Root.resolvedStyle.display, "The Characters panel never opens by itself.");
                 await session.Until(() => !fp.Playback.Holding);
                 Assert.AreEqual(sh.Board.View.Revision, fp.Board.View.Revision);
+                Assert.IsNull(sh.Board.View.CorruptionAttempt, "The attempt ended with its one command.");
+                Assert.AreNotEqual(DecisionKind.CorruptionTile, sh.Board.View.Decision?.Kind);
             }
             finally
             {
@@ -109,14 +108,6 @@ namespace Wotr.PlayTests
 
         // The watcher has read its history's baseline, so the opponent's next step is presented rather than remembered.
         private static Task Watching(TestScenarioRoom session, MountedMatchClient watcher) => session.Until(() => watcher.Activity.Loaded);
-
-        // One Shadow command, then its own view's next revision, so the next command is sent against it.
-        private static async Task Step(TestScenarioRoom session, MountedMatchClient client, CommandKind kind, CommandPayload payload)
-        {
-            var revision = client.Board.View.Revision;
-            await session.Send(Side.Shadow, kind, payload);
-            await session.Until(() => client.Board.View.Revision > revision);
-        }
 
         private static async Task Seen(Func<bool> condition, string what)
         {

@@ -83,6 +83,9 @@ not submit it. The single option glows, and its tooltip says what the click does
 - a Ruler discard with one eligible die: that die glows, and the hint reads "Click your only eligible die to discard
   it" (UI-273);
 - a corruption draw that is the only legal step: the console's Draw tiles; a single remaining tile: that tile (UI-274).
+  Since [UI-442](#a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442) a standard attempt has no
+  draw step (its own click draws every tile) and the server places a single drawn tile itself, a rule of the game (EXP-15
+  D8), not a click the client sends; Sequential corruption keeps its Draw again.
 
 A click that completes a choice still sends it at once (UI-142): recruiting at the only settlement, a card with one
 payment method, and awakening a king to his only destination. The player's own "Skip cards this battle" policy (UI-11)
@@ -1416,7 +1419,9 @@ Owner decision 2026-10-19: the kings' decisions are made on their objects, and n
   first." The drawn tiles stand beside the king: values for the Shadow, backs for the Free Peoples. The Shadow's
   click attaches a tile. In Sequential corruption the latest tile's click keeps it, and "Draw again" stays in the
   console; otherwise every draw is the console's Draw tiles. Since UI-279 nothing is sent without a click: a draw that is
-  the only legal step waits for Draw tiles, and a single remaining tile waits for its click.
+  the only legal step waits for Draw tiles, and a single remaining tile waits for its click. Since
+  [UI-442](#a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442) a standard attempt's click draws
+  all its tiles: two or three wait beside the king for the Shadow's click, a single one is placed with the attempt.
 - **Awakening.** Die → glowing king (portrait or his force on the map) → destination. A single destination (his
   besieged home, for one) is sent with the king's click.
 - **Cards and the cleanse.** A card's choice of a king lights his portrait ("Click to …"). The inspection's tiles stand
@@ -1926,7 +1931,9 @@ Owner requests and reports from the Kings and Lords test scenarios:
   after the previous tile shows, until the limit or a Kings tile; then the choice of a tile waits (`CorruptionDrawChain`).
   Each draw stays the server's own command, and opening the game still draws nothing (UI-12). The Sequential variant
   keeps one click per draw, as each is a choice. Tests: `ExpansionCorruptionNetworkTests`, `KingsCards02NetworkTests`
-  (`KingsCardNetworkChecks.DrawTiles` clicks once), `SovereignPanelNetworkTests`.
+  (`KingsCardNetworkChecks.DrawTiles` clicks once), `SovereignPanelNetworkTests`. Superseded by
+  [UI-442](#a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442): the server draws every tile in
+  the attempt's own command, so the standard attempt has no Draw tiles and `CorruptionDrawChain` is gone.
 
 ## Two characters a line, clear character tooltips, a dark Politics station — UI-408 to UI-410 (2026-10-29)
 
@@ -2313,6 +2320,7 @@ from the buttons at 7b924fb4 on a real server); every option keeps a click path 
     so the owner decides.
   - *The Kings corruption draw* (UI-423): "Draw tiles" / "Draw again" is a console button while the king's attempt button
     on his portrait lights for the same attempt. One lit control (as UI-418), or both? The owner's question since UI-423.
+    Since UI-442 only Sequential corruption's Draw again remains: a standard attempt draws all its tiles with its click.
 
 Branches: the battle declines, Worn with Sorrow and Toil, the Scouts, Stay here, Undo step / Cancel and the fallback lists
 are base game; Far-sighted, Narya and the kings' lists are expansions. The base port (ability-chips) has no
@@ -2991,3 +2999,45 @@ Playtest (owner's checklist):
   tooltip saying "Click the glowing portrait in the battle window"; after the White Rider (or Pass) they go out.
 - [ ] A king — `ui67-ruler`: click Théoden's Ruler token. Expect: his row and his portrait among the Sovereigns glow;
   a click on the portrait opens his window with Mustering of the Mark lit.
+
+<a id="a-standard-corruption-attempt-draws-all-its-tiles-with-its-click--ui-442"></a>
+## A standard corruption attempt draws all its tiles with its click — UI-442 (2026-11-02)
+
+The owner: the Shadow picked an Eye, clicked the king's attempt, and the console then asked to draw ("Draw tiles"), though
+nothing can come between the attempt and its draws (T28: a tile for each Eye left in the Hunt Box, up to three; an Eye
+or special tile is revealed and replaced; a Kings tile ends the attempt). "dla sequential corruption zostawmy obecne
+zachowanie, w innym przypadku klikniecie na ikone rulera od razu pobiera oba tokeny" — with Sequential Corruption keep
+the current behaviour; otherwise the attempt's click draws the tiles at once.
+
+- **The server draws** (server `CorruptionRuntime`, EXPANSIONS K02/X02; Kings rulebook pp. 12–13, 17–18): the standard
+  `AttemptCorruption` (and The West Has Failed's choice of a king) draws every tile in its own command. Two or three
+  numeric tiles open the private choice (`CorruptionChoice`, `ChooseCorruptionTile` only); a single one is the only
+  possible choice, so the server places it (EXP-15 D8) and the attempt ends in that revision; a Kings tile ends it on the
+  king. History, the Shadow-only `OwnCorruptionTile` events and the Free Peoples' backs are unchanged.
+- **The client** shows no Draw tiles for a standard attempt: the attempt's click (the lit button beside the king, after
+  the chosen Eye, UI-398, UI-430) leads straight to the glowing tiles beside the king and the hint "Click a glowing tile
+  beside the king to attach it", or to the placed tile. The attempt's tooltip says what the click draws: "Draws a
+  Corruption tile and places it on Dáin", "Draws 2 Corruption tiles at once · Then click the one to place on Dáin", or in
+  Sequential corruption "Draws up to 2 Corruption tiles, one at a time · Keep a tile or draw the next"
+  (`SovereignAttempt.Tooltip`). The king's window names the choice's consequence ("Attach one drawn tile; the others are
+  revealed and return to the Hunt pool"). UI-399's `CorruptionDrawChain` is removed.
+- **What stays:** Sequential corruption's console Draw again and the latest tile's click (UI-274, UI-423), and its
+  `CorruptionDraw` step after an Eye tile was drawn. A standard draw step saved by an earlier build still shows Draw
+  tiles; its one click now draws the remaining tiles at once.
+
+Tests: EditMode `SovereignPanelTests` (the attempt's tooltip for one, two and Sequential draws; the choice without a draw,
+its hint and consequence; a saved draw's Draw tiles); PlayMode on the pinned backend `ExpansionCorruptionNetworkTests`
+(`ui09-corruption-hidden/visible`: one click, one revision, two own tiles at the choice; `kings-sh-corruption`: the
+tile placed with the click; the Sequential cases unchanged), `SovereignPanelNetworkTests.Replacement`
+(`ui59-replacement-kings`: the click reveals the Eye tile, the pool refills and the Kings tile ends the attempt),
+`KingsCards02NetworkTests` (`kings-west`, `kings-west-draw`: the event's two tiles at the choice,
+`KingsCardNetworkChecks.AtTileChoice`) and `OpponentExpansionPresentationNetworkTests.Corruption`.
+
+Playtest (owner's checklist):
+- [ ] Two tiles — `kings-corruption-three-tiles` (Shadow, four Eyes) or a Kings game with three Eyes in the Hunt Box:
+  click an Eye in the dice row, then the lit attempt beside a king. Expect: no Draw tiles; the drawn tiles stand at once
+  beside the king (three here, values for the Shadow, backs for the Free Peoples), and a click on one attaches it.
+- [ ] One tile — `kings-sh-corruption` (Shadow, two Eyes): the same clicks. Expect: the one tile is placed on the king
+  with the attempt; no choice and no Draw tiles.
+- [ ] Sequential — `kings-variant-sequential-corruption`: the same clicks. Expect: one tile beside the king and the
+  console's Draw again; the latest tile's click keeps it, as before.

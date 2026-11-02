@@ -178,10 +178,16 @@ namespace Wotr.Client
                     : "Gain his Ruler token.") + "\nThe shared Ruler die arrives at the next Recover if an Awakened sovereign remains.";
             if (draft?.Kind == CommandKind.RemoveCorruptedSovereign)
                 return "Remove this Corrupted sovereign from play; his weaknesses end.";
-            if (view.CorruptionAttempt != null)
-                return view.CorruptionAttempt.Sequential ? "Draw again, or keep the latest tile. A Kings tile ends the draw."
-                    : "Draw up to the limit, then choose one tile. A Kings tile ends the draw.";
-            return "";
+            return view.CorruptionAttempt != null ? AttemptConsequence(view) : "";
+        }
+
+        // UI-442: a standard attempt waits only once its tiles are drawn; a draw still due is a game saved before UI-442.
+        private static string AttemptConsequence(PlayerView view)
+        {
+            if (view.CorruptionAttempt.Sequential)
+                return "Draw again, or keep the latest tile. A Kings tile ends the draw.";
+            return SovereignAttempt.MustDraw(view) ? "Draw the remaining tiles at once, then choose one. A Kings tile ends the draw."
+                : "Attach one drawn tile; the others are revealed and return to the Hunt pool.";
         }
 
         public static string Cost(PlayerView view, TurnDraft draft, string target)

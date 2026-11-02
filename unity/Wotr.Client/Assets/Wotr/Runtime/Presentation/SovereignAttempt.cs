@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Wotr.Contracts;
@@ -19,8 +20,9 @@ namespace Wotr.Client
     // UI-398 (owner): it starts from its Eye, as every action starts from its die (UI-389): the Eyes that may pay stand in
     // the Shadow's dice row (UI-230), and only the one clicked lights the kings and their attempt buttons; before that the
     // buttons stay dark and nothing glows for them. The tiles drawn for the attempt stand beside the king: the Shadow sees their values, the Free
-    // Peoples their backs; a click on one attaches it. Every draw is the console's button, even when it is the only legal
-    // step (UI-279); then it is lit (UI-423).
+    // Peoples their backs; a click on one attaches it. UI-442 (owner): a standard attempt draws all its tiles with the
+    // attempt's click, and the server places a single tile itself; only Sequential corruption (or a game saved before
+    // UI-442) draws from the console, a click per draw (UI-279), lit while it is the only step (UI-423).
     public static class SovereignAttempt
     {
         public const string ActionId = "attempt-corruption";
@@ -47,8 +49,7 @@ namespace Wotr.Client
             if (Enabled(view, draft, king.Id))
             {
                 var eye = view.Dice.First(d => d.Id == Eye(view, draft));
-                return "Click to attempt to corrupt " + name + " · Pays " + DieDescriptions.Summary(eye) +
-                    "\nDraw a tile for each other Eye in the Hunt Box, up to three.";
+                return "Click to attempt to corrupt " + name + " · Pays " + DieDescriptions.Summary(eye) + "\n" + Draws(view, name);
             }
             if (Option(view)?.EligibleIds.Contains(king.Id) == true)
                 return "Attempt to corrupt " + name + "\nClick an Eye that pays in your dice row first.";
@@ -56,6 +57,22 @@ namespace Wotr.Client
             var unmet = availability?.Conditions.Where(c => !c.Met).Select(c => "○ " + c.Description).ToList() ?? new List<string>();
             return "Attempt to corrupt " + name + (unmet.Count > 0 ? "\n" + string.Join("\n", unmet) : "\nNot available now");
         }
+
+        // UI-442 (owner): what the attempt's click draws. A standard attempt draws every tile at once: one tile is placed on
+        // the king, more wait beside him for the choice; Sequential corruption draws one at a time, each a choice.
+        private static string Draws(PlayerView view, string name)
+        {
+            var limit = DrawLimit(Option(view));
+            if (limit == 1)
+                return "Draws a Corruption tile and places it on " + name;
+            var tiles = TooltipText.Count(limit, "Corruption tile");
+            return view.Configuration.SequentialCorruption
+                ? "Draws up to " + tiles + ", one at a time · Keep a tile or draw the next"
+                : "Draws " + tiles + " at once · Then click the one to place on " + name;
+        }
+
+        // T28: a tile for each Eye left in the Hunt Box once this one pays, up to three (an attempt needs two Eyes).
+        private static int DrawLimit(ActionOption option) => Math.Min(3, Math.Max(1, option.EligibleDice.Count - 1));
 
         // The tiles beside a king: an attempt's draws, or an inspection's face-up tiles.
         public static IReadOnlyList<SovereignTile> Tiles(PlayerView view, SovereignView king)
@@ -86,7 +103,8 @@ namespace Wotr.Client
             }).ToList();
         }
 
-        // A draw that is the only legal step (Hidden or Visible corruption before the limit).
+        // A draw that is the only legal step of a standard attempt: since UI-442 only in a game saved before it, whose one
+        // draw now draws every remaining tile.
         public static bool MustDraw(PlayerView view) => OwnAttempt(view) && view.CorruptionAttempt?.Sequential == false &&
             view.Options.Any(o => o.Enabled && o.Kind == CommandKind.DrawCorruptionTile) &&
             !view.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile);
@@ -94,8 +112,8 @@ namespace Wotr.Client
         public static bool OwnAttempt(PlayerView view) => view?.Decision?.Kind == DecisionKind.CorruptionTile &&
             view.DecisionOwner == view.You && !view.Winner.HasValue;
 
-        // The draw is the console's button: Draw again in Sequential corruption (a click on the latest tile keeps it),
-        // Draw tiles otherwise.
+        // The draw is the console's button, offered by Sequential corruption since UI-442: Draw again (a click on the latest
+        // tile keeps it); Draw tiles only for a standard draw saved before UI-442.
         public static IReadOnlyList<ConsoleOption> ConsoleOptions(PlayerView view)
         {
             var options = new List<ConsoleOption>();
@@ -127,7 +145,7 @@ namespace Wotr.Client
                 return "Draw again · Draw another Corruption tile for " + name + ", or click the latest tile beside him to keep it";
             var remaining = attempt == null ? 0 : attempt.DrawLimit - attempt.DrawnCount;
             var tiles = remaining > 0 ? "up to " + TooltipText.Count(remaining, "Corruption tile") : "the Corruption tiles";
-            return "Draw tiles · Draw " + tiles + " for " + name + ", one after another · A Kings tile ends the draw";
+            return "Draw tiles · Draw " + tiles + " for " + name + " at once · A Kings tile ends the draw";
         }
 
         private static string Name(SovereignView king) => king.Title.Split(' ')[0];

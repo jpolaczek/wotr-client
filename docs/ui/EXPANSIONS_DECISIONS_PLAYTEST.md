@@ -122,6 +122,8 @@ difference in the rules (`Kings/KingsDismay.cs`).
   `fate-card-monsters-roused`, and `fate-card-orcs-erebor-held` (a North army holds Erebor, so Mount Gundabad and its
   plan are the only legal choice; TEST-14). Expect: where only one region or plan is legal the server applies it without a click,
   and the console's effect trail and the log name the result. A step with two or more legal choices still waits.
+  Since UI-442 also `kings-sh-corruption` (two Eyes): the attempt's click draws its one tile and places it on the king;
+  with three or four Eyes the drawn tiles wait beside the king for the Shadow's click.
 - [ ] **D9 — Every Guide response in the Hunt's response row.** Try: `fate-gimli-guide` (Gimli, Dwarven Lord, as Guide;
   UI-349), `lords-council-guide-separate` and `lords-council-hobbit-guide` (the Council's Guides; TEST-12) and a Hunt with Merry, Pippin or Gollum as Guide (base part released in 0.9.0-rc.14, UI-360). Expect: every Guide's response is a portrait in the Hunt window's
   response row (portrait, name, what it does); none is a text rectangle in the tray. The base Guides' part is a base-game

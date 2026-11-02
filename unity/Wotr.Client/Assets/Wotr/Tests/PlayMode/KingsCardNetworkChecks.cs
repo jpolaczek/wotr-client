@@ -29,25 +29,23 @@ namespace Wotr.PlayTests
             await room.At(revision + 1);
         }
 
-        // UI-274: an inspected king's tile stands face up beside his portrait; its click returns it.
-        // UI-279: each draw is the console's Draw tiles, even when it is the only legal step; nothing is drawn by itself.
-        // UI-399 (owner): one Draw tiles click draws every tile of a standard attempt; the choice then waits.
-        internal static async Task DrawTiles(MatchTestRoom room, MountedMatchClient client)
+        // UI-442 (owner): a standard attempt's click (or The West Has Failed's choice of a king) draws every tile at once, so
+        // the Shadow waits at the private tile choice with its own tiles, and no draw stands in the console.
+        internal static async Task AtTileChoice(MatchTestRoom room, MountedMatchClient client, int tiles)
         {
             var board = client.Board;
-            if (board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile))
-                return;
-            Button draw = null;
-            await room.Until(() => (draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile")) != null &&
-                draw.enabledInHierarchy && draw.worldBound.height > 0);
             await room.Settle();
-            draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
-            Assert.AreEqual("Draw tiles", draw.text);
-            PointerGestureEvents.ClickAt(draw);
-            await room.Until(() => board.View.Options.Any(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile) ||
-                board.View.CorruptionAttempt == null);
+            Assert.AreEqual(DecisionKind.CorruptionTile, board.View.Decision?.Kind);
+            Assert.AreEqual("CorruptionChoice", board.View.Decision.Presentation);
+            Assert.AreEqual(tiles, board.View.CorruptionAttempt.DrawnCount);
+            Assert.AreEqual(tiles, board.View.CorruptionAttempt.OwnChoices.Count);
+            var choose = board.View.Options.Single(o => o.Enabled && o.Kind == CommandKind.ChooseCorruptionTile);
+            Assert.AreEqual(tiles, choose.EligibleIds.Count);
+            Assert.IsFalse(board.View.Options.Any(o => o.Kind == CommandKind.DrawCorruptionTile), "A standard attempt has no draw step.");
+            Assert.IsNull(board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile"), "No Draw tiles stands in the console.");
         }
 
+        // UI-274: an inspected king's tile stands face up beside his portrait; its click returns it.
         internal static async Task<Button> InspectedTile(MatchTestRoom room, MountedMatchClient client, string king, string tile)
         {
             await BoardNavigation.Sovereign(client.Board, king);

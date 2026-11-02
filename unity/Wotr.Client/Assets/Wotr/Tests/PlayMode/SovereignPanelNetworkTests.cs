@@ -109,29 +109,41 @@ namespace Wotr.PlayTests
             watch.NeverOpened();
         }
 
-        // UI-279: a draw that is the only legal step waits for the console's Draw tiles; opening the game sends nothing
-        // (UI-12). The replacing Eye stays public and the Kings tile ends the attempt.
+        // UI-442 (owner): the attempt's click draws every tile in its one command: the Eye tile drawn is revealed and
+        // replaced, the emptied pool refills with the Kings tile, and the Kings tile ends the attempt on the king, face up
+        // and worth zero. Opening the game and choosing the Eye send nothing (UI-12); no Draw tiles stands in the console.
         private static async Task Replacement()
         {
             using var room = await Connect("ui59-replacement-kings", ScenarioKind.Interaction, openPanels: false);
             using var watch = new GenericWindowWatch(room.Fp, room.Sh);
+            const string id = "kings.sovereign.thranduil";
             var board = room.Sh.Board;
-            var attempt = board.View.CorruptionAttempt;
-            Assert.AreEqual(1, attempt.RevealedTiles.Count);
-            Assert.IsEmpty(attempt.OwnChoices);
-            var draw = board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile");
-            await Ready(room, draw);
-            Assert.AreEqual("Draw tiles", draw.text);
-            Assert.AreEqual(attempt.DrawnCount, board.View.CorruptionAttempt.DrawnCount, "Opening the game draws nothing.");
-            PointerGestureEvents.ClickAt(draw);
-            await room.Until(() => room.Fp.Board.View.CorruptionAttempt == null);
+            var revision = board.View.Revision;
+            Assert.IsNull(board.View.CorruptionAttempt, "The seed waits before the attempt.");
+            var option = board.View.Options.Single(o => o.Enabled && o.Kind == CommandKind.AttemptCorruption);
+            var die = option.EligibleDice.First();
+            var eye = board.OwnDice.Q<Button>(die);
+            Assert.IsNotNull(eye, "The Eye that may pay stands in the Shadow's row.");
+            PointerGestureEvents.ClickAt(eye);
+            await room.Settle();
+            board.Characters.Open();
+            await room.Settle();
+            var attempt = board.Sovereigns.Root.Q<Button>("sovereign-attempt-" + id);
+            await Ready(room, attempt);
+            Assert.IsTrue(attempt.ClassListContains("legal-target"), "The chosen Eye lights Thranduil's attempt.");
+            StringAssert.Contains("\nDraws 3 Corruption tiles at once · Then click the one to place on Thranduil", attempt.tooltip);
+            Assert.AreEqual(revision, board.View.Revision, "Opening the game and choosing the Eye send nothing.");
+            PointerGestureEvents.ClickAt(attempt);
+            await room.At(revision + 1);
+            Assert.IsNull(board.Console.Status.Options.Q<Button>("action-DrawCorruptionTile"));
             foreach (var client in new[] { room.Fp, room.Sh })
             {
-                Assert.IsNull(client.Board.View.CorruptionAttempt);
-                var tile = client.Board.View.Sovereigns.Single(s => s.Id == attempt.SovereignId).Tiles.Single();
+                Assert.IsNull(client.Board.View.CorruptionAttempt, "The Kings tile ended the attempt in its one command.");
+                Assert.AreNotEqual(DecisionKind.CorruptionTile, client.Board.View.Decision?.Kind);
+                var tile = client.Board.View.Sovereigns.Single(s => s.Id == id).Tiles.Single();
                 Assert.IsTrue(tile.Kings);
                 Assert.AreEqual(0, tile.Value);
-                Assert.AreEqual(DieLocation.Spent, client.Board.View.Dice.Single(d => d.Id == attempt.DieId).Location);
+                Assert.AreEqual(DieLocation.Spent, client.Board.View.Dice.Single(d => d.Id == die).Location);
                 Assert.IsFalse(client.Board.Hunt.Pinned);
             }
             watch.NeverOpened();

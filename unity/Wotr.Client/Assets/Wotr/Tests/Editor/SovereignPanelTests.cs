@@ -38,17 +38,62 @@ namespace Wotr.EditorTests
             Assert.AreEqual("Dáin · ♙ Initial · Erebor · Garrison\nCorruption ?/4", SovereignPresentation.Describe(king, "Erebor"));
         }
 
-        // UI-420 (owner): the console's draw names its king and how many tiles it may still draw.
+        // UI-420 (owner): the console's draw names its king and how many tiles it may still draw. UI-442: a standard draw
+        // exists only in a game saved before UI-442, and its one click draws the remaining tiles at once.
         [Test]
         public void TheDrawNamesItsKingAndHowManyTilesItMayDraw()
         {
             var view = View();
             view.Options.Add(new ActionOption { Kind = CommandKind.DrawCorruptionTile, Enabled = true });
-            Assert.AreEqual("Draw tiles · Draw up to 2 Corruption tiles for Dáin, one after another · A Kings tile ends the draw",
+            Assert.AreEqual("Draw tiles · Draw up to 2 Corruption tiles for Dáin at once · A Kings tile ends the draw",
                 SovereignAttempt.ConsoleOptions(view).Single().Tooltip);
             view.CorruptionAttempt.Sequential = true;
             StringAssert.StartsWith("Draw again · Draw another Corruption tile for Dáin, or click the latest tile",
                 SovereignAttempt.ConsoleOptions(view).Single().Tooltip);
+        }
+
+        // UI-442 (owner): the attempt's click draws every tile of a standard attempt, so its tooltip says what it draws and
+        // that a single tile is placed at once; Sequential corruption still draws one tile at a time.
+        [Test]
+        public void TheAttemptSaysItsClickDrawsEveryTile()
+        {
+            var view = View();
+            view.Decision.Kind = DecisionKind.Action;
+            view.CorruptionAttempt = null;
+            foreach (var id in new[] { "eye", "second", "third" })
+                view.Dice.Add(new DieView { Id = id, Owner = Side.Shadow, Source = "standard", Face = DieFace.Eye, Location = DieLocation.Hunt });
+            var attempt = new ActionOption { Kind = CommandKind.AttemptCorruption, Enabled = true, EligibleIds = { "king" }, EligibleDice = { "eye", "second" } };
+            view.Options.Add(attempt);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.AttemptCorruption, "eye");
+            var king = view.Sovereigns[0];
+            StringAssert.EndsWith("\nDraws a Corruption tile and places it on Dáin", SovereignAttempt.Tooltip(view, draft, king));
+            attempt.EligibleDice.Add("third");
+            StringAssert.EndsWith("\nDraws 2 Corruption tiles at once · Then click the one to place on Dáin",
+                SovereignAttempt.Tooltip(view, draft, king));
+            StringAssert.DoesNotContain("Draw tiles", SovereignAttempt.Tooltip(view, draft, king));
+            view.Configuration.SequentialCorruption = true;
+            StringAssert.EndsWith("\nDraws up to 2 Corruption tiles, one at a time · Keep a tile or draw the next",
+                SovereignAttempt.Tooltip(view, draft, king));
+        }
+
+        // UI-442: a standard attempt waits only at its tile choice, which offers no draw; the hint and the king's consequence
+        // name the choice. A standard draw still due is a game saved before UI-442.
+        [Test]
+        public void AStandardAttemptWaitsOnlyForItsTileChoice()
+        {
+            var view = View();
+            view.CorruptionAttempt.DrawnCount = 2;
+            view.Decision.Presentation = "CorruptionChoice";
+            view.Options.Add(new ActionOption { Kind = CommandKind.ChooseCorruptionTile, Enabled = true, EligibleIds = { "one", "two" } });
+            Assert.IsEmpty(SovereignAttempt.ConsoleOptions(view), "No Draw tiles stands in the console.");
+            Assert.IsFalse(SovereignAttempt.MustDraw(view));
+            Assert.AreEqual("Click a glowing tile beside the king to attach it", SovereignPresentation.Hint(view, new TurnDraft()));
+            Assert.AreEqual("Attach one drawn tile; the others are revealed and return to the Hunt pool.",
+                SovereignPresentation.Consequence(view, null));
+            view.Options[0] = new ActionOption { Kind = CommandKind.DrawCorruptionTile, Enabled = true };
+            Assert.IsTrue(SovereignAttempt.MustDraw(view), "A draw saved before UI-442 is still the console's.");
+            StringAssert.StartsWith("Draw the remaining tiles at once", SovereignPresentation.Consequence(view, null));
         }
 
         // UI-423 (owner's playtest pattern, like UI-418): the draw lights and pulses while it is the attempt's only step; once
