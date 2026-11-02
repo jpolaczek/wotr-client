@@ -30,6 +30,16 @@ namespace Wotr.EditorTests
             Assert.AreEqual(0, clicks, "Building it uses nothing.");
         }
 
+        // UI-440 (owner): Gandalf the Grey's draw is offered on his Guide portrait (UI-247), so its place names the portrait,
+        // not a deck (the deck stands in only when the roster cannot show the response, ReactionDecks).
+        [Test]
+        public void TheGreysDrawSaysItIsUsedOnHisGuidePortrait()
+        {
+            var place = AbilityUsePlaces.For("guide-draw-after-event-die-card");
+            StringAssert.Contains("Guide portrait in the Fellowship panel", place);
+            StringAssert.DoesNotContain("deck", place);
+        }
+
         [Test]
         public void ASkillIconNamesItsSkill()
         {

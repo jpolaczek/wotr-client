@@ -19,7 +19,8 @@ namespace Wotr.Client
 
         private static readonly IReadOnlyDictionary<string, string> Places = new Dictionary<string, string>
         {
-            ["guide-draw-after-event-die-card"] = "Offered after the Event card: click the lit deck",
+            ["guide-draw-after-event-die-card"] =
+                "Offered after you play an Event card with an Event die: click his glowing Guide portrait in the Fellowship panel",
             ["guide-separate-to-reduce-hunt-one"] = HuntResponse,
             ["guide-cancel-standard-hunt"] = HuntResponse,
             ["voluntary-reveal-to-reduce-hunt-one"] = "Offered in the Hunt window: click Gollum's response",
