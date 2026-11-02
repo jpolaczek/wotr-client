@@ -96,6 +96,17 @@ player's own actions reads as two short lines (what it is and takes, then `Avail
 only the tooltip lists the full cost, every condition with ✓ or ○, the timing and the rules page (rule 2: the lines do
 not repeat the tooltip's title). Every window's ability chip reads its title and gist (`Captain of the West · …`); the
 chip's tooltip stays the printed text and page. The kings' window keeps its base form on this line.
+Follow-up (2026-11-02, UI-440): a skill button is its bare icon, so its words move into its tooltip, one formatted form
+wherever the skill's icon stands — the character window, the roster row, a component button (`SkillTooltip`, rich text
+through `RuntimeTooltip.FormattedClass`, `RichText` shared with the roster row's tooltip): the name in bold gold (then
+the variant, `The Voice of Saruman · Recruit`, and on a component button the owner), the gist dim on the second line (the
+base game's abilities; an expansion card's has none on this line), a thin gap, the printed text, the source small and
+faint, a thin gap, and the state (rule 1): what a click does now in bright gold (`Click to use your Muster die: Move the
+Dwarves one step toward war`, `SkillUse`), or dim — `Choose an eligible die first`, `Usable with an eligible die or
+token`, where a reaction is used on this line (`AbilityUsePlaces`: `Offered in battle: click his portrait`), or on the
+roster `Click to open the character's window`. The name now leads (rule 2: the icon shows no words to repeat). Evil
+Knowledge's footer choice, now its bare icon, gains a tooltip that leads with its name (`Evil Knowledge · Click to extend
+the siege by one round without downgrading an Elite · Once per action`); its framed button had none.
 
 ## Tests
 

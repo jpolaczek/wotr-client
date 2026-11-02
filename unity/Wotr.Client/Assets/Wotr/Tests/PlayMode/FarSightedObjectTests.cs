@@ -76,7 +76,11 @@ namespace Wotr.PlayTests
             var button = await ComponentGestures.Show(client, "far-sighted-SeparateCompanions");
             Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityArt.Folder + "far-sighted"),
                 button.Q("icon-glyph").style.backgroundImage.value.texture);
-            Assert.IsNull(button.Q(className: IconButton.BadgeClass), "Far-sighted's buttons all move; no badge.");
+            // UI-440 (owner): Far-sighted's three moves are badged apart; a separation wears the board pin.
+            Assert.AreEqual(UnityEngine.Resources.Load<UnityEngine.Texture2D>(AbilityBadges.Alone),
+                button.Q(className: IconButton.BadgeClass).style.backgroundImage.value.texture);
+            // UI-440 (owner): the bare skill icon, lit while the die can use it.
+            SkillIconChecks.Bare(button, AbilityArt.Folder + "far-sighted", 28f);
             using var viewport = new BoardCompletionLayoutTests.LayoutViewport(client, 1366, 1f);
             await room.Settle();
             LayoutTests.Save(viewport.Texture, "ui439-component-far-sighted-1366-1.00.png");

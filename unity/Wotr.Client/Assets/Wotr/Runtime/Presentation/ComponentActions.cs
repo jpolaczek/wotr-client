@@ -52,6 +52,7 @@ namespace Wotr.Client
                         Symbol = CharacterSymbol(option.Kind, character.AbilityId),
                         Picture = CharacterPicture(view, option.Kind, character),
                         Badge = option.Kind == CommandKind.EnterCharacter ? "" : AbilityBadges.For(option.Kind, character.AbilityId),
+                        Definition = CharacterLibrary.Version(view, character.CharacterId),
                         Detail = TooltipText.Parts(character.Title, character.Detail),
                         Character = character, Enabled = character.Dice.Contains(die)
                     };
@@ -64,6 +65,7 @@ namespace Wotr.Client
                     Symbol = option.Kind == CommandKind.AttackArmy ? "⚔" : "→",
                     Picture = AbilityArt.For(cost.AbilityId),
                     Badge = AbilityBadges.For(option.Kind, cost.AbilityId),
+                    Definition = CharacterLibrary.Version(view, cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron"),
                     Detail = FigureGrid.Name(cost.AbilityId) + " · " + TravelLabel(option.Kind),
                     AbilityId = cost.AbilityId, Movement = cost, Enabled = true
                 };
@@ -77,6 +79,7 @@ namespace Wotr.Client
                     // use the ability.
                     Picture = AbilityArt.For(option.RulerTravel.AbilityId),
                     Badge = AbilityBadges.For(option.Kind, option.RulerTravel.AbilityId),
+                    Definition = CharacterLibrary.Version(view, "kings.sovereign.thranduil"),
                     Detail = "Far-sighted · " + TravelLabel(option.Kind),
                     AbilityId = option.RulerTravel.AbilityId, Enabled = true
                 };
@@ -110,6 +113,20 @@ namespace Wotr.Client
                     Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any Ring or cards its removal needs",
                     Enabled = option.EligibleDice.Contains(die)
                 };
+        }
+
+        // UI-440 (owner): a skill's icon clicked before any die is chosen, when one die (or identical dice) can pay for it
+        // (CharacterDraft.UniformDie, UI-239), takes that die; the action is then the one that die offers. Any other action
+        // stays as it is.
+        public static ComponentAction WithUniformDie(PlayerView view, TurnDraft draft, ComponentAction item)
+        {
+            if (item.Enabled || item.Character == null || draft.Payload.DieId.Length > 0)
+                return item;
+            var die = CharacterDraft.UniformDie(view, item.Character);
+            if (die.Length == 0)
+                return item;
+            draft.Change(p => p.DieId = die);
+            return For(view, draft).FirstOrDefault(current => current.Enabled && current.Key == item.Key) ?? item;
         }
 
         public static bool Select(PlayerView view, TurnDraft draft, ComponentAction item)

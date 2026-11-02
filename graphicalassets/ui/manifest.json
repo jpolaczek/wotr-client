@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "4c3f3ef1dd16c4b55ebc32bb2b38604f5f22b5c63d918e37fd26b25dda534a80",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "f0e568cc754e2ac3cfd1842afd089187301139bbe5783d73e4ec6276158fcf1d"
+    "assets.json": "91b4022f3ed49cc6d5134979509c9143c17efd6db227b2f21a6716018e7cfa69"
   },
   "assets": [
     {
@@ -518,6 +518,22 @@
       "alpha": true,
       "source_sha256": "dc092fe64b40fe0addb54522b4808d30e926ff66e2a30013a0089833211bbcbe",
       "png_sha256": "66a9c7bcc2784be47c581397dec1b64ab9320d07558ce6410b3ed1dff64e8fb0"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/ornaments/skill-glow.png",
+      "source": "src/ornaments/skill-glow.svg",
+      "variant": null,
+      "logical": [
+        44,
+        44
+      ],
+      "pixels": [
+        88,
+        88
+      ],
+      "alpha": true,
+      "source_sha256": "5da638203e2fdaf311c88349c75f71bae42751ff57f2bd2d4d80ed5cefd8c2be",
+      "png_sha256": "3cf7f9b12f2448195c6fd3631859ab1e344264a51a63cbbe8a1c4ce6c3ead874"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/dice/medallion.png",

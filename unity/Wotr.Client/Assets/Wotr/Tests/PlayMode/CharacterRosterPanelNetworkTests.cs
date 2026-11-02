@@ -43,6 +43,9 @@ namespace Wotr.PlayTests
             Assert.That(icon.worldBound.width, Is.GreaterThanOrEqualTo(17f), "The icons are larger two a line.");
             Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), "The icons fit inside the row.");
             Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), "The icons fit inside the row.");
+            // UI-440 (owner): a row's icon is the bare skill icon, its picture filling its box.
+            SkillIconChecks.Bare(icon, AbilityArt.For("base.character.gandalf-white", icon.userData as string), 17f);
+            await SkillIconLayouts.Capture(room, room.Fp, "roster", () => CheckRosterIcons(row));
             PointerGestureEvents.ClickAt(row);
             await room.Settle();
             Assert.IsTrue(board.Characters.InspectorPinned);
@@ -142,25 +145,21 @@ namespace Wotr.PlayTests
             var tooltip = room.Fp.Interface.Content.parent.Q<Label>("runtime-tooltip");
             Assert.AreEqual(ability.tooltip, tooltip.text);
             Assert.AreEqual(DisplayStyle.Flex, tooltip.resolvedStyle.display);
-            StringAssert.Contains("5 combat dice", tooltip.text.ToLowerInvariant());
-            // UI-139: a click unrolls the ability's full text under the chips; UI-369: a second click keeps it unrolled.
-            var text = board.Characters.Inspector.Root.Q<Label>("character-ability-text");
-            Assert.AreEqual(DisplayStyle.None, text.resolvedStyle.display);
+            // UI-440 (owner): the bare icon's formatted tooltip is the ability's description (its name, gist, printed text,
+            // source); the tooltip shows it as rich text. A passive ability's icon is read only: its click changes nothing.
+            Assert.IsTrue(tooltip.enableRichText);
+            var description = SkillTooltip.Plain(tooltip.text);
+            StringAssert.StartsWith("Captain of the West\n", description);
+            StringAssert.Contains("5 combat dice", description.ToLowerInvariant());
+            SkillIconChecks.Bare(ability, AbilityArt.For("base.character.gimli", "combat-strength-plus-one"), 28f);
+            Assert.IsTrue(ReadOnlyControl.Is(ability));
+            var placed = board.Characters.Inspector.Root.worldBound;
             PointerGestureEvents.ClickAt(ability);
             await room.Settle();
-            Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display);
-            StringAssert.Contains("5 combat dice", text.text.ToLowerInvariant());
-            Assert.IsTrue(ability.ClassListContains("selected"));
-            Assert.Greater(text.resolvedStyle.height, 20, "The unrolled label measures its text.");
-            PointerGestureEvents.ClickAt(ability);
-            await room.Settle();
-            Assert.AreEqual(DisplayStyle.Flex, text.resolvedStyle.display, "A second click on the selected chip changes nothing.");
-            // UI-371: another ability's text changes the window's content, not its place.
-            var placed = board.Characters.Inspector.Root.worldBound.position;
-            PointerGestureEvents.ClickAt(board.Characters.Inspector.Root.Q<Button>("character-ability-politics-dwarves-at-erebor"));
-            await room.Settle();
-            Assert.That(Vector2.Distance(placed, board.Characters.Inspector.Root.worldBound.position), Is.LessThan(1f),
+            Assert.IsNull(board.Characters.Inspector.Root.Q<Label>("character-ability-text"), "No text unrolls.");
+            Assert.That(Vector2.Distance(placed.position, board.Characters.Inspector.Root.worldBound.position), Is.LessThan(1f),
                 "The window stays where it stood.");
+            Assert.AreEqual(placed.height, board.Characters.Inspector.Root.worldBound.height, 0.5f, "Its content does not change.");
             // UI-372: no choice highlight is the old pale blue.
             var mint = new Color(144 / 255f, 203 / 255f, 172 / 255f);
             foreach (var target in board.Root.Query(className: "legal-target").ToList())
@@ -275,6 +274,19 @@ namespace Wotr.PlayTests
                 }
                 Assert.AreEqual(pan, board.Map.Camera.Pan);
                 Assert.AreEqual(revision, board.View.Revision);
+            }
+        }
+
+        // UI-440: in every layout a row's shown icons stay inside it, bare and at least 15 points.
+        private static void CheckRosterIcons(Button row)
+        {
+            foreach (var icon in row.Query<Button>(className: CharacterAbilityStrip.IconClass).ToList()
+                         .Where(b => b.resolvedStyle.display == DisplayStyle.Flex))
+            {
+                Assert.That(icon.worldBound.yMax, Is.LessThanOrEqualTo(row.worldBound.yMax + 0.5f), icon.name);
+                Assert.That(icon.worldBound.xMax, Is.LessThanOrEqualTo(row.worldBound.xMax + 0.5f), icon.name);
+                Assert.GreaterOrEqual(SkillIcon.Glyph(icon).worldBound.width, 14.5f, icon.name);
+                Assert.AreEqual(0f, icon.resolvedStyle.borderTopWidth, icon.name);
             }
         }
     }

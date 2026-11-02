@@ -34,7 +34,7 @@ namespace Wotr.PlayTests
                     Payload(character, ability, die, new[] { "lorien" }));
                 Assert.AreEqual(2, room.Sh.Board.View.Nations.Single(n => n.Id == "dwarves").StepsToWar);
                 Assert.AreEqual(DieLocation.Available, room.Sh.Board.View.Dice.Single(d => d.Id == die).Location);
-                await Choose(room, room.Fp, character, ability, die);
+                await ChooseFromWindow(room, room.Fp, character, ability, die, "character-ability-" + ability);
                 foreach (var client in new[] { room.Fp, room.Sh })
                 {
                     Assert.AreEqual(1, client.Board.View.Nations.Single(n => n.Id == "dwarves").StepsToWar);
@@ -108,7 +108,12 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(pairs, preview.Placements.Count);
                     Assert.IsTrue(preview.RemovedIds.All(regulars.Contains));
                     Assert.AreEqual(JsonConvert.SerializeObject(before.Units), JsonConvert.SerializeObject(room.Fp.Board.View.Units));
-                    await Choose(room, room.Sh, character, ability, die);
+                    // UI-440: the full reserve's upgrade is used from Voice's badged variant icon in Saruman's window, the
+                    // scarce one from the region's button, as before.
+                    if (scarce)
+                        await Choose(room, room.Sh, character, ability, die);
+                    else
+                        await ChooseFromWindow(room, room.Sh, character, ability, die, "character-ability-" + Voice + "-" + ability);
                     foreach (var client in new[] { room.Fp, room.Sh })
                     {
                         Assert.AreEqual(2 - pairs, Regulars(client.Board.View, "orthanc"));
@@ -134,6 +139,47 @@ namespace Wotr.PlayTests
                 await room.Settle();
         }
 
+        // UI-440 (owner): a one-click ability is used from its icon in the character's window: the lit icon's click sends at
+        // once a payload JSON-equal to the one the old path sent (the component path — Click to use, the region's button —
+        // on the same die). icon: the window's icon, a variant's (Voice's upgrade) where the ability has several.
+        private static async Task ChooseFromWindow(MatchTestRoom room, MountedMatchClient client, string character, string ability, string die,
+            string icon)
+        {
+            await ComponentGestures.Cost(room, client, die);
+            var choice = client.Board.View.Options.Single(o => o.Kind == CommandKind.UseCharacterAbility)
+                .CharacterActions.Single(c => c.CharacterId == character && c.AbilityId == ability);
+            await AbilityIcon(room, client, choice);
+            var expected = OldPayload(client.Board.View, die, ComponentGestures.Character(choice));
+            client.Board.Characters.Show(character, true);
+            await room.Settle();
+            await UseWindowIcon(room, client, client.Board.Characters.Inspector.Root.Q<Button>(icon), ability, expected);
+        }
+
+        private static async Task UseWindowIcon(MatchTestRoom room, MountedMatchClient client, Button icon, string ability, string expected)
+        {
+            SkillIconChecks.Bare(icon, AbilityArt.For(client.Board.Characters.Inspector.DefinitionId, ability), 28f);
+            Assert.IsTrue(icon.ClassListContains(ChoiceGlow.ClassName), ability + " glows with its die.");
+            LayoutTests.Save(client.Viewport, "ui440-window-" + ability + ".png");
+            var sent = new List<GameCommand>();
+            client.Interaction.CommandAnswered += (command, receipt, _) => sent.Add(command);
+            var revision = client.Board.View.Revision;
+            PointerGestureEvents.ClickAt(icon);
+            await room.At(revision + 1);
+            Assert.AreEqual(CommandKind.UseCharacterAbility, sent.Single().Kind);
+            Assert.AreEqual(expected, JsonConvert.SerializeObject(sent.Single().Payload), "The icon sends the old payload.");
+        }
+
+        private const string Voice = "muster-each-isengard-settlement-or-upgrade-two";
+
+        private static string OldPayload(PlayerView view, string die, string key)
+        {
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = die);
+            var action = ComponentActions.For(view, draft).Single(item => item.Key == key);
+            Assert.IsTrue(ComponentActions.Select(view, draft, action), key);
+            return JsonConvert.SerializeObject(draft.Payload);
+        }
+
         // UI-439: an ability's button shows the ability's own icon — both of Saruman's Voice buttons the Voice's, the recruit
         // badged with the Muster face and the upgrade with the level star; Gimli's his Dwarf of Erebor's, without a badge.
         private static async Task AbilityIcon(MatchTestRoom room, MountedMatchClient client, CharacterActionOption choice)
@@ -148,7 +194,15 @@ namespace Wotr.PlayTests
                 Assert.IsNull(button.Q(className: IconButton.BadgeClass), choice.AbilityId);
             await room.Settle();
             LayoutTests.Save(client.Viewport, "ui439-" + choice.AbilityId + ".png");
+            // UI-440 (owner): the button is the ability's bare icon, lit while its die is chosen; the badge stays.
+            SkillIconChecks.Bare(button, AbilityArt.For(choice.AbilityId), 28f);
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), choice.AbilityId);
+            if (Captured.Add(choice.AbilityId))
+                await SkillIconLayouts.Capture(room, client, "component-" + choice.AbilityId);
         }
+
+        // UI-440: each ability's component row is pictured once in four layouts.
+        private static readonly HashSet<string> Captured = new HashSet<string>();
 
         private static UnityEngine.Texture2D Texture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
 

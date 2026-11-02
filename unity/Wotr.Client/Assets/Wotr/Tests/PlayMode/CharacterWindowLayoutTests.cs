@@ -17,8 +17,9 @@ namespace Wotr.PlayTests
     // UI-436 (owner: "the window opens in a different place for each ruler; always show it beside the rulers' tab, in the
     // same place"): every character's window opened from the roster opens at one place beside where the Characters panel
     // unrolls, level with the Characters tab, in four layouts; its place is a picture whose click shows the region on the
-    // map as the old Locate button did. UI-439: each ability line shows its ability's own icon. Inspection sends nothing.
-    // On ability-chips the kings' own window keeps its base form and place (it hosts their decisions).
+    // map as the old Locate button did. UI-439: each ability line shows its ability's own icon; UI-440: each ability is its
+    // bare icon, described in its formatted tooltip. Inspection sends nothing. On ability-chips the kings' own window keeps
+    // its base form and place (it hosts their decisions).
     public sealed class CharacterWindowLayoutTests
     {
         private const int Rows = 3;
@@ -81,10 +82,28 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(first.Value.xMin, window.worldBound.xMin, 1, "Same place: " + label + " · " + name);
                 Assert.AreEqual(first.Value.width, window.worldBound.width, 1, "One width for every character's window: " + label + " · " + name);
                 if (!shownIcons)
-                    shownIcons = CheckAbilityIcons(board, window, label);
+                    shownIcons = await CheckAbilityIcons(room, board, window, label);
                 await CloseAll(room, board);
             }
             Assert.IsNotNull(first, "The roster has rows: " + label);
+            if (board.View.You == Side.FreePeoples)
+                Assert.IsTrue(await CheckGandalf(room, board, label), "Gandalf's window shows the Grey's card: " + label);
+        }
+
+        // UI-440: Gandalf's window, opened from his row, where the Grey's card (the base's or the Lords') shows the longest
+        // printed text.
+        private static async Task<bool> CheckGandalf(MatchTestRoom room, BoardScreen board, string label)
+        {
+            var gandalf = board.View.OwnCharacterRoster.FirstOrDefault(row => PrintsLongest(row.CurrentDefinitionId) ||
+                row.FutureVersions.Any(version => PrintsLongest(version.DefinitionId)));
+            if (gandalf == null)
+                return false;
+            await BoardNavigation.OpenCharacters(board);
+            PointerGestureEvents.ClickAt(board.Characters.Root.Q<Button>("character-roster-" + gandalf.FigureId));
+            await Shown(room, board);
+            var shown = await CheckLongestTooltip(room, board, label);
+            await CloseAll(room, board);
+            return shown;
         }
 
         private static async Task<IReadOnlyList<string>> RowNames(BoardScreen board)
@@ -95,20 +114,89 @@ namespace Wotr.PlayTests
                 .Select(row => row.name).Take(Rows).ToList();
         }
 
-        // UI-439: every ability line shows its ability's own icon (AbilityArt), on the window's card.
-        private static bool CheckAbilityIcons(BoardScreen board, VisualElement window, string label)
+        // UI-439: every ability shows its ability's own icon (AbilityArt), on the window's card. UI-440 (owner): a bare icon
+        // in one row, at least 28 points; a read-only one's click changes nothing and leaves no focus ring; keyboard focus
+        // rings it and opens its formatted description at once, whole inside the board.
+        private static async Task<bool> CheckAbilityIcons(MatchTestRoom room, BoardScreen board, VisualElement window, string label)
         {
             var definition = board.Characters.Inspector.DefinitionId;
-            var chips = window.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
-                .Where(chip => chip.resolvedStyle.display == DisplayStyle.Flex).ToList();
+            var chips = Icons(window);
             if (chips.Count == 0)
                 return false;
             foreach (var chip in chips)
-                Assert.AreEqual(Resources.Load<Texture2D>(AbilityArt.For(definition, chip.userData as string)),
-                    chip.Q(className: CharacterAbilityChips.IconClass).style.backgroundImage.value.texture, chip.name + " · " + label);
+            {
+                SkillIconChecks.Bare(chip, AbilityArt.For(definition, chip.userData as string), 28f);
+                Assert.AreEqual(chips[0].worldBound.yMin, chip.worldBound.yMin, 0.5f, "One row: " + chip.name + " · " + label);
+            }
             LayoutTests.Save(current, $"ui439-character-{label}.png");
+            var passive = chips.FirstOrDefault(ReadOnlyControl.Is);
+            Assert.IsNotNull(passive, "Without a chosen die some ability waits: " + label);
+            var placed = window.worldBound;
+            var revision = board.View.Revision;
+            PointerGestureEvents.ClickAt(passive);
+            await room.Settle();
+            Assert.IsFalse(passive.ClassListContains(KeyboardFocusRing.ClassName), "A click leaves no focus ring: " + label);
+            Assert.AreEqual(placed.position, window.worldBound.position, "The window keeps its content and place: " + label);
+            Assert.AreEqual(placed.height, window.worldBound.height, 0.5f, label);
+            Assert.AreEqual(revision, board.View.Revision, "A read-only icon's click sends nothing: " + label);
+            passive.Blur();
+            await room.Settle();
+            passive.Focus();
+            await room.Settle();
+            Assert.IsTrue(passive.ClassListContains(KeyboardFocusRing.ClassName), "Focus from the keyboard rings the icon: " + label);
+            CheckTooltip(board, passive, label);
+            LayoutTests.Save(current, $"ui440-character-{label}.png");
+            passive.Blur();
+            await CheckLongestTooltip(room, board, label);
             return true;
         }
+
+        // UI-440: the longest printed text (Gandalf the Grey's Emissary from the West, 381 characters) shows whole in its
+        // formatted description, on his Grey version's tab, where the window offers it.
+        private static async Task<bool> CheckLongestTooltip(MatchTestRoom room, BoardScreen board, string label)
+        {
+            var inspector = board.Characters.Inspector;
+            if (!PrintsLongest(inspector.DefinitionId))
+            {
+                var grey = inspector.Root.Query<Button>(className: "character-version-tab").ToList()
+                    .FirstOrDefault(tab => PrintsLongest(tab.userData as string) && tab.resolvedStyle.display != DisplayStyle.None);
+                if (grey == null || grey.worldBound.width <= 0)
+                    return false;
+                PointerGestureEvents.ClickAt(grey);
+                await room.Settle();
+            }
+            var icon = inspector.Root.Q<Button>("character-ability-" + Longest);
+            Assert.IsNotNull(icon, label);
+            Assert.AreEqual(381, CharacterAbilityLibrary.Find(inspector.DefinitionId, Longest).Text.Length, inspector.DefinitionId);
+            icon.Focus();
+            await room.Settle();
+            CheckTooltip(board, icon, label);
+            LayoutTests.Save(current, $"ui440-longest-tooltip-{label}.png");
+            icon.Blur();
+            return true;
+        }
+
+        private const string Longest = "may-transform-to-white";
+
+        private static bool PrintsLongest(string definition) =>
+            CharacterAbilityLibrary.For(definition ?? "").Any(ability => ability.Id == Longest);
+
+        // The formatted description shows whole, inside the board, its words the icon's own.
+        private static void CheckTooltip(BoardScreen board, Button icon, string label)
+        {
+            var tooltip = board.Root.panel.visualTree.Q<Label>("runtime-tooltip");
+            Assert.AreEqual(DisplayStyle.Flex, tooltip.resolvedStyle.display, label);
+            Assert.IsTrue(tooltip.enableRichText, "The skill's description is formatted: " + label);
+            Assert.AreEqual(icon.tooltip, tooltip.text, label);
+            var root = tooltip.parent.worldBound;
+            Assert.GreaterOrEqual(tooltip.worldBound.yMin, root.yMin - 1, label);
+            Assert.LessOrEqual(tooltip.worldBound.yMax, root.yMax + 1, label);
+            Assert.LessOrEqual(tooltip.worldBound.width, 361f, label);
+        }
+
+        private static List<Button> Icons(VisualElement window) =>
+            window.Query<Button>(className: CharacterAbilityChips.ChipClass).ToList()
+                .Where(chip => chip.resolvedStyle.display == DisplayStyle.Flex).ToList();
 
         // UI-436: the window stands just right of where the Characters panel unrolls, level with the Characters tab (or
         // raised only to stay whole above the bottom), inside the board, never over the panel.

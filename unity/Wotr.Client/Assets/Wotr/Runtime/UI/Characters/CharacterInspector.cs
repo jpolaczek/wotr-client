@@ -7,7 +7,8 @@ using Wotr.Contracts;
 namespace Wotr.Client
 {
     // One instance serves the roster, public map figures and awakened sovereigns. UI-139: the card speaks in
-    // symbols (statistics, ability chips) with tooltips; the full ability text unrolls on a click. UI-436 (owner): where
+    // symbols (statistics, ability icons) with tooltips; UI-440: an ability's description is its icon's formatted tooltip,
+    // and a lit icon's click uses the ability (CharacterAbilityChips). UI-436 (owner): where
     // the figure is is a picture of the place captioned with its name (clicked, a region shows on the map, as Locate
     // did), beside a line saying what being there means and the statistics; the window's actions read in words
     // (AvailabilityRows) instead of a bare "Limits".
@@ -16,14 +17,11 @@ namespace Wotr.Client
         public VisualElement Root { get; } = new VisualElement { name = "character-inspector" };
         public VisualElement Actions { get; } = new VisualElement { name = "character-actions" };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "character-decision-host" };
-        // UI-369: the chips light the abilities usable now and offer Click to use.
+        // UI-369: the chips light the abilities usable now; UI-440: a lit icon's click uses its ability.
         public CharacterAbilityChips Abilities => abilities;
         public string FigureId { get; private set; } = "";
         public string DefinitionId => version;
         public event Action Changed;
-        // UI-371: the player is about to change the window's content (an ability's text, a page). A version the decision
-        // selects is not such a change: the window still moves clear of the panels the decision opens.
-        public event Action ContentChanging;
         public PlacePicture Place { get; }
         public AvailabilityRows Limits { get; } = new AvailabilityRows("character-limits");
         private readonly BoardPresentation data;
@@ -64,9 +62,7 @@ namespace Wotr.Client
             Root.Add(PlaceRow());
             Limits.Root.AddToClassList("character-window-actions");
             Root.Add(Limits.Root);
-            abilities.Changing += () => ContentChanging?.Invoke();
             Root.Add(abilities.Root);
-            Root.Add(abilities.Pages);
             Root.Add(entry);
             Root.Add(Actions);
             Root.Add(DecisionHost);
@@ -153,7 +149,6 @@ namespace Wotr.Client
         {
             Root.EnableInClassList("character-decision-active", active);
             ShowLimits(!active && Limits.Count > 0);
-            abilities.Pages.style.display = !active && abilities.Paged ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void ShowLimits(bool shown) => Limits.Root.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;

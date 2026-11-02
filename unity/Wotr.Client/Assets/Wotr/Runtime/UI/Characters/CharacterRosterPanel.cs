@@ -20,9 +20,6 @@ namespace Wotr.Client
         public event Action<string> EntryRequested;
         public FloatingWindow Window { get; set; }
         public FloatingWindow InspectorWindow { get; set; }
-        // UI-371: the player changed the window's content (an ability's text, a page), so it stays where it
-        // stands until a figure opens, the roster moves or the board is resized.
-        private bool keepPlace;
         public bool Pinned => hover.Pinned;
         public bool InspectorPinned { get; private set; }
         public event Action Opening;
@@ -61,7 +58,6 @@ namespace Wotr.Client
             Root.style.display = DisplayStyle.None;
             pulse = new ChoicePulse(Root);
             Inspector = new CharacterInspector(data, focus, CloseInspection, PinInspection);
-            Inspector.ContentChanging += () => keepPlace = true;
             Actions = new CharacterRosterContext(this);
             var header = BoardScreen.Row("character-header");
             FloatingWindow.MarkHandle(header);
@@ -210,7 +206,6 @@ namespace Wotr.Client
             Inspecting?.Invoke();
             Inspector.Root.style.display = DisplayStyle.Flex;
             Inspector.Root.BringToFront();
-            keepPlace = false;
             PositionInspector();
         }
 
@@ -240,9 +235,8 @@ namespace Wotr.Client
         }
 
         // UI-436 (owner): a window opened from the Characters tab, its panel or a ruler stands at the one place beside the
-        // tab (CharacterWindowPlace); one opened from a region's window stands beside that window, its own panel.
-        // UI-371 (owner): there, after the player changes its content (another ability's text, a page) it keeps its
-        // top-left and is only pulled back inside the board.
+        // tab (CharacterWindowPlace); one opened from a region's window stands beside that window, its own panel. UI-440:
+        // a click on an ability no longer changes the window's content (UI-371's kept place is gone with the unrolled text).
         public void PositionInspector()
         {
             if (Inspector.Root.style.display.value == DisplayStyle.None || Inspector.Root.parent == null || InspectorWindow?.Restore() == true || source == null)
@@ -252,11 +246,6 @@ namespace Wotr.Client
             var viewport = Inspector.Root.parent;
             var size = Inspector.Root.layout.size;
             var measured = size.x > 0 && !float.IsNaN(size.x);
-            if (keepPlace && measured)
-            {
-                KeepInspectorInView(viewport, size);
-                return;
-            }
             var point = viewport.WorldToLocal(source.worldBound.center);
             if (!measured)
                 size = new Vector2(420, 280);
@@ -273,17 +262,6 @@ namespace Wotr.Client
                 Inspector.Root.style.left = rectangle.x;
             if (Mathf.Abs(Inspector.Root.style.top.value.value - rectangle.y) > .25f)
                 Inspector.Root.style.top = rectangle.y;
-        }
-
-        private void KeepInspectorInView(VisualElement viewport, Vector2 size)
-        {
-            var area = viewport.contentRect;
-            var left = Mathf.Clamp(Inspector.Root.layout.x, area.xMin, Mathf.Max(area.xMin, area.xMax - size.x));
-            var top = Mathf.Clamp(Inspector.Root.layout.y, area.yMin, Mathf.Max(area.yMin, area.yMax - size.y));
-            if (Mathf.Abs(Inspector.Root.layout.x - left) > .25f)
-                Inspector.Root.style.left = left;
-            if (Mathf.Abs(Inspector.Root.layout.y - top) > .25f)
-                Inspector.Root.style.top = top;
         }
 
         // UI-408 (owner): two characters a line give each its larger icons; a roster that would then reach past the board
@@ -318,14 +296,15 @@ namespace Wotr.Client
 
         public bool Wide => wide;
 
-        // UI-391: a usable ability's icon starts it, as Click to use does; another opens the window with that ability unrolled.
+        // UI-391: a usable ability's icon starts it, as the window's icon does; another opens the window at that ability (UI-440:
+        // its icon takes the focus, so its formatted description shows).
         private void ObserveAbilities(CharacterRosterRow row, string id)
         {
             row.Abilities.Used += item => Actions.Use(item);
             row.Abilities.Opened += ability =>
             {
                 Show(id, true, row.Root);
-                Inspector.Abilities.Select(ability);
+                Inspector.Abilities.Present(ability);
             };
         }
 
@@ -398,11 +377,7 @@ namespace Wotr.Client
         }
 
         // The roster's own move (unrolling, closing) changes what the window must avoid, so it is placed again.
-        private void PlaceInspectorAgain()
-        {
-            keepPlace = false;
-            PositionInspector();
-        }
+        private void PlaceInspectorAgain() => PositionInspector();
 
         private void BoardResized(GeometryChangedEvent change)
         {

@@ -20,7 +20,7 @@ namespace Wotr.EditorTests
             ("frames/topbar-frame", 192, 44, true), ("frames/cartouche", 64, 44, true),
             ("frames/pennant-free", 22, 28, true), ("frames/pennant-free-hover", 22, 28, true),
             ("frames/pennant-shadow", 22, 28, true), ("frames/pennant-shadow-hover", 22, 28, true), ("ornaments/wax-seal", 22, 22, true),
-            ("ornaments/move-glow", 44, 44, true),
+            ("ornaments/move-glow", 44, 44, true), ("ornaments/skill-glow", 44, 44, true),
             ("frames/button", 96, 40, true), ("frames/button-hover", 96, 40, true), ("frames/button-selected", 96, 40, true),
             ("frames/button-pressed", 96, 40, true), ("frames/button-square-pressed", 28, 28, true),
             ("frames/glow", 48, 48, true),

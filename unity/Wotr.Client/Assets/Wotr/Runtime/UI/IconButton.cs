@@ -11,6 +11,9 @@ namespace Wotr.Client
     public static class IconButton
     {
         public const string ClassName = "icon-button";
+        // The picture's element. UI-440: a bare skill icon (SkillIcon) names its picture the same way, so SetPicture and
+        // AddBadge serve it too.
+        public const string GlyphName = "icon-glyph";
         private const string Folder = "Wotr/Art/UI/actions/";
         private static readonly Dictionary<string, Texture2D> Icons = new Dictionary<string, Texture2D>();
 
@@ -26,14 +29,14 @@ namespace Wotr.Client
         public static Button Picture(string resource, string tooltip, Action action)
         {
             var button = Frame(tooltip, action);
-            button.Q("icon-glyph").style.backgroundImage = Background(resource);
+            button.Q(GlyphName).style.backgroundImage = Background(resource);
             return button;
         }
 
-        // UI-391: the picture of an icon made by Picture changes without rebuilding the button.
+        // UI-391: the picture of an icon made by Picture (UI-440: or by SkillIcon) changes without rebuilding the button.
         public static void SetPicture(Button button, string resource)
         {
-            var glyph = button.Q("icon-glyph");
+            var glyph = button.Q(GlyphName);
             if (glyph != null)
                 glyph.style.backgroundImage = Background(resource);
         }
@@ -51,12 +54,12 @@ namespace Wotr.Client
 
         public static void SetIcon(Button button, string icon)
         {
-            var glyph = button.Q("icon-glyph");
+            var glyph = button.Q(GlyphName);
             if (glyph == null)
                 return;
             glyph.style.backgroundImage = Background(Folder + icon);
             foreach (var old in new List<string>(button.GetClasses()))
-                if (old.StartsWith("icon-") && old != ClassName && old != "icon-glyph")
+                if (old.StartsWith("icon-") && old != ClassName && old != GlyphName)
                     button.RemoveFromClassList(old);
             button.AddToClassList("icon-" + icon);
         }
@@ -68,8 +71,8 @@ namespace Wotr.Client
             var button = BoardScreen.Button("", action);
             button.tooltip = tooltip;
             button.AddToClassList(ClassName);
-            var glyph = new VisualElement { name = "icon-glyph", pickingMode = PickingMode.Ignore };
-            glyph.AddToClassList("icon-glyph");
+            var glyph = new VisualElement { name = GlyphName, pickingMode = PickingMode.Ignore };
+            glyph.AddToClassList(GlyphName);
             button.Add(glyph);
             return button;
         }

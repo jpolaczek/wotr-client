@@ -294,6 +294,8 @@ namespace Wotr.Client
             if (!CanChoose(component.Kind))
                 return;
             var next = draft.Fork();
+            // UI-440: a skill's icon clicked before its die takes the one die that can pay for it.
+            component = ComponentActions.WithUniformDie(view, next, component);
             if (!ComponentActions.Select(view, next, component))
                 return;
             if (FellowshipActions.UsesPanel(view, next))
