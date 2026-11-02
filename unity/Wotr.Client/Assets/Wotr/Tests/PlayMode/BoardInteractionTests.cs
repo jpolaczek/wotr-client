@@ -262,7 +262,8 @@ namespace Wotr.PlayTests
             yield return Settle();
             MapContourProbe.LiftFigure(test.Board, army);
             yield return Settle();
-            Assert.IsNotNull(map.Q("hand-army-minas-tirith-FreePeoples"), "A press on a legal source lifts it as its click would.");
+            // UI-444: carried, the piece stands in the carry layer in the board's root, above the HUD.
+            Assert.IsNotNull(test.Board.Root.Q("hand-army-minas-tirith-FreePeoples"), "A press on a legal source lifts it as its click would.");
             Assert.IsNotEmpty(map.DraftOverlay.Targets);
             Assert.AreEqual(DisplayStyle.None, test.Board.Hover.Panel.Root.resolvedStyle.display, "No panel opens.");
             Escape(test.Board);
@@ -271,7 +272,7 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(map.DraftOverlay.Targets, "Esc leaves the draft as it was before the press: nothing chosen…");
             Assert.AreEqual("army", test.Board.ActionDie.DieId, "…the die still in hand.");
             Assert.IsFalse(army.ClassListContains("selected-force"));
-            Assert.IsNull(map.Q("hand-army-minas-tirith-FreePeoples"), "The army is back on its base.");
+            Assert.IsNull(test.Board.Root.Q("hand-army-minas-tirith-FreePeoples"), "The army is back on its base.");
 
             map.FocusOn(StandFeet(map, "army-minas-morgul-Shadow"), map.FitZoom * 1.6f);
             yield return Settle();
@@ -315,7 +316,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(pan, map.Camera.Pan, "Within the dwell the map stays.");
             yield return new WaitForSecondsRealtime(.6f);
             Assert.Greater(Vector2.Distance(pan, map.Camera.Pan), 20, "After the dwell the map pans.");
-            AssertUnder(piece, raised + HeldHigher(piece) + edge - press, "The carried figure stays under the pointer.");
+            // UI-444: whole on the screen and above the HUD, as near the pointer as the edge lets it.
+            TabletopFrameChecks.AssertCarriedWhole(test.Board.Root, piece, raised + HeldHigher(piece) + edge - press, "edge pan");
             Assert.AreEqual(MapRegion(DraftInput.At(map.panel, edge)), map.DragTarget, "The region under it is read again as the map moves.");
             LayoutTests.Save(test.Viewport, "ui405-edge-pan.png");
             LogDragCost(test.Board, edge);

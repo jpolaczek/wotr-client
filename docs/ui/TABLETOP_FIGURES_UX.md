@@ -433,6 +433,19 @@ height and only the Balrog (1.1) and the fallback silhouettes need `FigureStatur
   commits the click's step, Lamedon returns), `TravelGestureNetworkTests` (Gimli's figure carried onto Moria travels him);
   `MapContourProbe.DragFigure`/`LiftFigure`/`Carry`/`RefusedDrag` replace `AttemptDrag`.
 
+**As built (UI-444, 2026-11-02, owner: fix the half-cut carried army at the map's edge).** While carried, a raised piece
+stands in its own pointer-ignoring layer laid over the map in `#board-screen`, in front of the HUD and the windows
+(`MapFigureHand.CarryLayerName`, `map-hand-carried`), so neither the map's edge nor the top bar, the console or a rail
+cuts it. When the pointer is so near the screen's edge that a carried piece would cross it, the carried pieces shift
+inward together just enough to stay `ScreenMargin` (6 points) inside it (`KeepOnScreen`; their base and raised
+miniature, `MapHandPiece.CarriedBounds`); elsewhere they stay exactly under the pointer. The drag target stays the
+region under the pointer; a dropped piece rests where it shows. Set down — dropped, sent, home or Esc — a piece is back
+in the hand's layer, clipped to the map as before. Transforms only; nothing is laid out in a geometry callback.
+Tests: `BoardInteractionTests.UI405EdgePanMovesTheMapUnderACarriedFigureAfterADwell` and `TabletopCarryScene`'s
+edge-pan frames (`TabletopFrameChecks.AssertCarriedWhole`: in the carry layer in front of everything on the board,
+every drawn part inside the screen, moved from under the pointer only inward and only when it would cross the edge);
+the press-lift and Esc checks find the carried piece in the board's root.
+
 ## Flight profile (UI-404)
 
 Flights run between stand points: the previous place at the source and the current place at the destination, one
@@ -759,7 +772,7 @@ flight per destination marker, rendered with the same miniature.
 - Far out a character is its portrait in its side's medallion (UI-402); since UI-406 the medallion is a thick coin with
   a contact shadow.
 - A Nazgûl inside a mixed stack lifts with its base.
-- The lifted figure is clipped to the map.
+- The lifted figure is clipped to the map; since UI-444 a carried one stands above the HUD, whole on the screen.
 - The lifted part of a split rises on a base of its own; the figures left behind stay on the source's base behind and
   below it, so at the default pose mostly their plaque and count show under the raised base (UI-403).
 - A sent move stays raised over its place until the view arrives (UI-403; UI-404 lets the flight start from there),
@@ -877,7 +890,7 @@ frame instead, `TabletopFrameChecks.AssertReadable`):
 3. **"Helm's Deep" is split by its own stone at 125 %** — resolved by UI-426 (`ui407-map17-*-1.25-near`,
    `ui407-siege-*-1.25-near`: "Helm' ◆ Deep"). UI-406's name-clear rule leaves the name where it is when it has no vertical room. Suggested fix: let the
    name move sideways, or break the line before the stone.
-4. **At the map's edge the carried army is half cut off** (`ui407-edge-pan-*`): the pointer rests 8 points inside the
+4. **At the map's edge the carried army is half cut off** — resolved by UI-444 ("As built (UI-444)") (`ui407-edge-pan-*`): the pointer rests 8 points inside the
    26-point zone and the figure is centred under it, so the map's edge clips half of it while the map pans. This is the
    default "the lifted figure is clipped to the map"; the owner may prefer it drawn whole above the HUD while it is
    carried.
@@ -893,7 +906,7 @@ the garrison's puck far at 125 %, Strider's and Legolas's medallions and the Wes
 stones far, Fords of Isen's plaque under the besieger near, "Helm's Deep" on its stone at 125 % near), in
 `TabletopObjectsTests` (Denethor's marker on Minas Tirith's count, Dale's token on its stone, "Helm's Deep" on its stone)
 and in the whole-map frames of `MapRegionNamesTests` ("Helm's Deep" in all four layouts), and pass after it. Defect 5 is
-resolved by UI-428 ("As built (UI-428)"). Defect 4 remains.
+resolved by UI-428 ("As built (UI-428)"), defect 4 by UI-444 ("As built (UI-444)").
 
 **Profile `map-profile-2`** with the drag-with-edge-pan workloads ([MAP17_ACCEPTANCE](MAP17_ACCEPTANCE.md), "Drag with
 edge pan (UI-407)"): `drag-edge-fp` and `drag-edge-sh` carry each side's own largest army that can march, on the

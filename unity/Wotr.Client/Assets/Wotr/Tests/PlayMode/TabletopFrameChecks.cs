@@ -353,13 +353,49 @@ namespace Wotr.PlayTests
             var ring = map.Q("landing-mark");
             Assert.IsTrue(Visible(ring), "The landing mark shows · " + label);
             var mark = Shrunk(ring.worldBound, Pixel);
-            var pieces = map.Query(className: "figure-hand-piece").ToList();
+            // UI-444: a carried piece stands in the carry layer beside the map, in the board's root.
+            var pieces = (map.parent ?? map).Query(className: "figure-hand-piece").ToList();
             Assert.IsNotEmpty(pieces, "A figure is carried · " + label);
             foreach (var piece in pieces)
                 foreach (var part in piece.Q("hand-lift").Query<VisualElement>().ToList().Where(Drawn))
                     Assert.IsFalse(part.worldBound.Overlaps(mark),
                         $"{piece.name}'s {part.name} lies on the landing mark ({part.worldBound} on {ring.worldBound}) · {label}");
         }
+
+        // UI-444 (TABLETOP_FIGURES_UX, "As built (UI-444)"): a carried piece stands in the carry layer in front of
+        // everything on the board, wholly on the screen, and away from where the pointer holds it (held: its raised
+        // miniature's centre there) only when that place would cross the screen's edge, and then only inward.
+        internal static void AssertCarriedWhole(VisualElement board, VisualElement piece, Vector2 held, string label)
+        {
+            var layer = piece.parent;
+            while (layer != null && layer.name != CarryLayer)
+                layer = layer.parent;
+            Assert.IsNotNull(layer, "Carried in the layer above the HUD · " + label);
+            Assert.AreSame(layer, board.Children().Last(), "In front of everything on the board · " + label);
+            var parts = piece.Query<VisualElement>().ToList().Where(Drawn).Select(part => part.worldBound).ToList();
+            Assert.IsNotEmpty(parts, "The carried piece paints something · " + label);
+            var shown = parts.Aggregate(Union);
+            var screen = board.worldBound;
+            Assert.IsTrue(Contains(Grown(screen, Pixel), shown), $"Whole on the screen ({shown} in {screen}) · {label}");
+            var offset = piece.Q("hand-lift").worldBound.center - held;
+            if (offset.magnitude <= 1.5f)
+                return;
+            var unmoved = new Rect(shown.position - offset, shown.size);
+            Assert.IsFalse(Contains(Shrunk(screen, Pixel), unmoved),
+                $"Moved ({offset}) only because under the pointer it would cross the edge ({unmoved}) · {label}");
+            Assert.GreaterOrEqual(Vector2.Dot(offset, screen.center - held), 0, $"Moved inward ({offset}) · {label}");
+        }
+
+        // MapFigureHand.CarryLayerName, read here by its value.
+        private const string CarryLayer = "map-hand-carried";
+
+        private static bool Contains(Rect outer, Rect inner) =>
+            inner.xMin >= outer.xMin && inner.yMin >= outer.yMin && inner.xMax <= outer.xMax && inner.yMax <= outer.yMax;
+
+        private static Rect Grown(Rect rect, float by) => Rect.MinMaxRect(rect.xMin - by, rect.yMin - by, rect.xMax + by, rect.yMax + by);
+
+        private static Rect Union(Rect a, Rect b) =>
+            Rect.MinMaxRect(Mathf.Min(a.xMin, b.xMin), Mathf.Min(a.yMin, b.yMin), Mathf.Max(a.xMax, b.xMax), Mathf.Max(a.yMax, b.yMax));
 
         // A part that paints something: a picture, a filled background or a text.
         private static bool Drawn(VisualElement element)

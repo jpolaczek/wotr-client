@@ -188,6 +188,13 @@ namespace Wotr.Client
         // Its feet follow the pointer (map-local).
         public void Follow(Vector2 pointer) => carried = pointer + grab;
 
+        // UI-444: carried, it moves with the other carried pieces to show whole on the screen.
+        public void Shift(Vector2 by)
+        {
+            if (carried is Vector2 feet)
+                carried = feet + by;
+        }
+
         // Dropped: it rests on the board point under its feet.
         public void Rest(Vector2 ground)
         {
@@ -338,6 +345,18 @@ namespace Wotr.Client
         }
 
         private static float Grown(float edge, float feet) => feet + (edge - feet) * LiftScale;
+
+        // UI-444: all it shows at the last layout (map-local): its contact shadow on the table and its raised miniature.
+        public Rect CarriedBounds
+        {
+            get
+            {
+                var table = Stand.Bounds;
+                var raised = LiftedBounds;
+                return Rect.MinMaxRect(Mathf.Min(table.xMin, raised.xMin), Mathf.Min(table.yMin, raised.yMin),
+                    Mathf.Max(table.xMax, raised.xMax), Mathf.Max(table.yMax, raised.yMax));
+            }
+        }
 
         public void Remove()
         {

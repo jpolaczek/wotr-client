@@ -111,7 +111,8 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(Source.ClassListContains("lifted-away"), "The whole army is lifted: its base is empty · " + label);
         }
 
-        // Held in an edge zone, the map pans under the carried army after the dwell; the army stays under the pointer.
+        // Held in an edge zone, the map pans under the carried army after the dwell; UI-444: the army stays whole on the
+        // screen, above the HUD, as near the pointer as the edge lets it.
         private async Task EdgePan()
         {
             FrameMarch(Map, true);
@@ -133,7 +134,7 @@ namespace Wotr.PlayTests
                 if (dwelt < MapEdgePan.DragDwellSeconds - .05)
                     Assert.AreEqual(pan, resting, "Within the dwell the map stays · " + label);
                 Assert.Greater(Vector2.Distance(pan, Map.Camera.Pan), 20, "After the dwell the map pans · " + label);
-                BoardInteractionTests.AssertUnder(piece, lifted + edge - pointer, "The army stays under the pointer · " + label);
+                TabletopFrameChecks.AssertCarriedWhole(Board.Root, piece, lifted + edge - pointer, label);
                 Assert.AreEqual(BoardInteractionTests.MapRegion(DraftInput.At(Map.panel, edge)), Map.DragTarget ?? "",
                     "The region under it is read again as the map moves · " + label);
             });
@@ -212,7 +213,8 @@ namespace Wotr.PlayTests
             var pointer = press + new Vector2(DragStep, 0);
             MapContourProbe.Carry(Board, pointer);
             await Task.Delay(Transition);
-            var piece = Map.Q("hand-" + SourceName);
+            // UI-444: carried, the piece stands in the carry layer in the board's root, above the HUD.
+            var piece = Board.Root.Q("hand-" + SourceName);
             Assert.IsNotNull(piece, "The press lifts the army itself into the hand · " + label);
             return (piece, press, pointer);
         }
@@ -224,7 +226,7 @@ namespace Wotr.PlayTests
             BoardMenuLayoutTests.Key(Board.Root, false);
             MapContourProbe.Release(Map, point);
             await Task.Delay(Transition);
-            Assert.IsNull(Map.Q("hand-" + SourceName), "Esc puts the army back onto its base · " + label);
+            Assert.IsNull(Board.Root.Q("hand-" + SourceName), "Esc puts the army back onto its base · " + label);
             Assert.IsNull(Map.DragTarget, label);
         }
 

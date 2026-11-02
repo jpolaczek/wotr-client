@@ -21,8 +21,16 @@ namespace Wotr.Client
     // they are (Release): sent, they stay there and their flight leaves from there (Expect reads each piece's Ground);
     // planned, they dissolve there; otherwise they glide home over their source (Home), or onto their base when they leave
     // the hand.
+    // UI-444 (owner, 2026-11-02): while carried, a piece stands in its own pointer-ignoring layer laid over the map in the
+    // board's root, above the HUD and the windows (CarryLayerName), so neither the map's edge nor the HUD cuts it; the
+    // carried pieces shift inward together just enough to show whole on the screen (KeepOnScreen). Set down — dropped,
+    // sent, home or Esc — a piece is back in the hand's layer, clipped to the map.
     internal sealed class MapFigureHand
     {
+        public const string CarryLayerName = "map-hand-carried";
+        // UI-444: how far a carried piece keeps from the screen's edge; its gold rim and plaque reach a little past the
+        // visible part its stand measures.
+        public const float ScreenMargin = 6;
         public VisualElement Layer { get; }
         // A piece came down or dissolved: the places show what stands there again.
         public event Action Changed;
@@ -38,6 +46,8 @@ namespace Wotr.Client
         private readonly HashSet<string> returned = new HashSet<string>();
         // Every figure standing on the table, by the piece that would lift it ("<piece key>|<region>|<figure id>").
         private readonly HashSet<string> standing = new HashSet<string>();
+        // UI-444: where carried pieces stand, made on the first carry.
+        private VisualElement carryLayer;
 
         public MapFigureHand(MapCanvas map)
         {
@@ -72,23 +82,98 @@ namespace Wotr.Client
         public bool Grab(Vector2 pointer)
         {
             var taken = false;
-            foreach (var piece in pieces.Where(Chosen))
+            foreach (var piece in pieces.Where(Chosen).ToList())
             {
                 piece.Grab(pointer);
+                Carry(piece);
                 taken = true;
             }
             return taken;
         }
 
-        // The carried pieces stand under the pointer (map-local).
+        // The carried pieces stand under the pointer (map-local), whole on the screen (UI-444).
         public void Follow(Vector2 pointer)
         {
             var scale = map.Stands.FigureScale;
-            foreach (var piece in pieces.Where(piece => piece.Carried))
+            var carried = pieces.Where(piece => piece.Carried).ToList();
+            foreach (var piece in carried)
             {
                 piece.Follow(pointer);
                 piece.Layout(map, scale);
             }
+            KeepOnScreen(carried, scale);
+        }
+
+        // UI-444: when the pointer is so near the screen's edge that a carried piece would cross it, the carried pieces
+        // shift inward together just enough; elsewhere they stay exactly under the pointer.
+        private void KeepOnScreen(IReadOnlyList<MapHandPiece> carried, float scale)
+        {
+            if (carried.Count == 0 || !(Screen() is Rect screen))
+                return;
+            var shown = carried.Select(piece => piece.CarriedBounds).Aggregate(Union);
+            var shift = new Vector2(Inward(shown.xMin, shown.xMax, screen.xMin, screen.xMax),
+                Inward(shown.yMin, shown.yMax, screen.yMin, screen.yMax));
+            if (shift == Vector2.zero)
+                return;
+            foreach (var piece in carried)
+            {
+                piece.Shift(shift);
+                piece.Layout(map, scale);
+            }
+        }
+
+        // What the screen shows of the map (map-local), ScreenMargin inside its edges: the map within its host; null before
+        // layout.
+        private Rect? Screen()
+        {
+            var frame = map.layout;
+            if (float.IsNaN(frame.width) || frame.width <= 0 || frame.height <= 0)
+                return null;
+            var area = new Rect(0, 0, frame.width, frame.height);
+            if (map.parent?.layout is Rect host && !float.IsNaN(host.width))
+                area = Rect.MinMaxRect(Mathf.Max(0, -frame.x), Mathf.Max(0, -frame.y),
+                    Mathf.Min(frame.width, host.width - frame.x), Mathf.Min(frame.height, host.height - frame.y));
+            return Rect.MinMaxRect(area.xMin + ScreenMargin, area.yMin + ScreenMargin, area.xMax - ScreenMargin, area.yMax - ScreenMargin);
+        }
+
+        // How far an extent moves to lie inside a range: none when it does; one too large starts where the range starts.
+        private static float Inward(float min, float max, float low, float high)
+        {
+            if (max - min >= high - low || min < low)
+                return low - min;
+            return max > high ? high - max : 0;
+        }
+
+        // UI-444: the carried piece moves to the carry layer, laid over the map and in front of everything in its host.
+        private void Carry(MapHandPiece piece)
+        {
+            var host = map.parent;
+            if (host == null)
+                return;
+            if (carryLayer == null)
+            {
+                carryLayer = new VisualElement { name = CarryLayerName, pickingMode = PickingMode.Ignore };
+                carryLayer.AddToClassList(CarryLayerName);
+                carryLayer.style.position = Position.Absolute;
+            }
+            if (carryLayer.parent != host)
+                host.Add(carryLayer);
+            carryLayer.BringToFront();
+            var frame = map.layout;
+            carryLayer.style.left = frame.x;
+            carryLayer.style.top = frame.y;
+            carryLayer.style.width = frame.width;
+            carryLayer.style.height = frame.height;
+            carryLayer.Add(piece.Stand.Root);
+        }
+
+        // UI-444: every piece no longer carried stands in the hand's layer again, clipped to the map.
+        private void SetDown()
+        {
+            if (carryLayer == null || carryLayer.childCount == 0)
+                return;
+            foreach (var piece in pieces.Where(piece => !piece.Carried && piece.Stand.Root.parent == carryLayer))
+                Layer.Add(piece.Stand.Root);
         }
 
         // Dropped: each carried piece rests on the board point under it. Returns the figures they hold.
@@ -100,6 +185,7 @@ namespace Wotr.Client
                 dropped.UnionWith(piece.Ids);
                 piece.Rest(map.Camera.ToBoard(piece.ShownFeet));
             }
+            SetDown();
             return dropped;
         }
 
@@ -108,6 +194,7 @@ namespace Wotr.Client
         {
             foreach (var piece in pieces.Where(piece => piece.State == MapHandPiece.PieceState.InPlace && !piece.Ids.Overlaps(awaited)))
                 piece.Home(Moving);
+            SetDown();
         }
 
         // Whether the raised figures include units (they land as an army) or only characters.
@@ -343,6 +430,7 @@ namespace Wotr.Client
         public void Layout()
         {
             var scale = map.Stands.FigureScale;
+            SetDown();
             foreach (var piece in pieces)
                 piece.Layout(map, scale);
         }

@@ -3168,3 +3168,16 @@ Tests: EditMode `UsableSkillsTests.BeforeAnyDieIsChosenNoSkillIsUsableEvenWhenOn
 `ComponentActionTests.AnAbilityIsNotSelectedBeforeItsDieEvenWhenOneDieCouldPay`; PlayMode `UsableSkillLightNetworkTests`
 (on real seeds nothing is lit before a die or token and after its release) and `RulerTokenMenuTests.EveryLitTabGlowsAlike`
 (the Characters tab goes dark with the released Ruler die).
+
+<a id="a-carried-figure-stands-whole-above-the-hud--ui-444"></a>
+## A carried figure stands whole above the HUD — UI-444 (2026-11-02)
+
+The owner (layout audit item 8): fix the carried army that the map's edge cut in half while the map panned under it
+(UI-407's defect 4). While carried, a figure stands in a layer in front of the HUD and the windows and stays whole on
+the screen, shifting inward only as far as the edge requires; set down it is back on the map, clipped as before.
+Details and tests: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-444)".
+
+Playtest (owner's checklist):
+- [ ] `fp-army-move` (the Free Peoples). Choose an army, carry it to each edge of the screen and hold it there: the map
+  pans, the army shows whole, a little inside the edge, above the top bar, the console and the rails; dropped on a lit
+  region it moves as its click would; Esc puts it back.
