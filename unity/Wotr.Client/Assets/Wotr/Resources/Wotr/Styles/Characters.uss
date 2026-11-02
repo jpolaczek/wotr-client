@@ -27,6 +27,28 @@
     -unity-slice-left: 32;
     -unity-slice-scale: 0.5px;
 }
+/* UI-441 (owner): while a skill of the character can be used now the header wears the shared gold rim on a warm plate,
+   behind its plate art and title (a light of its own, so the header keeps its size); it breathes in the window's 750 ms
+   ChoicePulse with the lit icons, by opacity only. Reduced motion keeps it bright and still. */
+#board-screen .character-inspector > .character-header > .character-header-glow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: none;
+    border-width: 2px;
+    border-radius: 6px;
+    border-color: rgb(255, 214, 112);
+    background-color: rgba(120, 88, 24, 0.45);
+}
+#board-screen .character-inspector > .character-header.choice-glow > .character-header-glow { display: flex; }
+.motion-enabled #board-screen .character-inspector > .character-header > .character-header-glow {
+    transition-property: opacity;
+    transition-duration: 750ms;
+    transition-timing-function: ease-in-out-sine;
+}
+.motion-enabled #board-screen .character-inspector.choice-glow-pulse > .character-header > .character-header-glow { opacity: 0.4; }
 #board-screen .character-window > .character-header > .title {
     font-size: 15px;
     letter-spacing: 0.4px;

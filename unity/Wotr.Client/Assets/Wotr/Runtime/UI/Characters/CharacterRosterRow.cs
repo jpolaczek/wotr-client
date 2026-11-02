@@ -28,12 +28,16 @@ namespace Wotr.Client
         private bool versionOffered;
         private bool chosen;
         private string offeredVersion = "";
+        // UI-441: the character's skills usable now, or null.
+        private UsableSkills.Skill skill;
         private BoardPresentation data;
         private string statusText = "";
         // UI-243: the chosen row while its entry waits for a region: solid gold and a short instruction.
         public const string ChosenClass = "entry-chosen";
         public const string ChosenHint = "Choose a highlighted region";
         public const string RowClass = "character-roster-row";
+        // UI-441: the row's offer while a skill of the character is usable now.
+        public const string SkillHint = "Click its glowing icon";
 
         public CharacterRosterRow(string id)
         {
@@ -140,6 +144,18 @@ namespace Wotr.Client
             ShowOffer();
         }
 
+        // UI-441 (owner): a character whose skill can be used now glows and pulses on its row, as an offered entry does,
+        // and its tooltip starts with why; the light goes out with the last usable skill.
+        public void ShowSkill(UsableSkills.Skill usable)
+        {
+            if (usable == skill || usable != null && skill != null && UsableSkills.Line(usable, SkillHint) == UsableSkills.Line(skill, SkillHint))
+                return;
+            skill = usable;
+            ShowOffer();
+        }
+
+        public bool SkillLit => skill != null;
+
         public void Choose(bool value)
         {
             chosen = value;
@@ -150,7 +166,7 @@ namespace Wotr.Client
 
         private void ShowOffer()
         {
-            ChoiceGlow.Apply(Root, offered || versionOffered);
+            ChoiceGlow.Apply(Root, offered || versionOffered || skill != null);
             Root.tooltip = CharacterRowTooltip.Format(OfferText(), description);
         }
 
@@ -160,7 +176,9 @@ namespace Wotr.Client
                 return "";
             if (offered)
                 return CharacterRosterPresentation.EntryOffer(shown, offeredVersion.Length > 0 ? offeredVersion : Definition);
-            return versionOffered ? CharacterRosterPresentation.ChooseVersionOffer : "";
+            if (versionOffered)
+                return CharacterRosterPresentation.ChooseVersionOffer;
+            return UsableSkills.Line(skill, SkillHint);
         }
     }
 }

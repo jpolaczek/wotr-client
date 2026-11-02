@@ -29,6 +29,11 @@ namespace Wotr.Client
         private string tileKey = "";
         private string art = "";
         private string meterKey = "";
+        // What a click on the portrait does now (null when it only informs), its description, and (UI-441) why his skill
+        // lights him; "" when none can be used.
+        private string hint;
+        private string description = "";
+        private string skill = "";
 
         public SovereignPortrait(string id, Action portrait, Action attempt, Action<string, string> tileChosen)
         {
@@ -70,17 +75,34 @@ namespace Wotr.Client
             Status(king.Status);
             title.text = king.Title.Split(' ')[0];
             var region = data.Regions.TryGetValue(king.RegionId, out var definition) ? definition.Name : "Out of play";
-            var description = SovereignPresentation.Describe(king, region);
+            description = SovereignPresentation.Describe(king, region);
             var holds = view.RulerTokens.Any(t => t.SovereignId == king.Id && t.Location == "free-peoples");
             token.style.display = holds ? DisplayStyle.Flex : DisplayStyle.None;
             if (holds)
                 description += "\nHolds his Ruler token: it stands in the Free Peoples' dice pool";
-            Portrait.tooltip = hint != null ? hint + "\n" + description : description;
-            Portrait.EnableInClassList(LitClass, hint != null);
-            ChoiceGlow.Apply(Portrait, hint != null);
+            this.hint = hint;
+            ShowLight();
             Meter(king);
             AttemptButton(view, draft, king);
             Tiles(SovereignAttempt.Tiles(view, king));
+        }
+
+        // UI-441 (owner): a king whose skill can be used now glows on his portrait, as a king a decision lights does, and the
+        // tooltip says why; line: "" when none can be used.
+        public void ShowSkill(string line)
+        {
+            if (line == skill)
+                return;
+            skill = line;
+            ShowLight();
+        }
+
+        private void ShowLight()
+        {
+            var lead = hint ?? (skill.Length > 0 ? skill : null);
+            Portrait.tooltip = lead != null ? lead + "\n" + description : description;
+            Portrait.EnableInClassList(LitClass, lead != null);
+            ChoiceGlow.Apply(Portrait, lead != null);
         }
 
         // UI-345: a king whose portrait changes (awakened, corrupted) crossfades to it (UI-322); the first shows at once.

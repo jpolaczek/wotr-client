@@ -47,6 +47,8 @@ namespace Wotr.Client
         private PlayerView view;
         private TurnDraft draft;
         private Func<string, bool> lit = _ => false;
+        // UI-441: the kings with a skill usable now, and why (UsableSkills).
+        private IReadOnlyDictionary<string, string> skills = new Dictionary<string, string>();
         private string selected = "";
 
         public SovereignPanel(BoardPresentation data, Action<string> focus)
@@ -95,7 +97,19 @@ namespace Wotr.Client
                 Root.Add(portrait.Root);
             }
             portrait.Apply(view, sovereign, draft, data, ClickHint(sovereign.Id));
+            portrait.ShowSkill(Skill(sovereign.Id));
         }
+
+        // UI-441 (owner): a king whose skill can be used now lights on his portrait; its click opens his character window,
+        // where the skill's icon uses it.
+        public void LightSkills(IReadOnlyDictionary<string, string> lines)
+        {
+            skills = lines ?? new Dictionary<string, string>();
+            foreach (var portrait in portraits)
+                portrait.Value.ShowSkill(Skill(portrait.Key));
+        }
+
+        private string Skill(string id) => skills.TryGetValue(id, out var line) ? line : "";
 
         public string ClickHint(string id)
         {
@@ -164,7 +178,7 @@ namespace Wotr.Client
 
         private void Open(string id)
         {
-            if (view?.Sovereigns.FirstOrDefault(s => s.Id == id)?.Status == SovereignStatus.Awakened &&
+            if ((view?.Sovereigns.FirstOrDefault(s => s.Id == id)?.Status == SovereignStatus.Awakened || Skill(id).Length > 0) &&
                 InspectCharacter?.Invoke(id, Pinned, Source(id)) == true)
             {
                 Close();

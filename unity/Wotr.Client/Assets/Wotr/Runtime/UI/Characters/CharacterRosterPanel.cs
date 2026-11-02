@@ -40,6 +40,8 @@ namespace Wotr.Client
         private bool sovereignsOffered;
         // UI-391: a row's ability icon glows.
         private bool abilitiesOffered;
+        // UI-441: a character's skill can be used now.
+        private bool skillsOffered;
         private bool rosterAvailable;
         // UI-408: two rows a line unless the roster is too tall for the board in that form; decided per roster size and room.
         public const string WideClass = "roster-wide";
@@ -168,6 +170,7 @@ namespace Wotr.Client
             var offered = false;
             var available = false;
             var abilities = false;
+            var skills = false;
             foreach (var row in rows)
             {
                 var chosen = row.Key == Actions.EnteringFigure;
@@ -178,8 +181,10 @@ namespace Wotr.Client
                 available |= Actions.Available(row.Key);
                 row.Value.ShowVersion(OfferedVersion(row.Key, chosen, entry));
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
-                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
+                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die), view);
                 abilities |= row.Value.Abilities.Offered;
+                row.Value.ShowSkill(Actions.Skill(row.Key));
+                skills |= row.Value.SkillLit;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry, versions);
                 row.Value.Choose(chosen);
@@ -187,9 +192,12 @@ namespace Wotr.Client
             rosterOffered = offered;
             rosterAvailable = available;
             abilitiesOffered = abilities;
-            pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered);
+            skillsOffered = skills;
+            RunPulse();
             RefreshTab();
         }
+
+        private void RunPulse() => pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered || skillsOffered);
 
         // UI-438: the version a row shows while its entry is chosen or offered; empty for the row's own choice.
         private string OfferedVersion(string figure, bool chosen, bool entry)
@@ -200,14 +208,14 @@ namespace Wotr.Client
         }
 
         // UI-380 (owner): the Characters tab glows while the roster offers something — an entry, an action on a row, a
-        // king's decision — so the way to it is lit before the panel opens.
-        private void RefreshTab() => Tab.EnableInClassList("legal-target", rosterOffered || rosterAvailable || sovereignsOffered);
+        // king's decision — so the way to it is lit before the panel opens; UI-441: a character's skill usable now too.
+        private void RefreshTab() => Tab.EnableInClassList("legal-target", rosterOffered || rosterAvailable || sovereignsOffered || skillsOffered);
 
         // UI-345: a lit sovereign's portrait, attempt or tile pulses with the roster, in its one rhythm.
         public void OfferSovereigns(bool any)
         {
             sovereignsOffered = any;
-            pulse.Run(rosterOffered || sovereignsOffered || abilitiesOffered);
+            RunPulse();
             RefreshTab();
         }
 

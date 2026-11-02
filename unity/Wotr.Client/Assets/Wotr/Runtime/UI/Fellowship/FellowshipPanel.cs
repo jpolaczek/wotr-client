@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -87,6 +88,13 @@ namespace Wotr.Client
             roster.GuideChosen += id => GuideChosen?.Invoke(id);
             RegisterHover();
         }
+
+        // UI-441: the companions with a skill usable now glow on their portraits, and why (UsableSkills).
+        public void LightSkills(IReadOnlyDictionary<string, string> lines) => roster.LightSkills(lines);
+
+        public bool SkillUsable(string id) => roster.SkillUsable(id);
+
+        public Button PortraitButton(string id) => roster.Root.Q<Button>("fellowship-portrait-" + id);
 
         // UI-269: while the versions are chosen a portrait's click compares its two versions; otherwise it acts.
         private void Portrait(string id)

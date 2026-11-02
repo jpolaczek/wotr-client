@@ -92,7 +92,7 @@ moves to make room ("Figures on their places, sized with the map — UI-401" bel
 | Hover | `:hover` | base game Lightening |
 | Legal Source | `eligible-army` | ChoiceGlow halo behind the marker (UI-301): gold rim on a warm plate, pulsing |
 | Chosen Army | `selected-force` | Gold rim round the stand (UI-400); since UI-403 the chosen figures are lifted into the hand (rows below) |
-| Capacity owner | `ability-owner` | gold plinth without lifting and, since UI-374, the ChoiceGlow halo, pulsing |
+| Capacity owner | `ability-owner` | gold plinth without lifting and, since UI-374, the ChoiceGlow halo, pulsing; since UI-441 also the miniature of a character whose skill can be used now (or the force an Initial king leads), its tooltip leading with "Usable now: …" ([UX_SPEC](UX_SPEC.md#usable-skills-light-their-character--ui-441)) |
 | Pressing | `pressed` | principle UI-114 |
 | After the march | `moved` | extinguishing and sign ✓ on the stand |
 | Lifted, in place (UI-403) | `figure-hand-piece` `figure-lifted` (in `map-hand`) | The chosen figures — a force's units on a base of their own with the gold rim, each character on its stand — drawn by the same miniature at the same scale, 1.10 × round the feet and 12 px × scale higher; their contact shadow stays on the table at .8 and .35 opacity; opaque, never takes the pointer |

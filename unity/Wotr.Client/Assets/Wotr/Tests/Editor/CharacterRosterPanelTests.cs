@@ -204,7 +204,8 @@ namespace Wotr.EditorTests
             inspector.Abilities.Use += used.Add;
             inspector.Abilities.Usable(new[] { politics }, true, view);
             var chip = inspector.Root.Q<Button>("character-ability-" + printed.Id);
-            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "No die is chosen: nothing glows.");
+            // UI-441: the click uses the skill now, so the icon glows (and its character with it), no die chosen yet.
+            Assert.IsTrue(chip.ClassListContains(ChoiceGlow.ClassName), "The one die that can pay lights the icon.");
             Assert.IsFalse(ReadOnlyControl.Is(chip), "The one die that can pay makes the click useful.");
             StringAssert.EndsWith("\nClick to use your Muster die: Move the Dwarves one step toward war.", SkillTooltip.Plain(chip.tooltip));
             Assert.IsTrue(inspector.Abilities.Choose(chip.name));
@@ -214,6 +215,7 @@ namespace Wotr.EditorTests
             politics.Character.Dice.Add("army");
             inspector.Abilities.Usable(new[] { politics }, true, view);
             Assert.IsTrue(ReadOnlyControl.Is(chip), "Two different dice leave the choice to the player.");
+            Assert.IsFalse(chip.ClassListContains(ChoiceGlow.ClassName), "Nothing glows before the player's choice of die.");
             StringAssert.EndsWith("\n" + SkillUse.ChooseDie, SkillTooltip.Plain(chip.tooltip));
         }
 

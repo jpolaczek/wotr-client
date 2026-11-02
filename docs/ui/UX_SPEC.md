@@ -2835,7 +2835,8 @@ kept place (nothing on the window changes size any more).
   a one-click ability (the political steps, the messengers, Dwarvenking, Stewardship, Elvenking, Narya, Voice's upgrade)
   sends at once; a click-then-choose one (Call to Arms, Iron Guard, Mustering of the Mark, a variant's move or attack)
   starts its choice on the board, confirmed with the console's ✓ (UI-381). Before any die is chosen, an icon whose one
-  die (or identical dice) can pay (`CharacterDraft.UniformDie`) is clickable without the glow, its tooltip naming that
+  die (or identical dice) can pay (`CharacterDraft.UniformDie`) is clickable (since
+  [UI-441](#usable-skills-light-their-character--ui-441) it glows too), its tooltip naming that
   die, and its click takes the die and uses the skill (`ComponentActions.WithUniformDie`); with two different dice that
   could pay, the tooltip says "Choose an eligible die first". Every other icon is read only and its click does nothing: a
   passive ability, a triggered one (Take Them Alive!, Art of Disappearing), a reaction (used on the object that offers
@@ -2891,7 +2892,7 @@ Playtest (owner's checklist):
   line, each move badged; the move alone glows. Click it, then the Balrog's destination: he moves.
 - [ ] Saruman's Voice — a game with Saruman in Orthanc (Shadow): open his window before choosing a die. Expect: Voice's
   recruit and upgrade side by side, dimmed; hover: "Choose an eligible die first" (or, with one Muster die only, "Click
-  to use your Muster die: …" — a click then takes that die).
+  to use your Muster die: …" — a click then takes that die; since UI-441 both icons then glow, and Saruman with them).
 - [ ] A reaction — open the Witch-king's or Galadriel's window. Expect: Sorcerer or Nenya read only, its tooltip saying
   where it is used ("Offered in battle: click his portrait", "… click Nenya on the console").
 - [ ] Keyboard — Tab to an icon. Expect: a thin gold ring and the description at once; a mouse click leaves no ring.
@@ -2914,3 +2915,79 @@ icon and marker (`BattleContext`, `Interaction.uss`), Narya's activation (`Natio
 `KingsCards02Tests`, `KingsDecisionNetworkTests`, `FarSightedObjectTests`, `ExpansionDecisionNetworkTests`,
 `RulerTokenMenuTests`, `CharacterWindowLayoutTests`, `BattleArtTests`' Evil Knowledge part and the Fate, Ruler and Balrog
 parts of `CharacterRosterActionNetworkTests`.
+
+<a id="usable-skills-light-their-character--ui-441"></a>
+## A character whose skill can be used now lights up wherever it stands — UI-441 (2026-11-02)
+
+The owner, with a screenshot of the Characters panel (Gothmog's row unlit under On board) beside Gothmog's window (his
+two Fling Them into the Fray icons lit): "skill postaci jest mozliwy do uzycia ale nie powoduje to podswietlenia sie
+postaci, tylko samego skilla. upewnij sie ze zawsze podswietla sie postac jesli mozna w danym momencie uzyc jej skilla"
+— the character's skill could be used, yet only the skill lit, never the character; make sure the character always
+lights up whenever one of its skills can be used at that moment. (Fling is used on Gothmog's Reserve tokens, UI-271, so
+the roster, which left such abilities out, never lit him.)
+
+- **One rule** (`UsableSkills.Characters`, built once per refresh in `ComponentContextInteraction` from the turn's
+  `ComponentActions`). A character of the player's has a skill usable now exactly while one of its skill icons lights in
+  its window (`CharacterAbilityChips`): an action of the turn that uses one of the printed abilities of its current card
+  — its own command or a variant of it (`AbilityVariants`: Saruman's Voice, Gothmog's Fling, the Balrog's activation), a
+  Muster die's move or attack, Far-sighted, Narya; an ability used on its own object included (Gothmog's Reserve tokens,
+  the Balrog's figure) — offered with the chosen die or token, or, before any die is chosen, payable by the one die (or
+  identical dice) that can pay for it (`CharacterDraft.UniformDie`, `UsableSkills.UniformDie`). A reaction of the
+  character's offered to this player now counts too (a battle portrait's White Rider or Sorcerer, a Guide's Hunt
+  response — its Guide's when it names no source —, Gandalf the Grey's draw on his Guide portrait or its deck, Spear of
+  Terror, Nenya, He Sees, He Knows), named by the printed ability it uses (`AbilityArt.Printed`). Nothing counts while
+  another action is drafted, while a command is being sent, for an entry, for another version's ability or for the
+  opponent's characters.
+- **The window's icons follow the same rule.** UI-440 left an icon whose one die can pay clickable but dark; it now
+  glows (its click uses the skill), so the icon and its character light together, before any die is chosen as after.
+  The roster row's icons take the one die too and use the abilities used on their own objects, as the window's do. A
+  reaction's icon stays read only (UI-440): its character lights while the reaction is offered.
+- **Where the character lights**, each in its own pulse, with the shared light (no CSS filter; the pulses change
+  colours and opacity only; nothing is laid out in a geometry callback):
+  - its **Characters row** — the shared ChoiceGlow and the roster's pulse, as an offered entry (UI-240); its tooltip
+    leads in bright gold with why: "Usable now: Fling Them into the Fray · Click its glowing icon" (a reaction: "Usable
+    now: The White Rider · Click the glowing portrait in the battle window", `SkillReactionPlaces`);
+  - the **Characters tab** while some row is lit (`legal-target`, the edge tabs' pulse, UI-380);
+  - its **map miniature** (the ability-owner glow, UI-374/UI-402) — or, for an Initial king without a miniature, the force
+    he leads — pulsing with the map's choices; its tooltip leads with "Usable now: … · Click its glowing icon in
+    Characters" (`MapCanvas.LightSkills`, `MapCharacterFigures.LightSkills`; a figure is matched by its id or any of its
+    versions', so Gandalf the White's miniature lights for his row);
+  - its **Fellowship portrait** (a companion in the Fellowship) — ChoiceGlow with the roster's pulse; a portrait whose
+    click makes another choice now keeps that choice's words, and a portrait lit only for a skill opens the companion's
+    window on a click (`FellowshipContextInteraction`);
+  - a **king's portrait** among the Sovereigns — lit as a decision lights it (UI-274); its click opens his character
+    window, where the icon uses the skill, also for an Initial king (`SovereignPanel`);
+  - its **window's header** — a gilt rim on a warm plate behind the plate art and title (`character-header-glow`), shown
+    while the window shows the version in play, breathing in the window's one pulse with the lit icons (opacity only).
+  The light goes out with the last usable skill; every other light and colour is unchanged.
+- **Before any die is chosen** a character whose skill one die can pay is lit already, and so is the Characters tab: a
+  released die puts out the tabs it lit (UI-386), but the Characters tab stays lit while such a skill remains — Brand's
+  Call to Arms with the Ruler die as its only payer (`RulerTokenMenuTests.EveryLitTabGlowsAlike`).
+
+Tests: EditMode `UsableSkillsTests` (a one-click skill with its die, a die that pays nothing, the one die before any die
+is chosen vs two different dice, any variant of Voice lighting Saruman once, Gothmog's Fling on its Reserve tokens, the
+window's icon lit exactly while the rule names Gothmog with the die and with the one die, nothing while another action
+is drafted or a command is sent, entries, another version's ability and the opponent's characters, a reaction and its
+withdrawal, a Guide's Hunt response without a source and a card's reaction), `CharacterRosterPanelTests` (the one-die
+icon glows); PlayMode `RulerTokenMenuTests.EveryLitTabGlowsAlike` (the tab after the die's release) and
+`UsableSkillLightNetworkTests` on real seeds — Gothmog's Fling Them into the Fray
+(`t34-gothmog-upgrade`), Saruman's Voice (`ability-voice-recruit-full`), Gimli's Dwarf of Erebor (`ability-gimli`),
+Théoden's Mustering of the Mark after his Ruler token (`ui67-ruler`), Gandalf the Grey's draw (`grey`) and the White
+Rider (`white-rider`): before a die, with the skill's die, with a die that pays none of its skills and with the die
+released (or before and after the reaction), the window's icon and header, the Characters row and its tooltip, the
+rolled-up Characters tab (lit exactly while the panel holds a light), the map figure (`GlowingTargetChecks`: strong,
+pulsing, uncovered on screen), the king's and the Fellowship portraits glow exactly while the icon does (for a reaction,
+while it is offered); screenshots `ui441-<case>-row|tab|map|window|fellowship.png` and, for Gothmog under Reduced
+motion at 1920×1080 at 125 %, `ui441-gothmog-row|window|map-1920-1.25.png`.
+
+Playtest (owner's checklist):
+- [ ] The owner's case — Testing catalog `t34-gothmog-upgrade` (Shadow): click the Muster die. Expect: Gothmog's row
+  under On board glows and pulses (its tooltip: "Usable now: Fling Them into the Fray · Click its glowing icon"), the
+  Characters tab glows while the panel is rolled up, his figure in Minas Morgul glows, and his window's header glows
+  above his two lit Fling icons. Click a Character die instead: all of them go out together.
+- [ ] Before a die — the same game, no die chosen (one Muster die only). Expect: Fling's icons and Gothmog glow already;
+  a click on an icon takes the Muster die and uses it.
+- [ ] A reaction — `white-rider` (Free Peoples, the battle starts). Expect: Gandalf's row and his figure glow, the row's
+  tooltip saying "Click the glowing portrait in the battle window"; after the White Rider (or Pass) they go out.
+- [ ] A king — `ui67-ruler`: click Théoden's Ruler token. Expect: his row and his portrait among the Sovereigns glow;
+  a click on the portrait opens his window with Mustering of the Mark lit.

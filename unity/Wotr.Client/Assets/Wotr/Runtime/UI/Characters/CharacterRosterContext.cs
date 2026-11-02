@@ -21,6 +21,8 @@ namespace Wotr.Client
         private List<ComponentAction> components = new List<ComponentAction>();
         // UI-440: every action of the turn, an ability used on its own object included: the window's icons use it too.
         private List<ComponentAction> offered = new List<ComponentAction>();
+        // UI-441: the characters with a skill usable now (UsableSkills), lit wherever the panel draws them.
+        private IReadOnlyDictionary<string, UsableSkills.Skill> skills = UsableSkills.None;
         private PlayerView view;
         private TurnDraft draft;
         private VisualElement tray, dock;
@@ -58,10 +60,12 @@ namespace Wotr.Client
             dock = decisionDock;
         }
 
-        public void Apply(PlayerView latest, TurnDraft selection, IEnumerable<ComponentAction> choices, bool canEdit)
+        public void Apply(PlayerView latest, TurnDraft selection, IEnumerable<ComponentAction> choices, bool canEdit,
+            IReadOnlyDictionary<string, UsableSkills.Skill> usable = null)
         {
             view = latest;
             draft = selection;
+            skills = usable ?? UsableSkills.None;
             // UI-271: an ability used on its own object is not repeated as an inspector button.
             offered = choices.ToList();
             components = offered.Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
@@ -88,9 +92,15 @@ namespace Wotr.Client
         public bool Available(string id) => components.Any(item => item.Enabled && CharacterRosterActions.Row(view, item) == id);
 
         // UI-391: the actions of one roster row's version, for its ability icons; none while another action is drafted, as
-        // in the window (RefreshInspector).
+        // in the window (RefreshInspector). UI-441: an ability used on its own object (Gothmog's Reserve tokens, the
+        // Balrog's figure) lights its row's icon too, as it lights the window's.
         public IEnumerable<ComponentAction> RowActions(string id, string definition) => view == null || draft?.Kind != null
-            ? Enumerable.Empty<ComponentAction>() : CharacterRosterActions.For(view, id, definition, components);
+            ? Enumerable.Empty<ComponentAction>() : CharacterRosterActions.For(view, id, definition, offered);
+
+        // UI-441: this character's skills usable now, or null.
+        public UsableSkills.Skill Skill(string id) => skills.TryGetValue(id ?? "", out var skill) ? skill : null;
+
+        public bool AnySkill => skills.Count > 0;
 
         public bool Editable => enabled;
 
@@ -147,11 +157,16 @@ namespace Wotr.Client
             // entry) keep a button, and never one used on its own object (UI-271).
             var buttons = inspector.Abilities.Usable(choices, enabled, view)
                 .Where(item => !CharacterAbilityPlaces.OwnPlace(item)).ToList();
+            inspector.ShowSkill(CurrentVersion(inspector) ? Skill(inspector.FigureId) : null);
             actions.Apply(buttons, enabled);
             Present(actions.Root, buttons.Count > 0);
             Present(resume, DecisionFigure.Length > 0 && !active);
             Present(reaction, view != null && CharacterRosterActions.HasReaction(view, inspector.FigureId));
         }
+
+        // The window shows the version in play, whose skills the rule names.
+        private bool CurrentVersion(CharacterInspector inspector) => view != null && view.OwnCharacterRoster
+            .Any(row => row.FigureId == inspector.FigureId && row.CurrentDefinitionId.Length > 0 && row.CurrentDefinitionId == inspector.DefinitionId);
 
         private void Present(VisualElement element, bool visible)
         {

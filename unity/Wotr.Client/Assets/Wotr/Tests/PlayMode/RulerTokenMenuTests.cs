@@ -105,8 +105,12 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>("kings.die.fp.ruler"));
             await Task.Delay(600, token);
             Assert.AreEqual("", board.ActionDie.DieId, "The second click releases the die.");
-            foreach (var tab in tabs)
+            foreach (var tab in tabs.Take(2))
                 Assert.IsFalse(tab.ClassListContains("legal-target"), tab.name + " no longer glows.");
+            // UI-441 (owner): the Ruler die is still the one die that pays Brand's Call to Arms, so his skill can be used
+            // now (its icon's click takes the die) and the Characters tab keeps glowing exactly while that holds.
+            Assert.AreEqual(board.Characters.Actions.Skill("kings.sovereign.brand") != null, board.Characters.Tab.ClassListContains("legal-target"),
+                "The Characters tab glows exactly while a character's skill can be used.");
         }
 
         // UI-389 (owner's report): Thranduil's token lights all its uses at once — the Fellowship's move (its plaque and its

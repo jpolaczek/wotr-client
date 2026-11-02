@@ -12,6 +12,8 @@ namespace Wotr.Client
         private readonly Action<ComponentAction> select;
         // The components of the last refresh, for the contexts that place some of them on their objects (UI-271).
         public IReadOnlyList<ComponentAction> Current { get; private set; } = new List<ComponentAction>();
+        // UI-441: the characters with a skill usable now, built once per refresh and lit wherever they are drawn.
+        public IReadOnlyDictionary<string, UsableSkills.Skill> Skills { get; private set; } = UsableSkills.None;
 
         public ComponentContextInteraction(BoardScreen board, Action<ComponentAction> select)
         {
@@ -50,8 +52,24 @@ namespace Wotr.Client
             board.TableEffects.Draft(view, draft);
             var owned = components.Where(c => c.Enabled && idle).ToList();
             board.Map.HighlightOwners(owned.Select(c => c.Region), owned.Select(c => c.OwnerId));
-            board.Characters.Actions.Apply(view, draft, components, enabled);
+            Skills = UsableSkills.Characters(view, draft, components, enabled);
+            board.Characters.Actions.Apply(view, draft, components, enabled, Skills);
+            LightSkills(view);
         }
+
+        // UI-441 (owner): "the character always lights up whenever its skill can be used" — on the map (its miniature, or
+        // the force an Initial king leads), in the Fellowship panel and among the kings, as on its Characters row
+        // (CharacterRosterContext).
+        private void LightSkills(PlayerView view)
+        {
+            var kings = view.Sovereigns.Select(king => king.Id).ToList();
+            board.Map.LightSkills(UsableSkills.Lines(view, Skills, view.Characters.Select(c => c.Id).Concat(kings), MapSkillHint));
+            board.Fellowship.LightSkills(UsableSkills.Lines(view, Skills, view.OwnCompanions.Select(c => c.Id), PortraitSkillHint));
+            board.Sovereigns.LightSkills(UsableSkills.Lines(view, Skills, kings, PortraitSkillHint));
+        }
+
+        public const string MapSkillHint = "Click its glowing icon in Characters";
+        public const string PortraitSkillHint = "Click to use it in the character's window";
 
         public void Dispose()
         {

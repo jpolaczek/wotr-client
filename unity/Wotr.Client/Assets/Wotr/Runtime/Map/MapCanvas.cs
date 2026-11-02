@@ -71,6 +71,8 @@ namespace Wotr.Client
         private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
+        // UI-441: the characters with a skill usable now, and why; an Initial king among them glows on the force he leads.
+        private IReadOnlyDictionary<string, string> skillLines = new Dictionary<string, string>();
         private readonly Dictionary<(string, Side, bool), MapArmyStand> markers = new Dictionary<(string, Side, bool), MapArmyStand>();
         private readonly List<(string, Side, bool)> obsolete = new List<(string, Side, bool)>();
         // UI-334: armies that appeared or grew in the last sync; they flare and emerge on the next frame unless a flight
@@ -542,7 +544,8 @@ namespace Wotr.Client
 
         // UI-374: the lit sources and the owners of a figure's ability pulse together; UI-402: so do the choosable
         // characters.
-        private void RunArmyPulse() => armyPulse.Run(eligibleSources.Count > 0 || ownerRegions.Count > 0 || Characters.AnyEligible);
+        private void RunArmyPulse() => armyPulse.Run(eligibleSources.Count > 0 || ownerRegions.Count > 0 || Characters.AnyLit ||
+            markers.Values.Any(marker => SkillKing(marker) != null));
 
         // UI-402: a context that lights a figure's chip lights its miniature too.
         private void ShowChoices()
@@ -612,11 +615,36 @@ namespace Wotr.Client
             ownerRegions.Clear();
             ownerRegions.UnionWith(regions);
             foreach (var marker in markers.Values)
-                marker.Button.EnableInClassList("ability-owner", ownerRegions.Contains(marker.Army.RegionId));
+                ApplyOwner(marker);
             Characters.HighlightOwners(figures ?? Enumerable.Empty<string>());
             RunArmyPulse();
             Redraw();
         }
+
+        // UI-441 (owner): "the character always lights up whenever its skill can be used now": its miniature glows (the
+        // ability-owner glow) and its tooltip says why; an Initial king, drawn as a crown on the force he leads, lights that
+        // force. lines: the characters' ids and why each glows.
+        public void LightSkills(IReadOnlyDictionary<string, string> lines)
+        {
+            var next = lines ?? new Dictionary<string, string>();
+            if (next.Count == skillLines.Count && next.All(pair => skillLines.TryGetValue(pair.Key, out var line) && line == pair.Value))
+                return;
+            skillLines = next;
+            Characters.LightSkills(skillLines);
+            foreach (var marker in markers.Values)
+            {
+                ApplyOwner(marker);
+                ApplySovereignHint(marker);
+            }
+            RunArmyPulse();
+        }
+
+        // The Initial king with a usable skill this force holds, who has no miniature of his own; null.
+        private string SkillKing(MapArmyStand marker) => skillLines.Count == 0 ? null
+            : marker.Army.SovereignIds.FirstOrDefault(id => skillLines.ContainsKey(id) && Characters.Find(id) == null);
+
+        private void ApplyOwner(MapArmyStand marker) =>
+            marker.Button.EnableInClassList("ability-owner", ownerRegions.Contains(marker.Army.RegionId) || SkillKing(marker) != null);
 
         // The forces whose units the unsent moves take, and (UI-402) the characters they take, each on its own miniature.
         internal void ShowDraftSources(PlayerView view, TurnDraft draft)
@@ -726,6 +754,7 @@ namespace Wotr.Client
                 else if (Animated() && army.Total < before)
                     Later(shrinking, marker);
                 marker.Button.EnableInClassList(MapArmyArtwork.MovedClass, marched.Contains(key));
+                ApplyOwner(marker);
                 ApplySovereignHint(marker);
             }
             foreach (var key in obsolete)
@@ -788,7 +817,8 @@ namespace Wotr.Client
             var king = LitSovereign(marker);
             var description = ArmyMarkerText.Describe(marker.Army, Data.Regions[marker.Army.RegionId].Name);
             var offer = forceOffers.TryGetValue(marker.Army.RegionId, out var text) ? text : "";
-            marker.Button.tooltip = TooltipText.Lines(king != null ? sovereignHint(king) : "", offer, description);
+            var skill = SkillKing(marker) is { } owner ? skillLines[owner] : "";
+            marker.Button.tooltip = TooltipText.Lines(king != null ? sovereignHint(king) : "", skill, offer, description);
             marker.Button.EnableInClassList(SovereignTargetClass, king != null);
         }
 

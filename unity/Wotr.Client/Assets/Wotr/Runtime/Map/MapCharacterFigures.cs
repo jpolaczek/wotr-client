@@ -24,6 +24,8 @@ namespace Wotr.Client
         private readonly List<MapCharacterStand> leaving = new List<MapCharacterStand>();
         private readonly HashSet<string> drafted = new HashSet<string>();
         private readonly HashSet<string> owners = new HashSet<string>();
+        // UI-441: the characters with a skill usable now, and why (UsableSkills).
+        private IReadOnlyDictionary<string, string> skills = new Dictionary<string, string>();
         private readonly HashSet<string> selectedRegions = new HashSet<string>();
         private FigureChoices choices = new FigureChoices();
         private Func<string, string> sovereignHint = _ => null;
@@ -35,6 +37,9 @@ namespace Wotr.Client
         }
 
         public bool AnyEligible => stands.Values.Any(stand => !stand.Stacked && Lit(stand, choices.Eligible));
+
+        // Some shown miniature glows: choosable, or the owner of an ability a click uses, or (UI-441) of a usable skill.
+        public bool AnyLit => AnyEligible || stands.Values.Any(stand => !stand.Stacked && Owner(stand));
 
         public MapCharacterStand Find(string id) => stands.TryGetValue(id, out var stand) ? stand : null;
 
@@ -154,6 +159,15 @@ namespace Wotr.Client
             ShowStates();
         }
 
+        // UI-441 (owner): the characters with a skill usable now glow on their miniatures, and their tooltips say why.
+        public void LightSkills(IReadOnlyDictionary<string, string> lines)
+        {
+            skills = lines;
+            ShowStates();
+        }
+
+        public bool HasSkill(string id) => skills.ContainsKey(id);
+
         // Whether a region holds a selected character, so it shows figures (kept with the states, read every frame).
         public bool HoldsSelected(string region) => selectedRegions.Contains(region);
 
@@ -187,9 +201,17 @@ namespace Wotr.Client
             var king = LitSovereign(stand);
             var region = map.Data.Regions.TryGetValue(stand.Region, out var definition) ? definition.Name : stand.Region;
             var description = ArmyMarkerText.Describe(stand.Figure, region);
-            stand.Button.tooltip = king != null ? sovereignHint(king) + "\n" + description : description;
+            var tooltip = TooltipText.Lines(king != null ? sovereignHint(king) : "", SkillLine(stand), description);
+            if (stand.Button.tooltip != tooltip)
+                stand.Button.tooltip = tooltip;
             stand.Button.EnableInClassList(MapCanvas.SovereignTargetClass, king != null);
         }
+
+        // Why a figure of the stand glows for its skill (the front's, or one stacked behind it); "".
+        private string SkillLine(MapCharacterStand stand) =>
+            stand.Members.Select(member => skills.TryGetValue(member.Id, out var line) ? line : "").FirstOrDefault(line => line.Length > 0) ?? "";
+
+        private bool Owner(MapCharacterStand stand) => stand.Members.Any(m => owners.Contains(m.Id) || skills.ContainsKey(m.Id));
 
         // A stacked pair shows the state of any figure in it: lit when one of them is, marched when all of them are.
         private void ShowState(MapCharacterStand stand)
@@ -203,7 +225,7 @@ namespace Wotr.Client
             button.EnableInClassList(MapCharacterArtwork.EligibleClass, Lit(stand, choices.Eligible));
             button.EnableInClassList(MapCharacterArtwork.SelectedClass, selected);
             button.EnableInClassList(MapArmyArtwork.MovedClass, stand.Members.All(m => choices.Moved(m.Id)));
-            button.EnableInClassList("ability-owner", stand.Members.Any(m => owners.Contains(m.Id)));
+            button.EnableInClassList("ability-owner", Owner(stand));
             ApplySovereignHint(stand);
         }
 
