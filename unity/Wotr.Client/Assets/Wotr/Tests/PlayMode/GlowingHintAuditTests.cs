@@ -329,16 +329,17 @@ namespace Wotr.PlayTests
             });
         }
 
-        // Base Scouts (UI-432): the battle's region and the retreat regions light on the map.
+        // Base Scouts (UI-432): the battle's region and the retreat regions light on the map. UI-435: at 1920 × 1080 at 125 %
+        // the window's middle place covered Helm's Deep and the console hid it; the window now keeps to the middle's top
+        // and the camera brings both regions into the strip below it, in both layouts.
         private static async Task Scouts()
         {
             using var room = await Connect("strategy-scouts", ScenarioKind.CardPack, openPanels: false);
             var client = room.Fp;
             var region = client.Board.View.Battle.RegionId;
-            // At 1920 × 1080 at 125 % the battle window's default place covers Helm's Deep, and the map cannot pan its west
-            // edge past the screen to clear it: a limit left as it is (UX_SPEC, UI-434), so this case is checked at 1366 × 768.
-            await AuditAt(new[] { (1366, 1f) }, room, client, "scouts", "to withdraw into its stronghold, or a lit region to retreat", () =>
+            await AuditAt(Layouts, room, client, "scouts", "to withdraw into its stronghold, or a lit region to retreat", () =>
             {
+                Assert.IsTrue(client.Board.Battles.IsOpen, "The battle window stays open.");
                 GlowingTargetChecks.AssertRegionOffered(client.Board, region);
                 GlowingTargetChecks.AssertRegionOffered(client.Board, "fords-of-isen");
                 return Task.CompletedTask;

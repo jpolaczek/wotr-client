@@ -436,6 +436,10 @@ decision controls ([OPPONENT_ACTIONS_UX §6.15](OPPONENT_ACTIONS_UX.md#wdrozone-
 
 Owner's decision: this window opens centred in the board's middle, between the top bar and the console and between the side columns, in every phase; a position the player dragged it to wins ([IN_GAME_UX](IN_GAME_UX.md#okna-na-srodku--ui-324)).
 
+Since [UI-435](UX_SPEC.md#a-battle-window-keeps-its-lit-regions-clear--ui-435) a decision whose lit map regions the
+window or the HUD hides moves the window to the middle's top or bottom edge, away from them, and the view brings them into
+the strip it leaves, once per decision and map size.
+
 <a id="wstega--ui-327"></a>
 ## The stage marker glides — UI-327 (2026-10-25)
 

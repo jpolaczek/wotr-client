@@ -497,6 +497,22 @@ namespace Wotr.Client
             Refresh();
         }
 
+        // UI-435: whether the region's anchor shows on the screen with nothing over it (the top bar, the console, a panel or
+        // a window).
+        public bool Uncovered(string region)
+        {
+            if (!Data.Shapes.TryGetValue(region, out var shape))
+                return true;
+            var point = Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1]));
+            if (!new Rect(Vector2.zero, contentRect.size).Contains(point))
+                return false;
+            return !(Occlusions?.Invoke() ?? Enumerable.Empty<Rect>()).Any(cover => cover.Contains(point));
+        }
+
+        // UI-435: the screen point (map-local) a region's anchor shows at.
+        public Vector2 AnchorOnScreen(string region) => Data.Shapes.TryGetValue(region, out var shape)
+            ? Camera.ToScreen(new Vector2(shape.Anchor[0], shape.Anchor[1])) : contentRect.center;
+
         // The largest part of the map that nothing covers, in map-local points (SafeMapArea).
         private Rect FreeArea() =>
             SafeMapArea.Largest(new Rect(Vector2.zero, contentRect.size), Occlusions?.Invoke() ?? Enumerable.Empty<Rect>());

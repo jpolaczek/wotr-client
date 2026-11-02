@@ -15,6 +15,8 @@ namespace Wotr.Client
         // UI-392: the settlement chosen for an ability's recruitment while it waits for its figure (a pulsing gold edge).
         public HashSet<string> ChosenRegions { get; } = new HashSet<string>();
         private string endpoint = "";
+        // UI-435: the lit targets were drawn again (the battle window keeps them clear of itself).
+        public event System.Action Applied;
 
         public MapDraftOverlay(MapCanvas map) => this.map = map;
 
@@ -112,6 +114,7 @@ namespace Wotr.Client
             UpdateSourceRegions(view, draft);
             map.ShowDraftSources(view, draft);
             map.Refresh();
+            Applied?.Invoke();
         }
 
         // UI-323 (owner request): where the selected force stands — an army's march or attack, a group's journey origin, an

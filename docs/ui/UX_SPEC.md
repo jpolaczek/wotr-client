@@ -2453,7 +2453,7 @@ Inventory (verdict before UI-434; Audit = PlayMode `GlowingHintAuditTests` on th
 | "Click a lit Nazgûl, then where it flies" (`NazgulFlightDraft`) | base | the lit Nazgûl | map | STRONG glow; HIDDEN at 1920×1080 at 125 % (Barad-dûr beyond the screen's edge) | the view comes to them once (`NazgulFlightInteraction`) · Audit `shadow-strike` |
 | The other map figures ("Balrog's glowing army", "a lit army", "a lit companion", "a lit figure") | base; Balrog expansions (Lords) | army and character stands | map | STRONG: the map's choice glow and pulse | — · `LordsCharacterNetworkTests`, `CompanionJourneyMapTests`, `BoardDrawnOptionsTests` |
 | "Choose/click a highlighted/lit region, destination, settlement", red attack regions, Work of the Enemy's lit region, Monsters Roused's halves | base; Kings, Fate | regions | map | STRONG: the map's target glow pulsing | — · Audit `kings-enemy-army`, `fate-monsters` |
-| "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat" (`ScoutsShelter`), "Choose a highlighted retreat region." | base | the battle region; the retreat regions | map, beside the battle window | STRONG at 1366×768; HIDDEN at 1920×1080 at 125 % (under the battle window) | left: see the limits · Audit `strategy-scouts` at 1366×768 |
+| "Click Helm's Deep to withdraw into its stronghold, or a lit region to retreat" (`ScoutsShelter`), "Choose a highlighted retreat region." | base | the battle region; the retreat regions | map, beside the battle window | STRONG at 1366×768; at 1920×1080 at 125 % HIDDEN until UI-435 (under the battle window and the console) | the window keeps to the middle's top and the view brings both regions below it ([UI-435](#a-battle-window-keeps-its-lit-regions-clear--ui-435)) · Audit `strategy-scouts` in both layouts |
 | "Click the glowing field army or garrison in the region's panel", "Click a lit region, then its lit figure(s)" | base; Kings | force sections; figures | region panel | STRONG (UI-251, UI-431) | — · `BoardDrawnOptionsTests` |
 | "Click a glowing tile beside the king", "Click the glowing king …", "Click a glowing king, by his portrait or on the map / in the battle window's army", "Click the attempt button beside a king in the Characters panel" | expansions (Kings) | portraits, attempt buttons, tiles; map markers; battle kings | Characters panel (tab lit, UI-380); map; battle window | STRONG (UI-274, UI-345, UI-411) | — · `SovereignPanelNetworkTests`, `ExpansionCorruptionNetworkTests` |
 | "Click a glowing nation token in Politics", "a glowing nation token to activate and advance it" (`KingsCardChoices`) | expansions (Kings) | Shadow or Free nations' tokens | Politics panel (tab lit) | STRONG (UI-423) | — · `KingsBranchNetworkTests`; Audit `ui09-council-politics` (same tokens) |
@@ -2464,10 +2464,10 @@ Inventory (verdict before UI-434; Audit = PlayMode `GlowingHintAuditTests` on th
 | "Choose what this die acts on: the highlighted map, cards and panels", "Choose a highlighted object …", "Select the highlighted …, then confirm" (`DecisionObjects`) | base | a die's uses; a window's choices | each object's family | per family (UI-136, UI-389) | — |
 
 Limits left as they are:
-- *A floating window over a lit region.* At 1920×1080 at 125 % the battle window's default place covers Helm's Deep,
-  which Scouts asks to click, and the console the rest of it; the map cannot pan its west edge past the screen to clear
-  it, so a camera move does not help. At 1366×768 the region shows below the window. The window moves by its header and
-  closes, as before; placing windows away from lit regions is a layout change of its own.
+- *A floating window over a lit region* — resolved by [UI-435](#a-battle-window-keeps-its-lit-regions-clear--ui-435)
+  for the battle window. At 1920×1080 at 125 % its middle place covered Helm's Deep, which Scouts asks to click, and the
+  console the rest of it; the map cannot pan its west edge past the screen, so only the window's move to the middle's
+  top together with a camera move into the strip below it clears the region.
 - *A window's generic console line.* While a decision lives in a window (the siege extension, Nenya's tile), the console
   reads "Select the highlighted choices, then confirm." and the window's tray names the object; both objects glow.
 - *A hand card over the decks.* A hand card that slid under the pointer stands expanded over the decks until the pointer
@@ -3210,3 +3210,32 @@ Tests: PlayMode `CharacterRosterLayoutTests` (both seats, 1366 and 1920, 100 % a
 inside the board, apart, every button whole and uncovered; `ui66-roster-*`), `CharacterRosterPanelNetworkTests`,
 `CharacterWindowLayoutTests`, `LeftRailLayoutTests`, `LayoutStressScenarioTests`, `RulerTokenMenuTests` (two a line
 where they fit).
+
+<a id="a-battle-window-keeps-its-lit-regions-clear--ui-435"></a>
+## A battle window keeps its lit regions clear — UI-435 (2026-11-02)
+
+Found by UI-434's audit, fixed at the owner's request (layout audit item 9): with Scouts the battle window's middle place
+(UI-324) covered Helm's Deep — the region whose click withdraws into the siege — at 1920 × 1080 at 125 %, and the
+console hid what the window left; the map cannot pan its west edge past the screen, so neither a camera move nor the
+window's move alone cleared it.
+
+- **The rule** (`RegionalBattlePanel.KeepClear`, after the draft's lights are drawn, `MapDraftOverlay.Applied`, and on a
+  map size change): once per decision and map size, when a region the decision lights (`DraftOverlay.Targets` and
+  `AttackTargets`) has its anchor under the window or the HUD (`MapCanvas.Uncovered`: outside the screen or inside one
+  of the map's occlusions), the window keeps to the middle's top edge when the lit regions lie below the board's centre
+  (otherwise its bottom edge), still centred across the middle (`FloatingWindow.Flush`), and once it stands there the
+  view brings the lit regions into the free strip it leaves (`MapCanvas.Reveal`). While that decision lasts, a camera
+  move keeps the window at that edge instead of re-centring it.
+- **Unchanged:** a decision whose lit regions all show opens the window in the middle, as before; a window the player
+  dragged keeps its place (only the view moves); a new decision returns to the middle; nothing moves for a battle
+  without lit regions (UI-149's incoming battle neither opens nor pans).
+
+Playtest (owner's checklist):
+- [ ] Scouts — seeded `strategy-scouts` (the Free Peoples), Windowed 1920 × 1080 at 125 %. Expect: the battle window at
+  the top of the board's middle, Helm's Deep and Fords of Isen lit in the strip below it, above the console; Helm's
+  Deep's click withdraws into the siege. At 1366 × 768 the window opens in the middle as before.
+- [ ] In the same battle drag the window by its header anywhere: it stays where you put it (the next decision too).
+
+Tests: PlayMode `GlowingHintAuditTests.ScoutsBattleRegionAndRetreatAreLitOnScreen` (both layouts: the window open,
+Helm's Deep and Fords of Isen lit with exposed terrain; `ui434-scouts-*`), `BattleLayoutTests`,
+`BattleWindowNetworkTests`, `BoardRuleDeclineTests`, `Strategy01NetworkTests`, `FloatingWindowTests`.
