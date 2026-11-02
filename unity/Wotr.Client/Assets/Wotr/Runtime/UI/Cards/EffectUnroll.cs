@@ -37,14 +37,29 @@ namespace Wotr.Client
                 card.Root.RemoveFromHierarchy();
             text.text = isCard ? "" : string.Join("\n", source.Effects.Select(e => e.Description).Where(d => !string.IsNullOrEmpty(d)).Distinct());
             text.style.display = isCard ? DisplayStyle.None : DisplayStyle.Flex;
-            var tile = host.WorldToLocal(entry.Root.worldBound);
             var area = host.WorldToLocal(list.worldBound);
             Root.style.left = area.xMin;
             Root.style.width = area.width;
-            Root.style.top = tile.yMax + 2;
+            Place(entry, host);
             Root.style.display = DisplayStyle.Flex;
             Root.BringToFront();
             Root.Query<VisualElement>().ForEach(element => element.pickingMode = PickingMode.Ignore);
+        }
+
+        // UI-424: a tile in the board's upper half unrolls its text downward, one in the lower half upward from above the
+        // tile, so the text never runs under the bottom row of a panel that stands low or is full.
+        private void Place(EffectEntry entry, VisualElement host)
+        {
+            var tile = host.WorldToLocal(entry.Root.worldBound);
+            var stage = host.parent;
+            if (stage == null || entry.Root.worldBound.center.y < stage.worldBound.center.y)
+            {
+                Root.style.top = tile.yMax + 2;
+                Root.style.bottom = StyleKeyword.Null;
+                return;
+            }
+            Root.style.top = StyleKeyword.Null;
+            Root.style.bottom = host.layout.height - tile.yMin + 2;
         }
 
         public void Hide()

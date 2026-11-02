@@ -14,8 +14,14 @@ namespace Wotr.Client
         private string inspectTooltip = "";
         // UI-430: why an effect offers this card's discard now (its tile's and its ×'s tooltip), or "".
         private string offer = "";
+        // UI-424: the grid the entry stands in, and its title's words measured once per text (null until measured).
+        private EffectsGridArrangement arrangement = EffectsGridArrangement.Regular;
+        private EffectTitleFit fit;
+        private FontDefinition measuredFont;
+        private float fittedSize;
+        private readonly IVisualElementScheduledItem measuring;
 
-        // UI-94: a click selects the source; its details, including a card's complete text, open below the list.
+        // UI-94: a click selects the source; its details, including a card's complete text, open beside the list (UI-424).
         // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll).
         public EffectEntry(EffectSource source, Action<EffectSource, bool> inspect, Action<string> remove,
             Action<EffectEntry, bool> hover)
@@ -49,6 +55,59 @@ namespace Wotr.Client
             Root.RegisterCallback<PointerLeaveEvent>(_ => hover(this, false));
             title.RegisterCallback<FocusInEvent>(_ => hover(this, true));
             title.RegisterCallback<FocusOutEvent>(_ => hover(this, false));
+            // UI-424: the words are measured once the title has its style, outside layout callbacks.
+            measuring = title.schedule.Execute(MeasureTitle);
+            measuring.Pause();
+            title.RegisterCallback<AttachToPanelEvent>(_ => RequestMeasure());
+            title.RegisterCallback<GeometryChangedEvent>(_ => RequestMeasure());
+        }
+
+        // UI-424: the entry's size, its title's height and type follow the grid's arrangement; the title fits its tile.
+        public void Arrange(EffectsGridArrangement next)
+        {
+            arrangement = next;
+            Root.style.width = next.EntryWidth;
+            Root.style.height = next.EntryHeight;
+            Root.style.marginBottom = next.RowGap;
+            title.style.height = next.TitleHeight;
+            FitTitle();
+        }
+
+        // A title measured before its style was resolved (another font) is measured again.
+        private void RequestMeasure()
+        {
+            if (fit != null && !measuredFont.Equals(title.resolvedStyle.unityFontDefinition))
+                fit = null;
+            if (fit == null && title.panel != null)
+                measuring.ExecuteLater(0);
+        }
+
+        private void MeasureTitle()
+        {
+            var size = title.resolvedStyle.fontSize;
+            if (fit != null || title.panel == null || float.IsNaN(size) || size <= 0)
+                return;
+            var runs = EffectTitleFit.Measure(EffectTitleFit.Split(title.text), TextWidth);
+            fit = new EffectTitleFit(runs, TextHeight("A"), TextHeight("A\nA"), size);
+            measuredFont = title.resolvedStyle.unityFontDefinition;
+            FitTitle();
+        }
+
+        private float TextWidth(string text) =>
+            title.MeasureTextSize(text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+
+        private float TextHeight(string text) =>
+            title.MeasureTextSize(text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).y;
+
+        // The arrangement's type size, or the largest smaller one whose wrap fits the tile (EffectTitleFit).
+        private void FitTitle()
+        {
+            var width = arrangement.TitleTextWidth(removal.style.display == DisplayStyle.Flex, title.ClassListContains("effect-card-tile"));
+            var size = fit?.Size(arrangement.TitleSize, width, arrangement.TitleTextHeight) ?? arrangement.TitleSize;
+            if (Mathf.Approximately(size, fittedSize))
+                return;
+            fittedSize = size;
+            title.style.fontSize = size;
         }
 
         // UI-288: a card is a small parchment card, as in the hand, with the symbol printed on its corner.
@@ -63,9 +122,14 @@ namespace Wotr.Client
         public void Apply(EffectSource source)
         {
             Source = source;
-            title.text = source.Title;
-            inspectTooltip = source.Kind == "Ability" ? "Show this public ability below"
-                : CardLibrary.Cards.ContainsKey(source.SourceId) ? "Show the complete Event and Combat text below" : "Show this effect below";
+            if (title.text != source.Title)
+            {
+                title.text = source.Title;
+                fit = null;
+                RequestMeasure();
+            }
+            inspectTooltip = source.Kind == "Ability" ? "Show this public ability beside the list"
+                : CardLibrary.Cards.ContainsKey(source.SourceId) ? "Show the complete Event and Combat text beside the list" : "Show this effect beside the list";
             title.tooltip = TitleTooltip();
             owner.text = source.Owner == Wotr.Contracts.Side.FreePeoples ? "FP ◆" : "SH ◆";
             owner.tooltip = BoardScreen.SideName(source.Owner);
@@ -80,6 +144,7 @@ namespace Wotr.Client
             removal.tooltip = action == null ? "" : "Remove " + Source.Title + " · " + EffectsPresentation.RemovalCost(view, action) +
                 (action.Enabled ? "" : " Select an eligible die.");
             title.EnableInClassList("legal-target", action?.Enabled == true);
+            FitTitle();
         }
 
         // UI-214: a card's effect offers this source (The Nazgûl Strike! discards a table card); its × chooses it. UI-430
@@ -93,6 +158,7 @@ namespace Wotr.Client
             title.EnableInClassList("legal-target", false);
             title.EnableInClassList(TableEffectsView.DiscardClass, enabled);
             title.tooltip = TitleTooltip();
+            FitTitle();
         }
 
         private void WithdrawOffer()

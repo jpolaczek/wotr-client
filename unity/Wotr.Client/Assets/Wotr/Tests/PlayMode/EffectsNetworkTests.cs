@@ -48,7 +48,7 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Protection));
             await room.Settle();
             Assert.AreSame(actor.Board.TableEffects.DecisionHost, actor.Board.Tray.parent);
-            Assert.AreEqual(DisplayStyle.None, actor.Board.TableEffects.Root.Q("effect-card").resolvedStyle.display,
+            Assert.AreEqual(DisplayStyle.None, actor.Board.TableEffects.Details.Q("effect-card").resolvedStyle.display,
                 "UI-94: paying for a removal leaves the room to the decision.");
             StringAssert.Contains("one Army Event and one Character Event", actor.Board.TableEffects.Root.Q<Label>("effect-removal-cost").text);
             Assert.IsFalse(actor.Board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
@@ -139,7 +139,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual("Effect ended", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
             Assert.IsNull(observer.Board.TableEffects.Root.Q<Button>("effect-source-" + Wormtongue));
             AssertCardInPanel(observer.Board, Wormtongue);
-            Assert.IsTrue(observer.Board.TableEffects.Root.Q("effect-card").ClassListContains("effect-card-ended"));
+            Assert.IsTrue(observer.Board.TableEffects.Details.Q("effect-card").ClassListContains("effect-card-ended"));
             await Reconnect(room, observer);
             Assert.AreEqual("Effect ended", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
             AssertCardInPanel(observer.Board, Wormtongue);
@@ -221,13 +221,14 @@ namespace Wotr.PlayTests
             Assert.IsFalse(actor.Board.TableEffects.IsOpen, "A legal movement target must not open Effects.");
         }
 
-        // UI-94: a card source is read at the bottom of the Effects panel, never in a separate card window.
+        // UI-94: a card source is read in the Effects panel's details, never in a separate card window; UI-424: the details
+        // stand on their own card beside the panel, above the bottom bar.
         internal static void AssertCardInPanel(BoardScreen board, string id)
         {
             var card = CardLibrary.Cards[id];
             Assert.IsEmpty(board.Cards.CardId, "No separate card window.");
             Assert.AreEqual(DisplayStyle.None, board.Cards.Root.resolvedStyle.display);
-            var block = board.TableEffects.Root.Q("effect-card");
+            var block = board.TableEffects.Details.Q("effect-card");
             Assert.IsNotNull(block);
             Assert.AreEqual(card.Event, block.Q<Label>("effect-card-event").text);
             Assert.AreEqual(CardTextFormat.Kind(card), block.Q<Label>("effect-card-kind").text);
@@ -235,11 +236,14 @@ namespace Wotr.PlayTests
             if (card.HasCombat)
                 Assert.AreEqual(card.Combat, block.Q<Label>("effect-card-combat-text").text);
             Assert.That(block.resolvedStyle.backgroundImage.texture?.name, Does.StartWith("parchment"));
-            var panel = board.TableEffects.Root.worldBound;
-            Assert.LessOrEqual(block.worldBound.yMax, panel.yMax + 1, "The card text fits in the panel.");
-            Assert.LessOrEqual(panel.yMax, board.TableEffects.Root.parent.worldBound.yMax + 1, "The panel stays above the bottom bar.");
-            Assert.GreaterOrEqual(block.worldBound.xMin, panel.xMin - 1);
-            Assert.LessOrEqual(block.worldBound.xMax, panel.xMax + 1);
+            var details = board.TableEffects.Details.worldBound;
+            Assert.LessOrEqual(block.worldBound.yMax, details.yMax + 1, "The card text fits in the details.");
+            Assert.GreaterOrEqual(block.worldBound.xMin, details.xMin - 1);
+            Assert.LessOrEqual(block.worldBound.xMax, details.xMax + 1);
+            var stage = board.TableEffects.Root.parent.worldBound;
+            Assert.LessOrEqual(board.TableEffects.Root.worldBound.yMax, stage.yMax + 1, "The panel stays above the bottom bar.");
+            Assert.LessOrEqual(details.yMax, stage.yMax + 1, "The details stay above the bottom bar.");
+            Assert.GreaterOrEqual(details.xMin + 1, board.TableEffects.Root.worldBound.xMax, "The details stand beside the panel.");
         }
 
         private static async Task Open(MatchTestRoom room, MountedMatchClient actor)
