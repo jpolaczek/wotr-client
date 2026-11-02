@@ -58,6 +58,9 @@ namespace Wotr.Client
         private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
         private readonly HashSet<string> ownerRegions = new HashSet<string>();
+        // UI-441: the forces holding a character with a skill usable now, and why.
+        public const string SkillOwnerClass = "skill-owner";
+        private IReadOnlyDictionary<(string, Side, bool), string> skillForces = new Dictionary<(string, Side, bool), string>();
         private readonly Dictionary<(string, Side, bool), Marker> markers = new Dictionary<(string, Side, bool), Marker>();
         private readonly List<(string, Side, bool)> obsolete = new List<(string, Side, bool)>();
         // UI-334: armies that appeared or grew in the last sync; they flare and emerge on the next frame unless a flight
@@ -445,7 +448,7 @@ namespace Wotr.Client
                 sourceRegions.Add(source.Item1);
             foreach (var marker in markers.Values)
                 marker.Button.EnableInClassList("eligible-army", eligibleSources.Contains((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison)));
-            armyPulse.Run(eligibleSources.Count > 0);
+            RunArmyPulse();
             Redraw();
         }
 
@@ -504,9 +507,35 @@ namespace Wotr.Client
             ownerRegions.Clear();
             ownerRegions.UnionWith(regions);
             foreach (var marker in markers.Values)
-                marker.Button.EnableInClassList("ability-owner", ownerRegions.Contains(marker.Army.RegionId));
+                ApplyOwner(marker);
             Redraw();
         }
+
+        // UI-441 (owner): "the character always lights up whenever its skill can be used now": the force it stands in
+        // wears the ability owner's plinth and the shared halo, pulsing with the map's choices, and its tooltip says why.
+        // forces: the forces (region, side, garrison) and why each glows.
+        public void LightSkills(IReadOnlyDictionary<(string, Side, bool), string> forces)
+        {
+            var next = forces ?? new Dictionary<(string, Side, bool), string>();
+            if (next.Count == skillForces.Count && next.All(pair => skillForces.TryGetValue(pair.Key, out var line) && line == pair.Value))
+                return;
+            skillForces = next;
+            foreach (var marker in markers.Values)
+            {
+                ApplyOwner(marker);
+                marker.Button.tooltip = MarkerTooltip(marker.Army);
+            }
+            RunArmyPulse();
+        }
+
+        private void ApplyOwner(Marker marker)
+        {
+            var skill = skillForces.ContainsKey((marker.Army.RegionId, marker.Army.Side, marker.Army.Garrison));
+            marker.Button.EnableInClassList("ability-owner", ownerRegions.Contains(marker.Army.RegionId) || skill);
+            marker.Button.EnableInClassList(SkillOwnerClass, skill);
+        }
+
+        private void RunArmyPulse() => armyPulse.Run(eligibleSources.Count > 0 || skillForces.Count > 0);
 
         internal void ShowDraftSources(PlayerView view, TurnDraft draft)
         {
@@ -563,6 +592,7 @@ namespace Wotr.Client
                     Later(shrinking, marker);
                 marker.Button.EnableInClassList(MapArmyArtwork.MovedClass, marched.Contains(key));
                 marker.Button.tooltip = MarkerTooltip(army);
+                ApplyOwner(marker);
             }
             foreach (var key in obsolete)
             {
@@ -583,7 +613,9 @@ namespace Wotr.Client
         private string MarkerTooltip(ArmyMarker army)
         {
             var description = ArmyMarkerText.Describe(army, Data.Regions[army.RegionId].Name);
-            return forceOffers.TryGetValue(army.RegionId, out var offer) ? TooltipText.Lines(offer, description) : description;
+            var skill = skillForces.TryGetValue((army.RegionId, army.Side, army.Garrison), out var line) ? line : "";
+            var offer = forceOffers.TryGetValue(army.RegionId, out var text) ? text : "";
+            return TooltipText.Lines(offer, skill, description);
         }
 
         // UI-431: the forces whose click makes a card's choice now (The Black Captain Commands' Nazgûl); an empty map

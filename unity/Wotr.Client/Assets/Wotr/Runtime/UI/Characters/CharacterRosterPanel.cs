@@ -36,6 +36,9 @@ namespace Wotr.Client
         private readonly Label empty = new Label("No named characters in this view") { name = "characters-empty" };
         private VisualElement sovereigns;
         private readonly ChoicePulse pulse;
+        // UI-441: a character's skill can be used now; a king is lit for a decision (the Characters tab glows for either).
+        private bool skillsOffered;
+        private bool sovereignsOffered;
         // UI-408: two rows a line unless the roster is too tall for the board in that form; decided per roster size and room.
         public const string WideClass = "roster-wide";
         public const string CompactClass = "roster-compact";
@@ -162,21 +165,36 @@ namespace Wotr.Client
         {
             var offered = false;
             var abilities = false;
+            var skills = false;
             foreach (var row in rows)
             {
                 var chosen = row.Key == Actions.EnteringFigure;
                 var entry = Enterable(row.Key) && !chosen;
                 offered |= entry;
                 row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
-                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
+                row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die), view);
                 abilities |= row.Value.Abilities.Offered;
+                row.Value.ShowSkill(Actions.Skill(row.Key));
+                skills |= row.Value.SkillLit;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry);
                 row.Value.Choose(chosen);
             }
-            // UI-391: a row's usable ability icon pulses with the roster.
-            pulse.Run(offered || abilities);
+            // UI-391: a row's usable ability icon pulses with the roster; UI-441: so does a character whose skill can be used.
+            pulse.Run(offered || abilities || skills);
+            skillsOffered = skills;
+            RefreshTab();
         }
+
+        // UI-441 (owner): the Characters tab glows while a character there has a skill usable now, as it glows for a king
+        // a decision lights (UI-101).
+        public void OfferSovereigns(bool any)
+        {
+            sovereignsOffered = any;
+            RefreshTab();
+        }
+
+        private void RefreshTab() => Tab.EnableInClassList("legal-target", sovereignsOffered || skillsOffered);
 
         public void Attach(VisualElement tray, VisualElement dock) => Actions.Attach(tray, dock);
         public void OpenDecision() => Actions.OpenDecision();

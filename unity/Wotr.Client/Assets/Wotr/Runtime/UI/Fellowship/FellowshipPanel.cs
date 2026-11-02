@@ -80,6 +80,13 @@ namespace Wotr.Client
             RegisterHover();
         }
 
+        // UI-441: the companions with a skill usable now glow on their portraits, and why (UsableSkills).
+        public void LightSkills(System.Collections.Generic.IReadOnlyDictionary<string, string> lines) => roster.LightSkills(lines);
+
+        public bool SkillUsable(string id) => roster.SkillUsable(id);
+
+        public Button PortraitButton(string id) => roster.Root.Q<Button>("fellowship-portrait-" + id);
+
         // UI-293: a click on the Fellowship's marker on its track (or its figure on the map) hides a revealed Fellowship
         // when the chosen die allows it.
         public bool RequestHide()

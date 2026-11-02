@@ -15,7 +15,8 @@ namespace Wotr.Client
     // dice) can pay is clickable too and takes that die (CharacterDraft.UniformDie). Every other icon is read only — a
     // passive, triggered, reaction or entry ability, or one waiting for its die — and only explains itself: the formatted
     // tooltip (SkillTooltip) names the ability, gives its gist, printed text and source, and says what a click does now,
-    // what it waits for or where the ability is used (AbilityUsePlaces).
+    // what it waits for or where the ability is used (AbilityUsePlaces). UI-441: an icon glows exactly while its click uses
+    // the ability now — the one-die icon too — the condition UsableSkills shares, so its character lights with it.
     public sealed class CharacterAbilityChips
     {
         public const string ChipClass = "character-ability";
@@ -26,6 +27,7 @@ namespace Wotr.Client
         public event Action<ComponentAction> Use;
         public VisualElement Root { get; } = new VisualElement { name = "character-abilities" };
         private readonly List<Icon> icons = new List<Icon>();
+        // The window's own pulse when it hosts more lights than the icons (UI-441: the header); otherwise the row's.
         private readonly ChoicePulse pulse;
         private ILookup<string, ComponentAction> offered = Enumerable.Empty<ComponentAction>().ToLookup(action => "");
         private bool editable;
@@ -42,11 +44,15 @@ namespace Wotr.Client
             public ComponentAction Action { get; set; }
         }
 
-        public CharacterAbilityChips()
+        // ownPulse: false when the host runs one pulse for the icons and its other lights (CharacterInspector).
+        public CharacterAbilityChips(bool ownPulse = true)
         {
             Root.AddToClassList("character-abilities");
-            pulse = new ChoicePulse(Root);
+            pulse = ownPulse ? new ChoicePulse(Root) : null;
         }
+
+        // UI-441: some icon's click uses its ability now.
+        public bool Lit => icons.Any(icon => icon.Button.ClassListContains(ChoiceGlow.ClassName));
 
         // The card's icons, built once per card.
         public void Apply(string definition)
@@ -135,11 +141,11 @@ namespace Wotr.Client
         {
             foreach (var icon in icons)
                 RefreshIcon(icon);
-            pulse.Run(icons.Any(icon => icon.Button.ClassListContains(ChoiceGlow.ClassName)));
+            pulse?.Run(Lit);
         }
 
-        // A usable icon glows and takes clicks; one that can take its one die is clickable without the glow; any other
-        // is read only, a variant among them dimmed in its slot.
+        // A usable icon glows and takes clicks — UI-441: one that can take its one die too; any other is read only, a
+        // variant among them dimmed in its slot.
         private void RefreshIcon(Icon icon)
         {
             var actions = editable ? offered[icon.Slot.Key].ToList() : new List<ComponentAction>();
@@ -149,7 +155,7 @@ namespace Wotr.Client
             var button = icon.Button;
             ReadOnlyControl.Apply(button, icon.Action != null);
             button.EnableInClassList(IdleClass, icon.Action == null && AbilityVariants.Grouped(icon.Slot.Ability.Id));
-            ChoiceGlow.Apply(button, ready != null);
+            ChoiceGlow.Apply(button, icon.Action != null);
             var tooltip = Tooltip(icon.Slot, State(icon.Slot, actions, ready, payable), icon.Action != null);
             if (button.tooltip != tooltip)
                 button.tooltip = tooltip;
@@ -174,8 +180,7 @@ namespace Wotr.Client
         }
 
         // UI-440: before any die is chosen, the one die (or identical dice) that can pay for a character's ability.
-        private string UniformDie(ComponentAction action) =>
-            view != null && action.Character != null && action.DieId.Length == 0 ? CharacterDraft.UniformDie(view, action.Character) : "";
+        private string UniformDie(ComponentAction action) => UsableSkills.UniformDie(view, action);
 
         private string DieName(string die) => DieUse.Name(view, die);
     }

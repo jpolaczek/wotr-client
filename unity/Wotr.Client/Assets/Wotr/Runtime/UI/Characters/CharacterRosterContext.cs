@@ -19,6 +19,8 @@ namespace Wotr.Client
         private readonly Button reaction;
         private readonly Button resume;
         private List<ComponentAction> components = new List<ComponentAction>();
+        // UI-441: the characters with a skill usable now (UsableSkills), lit wherever the panel draws them.
+        private IReadOnlyDictionary<string, UsableSkills.Skill> skills = UsableSkills.None;
         private PlayerView view;
         private TurnDraft draft;
         private VisualElement tray, dock;
@@ -56,10 +58,12 @@ namespace Wotr.Client
             dock = decisionDock;
         }
 
-        public void Apply(PlayerView latest, TurnDraft selection, IEnumerable<ComponentAction> choices, bool canEdit)
+        public void Apply(PlayerView latest, TurnDraft selection, IEnumerable<ComponentAction> choices, bool canEdit,
+            IReadOnlyDictionary<string, UsableSkills.Skill> usable = null)
         {
             view = latest;
             draft = selection;
+            skills = usable ?? UsableSkills.None;
             components = choices.ToList();
             enabled = canEdit;
             DecisionFigure = CharacterRosterActions.OwnsDecision(view, draft)
@@ -90,6 +94,11 @@ namespace Wotr.Client
             ? Enumerable.Empty<ComponentAction>() : CharacterRosterActions.For(view, id, definition, components);
 
         public bool Editable => enabled;
+
+        // UI-441: this character's skills usable now, or null.
+        public UsableSkills.Skill Skill(string id) => skills.TryGetValue(id ?? "", out var skill) ? skill : null;
+
+        public bool AnySkill => skills.Count > 0;
 
         // UI-391: a row's ability icon starts its action, as the window's Click to use does.
         public void Use(ComponentAction item) => Selected?.Invoke(item);
@@ -135,11 +144,16 @@ namespace Wotr.Client
             // UI-369/UI-440: an action that uses one of the card's abilities is used from its icon; only the others (an
             // entry) keep a button.
             var buttons = inspector.Abilities.Usable(choices, enabled, view);
+            inspector.ShowSkill(CurrentVersion(inspector) ? Skill(inspector.FigureId) : null);
             actions.Apply(buttons, enabled);
             Present(actions.Root, buttons.Count > 0);
             Present(resume, DecisionFigure.Length > 0 && !active);
             Present(reaction, view != null && CharacterRosterActions.HasReaction(view, inspector.FigureId));
         }
+
+        // The window shows the version in play, whose skills the rule names.
+        private bool CurrentVersion(CharacterInspector inspector) => view != null && view.OwnCharacterRoster
+            .Any(row => row.FigureId == inspector.FigureId && row.CurrentDefinitionId.Length > 0 && row.CurrentDefinitionId == inspector.DefinitionId);
 
         private void Present(VisualElement element, bool visible)
         {

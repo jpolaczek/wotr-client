@@ -140,7 +140,11 @@
     transition-duration: 750ms;
     transition-timing-function: ease-in-out-sine;
 }
-.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow {
+/* UI-441 (owner): the force a character whose skill can be used now stands in (skill-owner) wears the halo too, over the
+   ability owner's plinth, and pulses with the map's choices. */
+.army.ability-owner.skill-owner > .army-choice-glow { display: flex; }
+.motion-enabled .map.choice-glow-pulse .army.eligible-army > .army-choice-glow,
+.motion-enabled .map.choice-glow-pulse .army.skill-owner > .army-choice-glow {
     border-color: rgba(255, 214, 112, 0.4);
     background-color: rgba(70, 52, 18, 0.3);
     scale: 1.05 1.05;

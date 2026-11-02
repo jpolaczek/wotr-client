@@ -27,6 +27,10 @@ namespace Wotr.Client
         private bool offered;
         private bool chosen;
         private string statusText = "";
+        // UI-441: the character's skills usable now, or null.
+        private UsableSkills.Skill skill;
+        // UI-441: the row's offer while a skill of the character is usable now.
+        public const string SkillHint = "Click its glowing icon";
         // UI-243: the chosen row while its entry waits for a region: solid gold and a short instruction.
         public const string ChosenClass = "entry-chosen";
         public const string ChosenHint = "Choose a highlighted region";
@@ -111,6 +115,18 @@ namespace Wotr.Client
             ShowOffer();
         }
 
+        // UI-441 (owner): a character whose skill can be used now glows and pulses on its row, as an offered entry does,
+        // and its tooltip starts with why; the light goes out with the last usable skill.
+        public void ShowSkill(UsableSkills.Skill usable)
+        {
+            if (usable == skill || usable != null && skill != null && UsableSkills.Line(usable, SkillHint) == UsableSkills.Line(skill, SkillHint))
+                return;
+            skill = usable;
+            ShowOffer();
+        }
+
+        public bool SkillLit => skill != null;
+
         public void Choose(bool value)
         {
             chosen = value;
@@ -121,8 +137,10 @@ namespace Wotr.Client
 
         private void ShowOffer()
         {
-            ChoiceGlow.Apply(Root, offered);
-            Root.tooltip = CharacterRowTooltip.Format(offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) : "", description);
+            ChoiceGlow.Apply(Root, offered || skill != null);
+            Root.tooltip = CharacterRowTooltip.Format(OfferText(), description);
         }
+
+        private string OfferText() => offered && shown != null ? CharacterRosterPresentation.EntryOffer(shown) : UsableSkills.Line(skill, SkillHint);
     }
 }

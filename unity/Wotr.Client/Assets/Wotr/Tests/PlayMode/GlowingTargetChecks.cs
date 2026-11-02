@@ -64,7 +64,8 @@ namespace Wotr.PlayTests
                 return "gold ChoiceGlow";
             if (element.ClassListContains("legal-target") && Rim(element, Gold))
                 return "gold legal-target rim";
-            if (element.ClassListContains("eligible-army") && Shown(element.Q(className: "army-choice-glow")))
+            if ((element.ClassListContains("eligible-army") || element.ClassListContains(MapCanvas.SkillOwnerClass)) &&
+                Shown(element.Q(className: "army-choice-glow")))
                 return "map choice glow";
             if (element.ClassListContains("eligible-token") && Shown(element.Q(className: "reserve-choice-glow")))
                 return "Reserve choice glow";

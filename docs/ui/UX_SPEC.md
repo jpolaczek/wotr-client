@@ -2219,7 +2219,8 @@ kept place (nothing on the window changes size any more). Ported from `expansion
   a one-click ability (the political steps, the messengers, Narya, Voice's upgrade) sends at once; a click-then-choose
   one (Mustering of the Mark, a variant's move or attack) starts its choice on the board, confirmed with the console's ✓
   (UI-381). Before any die is chosen, an icon whose one die (or identical dice) can pay (`CharacterDraft.UniformDie`) is
-  clickable without the glow, its tooltip naming that die, and its click takes the die and uses the skill
+  clickable (since [UI-441](#usable-skills-light-their-character--ui-441) it glows too), its tooltip naming that die,
+  and its click takes the die and uses the skill
   (`ComponentActions.WithUniformDie`); with two different dice that could pay, the tooltip says "Choose an eligible die
   first". Every other icon is read only and its click does nothing: a passive ability, a triggered one (Take Them
   Alive!, Art of Disappearing), a reaction (used on the object that offers it) and a change of version (from the
@@ -2293,7 +2294,55 @@ Playtest (owner's checklist):
   each move badged; the move alone glows. Click it, then the Balrog's destination: he moves.
 - [ ] Saruman's Voice — a game with Saruman in Orthanc (Shadow): open his window before choosing a die. Expect: Voice's
   recruit and upgrade side by side, dimmed; hover: "Choose an eligible die first" (or, with one Muster die only, "Click
-  to use your Muster die: …" — a click then takes that die).
+  to use your Muster die: …" — a click then takes that die; since UI-441 both icons then glow, and Saruman with them).
 - [ ] A reaction — open the Witch-king's or Gandalf the White's window. Expect: the Sorcerer or the White Rider read
   only, its tooltip saying where it is used ("Offered in battle: click his portrait").
 - [ ] Keyboard — Tab to an icon. Expect: a thin gold ring and the description at once; a mouse click leaves no ring.
+
+<a id="usable-skills-light-their-character--ui-441"></a>
+## A character whose skill can be used now lights up wherever it stands — UI-441, base parts (2026-11-02)
+
+The owner, with a screenshot of the Characters panel (Gothmog's row unlit) beside Gothmog's window (his two Fling Them
+into the Fray icons lit): "skill postaci jest mozliwy do uzycia ale nie powoduje to podswietlenia sie postaci, tylko
+samego skilla. upewnij sie ze zawsze podswietla sie postac jesli mozna w danym momencie uzyc jej skilla" — whenever one
+of a character's skills can be used at that moment, the character itself lights up, not only the skill's icon. The
+expansions' section (same anchor on `expansions`) also lights the miniatures (UI-402), the abilities used on their own
+objects (Gothmog's Reserve tokens, the Balrog's figure) and the kings' portraits of the newer strip; the base has none of
+them, so these are its parts.
+
+- **One rule** (`UsableSkills.Characters`, built once per refresh in `ComponentContextInteraction` from the turn's
+  `ComponentActions`): a character of the player's has a skill usable now exactly while one of its skill icons lights in
+  its window (`CharacterAbilityChips`) — an action of the turn that uses one of the printed abilities of its current card
+  (its own command or a variant of it, a Muster die's move or attack, Narya), offered with the chosen die, or, before any
+  die is chosen, payable by the one die (or identical dice) that can pay for it (`CharacterDraft.UniformDie`) — or a
+  reaction of its offered to this player now (a battle portrait's White Rider or Sorcerer, a Guide's Hunt response,
+  Gandalf the Grey's draw), named by the printed ability it uses. Nothing counts while another action is drafted, while a
+  command is being sent, for an entry, another version's ability or the opponent's characters.
+- **The window's icons follow the same rule**: an icon whose one die can pay now glows too (UI-440 left it dark), and the
+  roster row's icons take that die as the window's do; a reaction's icon stays read only.
+- **Where the character lights** (the shared light; the pulses change colours and opacity only): its **Characters row**
+  (ChoiceGlow and the roster's pulse; the tooltip leads with "Usable now: The Voice of Saruman · Click its glowing icon",
+  a reaction with the object that offers it, `SkillReactionPlaces`); the **Characters tab** while a row is lit; the
+  **force it stands in on the map** — the ability owner's plinth with the shared ChoiceGlow halo (`skill-owner`),
+  pulsing with the map's choices, its tooltip leading with "Usable now: … · Click its glowing icon in Characters"
+  (`MapCanvas.LightSkills`); its **Fellowship portrait** (a portrait lit only for a skill opens the companion's window on
+  a click); a **king's portrait** in the Sovereigns strip (its click opens his character window); its **window's
+  header** (`character-header-glow`, with the version in play shown, in the window's one pulse with the lit icons).
+  The light goes out with the last usable skill; every other light is unchanged.
+
+Tests: EditMode `UsableSkillsTests` (each class of skill on the catalogue's cards, a die that pays nothing, the one die
+vs two different dice, nothing while another action is drafted or a command is sent, entries, another version and the
+opponent's characters, a reaction, a Guide's Hunt response and a card's reaction), `CharacterRosterPanelTests` (the
+one-die icon glows); PlayMode `UsableSkillLightNetworkTests` on base seeds — Saruman's Voice
+(`ability-voice-recruit-full`), Gimli's Dwarf of Erebor (`ability-gimli`), Gandalf the Grey's draw (`grey`) and the White
+Rider (`white-rider`): the window's icon and header, the Characters row, the Characters tab, the force on the map
+(`GlowingTargetChecks`, which reads the `skill-owner` halo) and the Fellowship portrait glow exactly while the icon does
+(for a reaction, while it is offered); screenshots `ui441-<case>-row|tab|map|window|fellowship.png`.
+
+Playtest (owner's checklist):
+- [ ] Saruman's Voice — `ability-voice-recruit-full` (Shadow): click the Muster die. Expect: Saruman's row glows and
+  pulses (its tooltip: "Usable now: The Voice of Saruman · Click its glowing icon"), the Characters tab glows while the
+  panel is rolled up, the force in Orthanc glows, and his window's header glows above Voice's lit icons. Choose another
+  die: all of them go out together.
+- [ ] A reaction — `white-rider` (Free Peoples, the battle starts). Expect: Gandalf's row and his force glow, the row's
+  tooltip saying "Click the glowing portrait in the battle window"; after the White Rider (or Pass) they go out.

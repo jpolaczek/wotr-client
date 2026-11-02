@@ -32,6 +32,10 @@ namespace Wotr.Client
         public Func<string, bool, VisualElement, bool> InspectCharacter { get; set; }
         private readonly SovereignInspector inspector;
         private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
+        // UI-441: the kings with a skill usable now and why (UsableSkills), and the kings a decision lights.
+        private IReadOnlyDictionary<string, string> skills = new Dictionary<string, string>();
+        private readonly HashSet<string> targets = new HashSet<string>();
+        private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
         private readonly BoardPresentation data;
         private readonly IVisualElementScheduledItem positionUpdate;
         private bool positionScheduled;
@@ -102,7 +106,8 @@ namespace Wotr.Client
             button.text = sovereign.Title.Split(' ')[0] + "\n" + SovereignPresentation.Status(sovereign.Status);
             var region = data.Regions.TryGetValue(sovereign.RegionId, out var definition) ? definition.Name : "Out of play";
             // UI-420 (owner): the portrait reads "Dáin Ironfoot · ◉ Corrupted · Erebor", then his corruption.
-            button.tooltip = SovereignPresentation.Describe(sovereign, region);
+            descriptions[sovereign.Id] = SovereignPresentation.Describe(sovereign, region);
+            ShowLight(sovereign.Id, button);
             button.EnableInClassList("corrupted-sovereign", sovereign.Status == SovereignStatus.Corrupted);
             var listed = sovereign.Status == SovereignStatus.Awakened && ListedAsCharacter?.Invoke(sovereign.Id) == true;
             button.style.display = listed ? DisplayStyle.None : DisplayStyle.Flex;
@@ -142,13 +147,36 @@ namespace Wotr.Client
         public void Highlight(Func<string, bool> legal)
         {
             var any = false;
+            targets.Clear();
             foreach (var portrait in portraits)
             {
                 var target = legal(portrait.Key);
-                portrait.Value.EnableInClassList("legal-target", target);
+                if (target)
+                    targets.Add(portrait.Key);
+                ShowLight(portrait.Key, portrait.Value);
                 any |= target;
             }
             Highlighted?.Invoke(any);
+        }
+
+        // UI-441 (owner): a king whose skill can be used now lights on his portrait (the gold rim and the shared glow) and
+        // its tooltip says why; its click opens his character window, where the skill's icon uses it.
+        public void LightSkills(IReadOnlyDictionary<string, string> lines)
+        {
+            skills = lines ?? new Dictionary<string, string>();
+            foreach (var portrait in portraits)
+                ShowLight(portrait.Key, portrait.Value);
+        }
+
+        private void ShowLight(string id, Button button)
+        {
+            var skill = skills.TryGetValue(id, out var line) ? line : "";
+            button.EnableInClassList("legal-target", targets.Contains(id) || skill.Length > 0);
+            ChoiceGlow.Apply(button, skill.Length > 0);
+            var description = descriptions.TryGetValue(id, out var text) ? text : "";
+            var tooltip = TooltipText.Lines(skill, description);
+            if (button.tooltip != tooltip)
+                button.tooltip = tooltip;
         }
 
         public void Close()
@@ -166,7 +194,7 @@ namespace Wotr.Client
 
         private void Open(string id)
         {
-            if (view?.Sovereigns.FirstOrDefault(s => s.Id == id)?.Status == SovereignStatus.Awakened &&
+            if ((view?.Sovereigns.FirstOrDefault(s => s.Id == id)?.Status == SovereignStatus.Awakened || skills.ContainsKey(id)) &&
                 InspectCharacter?.Invoke(id, Pinned, Source(id)) == true)
             {
                 Close();

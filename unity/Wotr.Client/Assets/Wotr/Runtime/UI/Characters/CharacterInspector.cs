@@ -11,9 +11,11 @@ namespace Wotr.Client
     // and a lit icon's click uses the ability (CharacterAbilityChips). UI-436 (owner): where
     // the figure is is a picture of the place captioned with its name (clicked, a region shows on the map, as Locate
     // did), beside a line saying what being there means and the statistics; the window's actions read in words
-    // (AvailabilityRows) instead of a bare "Limits".
+    // (AvailabilityRows) instead of a bare "Limits". UI-441 (owner): while a skill of the character can be used now
+    // (UsableSkills) its header glows and breathes with the lit icons, in one pulse.
     public sealed class CharacterInspector
     {
+        public const string HeaderGlowClass = "character-header-glow";
         public VisualElement Root { get; } = new VisualElement { name = "character-inspector" };
         public VisualElement Actions { get; } = new VisualElement { name = "character-actions" };
         public VisualElement DecisionHost { get; } = new VisualElement { name = "character-decision-host" };
@@ -29,7 +31,9 @@ namespace Wotr.Client
         private readonly Label edition = Text("character-edition");
         private readonly Label state = Text("character-state");
         private readonly CharacterFactStrip stats = new CharacterFactStrip();
-        private readonly CharacterAbilityChips abilities = new CharacterAbilityChips();
+        private readonly CharacterAbilityChips abilities = new CharacterAbilityChips(ownPulse: false);
+        private readonly VisualElement header = BoardScreen.Row("character-header");
+        private readonly ChoicePulse pulse;
         private readonly Label entry = Text("character-entry");
         private readonly VisualElement versions = BoardScreen.Row();
         private CharacterRosterView row;
@@ -43,8 +47,9 @@ namespace Wotr.Client
             Root.AddToClassList("character-inspector");
             Root.style.display = DisplayStyle.None;
             Place = new PlacePicture("locate-character", focus);
-            var header = BoardScreen.Row("character-header");
+            pulse = new ChoicePulse(Root);
             FloatingWindow.MarkHandle(header);
+            header.Add(HeaderGlow());
             header.Add(title);
             edition.AddToClassList("character-edition");
             header.Add(edition);
@@ -67,6 +72,24 @@ namespace Wotr.Client
             Root.Add(Actions);
             Root.Add(DecisionHost);
         }
+
+        // UI-441: the light behind the header's plate and title; only its opacity breathes.
+        private static VisualElement HeaderGlow()
+        {
+            var glow = new VisualElement { name = HeaderGlowClass, pickingMode = PickingMode.Ignore };
+            glow.AddToClassList(HeaderGlowClass);
+            return glow;
+        }
+
+        // UI-441: the header glows while a skill of the shown version can be used now (the lit icons below say what their
+        // click does); the window's one pulse runs while the header or an icon glows.
+        public void ShowSkill(UsableSkills.Skill skill)
+        {
+            ChoiceGlow.Apply(header, skill != null);
+            pulse.Run(skill != null || abilities.Lit);
+        }
+
+        public bool HeaderLit => header.ClassListContains(ChoiceGlow.ClassName);
 
         // UI-436: the place's picture, and beside it what being there means and the card's statistics.
         private VisualElement PlaceRow()

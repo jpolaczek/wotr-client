@@ -163,6 +163,12 @@ namespace Wotr.Client
                 return;
             }
             var kind = FellowshipActions.PortraitKind(view, board.ActionDie, id, draft);
+            if (!kind.HasValue && !busy() && board.Fellowship.SkillUsable(id))
+            {
+                // UI-441: a portrait lit for its companion's skill opens the companion's window, where its icon uses it.
+                board.Characters.Show(id, true, board.Fellowship.PortraitButton(id));
+                return;
+            }
             if (busy() || !kind.HasValue || HuntActions.UsesPanel(view, draft))
                 return;
             board.Fellowship.Open();

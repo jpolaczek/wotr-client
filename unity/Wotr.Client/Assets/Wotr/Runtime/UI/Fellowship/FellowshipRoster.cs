@@ -14,6 +14,12 @@ namespace Wotr.Client
         public bool ShowsGuide { get; private set; }
         private readonly Dictionary<string, Button> portraits = new Dictionary<string, Button>();
         private readonly Dictionary<string, string> descriptions = new Dictionary<string, string>();
+        // The offer each portrait's click makes now (the last Context), and (UI-441) the companions with a usable skill.
+        private readonly Dictionary<string, string> offers = new Dictionary<string, string>();
+        private readonly HashSet<string> lured = new HashSet<string>();
+        private IReadOnlyDictionary<string, string> skills = new Dictionary<string, string>();
+        // Some portrait's click makes a turn's choice now (the last Context).
+        private bool offering;
         private readonly ChoicePulse pulse;
         private string roster = "";
 
@@ -87,7 +93,9 @@ namespace Wotr.Client
 
         public void Context(PlayerView view, TurnDraft draft, ActionDieContext context, bool enabled)
         {
-            var choosing = false;
+            offering = false;
+            offers.Clear();
+            lured.Clear();
             foreach (var item in portraits)
             {
                 var kind = FellowshipActions.PortraitKind(view, context, item.Key, draft);
@@ -100,16 +108,42 @@ namespace Wotr.Client
                 // UI-229/UI-240: a portrait whose click chooses the next Guide or separates the companion glows and
                 // pulses, and its tooltip starts with what the click does.
                 var offer = lure ? LureChoice.EliminateTooltip(view) : enabled ? Offer(view, item.Key, kind) : "";
-                choosing |= offer.Length > 0;
-                ChoiceGlow.Apply(item.Value, offer.Length > 0 && !lure);
-                if (descriptions.TryGetValue(item.Key, out var description))
-                    item.Value.tooltip = offer.Length > 0 ? offer + "\n" + description : description;
+                offering |= offer.Length > 0;
+                offers[item.Key] = offer;
+                if (lure)
+                    lured.Add(item.Key);
+                ShowLight(item.Key, item.Value);
                 item.Value.EnableInClassList("selected", draft.Kind == CommandKind.SelectGuide ? draft.Payload.GuideId == item.Key
                     : draft.Kind is CommandKind.SeparateCompanions or CommandKind.ChooseEffect && draft.Payload.Ids.Contains(item.Key));
             }
-            Choosing = choosing;
-            pulse.Run(choosing);
+            Choosing = offering;
+            RunPulse();
         }
+
+        // UI-441 (owner): a companion whose skill can be used now glows on its portrait and pulses with the roster, and its
+        // tooltip says why — unless its click makes another choice now, which keeps its own words.
+        public void LightSkills(IReadOnlyDictionary<string, string> lines)
+        {
+            skills = lines ?? new Dictionary<string, string>();
+            foreach (var item in portraits)
+                ShowLight(item.Key, item.Value);
+            RunPulse();
+        }
+
+        // This companion's skill can be used now (UI-441).
+        public bool SkillUsable(string id) => skills.ContainsKey(id);
+
+        private void ShowLight(string id, Button button)
+        {
+            var offer = offers.TryGetValue(id, out var text) ? text : "";
+            var skill = offer.Length == 0 && skills.TryGetValue(id, out var line) ? line : "";
+            ChoiceGlow.Apply(button, offer.Length > 0 && !lured.Contains(id) || skill.Length > 0);
+            var lead = offer.Length > 0 ? offer : skill;
+            if (descriptions.TryGetValue(id, out var description))
+                button.tooltip = lead.Length > 0 ? lead + "\n" + description : description;
+        }
+
+        private void RunPulse() => pulse.Run(offering || portraits.Keys.Any(skills.ContainsKey));
 
         public static string Offer(PlayerView view, string id, CommandKind? kind) => kind switch
         {
