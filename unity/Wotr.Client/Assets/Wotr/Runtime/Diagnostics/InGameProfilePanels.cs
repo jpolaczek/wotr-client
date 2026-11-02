@@ -57,9 +57,10 @@ namespace Wotr.Client.Diagnostics
         }
 
         // UI-94: selecting a source shows its card text at the bottom of the panel instead of a card window.
+        // UI-446: a source's text is read on hover (its tile unrolls it); a click opens no details.
         private void Inspect(string source)
         {
-            click(board.TableEffects.Root.Q<Button>("effect-source-" + source));
+            board.TableEffects.Inspect(source);
             inspected = source;
         }
 
@@ -71,8 +72,8 @@ namespace Wotr.Client.Diagnostics
 
         private void VerifyInspected(VisualElement root)
         {
-            if (board.TableEffects.SelectedSource != inspected)
-                throw new InvalidOperationException("Effects did not select the requested source.");
+            if (board.TableEffects.UnrolledSource != inspected)
+                throw new InvalidOperationException("Effects did not unroll the requested source.");
             if (!Appearance.Closed(board.Cards.Root) && board.Cards.Root.resolvedStyle.display != DisplayStyle.None)
                 throw new InvalidOperationException("An Effects source opened a separate card window.");
             if (CardLibrary.Cards.ContainsKey(inspected))

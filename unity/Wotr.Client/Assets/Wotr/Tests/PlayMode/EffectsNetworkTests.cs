@@ -48,7 +48,12 @@ namespace Wotr.PlayTests
             PointerGestureEvents.ClickAt(actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Protection));
             await room.Settle();
             Assert.AreSame(actor.Board.TableEffects.DecisionHost, actor.Board.Tray.parent);
-            Assert.AreEqual(DisplayStyle.None, actor.Board.TableEffects.Details.Q("effect-card").resolvedStyle.display,
+            // UI-446 (owner): the source's details show only now, while its removal is paid, inside the panel.
+            var details = actor.Board.TableEffects.Details;
+            Assert.AreEqual(DisplayStyle.Flex, details.resolvedStyle.display, "The payment shows the source's details.");
+            Assert.AreEqual("Free Peoples · In play", details.Q<Label>("effect-detail-state").text);
+            Assert.LessOrEqual(details.worldBound.xMax, actor.Board.TableEffects.Root.worldBound.xMax + 1, "The details stand in the panel.");
+            Assert.AreEqual(DisplayStyle.None, details.Q("effect-card").resolvedStyle.display,
                 "UI-94: paying for a removal leaves the room to the decision.");
             StringAssert.Contains("one Army Event and one Character Event", actor.Board.TableEffects.Root.Q<Label>("effect-removal-cost").text);
             Assert.IsFalse(actor.Board.Tray.Q<Button>("confirm-decision").enabledInHierarchy);
@@ -75,7 +80,8 @@ namespace Wotr.PlayTests
             Assert.AreEqual(1, actor.Board.View.Hand.Count);
             await Reconnect(room, actor);
             Assert.AreEqual("Effects · 1", actor.Board.TableEffects.Tab.text);
-            Assert.AreEqual("Effect ended", actor.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
+            // UI-446 (owner): the paid removal leaves nothing pinned — no "Effect ended" details outside a payment.
+            NothingPinned(actor.Board);
             LayoutTests.Save(actor.Viewport, "ui57-protection-removed-shadow.png");
         }
 
@@ -103,9 +109,16 @@ namespace Wotr.PlayTests
             var ring = before.Options.Single(o => o.Kind == CommandKind.DiscardPalantir).EligibleIds[0];
             await ComponentGestures.Cost(room, actor, die.Id);
             await Open(room, actor);
-            PointerGestureEvents.ClickAt(actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Palantir));
+            // UI-446 (owner): the lit card prepares its removal exactly as its × does (UI-430's board rule).
+            var tile = actor.Board.TableEffects.Root.Q<Button>("effect-source-" + Palantir);
+            Assert.IsTrue(tile.ClassListContains("legal-target"), "The removable card is lit.");
+            Assert.IsFalse(ReadOnlyControl.Is(tile), "Its click prepares the removal.");
+            Assert.AreEqual(actor.Board.TableEffects.Root.Q<Button>("remove-table-" + Palantir).tooltip, tile.tooltip);
+            PointerGestureEvents.ClickAt(tile);
             await room.Settle();
             Assert.AreSame(actor.Board.TableEffects.DecisionHost, actor.Board.Tray.parent);
+            Assert.AreEqual(Palantir, actor.Board.TableEffects.SelectedSource);
+            Assert.AreEqual(DisplayStyle.Flex, actor.Board.TableEffects.Details.resolvedStyle.display, "The payment shows the details.");
             StringAssert.Contains("give one Elven Ring to the Shadow", actor.Board.TableEffects.Root.Q<Label>("effect-removal-cost").text);
             Assert.IsNull(actor.Board.Tray.Q<Button>("confirm-decision"));
             Assert.AreEqual(before.Revision, actor.Board.View.Revision);
@@ -123,10 +136,8 @@ namespace Wotr.PlayTests
             using var room = await Connect("effects-expiry", ScenarioKind.BaseAcceptance);
             var observer = room.Sh;
             await Open(room, observer);
-            PointerGestureEvents.ClickAt(observer.Board.TableEffects.Root.Q<Button>("effect-source-" + Wormtongue));
-            await room.Settle();
-            AssertCardInPanel(observer.Board, Wormtongue);
-            Assert.AreEqual("Shadow · In play", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
+            // UI-446 (owner): the source is read from its tile's unrolled text; a click opens no details.
+            await Read(room, observer.Board, Wormtongue);
             // UI-413 (owner): the Politics row keeps its name clear; the Effects tab lists Rohan's effect.
             Assert.IsNull(observer.Board.Nations.Drawer.Q(className: "effect-scope-badge"), "No effect badge covers a nation's name.");
             Assert.IsNull(observer.Board.Map.Q("map-effects-orthanc"), "Saruman is an expiry condition, not the effect's region.");
@@ -136,13 +147,13 @@ namespace Wotr.PlayTests
             FellowshipGestures.Figure(room.Fp, origin, "base.character.gandalf-grey");
             await room.MoveTo(room.Fp, "helms-deep");
             Assert.IsFalse(observer.Board.View.Effects.Any(e => e.SourceId == Wormtongue));
-            Assert.AreEqual("Effect ended", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
             Assert.IsNull(observer.Board.TableEffects.Root.Q<Button>("effect-source-" + Wormtongue));
-            AssertCardInPanel(observer.Board, Wormtongue);
-            Assert.IsTrue(observer.Board.TableEffects.Details.Q("effect-card").ClassListContains("effect-card-ended"));
+            // UI-446 (owner): the expired source leaves nothing pinned — its unrolled text goes with its tile and no "Effect
+            // ended" details stay outside a removal being paid (UI-94's pinned text no longer exists).
+            NothingPinned(observer.Board);
             await Reconnect(room, observer);
-            Assert.AreEqual("Effect ended", observer.Board.TableEffects.Root.Q<Label>("effect-detail-state").text);
-            AssertCardInPanel(observer.Board, Wormtongue);
+            Assert.IsNull(observer.Board.TableEffects.Root.Q<Button>("effect-source-" + Wormtongue));
+            NothingPinned(observer.Board);
             LayoutTests.Save(observer.Viewport, "ui94-expired-pinned-shadow.png");
         }
 
@@ -161,13 +172,7 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(board.TableEffects.Tab);
                 await room.Settle();
                 Assert.IsTrue(board.TableEffects.IsOpen);
-                var source = board.TableEffects.Root.Q<Button>("effect-source-" + Protection);
-                await ComponentGestures.Hover(source);
-                Assert.IsEmpty(board.Cards.CardId);
-                PointerGestureEvents.ClickAt(source);
-                await room.Settle();
-                Assert.AreEqual(Protection, board.TableEffects.SelectedSource);
-                AssertCardInPanel(board, Protection);
+                await Read(room, board, Protection);
                 Assert.IsFalse(board.Family.Watching, "The source opens no sub-window.");
                 Assert.AreEqual(pan, camera.Pan);
                 Assert.AreEqual(zoom, camera.Zoom);
@@ -189,8 +194,13 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(effect);
                 await room.Settle();
                 Assert.IsTrue(board.TableEffects.IsOpen);
-                Assert.AreEqual(Protection, board.TableEffects.SelectedSource);
+                // UI-446 (owner): the region's effect opens the panel with the source's text unrolled, as a hover shows it,
+                // whole on the screen; it selects nothing and opens no details.
+                Assert.AreEqual(Protection, board.TableEffects.UnrolledSource);
+                Assert.IsEmpty(board.TableEffects.SelectedSource);
+                Assert.AreEqual(DisplayStyle.None, board.TableEffects.Details.resolvedStyle.display);
                 Assert.AreEqual(revision, board.View.Revision);
+                EffectsPanelChecks.UnrolledText(board, Protection, "region " + board.View.You);
             }
         }
 
@@ -221,29 +231,38 @@ namespace Wotr.PlayTests
             Assert.IsFalse(actor.Board.TableEffects.IsOpen, "A legal movement target must not open Effects.");
         }
 
-        // UI-94: a card source is read in the Effects panel's details, never in a separate card window; UI-424: the details
-        // stand on their own card beside the panel, above the bottom bar.
+        // UI-94: a card source is read in the Effects panel, never in a separate card window; UI-446 (owner): its hovered tile
+        // unrolls only the card's part in effect, whole, above the bottom bar (EffectsPanelChecks.UnrolledText).
         internal static void AssertCardInPanel(BoardScreen board, string id)
         {
-            var card = CardLibrary.Cards[id];
+            Assert.IsTrue(CardLibrary.Cards.ContainsKey(id), id + " is a card.");
             Assert.IsEmpty(board.Cards.CardId, "No separate card window.");
             Assert.AreEqual(DisplayStyle.None, board.Cards.Root.resolvedStyle.display);
-            var block = board.TableEffects.Details.Q("effect-card");
-            Assert.IsNotNull(block);
-            Assert.AreEqual(card.Event, block.Q<Label>("effect-card-event").text);
-            Assert.AreEqual(CardTextFormat.Kind(card), block.Q<Label>("effect-card-kind").text);
-            Assert.AreEqual(card.HasCombat ? DisplayStyle.Flex : DisplayStyle.None, block.Q("effect-card-combat").resolvedStyle.display);
-            if (card.HasCombat)
-                Assert.AreEqual(card.Combat, block.Q<Label>("effect-card-combat-text").text);
-            Assert.That(block.resolvedStyle.backgroundImage.texture?.name, Does.StartWith("parchment"));
-            var details = board.TableEffects.Details.worldBound;
-            Assert.LessOrEqual(block.worldBound.yMax, details.yMax + 1, "The card text fits in the details.");
-            Assert.GreaterOrEqual(block.worldBound.xMin, details.xMin - 1);
-            Assert.LessOrEqual(block.worldBound.xMax, details.xMax + 1);
+            EffectsPanelChecks.UnrolledText(board, id, board.View.You + " " + id);
             var stage = board.TableEffects.Root.parent.worldBound;
             Assert.LessOrEqual(board.TableEffects.Root.worldBound.yMax, stage.yMax + 1, "The panel stays above the bottom bar.");
-            Assert.LessOrEqual(details.yMax, stage.yMax + 1, "The details stay above the bottom bar.");
-            Assert.GreaterOrEqual(details.xMin + 1, board.TableEffects.Root.worldBound.xMax, "The details stand beside the panel.");
+        }
+
+        // UI-446 (owner): a card source is read by hovering its tile; a click on the read-only tile then opens nothing and
+        // leaves the text unrolled.
+        internal static async Task Read(MatchTestRoom room, BoardScreen board, string id)
+        {
+            var tile = board.TableEffects.Root.Q<Button>("effect-source-" + id);
+            await ComponentGestures.Hover(tile);
+            AssertCardInPanel(board, id);
+            PointerGestureEvents.ClickAt(tile);
+            await room.Settle();
+            EffectsPanelChecks.ClickOpensNothing(board, id, board.View.You + " " + id);
+            AssertCardInPanel(board, id);
+        }
+
+        // Nothing of an ended or paid source stays: no unrolled text, no details, no selection.
+        private static void NothingPinned(BoardScreen board)
+        {
+            Assert.IsEmpty(board.TableEffects.UnrolledSource);
+            Assert.AreEqual(DisplayStyle.None, board.TableEffects.Root.Q("effect-unroll").resolvedStyle.display);
+            Assert.AreEqual(DisplayStyle.None, board.TableEffects.Details.resolvedStyle.display);
+            Assert.IsEmpty(board.TableEffects.SelectedSource);
         }
 
         private static async Task Open(MatchTestRoom room, MountedMatchClient actor)

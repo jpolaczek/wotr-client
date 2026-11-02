@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine.UIElements;
 using Wotr.Client;
@@ -63,10 +64,18 @@ namespace Wotr.EditorTests
             table.Apply(view);
             var source = table.Root.Q<Button>("effect-source-" + id);
             Assert.IsNotNull(source);
+            Assert.IsTrue(source.ClassListContains("effect-card-tile"), "The table card is a card tile.");
+            // UI-446 (owner): the card is read from its tile's unrolled text (LordsFinalCardsNetworkTests), only its part in
+            // effect — a table card's Event; neither a click nor Inspect opens details beside or in the panel.
+            Assert.IsTrue(ReadOnlyControl.Is(source), "A click on the card does nothing.");
+            Assert.AreEqual(TooltipText.Parts(CardLibrary.Title(id), "A card in effect"), source.tooltip);
+            Assert.IsFalse(EffectsPresentation.CombatPart(EffectsPresentation.Sources(view).Single()), "Its Event part is in effect.");
+            Assert.AreEqual("SPECIAL CARD · SPECIAL EVENT", CardTextFormat.Kind(CardLibrary.Cards[id]));
             table.Inspect(id);
-            Assert.AreEqual("SPECIAL CARD · SPECIAL EVENT", table.Root.Q<Label>("effect-card-kind").text);
-            Assert.AreEqual(CardLibrary.Cards[id].Event, table.Root.Q<Label>("effect-card-event").text);
-            Assert.AreEqual(DisplayStyle.None, table.Root.Q("effect-card-combat").style.display.value);
+            Assert.IsTrue(table.IsOpen);
+            Assert.IsEmpty(table.SelectedSource);
+            Assert.AreEqual(DisplayStyle.None, table.Details.style.display.value);
+            Assert.IsNull(table.Root.Q("effect-card"), "No card text block opens outside its tile's unrolled text.");
             view.Effects.Add(new ActiveEffectView { Id = "effect", SourceId = id, Owner = Side.Shadow });
             table.Apply(view);
             Assert.AreEqual("Effects · 1", table.Tab.text);

@@ -57,13 +57,5 @@ namespace Wotr.Tests
             Assert.AreSame(EffectsGridArrangement.Regular, EffectsGridArrangement.Choose(22, 0));
             Assert.AreSame(EffectsGridArrangement.All.Last(), EffectsGridArrangement.Choose(80, Scaled));
         }
-
-        [Test]
-        public void TheDetailsCardStandsLevelWithThePanelAndRisesOnlyAsFarAsItMust()
-        {
-            Assert.AreEqual(0, EffectDetailsPlace.Offset(58, 300, 584));
-            Assert.AreEqual(-110, EffectDetailsPlace.Offset(232, 300, 430));
-            Assert.AreEqual(8 - 200f, EffectDetailsPlace.Offset(200, 500, 430), "never above the top of the board");
-        }
     }
 }

@@ -10,9 +10,12 @@ namespace Wotr.Client
         public EffectSource Source { get; private set; }
         private readonly Button title, removal;
         private readonly Label owner = new Label();
-        private string inspectTooltip = "";
-        // UI-272: what a click on the card itself does now (Lore before Dismay), or "" when the click inspects it.
+        // UI-446: what the tile is, when its click does nothing now (its text unrolls on hover).
+        private string restingTooltip = "";
+        // UI-272: what a click on the card itself does now (Lore before Dismay), or "".
         private string use = "";
+        // UI-446: the removal the × prepares now, which a click on the lit tile prepares too (UI-430's board rule), or null.
+        private ComponentAction removable;
         // UI-430: why an effect offers this card's discard now (its tile's and its ×'s tooltip), or "".
         private string offer = "";
         // UI-424: the grid the entry stands in, and its title's words measured once per text (null until measured).
@@ -22,21 +25,19 @@ namespace Wotr.Client
         private float fittedSize;
         private readonly IVisualElementScheduledItem measuring;
 
-        // UI-94: a click selects the source; its details, including a card's complete text, open beside the list (UI-424).
-        // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll).
-        public EffectEntry(EffectSource source, Action<EffectSource, bool> inspect, Action<string> remove,
-            Action<EffectEntry, bool> hover, Action<string> used)
+        // UI-221: hovering or focusing the tile unrolls its text over the other tiles (EffectUnroll). UI-446 (owner): a
+        // click opens no details; it discards a red card (UI-430), uses a card the decision uses (UI-272) or prepares the
+        // removal the × offers, and otherwise does nothing, so the tile is read only then.
+        public EffectEntry(EffectSource source, Action<string> remove, Action<EffectEntry, bool> hover, Action<string> used)
         {
             Source = source;
             Root.AddToClassList("effect-entry");
             title = BoardScreen.Button(source.Title, () =>
             {
-                if (offer.Length > 0)
+                if (offer.Length > 0 || removable != null)
                     remove(Source.SourceId);
                 else if (use.Length > 0)
                     used(Source.SourceId);
-                else
-                    inspect(Source, true);
             });
             title.AddToClassList("effect-source");
             title.name = "effect-source-" + source.SourceId;
@@ -131,9 +132,9 @@ namespace Wotr.Client
                 fit = null;
                 RequestMeasure();
             }
-            inspectTooltip = source.Kind == "Ability" ? "Show this public ability beside the list"
-                : CardLibrary.Cards.ContainsKey(source.SourceId) ? "Show the complete Event and Combat text beside the list" : "Show this effect beside the list";
-            title.tooltip = TitleTooltip();
+            restingTooltip = TooltipText.Parts(source.Title, source.Kind == "Ability" ? "A public ability in play"
+                : CardLibrary.Cards.ContainsKey(source.SourceId) ? "A card in effect" : "An effect in play");
+            Refresh();
             owner.text = source.Owner == Wotr.Contracts.Side.FreePeoples ? "FP ◆" : "SH ◆";
             owner.tooltip = BoardScreen.SideName(source.Owner);
             Root.EnableInClassList("shadow-effect", source.Owner == Wotr.Contracts.Side.Shadow);
@@ -146,7 +147,9 @@ namespace Wotr.Client
             removal.SetEnabled(enabled && action?.Enabled == true);
             removal.tooltip = action == null ? "" : "Remove " + Source.Title + " · " + EffectsPresentation.RemovalCost(view, action) +
                 (action.Enabled ? "" : " Select an eligible die.");
+            removable = enabled && action?.Enabled == true ? action : null;
             title.EnableInClassList("legal-target", action?.Enabled == true);
+            Refresh();
             FitTitle();
         }
 
@@ -159,7 +162,7 @@ namespace Wotr.Client
             if (next.Length == 0 && use.Length == 0)
                 return;
             use = next;
-            title.tooltip = TitleTooltip();
+            Refresh();
             ChoiceGlow.Apply(title, use.Length > 0);
             if (use.Length > 0)
                 title.EnableInClassList("legal-target", true);
@@ -175,7 +178,7 @@ namespace Wotr.Client
             removal.tooltip = offer;
             title.EnableInClassList("legal-target", false);
             title.EnableInClassList(TableEffectsView.DiscardClass, enabled);
-            title.tooltip = TitleTooltip();
+            Refresh();
             FitTitle();
         }
 
@@ -185,10 +188,16 @@ namespace Wotr.Client
                 return;
             offer = "";
             title.RemoveFromClassList(TableEffectsView.DiscardClass);
-            title.tooltip = TitleTooltip();
+            Refresh();
         }
 
-        // What a click on the card itself does: discard it for an effect (UI-430), use it (UI-272), or show its text.
-        private string TitleTooltip() => offer.Length > 0 ? offer : use.Length > 0 ? use : inspectTooltip;
+        // What a click on the card itself does now — discard it for an effect (UI-430), use it (UI-272), prepare its
+        // removal — or, read only, what the tile is (UI-446).
+        private void Refresh()
+        {
+            var interactive = offer.Length > 0 || use.Length > 0 || removable != null;
+            ReadOnlyControl.Apply(title, interactive);
+            title.tooltip = offer.Length > 0 ? offer : use.Length > 0 ? use : removable != null ? removal.tooltip : restingTooltip;
+        }
     }
 }

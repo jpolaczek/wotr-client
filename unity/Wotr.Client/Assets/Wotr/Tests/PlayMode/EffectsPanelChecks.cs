@@ -8,7 +8,8 @@ using Wotr.Client;
 namespace Wotr.PlayTests
 {
     // UI-424: the Effects panel's shared layout checks — every source title inside its tile, every entry inside the panel,
-    // the panel and the details card beside it above the bottom row — for the layout, stress and network tests.
+    // the panel above the bottom row; UI-446: a hovered source's unrolled text whole, with only its part in effect, and a
+    // read-only source's click opening nothing — for the layout, stress and network tests.
     internal static class EffectsPanelChecks
     {
         public static List<Button> Sources(BoardScreen board) =>
@@ -60,22 +61,74 @@ namespace Wotr.PlayTests
             Assert.LessOrEqual(panel.yMax - 1, BottomRow(board), "effects-panel above the bottom row · " + layout);
         }
 
-        // UI-424: a source's details stand on their own card beside the panel, whole, above the bottom row, every part inside.
-        public static void DetailsBesideThePanel(BoardScreen board, string layout)
+        // UI-446 (owner): a hovered source's text unrolls whole — below the top bar, above the bottom row, inside the screen,
+        // every shown part inside it — and shows only the source's part in effect (ActivePart). It replaces the details card
+        // UI-424 stood beside the panel.
+        public static void UnrolledText(BoardScreen board, string sourceId, string layout)
         {
-            var details = board.TableEffects.Details;
-            Assert.AreEqual(DisplayStyle.Flex, details.resolvedStyle.display, "details shown · " + layout);
-            Assert.AreEqual(Visibility.Visible, details.resolvedStyle.visibility, "details placed · " + layout);
-            var card = details.worldBound;
-            var panel = board.TableEffects.Root.worldBound;
-            Assert.GreaterOrEqual(card.xMin + 1, panel.xMax, "details beside the panel · " + layout);
-            Assert.GreaterOrEqual(card.yMin + 1, board.TopBar.Root.worldBound.yMax, "details below the top bar · " + layout);
-            Assert.LessOrEqual(card.yMax - 1, BottomRow(board), "details above the bottom row · " + layout);
-            Assert.LessOrEqual(card.xMax - 1, board.TableEffects.Root.parent.worldBound.xMax, "details on the screen · " + layout);
-            foreach (var element in details.Query<VisualElement>().ToList().Where(e => e != details && e.visible && e.worldBound.width > 0))
-                Inside(element.worldBound, card, element.name + " inside the details · " + layout);
-            foreach (var label in details.Query<Label>().ToList().Where(l => l.resolvedStyle.display != DisplayStyle.None && l.text.Length > 0))
+            var unroll = board.TableEffects.Root.Q("effect-unroll");
+            Assert.AreEqual(sourceId, board.TableEffects.UnrolledSource, "the hovered source unrolls · " + layout);
+            Assert.AreEqual(DisplayStyle.Flex, unroll.resolvedStyle.display, "unrolled text shown · " + layout);
+            var text = unroll.worldBound;
+            var stage = board.TableEffects.Root.parent.worldBound;
+            Assert.GreaterOrEqual(text.yMin + 1, board.TopBar.Root.worldBound.yMax, "unrolled text below the top bar · " + layout);
+            Assert.LessOrEqual(text.yMax - 1, BottomRow(board), "unrolled text above the bottom row · " + layout);
+            Assert.GreaterOrEqual(text.xMin + 1, stage.xMin, "unrolled text on the screen · " + layout);
+            Assert.LessOrEqual(text.xMax - 1, stage.xMax, "unrolled text on the screen · " + layout);
+            foreach (var element in unroll.Query<VisualElement>().ToList().Where(e => e != unroll && Displayed(e, unroll)))
+                Inside(element.worldBound, text, element.name + " inside the unrolled text · " + layout);
+            foreach (var label in unroll.Query<Label>().ToList().Where(l => l.text.Length > 0 && Displayed(l, unroll)))
                 WholeText(label, layout);
+            ActivePart(board, unroll, sourceId, layout);
+        }
+
+        // A card shows its Event text, or only its Combat text while every effect of the source lasts a battle or a combat
+        // round (EffectsPresentation.CombatPart); an ability or another effect shows its descriptions as plain text.
+        private static void ActivePart(BoardScreen board, VisualElement unroll, string sourceId, string layout)
+        {
+            var sources = EffectsPresentation.Sources(board.View).Where(source => source.SourceId == sourceId).ToList();
+            var plain = unroll.Q<Label>("effect-unroll-text");
+            if (!CardLibrary.Cards.TryGetValue(sourceId, out var card))
+            {
+                Assert.IsNull(unroll.Q("effect-card"), "an ability or effect has no card text · " + layout);
+                Assert.AreEqual(DisplayStyle.Flex, plain.resolvedStyle.display, "its descriptions shown · " + layout);
+                Assert.IsTrue(sources.Any(source => plain.text == Descriptions(source)), $"'{plain.text}' describes the source · {layout}");
+                return;
+            }
+            Assert.AreEqual(DisplayStyle.None, plain.resolvedStyle.display, "a card has no plain text · " + layout);
+            var block = unroll.Q("effect-card");
+            Assert.IsNotNull(block, "the card's text · " + layout);
+            Assert.That(block.resolvedStyle.backgroundImage.texture?.name, Does.StartWith("parchment"), layout);
+            Assert.AreEqual(CardTextFormat.Kind(card), block.Q<Label>("effect-card-kind").text, layout);
+            Assert.AreEqual(CardLibrary.EventText(card, board.View.Configuration), block.Q<Label>("effect-card-event").text, layout);
+            var combat = EffectsPresentation.CombatPart(sources.Single());
+            Assert.AreEqual(combat ? DisplayStyle.None : DisplayStyle.Flex, block.Q("effect-card-event").resolvedStyle.display,
+                "only the part in effect: the Event text · " + layout);
+            Assert.AreEqual(combat && card.HasCombat ? DisplayStyle.Flex : DisplayStyle.None, block.Q("effect-card-combat").resolvedStyle.display,
+                "only the part in effect: the Combat text · " + layout);
+            if (combat && card.HasCombat)
+                Assert.AreEqual(card.Combat, block.Q<Label>("effect-card-combat-text").text, layout);
+        }
+
+        private static string Descriptions(EffectSource source) => string.Join("\n", source.Effects.Select(effect => effect.Description)
+            .Where(description => !string.IsNullOrEmpty(description)).Distinct());
+
+        // UI-446 (owner): a click on a read-only source does nothing — no details card, no selection, no card window.
+        public static void ClickOpensNothing(BoardScreen board, string sourceId, string layout)
+        {
+            Assert.IsTrue(ReadOnlyControl.Is(board.TableEffects.Root.Q<Button>("effect-source-" + sourceId)), "a read-only source · " + layout);
+            Assert.AreEqual(DisplayStyle.None, board.TableEffects.Details.resolvedStyle.display, "no details · " + layout);
+            Assert.IsEmpty(board.TableEffects.SelectedSource, "nothing selected · " + layout);
+            Assert.IsEmpty(board.Cards.CardId, "no separate card window · " + layout);
+        }
+
+        // The element and every parent up to the root are displayed, and it has a size.
+        private static bool Displayed(VisualElement element, VisualElement root)
+        {
+            for (var current = element; current != null && current != root.parent; current = current.parent)
+                if (current.resolvedStyle.display == DisplayStyle.None)
+                    return false;
+            return element.worldBound.width > 0 && element.worldBound.height > 0;
         }
 
         // Every line of a label is inside its box, measured at the pixel boundary its label renders at.

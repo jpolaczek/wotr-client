@@ -88,14 +88,9 @@ namespace Wotr.PlayTests
                 Assert.IsEmpty(board.Cards.CardId, "Hovering a final reaction must not inspect or execute it.");
                 PointerGestureEvents.ClickAt(board.TableEffects.Tab);
                 await room.Settle();
-                var source = board.TableEffects.Root.Q<Button>("effect-source-" + card);
-                await ComponentGestures.Hover(source);
-                Assert.IsEmpty(board.Cards.CardId);
-                PointerGestureEvents.ClickAt(source);
-                await room.Settle();
-                Assert.AreEqual(card, board.TableEffects.SelectedSource);
-                EffectsNetworkTests.AssertCardInPanel(board, card);
-                StringAssert.Contains("automatically", board.TableEffects.Root.Q<Label>("effect-card-event").text);
+                // UI-446 (owner): the card is read from its tile's unrolled text, its Event part; a click on it opens nothing.
+                await EffectsNetworkTests.Read(room, board, card);
+                StringAssert.Contains("automatically", board.TableEffects.Root.Q("effect-unroll").Q<Label>("effect-card-event").text);
                 Assert.AreEqual(inspectionRevision, board.View.Revision, "Reading a source keeps the reaction pending.");
                 Assert.IsNull(room.Fp.Board.View.Decision);
                 Assert.IsTrue(room.Fp.Board.View.Hunt.DamagePending);
@@ -156,13 +151,9 @@ namespace Wotr.PlayTests
                             VisualElement.MeasureMode.Exactly, 0, VisualElement.MeasureMode.Undefined);
                         Assert.LessOrEqual(size.y, rules.contentRect.height + 1, "Card rules clipped");
                     }
-                    var effectCard = client.Board.TableEffects.Root.Q("effect-card");
-                    if (client.Board.TableEffects.IsOpen && effectCard != null)
-                    {
-                        Assert.LessOrEqual(effectCard.worldBound.yMax, client.Board.Root.worldBound.yMax + 1, "UI-94: card text stays on screen");
-                        // UI-424: the card text stands in the details card beside the panel.
-                        Assert.LessOrEqual(effectCard.worldBound.yMax, client.Board.TableEffects.Details.worldBound.yMax + 1);
-                    }
+                    var effects = client.Board.TableEffects;
+                    if (effects.IsOpen && effects.UnrolledSource.Length > 0)
+                        await Reread(room, client.Board, effects.UnrolledSource, $"{name} {width} {scale:0.00}");
                     LayoutTests.Save(target, $"lords03-{name}-{width}-{scale:0.00}.png");
                     client.Panel.targetTexture = client.Viewport;
                     target.Release();
@@ -170,6 +161,17 @@ namespace Wotr.PlayTests
                 }
             client.Panel.scale = 1f;
             await room.Settle();
+        }
+
+        // UI-446 (owner): a card read in the open Effects panel unrolls whole on the screen in every layout (UI-94); the pointer
+        // leaves its tile and comes back, so the text unrolls where the tile stands in this layout.
+        private static async Task Reread(MatchTestRoom room, BoardScreen board, string id, string layout)
+        {
+            CardGestures.Move(board.TableEffects.Root.Q(className: "panel-header"));
+            await room.Settle();
+            CardGestures.Move(board.TableEffects.Root.Q<Button>("effect-source-" + id));
+            await room.Settle();
+            EffectsPanelChecks.UnrolledText(board, id, layout);
         }
     }
 }

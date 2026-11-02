@@ -112,13 +112,8 @@ namespace Wotr.PlayTests
                 .Single(choice => choice.Id == id).SourceId;
             PointerGestureEvents.ClickAt(board.TableEffects.Tab);
             await room.Settle();
-            var source = board.TableEffects.Root.Q<Button>("effect-source-" + sourceId);
-            await ComponentGestures.Hover(source);
-            Assert.IsEmpty(board.Cards.CardId);
-            PointerGestureEvents.ClickAt(source);
-            await room.Settle();
-            Assert.AreEqual(sourceId, board.TableEffects.SelectedSource);
-            EffectsNetworkTests.AssertCardInPanel(board, sourceId);
+            // UI-446 (owner): the source is read from its tile's unrolled text; a click on it opens nothing.
+            await EffectsNetworkTests.Read(room, board, sourceId);
             Assert.IsTrue(board.Hunt.IsOpen, "Reading a source preserves the explicitly opened Hunt.");
             Assert.AreEqual(revision, board.View.Revision, "Inspecting a source cannot resolve its reaction.");
             LayoutTests.Save(room.Fp.Viewport, "ui74-reaction-source-" + id + ".png");

@@ -83,8 +83,9 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.Characters.Pinned, "The Characters tab opens with a click.");
         }
 
-        // UI-424: every source is a whole tile with its whole title in the panel, which ends above the bottom row; the card
-        // with the longest text opens its details beside the panel, whose width and columns stay.
+        // UI-424: every source is a whole tile with its whole title in the panel, which ends above the bottom row; UI-446
+        // (owner): a click on the card with the longest text opens nothing, and hovering it unrolls its part in effect whole,
+        // while the panel's width and columns stay.
         private static async Task OpenEffects(TestScenarioRoom room, BoardScreen board, Shot shot)
         {
             PointerGestureEvents.ClickAt(board.TableEffects.Tab);
@@ -103,23 +104,36 @@ namespace Wotr.PlayTests
             Assert.That(width, Is.EqualTo(board.TableEffects.Arrangement.PanelWidth).Within(1f), "The arrangement's width · " + shot.Layout);
             var grid = EffectsPanelChecks.Grid(board);
             LayoutTests.Save(shot.Texture, $"ui424-effects-sources-{shot.Layout}.png");
-            PointerGestureEvents.ClickAt(LongestText(sources));
+            var longest = LongestText(board, sources);
+            var id = SourceId(longest);
+            PointerGestureEvents.ClickAt(longest);
+            await room.Settle();
+            EffectsPanelChecks.ClickOpensNothing(board, id, shot.Layout);
+            EffectsPanelChecks.UnrolledText(board, id, shot.Layout);
+            Assert.That(board.TableEffects.Root.layout.width, Is.EqualTo(width).Within(.5f), "The panel keeps its width · " + shot.Layout);
+            EffectsPanelChecks.SameGrid(grid, EffectsPanelChecks.Grid(board), shot.Layout);
+            EffectsPanelChecks.PanelAboveBottomRow(board, shot.Layout);
+            LayoutTests.Save(shot.Texture, $"ui424-effects-details-{shot.Layout}.png");
             // The pointer leaves the tile for the panel's header, so the hovered text rolls back (UI-221).
             CardGestures.Move(board.TableEffects.Root.Q(className: "panel-header"));
             await room.Settle();
-            Assert.That(board.TableEffects.Root.layout.width, Is.EqualTo(width).Within(.5f), "The panel keeps its width · " + shot.Layout);
-            EffectsPanelChecks.SameGrid(grid, EffectsPanelChecks.Grid(board), shot.Layout);
-            EffectsPanelChecks.DetailsBesideThePanel(board, shot.Layout);
-            EffectsPanelChecks.PanelAboveBottomRow(board, shot.Layout);
-            LayoutTests.Save(shot.Texture, $"ui424-effects-details-{shot.Layout}.png");
         }
 
-        // The table card whose Event and Combat text is the longest.
-        private static Button LongestText(System.Collections.Generic.IEnumerable<Button> sources) => sources
-            .Where(button => CardLibrary.Cards.ContainsKey(button.name.Substring("effect-source-".Length)))
-            .OrderByDescending(button => Length(CardLibrary.Cards[button.name.Substring("effect-source-".Length)])).First();
+        // The card source whose shown text is the longest: a source unrolls only its part in effect (UI-446).
+        private static Button LongestText(BoardScreen board, System.Collections.Generic.IEnumerable<Button> sources)
+        {
+            var shown = EffectsPresentation.Sources(board.View).Where(source => CardLibrary.Cards.ContainsKey(source.SourceId))
+                .GroupBy(source => source.SourceId).ToDictionary(group => group.Key, group => ShownLength(group.First()));
+            return sources.Where(button => shown.ContainsKey(SourceId(button))).OrderByDescending(button => shown[SourceId(button)]).First();
+        }
 
-        private static int Length(CardText card) => card.Event.Length + card.Combat.Length;
+        private static int ShownLength(EffectSource source)
+        {
+            var card = CardLibrary.Cards[source.SourceId];
+            return EffectsPresentation.CombatPart(source) ? card.Combat.Length : card.Event.Length;
+        }
+
+        private static string SourceId(Button tile) => tile.name.Substring("effect-source-".Length);
 
         private static async Task OpenStrikeObjects(TestScenarioRoom room, BoardScreen board, Shot shot)
         {
@@ -146,7 +160,7 @@ namespace Wotr.PlayTests
                 }
             }
             // The edge panels open between the top bar and the bottom row (the console's row); UI-424: the Effects panel with
-            // every source and its details card as well.
+            // every source as well, and UI-446 a removal's details, which stand inside it while the removal is paid.
             var table = Rect.MinMaxRect(screen.xMin, board.TopBar.Root.worldBound.yMax, screen.xMax, EffectsPanelChecks.BottomRow(board));
             if (Shown(board.Characters.Root))
                 Inside(board.Characters.Root.worldBound, table, "characters-panel above the bottom row · " + layout);

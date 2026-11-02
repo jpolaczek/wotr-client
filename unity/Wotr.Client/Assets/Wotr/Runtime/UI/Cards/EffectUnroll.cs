@@ -4,8 +4,9 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // UI-221: the complete text of a hovered table source unrolls on parchment under its tile, over the other
-    // sources, like a hand card (UI-91). It only shows text: it takes no pointer and sends nothing.
+    // UI-221: the text of a hovered table source unrolls on parchment under its tile, over the other sources, like a
+    // hand card (UI-91); UI-446: a card's only in the part in effect. It only shows text: it takes no pointer and sends
+    // nothing.
     internal sealed class EffectUnroll
     {
         public VisualElement Root { get; } = new VisualElement { name = "effect-unroll", pickingMode = PickingMode.Ignore };
@@ -29,7 +30,7 @@ namespace Wotr.Client
             var isCard = CardLibrary.Cards.TryGetValue(source.SourceId, out var printed);
             if (isCard)
             {
-                card.Show(printed, CardLibrary.EventText(printed, configuration), false);
+                card.Show(printed, CardLibrary.EventText(printed, configuration), false, EffectsPresentation.CombatPart(source));
                 if (card.Root.parent != Root)
                     Root.Insert(0, card.Root);
             }

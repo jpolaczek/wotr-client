@@ -19,6 +19,11 @@ namespace Wotr.Client
     {
         public static string Key(string source, Side owner) => owner + ":" + source;
 
+        // UI-446 (owner): a card source shows only the part of the card in effect — its Combat text when every effect it
+        // has lasts a battle or a combat round, otherwise its Event text (a table card's, a lasting event's).
+        public static bool CombatPart(EffectSource source) => source != null && source.Effects.Count > 0 &&
+            source.Effects.All(effect => effect.Duration is "EndBattle" or "EndCombatRound");
+
         public static IReadOnlyList<EffectSource> Sources(PlayerView view)
         {
             var sources = new Dictionary<string, EffectSource>();

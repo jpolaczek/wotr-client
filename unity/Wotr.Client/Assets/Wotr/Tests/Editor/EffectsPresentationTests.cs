@@ -64,6 +64,8 @@ namespace Wotr.Tests
             Assert.AreEqual("No active effects", table.Root.Q<Label>("effects-empty").text);
         }
 
+        // UI-446 (owner): an ability's tile is read only — its descriptions unroll as plain text on hover (EffectsLayoutTests)
+        // — and neither a click nor Inspect opens details or a card text block for it.
         [Test]
         public void PublicAbilityHasDistinctReadableDescriptionsAndNoCardAssumption()
         {
@@ -76,9 +78,15 @@ namespace Wotr.Tests
             view.Effects.Add(effect);
             var table = Panel();
             table.Apply(view);
+            var tile = table.Root.Q<Button>("effect-source-" + effect.SourceId);
+            Assert.IsTrue(ReadOnlyControl.Is(tile), "A click on the ability does nothing.");
+            Assert.AreEqual("Théoden · A public ability in play", tile.tooltip);
+            Assert.IsFalse(tile.ClassListContains("effect-card-tile"), "An ability is not a card.");
             table.Inspect(effect.SourceId);
-            Assert.AreEqual(effect.Description, table.Root.Q<Label>("effect-description-ability").text);
-            Assert.IsNotNull(table.Root.Q<Button>("effect-locate-helms-deep"));
+            Assert.IsTrue(table.IsOpen);
+            Assert.IsEmpty(table.SelectedSource, "Reading a source selects nothing.");
+            Assert.AreEqual(DisplayStyle.None, table.Details.style.display.value, "No details open for a read source.");
+            Assert.IsNull(table.Root.Q<Button>("effect-locate-helms-deep"), "Outside a removal no details hold a place.");
             Assert.IsNull(table.Root.Q("effect-card"), "An ability has no card text block.");
         }
 
@@ -100,7 +108,9 @@ namespace Wotr.Tests
             Assert.AreEqual(EffectsPresentation.Key("base.fp.strategy.02", Side.FreePeoples), sources.Single(s => s.Title == "A Power too Great").Key);
         }
 
-        // UI-414 (owner): a place shows its button once in a source, and none where the effect's text names it.
+        // UI-414 (owner): a place shows its button once in a source, and none where the effect's text names it. UI-446: a
+        // source's details, with its places' buttons, show only while its removal is paid, so each check prepares one (the
+        // removal is only the way to the details here).
         [Test]
         public void APlaceShowsItsButtonOnceAndNotWhereTheTextNamesIt()
         {
@@ -108,29 +118,47 @@ namespace Wotr.Tests
             view.Effects.Add(Effect("one", "rivendell", "EndTurn"));
             view.Effects.Add(Effect("two", "rivendell", "EndBattle"));
             view.Effects.Add(Ability("ban", "erebor", "Corrupted ruler · Dáin", "Leaders and Elites cannot be recruited in Erebor."));
-            var table = Panel();
+            var table = Payable();
             table.Apply(view);
             table.Inspect("base.fp.strategy.02");
+            Assert.IsEmpty(table.Root.Query<Button>("effect-locate-rivendell").ToList(), "Reading a source shows no details.");
+            PrepareRemoval(table, view, "base.fp.strategy.02");
+            Assert.AreEqual(DisplayStyle.Flex, table.Details.style.display.value);
             Assert.AreEqual(1, table.Root.Query<Button>("effect-locate-rivendell").ToList().Count, "Rivendell shows once.");
-            table.Inspect("kings.character.dain.corrupted");
+            PrepareRemoval(table, view, "kings.character.dain.corrupted");
+            Assert.AreEqual("Corrupted ruler · Dáin", table.Root.Q<Label>("effect-detail-title").text);
             Assert.IsNull(table.Root.Q<Button>("effect-locate-erebor"), "The text names Erebor.");
         }
 
+        // UI-446 (owner): a plain click opens nothing, so a source's details show only while its removal is paid; there they
+        // follow the source's updates, say when it ended and go with the payment. The pinned details of a source read and
+        // then ended (UI-94's "Effect ended" outside a payment) no longer exist, so this case no longer asserts them.
         [Test]
         public void UpdatesKeepSourceControlsAndPinnedEndedInformationButRemoveTheirActions()
         {
             var view = new PlayerView { MatchId = "effects" };
             view.Effects.Add(Effect("local", "rivendell"));
-            var table = Panel();
+            var table = Payable();
             table.Apply(view);
-            table.Inspect("base.fp.strategy.02");
             var source = table.Root.Q<Button>("effect-source-base.fp.strategy.02");
             var card = CardLibrary.Cards["base.fp.strategy.02"];
+            table.Inspect("base.fp.strategy.02");
+            Assert.IsTrue(table.IsOpen);
+            Assert.IsEmpty(table.SelectedSource, "Reading a source selects nothing.");
+            Assert.AreEqual(DisplayStyle.None, table.Details.style.display.value, "No details open for a read source.");
+            Assert.IsTrue(ReadOnlyControl.Is(source), "A click on a source without a removal does nothing.");
+            Assert.AreEqual("A Power too Great · A card in effect", source.tooltip);
+            var draft = PrepareRemoval(table, view, "base.fp.strategy.02");
+            var removal = table.Root.Q<Button>("remove-table-base.fp.strategy.02");
+            Assert.IsFalse(ReadOnlyControl.Is(source), "The lit tile prepares the removal as its × does.");
+            Assert.AreEqual(removal.tooltip, source.tooltip);
+            Assert.AreEqual("base.fp.strategy.02", table.SelectedSource);
+            Assert.AreEqual(DisplayStyle.Flex, table.Details.style.display.value, "The payment shows the source's details.");
             Assert.AreEqual("Free Peoples · In play", table.Root.Q<Label>("effect-detail-state").text);
-            Assert.AreEqual(card.Event, table.Root.Q<Label>("effect-card-event").text, "UI-94: the card's text is in the panel.");
-            Assert.AreEqual(CardTextFormat.Kind(card), table.Root.Q<Label>("effect-card-kind").text);
-            Assert.AreEqual(CardTextFormat.CombatHeading(card), table.Root.Q<Label>("effect-card-combat-heading").text);
-            Assert.AreEqual(card.Combat, table.Root.Q<Label>("effect-card-combat-text").text);
+            // Its card text block (hidden during the payment by LeftRail.uss) holds only the part in effect: the Event text.
+            Assert.AreEqual(card.Event, table.Details.Q<Label>("effect-card-event").text);
+            Assert.AreEqual(CardTextFormat.Kind(card), table.Details.Q<Label>("effect-card-kind").text);
+            Assert.AreEqual(DisplayStyle.None, table.Details.Q("effect-card-combat").style.display.value, "The Combat part is not in effect.");
             view.Revision++;
             view.Effects[0].ExpiryDescription = "At the end of this turn.";
             table.Apply(view);
@@ -140,11 +168,30 @@ namespace Wotr.Tests
             table.Apply(view);
             table.Context(System.Array.Empty<ComponentAction>(), true);
             Assert.IsNull(table.Root.Q<Button>(source.name));
-            Assert.AreEqual("Effect ended", table.Root.Q<Label>("effect-detail-state").text);
-            Assert.AreEqual(card.Event, table.Root.Q<Label>("effect-card-event").text, "An ended pinned source keeps its card text.");
-            Assert.IsTrue(table.Root.Q("effect-card").ClassListContains("effect-card-ended"));
+            Assert.AreEqual("Effect ended", table.Root.Q<Label>("effect-detail-state").text, "The paid source ended.");
+            Assert.IsTrue(table.Details.Q("effect-card").ClassListContains("effect-card-ended"));
             Assert.IsNull(table.Root.Q<Button>("remove-table-base.fp.strategy.02"));
             Assert.AreEqual("Effects · 0", table.Tab.text);
+            table.Draft(view, draft);
+            Assert.IsEmpty(table.SelectedSource, "The payment ends with its source.");
+            Assert.AreEqual(DisplayStyle.None, table.Details.style.display.value, "Nothing pinned stays after the payment.");
+        }
+
+        // UI-446 (owner): a card shows only its part in effect — its Combat text while every effect it has lasts a battle or
+        // a combat round, otherwise its Event text.
+        [Test]
+        public void ACardShowsItsCombatPartOnlyWhileEveryEffectLastsABattleOrARound()
+        {
+            var view = new PlayerView();
+            view.Effects.Add(Effect("battle", "rivendell", "EndBattle"));
+            view.Effects.Add(Effect("round", "lorien", "EndCombatRound"));
+            Assert.IsTrue(EffectsPresentation.CombatPart(EffectsPresentation.Sources(view).Single()));
+            view.Effects.Add(Effect("turn", "grey-havens", "EndTurn"));
+            Assert.IsFalse(EffectsPresentation.CombatPart(EffectsPresentation.Sources(view).Single()), "A lasting effect is the Event's.");
+            view.Effects.Clear();
+            view.Players.Add(new PlayerSummary { Side = Side.FreePeoples, TableCards = { "base.fp.strategy.02" } });
+            Assert.IsFalse(EffectsPresentation.CombatPart(EffectsPresentation.Sources(view).Single()), "A table card shows its Event.");
+            Assert.IsFalse(EffectsPresentation.CombatPart(null));
         }
 
         [Test]
@@ -238,6 +285,28 @@ namespace Wotr.Tests
         }
 
         private static TableEffectsView Panel() => new TableEffectsView(new VisualElement(), new MapCanvas(BoardPresentation.Load()));
+
+        // A panel with the decision tray it takes in while a removal is paid.
+        private static TableEffectsView Payable()
+        {
+            var table = Panel();
+            var tray = new VisualElement();
+            var dock = new VisualElement();
+            dock.Add(tray);
+            table.Attach(tray, dock);
+            return table;
+        }
+
+        // The removal of this source is offered and being paid, as its × or its lit tile prepares it.
+        private static TurnDraft PrepareRemoval(TableEffectsView table, PlayerView view, string source)
+        {
+            table.Context(new[] { new ComponentAction { Kind = CommandKind.DiscardProtection, CardId = source, Enabled = true } }, true);
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.DiscardProtection, "die");
+            draft.Change(p => p.CardId = source);
+            table.Draft(view, draft);
+            return draft;
+        }
 
         private static ActiveEffectView Effect(string id, string region, string duration = "UntilRemoved") => new ActiveEffectView
         {

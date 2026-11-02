@@ -682,7 +682,7 @@ Notification 2026-10-10 with the user's choice "View on the how card “ Hover o
 <a id="treść-karty-w-panelu-effects--ui-94"></a>
 ## Content of card in the Effects Panel — UI-94
 
-Notification 2026-10-11 with screen: all information from a separate window card display at the bottom of the Effects panel. Source click- card selects them, and under the ranges and term appears a small parchment as developed card in the hands: the icon of the type of event, type (e.g. " STRATEGY CARD · MUSTER EVENT ), full text of the event and the fight section (initiative, title, text). The title is once, in the heading of the detail; card (Free Peoples · In play or "Effect ended", then parchment is extinguished) replaces the window footer. The Effects entry no longer opens a floating preview card ; the capacity of the form and source without card They don't have parchment. card range does not repeat the shortcut of effect (says it card ) Location buttons and expiration date are in one row. When text would push the panel under the bottom pass (e.g. 768 px at 125% ), panel expands like an old window card at most to 55% width board , and the sources entries have one line; the new source or change of window returns to the width of the bar. When paying for the removal of parchment is hidden, because the place is the decision. The content is located above the bottom pass in four systems without changing. Since UI-424 (2026-11-02) the panel never widens: the details open on their own card beside the panel ([UI-424](#the-effects-panel-keeps-every-source-and-its-width--ui-424)).
+Notification 2026-10-11 with screen: all information from a separate window card display at the bottom of the Effects panel. Source click- card selects them, and under the ranges and term appears a small parchment as developed card in the hands: the icon of the type of event, type (e.g. " STRATEGY CARD · MUSTER EVENT ), full text of the event and the fight section (initiative, title, text). The title is once, in the heading of the detail; card (Free Peoples · In play or "Effect ended", then parchment is extinguished) replaces the window footer. The Effects entry no longer opens a floating preview card ; the capacity of the form and source without card They don't have parchment. card range does not repeat the shortcut of effect (says it card ) Location buttons and expiration date are in one row. When text would push the panel under the bottom pass (e.g. 768 px at 125% ), panel expands like an old window card at most to 55% width board , and the sources entries have one line; the new source or change of window returns to the width of the bar. When paying for the removal of parchment is hidden, because the place is the decision. The content is located above the bottom pass in four systems without changing. Since UI-424 (2026-11-02) the panel never widens: the details open on their own card beside the panel ([UI-424](#the-effects-panel-keeps-every-source-and-its-width--ui-424)); since [UI-446](#a-card-effect-shows-its-active-part--ui-446) a click opens no details at all and the hover text shows a card's active part.
 
 <a id="płynny-ruch-drużyny--ui-95"></a>
 ## Liquid movement Fellowship — UI-95
@@ -3090,7 +3090,8 @@ clicking a source (Captain of Despair) widened the whole panel to almost the scr
   points): a long two-line name takes 11.5 points in a regular tile; with a × in three or four columns the longest names
   of the catalogue take 9–10 points. A title measured before its style was resolved is measured again. An entry's border
   is always 2 points (gilt when selected), so selecting a source moves no title.
-- **A source's details open on their own card beside the panel** (`EffectDetailsPlace`, 288 points wide on the panel's
+- **A source's details open on their own card beside the panel** — retired by
+  [UI-446](#a-card-effect-shows-its-active-part--ui-446) (`EffectDetailsPlace`, 288 points wide on the panel's
   frame): the state ("Shadow · In play"), the scopes with their Locate buttons and expiry, and the card's text parchment
   wrap inside the card, which stands level with the panel's top and moves up only as far as it must to end above the
   bottom row. The grid neither moves nor widens; UI-94's reading width (up to 55 % of the board) and QUAL-19's compact
@@ -3239,3 +3240,31 @@ Playtest (owner's checklist):
 Tests: PlayMode `GlowingHintAuditTests.ScoutsBattleRegionAndRetreatAreLitOnScreen` (both layouts: the window open,
 Helm's Deep and Fords of Isen lit with exposed terrain; `ui434-scouts-*`), `BattleLayoutTests`,
 `BattleWindowNetworkTests`, `BoardRuleDeclineTests`, `Strategy01NetworkTests`, `FloatingWindowTests`.
+
+<a id="a-card-effect-shows-its-active-part--ui-446"></a>
+## A card effect shows its active part; no details beside the panel — UI-446 (2026-11-02)
+
+The owner: "if an effect comes from a card, we should show only the effect that is active; the other one need not show
+when we hover. The window that appears on the right after clicking an effect is to be removed." This supersedes UI-94's
+click that shows a source and UI-424's details card beside the panel.
+
+- **The hover text** (UI-221, `EffectUnroll`): a card shows its heading and only the part in effect — its Event text, or,
+  for a source whose every effect lasts a battle or a combat round, its Combat text (`EffectsPresentation.CombatPart`,
+  from the projected `Duration`). Every card effect the server projects today is an Event's (a table card, a lasting
+  event), so the Combat part no longer shows in the panel. An ability or effect still unrolls its descriptions.
+- **A click** opens nothing and selects nothing: it discards a red table card (UI-430), uses a card the decision uses
+  (UI-272), or — the board rule of UI-430 — prepares the removal the tile's × offers when the tile is lit for it.
+  Otherwise the tile is read only (`ReadOnlyControl`: no hover frame, no press, it keeps its plate and parchment) and its
+  tooltip names it ("Wizard's Staff · A card in effect").
+- **A removal being paid** keeps its details (state, scopes, expiry) inside the panel above the payment, as before; the
+  details never stand beside the panel (`EffectDetailsPlace` is gone).
+- `TableEffectsView.Inspect` opens the panel and unrolls the source's text as a hover does (`UnrolledSource`).
+
+Playtest (owner's checklist):
+- [ ] Testing catalog `layout-effects-sources`. Hover a card tile: only its Event text unrolls (no Combat part). Click a
+  plain tile: nothing opens on the right and the tile does not press. In a game with The Nazgûl Strike! the red tiles'
+  click still discards; with a removal offered, the lit tile's click starts the removal like its ×.
+
+Tests: EditMode `EffectsPresentationTests`, `LordsFinalCardsTests`; PlayMode `EffectsLayoutTests`, `EffectsNetworkTests`,
+`LayoutStressScenarioTests`, `ClickInspectionTests`, `CardPackNetworkTests`, `LordsFinalCardsNetworkTests`,
+`CorruptedEffectsMenuTests`, `WindowFamilyNetworkTests`, with the shared `EffectsPanelChecks`.

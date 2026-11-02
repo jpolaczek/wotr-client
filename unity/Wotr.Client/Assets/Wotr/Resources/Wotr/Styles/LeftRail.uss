@@ -475,30 +475,21 @@
 #board-screen .effects-panel .effect-entry > Label { width: 18px; min-width: 18px; margin: 0 2px 0 0; padding: 0; flex-shrink: 0; }
 #board-screen .effects-panel .effect-source { min-height: 0; padding: 4px 4px; }
 #board-screen .effects-panel .effect-remove { margin: 0 0 0 2px; flex-shrink: 0; }
-/* UI-424: a source's details (state, expiry, the card's text) open on their own card beside the panel, level with its top
-   and moved up only as far as they must to end above the bottom row (EffectDetailsPlace), so the panel keeps its width and
-   its grid stays where it is. While a removal is paid they stand inside the panel above the payment, as before. */
+/* UI-446 (owner): no details card beside the panel; a source's details show only while its removal is paid, inside the
+   panel above the payment. */
 #board-screen .effects-panel > #effects-source-details {
-    position: absolute;
-    left: 100%;
-    top: 0;
-    width: 288px;
-    margin: 0 0 0 6px;
-    padding: 8px 10px 10px 10px;
-    border-top-width: 0;
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
-}
-#board-screen .effects-panel.preparing-effect-removal > #effects-source-details {
     position: relative;
-    left: 0;
-    width: auto;
     margin: 3px 0 0 0;
     padding: 3px 0 0 0;
     border-top-width: 1px;
     background-image: none;
 }
+/* UI-446: a tile whose click does nothing now is read only (no hover frame, no press) but keeps its plate. */
+#board-screen .effects-panel .effect-source.action.read-only,
+#board-screen .effects-panel .effect-source.action.read-only:hover,
+#board-screen .effects-panel .effect-source.action.read-only:focus,
+#board-screen .effects-panel .effect-source.action.read-only.pressed { background-image: resource("Wotr/Art/UI/frames/button"); }
+#board-screen .effects-panel .effect-source.effect-card-tile.action.read-only,
+#board-screen .effects-panel .effect-source.effect-card-tile.action.read-only:hover,
+#board-screen .effects-panel .effect-source.effect-card-tile.action.read-only:focus,
+#board-screen .effects-panel .effect-source.effect-card-tile.action.read-only.pressed { background-image: resource("Wotr/Art/UI/cards/parchment"); }

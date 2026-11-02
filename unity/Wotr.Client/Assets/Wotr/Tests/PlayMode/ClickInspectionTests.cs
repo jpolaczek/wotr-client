@@ -110,9 +110,17 @@ namespace Wotr.PlayTests
                 var revision = board.View.Revision;
                 await Inspect(board.TableEffects.Tab, () => board.TableEffects.IsOpen, room, board.TableEffects.Root);
                 var source = board.TableEffects.Root.Query<Button>(className: "effect-source").First();
-                await Inspect(source, () => board.TableEffects.SelectedSource.Length > 0, room);
-                Assert.IsNotEmpty(board.TableEffects.Root.Q<Label>("effect-card-event").text, "UI-94: the card text is in the panel.");
+                var id = source.name.Substring("effect-source-".Length);
+                var side = board.View.You.ToString();
+                // UI-446 (owner): hovering or focusing a source unrolls its text in the panel (UI-94), which is how it is read,
+                // and opens nothing; a click on the read-only source opens nothing either.
+                await Silent(source, room);
+                EffectsPanelChecks.UnrolledText(board, id, side);
+                Assert.IsEmpty(board.TableEffects.SelectedSource, "Hover/focus selects nothing.");
                 Assert.IsEmpty(board.Cards.CardId);
+                PointerGestureEvents.ClickAt(source);
+                await room.Settle();
+                EffectsPanelChecks.ClickOpensNothing(board, id, side);
                 Assert.AreEqual(revision, board.View.Revision);
             }
         }

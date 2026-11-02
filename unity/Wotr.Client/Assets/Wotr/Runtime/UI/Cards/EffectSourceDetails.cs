@@ -47,10 +47,10 @@ namespace Wotr.Client
             var located = new HashSet<string>();
             foreach (var group in source.Effects.GroupBy(e => (e.Description, e.Modifier, Expiry: EffectsPresentation.Expiry(e))))
                 scopes.Add(Scope(source, group.ToList(), group.Key.Expiry, text != null, located));
-            // UI-94: a card source shows its complete Event and Combat text here instead of in a card window.
+            // UI-94: a card source shows its text here instead of in a card window (UI-446: the part in effect).
             if (text != null)
             {
-                card.Show(text, cardText, ended);
+                card.Show(text, cardText, ended, EffectsPresentation.CombatPart(source));
                 Root.Add(card.Root);
             }
             ShowsCard = text != null;
