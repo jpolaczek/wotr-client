@@ -22,6 +22,8 @@ namespace Wotr.Client
         public CharacterAbilityChips Abilities { get; } = new CharacterAbilityChips();
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
+        // UI-447: his portrait at the head of the title bar.
+        private readonly CharacterWindowPortrait portrait = new CharacterWindowPortrait();
         private readonly Label abilityHeading = Text("sovereign-ability");
         private readonly VisualElement badge = new VisualElement { name = "sovereign-window-status" };
         private readonly VisualElement badgeIcon = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -66,6 +68,7 @@ namespace Wotr.Client
             var header = BoardScreen.Row("character-header");
             header.AddToClassList("information-heading");
             FloatingWindow.MarkHandle(header);
+            header.Add(portrait.Root);
             header.Add(title);
             badge.AddToClassList("sovereign-window-status");
             badgeIcon.AddToClassList("sovereign-window-status-icon");
@@ -105,6 +108,7 @@ namespace Wotr.Client
             var same = sovereign.Id == shown;
             shown = sovereign.Id;
             Set(title, sovereign.Title, same);
+            portrait.Apply(SovereignPortrait.ArtOf(sovereign), sovereign.Status == SovereignStatus.Corrupted ? Side.Shadow : Side.FreePeoples);
             Status(sovereign.Status, same);
             Place.Apply(PlacePresentation.For(sovereign, data.Regions));
             Corruption(sovereign, same);

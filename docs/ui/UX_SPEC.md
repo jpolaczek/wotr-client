@@ -3268,3 +3268,25 @@ Playtest (owner's checklist):
 Tests: EditMode `EffectsPresentationTests`, `LordsFinalCardsTests`; PlayMode `EffectsLayoutTests`, `EffectsNetworkTests`,
 `LayoutStressScenarioTests`, `ClickInspectionTests`, `CardPackNetworkTests`, `LordsFinalCardsNetworkTests`,
 `CorruptedEffectsMenuTests`, `WindowFamilyNetworkTests`, with the shared `EffectsPanelChecks`.
+
+<a id="a-characters-window-shows-its-portrait--ui-447"></a>
+## A character's window shows its portrait — UI-447 (2026-11-02)
+
+The owner, with a screenshot of Théoden's corrupted ruler window: "the character's window should also show its portrait
+or icon".
+
+- **A medallion at the head of the title bar** (`CharacterWindowPortrait`), before the name, in both window forms
+  (`CharacterInspector`, `SovereignInspector`, UI-436): a round 30-point gilt medallion holding the painted portrait of
+  the version the window shows (`PortraitArtwork`, the battle portraits; a version tab or another character changes
+  it), a ruler's of his state as the Sovereigns strip shows him (`SovereignPortrait.ArtOf`: awakened, corrupted), or the
+  figure's own art where no portrait exists (`FigureArtwork`). It takes no pointer, is written only when the version
+  changes, and the header and the window keep their size.
+
+Playtest (owner's checklist):
+- [ ] Open Characters, click Gimli: his portrait heads the window's title bar; click Gandalf the Grey and his White tab:
+  the medallion follows the version. In a Kings game click Théoden's portrait: his window shows his portrait (corrupted
+  once he is).
+
+Tests: EditMode `CharacterRosterPanelTests.TheCharacterWindowShowsThePortraitOfTheVersionItShows`; PlayMode
+`CharacterWindowLayoutTests`, `CharacterRosterLayoutTests`, `CharacterRosterPanelNetworkTests`, `SovereignPanelNetworkTests`,
+`SovereignSectionLayoutTests`, `RulerTokenMenuTests`.

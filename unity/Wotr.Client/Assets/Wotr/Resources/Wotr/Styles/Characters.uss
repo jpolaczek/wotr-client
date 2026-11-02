@@ -348,3 +348,18 @@
     height: 17px;
     margin: 0 0 1px 2px;
 }
+
+/* UI-447 (owner): the window's character as a round gilt medallion at the head of its title bar, before the name; the
+   portrait fills it (cropped), the header keeps its height. */
+#board-screen .character-window > .character-header > .character-window-portrait {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    margin: 0 7px 0 -8px;
+    flex-shrink: 0;
+    border-width: 1px;
+    border-radius: 15px;
+    border-color: rgb(214, 170, 86);
+    background-color: rgb(46, 34, 24);
+    -unity-background-scale-mode: scale-and-crop;
+}

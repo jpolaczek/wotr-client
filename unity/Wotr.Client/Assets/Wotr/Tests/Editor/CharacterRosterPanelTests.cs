@@ -219,6 +219,25 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { paid }, used);
         }
 
+        // UI-447 (owner): the window shows who it is about — the shown version's portrait at the head of its title bar.
+        [Test]
+        public void TheCharacterWindowShowsThePortraitOfTheVersionItShows()
+        {
+            var view = Read("CharacterRosterWire.json");
+            var inspector = new CharacterInspector(BoardPresentation.Load(), _ => { }, () => { }, () => { });
+            Assert.IsTrue(inspector.Apply(view, "base.character.gimli"));
+            var portrait = inspector.Root.Q(CharacterWindowPortrait.ClassName);
+            Assert.IsNotNull(portrait, "The medallion stands in the window.");
+            Assert.AreSame(inspector.Root.Q(className: "character-header"), portrait.parent, "It heads the title bar.");
+            var gimli = PortraitArtwork.Sprite(inspector.DefinitionId);
+            Assert.IsNotNull(gimli, "Gimli has a painted portrait.");
+            Assert.AreSame(gimli, inspector.Portrait.Shown, "The painted portrait of the version shown.");
+            Assert.AreEqual(PickingMode.Ignore, portrait.pickingMode, "It takes no pointer.");
+            Assert.IsTrue(inspector.Apply(view, "base.character.strider"));
+            Assert.AreSame(PortraitArtwork.Sprite(inspector.DefinitionId), inspector.Portrait.Shown, "Another character, his portrait.");
+            Assert.AreNotSame(gimli, inspector.Portrait.Shown);
+        }
+
         private static ComponentAction Politics(string ability, bool enabled) => new ComponentAction
         {
             Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility, Enabled = enabled, Detail = "Move the Dwarves one step toward war.",

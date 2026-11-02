@@ -127,9 +127,12 @@ namespace Wotr.Client
             return image;
         }
 
-        // An Initial king shows his awakened portrait, dimmed; a Corrupted one his corrupted portrait.
-        private string Art(SovereignView king) => king.DefinitionId.Length > 0 ? king.DefinitionId
-            : "kings.character." + id.Substring(id.LastIndexOf('.') + 1) + ".awakened";
+        // An Initial king shows his awakened portrait, dimmed; a Corrupted one his corrupted portrait (UI-447: his window
+        // shows the same).
+        public static string ArtOf(SovereignView king) => king.DefinitionId.Length > 0 ? king.DefinitionId
+            : "kings.character." + king.Id.Substring(king.Id.LastIndexOf('.') + 1) + ".awakened";
+
+        private static string Art(SovereignView king) => ArtOf(king);
 
         private void Status(SovereignStatus value)
         {

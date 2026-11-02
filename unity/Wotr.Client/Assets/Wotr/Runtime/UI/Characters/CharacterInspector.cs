@@ -29,6 +29,8 @@ namespace Wotr.Client
         public AvailabilityRows Limits { get; } = new AvailabilityRows("character-limits");
         private readonly BoardPresentation data;
         private readonly Label title = BoardScreen.Title("");
+        // UI-447: the shown version's portrait at the head of the title bar.
+        public CharacterWindowPortrait Portrait { get; } = new CharacterWindowPortrait();
         private readonly Label edition = Text("character-edition");
         private readonly Label state = Text("character-state");
         private readonly Label abilityHeading = Text("character-ability-heading");
@@ -53,6 +55,7 @@ namespace Wotr.Client
             pulse = new ChoicePulse(Root);
             FloatingWindow.MarkHandle(header);
             header.Add(HeaderGlow());
+            header.Add(Portrait.Root);
             header.Add(title);
             edition.AddToClassList("character-edition");
             header.Add(edition);
@@ -133,6 +136,7 @@ namespace Wotr.Client
         private void Refresh()
         {
             title.text = version.Length > 0 ? CharacterLibrary.Name(version) : row.Title;
+            Portrait.Apply(version.Length > 0 ? version : row.CurrentDefinitionId, row.Side);
             edition.text = version.Length > 0 ? CharacterLibrary.Edition(version) : "";
             edition.tooltip = edition.text.Length > 0 ? "Card version · " + edition.text : "";
             edition.style.display = edition.text.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
