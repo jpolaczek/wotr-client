@@ -14,13 +14,20 @@
 #board-screen .dice-panel .available-dice .die.die-shadow { margin-bottom: 1px; }
 #board-screen .dice-panel.dense-resources .available-dice .die.die-free,
 #board-screen .dice-panel.dense-resources .available-dice .die.die-shadow { width: 32px; min-width: 32px; height: 32px; min-height: 32px; margin: 0 3px 3px 0; }
-/* Games with Lords or Kings keep the same height; their reserves (ruler and council tokens, special dice
-   pools) stand in a second column beside the dice, so only the panel's width differs from the base game. */
-#board-screen .dice-panel.expanded-resources { width: 432px; }
+/* Games with Lords or Kings keep the same height; their dice column is wide enough for six dice a row, with the
+   counters under the dice as in the base game (the column keeps a few points beyond six dice of 35 px, so a scaled
+   layout never wraps the sixth). UI-467 (owner, 2026-11-03): only the tokens (Ruler, Dismay, Council) stand in a
+   narrow second column, three a row (the fullest pool, five Dismay and two Council tokens, in three rows), and only in
+   a game that has them, so the console keeps a wide hint line (the panel was 432 px with the counters spread beside
+   the dice). */
+#board-screen .dice-panel.expanded-resources { width: 230px; }
+#board-screen .dice-panel.expanded-resources.token-column { width: 336px; }
 #board-screen .dice-panel.expanded-resources .own-resource-columns { flex-direction: row; align-items: flex-start; }
-#board-screen .dice-panel.expanded-resources .own-resource-columns > .available-dice { width: 210px; }
-#board-screen .dice-panel.expanded-resources .own-resource-reserves { flex-grow: 1; flex-basis: 0; margin-left: 8px; }
-#board-screen .dice-panel.expanded-resources .dice-header { width: 210px; }
+#board-screen .dice-panel.expanded-resources .own-dice-column { width: 214px; }
+#board-screen .dice-panel.expanded-resources .own-resource-reserves { display: none; }
+#board-screen .dice-panel.expanded-resources.token-column .own-resource-reserves { display: flex; width: 100px; margin-left: 6px; }
+#board-screen .dice-panel.expanded-resources.token-column .own-resource-reserves .pool-tokens { flex-wrap: wrap; margin: 0; }
+#board-screen .dice-panel.expanded-resources.token-column .own-resource-reserves .pool-tokens > Button { margin: 0 3px 3px 0; }
 
 .turn-console {
     flex-grow: 1;

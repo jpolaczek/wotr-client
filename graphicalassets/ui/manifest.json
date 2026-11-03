@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "aa7d5f0681bda906adca851beb8d2166683fdfdbab60ada410cccdd50b5ebfd5",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "28ad8c5ccd0341d877097644800d2a1a247bb6ea94bb260f0e477271ea68b0b8"
+    "assets.json": "1df1021ebfcde8606e87f71133ad8e66f63985540f4ebdbf97726a114d67f261"
   },
   "assets": [
     {
@@ -342,6 +342,22 @@
       "alpha": true,
       "source_sha256": "0467504e1ba496592208e96e0500d6a17de317872053a738d24c2d1de3cf4b67",
       "png_sha256": "97cca4598c5e66f5cec5749f91b964164c0964d068fa10183eda4a8b3fb6f600"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/panel-header-free-lacquer.png",
+      "source": "src/frames/panel-header.svg",
+      "variant": "free-lacquer",
+      "logical": [
+        120,
+        32
+      ],
+      "pixels": [
+        240,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "0467504e1ba496592208e96e0500d6a17de317872053a738d24c2d1de3cf4b67",
+      "png_sha256": "0e33f14a7c8436571bdca30fbb35bf8641c1c74c94523e92a035325121ae4cd6"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frames/button-square.png",

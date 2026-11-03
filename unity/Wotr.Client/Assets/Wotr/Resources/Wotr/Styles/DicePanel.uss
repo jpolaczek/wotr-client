@@ -37,6 +37,8 @@
     -unity-slice-left: 32;
     -unity-slice-scale: 0.5px;
 }
+/* UI-466 (owner): the Free Peoples' band is blue lacquer; the Shadow keeps the red one. */
+#board-screen .dice-panel .dice-header.dice-header-free { background-image: resource("Wotr/Art/UI/frames/panel-header-free-lacquer"); }
 #board-screen .dice-panel .dice-header > .title {
     margin: 0;
     padding: 0;

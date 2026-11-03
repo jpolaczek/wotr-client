@@ -8,11 +8,15 @@ namespace Wotr.Client
 {
     public sealed class ActionPoolView
     {
-        // The own panel's header band in red lacquer names the side (UI-173: without Help links).
+        // UI-466 (owner, 2026-11-03): the Free Peoples' band is blue lacquer, unlike the Shadow's red one.
+        public const string FreePeoplesHeaderClass = "dice-header-free";
+
+        // The own panel's header band names the side (UI-173: without Help links), in its side's lacquer (UI-466).
         private static VisualElement Header(Side side)
         {
             var header = BoardScreen.Row("dice-header");
             header.name = "dice-header";
+            header.EnableInClassList(FreePeoplesHeaderClass, side == Side.FreePeoples);
             var title = BoardScreen.Title(BoardScreen.SideName(side).ToUpperInvariant());
             title.AddToClassList("dice-side-title");
             header.Add(title);
@@ -98,18 +102,30 @@ namespace Wotr.Client
             return label;
         }
 
+        // UI-467 (owner, 2026-11-03): the counters stand under the dice, as in the base game; beside the dice only a narrow
+        // column of tokens, in a game that has them, so the panel stays compact and the console's hint line wide.
         private void OwnResources(VisualElement root, VisualElement available, PlayerView view, Side side)
         {
+            root.EnableInClassList(TokenColumnClass, HasTokens(view, side));
             var columns = new VisualElement { name = "own-resource-columns" };
             columns.AddToClassList("own-resource-columns");
             root.Add(columns);
-            columns.Add(available);
+            var dice = new VisualElement { name = "own-dice-column" };
+            dice.AddToClassList("own-dice-column");
+            columns.Add(dice);
+            dice.Add(available);
+            Locations(dice, view, side);
             var reserves = new VisualElement { name = "own-resource-reserves" };
             reserves.AddToClassList("own-resource-reserves");
             columns.Add(reserves);
-            Locations(reserves, view, side);
             Tokens(reserves, view, side);
         }
+
+        public const string TokenColumnClass = "token-column";
+
+        // Kings' Ruler and Dismay tokens, or the Shadow's Council tokens: the game's tokens stand beside the dice.
+        private static bool HasTokens(PlayerView view, Side side) =>
+            view.Configuration.Kings || CouncilTokenSlots.Shown(view, side);
 
         // Compare the small public resource projection; unrelated board updates retain controls and focus.
         private static string Snapshot(PlayerView view, Side side, bool own) =>

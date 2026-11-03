@@ -22,6 +22,10 @@
       "--button-top": "#6a2019",
       "--button-bottom": "#2e0d0b"
     },
+    "free-lacquer": {
+      "--lacquer-red-top": "#1d4466",
+      "--lacquer-red-bottom": "#0a1b2c"
+    },
     "free": {
       "--enamel-light": "#2f5f82",
       "--enamel-mid": "#183c58",
@@ -736,7 +740,10 @@
     },
     {
       "source": "frames/panel-header.svg",
-      "role": "Panel header band in red lacquer with gilt rules.",
+      "role": "Panel header band in red lacquer with gilt rules; UI-466: the free-lacquer variant in blue lacquer heads the Free Peoples' own dice panel.",
+      "variants": [
+        "free-lacquer"
+      ],
       "slices": {
         "top": 8,
         "right": 16,

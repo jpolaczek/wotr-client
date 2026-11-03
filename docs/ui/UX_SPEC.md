@@ -3843,3 +3843,42 @@ Playtest (owner's checklist):
   plain range. Expect: the drop moves him there with Far-sighted, as the click did.
 - [ ] Same scenario, when the Free Peoples' pool also shows a standard Character die: choose it instead of the Ruler die.
   Expect: Thranduil's figure glows without the Far-sighted line and lights only his plain range.
+
+<a id="the-free-peoples-band-is-blue--ui-466"></a>
+## The Free Peoples' side band is blue — UI-466 (2026-11-03)
+
+The owner: "the bar at the bottom left that shows Free Peoples should be blue for the Free Peoples, unlike the red one
+for the Shadow". The own dice panel's header band (`ActionPoolView.Header`) takes `dice-header-free` for the Free
+Peoples and shows `frames/panel-header-free-lacquer`: the same gilt-ruled band as `frames/panel-header` in blue lacquer
+(the `free-lacquer` variant of `graphicalassets/ui`, which overrides only the lacquer tokens). The Shadow keeps the red
+band; every other panel header is unchanged.
+
+Playtest (owner's checklist):
+- [ ] Any Free Peoples game. Expect: the band at the bottom left reading FREE PEOPLES is blue with its gilt rule.
+- [ ] Any Shadow game. Expect: the band reading SHADOW stays red.
+
+Tests: PlayMode `DicePanelLayoutTests` (both sides in four layouts: blue band for the Free Peoples, red for the Shadow).
+
+<a id="a-compact-dice-panel-in-expansion-games--ui-467"></a>
+## A compact dice panel in expansion games — UI-467 (2026-11-03)
+
+The owner (with a screenshot of a Ruler token): "in some cases, e.g. when there is a token to spend, the panel on the left
+widens a lot and the bar with instructions shrinks; the left part should be designed more compactly, with less free
+space, which leaves room for a bigger bar with hints on what to click". In a Lords or Kings game the own dice panel was
+432 px: the dice in a 210 px column and, beside them, a second column as wide holding the counters spread across it and
+the tokens below. Now the counters (spent, Hunt, out, the Fellowship Box) stand under the dice as in the base game
+(`ActionPoolView.OwnResources`, `own-dice-column`), and beside the dice only a 100 px column of tokens, three a row (Kings'
+Ruler and Dismay tokens, the Shadow's Council tokens), and only in a game that has them (`token-column`). The panel is
+230 px without tokens and 336 px with them (the fullest pool, five Dismay and two Council tokens, fits in three rows); its height is unchanged, the header band spans the panel, and the console
+takes the width freed.
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted` or any Kings game. Expect: the dice with the counters under them, the Ruler token beside the dice
+  in a narrow column; the console's hint line clearly wider than before.
+- [ ] A Lords game without the Council (e.g. `lords-sh-use-balrog-active`). Expect: no token column, the panel only as wide
+  as the dice.
+
+Tests: PlayMode `ExpansionMatrixLayoutTests` and `LayoutStressScenarioTests` (`ResourcesFit`: the own panel at most 336 px,
+every die, counter and token inside it without overlap, in 186 matrix views and the stress scenarios, four layouts),
+`DicePanelLayoutTests`, `TurnConsoleLayoutTests`, `RulerTokenMenuTests`, `CouncilTokenMenuTests`, `CompactBoardLayoutTests`,
+`InGameDenseLayoutTests`.
