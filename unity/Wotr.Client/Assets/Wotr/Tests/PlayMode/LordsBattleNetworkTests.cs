@@ -12,7 +12,7 @@ using static Wotr.PlayTests.KingsCardNetworkChecks;
 namespace Wotr.PlayTests
 {
     // UI-347 (EXP-15 D10, D12): the Lords choices of a battle stand on its objects. Orderly Withdrawal's cancelled hit is a
-    // "−1" on the Shadow's hits and the console's Pass keeps the hit; the Mouth of Sauron's Evil Knowledge is his portrait
+    // "−1" (UI-458: on the roll of the Free Peoples, who use it) and the console's Pass keeps the hit; the Mouth of Sauron's Evil Knowledge is his portrait
     // in the besieging column. No button repeats either.
     public class LordsBattleNetworkTests
     {
@@ -34,8 +34,10 @@ namespace Wotr.PlayTests
                 foreach (var id in new[] { BattleObjectChoices.WithdrawalCancel, OptionalDecline.WithdrawalKeep })
                     Assert.IsNull(client.Board.Tray.Q<Button>("effect-choice-" + id), id);
                 Assert.AreEqual(KeepTheHit, client.Board.Console.Actions.Pass.tooltip);
-                var pip = client.Board.Tray.Q<Button>("battle-hit-cancel-1");
-                Assert.IsNotNull(pip, "The −1 stands on the Shadow's hits.");
+                // UI-458 (owner, 2026-11-03): the −1 stands on the side that uses it — the defending Free Peoples' column.
+                Assert.IsNull(client.Board.Tray.Q("battle-attacker").Q<Button>("battle-hit-cancel-1"), "Not on the Shadow's column.");
+                var pip = client.Board.Tray.Q("battle-defender").Q<Button>("battle-hit-cancel-1");
+                Assert.IsNotNull(pip, "The −1 stands on the Free Peoples' own roll.");
                 Assert.IsTrue(pip.ClassListContains(ChoiceGlow.ClassName));
                 StringAssert.StartsWith("Cancel hit · withdraw", pip.tooltip);
                 // UI-419 (owner): the −1 pulses, and Skip effect in the battle window names what it skips.
@@ -47,7 +49,7 @@ namespace Wotr.PlayTests
                 var revision = client.Board.View.Revision;
                 if (cancel)
                 {
-                    await Layout(room, client, "orderly-withdrawal", "ui347");
+                    await Layout(room, client, "orderly-withdrawal", "ui458");
                     CardNetworkTests.Click(client.Board.Tray.Q<Button>("battle-hit-cancel-1"));
                 }
                 else

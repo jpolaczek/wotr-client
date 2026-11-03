@@ -181,6 +181,9 @@ The console replaces the present dock and has a **fixed height** of the entire l
   server's reply interrupted ✓ acts as ‘Check result’. UI-430 (owner, 2026-10-30): a Finish that ends a card's event
   (The Nazgûl Strike!, There is Another Way's Stay, Wind from the West) is this ✓ — lit while nothing else is chosen,
   `Finish · End <card> without …` — and no longer a button ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
+- UI-455 (owner, 2026-11-03): under the four, on a line of its own, a small **Cancel** (`console-cancel`) that is always
+  shown and greyed while there is nothing to cancel; its click drops the whole unsent draft
+  ([below](#ui-455)).
 - Other action components (form capabilities, expansions chips) belong to the panels of their
   objects (Characters, Dice & tokens), not to the console.
 
@@ -657,3 +660,33 @@ UI-430 (owner, 2026-10-30): The Nazgûl Strike! has no console options any more 
 panel, its Hunt roll the glowing Hunt Box and its Finish the ✓ ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)); the strip stays for other cards' options.
 Without options, a committed chip that does not fit its share of the line at its full text stands alone in the strip, so a
 card's name is never cut to "…" (UI-430; it was the UI-297 ellipsis).
+
+<a id="ui-455"></a>
+## The console's fixed Cancel — UI-455 (2026-11-03)
+
+The owner (translated): "after clicking and choosing the character to separate, a long, narrow Cancel button appears in the
+bottom panel; it must not be there. Instead there must be an additional small, default, always present Cancel among the
+console's other buttons (Back, Finish, etc.), disabled when there is nothing to cancel." This replaces UI-448's Cancel
+option (`RouteCancel`, `console-cancel-route`), which took the hint's place in the status line while a Fellowship route
+was drawn.
+
+- **Its place.** `ConsoleActions.Cancel` (`console-cancel`) stands on its own line under the 2 × 2 icons, as wide as their
+  column (80 × 22 pt, a short labelled button). It is always shown; the bottom bar keeps its 140 pt, and no other control
+  moves between states (the three lines stand centred in the action zone, so the four icons sit a few points higher than
+  before UI-455, once and for all).
+- **What it cancels** (`DraftCancel`): everything chosen since the last sent step — the die or token, the action, its
+  figures, regions, route and cost — at once, where ↶ undoes one step. A drawn Fellowship route keeps UI-298's rule
+  (`FellowshipDraft.CancelRoute`): a declaration ends, a reveal or a card's forced separation starts again. Every forced
+  step starts again too (`MandatoryDraft`, the step TurnInteraction applies to an empty draft): an action sequence's next
+  step with its spent die, losses, a reveal, a Guide.
+- **When it is enabled.** Only for the player's own decision, while the console takes input (not during a send, a hold or
+  offline), and only while its click would change the draft; otherwise it is greyed with `Cancel · Nothing chosen to
+  cancel`. Its tooltip names what it drops ("Clear the chosen companions and their route", "Clear the drawn route",
+  "Drop everything chosen since your last sent step"). It sends nothing.
+- The console's line keeps its hint while a route is drawn (no option replaces it), so the step's instruction stays in
+  view (UI-456).
+
+Tests: EditMode `DraftCancelTests` (the fifth button and its line, the whole draft dropped, a separation, a forced reveal, an
+action sequence), `WindowListsTests`; PlayMode `ConsoleCancelNetworkTests.ASeparationIsCancelledFromTheConsolesFixedCancel`
+(`fp-character-separate-companions`), `TurnConsoleLayoutTests` (Cancel shown under the four in eight layouts, every
+control in its place with and without a die), `FellowshipNetworkTests`, `CharacterNetworkTests`.

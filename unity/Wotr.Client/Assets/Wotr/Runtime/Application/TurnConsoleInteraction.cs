@@ -14,6 +14,7 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private readonly DecisionTray tray;
         private readonly Action back;
+        private readonly Action cancel;
         private readonly Action confirm;
         private readonly Action finish;
         private readonly Action decline;
@@ -33,13 +34,14 @@ namespace Wotr.Client
         // reinforcing: a card or ability recruitment plan is under way; the Reinforcements panel holds its choices
         // and its own ✓, so the decision window stays closed and the status opens that panel. finishOption: the path a
         // card's console option took (UI-214), which the ✓ takes for the card's Finish.
-        public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action confirm, Action finish,
+        public TurnConsoleInteraction(BoardScreen board, DecisionTray tray, Action back, Action cancel, Action confirm, Action finish,
             Action decline, Action<ConsoleOption> declineOption, Action<ConsoleOption> finishOption, Action<ComponentAction> component,
             Action<string> ring, Func<bool> reinforcing)
         {
             this.board = board;
             this.tray = tray;
             this.back = back;
+            this.cancel = cancel;
             this.confirm = confirm;
             this.finish = finish;
             this.decline = decline;
@@ -51,6 +53,7 @@ namespace Wotr.Client
             var console = board.Console;
             console.Status.Clicked += OpenDecisionHost;
             console.Actions.BackClicked += Back;
+            console.Actions.CancelClicked += Cancel;
             console.Actions.ConfirmClicked += Confirm;
             console.Actions.PassClicked += Pass;
             console.Actions.DiscardClicked += Discard;
@@ -109,6 +112,8 @@ namespace Wotr.Client
                 Tooltip("Discard", DiscardDetail(), CommandKind.DiscardDie, discard));
             ConsoleActions.Set(actions.Back, idle && (onBoard || FellowshipBack()) && (draft.Kind.HasValue || draft.Payload.DieId.Length > 0),
                 "Back · Undo the last unsent step");
+            // UI-455 (owner): the fixed Cancel drops the whole unsent draft; greyed while there is nothing to drop.
+            ConsoleActions.Set(actions.Cancel, idle && DraftCancel.Offered(view, draft), DraftCancel.Tooltip(view, draft));
             var finishing = Finishing();
             var card = CardChoice(onBoard) || PlacedChoice();
             var ending = CardFinish(onBoard);
@@ -228,6 +233,12 @@ namespace Wotr.Client
         {
             if (board.Console.Actions.Back.enabledSelf)
                 back();
+        }
+
+        private void Cancel()
+        {
+            if (board.Console.Actions.Cancel.enabledSelf)
+                cancel();
         }
 
         private void Confirm()
@@ -439,6 +450,7 @@ namespace Wotr.Client
             var console = board.Console;
             console.Status.Clicked -= OpenDecisionHost;
             console.Actions.BackClicked -= Back;
+            console.Actions.CancelClicked -= Cancel;
             console.Actions.ConfirmClicked -= Confirm;
             console.Actions.PassClicked -= Pass;
             console.Actions.DiscardClicked -= Discard;

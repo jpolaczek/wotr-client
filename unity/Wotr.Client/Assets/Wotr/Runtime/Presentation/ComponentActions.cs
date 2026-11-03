@@ -93,7 +93,9 @@ namespace Wotr.Client
                     Badge = AbilityBadges.For(option.Kind, option.RulerTravel.AbilityId),
                     Definition = CharacterLibrary.Version(view, "kings.sovereign.thranduil"),
                     Detail = "Far-sighted · " + TravelLabel(option.Kind),
-                    AbilityId = option.RulerTravel.AbilityId, Enabled = true
+                    // UI-456 (owner): Move companions waits for a companion outside the Fellowship.
+                    AbilityId = option.RulerTravel.AbilityId, Enabled = FarSightedMoves.Offered(option),
+                    Reason = FarSightedMoves.Reason(option)
                 };
             if (option.Kind == CommandKind.UseCouncilToken)
                 foreach (var token in option.EligibleIds)

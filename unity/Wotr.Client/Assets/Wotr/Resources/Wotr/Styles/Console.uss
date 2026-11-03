@@ -334,6 +334,19 @@
 .console-actions { width: 80px; flex-shrink: 0; flex-direction: row; flex-wrap: wrap; align-content: center; justify-content: space-between; }
 #board-screen .console-actions .console-action { width: 36px; min-width: 36px; height: 36px; min-height: 36px; margin: 2px 0; }
 #board-screen .console-actions .console-action:disabled { opacity: 0.4; }
+/* UI-455 (owner, 2026-11-03): a small Cancel on its own line under the four, always in its place, greyed while there is
+   nothing to cancel. The grid keeps its columns; the three lines stand centred in the zone. */
+#board-screen .console-actions .console-cancel {
+    width: 80px;
+    min-width: 80px;
+    height: 22px;
+    min-height: 22px;
+    margin: 2px 0 0 0;
+    padding: 0 4px;
+    font-size: 11px;
+    -unity-text-align: middle-center;
+}
+#board-screen .console-actions .console-cancel:disabled { opacity: 0.4; }
 
 /* The decision window: choices without an object, above the console. */
 .decision-window {

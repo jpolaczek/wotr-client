@@ -220,6 +220,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(DisplayStyle.None, board.Characters.Root.resolvedStyle.display);
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 1, mousePosition = origin }))
                 board.Map.SendEvent(up);
+            await RowClosesItsWindow(room, board, row);
             var enemy = room.Sh.Board;
             enemy.Map.Focus("hollin");
             enemy.Hover.Open("hollin");
@@ -235,6 +236,29 @@ namespace Wotr.PlayTests
             Assert.AreEqual(revision, enemy.View.Revision);
             var actual = await room.Fp.Api.Get<PlayerView>($"api/matches/{board.View.MatchId}", room.Token);
             Assert.AreEqual(originalView, JsonConvert.SerializeObject(actual), "Inspection and keyboard navigation must not mutate the server view.");
+        }
+
+        // UI-460 (owner, 2026-11-03): a second click on the row of the open window closes it; the next one opens it again, and
+        // the Characters panel stays open throughout.
+        private static async Task RowClosesItsWindow(MatchTestRoom room, BoardScreen board, Button row)
+        {
+            PointerGestureEvents.ClickAt(board.Characters.Tab);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display);
+            PointerGestureEvents.ClickAt(row);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Inspector.Root.resolvedStyle.display, "The row's first click opens its window.");
+            LayoutTests.Save(room.Fp.Viewport, "ui460-window-open.png");
+            PointerGestureEvents.ClickAt(row);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.resolvedStyle.display, "The row's second click closes its window.");
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display, "The Characters panel stays open.");
+            LayoutTests.Save(room.Fp.Viewport, "ui460-window-closed.png");
+            PointerGestureEvents.ClickAt(row);
+            await room.Settle();
+            Assert.AreEqual(DisplayStyle.Flex, board.Characters.Inspector.Root.resolvedStyle.display, "The next click opens it again.");
+            Assert.AreEqual("base.character.gimli", board.Characters.Inspector.FigureId);
+            board.Characters.Close();
         }
 
         private static async Task Sovereigns()

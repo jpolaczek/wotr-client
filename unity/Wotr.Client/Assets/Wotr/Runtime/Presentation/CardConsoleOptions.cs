@@ -10,9 +10,8 @@ namespace Wotr.Client
         Reaction,
         Action,
         // UI-233: after View board, the console reopens the end of the game (result, log, Save replay).
-        OpenGameEnd,
-        // UI-448 (owner): the drawn Fellowship route's Cancel, moved from its panel to the console's last option.
-        CancelRoute
+        // UI-455 (owner, 2026-11-03): UI-448's Cancel option is the console's fixed Cancel (ConsoleActions, DraftCancel).
+        OpenGameEnd
     }
 
     // UI-214: one object-less choice of a card or a reaction, shown as a button in the turn console's status zone.

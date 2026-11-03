@@ -162,6 +162,10 @@ namespace Wotr.Client
         {
             if (ready != null)
                 return SkillUse.Ready(ready, DieName(ready.DieId));
+            // UI-456: an action greyed for another reason than its die says that reason.
+            var reason = actions.Select(action => action.Reason).FirstOrDefault(text => text.Length > 0);
+            if (reason != null)
+                return reason;
             return actions.Count > 0 ? SkillUse.ChooseDie : AbilityUsePlaces.For(slot.Ability.Id);
         }
 

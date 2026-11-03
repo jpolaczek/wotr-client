@@ -740,3 +740,8 @@
 
 /* UI-251: losses from an event outside a battle stay a region's panel — no battle scene strip or side emblems. */
 .regional-battle.event-loss-panel .battle-scene { display: none; }
+/* UI-464 (owner, 2026-11-03): an event's losses have no two columns, so their window is as wide as its content needs (the
+   region's heading and hits, a row of figures, Apply losses) instead of the battle window's two columns; more figures wrap
+   onto the next row. A definite width keeps the wrapped rows inside the frame (an auto width measures them unwrapped). */
+.regional-battle.event-loss-panel,
+.loss-planning .regional-battle.event-loss-panel { width: 460px; max-width: 95%; }

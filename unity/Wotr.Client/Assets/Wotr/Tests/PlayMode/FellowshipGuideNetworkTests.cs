@@ -100,7 +100,9 @@ namespace Wotr.PlayTests
                 await room.Settle();
             }
             await room.Settle();
-            Assert.AreEqual("Separated companions cannot rejoin", board.Tray.Q<Label>("fellowship-separation-hint").text);
+            // UI-456 (owner): no rule note in the panel; the console says what the click does.
+            Assert.IsNull(board.Tray.Q<Label>("fellowship-separation-hint"), "No 'Separated companions cannot rejoin'.");
+            StringAssert.EndsWith("Click a highlighted region to move there.", board.Console.Status.Hint.text);
             CollectionAssert.AreEquivalent(new[] { "minas-tirith" }, board.Map.DraftOverlay.Targets);
             // UI-105: the destination click separates the companions at once.
             room.Boundary.HoldNextCommand = true;

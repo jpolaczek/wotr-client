@@ -246,7 +246,9 @@ namespace Wotr.PlayTests
                         yield return Settle();
                         var label = $"{width}×{scale:0.00}";
                         var tray = client.Board.Tray;
-                        Assert.IsNotNull(tray.Q("battle-defender").Q("battle-hit-cancels"), label + ": the hit buttons on the defender's roll");
+                        // UI-458 (owner): the hit buttons stand on the roll of the side that uses them (the Free Peoples attack).
+                        Assert.IsNotNull(tray.Q("battle-attacker").Q("battle-hit-cancels"), label + ": the hit buttons on the user's own roll");
+                        Assert.IsNotNull(tray.Q("battle-defender").Q("battle-hit-cancels-reserved"), label + ": their room kept opposite");
                         Assert.IsNotNull(tray.Q("battle-attacker").Q("battle-garrison-shelf"), label + ": the attacker's ledge");
                         Assert.IsNotNull(tray.Q("battle-defender").Q("battle-garrison-shelf-reserved"), label + ": kept on the defender's side");
                         Assert.IsNotNull(tray.Q("battle-defender").Q("battle-roll-page-Shadow"), label + ": the special attack's pager");

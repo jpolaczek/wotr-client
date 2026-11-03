@@ -91,6 +91,10 @@ namespace Wotr.Client
 
         public bool Available(string id) => components.Any(item => item.Enabled && CharacterRosterActions.Row(view, item) == id);
 
+        // UI-457: an entry lights its row whichever version it shows; the figure's other actions only the version in play.
+        public bool Available(string id, bool inPlay) => components.Any(item => item.Enabled &&
+            CharacterRosterActions.Row(view, item) == id && (inPlay || item.Kind == CommandKind.EnterCharacter));
+
         // UI-391: the actions of one roster row's version, for its ability icons; none while another action is drafted, as
         // in the window (RefreshInspector). UI-441: an ability used on its own object (Gothmog's Reserve tokens, the
         // Balrog's figure) lights its row's icon too, as it lights the window's.
@@ -99,6 +103,12 @@ namespace Wotr.Client
 
         // UI-441: this character's skills usable now, or null.
         public UsableSkills.Skill Skill(string id) => skills.TryGetValue(id ?? "", out var skill) ? skill : null;
+
+        // UI-457 (owner, 2026-11-03): a row lights for a skill or an action only while it shows the version in play. A
+        // companion in the Fellowship with a next version shows that version (Gandalf the White for the Grey), which is not
+        // on the board; the skills of the version in the Fellowship light its Fellowship portrait instead.
+        public bool ShowsVersionInPlay(string id, string definition) => view != null && view.OwnCharacterRoster.Any(row =>
+            row.FigureId == id && row.CurrentDefinitionId.Length > 0 && row.CurrentDefinitionId == definition);
 
         public bool AnySkill => skills.Count > 0;
 

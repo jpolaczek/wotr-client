@@ -89,9 +89,10 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(DecisionKind.CompanionSeparation, room.Fp.Board.View.Decision.Kind);
                 Assert.AreEqual(2, FellowshipChoiceMarks.Chosen(room.Fp.Board));
                 // UI-105: a separation has no drawn steps. UI-298: its companions are forced, so Cancel has nothing to clear
-                // and stays disabled.
+                // and stays disabled — UI-455: the console's fixed Cancel, in its place.
                 Assert.IsNull(room.Fp.Board.Tray.Q<Button>("route-undo"));
-                Assert.IsFalse(room.Fp.Board.Console.Root.Q<Button>(Wotr.Client.RouteCancel.Name).enabledSelf, "UI-448: the console's Cancel.");
+                Assert.IsFalse(room.Fp.Board.Console.Actions.Cancel.enabledSelf, "UI-455: the console's fixed Cancel.");
+                Assert.AreEqual(DisplayStyle.Flex, room.Fp.Board.Console.Actions.Cancel.resolvedStyle.display);
                 Assert.AreEqual(DecisionKind.CompanionSeparation, room.Fp.Board.View.Decision.Kind);
                 Assert.AreEqual(2, FellowshipChoiceMarks.Chosen(room.Fp.Board));
                 await room.Settle();

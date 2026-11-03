@@ -121,9 +121,11 @@ namespace Wotr.EditorTests
             var root = new VisualElement();
             var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { });
             context.Refresh();
-            var pips = root.Q("battle-defender").Q("battle-hit-cancels");
-            Assert.IsNotNull(pips, "The pips sit on the opponent's hits.");
-            Assert.IsNull(root.Q("battle-attacker").Q("battle-hit-cancels"));
+            // UI-458 (owner, 2026-11-03): the pips stand on the roll of the side that uses them, the player's own column.
+            var pips = root.Q("battle-attacker").Q("battle-hit-cancels");
+            Assert.IsNotNull(pips, "The pips sit on the Free Peoples' own roll.");
+            Assert.IsNull(root.Q("battle-defender").Q("battle-hit-cancels"), "Not on the opponent's hits.");
+            Assert.IsNotNull(root.Q("battle-defender").Q("battle-hit-cancels-reserved"), "Their room is kept on the other side.");
             Assert.AreEqual(2, pips.childCount);
             Assert.IsFalse(pips.Q<Button>("battle-hit-cancel-1").enabledSelf);
 
@@ -147,8 +149,8 @@ namespace Wotr.EditorTests
             CollectionAssert.AreEqual(new[] { "heroic-death.decline" }, draft.Payload.Ids, "Keep all clears the plan.");
         }
 
-        // UI-347 (EXP-15 D10): Orderly Withdrawal's cancelled hit is a "−1" pip on the opponent's hits; Keep the hit is the
-        // console's Pass, so no list repeats either.
+        // UI-347 (EXP-15 D10): Orderly Withdrawal's cancelled hit is a "−1" pip (UI-458: on its own side's roll); Keep the hit
+        // is the console's Pass, so no list repeats either.
         [Test]
         public void OrderlyWithdrawalCancelsItsHitOnThePipAndKeepsItThroughPass()
         {
@@ -171,7 +173,9 @@ namespace Wotr.EditorTests
             var root = new VisualElement();
             var context = new BattleContext(root, view.Battle, view, draft, edit => edit(), _ => { });
             context.Refresh();
-            var pip = root.Q("battle-defender").Q<Button>("battle-hit-cancel-1");
+            // UI-458 (owner): the −1 stands on the Free Peoples' own column, the side that plays Orderly Withdrawal.
+            Assert.IsNull(root.Q("battle-defender").Q<Button>("battle-hit-cancel-1"), "Not on the Shadow's column.");
+            var pip = root.Q("battle-attacker").Q<Button>("battle-hit-cancel-1");
             Assert.AreEqual("−1", pip.text);
             Assert.IsTrue(pip.ClassListContains(ChoiceGlow.ClassName));
             StringAssert.StartsWith("Cancel hit · withdraw", pip.tooltip);

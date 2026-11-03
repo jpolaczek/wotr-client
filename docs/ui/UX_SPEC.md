@@ -3311,6 +3311,8 @@ Fellowship must not disappear from this view. This supersedes UI-236's "no panel
 - **The console takes Back and Cancel**: its ↶ undoes a step of any drawn Fellowship route (declared or revealed position,
   separation), wherever the route is drawn; Cancel is the console's last option while such a route is drawn
   (`RouteCancel`, `console-cancel-route`): it ends the declaration, or clears a mandatory route or the chosen companions.
+  UI-455 (owner, 2026-11-03) replaced that option by the console's small fixed Cancel
+  ([below](#the-consoles-fixed-cancel--ui-455)).
 
 Playtest (owner's checklist):
 - [ ] A Fellowship phase with the Fellowship hidden. Expect: Declare beside Finish phase; its click brings the camera to
@@ -3462,3 +3464,162 @@ Playtest (owner's checklist):
   carried to its region and its faint planned figure appears as it lands.
 - [ ] Any of these with Skip animations on. Expect: no flight; the figure stands on its place (or its faint planned
   figure) at once.
+
+<a id="the-consoles-fixed-cancel--ui-455"></a>
+## The console's fixed Cancel — UI-455 (2026-11-03)
+
+The owner's playtest of `fp-character-separate-companions` (translated): choosing the character to separate showed a long,
+narrow Cancel in the console; instead the console needs a small, default, always present Cancel among its other buttons,
+greyed when there is nothing to cancel. This replaces UI-448's Cancel option in the console's line.
+
+- **A fifth console action** (`ConsoleActions.Cancel`, `console-cancel`): a small labelled button on its own line under
+  ↶ ✓ ⇥ ⊠, always shown, greyed (with `Cancel · Nothing chosen to cancel`) while there is nothing to cancel. The bottom
+  bar keeps its height and every control its place in every state.
+- **One meaning everywhere** (`DraftCancel`): Cancel drops everything chosen since the last sent step — die or token,
+  action, figures, regions, route — where ↶ undoes one step. A drawn route keeps UI-298's rule (a declaration ends; a
+  reveal or a forced separation starts again), and every forced step starts again (`MandatoryDraft`), so Cancel is enabled
+  only while its click would change the draft. It sends nothing.
+- The console's line keeps its hint while a route is drawn. Details: [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-455).
+
+Screenshots: `ui455-before-separation.png` (the long Cancel), `ui455-after-separation.png`, `ui455-after-cancelled.png`.
+
+Tests: EditMode `DraftCancelTests`, `WindowListsTests`; PlayMode `ConsoleCancelNetworkTests`, `TurnConsoleLayoutTests`,
+`FellowshipNetworkTests`, `CharacterNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `fp-character-separate-companions`. Before choosing anything the small Cancel under the four console buttons is
+  greyed. Click the Character die: Cancel lights. Click Legolas's glowing portrait in the Fellowship panel. Expect: no long
+  Cancel in the console's line, its hint reads "Legolas · Click a highlighted region to move there.", and the small Cancel
+  says "Clear the chosen companions and their route". Click it: the companion and the die are dropped, Cancel greys again.
+- [ ] Any Fellowship phase with the Fellowship hidden. Declare, draw a step, then Cancel. Expect: the declaration ends, as
+  UI-448's option did; ↶ still undoes one step.
+- [ ] Any army move with an Army die: choose an army and a region, then Cancel. Expect: the die and the planned move are
+  dropped at once.
+
+<a id="far-sighted-moves-only-companions-outside--ui-456"></a>
+## Far-sighted moves only companions outside the Fellowship; every instruction in the console — UI-456 (2026-11-03)
+
+The owner's playtest of `kings-far-sighted` (translated): "Move companions" behaves like "Separate companions" when no
+companion is outside the Fellowship — then it must be greyed. Remove "Separated companions cannot rejoin", "Choose a
+group" and "Select figures…" wherever they show in panels and windows: every instruction belongs in the console, correct
+for each step.
+
+- **Root cause.** The server offers Move companions because Thranduil himself, the Awakened king who uses Far-sighted,
+  counts as a Companion outside the Fellowship (KINGS pp. 8–13). Its click started a move whose only lit objects were the
+  Fellowship's portraits, whose click separates — so it looked like Separate companions.
+- **Greyed while no companion but Thranduil is outside** (`FarSightedMoves`): Far-sighted's Move companions variant is
+  greyed in its slot (the Woodland Realm's window, Thranduil's row and window), its tooltip says "No companion is outside
+  the Fellowship" (`ComponentAction.Reason`) and its click starts nothing. Move the Fellowship and Separate companions stay.
+  Thranduil's own move remains his figure's plain move on the map. Open question for the owner: Far-sighted moving
+  Thranduil himself one region further is no longer offered from the picture.
+- **No instruction in the Fellowship panel** (`FellowshipChoices`, `DecisionTray`): no "Separated companions cannot rejoin"
+  line (the fact stays in the ✓'s summary); the route's summary states where the move stands — its origin, then its end and
+  steps — without "Choose a group", "Choose a destination" or "Choose a route"; the tray's status line is hidden while a
+  Fellowship move is drawn in the panel.
+- **The console's hint for each step** (`FellowshipDraft.Hint`, now the console's hint for every move to a destination):
+  a separation before its companions are chosen — "Click the glowing portrait of each companion to separate in the
+  Fellowship panel."; a companions' move — "Click a glowing companion on the map to choose who moves."; another figures'
+  move — "Click a glowing figure on the map to choose who moves."; once the figures are chosen — "‹names› · Click a
+  highlighted region to move there." (UI-375).
+
+Screenshots: `ui456-before-die.png`, `ui456-before-move-companions.png` (the lit portraits after Move companions),
+`ui456-after-far-sighted.png`.
+
+Tests: EditMode `ComponentActionTests.FarSightedMoveCompanionsWaitsForACompanionOutsideTheFellowship`,
+`WindowListsTests.TheFellowshipTrayListsNoStayStayAllOrTravelMode`; PlayMode
+`ConsoleCancelNetworkTests.FarSightedMovesNoCompanionWhileNoneIsOutsideTheFellowship` (`kings-far-sighted`),
+`ConsoleCancelNetworkTests.ASeparationIsCancelledFromTheConsolesFixedCancel`, `FellowshipGuideNetworkTests`,
+`FellowshipRoutesNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted`. Click the Ruler die, open the Woodland Realm. Expect: Thranduil's Move companions picture is
+  greyed and says "No companion is outside the Fellowship"; Move the Fellowship and Separate companions are lit; the greyed
+  picture's click does nothing.
+- [ ] `fp-character-move-companions` with a Character die (Legolas and Gimli outside). Expect: Move companions works as
+  before; the console says "Click a glowing companion on the map to choose who moves.", then names the chosen ones.
+- [ ] `fp-character-separate-companions`. Choose the Character die, then a companion's portrait. Expect: the Fellowship
+  panel shows the portraits and "Rivendell" only — no "Separated companions cannot rejoin", no "Choose …", no "Select
+  figures…"; every instruction is in the console.
+
+<a id="a-version-not-in-play-never-lights--ui-457"></a>
+## A version not in play never lights its Characters row — UI-457 (2026-11-03)
+
+The owner (translated): when a card is drawn whose mechanic concerns Gandalf as the Guide, the Characters tab and row of a
+Gandalf version not yet on the board must not light up; check similar cases.
+
+- **Root cause.** UI-441 lights a character wherever it is drawn while one of its skills is usable now — here Gandalf the
+  Grey's Guide draw after an Event card. A companion in the Fellowship with a next version has its Characters row show that
+  version (Gandalf the White, UI-438), so the row and the Characters tab lit for a version not on the board.
+- **The rule** (`CharacterRosterContext.ShowsVersionInPlay`): a Characters row lights for a usable skill, and for a
+  figure's action, only while it shows the version in play; the Characters tab follows its rows. An entry still lights the
+  row of the version it brings in (UI-240, UI-438). The skill keeps lighting the version in play where it is drawn:
+  Gandalf the Grey's Fellowship portrait, a figure on the map, a king's portrait.
+- **Similar cases** covered by the same rule: Strider in the Fellowship (his row shows Aragorn), any companion with an
+  alternate version, a reaction whose source is a version not in play.
+
+Tests: EditMode `CharacterRosterPanelTests.ARowLightsForASkillOnlyWhileItShowsTheVersionInPlay`, `UsableSkillsTests`.
+
+Playtest (owner's checklist):
+- [ ] Test menu → Free Peoples cards → Book of Mazarbul (event), Gandalf the Grey the Guide. Play it with the Event die.
+  Expect: Gandalf's Fellowship portrait glows for his draw; the Characters tab and Gandalf the White's row do not.
+- [ ] Gandalf the White in play with a skill usable now. Expect: his row and the tab light as before.
+
+<a id="the-hit-buttons-stand-on-their-users-side--ui-458"></a>
+## The hit buttons stand on their user's side — UI-458 (2026-11-03)
+
+The owner's playtest of `lords-card-orderly-withdrawal` (translated): the clickable "−1" must show on the side of the
+faction that uses it, in the battle window. UI-246 and UI-347 had put it on the opponent's hits.
+
+- **The rule** (`BattleDiceStrip.HitCancels`): the hit buttons a card adds — Orderly Withdrawal's −1 and Heroic Death's
+  −1, −2… (one mechanism, so both follow the owner's rule) — stand on the roll heading of the deciding player's own
+  column; the opposite column keeps their unseen room, so both rows stay level (UI-437). A side that cancels hits without
+  a roll of its own shows them in its reserved roll row.
+
+Screenshots: `ui458-before-orderly-withdrawal-1920-1.00.png`, `ui458-orderly-withdrawal-{1366,1920}-{1.00,1.25}.png`.
+
+Tests: EditMode `BattleObjectChoicesTests` (Heroic Death, Orderly Withdrawal); PlayMode `LordsBattleNetworkTests`,
+`BattleLayoutTests.WhatAnAbilityAddsToOneSideKeepsBothSidesRowsLevel`.
+
+Playtest (owner's checklist):
+- [ ] `lords-card-orderly-withdrawal` (the Free Peoples). Expect: the glowing, pulsing −1 stands in the Free Peoples'
+  (defender's) column, on their Combat roll's heading; its click cancels a hit and withdraws; Pass keeps the hit.
+- [ ] A battle where the Free Peoples play Heroic Death. Expect: the −1/−2 buttons stand in the Free Peoples' column.
+
+<a id="a-characters-row-closes-its-window--ui-460"></a>
+## A character's row closes its own window — UI-460 (2026-11-03)
+
+The owner: in the Characters tab, while one character's window is open, a second click on that character's row closes the
+window. A row's click now toggles the pinned window of its character (`CharacterRosterPanel.ShowsWindowOf`); a click on
+another row still switches to that character, an entry row still enters, and the Characters panel stays open.
+
+Screenshots: `ui460-window-open.png`, `ui460-window-closed.png`.
+
+Tests: PlayMode `CharacterRosterPanelNetworkTests.ClickAndKeyboardInspectionPreserveTheDieWhileHoverAndPanStaySilent`.
+
+Playtest (owner's checklist):
+- [ ] Any game: open Characters, click Gimli's row (his window opens), click the row again. Expect: the window closes and
+  the Characters panel stays; a third click opens it again.
+
+<a id="an-events-losses-window-fits-its-content--ui-464"></a>
+## An event's losses window fits its content — UI-464 (2026-11-03)
+
+The owner's playtest of `kings-event-return-to-valinor` (translated): the window in which the Free Peoples eliminate units
+is too big, with a lot of empty space; it must fit its content, and so must the same window for other events' losses.
+
+- **Root cause.** Event losses (UI-251) reuse the battle window, whose loss planning is 820 pt wide for two columns.
+- **The rule** (`Battle.uss`, `.event-loss-panel`): an event's losses window is as wide as its one column needs — 460 pt
+  (at most 95 % of the screen) for the region's heading and hits, a row of figures and Apply losses, more figures wrapping
+  onto the next row — for every event's losses (Return to Valinor, Madness and Horror, Shadow Spells…); battles keep
+  their width. A definite width, not an auto one: an auto width measured the wrapping footer on one line and left Apply
+  losses below the frame.
+
+Screenshots: `ui464-before-valinor-{1366,1920}-1.00.png`, `ui464-after-valinor-{1366,1920}-1.00.png`,
+`kings03-valinor-loss-*.png`.
+
+Tests: PlayMode `KingsCards03NetworkTests` (Return to Valinor's losses at 1366 and 1920: narrower than 700 pt, its figures,
+hit budget and Apply losses inside the frame, no scroll).
+
+Playtest (owner's checklist):
+- [ ] `kings-event-return-to-valinor` (the Shadow plays it; then the Free Peoples). Expect: the Lórien losses window is
+  about as wide as its heading and figures, with no wide empty area; Apply losses works as before.
+- [ ] `lords-card-madness-and-horror-event` (or any other event with losses). Expect: the same fitted window.

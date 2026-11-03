@@ -21,7 +21,7 @@ namespace Wotr.Client
             if (pages.Count == 0)
             {
                 if (rows?.Roll == true)
-                    root.Add(Reserved(rows));
+                    root.Add(Reserved(rows, force, view, draft, edit));
                 return;
             }
             var selected = Math.Max(0, pages.FindLastIndex(p => p.Source == battle.LossSource && battle.LossSource != "combat"));
@@ -98,17 +98,16 @@ namespace Wotr.Client
             return details.Length == 0 ? "" : TooltipText.Lines(page.Title, details);
         }
 
-        // UI-246: Heroic Death cancels the opponent's hits on their own indicator: one button per amount it may cancel
-        // (−1, −2, …); the chosen amount is selected. Keep hits (zero) stays a button with Keep all. UI-347 (D10): Orderly
-        // Withdrawal's one hit is the same "−1"; its click sends it, and the console's Pass keeps the hit. Returns whether the
-        // heading shows them.
+        // UI-246: Heroic Death cancels the opponent's hits: one button per amount it may cancel (−1, −2, …); the chosen amount
+        // is selected. Keep hits (zero) stays a button with Keep all. UI-347 (D10): Orderly Withdrawal's one hit is the same
+        // "−1"; its click sends it, and the console's Pass keeps the hit. UI-458 (owner, 2026-11-03): the buttons stand on the
+        // roll heading of the side that uses them — the deciding player's own column — not on the opponent's hits. Returns
+        // whether the heading shows them.
         private bool HitCancels(VisualElement heading, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
-            if (draft == null || edit == null || force.Side == view.You)
+            if (!UsesHitCancels(force, view, draft, edit))
                 return false;
             var amounts = BattleObjectChoices.HitAmounts(view);
-            if (amounts.Count == 0)
-                return false;
             var row = BoardScreen.Row("battle-hit-cancels");
             row.name = "battle-hit-cancels";
             // UI-419 (owner): a pip a click may choose pulses, as the board's choices do.
@@ -126,6 +125,10 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-458: the hit buttons belong to the deciding player's own column.
+        private static bool UsesHitCancels(BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit) =>
+            draft != null && edit != null && force.Side == view.You && BattleObjectChoices.HitAmounts(view).Count > 0;
+
         private static Button Pager(string name)
         {
             var pager = IconButton.Create("next", "Show next roll", null);
@@ -134,14 +137,17 @@ namespace Wotr.Client
             return pager;
         }
 
-        // UI-437: an unseen heading and row of one die, so the other side's roll stands level with nothing moved.
-        private static VisualElement Reserved(BattleRowPlan rows)
+        // UI-437: an unseen heading and row of one die, so the other side's roll stands level with nothing moved. UI-458: a
+        // side that cancels hits without a roll of its own shows its buttons there; the rest of the slot stays unseen.
+        private VisualElement Reserved(BattleRowPlan rows, BattleForceView force, PlayerView view, TurnDraft draft, Action<Action> edit)
         {
             var slot = new VisualElement { name = "battle-roll-reserved", pickingMode = PickingMode.Ignore };
-            slot.AddToClassList(BattleContext.ReservedClass);
             var heading = BoardScreen.Row("battle-roll-heading");
             heading.Add(new Label(" ") { name = "battle-roll-source-reserved", pickingMode = PickingMode.Ignore });
-            if (rows.CancelsHits)
+            var cancels = HitCancels(heading, force, view, draft, edit);
+            if (!cancels)
+                slot.AddToClassList(BattleContext.ReservedClass);
+            if (rows.CancelsHits && !cancels)
                 heading.Add(ReservedHitCancels());
             if (rows.Paged)
                 heading.Add(Reserve(Pager("battle-roll-page-reserved")));
@@ -150,6 +156,8 @@ namespace Wotr.Client
             var die = Reserve(new Button { name = "battle-die-reserved" });
             die.AddToClassList("battle-die");
             dice.Add(die);
+            if (cancels)
+                dice.AddToClassList(BattleContext.ReservedClass);
             slot.Add(dice);
             return slot;
         }

@@ -27,5 +27,8 @@ namespace Wotr.Client
         public CharacterActionOption Character { get; set; }
         public MovementCostOption Movement { get; set; }
         public bool Enabled { get; set; }
+        // UI-456: why an action offered with its die is still greyed ("No companion is outside the Fellowship"); "" when
+        // only its die is missing.
+        public string Reason { get; set; } = "";
     }
 }

@@ -136,8 +136,7 @@ namespace Wotr.Client
                 if (draft.Kind == CommandKind.AwakenSovereign && SovereignPresentation.OwnsDecision(view, draft))
                     return ""; // The route row and its tooltip already describe this gesture.
                 if (TravelDraft.TargetRoute(draft.Kind))
-                    return travel == null ? "Select figures on the map, then click their destination."
-                        : "Click a highlighted destination to move there.";
+                    return travel == null ? ChooseFigures(draft.Kind) : "Click a highlighted destination to move there.";
                 if (route?.Count > 0 && travel != null && !TravelDraft.EndAllowed(route, travel))
                     return route.Count - 1 > travel.Range ? "Shorten the route or select a companion with enough range."
                         : "Continue the route · This region cannot be the destination.";
@@ -148,6 +147,19 @@ namespace Wotr.Client
             return draft.Payload.DieId.Length == 0 && view.Options.Any(o => o.Kind == draft.Kind && o.EligibleDice.Count > 0)
                 ? "Choose an action die from your pool." : "";
         }
+
+        // UI-456 (owner, 2026-11-03): the console names where the figures of the move are chosen — the Fellowship panel's
+        // portraits for a separation, the map for the others — instead of "Select figures on the map".
+        public const string ChooseSeparated = "Click the glowing portrait of each companion to separate in the Fellowship panel.";
+        public const string ChooseCompanions = "Click a glowing companion on the map to choose who moves.";
+        public const string ChooseCharacters = "Click a glowing figure on the map to choose who moves.";
+
+        private static string ChooseFigures(CommandKind? kind) => kind switch
+        {
+            CommandKind.SeparateCompanions => ChooseSeparated,
+            CommandKind.MoveCompanions => ChooseCompanions,
+            _ => ChooseCharacters
+        };
 
         // UI-423 (owner's playtest pattern, like UI-416): a card's move names its figures — "Move the Balrog" for A Balrog is
         // Come! — and speaks of Nazgûl only when it moves nothing else.

@@ -526,6 +526,58 @@ namespace Wotr.EditorTests
             Assert.IsTrue(ability.focusable);
         }
 
+        // UI-457 (owner, 2026-11-03): Gandalf the Grey's Guide draw is offered while he is in the Fellowship. His Characters
+        // row shows Gandalf the White, the version not on the board, so neither the row nor the Characters tab lights; the
+        // rule still names Gandalf, whose Fellowship portrait lights. Once the White is in play his row lights for his skill.
+        [Test]
+        public void ARowLightsForASkillOnlyWhileItShowsTheVersionInPlay()
+        {
+            const string grey = "base.character.gandalf-grey";
+            const string white = "base.character.gandalf-white";
+            var view = new PlayerView
+            {
+                MatchId = "m", You = Side.FreePeoples, DecisionOwner = Side.FreePeoples,
+                Decision = new DecisionView { Id = "draw", Kind = DecisionKind.Reaction }
+            };
+            var row = new CharacterRosterView
+            {
+                FigureId = grey, Identity = "gandalf", Side = Side.FreePeoples, CurrentDefinitionId = grey, Title = "Gandalf the Grey",
+                Lifecycle = CharacterRosterLifecycle.InFellowship,
+                FutureVersions = { new CharacterEntryVersionView { DefinitionId = white, Title = "Gandalf the White", Mode = CharacterEntryMode.Transformation } }
+            };
+            view.OwnCharacterRoster.Add(row);
+            view.Options.Add(Reaction("character.grey-draw", grey));
+            var skills = UsableSkills.Characters(view, new TurnDraft(), Enumerable.Empty<ComponentAction>(), true);
+            Assert.IsTrue(skills.ContainsKey(grey), "The rule names Gandalf: his Fellowship portrait lights.");
+            var panel = new CharacterRosterPanel(new VisualElement(), BoardPresentation.Load(), _ => { });
+            panel.Apply(view);
+            panel.Actions.Apply(view, new TurnDraft(), Enumerable.Empty<ComponentAction>(), true, skills);
+            var button = panel.Root.Q<Button>("character-roster-" + grey);
+            StringAssert.Contains("White", button.Q<Label>("character-roster-title").text, "The row shows the version not in play.");
+            Assert.IsFalse(button.ClassListContains(ChoiceGlow.ClassName), "Gandalf the White's row does not light.");
+            Assert.IsFalse(panel.Tab.ClassListContains("legal-target"), "Nor does the Characters tab.");
+            StringAssert.DoesNotStartWith("Usable now", CharacterRowTooltip.Plain(button.tooltip));
+
+            row.CurrentDefinitionId = white;
+            row.Title = "Gandalf the White";
+            row.Lifecycle = CharacterRosterLifecycle.OnBoard;
+            row.RegionId = "fangorn";
+            row.FutureVersions.Clear();
+            view.Options.Clear();
+            view.Options.Add(Reaction("character.white-rider", white));
+            skills = UsableSkills.Characters(view, new TurnDraft(), Enumerable.Empty<ComponentAction>(), true);
+            panel.Apply(view);
+            panel.Actions.Apply(view, new TurnDraft(), Enumerable.Empty<ComponentAction>(), true, skills);
+            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), "The version in play lights its row.");
+            Assert.IsTrue(panel.Tab.ClassListContains("legal-target"), "And the Characters tab.");
+        }
+
+        private static ActionOption Reaction(string id, string source) => new ActionOption
+        {
+            Kind = CommandKind.RespondEffect, Enabled = true, EligibleIds = { id },
+            EffectChoices = { new EffectChoiceView { Id = id, SourceId = source, Title = "Response " + id } }
+        };
+
         private static PlayerView Read(string file) => JsonConvert.DeserializeObject<PlayerView>(
             File.ReadAllText(Path.Combine(Application.dataPath, "Wotr/Tests/Editor", file)));
     }

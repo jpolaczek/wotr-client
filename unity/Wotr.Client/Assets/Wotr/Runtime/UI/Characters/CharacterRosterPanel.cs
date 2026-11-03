@@ -189,12 +189,15 @@ namespace Wotr.Client
                 // UI-438: several versions that may enter now are chosen in the character's window.
                 var versions = !entry && !chosen && Actions.EntryVersions(row.Key).Count > 1;
                 offered |= entry || versions;
-                available |= Actions.Available(row.Key);
                 row.Value.ShowVersion(OfferedVersion(row.Key, chosen, entry));
-                row.Value.Root.EnableInClassList("legal-target", Actions.Available(row.Key));
+                // UI-457: a row lights for its skills and a figure's actions only while it shows the version in play.
+                var inPlay = Actions.ShowsVersionInPlay(row.Key, row.Value.Definition);
+                var usable = Actions.Available(row.Key, inPlay);
+                available |= usable;
+                row.Value.Root.EnableInClassList("legal-target", usable);
                 row.Value.Abilities.Offer(Actions.RowActions(row.Key, row.Value.Definition), Actions.Editable, die => DieUse.Name(view, die));
                 abilities |= row.Value.Abilities.Offered;
-                row.Value.ShowSkill(Actions.Skill(row.Key));
+                row.Value.ShowSkill(inPlay ? Actions.Skill(row.Key) : null);
                 skills |= row.Value.SkillLit;
                 row.Value.Root.EnableInClassList(EntryClass, entry);
                 row.Value.Offer(entry, versions);
@@ -367,7 +370,12 @@ namespace Wotr.Client
             };
         }
 
+        // UI-460 (owner, 2026-11-03): this character's window is open, so the row's next click closes it.
+        public bool ShowsWindowOf(string id) => InspectorPinned && Inspector.Root.style.display.value != DisplayStyle.None &&
+            Inspector.FigureId == id;
+
         // A single click inspects, except when the row can be entered: its double-click must not flash the window.
+        // UI-460: a second click on the row of the open window closes it.
         private void ObserveRow(Button row, string id)
         {
             row.AddToClassList(RuntimeTooltip.RichHoverClass);
@@ -378,6 +386,8 @@ namespace Wotr.Client
                     return;
                 if (Enterable(id))
                     EntryRequested?.Invoke(id);
+                else if (ShowsWindowOf(id))
+                    CloseInspection();
                 else
                 {
                     Show(id, true, row);

@@ -293,6 +293,55 @@ namespace Wotr.EditorTests
             Assert.AreEqual("kings.sovereign.thranduil", picture.OwnerId);
         }
 
+        // UI-456 (owner, 2026-11-03, kings-far-sighted): Far-sighted's Move companions waits for a companion outside the
+        // Fellowship. Thranduil alone, the king who uses it, is none: the variant is greyed in its slot and says why, so its
+        // click no longer starts a move whose only lit objects are the Fellowship's portraits (their click separates).
+        [Test]
+        public void FarSightedMoveCompanionsWaitsForACompanionOutsideTheFellowship()
+        {
+            const string thranduil = FarSightedMoves.Owner;
+            var view = View();
+            view.You = Side.FreePeoples;
+            view.DecisionOwner = Side.FreePeoples;
+            var option = new ActionOption
+            {
+                Kind = CommandKind.MoveCompanions, Enabled = true, EligibleIds = { thranduil }, EligibleDice = { "ruler" },
+                Travel = { new TravelOption { Id = thranduil, Origin = "woodland-realm", Range = 2 } },
+                RulerTravel = new RulerTravelOption
+                {
+                    AbilityId = "kings.far-sighted", Dice = { "ruler" }, RangeBonus = 1,
+                    Travel = { new TravelOption { Id = thranduil, Origin = "woodland-realm", Range = 3 } }
+                }
+            };
+            view.Options.Add(option);
+            var draft = new TurnDraft();
+            draft.Change(p => p.DieId = "ruler");
+            var move = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
+            Assert.IsFalse(move.Enabled, "Only Thranduil stands outside the Fellowship.");
+            Assert.AreEqual(FarSightedMoves.NoCompanion, move.Reason);
+            Assert.IsFalse(ComponentActions.Select(view, draft, move), "Its click starts nothing.");
+            Assert.IsNull(draft.Kind);
+            var actions = new ComponentActionView();
+            actions.Apply(new[] { move }, true);
+            var button = actions.Root.Q<Button>("component-far-sighted-MoveCompanions");
+            Assert.IsFalse(button.enabledSelf, "Greyed in the region's window.");
+            StringAssert.EndsWith(FarSightedMoves.NoCompanion, SkillTooltip.Plain(button.tooltip), "Its tooltip says why.");
+            var chips = new CharacterAbilityChips();
+            chips.Apply("kings.character.thranduil.awakened");
+            chips.Usable(new[] { move }, true, view);
+            var icon = chips.Icons.Single(b => b.name.EndsWith("-" + CommandKind.MoveCompanions));
+            Assert.IsTrue(icon.ClassListContains(CharacterAbilityChips.IdleClass), "Dimmed in Thranduil's window.");
+            StringAssert.EndsWith(FarSightedMoves.NoCompanion, SkillTooltip.Plain(icon.tooltip));
+
+            const string legolas = "base.character.legolas";
+            option.EligibleIds.Add(legolas);
+            option.RulerTravel.Travel.Add(new TravelOption { Id = legolas, Origin = "lorien", Range = 4 });
+            move = ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions");
+            Assert.IsTrue(move.Enabled, "Legolas has left the Fellowship.");
+            Assert.AreEqual("", move.Reason);
+            Assert.IsTrue(ComponentActions.For(view, draft).Single(c => c.Key == "far-sighted-MoveCompanions").Enabled);
+        }
+
         // UI-443 (owner, reversing UI-440's decision 7): before any die is chosen an ability is not selected, even when one
         // die alone could pay for it; with that die chosen it is.
         [Test]

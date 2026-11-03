@@ -36,6 +36,9 @@ namespace Wotr.Client
         public event Action Skip;
         private Button confirm;
         private Label status;
+        // UI-456 (owner, 2026-11-03): a Fellowship move drawn in the Fellowship panel keeps its instruction in the console
+        // only; the panel's status line stays hidden.
+        private bool hintInConsole;
         private string layoutKey;
         private VisualElement confirmHost;
 
@@ -138,7 +141,7 @@ namespace Wotr.Client
             {
                 // UI-273: with Lords and Kings, a step before the first action is numbered.
                 status.text = busy ? "Waiting for the server…" : PreActionSteps.Label(view, StatusHint(view, draft));
-                status.style.display = status.text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+                ShowStatus();
                 HintChanged?.Invoke(status.text, status.text);
             }
             else
@@ -184,6 +187,10 @@ namespace Wotr.Client
             var council = CouncilTravel.Hint(view, draft);
             if (council.Length > 0)
                 return council;
+            // UI-456 (owner): a move of figures to a destination says in the console where its figures are chosen.
+            var figures = TravelDraft.TargetRoute(draft.Kind) ? FellowshipDraft.Hint(draft, view) : "";
+            if (figures.Length > 0)
+                return figures;
             if (ExpansionDraft.CouncilPoliticsPending(draft))
                 return ExpansionDraft.CouncilPoliticsHint;
             if (draft.Kind == CommandKind.SelectGuide && ContextualFellowship)
@@ -225,6 +232,7 @@ namespace Wotr.Client
             confirm?.RemoveFromHierarchy();
             confirm = null;
             status = null;
+            hintInConsole = false;
             battlePreview = null;
             RecoversInConsole = uncertain && FellowshipHost;
             if (uncertain)
@@ -282,6 +290,7 @@ namespace Wotr.Client
             status = new Label(DecisionObjects.Prompt(view, draft) + ".");
             status.AddToClassList("draft-status");
             footer.Insert(0, status);
+            hintInConsole = FellowshipHost && FellowshipDraft.UsesRoute(draft.Kind);
             if (view.Battle != null)
             {
                 footer.AddToClassList("battle-choice-footer");
@@ -545,6 +554,9 @@ namespace Wotr.Client
         // The tray sits in the Fellowship panel (FellowshipActions.UsesPanel), not in the Hunt window.
         private bool FellowshipHost => ContextualFellowship && !ContextualHunt;
 
+        private void ShowStatus() =>
+            status.style.display = status.text.Length == 0 || hintInConsole ? DisplayStyle.None : DisplayStyle.Flex;
+
         private string PendingMessage(string problem)
         {
             if (!RecoversInConsole)
@@ -577,7 +589,7 @@ namespace Wotr.Client
             {
                 status.text = message;
                 status.tooltip = detail.Length > 0 ? message + "\n" + detail : message;
-                status.style.display = message.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+                ShowStatus();
             }
         }
 

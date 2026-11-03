@@ -5,7 +5,8 @@ using UnityEngine.UIElements;
 namespace Wotr.Client
 {
     // UI-160: the four permanent actions of the console. Each keeps its place; an action not available now is
-    // greyed out with the reason in its tooltip.
+    // greyed out with the reason in its tooltip. UI-455 (owner, 2026-11-03): a small Cancel under them, always in its
+    // place, greyed while there is nothing to cancel (DraftCancel).
     public sealed class ConsoleActions
     {
         public VisualElement Root { get; } = new VisualElement { name = "console-actions" };
@@ -13,10 +14,12 @@ namespace Wotr.Client
         public Button Confirm { get; }
         public Button Pass { get; }
         public Button Discard { get; }
+        public Button Cancel { get; }
         public event Action BackClicked;
         public event Action ConfirmClicked;
         public event Action PassClicked;
         public event Action DiscardClicked;
+        public event Action CancelClicked;
         private readonly ChoicePulse pulse;
 
         public ConsoleActions()
@@ -27,6 +30,21 @@ namespace Wotr.Client
             Confirm = Add("confirm", "console-confirm", "Finish · Available during an action of several steps", () => ConfirmClicked?.Invoke());
             Pass = Add("pass", "console-pass", "Pass · " + PassDetail, () => PassClicked?.Invoke());
             Discard = Add("discard", "console-discard", "Discard the selected die without effect", () => DiscardClicked?.Invoke());
+            Cancel = AddCancel();
+        }
+
+        public const string CancelName = "console-cancel";
+
+        // UI-455: the Cancel is a small labelled button on its own line under the 2 x 2 icons.
+        private Button AddCancel()
+        {
+            var button = BoardScreen.Button("Cancel", () => CancelClicked?.Invoke());
+            button.name = CancelName;
+            button.tooltip = DraftCancel.NothingTooltip;
+            button.AddToClassList("console-cancel");
+            button.SetEnabled(false);
+            Root.Add(button);
+            return button;
         }
 
         // UI-420 (owner): Pass says what passing does.

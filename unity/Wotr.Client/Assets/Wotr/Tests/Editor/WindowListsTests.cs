@@ -8,8 +8,8 @@ using Wotr.Contracts;
 namespace Wotr.EditorTests
 {
     // UI-432 (owner's rule, UI-430): a window list that repeats an object always on screen goes. The Fellowship tray keeps
-    // only Undo step and Cancel of a drawn route; the decision window lists no die, deck or king; a character's actions
-    // stay as the fallback for the moments its row offers none.
+    // only the summary of a drawn route (UI-448: its Undo step and Cancel are the console's); the decision window lists no
+    // die, deck or king; a character's actions stay as the fallback for the moments its row offers none.
     public sealed class WindowListsTests
     {
         private const string Legolas = "base.character.legolas";
@@ -26,19 +26,21 @@ namespace Wotr.EditorTests
             foreach (var name in new[] { "travel-stay", "travel-stay-all", "travel-standard", "travel-ruler" })
                 Assert.IsNull(root.Q<Button>(name), name + " is its object's click now.");
             Assert.IsNull(root.Q<Label>("travel-far-sighted"), "The standard move names no mode.");
-            // UI-448 (owner): the separation's Cancel is the console's last option, not a panel button.
+            // UI-448 (owner): the separation's Cancel is the console's, not a panel button; UI-455: its fixed Cancel.
             Assert.IsNull(root.Q<Button>("route-cancel"), "No Cancel in the panel.");
-            var cancel = RouteCancel.Option(view, draft);
-            Assert.AreEqual(RouteCancel.Name, cancel?.Name, "The console's Cancel clears the chosen companions.");
-            Assert.IsTrue(cancel.Enabled, "A chosen companion can be cleared.");
+            Assert.IsTrue(DraftCancel.Offered(view, draft), "The console's Cancel clears the chosen companion.");
+            Assert.AreEqual("Cancel · Clear the chosen companions and their route", DraftCancel.Tooltip(view, draft));
+            // UI-456 (owner): no rule note and no instruction in the panel; the summary states where the move stands.
+            Assert.IsNull(root.Q<Label>("fellowship-separation-hint"), "No 'Separated companions cannot rejoin'.");
+            Assert.AreEqual("Rivendell", root.Q<Label>("travel-summary").text, "No 'Choose a destination'.");
 
             draft.Change(p => p.AbilityId = FarSighted);
             root = Build(view, draft, contextual: false);
             Assert.AreEqual("Far-sighted · Range +1", root.Q<Label>("travel-far-sighted").text, "Thranduil's move names its mode.");
         }
 
-        // UI-448 (owner): a drawn route keeps only its summary in the panel; the console's ↶ undoes a step and its last option,
-        // Cancel, ends the declaration.
+        // UI-448 (owner): a drawn route keeps only its summary in the panel; the console's ↶ undoes a step and its Cancel
+        // (UI-455: the fixed one) ends the declaration.
         [Test]
         public void ADrawnRouteLeavesUndoAndCancelToTheConsole()
         {
@@ -51,8 +53,8 @@ namespace Wotr.EditorTests
             Assert.IsNull(root.Q<Button>("route-cancel"), "No Cancel in the panel.");
             Assert.IsNull(root.Q<Label>("fellowship-route-effect"), "No 'Declare position · Remain hidden' line.");
             Assert.IsNotNull(root.Q<Label>("travel-summary"), "The route's summary stays.");
-            Assert.IsTrue(RouteCancel.Option(view, draft).Enabled, "Cancel ends the declaration, even before its first step.");
-            Assert.IsNull(RouteCancel.Option(view, new TurnDraft()), "No Cancel without a route.");
+            Assert.IsTrue(DraftCancel.Offered(view, draft), "Cancel ends the declaration, even before its first step.");
+            Assert.IsFalse(DraftCancel.Offered(view, new TurnDraft()), "Nothing to cancel without a route.");
         }
 
         // Stay here was TravelDraft.Stay; the click on the lit origin region (TravelDraft.RouteTo) makes the same route.

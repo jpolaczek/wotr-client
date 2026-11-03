@@ -161,7 +161,7 @@ namespace Wotr.Client
             board.Map.MiniatureSelected += ChooseMiniature;
             components = new ComponentContextInteraction(board, ChooseComponent);
             consoleOptions = new ConsoleOptionsInteraction(board, ChooseConsoleOption, UsePalantir);
-            console = new TurnConsoleInteraction(board, tray, Back, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
+            console = new TurnConsoleInteraction(board, tray, Back, Cancel, Confirm, FinishSequence, () => Choose(CommandKind.DeclineReaction),
                 ChooseDecline, ChooseConsoleOption, ChooseComponent, ChooseRing, () => reinforcements.Planning);
             tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
@@ -464,6 +464,14 @@ namespace Wotr.Client
             EnsureMandatoryDraft();
         });
 
+        // UI-455 (owner, 2026-11-03): the console's fixed Cancel drops the whole unsent draft (DraftCancel); a forced step
+        // starts again.
+        private void Cancel() => Edit(() =>
+        {
+            DraftCancel.Apply(draft, view);
+            EnsureMandatoryDraft();
+        });
+
         // UI-127: the first Escape over the open region panel drops the whole unsent selection; the die stays,
         // and an army action in progress rebuilds its step.
         private bool ClearArmySelection()
@@ -633,57 +641,7 @@ namespace Wotr.Client
                 return;
             if (!draft.Kind.HasValue)
                 session.Edited(view);
-            if (!draft.Kind.HasValue && view.Decision.Kind == DecisionKind.ActionSequence && view.ActionSequence is { } sequence)
-            {
-                draft.Choose(sequence.Kind, sequence.DieId);
-                draft.Change(p =>
-                {
-                    p.Stepwise = true;
-                    p.MovementCost = sequence.Face;
-                    p.AbilityId = sequence.AbilityId;
-                });
-            }
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.AllocateHunt)
-                draft.Choose(CommandKind.AllocateHunt);
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.DiscardCards)
-                draft.Choose(CommandKind.DiscardCards);
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.RemoveExcess)
-                draft.Choose(CommandKind.RemoveExcess);
-            if (!draft.Kind.HasValue && view.Decision?.Kind == DecisionKind.EffectChoice)
-                draft.Choose(CommandKind.ChooseEffect);
-            if (draft.Kind.HasValue)
-                return;
-            var mandatory = view.Decision?.Kind switch
-            {
-                DecisionKind.FellowshipRoute => CommandKind.RevealFellowship,
-                DecisionKind.Guide => CommandKind.SelectGuide,
-                DecisionKind.CompanionSeparation => view.Options.FirstOrDefault(o => o.Kind is CommandKind.SeparateCompanions or CommandKind.MoveCompanions)?.Kind,
-                DecisionKind.HuntReroll => CommandKind.RerollHunt,
-                DecisionKind.HuntDamage => CommandKind.ResolveHuntDamage,
-                DecisionKind.CorruptionTile => view.Options.First(o => o.Enabled).Kind,
-                DecisionKind.CouncilVersions => CommandKind.ChooseCompanionVersions,
-                DecisionKind.CouncilHomelands => CommandKind.ChooseCouncilHomelands,
-                DecisionKind.CouncilToken => CommandKind.ChooseCouncilToken,
-                DecisionKind.SpecialDieChoice => CommandKind.ChooseSpecialDie,
-                DecisionKind.Dismay when view.Options.Any(o => o.Enabled && o.Kind == CommandKind.UseDismay) => CommandKind.UseDismay,
-                DecisionKind.KeepActionDie when view.Options.Any(o => o.Enabled && o.Kind == CommandKind.UseVilya) => CommandKind.UseVilya,
-                DecisionKind.Reaction when view.Options.Any(o => o.Enabled && o.Kind == CommandKind.RespondEffect) => CommandKind.RespondEffect,
-                DecisionKind.RulerDiscard => CommandKind.DiscardRulerDie,
-                DecisionKind.CombatCard => CommandKind.CommitCombatCard,
-                DecisionKind.Losses => view.EventLoss != null ? CommandKind.TakeEventLosses : CommandKind.TakeBattleLosses,
-                DecisionKind.BattleReroll => CommandKind.RerollBattle,
-                DecisionKind.BattleAdvance => CommandKind.AdvanceBattle,
-                DecisionKind.BattleRetreat when view.Options.Any(o => o.Kind == CommandKind.RetreatBattle) => CommandKind.RetreatBattle,
-                DecisionKind.SiegeContinuation => CommandKind.ExtendSiege,
-                DecisionKind.ArmyEvent => view.Options.FirstOrDefault(o => o.Enabled && o.ArmyEvent != null)?.Kind,
-                DecisionKind.CharacterEvent => CommandKind.MoveShadowCharacters,
-                _ => (CommandKind?)null
-            };
-            if (mandatory.HasValue)
-            {
-                DraftGesture.Choose(draft, view, mandatory.Value);
-                CouncilDraft.Defaults(draft, DraftOptions.For(view, draft));
-            }
+            MandatoryDraft.Ensure(view, draft);
         }
 
         // UI-304: the playback gate. While held, the tray, console, rings, battle policy, keyboard, map, figure, die and card
@@ -742,12 +700,6 @@ namespace Wotr.Client
             if (choice.Kind == ConsoleOptionKind.Action && choice.Command.HasValue)
             {
                 Choose(choice.Command.Value);
-                return;
-            }
-            // UI-448: the console's Cancel clears the drawn route (or the chosen companions), as the panel's Cancel did.
-            if (choice.Kind == ConsoleOptionKind.CancelRoute)
-            {
-                Edit(() => FellowshipDraft.CancelRoute(draft, view));
                 return;
             }
             if (choice.Kind == ConsoleOptionKind.Reaction)

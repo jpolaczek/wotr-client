@@ -30,7 +30,9 @@ namespace Wotr.PlayTests
             await room.Settle();
             PointerGestureEvents.ClickAt(declare);
             await room.Settle();
-            StringAssert.Contains("Choose a route", board.Tray.Q<Label>("travel-summary").text, "The declaration started.");
+            // UI-456 (owner): the summary names where the route starts and asks for nothing; the console instructs.
+            Assert.AreEqual(board.Map.Data.Regions[board.View.Fellowship.RegionId].Name, board.Tray.Q<Label>("travel-summary").text,
+                "The declaration started.");
             var region = board.View.Fellowship.RegionId;
             var anchor = board.Map.Data.Shapes[region].Anchor;
             Assert.IsTrue(board.Map.contentRect.Contains(board.Map.Camera.ToScreen(new UnityEngine.Vector2(anchor[0], anchor[1]))),

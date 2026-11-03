@@ -87,7 +87,7 @@ namespace Wotr.Client
                 return SkillTooltip.Format(skill);
             var ability = ComponentActions.AbilityTitle(item.Character);
             var detail = (item.Owner.Length > 0 ? item.Owner + " · " : "") + (ability.Length > 0 ? ability + " · " : "") + item.Detail;
-            return detail + (item.Enabled ? "\nClick to use" : "\n" + ChooseDie);
+            return detail + (item.Enabled ? "\nClick to use" : "\n" + (item.Reason.Length > 0 ? item.Reason : ChooseDie));
         }
 
         // UI-440: a button that uses a printed ability is its bare skill icon with the skill's description; an entry (the
@@ -101,7 +101,7 @@ namespace Wotr.Client
             var variant = AbilityVariants.KeyOf(item, ability);
             parts.Variant = AbilityVariants.For(ability).FirstOrDefault(candidate => candidate.Key == variant)?.Name ?? "";
             parts.Owner = item.Owner == parts.Name ? "" : item.Owner;
-            parts.State = item.Enabled ? SkillUse.ClickToUse(item.Detail) : ChooseDie;
+            parts.State = item.Enabled ? SkillUse.ClickToUse(item.Detail) : item.Reason.Length > 0 ? item.Reason : ChooseDie;
             parts.Ready = item.Enabled;
             return parts;
         }

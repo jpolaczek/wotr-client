@@ -42,12 +42,38 @@ namespace Wotr.PlayTests
             using (var room = await Connect("kings-valinor-losses", ScenarioKind.CardPack))
             {
                 var unit = room.Fp.Board.View.Units.Single(u => u.Location == "lorien" && u.Kind == UnitKind.Regular);
+                await LossWindowFits(room, room.Fp);
                 Click(room.Fp, "loss-" + unit.Id);
                 await Layout(room, room.Fp, "valinor-loss");
                 await KingsCardNetworkChecks.Reconnect(room, room.Fp);
                 await room.Confirm(room.Fp);
                 Assert.AreEqual("casualties", room.Sh.Board.View.Units.Single(u => u.Id == unit.Id).Location);
             }
+        }
+
+        // UI-464 (owner, 2026-11-03): an event's losses window fits its content — no battle window's width of empty space.
+        private static async Task LossWindowFits(MatchTestRoom room, MountedMatchClient client)
+        {
+            if (!client.Board.Battles.IsOpen)
+                CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+            foreach (var width in new[] { 1366, 1920 })
+                using (var viewport = new BoardCompletionLayoutTests.LayoutViewport(client, width, 1f))
+                {
+                    await room.Settle();
+                    var window = client.Board.Tray.parent;
+                    Assert.IsTrue(window.ClassListContains("event-loss-panel"), "The event's losses window.");
+                    Assert.Less(window.layout.width, 700f, "Narrower than the battle window's 820 · " + width);
+                    var figures = client.Board.Tray.Q(className: "loss-figures");
+                    Assert.LessOrEqual(figures.worldBound.yMax, window.worldBound.yMax, "The figures stay inside · " + width);
+                    var budget = client.Board.Tray.Q<Label>("battle-loss-budget");
+                    if (budget != null)
+                        Assert.LessOrEqual(budget.worldBound.xMax, window.worldBound.xMax + 0.5f, "The hits budget stays inside · " + width);
+                    var apply = client.Board.Tray.Q<Button>("confirm-decision");
+                    Assert.IsNotNull(apply, "Apply losses.");
+                    Assert.LessOrEqual(apply.worldBound.yMax, window.worldBound.yMax + 0.5f, "Apply losses stays inside the frame · " + width);
+                    LayoutTests.AssertNoDecisionScroll(client.Board);
+                    LayoutTests.Save(viewport.Texture, $"ui464-after-valinor-{width}-1.00.png");
+                }
         }
 
         private static async Task Stormcrow()
