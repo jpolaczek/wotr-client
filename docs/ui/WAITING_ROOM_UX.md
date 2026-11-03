@@ -11,7 +11,7 @@ User order with 2026-10-15:
 <a id="układ-menu-25"></a>
 ## Layout (MENU-25)
 
-The waiting room accepts the layout of the main menu (MENU-11/MENU-15): dimmed map, header, fixed body 980×540 with window in the `frames/panel` frame and column action 250 px on the right and the status row. The sizes are fixed and each control has a fixed place: it is not available brightened, it does not disappear.
+The waiting room accepts the layout of the main menu (MENU-11/MENU-15): dimmed map, header, fixed body 980×540 with window in the `frontend/card` frame (UI-470; formerly `frames/panel`) and column action 250 px on the right and the status row. The sizes are fixed and each control has a fixed place: it is not available brightened, it does not disappear.
 
 ```
               EVENING GAME                     (name of room)
@@ -35,9 +35,11 @@ The waiting room accepts the layout of the main menu (MENU-11/MENU-15): dimmed m
                  status / errors
 ```
 
-- Window header (`frames/panel-header`): "Players" and refresh icon (`refresh-room`) at the right
-  end of the table, as in the menu. Refreshing is no longer between bigger buttons.
-- Two player seats, always in order of Free Peoples, Shadow, in the `frames/entry` frame. Each
+- Window header (since UI-470 no band: the title centred over `frontend/divider`; formerly `frames/panel-header`):
+  "Players" and refresh icon (`refresh-room`) at the right end of the table, as in the menu. Refreshing is no longer
+  between bigger buttons.
+- Two player seats, always in order of Free Peoples, Shadow, in the `frontend/row` frame (UI-470; your own seat in
+  `frontend/row-selected`; formerly `frames/entry`). Each
   contains:
   - Page emblem: ring or eye as on menu lists;
   - the name of the page;
@@ -140,8 +142,9 @@ keep the code readable beside it; observers that do not fit the line are clipped
   game shows a grey crest. Names: `rules-module-fate|lords|kings`.
 - Six variant chips in one column, grouped by the expansion they need: New Cities (Fate), Council of Rivendell
   (Lords), Visible Corruption and Sequential Corruption (Kings), Dismay and Removing Ruler Tokens (Lords and Kings)
-  (`rules-variant-<id>`). A chip that is on wears the red lacquer of a selected
-  button and a ticked gilt ring; off, an empty ring.
+  (`rules-variant-<id>`). A chip that is on wears the menus' selected button (UI-470: a warm field with a bright
+  line, `frontend/button-selected`) and a ticked box (`frontend/check-selected`); off, an empty box. The medallions
+  are the thin `frontend/medallion` (UI-470).
 - Only the host of a waiting room changes the rules. A click sends `PUT /api/rooms/{id}/configuration` with the
   room's version and the configuration after that one change (`RulesChoices.Toggle`); the strip changes only when
   the server's room comes back. Removing an expansion removes its variants; adding or removing Lords or Kings sets

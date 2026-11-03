@@ -19,14 +19,15 @@
     min-width: 0;
     margin: 0 4px;
     padding: 10px 16px;
-    background-image: resource("Wotr/Art/UI/frames/entry");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
+    background-image: resource("Wotr/Art/UI/frontend/row");
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-left: 16;
     -unity-slice-scale: 0.5px;
 }
-.waiting-room .waiting-seat.yours { background-image: resource("Wotr/Art/UI/frames/entry-hover"); }
+/* UI-470 (owner, 2026-11-03): a seat is a quiet thin-line row (frontend/row); your own seat is lit by a gold line. */
+.waiting-room .waiting-seat.yours { background-image: resource("Wotr/Art/UI/frontend/row-selected"); }
 .waiting-room .waiting-seat-heading { flex-direction: row; align-items: center; margin-bottom: 4px; }
 .waiting-room .waiting-seat-heading .menu-row-emblem { width: 32px; height: 32px; }
 .waiting-room .waiting-seat-side {
@@ -101,10 +102,10 @@
     border-bottom-width: 1px;
     border-left-width: 1px;
     border-right-width: 1px;
-    border-top-color: rgba(232, 204, 130, 0.25);
-    border-bottom-color: rgba(232, 204, 130, 0.25);
-    border-left-color: rgba(232, 204, 130, 0.25);
-    border-right-color: rgba(232, 204, 130, 0.25);
+    border-top-color: rgba(163, 132, 75, 0.42);
+    border-bottom-color: rgba(163, 132, 75, 0.42);
+    border-left-color: rgba(163, 132, 75, 0.42);
+    border-right-color: rgba(163, 132, 75, 0.42);
 }
 .waiting-room .waiting-observer-name {
     max-width: 120px;
@@ -177,10 +178,10 @@
     border-bottom-width: 1px;
     border-left-width: 1px;
     border-right-width: 1px;
-    border-top-color: rgba(232, 204, 130, 0.25);
-    border-bottom-color: rgba(232, 204, 130, 0.25);
-    border-left-color: rgba(232, 204, 130, 0.25);
-    border-right-color: rgba(232, 204, 130, 0.25);
+    border-top-color: rgba(163, 132, 75, 0.42);
+    border-bottom-color: rgba(163, 132, 75, 0.42);
+    border-left-color: rgba(163, 132, 75, 0.42);
+    border-right-color: rgba(163, 132, 75, 0.42);
 }
 .waiting-room .room-chat-message { flex-direction: row; flex-wrap: wrap; margin-bottom: 2px; }
 .waiting-room .room-chat-author { margin-right: 6px; font-size: 15px; -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold"); }

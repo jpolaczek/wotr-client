@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
+  <!-- UI-470 (owner, 2026-11-03): an expansion's checkbox in the rules strip, thin like the rest of the menus: a dark
+       enamel disc inside one muted-gold ring and a hairline ring. The crest (rules/crest-*) is drawn by USS on top.
+       hover brightens the ring, pressed darkens the disc; fate-on, lords-on and kings-on fill it with the module's
+       enamel, light the ring and add a soft gold halo. -->
+  <defs>
+    <radialGradient id="fe-medallion-enamel" cx="28" cy="24" r="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0" style="stop-color: var(--enamel-light)"/>
+      <stop offset="0.65" style="stop-color: var(--enamel-mid)"/>
+      <stop offset="1" style="stop-color: var(--enamel-dark)"/>
+    </radialGradient>
+  </defs>
+  <circle cx="28" cy="28" r="25.4" fill="none" style="stroke: var(--fe-glow); opacity: var(--fe-glow-opacity)"
+    stroke-width="2" filter="url(#glow)"/>
+  <circle cx="28" cy="28" r="24" fill="url(#fe-medallion-enamel)" fill-opacity="0.94" style="stroke: var(--fe-line)"
+    stroke-width="1.1"/>
+  <circle cx="28" cy="28" r="21.2" fill="none" style="stroke: var(--fe-line)" stroke-width="0.5" stroke-opacity="0.55"/>
+</svg>

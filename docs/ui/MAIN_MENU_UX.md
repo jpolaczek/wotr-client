@@ -40,8 +40,9 @@ The screen (`MainMenuScreen`) has three layers:
 - background**: dim map (`MapCanvas/terrain`), without interaction;
 - **header**: ‘WAR OF THE RING’ in Cinzel and ‘Signed in as {username}’;
 - **Body** of constant size 980×540, (reduces only on the screen that does not accommodate it):
-  - **window** (`menu-window`, `frames/panel` frame, `frames/panel-header` header with page title
-    and Fresh button);
+  - **window** (`menu-window`; since UI-470 the thin `frontend/card` with the page title centred over
+    `frontend/divider` and the Refresh button at the header's right end; formerly `frames/panel` and
+    `frames/panel-header`);
   - **column action** (`menu-actions`, 250 entitled, same frame).
 
 The window shows one page at a time and does not change the size between the pages:
@@ -384,9 +385,10 @@ User application from 2026-10-16: "Adjust host view a game to the rest of the de
 
 - the row ‘Game name’ with the name field (`room-name`), the label in the constant column 150
   entitled;
-- "Choose your side": two card pages `SideChoice` in the frame `frames/entry`, like the seats in the
-  waiting room, with the emblem (ring, eye), name and one sentence about how the page wins
-  (`host-fp`, `host-shadow`); the selected card shines and has a golden outline;
+- "Choose your side": two card pages `SideChoice` in the frame `frontend/row` (UI-470; formerly
+  `frames/entry`), like the seats in the waiting room, with the emblem (ring, eye), name and one sentence
+  about how the page wins (`host-fp`, `host-shadow`); the selected card wears `frontend/row-selected`
+  (a thin gold line over a warm field);
 - ‘Visibility’: segment buttons ‘Public’ and ‘Private’ (`host-public`, `host-private`) with one
   sentence of the explanation below;
 - the line of rules „Two players · Play at your own pace · Choose expansions in the waiting room” (`host-rules-note`,

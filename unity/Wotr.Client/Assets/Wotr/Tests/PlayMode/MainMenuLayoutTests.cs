@@ -166,6 +166,8 @@ namespace Wotr.PlayTests
                     foreach (var name in new[] { "quit-confirm", "quit-cancel" })
                         Fits(menu.Root.Q<Button>(name), menu.Root.Q("quit-window"));
                     Fits(menu.Root.Q("quit-window"), content);
+                    // UI-470 (owner, 2026-11-03): the question over the menu, in the menus' thin-line style.
+                    LayoutTests.Save(target, $"ui470-quit-{width}-{scale:0.00}.png");
                     BoardMenuLayoutTests.Key(menu.Root.Q<Button>("quit-cancel"), true);
                     BoardMenuLayoutTests.Key(menu.Root.Q<Button>("quit-cancel"), false);
                     yield return Settle();
@@ -238,6 +240,8 @@ namespace Wotr.PlayTests
                     Assert.IsFalse(menu.Root.Q<Button>("host-fp").ClassListContains("selected"));
                     ReturnTestFixture.Click(menu.Root.Q<Button>("host-fp"));
                     yield return Settle();
+                    // UI-470 (owner, 2026-11-03): the Host a game page itself.
+                    LayoutTests.Save(target, $"ui470-host-form-{width}-{scale:0.00}.png");
                     // MENU-31: the demo page asks only for the side, with its cards in the same window.
                     ReturnTestFixture.Click(menu.Root.Q<Button>("menu-demo"));
                     yield return Settle();

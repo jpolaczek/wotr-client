@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- UI-470 (owner, 2026-11-03): the line icon inside a search field (a lens). -->
+  <g fill="none" style="stroke: var(--fe-rule)" stroke-width="1.1" stroke-linecap="round">
+    <circle cx="7" cy="7" r="4.3"/>
+    <path d="M10.2 10.2 L13.6 13.6"/>
+  </g>
+</svg>

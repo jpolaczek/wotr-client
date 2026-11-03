@@ -12,7 +12,14 @@
       "--enamel-dark": "#1e1c19",
       "--button-top": "#3d3a36",
       "--button-bottom": "#252321",
-      "--glow-opacity": "0.45"
+      "--glow-opacity": "0.45",
+      "--fe-line": "#b39058",
+      "--fe-field-top": "#272420",
+      "--fe-field-bottom": "#1a1815",
+      "--fe-sheen-opacity": "0.08",
+      "--fe-row-fill": "#1b1916",
+      "--fe-row-opacity": "0.74",
+      "--fe-row-line": "#9a7c4a"
     },
     "selected": {
       "--gilt-highlight": "#fff3cc",
@@ -20,7 +27,16 @@
       "--gilt-mid": "#b08a40",
       "--gilt-shadow": "#7a5822",
       "--button-top": "#6a2019",
-      "--button-bottom": "#2e0d0b"
+      "--button-bottom": "#2e0d0b",
+      "--fe-line": "#d4b26c",
+      "--fe-field-top": "#3a2f1f",
+      "--fe-field-bottom": "#251e14",
+      "--fe-field-opacity": "0.94",
+      "--fe-sheen-opacity": "0.08",
+      "--fe-row-fill": "#2a2218",
+      "--fe-row-opacity": "0.8",
+      "--fe-row-line": "#c9a764",
+      "--fe-tick-opacity": "1"
     },
     "free-lacquer": {
       "--lacquer-red-top": "#1d4466",
@@ -97,7 +113,13 @@
       "--button-bottom": "#0d0c0b",
       "--enamel-light": "#2a2724",
       "--enamel-mid": "#181614",
-      "--enamel-dark": "#0b0a09"
+      "--enamel-dark": "#0b0a09",
+      "--fe-line": "#8f7444",
+      "--fe-field-top": "#0f0e0c",
+      "--fe-field-bottom": "#171512",
+      "--fe-sheen-opacity": "0",
+      "--fe-row-fill": "#0b0a09",
+      "--fe-row-opacity": "0.8"
     },
     "free-pressed": {
       "--gilt-highlight": "#cbb37c",
@@ -228,7 +250,9 @@
       "--glow-opacity": "1",
       "--enamel-light": "#4d7fa8",
       "--enamel-mid": "#24506f",
-      "--enamel-dark": "#102c42"
+      "--enamel-dark": "#102c42",
+      "--fe-line": "#e2c27c",
+      "--fe-glow-opacity": "0.85"
     },
     "lords-on": {
       "--gilt-highlight": "#fff6d6",
@@ -238,7 +262,9 @@
       "--glow-opacity": "1",
       "--enamel-light": "#4f8a5e",
       "--enamel-mid": "#275a36",
-      "--enamel-dark": "#12321c"
+      "--enamel-dark": "#12321c",
+      "--fe-line": "#e2c27c",
+      "--fe-glow-opacity": "0.85"
     },
     "kings-on": {
       "--gilt-highlight": "#fff6d6",
@@ -248,7 +274,9 @@
       "--glow-opacity": "1",
       "--enamel-light": "#9a3a5a",
       "--enamel-mid": "#5e1c35",
-      "--enamel-dark": "#33101e"
+      "--enamel-dark": "#33101e",
+      "--fe-line": "#e2c27c",
+      "--fe-glow-opacity": "0.85"
     },
     "vilya": {
       "--enamel-light": "#4c7fd0",
@@ -649,6 +677,27 @@
     },
     "landing-attack": {
       "--rim-color": "#e0573f"
+    },
+    "primary": {
+      "--fe-line": "#d6b46c",
+      "--fe-field-top": "#6e5530",
+      "--fe-field-bottom": "#3a2b16",
+      "--fe-field-opacity": "1",
+      "--fe-sheen-opacity": "0.16"
+    },
+    "primary-hover": {
+      "--fe-line": "#efcf88",
+      "--fe-field-top": "#82663a",
+      "--fe-field-bottom": "#46351b",
+      "--fe-field-opacity": "1",
+      "--fe-sheen-opacity": "0.22"
+    },
+    "primary-pressed": {
+      "--fe-line": "#c09d5a",
+      "--fe-field-top": "#3e2f18",
+      "--fe-field-bottom": "#563f20",
+      "--fe-field-opacity": "1",
+      "--fe-sheen-opacity": "0"
     }
   },
   "assets": [
@@ -1813,6 +1862,82 @@
     {
       "source": "icons/fellowship-box.svg",
       "role": "UI-270: counter of action dice in the Fellowship Box (Strider, Dúnadan, Council of Rivendell)."
+    },
+    {
+      "source": "frontend/card.svg",
+      "role": "UI-470: the card of every menu window (sign-in, the main menu's window and action column, the waiting room, Settings, the questions, the board's Menu): translucent charcoal under one thin muted-gilt rule with small concave corners, a hairline inner rule and four tiny gilt lozenges.",
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
+      "source": "frontend/button.svg",
+      "role": "UI-470: a menu button, tab or segment: a dark field edged with one muted-gold line; selected is an open page or chosen segment, primary the one main action's warm-gold gradient.",
+      "variants": [
+        "hover",
+        "pressed",
+        "selected",
+        "primary",
+        "primary-hover",
+        "primary-pressed"
+      ],
+      "slices": {
+        "top": 6,
+        "right": 6,
+        "bottom": 6,
+        "left": 6
+      }
+    },
+    {
+      "source": "frontend/row.svg",
+      "role": "UI-470: a list row, side card or waiting-room seat: a quiet dark field with a dim line; selected marks the chosen side or your seat.",
+      "variants": [
+        "hover",
+        "selected"
+      ],
+      "slices": {
+        "top": 8,
+        "right": 8,
+        "bottom": 8,
+        "left": 8
+      }
+    },
+    {
+      "source": "frontend/divider.svg",
+      "role": "UI-470: a hairline fading out at both ends round a tiny open lozenge, under a menu window's title and over the sign-in card's last row; drawn unscaled."
+    },
+    {
+      "source": "frontend/medallion.svg",
+      "role": "UI-470: an expansion's checkbox in the rules strip: a dark enamel disc in one thin ring; lit in the module's enamel with a soft halo when the game uses it.",
+      "variants": [
+        "hover",
+        "pressed",
+        "fate-on",
+        "lords-on",
+        "kings-on"
+      ]
+    },
+    {
+      "source": "frontend/check.svg",
+      "role": "UI-470: a menus' checkbox (variant chips, expansion captions, Settings toggles); selected draws the tick.",
+      "variants": [
+        "selected"
+      ]
+    },
+    {
+      "source": "frontend/icon-account.svg",
+      "role": "UI-470: line icon inside the account name field."
+    },
+    {
+      "source": "frontend/icon-password.svg",
+      "role": "UI-470: line icon inside the password field."
+    },
+    {
+      "source": "frontend/icon-search.svg",
+      "role": "UI-470: line icon inside a search field."
     }
   ],
   "previews": [

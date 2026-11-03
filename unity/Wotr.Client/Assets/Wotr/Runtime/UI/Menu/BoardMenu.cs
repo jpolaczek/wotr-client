@@ -31,6 +31,8 @@ namespace Wotr.Client
         public BoardMenu()
         {
             Root.AddToClassList("board-menu");
+            // UI-470 (owner, 2026-11-03): the Menu panel is a menu window too; its toggle stays in the top bar's look.
+            FrontendTheme.ApplyChrome(Root);
             Panel.AddToClassList("board-menu-panel");
             Root.style.display = DisplayStyle.None;
             Root.Add(Panel);

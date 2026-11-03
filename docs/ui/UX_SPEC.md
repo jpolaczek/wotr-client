@@ -3926,3 +3926,96 @@ Tests: PlayMode `CharacterWindowLayoutTests` (every king's window at one place a
 empty strip, four layouts), `CharacterRosterLayoutTests`, `CharacterRosterPanelNetworkTests`,
 `CharacterRosterActionNetworkTests`, `SovereignPanelNetworkTests`, `SovereignSectionLayoutTests`, `InGameDenseLayoutTests`,
 `LayoutStressScenarioTests`, `ExpansionWindowNetworkTests`.
+
+<a id="the-menus-in-thin-lines--ui-470"></a>
+## The menus in thin lines — UI-470 (2026-11-03)
+
+The owner (with a reference picture of a sign-in card): "let's change the design of the main menu, the settings, etc. —
+all windows that are not part of the game's own interface: Test scenarios, Host a game and the rest. Everything less
+thick and in-your-face; slick and elegant — now it is terribly coarse. Do not add right-pointing arrows on every button.
+Do not add or change any functionality; we only care about the graphics." Only art and colours changed: every text,
+control, name, order, place and size class is the one it was, and no button carries an arrow or a new icon.
+
+One chrome for every menu window. `Styles/Menus.uss` holds it; `FrontendTheme.ApplyChrome` attaches the sheet and the
+class `menu-chrome` to the sign-in, main menu, waiting room and replay library (through `FrontendTheme.Apply`), Settings
+(`InterfaceSettingsPanel`), the questions (`ConfirmationDialog`: Quit, delete; `GameDeletedNotice`) and the board's Menu
+panel (`BoardMenu`). Nothing reaches the board's HUD: the top bar's Menu toggle, the panels, the battle, card and
+character windows keep their art.
+- A window is a card (`frontend/card`): translucent charcoal under one thin muted-gilt rule with small concave corners, a
+  tiny gilt lozenge in each cut and a hairline inner rule — no bevel, band or shadow.
+- A button, tab or segment (`frontend/button`) is a dark field edged with one muted-gold line, its words in Alegreya
+  Regular. Hover lightens the line and the field; a press darkens the field and sinks it a point (UI-113); an open page,
+  a chosen segment or tab and a variant that is on wear `selected` (a warm field with a bright line) instead of red
+  lacquer; a disabled control is greyed; keyboard focus brightens the words only, so a clicked button never looks held.
+  The one main action of a screen — Login, Create game, Start game — is `primary`, a soft warm-gold gradient with a
+  brighter line (`primary-hover`, `primary-pressed`).
+- A text field is a dark field with one muted-gold line that brightens on hover and turns gold on focus, a muted
+  placeholder, a gold caret and selection. Checkboxes are small boxes with a gold tick (`frontend/check`); a slider is a
+  quiet gold track with a small dark dragger edged in gold; a scroll bar has no plate, a slim muted-gold thumb and quiet
+  arrows, 10 points wide instead of 13.
+- Titles are Cinzel capitals, letter-spaced, light gold, without the faux bold.
+
+Per screen:
+- **Sign-in**: the card instead of a flat plate with a border (one point more padding for the border it replaced); the
+  title 21 points with wider spacing; a small line icon inside the account name and password fields
+  (`frontend/icon-account`, `icon-password`); Login primary; Create account and Forgot password? thin; a hairline with a
+  tiny lozenge (`frontend/divider`) over Settings and Replays, which now keep the 8-point gap between them that the old
+  `:first-child` rule (unsupported in USS) never gave.
+- **Main menu**: the window and the action column are cards; the red header band is gone — the page's name stands
+  centred in spaced capitals over the divider, Refresh keeps its place at the header's right end. Open games, My games
+  (own rooms and saved games), Replays and the test scenarios are quiet rows (`frontend/row`, `row-hover`) instead of
+  gilt entry plates; a saved game waiting for your decision keeps its gold mark, 2 points instead of 4. The open page's
+  action is `selected`. Join by code's rules, the lobby panel, the players-online strip and tab, a name's context tab
+  and the challenge tab (now a warm charcoal plate under a bright gilt line instead of red) are in charcoal and muted
+  gold.
+- **Host a game / Demo vs CPU**: the side cards are rows and the chosen side is lit by `row-selected` (a thin gold line
+  over a warm field; the 2-point ring is gone); Public and Private are segments; Create game is primary. The rules strip
+  (demo page and waiting room): the expansions' medallions are the thin `frontend/medallion` (a dark enamel disc in one
+  ring, lit in the module's enamel with a soft halo when on), the ticks are boxes, and a variant chip that is on is
+  `selected`.
+- **Test scenarios**: the tabs are thin buttons (the open one `selected`), a lens (`frontend/icon-search`) stands inside
+  the search field, the scenarios are rows; the hint and descriptions are muted parchment instead of grey-teal.
+- **Waiting room**: the seats are rows and your own seat is `row-selected`; the observers' chips and the chat log are
+  edged in muted gold; Start game is primary.
+- **Settings, the questions and the board's Menu**: the card instead of a flat plate (the Menu panel keeps its inner
+  size: the 1-point border became a point of padding), thin buttons (the chosen size, window mode and resolution
+  `selected`), boxes for the toggles, quiet sliders.
+- The map behind the menus is a little dimmer (tint rgb(72, 66, 56) instead of rgb(88, 80, 66)), so the thin cards stand
+  clear of it.
+
+Art (`graphicalassets/ui/src/frontend`, `render.py --only frontend`; tokens `--fe-*` in `palette.css`; new variants
+`primary`, `primary-hover`, `primary-pressed`, and `--fe-*` overrides in `hover`, `pressed`, `selected`, `fate-on`,
+`lords-on`, `kings-on`): `card` (64 pt, slices 12), `button` with six variants (64×32 pt, slices 6), `row` with `hover`
+and `selected` (96×40 pt, slices 8), `divider` (200×8 pt, unscaled), `medallion` with five variants (56 pt), `check` and
+`check-selected` (14 pt), `icon-account`, `icon-password`, `icon-search` (16 pt). The board keeps `frames/panel`,
+`panel-header`, `entry` and `button`; `rules/medallion*` and `rules/check-*` are no longer referenced but stay in the
+kit.
+
+Playtest (owner's checklist):
+- [ ] Start the game. Expect: the sign-in card thin and dark over a dimmer map; small icons in the two fields; Login warm
+  gold; the other buttons dark with a thin line; no arrows anywhere; Settings and Replays with a gap under a hairline
+  with a tiny lozenge.
+- [ ] Hover, press and release Create account; tab into a field. Expect: the line lightens on hover, the button darkens
+  and sinks while held; the focused field's line turns gold.
+- [ ] Sign in. Expect: the window and the column as thin cards; "OPEN GAMES" centred over the hairline; Open games
+  marked in the column by a warm field; rows quiet with a dim line that brightens on hover; a disabled Observe clearly
+  grey.
+- [ ] Host a game. Expect: the chosen side card lit by a thin gold line; Public as a warm segment; Create game warm gold.
+- [ ] Demo vs CPU, then Test scenarios. Expect: thin medallions and boxes in the rules row; thin tabs with the open one
+  warm; a lens in the search field; scenario rows like the game rows.
+- [ ] Open a waiting room (as host, with expansions). Expect: your seat lit by a gold line; the medallions lit in their
+  enamel when on; the chips that are on warm; Start game warm gold once both are ready, grey before.
+- [ ] Settings from the menu and from a game's Menu; Quit game. Expect: the same thin card, buttons, boxes and sliders;
+  the chosen 100 %/125 % and window mode warm; the board's Menu panel as a small thin card while the top bar keeps its
+  look.
+- [ ] Repeat one screen at 1366×768 with 125 %. Expect: nothing clipped, every control in its usual place.
+
+Tests: EditMode suite (`UiArtKitTests` lists the 23 new textures; `FrontendThemeTests`, `GatewayScreenTests`,
+`MainMenuTests`, `WaitingRoomTests`, `ConfirmationDialogTests` unchanged and green); PlayMode `MainMenuLayoutTests` (two
+new screenshots, `ui470-host-form-*` and `ui470-quit-*`; every page, the waiting room, Settings and the question in four
+layouts), `TestScenarioNetworkTests`, `WaitingRoomRulesTests`, `ConfigurationLayoutTests`, `LayoutTests`,
+`InterfaceSettingsTests`, `SoundSettingsTests`, `BoardMenuLayoutTests` and the menu network classes. Results
+(2026-11-03): EditMode 1504/1504; every PlayMode class above passes except four failures already known before UI-470
+(`MenuBrowserNetworkTests.Scrolling…`, `WaitingRoomRemovalNetworkTests.TheHostRemoves…`, `ReturnListTests.BothPlayers…`,
+`BoardMenuNetworkTests.MenuReceives…`: status texts and timeouts, not styles). Screenshots:
+`.artifacts/screenshots/ui470-before-*.png` and `ui470-after-*.png`.

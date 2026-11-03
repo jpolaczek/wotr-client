@@ -2,9 +2,9 @@
   "task": "UI-86",
   "renderer": "headless Google Chrome",
   "shared_sha256": {
-    "palette.css": "aa7d5f0681bda906adca851beb8d2166683fdfdbab60ada410cccdd50b5ebfd5",
+    "palette.css": "82c15de854bf52b4e1f009f0a92e8985b0923807a24d007b94c38b19341ad2a4",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "1df1021ebfcde8606e87f71133ad8e66f63985540f4ebdbf97726a114d67f261"
+    "assets.json": "8a803e1a5d36f0beb975dc64b51f371d354de2a58af9afedc56aa15699a9a581"
   },
   "assets": [
     {
@@ -5222,6 +5222,374 @@
       "alpha": true,
       "source_sha256": "86e65fd9eff5ee6ed8b9d6a99098efc87c8459ee41c40b5ce4a0f8574e7b67ff",
       "png_sha256": "7b6d6408e21250f7ccf4f1577a844c60d726b1d4a07854e0ced1087a6bce51aa"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/card.png",
+      "source": "src/frontend/card.svg",
+      "variant": null,
+      "logical": [
+        64,
+        64
+      ],
+      "pixels": [
+        128,
+        128
+      ],
+      "alpha": true,
+      "source_sha256": "8ff6e0d2a9a8ed51a654679a000499da18a301bb1e29874d80589a9529909ba0",
+      "png_sha256": "55eed5d0ae897a007789515425d7c354acb824d76e86669a08ce48351e022a5e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button.png",
+      "source": "src/frontend/button.svg",
+      "variant": null,
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "74c1a9c8006371f4b1ee8ead0c94d5839f56b7203e6194372ed0d0d5c6e621a2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button-hover.png",
+      "source": "src/frontend/button.svg",
+      "variant": "hover",
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "ae93ab6a095fbfe7368b5f942e3de9d8516a63d7e700920d4f6e5921c8f4eda4"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button-pressed.png",
+      "source": "src/frontend/button.svg",
+      "variant": "pressed",
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "91e1e843c27688f17951146176cd6d77138d6f9cf003d871a58d0acb0fd020a9"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button-selected.png",
+      "source": "src/frontend/button.svg",
+      "variant": "selected",
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "f30a233d94a47605c1a24a3feec81f1db0be740feac4c8c3455384a6eb33c853"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button-primary.png",
+      "source": "src/frontend/button.svg",
+      "variant": "primary",
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "6c0e45248eeae40ebf0379bc3e61a0f4e5e6a7684071de8a36fcbf1742c432c8"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button-primary-hover.png",
+      "source": "src/frontend/button.svg",
+      "variant": "primary-hover",
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "6265329cc335cbdbe3a7d4707094c6d357df451b1fc61f60f08cbd1fac1c7b82"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button-primary-pressed.png",
+      "source": "src/frontend/button.svg",
+      "variant": "primary-pressed",
+      "logical": [
+        64,
+        32
+      ],
+      "pixels": [
+        128,
+        64
+      ],
+      "alpha": true,
+      "source_sha256": "3a73eec39aa5160aa4b621d951fd0bb148d808cf53d2f48e31852aa009ccfdb6",
+      "png_sha256": "fef5c359d4d238083fc12fcebb0823834deedc36225d70b4d137d72f1bcb8e3c"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/row.png",
+      "source": "src/frontend/row.svg",
+      "variant": null,
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "e6c50ba6359034c00415b05a5a89759a2555de586483ad78436e1a328058b0e3",
+      "png_sha256": "25f6662965f1783d1ef6a05c91344af9d208d501650981336a87cc82825d8082"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/row-hover.png",
+      "source": "src/frontend/row.svg",
+      "variant": "hover",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "e6c50ba6359034c00415b05a5a89759a2555de586483ad78436e1a328058b0e3",
+      "png_sha256": "e9651970ac6c5443541c1d91878db6d09383ff172f7caa055e5902dc9762cc16"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/row-selected.png",
+      "source": "src/frontend/row.svg",
+      "variant": "selected",
+      "logical": [
+        96,
+        40
+      ],
+      "pixels": [
+        192,
+        80
+      ],
+      "alpha": true,
+      "source_sha256": "e6c50ba6359034c00415b05a5a89759a2555de586483ad78436e1a328058b0e3",
+      "png_sha256": "d0e0f25c582dcaee8c91817337409da787d9770b9cf1a94d5f4ed469d8c369f3"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/divider.png",
+      "source": "src/frontend/divider.svg",
+      "variant": null,
+      "logical": [
+        200,
+        8
+      ],
+      "pixels": [
+        400,
+        16
+      ],
+      "alpha": true,
+      "source_sha256": "5f59ada7da607dfb4c0ddd32465672ee2efc99782d3fda6dc28ae6df41616b4e",
+      "png_sha256": "14dc8fa39054288994830dd1f9fe9a8fca624236d3cc0903849032afc9c6416f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion.png",
+      "source": "src/frontend/medallion.svg",
+      "variant": null,
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "a8eb4da62cf7c6ce29149ba62c53c811c3497c9283f310759595bbb40610b812",
+      "png_sha256": "17d6282b5229605a05c9b6ee0f5dff91c6a0b4b936e0c05692c8ff2c34908031"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion-hover.png",
+      "source": "src/frontend/medallion.svg",
+      "variant": "hover",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "a8eb4da62cf7c6ce29149ba62c53c811c3497c9283f310759595bbb40610b812",
+      "png_sha256": "bfc573831bedd52c8be3a2067c3eb9225b661b97a6d8394eab930d0a334fe7e2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion-pressed.png",
+      "source": "src/frontend/medallion.svg",
+      "variant": "pressed",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "a8eb4da62cf7c6ce29149ba62c53c811c3497c9283f310759595bbb40610b812",
+      "png_sha256": "63c00fcbbb8c11e9a79f55abee87371415bd27f3088369db87b44e365a186a98"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion-fate-on.png",
+      "source": "src/frontend/medallion.svg",
+      "variant": "fate-on",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "a8eb4da62cf7c6ce29149ba62c53c811c3497c9283f310759595bbb40610b812",
+      "png_sha256": "59901bb3980eeb7ba4f92f1b0defe3f68c983742241a216725af1ebefc92cf91"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion-lords-on.png",
+      "source": "src/frontend/medallion.svg",
+      "variant": "lords-on",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "a8eb4da62cf7c6ce29149ba62c53c811c3497c9283f310759595bbb40610b812",
+      "png_sha256": "24ed057b77e31208bbccbde162bc957c757d7e92ed98a430ff9243c332d934e1"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion-kings-on.png",
+      "source": "src/frontend/medallion.svg",
+      "variant": "kings-on",
+      "logical": [
+        56,
+        56
+      ],
+      "pixels": [
+        112,
+        112
+      ],
+      "alpha": true,
+      "source_sha256": "a8eb4da62cf7c6ce29149ba62c53c811c3497c9283f310759595bbb40610b812",
+      "png_sha256": "c1e88f10ec79c73608b9e08a6876fe5c2230689eebb51774cd134c8980b826a5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/check.png",
+      "source": "src/frontend/check.svg",
+      "variant": null,
+      "logical": [
+        14,
+        14
+      ],
+      "pixels": [
+        28,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "a0272b7d6fb20556b61e0d8643da235357332eb6ea0d19dff9cdaa5169794663",
+      "png_sha256": "c151ddf83b193467e23eb351dcabb672470c10d76a114ec635be07e995d11cf5"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/check-selected.png",
+      "source": "src/frontend/check.svg",
+      "variant": "selected",
+      "logical": [
+        14,
+        14
+      ],
+      "pixels": [
+        28,
+        28
+      ],
+      "alpha": true,
+      "source_sha256": "a0272b7d6fb20556b61e0d8643da235357332eb6ea0d19dff9cdaa5169794663",
+      "png_sha256": "4a633900adaafd78d4fc1443c2ff4b96781ef86c13650fa88b82b5f580f4030b"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/icon-account.png",
+      "source": "src/frontend/icon-account.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "f840cb55062f5e1789bd73012c8729bb42e7eae109d4ed8276c7eae94cb0c988",
+      "png_sha256": "96251726255cd10f30eaad13a4c4aad0e16f99bd5648c7ce4acb6076453338f2"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/icon-password.png",
+      "source": "src/frontend/icon-password.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "0766a37291051635a5a3f938d5fbafaa7169eba5fda26b0dc755298e148fd99d",
+      "png_sha256": "7edfa04eb33fe44d65e9727870b8cc2cb688209029c301a6d01be19bf7178c65"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/icon-search.png",
+      "source": "src/frontend/icon-search.svg",
+      "variant": null,
+      "logical": [
+        16,
+        16
+      ],
+      "pixels": [
+        32,
+        32
+      ],
+      "alpha": true,
+      "source_sha256": "a6c2845cab6d693f62e299951a1b060d4b7ecb3713cdf283d64ff826656037a6",
+      "png_sha256": "f1c54dfa8427024ff519c89919ed04259d13b6401d665a7b728c08ffe3b6b164"
     }
   ]
 }

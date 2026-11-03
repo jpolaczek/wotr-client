@@ -1,0 +1,191 @@
+/* UI-470 (owner, 2026-11-03): the menus' thin-line chrome. Every window outside the game's own interface wears it:
+   sign-in, the main menu with its pages, the waiting room, Settings, the questions (Quit, a deleted game) and the board's
+   Menu panel. FrontendTheme.ApplyChrome attaches this sheet and the class menu-chrome to their roots, so it never reaches
+   the board's HUD. A translucent charcoal card under one thin muted-gilt rule (frontend/card), dark buttons and fields
+   edged with a single muted-gold line (frontend/button), a warm-gold gradient for the one main action, quiet checkboxes,
+   sliders and scroll bars. States stay visible but subtle (UI-113): hover lightens the line, a press darkens the field
+   and sinks it a point (Interaction.uss), an open page or chosen segment is a warm field with a bright line, and a
+   disabled control is greyed. Only the art and colours change; every size and place is the screen's own. */
+
+/* Cards: the windows themselves. */
+.menu-chrome .interface-settings-panel,
+.menu-chrome .confirm-window,
+.menu-chrome .board-menu-panel {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frontend/card");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+    color: rgb(226, 214, 188);
+}
+
+/* Titles: spaced serif capitals in a light gold, without the faux bold. */
+.menu-chrome .title {
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-font-style: normal;
+    letter-spacing: 2px;
+    color: rgb(232, 207, 146);
+}
+
+/* Buttons, tabs and segments. */
+.menu-chrome .action {
+    color: rgb(228, 216, 188);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-Regular");
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frontend/button");
+    -unity-slice-top: 12;
+    -unity-slice-right: 12;
+    -unity-slice-bottom: 12;
+    -unity-slice-left: 12;
+    -unity-slice-scale: 0.5px;
+    border-width: 0;
+}
+.menu-chrome .action:hover {
+    color: rgb(244, 232, 204);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frontend/button-hover");
+}
+/* Keyboard focus brightens the words only, so a clicked button does not look held. */
+.menu-chrome .action:focus { color: rgb(250, 230, 172); }
+.menu-chrome .action.selected {
+    color: rgb(248, 230, 184);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    background-image: resource("Wotr/Art/UI/frontend/button-selected");
+    border-width: 0;
+}
+.menu-chrome .unity-button.action.pressed {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frontend/button-pressed");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+.menu-chrome .action:disabled {
+    color: rgb(130, 122, 104);
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: rgb(150, 146, 140);
+}
+.menu-chrome .action.selected:disabled { color: rgb(170, 156, 124); }
+
+/* The one main action of a screen: Login, Create game, Start game. */
+.menu-chrome #auth-submit,
+.menu-chrome #submit-host,
+.menu-chrome #start-game {
+    color: rgb(252, 240, 212);
+    -unity-font-definition: resource("Wotr/Fonts/Alegreya-SemiBold");
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+    background-image: resource("Wotr/Art/UI/frontend/button-primary");
+}
+.menu-chrome #auth-submit:hover,
+.menu-chrome #submit-host:hover,
+.menu-chrome #start-game:hover { background-image: resource("Wotr/Art/UI/frontend/button-primary-hover"); }
+.menu-chrome #auth-submit.pressed,
+.menu-chrome #submit-host.pressed,
+.menu-chrome #start-game.pressed { background-image: resource("Wotr/Art/UI/frontend/button-primary-pressed"); }
+.menu-chrome #auth-submit:disabled,
+.menu-chrome #submit-host:disabled,
+.menu-chrome #start-game:disabled { color: rgb(150, 140, 118); -unity-background-image-tint-color: rgb(120, 118, 114); }
+
+/* DIST-17: Settings lit by an available update keeps a clear glow on the thin art: a warm field, a bright line and
+   gold words; nothing moves. */
+.menu-chrome .action.update-glow {
+    color: rgb(255, 232, 178);
+    background-image: resource("Wotr/Art/UI/frontend/button-selected");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+/* Icon buttons (refresh, close, back, clear): the same thin field round the action icon. */
+.menu-chrome .action.icon-button {
+    background-image: resource("Wotr/Art/UI/frontend/button");
+    -unity-slice-top: 12;
+    -unity-slice-right: 12;
+    -unity-slice-bottom: 12;
+    -unity-slice-left: 12;
+}
+.menu-chrome .action.icon-button:hover,
+.menu-chrome .action.icon-button:focus,
+.menu-chrome .action.icon-button.selected { background-image: resource("Wotr/Art/UI/frontend/button-hover"); }
+.menu-chrome .unity-button.action.icon-button.pressed {
+    background-image: resource("Wotr/Art/UI/frontend/button-pressed");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+.menu-chrome .action.icon-button:disabled { opacity: 0.45; }
+
+/* Text fields: a dark field with one muted-gold line that brightens on hover and lights on focus. */
+.menu-chrome .unity-base-text-field__input {
+    color: rgb(240, 230, 206);
+    background-color: rgba(10, 9, 8, 0.72);
+    border-width: 1px;
+    border-color: rgb(118, 95, 62);
+    border-radius: 2px;
+    --unity-cursor-color: rgb(232, 207, 146);
+    --unity-selection-color: rgba(214, 178, 108, 0.35);
+}
+.menu-chrome .unity-base-text-field:hover > .unity-base-text-field__input { border-color: rgb(160, 130, 82); }
+.menu-chrome .unity-base-text-field:focus > .unity-base-text-field__input { border-color: rgb(214, 178, 108); }
+.menu-chrome .unity-base-text-field:disabled > .unity-base-text-field__input { border-color: rgb(84, 74, 58); color: rgb(150, 142, 124); }
+.menu-chrome .unity-base-text-field__input--placeholder { color: rgb(138, 126, 104); }
+
+/* Checkboxes: the small box of frontend/check, ticked in gold. */
+.menu-chrome .unity-toggle__checkmark {
+    width: 16px;
+    height: 16px;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: resource("Wotr/Art/UI/frontend/check");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: scale-to-fit;
+}
+.menu-chrome .unity-toggle:checked .unity-toggle__checkmark,
+.menu-chrome .unity-toggle__input:checked > .unity-toggle__checkmark { background-image: resource("Wotr/Art/UI/frontend/check-selected"); }
+.menu-chrome .unity-toggle:hover .unity-toggle__checkmark { -unity-background-image-tint-color: rgb(255, 236, 196); }
+
+/* Sliders: a hairline track and a small dark dragger edged in gold. */
+.menu-chrome .unity-base-slider__tracker {
+    background-color: rgba(163, 132, 75, 0.38);
+    border-width: 0;
+}
+.menu-chrome .unity-base-slider__dragger {
+    background-color: rgb(28, 25, 22);
+    border-width: 1px;
+    border-color: rgb(196, 162, 98);
+    border-radius: 2px;
+}
+.menu-chrome .unity-base-slider__dragger-border { border-width: 0; }
+.menu-chrome .unity-base-slider:hover .unity-base-slider__dragger { border-color: rgb(232, 204, 140); }
+
+/* Scroll bars: no plate; a slim muted-gold thumb and quiet arrows, 10 points wide instead of 13. */
+.menu-chrome .unity-scroller { background-color: rgba(0, 0, 0, 0); border-width: 0; }
+.menu-chrome .unity-scroller--vertical { width: 10px; min-width: 10px; }
+.menu-chrome .unity-scroller .unity-base-slider__tracker {
+    background-color: rgba(255, 244, 220, 0.04);
+    border-width: 0;
+    border-radius: 3px;
+}
+.menu-chrome .unity-scroller .unity-base-slider__dragger {
+    background-color: rgba(163, 132, 75, 0.45);
+    border-width: 0;
+    border-radius: 3px;
+}
+.menu-chrome .unity-scroller .unity-base-slider__dragger:hover { background-color: rgba(196, 162, 98, 0.75); }
+.menu-chrome .unity-scroller__low-button,
+.menu-chrome .unity-scroller__high-button {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    -unity-background-image-tint-color: rgb(150, 124, 80);
+}
+.menu-chrome .unity-scroller__low-button:hover,
+.menu-chrome .unity-scroller__high-button:hover { -unity-background-image-tint-color: rgb(214, 178, 108); }
+
+/* Settings: the explanation in a quieter parchment; the panel keeps its two columns and every size (UI-415, QUAL-19). */
+.menu-chrome .interface-settings-panel #motion-description { color: rgb(176, 164, 136); }
+.menu-chrome .interface-settings-panel .settings-section { border-top-color: rgba(163, 132, 75, 0.3); }
+
+/* The questions: the note in parchment. */
+.menu-chrome .confirm-window .confirm-note { color: rgb(214, 202, 172); }
+
+/* The board's Menu: the panel as a small card; its rows keep their height and place. */
+.menu-chrome .board-menu-panel { padding: 11px; }
+.menu-chrome .board-menu-panel > .action { padding-left: 14px; }
