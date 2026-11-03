@@ -31,9 +31,8 @@ namespace Wotr.Client
         private MapPoliticalView political;
         // UI-224: the pulsing edge glow of enterable (green) and attackable (red) regions, and its reused buffers.
         private MapTargetGlow targetGlow;
-        // UI-453: the placement targets' breathing fill, and this frame's set.
-        private MapPlacementPulse placementPulse;
-        private readonly List<string> placing = new List<string>();
+        // UI-453/UI-468: every target region's breathing fill (the enterable and attackable sets below).
+        private MapTargetPulse targetPulse;
         private readonly List<string> enterable = new List<string>();
         private readonly List<string> attackable = new List<string>();
         private readonly List<string> chosen = new List<string>();
@@ -41,9 +40,9 @@ namespace Wotr.Client
         private MapSourceGlow sourceGlow;
         private readonly List<string> sourceable = new List<string>();
         public bool TargetsGlowing => targetGlow?.Glowing == true;
-        public bool PlacementsPulsing => placementPulse?.Pulsing == true;
-        public bool PlacementPulses(string region) => placementPulse?.Pulses(region) == true;
-        public int PlacementPulseRepaints => placementPulse?.Layer.Repaints ?? 0;
+        public bool TargetsPulsing => targetPulse?.Pulsing == true;
+        public bool TargetPulses(string region) => targetPulse?.Pulses(region) == true;
+        public int TargetPulseRepaints => targetPulse?.Layer.Repaints ?? 0;
         // UI-323: the regions with the steady gold source edge.
         public IReadOnlyCollection<string> SourceGlowRegions => sourceGlow?.Regions ?? (IReadOnlyCollection<string>)new string[0];
         public int TargetGlowRepaints => targetGlow?.Layer.Repaints ?? 0;
@@ -91,8 +90,8 @@ namespace Wotr.Client
                 regions.Add(shape.Id, region);
                 Add(region.Layer);
             }
-            placementPulse = new MapPlacementPulse(geometry, size);
-            Add(placementPulse.Layer);
+            targetPulse = new MapTargetPulse(geometry, size);
+            Add(targetPulse.Layer);
             targetGlow = new MapTargetGlow(geometry, size);
             Add(targetGlow.Layer);
             sourceGlow = new MapSourceGlow(geometry, size);
@@ -158,13 +157,10 @@ namespace Wotr.Client
             attackable.Clear();
             sourceable.Clear();
             chosen.Clear();
-            placing.Clear();
             foreach (var entry in regions)
             {
                 var emphasis = Emphasis(entry.Key, selected, sources, owners, draft, data, hovered, pressed, carried);
                 entry.Value.Update(emphasis);
-                if (emphasis == MapRegionEmphasis.PlacementTarget)
-                    placing.Add(entry.Key);
                 if (draft?.AttackTargets.Contains(entry.Key) == true)
                     attackable.Add(entry.Key);
                 else if (draft?.ChosenRegions.Contains(entry.Key) == true)
@@ -175,7 +171,7 @@ namespace Wotr.Client
                     sourceable.Add(entry.Key);
             }
             targetGlow.Update(enterable, attackable, chosen);
-            placementPulse.Update(placing);
+            targetPulse.Update(enterable, attackable);
             sourceGlow.Update(sourceable);
             LastUpdateMilliseconds = (Stopwatch.GetTimestamp() - started) * 1000d / Stopwatch.Frequency;
         }
@@ -302,7 +298,7 @@ namespace Wotr.Client
             terrainLayer = null;
             political = null;
             targetGlow = null;
-            placementPulse = null;
+            targetPulse = null;
         }
     }
 }

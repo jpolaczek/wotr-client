@@ -49,16 +49,17 @@
     transition-duration: 750ms;
     transition-timing-function: ease-in-out-sine;
 }
-.motion-enabled .map-target-glow.map-target-glow-dim { opacity: 0.35; }
-/* UI-453 (owner): a placement target's bright fill breathes in the same rhythm, fading out fully between beats; with
+/* UI-468 (owner): the edge fades deeper between beats, so the pulse is clearly seen. */
+.motion-enabled .map-target-glow.map-target-glow-dim { opacity: 0.2; }
+/* UI-453/UI-468 (owner): every target's bright fill breathes in the same rhythm, fading out fully between beats; with
    Reduced motion it stays lit. */
-.map-placement-pulse { opacity: 1; }
-.motion-enabled .map-placement-pulse {
+.map-target-pulse { opacity: 1; }
+.motion-enabled .map-target-pulse {
     transition-property: opacity;
     transition-duration: 750ms;
     transition-timing-function: ease-in-out-sine;
 }
-.motion-enabled .map-placement-pulse.map-placement-pulse-dim { opacity: 0; }
+.motion-enabled .map-target-pulse.map-target-pulse-dim { opacity: 0; }
 
 /* UI-229/UI-238/UI-240: ChoiceGlow. An object the player is asked to click for a choice (the next Guide, the die an
    Elven Ring changes, a character's change into another version) wears a thick gold rim on a warm plate; its host

@@ -3415,7 +3415,7 @@ recruitment, the Council's homelands) breathes: one retained layer above the reg
 them a bright green whose opacity fades fully in and out in the targets' 750 ms rhythm, beside their pulsing edge
 (UI-224). It is a class toggle with an opacity transition under .motion-enabled — Reduced motion keeps the regions lit
 and still — and the layer repaints only when the set changes, never while the camera moves. A move's targets keep their
-still fill.
+still fill. *Since UI-468 every target pulses this way.*
 
 Playtest (owner's checklist):
 - [ ] `fate-card-monsters-roused`. Expect: both halves' regions green and breathing, then the plan's regions likewise;
@@ -3882,3 +3882,24 @@ Tests: PlayMode `ExpansionMatrixLayoutTests` and `LayoutStressScenarioTests` (`R
 every die, counter and token inside it without overlap, in 186 matrix views and the stress scenarios, four layouts),
 `DicePanelLayoutTests`, `TurnConsoleLayoutTests`, `RulerTokenMenuTests`, `CouncilTokenMenuTests`, `CompactBoardLayoutTests`,
 `InGameDenseLayoutTests`.
+
+<a id="every-target-region-pulses-clearly--ui-468"></a>
+## Every target region pulses clearly — UI-468 (2026-11-03)
+
+The owner: "the regions that can be clicked and are suggested by colour should pulse more clearly; now it is barely
+noticeable, especially against similar colours all around". UI-453's breathing fill now covers every target region
+(`MapTargetPulse`, was `MapPlacementPulse`): a move's or a placement's in a bright mint, an attack's in a bright red, both
+lighter than any land of the map, over the region's still fill, fading fully in and out in the 750 ms rhythm. The target
+edge (`MapTargetGlow`, UI-224) gets an ink line under its bright line, a wider halo, and fades to 20 % instead of 35 %
+between beats, so it stands out against a neighbour of a similar colour. The chosen region (UI-392) keeps its gold edge
+without the fill. Still one retained layer each, toggled by class under .motion-enabled (Reduced motion keeps them lit
+and still) and repainted only when a set changes.
+
+Playtest (owner's checklist):
+- [ ] `fp-muster-recruit` and any army move. Expect: every lit settlement or region clearly breathes, also next to green
+  regions such as Rohan or Mirkwood; an attack's region breathes red.
+- [ ] With Skip animations on. Expect: the targets brightly lit and still.
+
+Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget` (a move's, a placement's and an attack's
+target pulse, a region that is no target does not, no repaint for the same set); PlayMode `GlowingHintAuditTests`,
+`MusterNetworkTests`, `FateCardsNetworkTests`, `MovementNetworkTests`, `BoardInteractionTests`, `MapClickMoveNetworkTests`.

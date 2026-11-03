@@ -86,13 +86,17 @@ namespace Wotr.Client
             MapVectorDrawing.Outline(painter, shape.Rings, new Color(Chosen.r, Chosen.g, Chosen.b, .95f), 3.6f);
         }
 
-        // A soft wide halo and a bright thin line on the region's edge.
+        // A soft wide halo and a bright line on the region's edge; UI-468 (owner, 2026-11-03): an ink line under the
+        // bright one, so the edge stands out against a neighbour of a similar colour.
         private void Glow(Painter2D painter, string id, Color color)
         {
             if (!shapes.TryGetValue(id, out var shape))
                 return;
-            MapVectorDrawing.Outline(painter, shape.Rings, new Color(color.r, color.g, color.b, .32f), 8f);
-            MapVectorDrawing.Outline(painter, shape.Rings, new Color(color.r, color.g, color.b, .9f), 2.4f);
+            MapVectorDrawing.Outline(painter, shape.Rings, new Color(color.r, color.g, color.b, .42f), 11f);
+            MapVectorDrawing.Outline(painter, shape.Rings, Contrast, 5f);
+            MapVectorDrawing.Outline(painter, shape.Rings, new Color(color.r, color.g, color.b, 1f), 2.8f);
         }
+
+        private static readonly Color Contrast = new Color(.04f, .06f, .05f, .78f);
     }
 }
