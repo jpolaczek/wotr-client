@@ -221,9 +221,9 @@ namespace Wotr.PlayTests
             }
             Assert.IsFalse(bounds.Overlaps(tab), label);
             Assert.IsEmpty(window.Query<ScrollView>().ToList(), label);
+            // UI-469 (owner): a ruler's window is as tall as its content, with no empty strip at the bottom.
             if (window.ClassListContains(SovereignInspector.RulerWindowClass))
-                Assert.AreEqual(window.resolvedStyle.minHeight.value, window.layout.height, 1,
-                    "A ruler's window at rest has the ruler size, its content within it: " + label);
+                Assert.AreEqual(ContentHeight(window), window.layout.height, 2, "No empty strip under the content: " + label);
             var place = window.Q<Button>(className: PlacePicture.ClassName);
             Assert.IsNotNull(place, "The place is a picture: " + label);
             Assert.That(place.worldBound.width, Is.GreaterThan(90f), label);
@@ -271,10 +271,16 @@ namespace Wotr.PlayTests
 
         private static void Same(Rect expected, Rect actual, string label)
         {
+            // UI-469: the windows are as tall as their content, so a taller one may be raised to keep its bottom margin
+            // (CheckPlace: level with the Characters tab or raised); the column and the width stay.
             Assert.AreEqual(expected.xMin, actual.xMin, 1, "Same place: " + label);
-            Assert.AreEqual(expected.yMin, actual.yMin, 1, "Same place: " + label);
             Assert.AreEqual(expected.width, actual.width, 1, "Same size: " + label);
-            Assert.AreEqual(expected.height, actual.height, 1, "Same size: " + label + " · " + expected.height + " / " + actual.height);
         }
+
+        // UI-469: the shown rows with their margins, and the window's own padding.
+        private static float ContentHeight(VisualElement window) =>
+            window.Children().Where(child => child.resolvedStyle.display != DisplayStyle.None)
+                .Sum(child => child.layout.height + child.resolvedStyle.marginTop + child.resolvedStyle.marginBottom) +
+            window.resolvedStyle.paddingTop + window.resolvedStyle.paddingBottom;
     }
 }

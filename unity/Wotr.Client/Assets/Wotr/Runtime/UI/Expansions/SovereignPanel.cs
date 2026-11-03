@@ -26,8 +26,8 @@ namespace Wotr.Client
         public Func<IEnumerable<Rect>> FixedOcclusions { get; set; }
         public Func<VisualElement> FallbackAnchor { get; set; }
         public CharacterWindowPlace Place { get; set; }
-        // The window's size before its first layout (USS .ruler-window).
-        public static readonly Vector2 WindowSize = new Vector2(380, 252);
+        // The window's size before its first layout: UI-469, as tall as a king's content at rest.
+        public static readonly Vector2 WindowSize = new Vector2(380, 208);
         public bool HasShownPortraits => portraits.Count > 0;
         // UI-274: a portrait's choice in the current decision (a card's king, the cleanse) and the objects' clicks.
         public Func<string, SovereignChoice> Choice { get; set; } = _ => null;

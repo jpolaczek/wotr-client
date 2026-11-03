@@ -53,9 +53,6 @@ namespace Wotr.Client
             Root.Add(PlaceRow());
             Actions.Root.AddToClassList("character-window-actions");
             Root.Add(Actions.Root);
-            abilityHeading.AddToClassList("ability-lines-heading");
-            Root.Add(abilityHeading);
-            Root.Add(Abilities.Root);
             var progress = BoardScreen.Row("sovereign-progress");
             progress.Add(attempt);
             progress.Add(revealed);
@@ -99,6 +96,11 @@ namespace Wotr.Client
             flags.AddToClassList("character-place-meaning");
             facts.Add(flags);
             facts.Add(tiles);
+            // UI-469 (owner, 2026-11-03): his abilities stand beside the picture, under his corruption, so the window
+            // needs no row of its own for them.
+            abilityHeading.AddToClassList("ability-lines-heading");
+            facts.Add(abilityHeading);
+            facts.Add(Abilities.Root);
             row.Add(facts);
             return row;
         }
@@ -150,7 +152,8 @@ namespace Wotr.Client
             Meter(sovereign);
             meter.style.display = initial ? DisplayStyle.Flex : DisplayStyle.None;
             meaning.text = SovereignPresentation.CorruptionMeaning(sovereign);
-            flags.text = SovereignPresentation.Flags(sovereign);
+            // UI-469: no flags, no line.
+            Show(flags, SovereignPresentation.Flags(sovereign));
         }
 
         // A pip per point of resistance: filled for the known corruption, hatched for tiles whose values are hidden.
@@ -198,7 +201,8 @@ namespace Wotr.Client
                 face.tooltip = tile.Kings ? "Kings tile · Corruption 0" : tile.Value.HasValue
                     ? "Corruption " + tile.Value + (tile.Reveal ? " · Reveal" : "") : "Face-down Corruption tile";
             }
-            tiles.style.visibility = faces.Count > 0 ? Visibility.Visible : Visibility.Hidden;
+            // UI-469: a row with nothing to show takes no room.
+            tiles.style.display = faces.Count > 0 ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void Attempt(PlayerView view, string id)

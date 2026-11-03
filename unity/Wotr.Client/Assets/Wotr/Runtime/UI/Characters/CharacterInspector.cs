@@ -73,9 +73,6 @@ namespace Wotr.Client
             Root.Add(PlaceRow());
             Limits.Root.AddToClassList("character-window-actions");
             Root.Add(Limits.Root);
-            abilityHeading.AddToClassList("ability-lines-heading");
-            Root.Add(abilityHeading);
-            Root.Add(abilities.Root);
             Root.Add(entry);
             Root.Add(Actions);
             Root.Add(DecisionHost);
@@ -109,6 +106,10 @@ namespace Wotr.Client
             state.AddToClassList("character-place-meaning");
             facts.Add(state);
             facts.Add(stats.Root);
+            // UI-469 (owner, 2026-11-03): the abilities stand beside the picture, under the card's statistics.
+            abilityHeading.AddToClassList("ability-lines-heading");
+            facts.Add(abilityHeading);
+            facts.Add(abilities.Root);
             place.Add(facts);
             return place;
         }

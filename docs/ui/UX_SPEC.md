@@ -3903,3 +3903,26 @@ Playtest (owner's checklist):
 Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget` (a move's, a placement's and an attack's
 target pulse, a region that is no target does not, no repaint for the same set); PlayMode `GlowingHintAuditTests`,
 `MusterNetworkTests`, `FateCardsNetworkTests`, `MovementNetworkTests`, `BoardInteractionTests`, `MapClickMoveNetworkTests`.
+
+<a id="skills-beside-the-place-picture--ui-469"></a>
+## Skills beside the place picture, no empty strip — UI-469 (2026-11-03)
+
+The owner (Thranduil's window): "let's change the design of the window of a character with skills: move the row with the
+skills to the right of the map or the Fellowship marker, and get rid of the empty strip at the bottom by making the whole
+window smaller". In a king's window (`SovereignInspector`) and a character's (`CharacterInspector`) the ability heading
+("Abilities once awakened", …) and the row of skill icons now stand in the facts column beside the place picture, under
+the corruption meter or the card's statistics. The king's flags line and corruption tiles collapse when they show nothing,
+and a ruler's window no longer keeps the 252-point minimum (UI-436): it is as tall as its content, about 208 points at
+rest, and still opens at one place with one width (a king with an extra action line is a line taller).
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted` (or any Kings game): open Thranduil, then Brand, from the Characters tab. Expect: the skill icons
+  beside the place picture under the corruption meter, the Awaken line below, no empty strip at the bottom; every king's
+  window opens at the same place.
+- [ ] A companion with skills (e.g. Gandalf the Grey). Expect: the skill icons beside the place picture under the
+  statistics.
+
+Tests: PlayMode `CharacterWindowLayoutTests` (every king's window at one place and width, as tall as its content with no
+empty strip, four layouts), `CharacterRosterLayoutTests`, `CharacterRosterPanelNetworkTests`,
+`CharacterRosterActionNetworkTests`, `SovereignPanelNetworkTests`, `SovereignSectionLayoutTests`, `InGameDenseLayoutTests`,
+`LayoutStressScenarioTests`, `ExpansionWindowNetworkTests`.

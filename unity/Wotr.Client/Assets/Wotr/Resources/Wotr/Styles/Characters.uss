@@ -81,11 +81,9 @@
 .character-status-may-return { background-image: resource("Wotr/Art/UI/characters/may-return"); }
 .character-status-fellowship { background-image: resource("Wotr/Art/UI/icons/fellowship"); }
 
-/* UI-436: the place as a picture (Art/Places, 128x80 points) captioned with its name, and beside it the facts. Every
-   ruler's window has one size at rest: the sovereign's rows keep fixed heights and an awakened ruler's character window
-   is at least as tall. UI-440: with the abilities one row of icons (no lines), an Initial king's rows need 244 points;
-   252 keeps one size with little empty space. */
-#board-screen .character-window.ruler-window { min-height: 252px; }
+/* UI-436: the place as a picture (Art/Places, 128x80 points) captioned with its name, and beside it the facts. UI-469
+   (owner, 2026-11-03): the abilities stand in the facts beside the picture and empty fact lines collapse, so a ruler's
+   window is as tall as its content (about 208 points, no empty strip); it still opens at one place with one width. */
 .character-place-row { flex-direction: row; align-items: flex-start; flex-shrink: 0; min-height: 82px; margin: 0 0 4px 0; }
 #board-screen .character-window .place-picture {
     width: 128px;
