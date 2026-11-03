@@ -3511,7 +3511,10 @@ for each step.
   greyed in its slot (the Woodland Realm's window, Thranduil's row and window), its tooltip says "No companion is outside
   the Fellowship" (`ComponentAction.Reason`) and its click starts nothing. Move the Fellowship and Separate companions stay.
   Thranduil's own move remains his figure's plain move on the map. Open question for the owner: Far-sighted moving
-  Thranduil himself one region further is no longer offered from the picture.
+  Thranduil himself one region further is no longer offered from the picture. Decided by
+  [UI-465](#thranduils-figure-moves-with-far-sighted--ui-465) (owner, 2026-11-03): "both" — the variant stays greyed, its
+  reason now reads "No companion is outside the Fellowship · Thranduil moves from his figure", and with the Ruler die his
+  figure on the map moves him with Far-sighted.
 - **No instruction in the Fellowship panel** (`FellowshipChoices`, `DecisionTray`): no "Separated companions cannot rejoin"
   line (the fact stays in the ✓'s summary); the route's summary states where the move stands — its origin, then its end and
   steps — without "Choose a group", "Choose a destination" or "Choose a route"; the tray's status line is hidden while a
@@ -3533,8 +3536,8 @@ Tests: EditMode `ComponentActionTests.FarSightedMoveCompanionsWaitsForACompanion
 
 Playtest (owner's checklist):
 - [ ] `kings-far-sighted`. Click the Ruler die, open the Woodland Realm. Expect: Thranduil's Move companions picture is
-  greyed and says "No companion is outside the Fellowship"; Move the Fellowship and Separate companions are lit; the greyed
-  picture's click does nothing.
+  greyed and says "No companion is outside the Fellowship" (since UI-465 followed by "· Thranduil moves from his figure");
+  Move the Fellowship and Separate companions are lit; the greyed picture's click does nothing.
 - [ ] `fp-character-move-companions` with a Character die (Legolas and Gimli outside). Expect: Move companions works as
   before; the console says "Click a glowing companion on the map to choose who moves.", then names the chosen ones.
 - [ ] `fp-character-separate-companions`. Choose the Character die, then a companion's portrait. Expect: the Fellowship
@@ -3782,3 +3785,61 @@ Playtest (owner's checklist):
   glows.
 - [ ] Same scenario with Skip animations on. Expect: no flight; the card leaves the hand and the Effects tab glows briefly.
 - [ ] Any Event card that does not stay on the table (e.g. a recruiting Event). Expect: nothing flies to the Effects tab.
+
+<a id="thranduils-figure-moves-with-far-sighted--ui-465"></a>
+## Thranduil's figure moves with Far-sighted — UI-465 (2026-11-03)
+
+The owner's decision on UI-456's open question (translated): "both" — while Awakened Thranduil is the only companion
+outside the Fellowship, Far-sighted's "Move companions" stays greyed, and Thranduil's own figure on the map lights as
+Far-sighted's mover, so his own move can use Far-sighted's +1 range.
+
+- **Why his figure's move is Far-sighted's with the Ruler die.** Far-sighted is paid by the Free Peoples' Ruler die
+  showing a Character (KINGS pp. 8–13, as UI-456 cites; the server's `KingsFarSighted.Valid`,
+  `KingsRulerAbilities.CanPay`). For Move companions the server offers it as the option's `RulerTravel` (`AbilityId`
+  `kings.far-sighted`, `RangeBonus` 1, one travel per Free Peoples character on the board, Thranduil included) and moves
+  with `MoveCompanions`, `AbilityId` `kings.far-sighted` and `CompanionMoves` (`ActionStepRules.Companions`,
+  `KingsFarSighted.Bonus`). With that die it gives Thranduil his plain move plus one region for the same die (a
+  destination within his plain range stays reachable), so with the Ruler die his figure's move is Far-sighted's. With any
+  other Character die his plain move stays as it is.
+- **The figure** (`FarSightedFigure`, `TravelActions`): with the Ruler die chosen, no companions' move drafted and no
+  Ruler token chosen, while he is the only companion outside the Fellowship, Thranduil's miniature glows as a choosable
+  figure and its tooltip — and his chip in the Woodland Realm's panel — leads with "Far-sighted · Range +1 · Click to move
+  Thranduil one region further" (`MapCanvas.OfferFigures`, `TravelContextInteraction.Offers`). Its click (or a drag past
+  the threshold, UI-405, which makes the same click) starts `MoveCompanions` with `AbilityId` `kings.far-sighted`, his
+  group and the Ruler die (`DraftOptions.WithRulerTravel`), and lights his Far-sighted range; a lit region's click (or the
+  drop there) sends it. Back leaves him behind and his figure still offers the Far-sighted move; Esc and the console's
+  Cancel undo as for any move.
+- **The variant stays greyed** (`FarSightedMoves`): Far-sighted's Move companions keeps UI-456's greyed slot; its reason
+  now points at the figure: "No companion is outside the Fellowship · Thranduil moves from his figure". Move the Fellowship
+  and Separate companions are unchanged.
+- **Another companion outside**: behaviour as before UI-465 — the variant is enabled and moves the chosen companions (him
+  among them) one region further; every figure's own click, his included, starts a plain move. A chosen Ruler token keeps
+  its own travel (UI-389).
+- No server or contract change.
+
+Screenshots: `ui465-lit-figure.png` (the Ruler die chosen, his lit figure), `ui465-far-sighted-range.png` (his Far-sighted
+range after his click).
+
+Tests: EditMode `FarSightedFigureTests` (the Ruler die starts Far-sighted from his figure with its range, Back and a
+second click; another Character die moves him plainly; the variant stays greyed with the new reason; another companion
+outside keeps the plain move and the enabled variant; a Ruler token keeps its travel),
+`ComponentActionTests.FarSightedMoveCompanionsWaitsForACompanionOutsideTheFellowship`; PlayMode
+`FarSightedFigureNetworkTests` (`kings-far-sighted`: the click path and the drag path send `MoveCompanions` with
+`AbilityId` `kings.far-sighted` and Thranduil's move to a region one beyond his plain range; the variant is greyed with
+its reason), `ConsoleCancelNetworkTests.FarSightedMovesNoCompanionWhileNoneIsOutsideTheFellowship`;
+`ExpansionTokenNetworkTests.FarSightedIsAnExplicitModeForMovement` and `ThranduilsTokenPaysForFarSightedInTheSameAction`
+(seeded `ui09-travel`, Thranduil alone outside) now move him from his figure — with the Ruler die, or with his token —
+instead of clicking the variant UI-456 greyed.
+
+Playtest (owner's checklist):
+- [ ] `kings-far-sighted`. Click the Ruler die. Expect: Thranduil's figure in the Woodland Realm glows; its tooltip begins
+  "Far-sighted · Range +1 · Click to move Thranduil one region further". Open the Woodland Realm: Far-sighted's Move
+  companions picture is greyed and says "No companion is outside the Fellowship · Thranduil moves from his figure".
+- [ ] Same scenario. Click Thranduil's figure. Expect: he lifts, the console says "Thranduil — King of the Woodland Realm ·
+  Click a highlighted region to move there.", and the lit regions reach one region further than his plain move. Click
+  Back: he is put back and still glows with the Far-sighted line. Click him again, then a lit region one beyond his plain
+  range. Expect: he moves there at once.
+- [ ] Same scenario, a new start. With the Ruler die chosen, drag Thranduil's figure onto a lit region one beyond his
+  plain range. Expect: the drop moves him there with Far-sighted, as the click did.
+- [ ] Same scenario, when the Free Peoples' pool also shows a standard Character die: choose it instead of the Ruler die.
+  Expect: Thranduil's figure glows without the Far-sighted line and lights only his plain range.

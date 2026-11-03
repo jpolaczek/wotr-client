@@ -26,6 +26,8 @@ namespace Wotr.Client
         private readonly HashSet<string> owners = new HashSet<string>();
         // UI-441: the characters with a skill usable now, and why (UsableSkills).
         private IReadOnlyDictionary<string, string> skills = new Dictionary<string, string>();
+        // UI-465: what a lit figure's click does now, when an ability offers it (Far-sighted's Thranduil).
+        private IReadOnlyDictionary<string, string> offers = new Dictionary<string, string>();
         private readonly HashSet<string> selectedRegions = new HashSet<string>();
         private FigureChoices choices = new FigureChoices();
         private Func<string, string> sovereignHint = _ => null;
@@ -168,6 +170,14 @@ namespace Wotr.Client
 
         public bool HasSkill(string id) => skills.ContainsKey(id);
 
+        // UI-465: the figures whose click starts a move an ability offers lead their tooltips with it.
+        public void Offer(IReadOnlyDictionary<string, string> lines)
+        {
+            offers = lines;
+            foreach (var stand in stands.Values)
+                ApplySovereignHint(stand);
+        }
+
         // Whether a region holds a selected character, so it shows figures (kept with the states, read every frame).
         public bool HoldsSelected(string region) => selectedRegions.Contains(region);
 
@@ -201,15 +211,16 @@ namespace Wotr.Client
             var king = LitSovereign(stand);
             var region = map.Data.Regions.TryGetValue(stand.Region, out var definition) ? definition.Name : stand.Region;
             var description = ArmyMarkerText.Describe(stand.Figure, region);
-            var tooltip = TooltipText.Lines(king != null ? sovereignHint(king) : "", SkillLine(stand), description);
+            var tooltip = TooltipText.Lines(king != null ? sovereignHint(king) : "", Line(stand, offers), Line(stand, skills), description);
             if (stand.Button.tooltip != tooltip)
                 stand.Button.tooltip = tooltip;
             stand.Button.EnableInClassList(MapCanvas.SovereignTargetClass, king != null);
         }
 
-        // Why a figure of the stand glows for its skill (the front's, or one stacked behind it); "".
-        private string SkillLine(MapCharacterStand stand) =>
-            stand.Members.Select(member => skills.TryGetValue(member.Id, out var line) ? line : "").FirstOrDefault(line => line.Length > 0) ?? "";
+        // The line of a figure of the stand (the front's, or one stacked behind it): why it glows for its skill, or what its
+        // click offers (UI-465); "".
+        private static string Line(MapCharacterStand stand, IReadOnlyDictionary<string, string> lines) =>
+            stand.Members.Select(member => lines.TryGetValue(member.Id, out var line) ? line : "").FirstOrDefault(line => line.Length > 0) ?? "";
 
         private bool Owner(MapCharacterStand stand) => stand.Members.Any(m => owners.Contains(m.Id) || skills.ContainsKey(m.Id));
 

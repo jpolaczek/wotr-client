@@ -132,7 +132,9 @@ namespace Wotr.PlayTests
                     Token(room.Fp, "thranduil");
                 var die = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples).Id;
                 await ComponentGestures.Cost(room, room.Fp, die);
-                await ComponentGestures.Select(room.Fp, "far-sighted-MoveCompanions");
+                // UI-465 (owner, 2026-11-03): Thranduil is the only companion outside the Fellowship, so Far-sighted's Move
+                // companions is greyed (UI-456) and his own figure moves him with Far-sighted — with the Ruler die
+                // (FarSightedFigure), or with his token, whose travel carries it (UI-389).
                 var figure = room.Fp.Board.View.Characters.Single(c => c.Id == "kings.sovereign.thranduil");
                 FellowshipGestures.Figure(room.Fp, figure.Location, figure.Id);
                 Assert.IsTrue(room.Fp.Board.Map.DraftOverlay.Targets.Contains("dale"));

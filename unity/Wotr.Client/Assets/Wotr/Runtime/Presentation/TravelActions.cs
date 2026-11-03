@@ -25,6 +25,9 @@ namespace Wotr.Client
             var option = DraftOptions.For(view, draft, kind);
             if (option == null || !context.Allows(option))
                 return null;
+            // UI-465 (owner, 2026-11-03): with the die that pays Far-sighted, Thranduil alone outside moves with it.
+            if (FarSightedFigure.Moves(view, draft, context))
+                return FarSightedFigure.Option(option);
             var required = option.MovementCosts.FirstOrDefault(c => c.DieId == context.DieId && c.AbilityId == context.AbilityId)?.RequiredCharacterId;
             return string.IsNullOrEmpty(required) ? option : new ActionOption
             {
@@ -60,6 +63,7 @@ namespace Wotr.Client
             if (draft.Kind != option.Kind || !joins)
             {
                 var token = draft.Payload.RulerTokenId;
+                var ability = FarSightedFigure.Ability(view, draft, context);
                 if (journey && draft.Kind == option.Kind)
                 {
                     TravelDraft.RemoveGroup(draft);
@@ -67,11 +71,12 @@ namespace Wotr.Client
                 }
                 else
                     draft.Choose(option.Kind, journey ? "" : context.DieId);
-                // UI-389: a Ruler token's travel (Thranduil's) carries the token's ability.
+                // UI-389: a Ruler token's travel (Thranduil's) carries the token's ability; UI-465: so does his figure's move
+                // with the die that pays Far-sighted.
                 draft.Change(p =>
                 {
                     p.Stepwise = !journey;
-                    p.AbilityId = journey ? "" : token.Length > 0 ? ExpansionDraft.TokenAbility(view, token, option.Kind) : context.AbilityId;
+                    p.AbilityId = journey ? "" : token.Length > 0 ? ExpansionDraft.TokenAbility(view, token, option.Kind) : ability;
                     p.RulerTokenId = journey ? "" : token;
                 });
             }

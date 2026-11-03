@@ -1007,6 +1007,7 @@ namespace Wotr.Client
             captainOrder.Refresh(view, draft);
             monsters.Refresh(view, draft);
             board.Map.OfferForces(ForceOffers());
+            board.Map.OfferFigures(travel.Offers);
             lore.Refresh(view, draft);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
             willFaces.Refresh(view, draft, !SelectionBusy);
@@ -1289,6 +1290,7 @@ namespace Wotr.Client
             lore.Dispose();
             councilTravel.Dispose();
             board.Map.OfferForces(null);
+            board.Map.OfferFigures(null);
             console.Dispose();
             board.Characters.EntryRequested -= RequestEntry;
             board.Characters.Enterable = _ => false;

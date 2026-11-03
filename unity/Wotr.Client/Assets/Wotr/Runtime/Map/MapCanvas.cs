@@ -67,6 +67,8 @@ namespace Wotr.Client
         private Func<string, string> sovereignHint = _ => null;
         // UI-431: what a click on a lit force does now (a card's choice made on it), by region; its tooltip leads with it.
         private IReadOnlyDictionary<string, string> forceOffers = new Dictionary<string, string>();
+        // UI-465: what a click on a lit character's miniature does now (Far-sighted's Thranduil), by figure id.
+        private IReadOnlyDictionary<string, string> figureOffers = new Dictionary<string, string>();
         // UI-301: the armies a click may choose pulse together in ChoiceGlow's rhythm.
         private readonly ChoicePulse armyPulse;
         private readonly HashSet<string> sourceRegions = new HashSet<string>();
@@ -889,16 +891,27 @@ namespace Wotr.Client
         public void OfferForces(IReadOnlyDictionary<string, string> offers)
         {
             var next = offers ?? new Dictionary<string, string>();
-            if (SameOffers(next))
+            if (SameOffers(next, forceOffers))
                 return;
             forceOffers = next;
             foreach (var marker in markers.Values)
                 ApplySovereignHint(marker);
         }
 
-        // The offers each refresh brings are usually the last ones; only a change rewrites the markers' tooltips.
-        private bool SameOffers(IReadOnlyDictionary<string, string> next) => next.Count == forceOffers.Count &&
-            next.All(pair => forceOffers.TryGetValue(pair.Key, out var text) && text == pair.Value);
+        // UI-465 (TOOLTIP_AUDIT rule 1): the character miniatures whose click starts a move an ability offers (Thranduil's
+        // with Far-sighted) say so first; an empty map withdraws the offers.
+        public void OfferFigures(IReadOnlyDictionary<string, string> offers)
+        {
+            var next = offers ?? new Dictionary<string, string>();
+            if (SameOffers(next, figureOffers))
+                return;
+            figureOffers = next;
+            Characters.Offer(figureOffers);
+        }
+
+        // The offers each refresh brings are usually the last ones; only a change rewrites the tooltips.
+        private static bool SameOffers(IReadOnlyDictionary<string, string> next, IReadOnlyDictionary<string, string> current) =>
+            next.Count == current.Count && next.All(pair => current.TryGetValue(pair.Key, out var text) && text == pair.Value);
 
         // UI-274, UI-401: a corrupted king's marker stands beside his capital's forces. UI-425: on its own place (UI-422's
         // stand places), the nearest to the region's last character place on which it covers no force's count or plaque and

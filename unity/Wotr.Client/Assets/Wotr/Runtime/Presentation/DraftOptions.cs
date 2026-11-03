@@ -24,7 +24,7 @@ namespace Wotr.Client
             }
             var option = choices.Count == 1 ? choices[0] : Sovereigns(choices);
             if (option.RulerTravel != null && draft.Payload.AbilityId == option.RulerTravel.AbilityId)
-                return Travel(option, option.RulerTravel.Dice, option.RulerTravel.Travel);
+                return WithRulerTravel(option);
             if (option.Kind == CommandKind.AwakenSovereign)
                 return Travel(option, option.EligibleDice, option.Travel.Where(t => t.Id == draft.Payload.CharacterId).ToList());
             return option;
@@ -52,6 +52,10 @@ namespace Wotr.Client
             Travel = source.Travel,
             Reason = source.Reason
         };
+
+        // The option as its king's ability moves it (Far-sighted): the ability's dice and travel.
+        public static ActionOption WithRulerTravel(ActionOption option) =>
+            Travel(option, option.RulerTravel.Dice, option.RulerTravel.Travel);
 
         private static ActionOption Travel(ActionOption source, List<string> dice, List<TravelOption> travel) => new ActionOption
         {

@@ -171,6 +171,9 @@ difference in the rules (`Kings/KingsDismay.cs`).
 - [ ] **D18 — Far-sighted.** Try: `kings-far-sighted` (UI-276) and `kings-far-sighted-hunt` (three Hunt dice, so the
   Fellowship mode's reduction acts; TEST-13). Expect: Thranduil's ability
   picture glows with an eligible die; using it is Far-sighted, not using it is the standard move; no toggle or mode chip.
+  Since UI-465 (owner, 2026-11-03), while Thranduil is the only companion outside the Fellowship, Move companions'
+  picture is greyed and, with the Ruler die, his own figure on the map moves him with Far-sighted
+  ([UX_SPEC](UX_SPEC.md#thranduils-figure-moves-with-far-sighted--ui-465)).
 - [ ] **D19 — Where the Ruler tokens sit.** Try: `kings-fp-ruler-token`. Expect: the usable token stands in the dice
   pool beside the Ruler die; the king's portrait wears a badge that he holds it.
 - [ ] **D20 — Spending Dismay.** Try: `kings-dismay` (UI-276). Expect: the Shadow clicks the Free Peoples Ruler die to reroll;

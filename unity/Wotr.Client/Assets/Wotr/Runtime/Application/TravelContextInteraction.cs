@@ -14,6 +14,9 @@ namespace Wotr.Client
         private TurnDraft draft;
         public bool Active => draft != null && TravelActions.IsStep(draft);
         private static readonly IReadOnlyDictionary<string, ArmyMarker> NoJourney = new Dictionary<string, ArmyMarker>();
+        private static readonly IReadOnlyDictionary<string, string> NoOffers = new Dictionary<string, string>();
+        // UI-465: the figures whose tooltip names the ability their move uses (Far-sighted's Thranduil), by figure id.
+        public IReadOnlyDictionary<string, string> Offers { get; private set; } = NoOffers;
 
         public TravelContextInteraction(BoardScreen board, Action<Action, bool> edit, Func<bool> busy)
         {
@@ -29,6 +32,7 @@ namespace Wotr.Client
             // UI-294: a card's journey shows its planned companions faintly at their destinations.
             board.Map.PlannedJourneys.Apply(CompanionJourneyDraft.Active(view, draft) ? CompanionJourneyDraft.Planned(view, draft) : NoJourney,
                 false);
+            Offers = NoOffers;
             var option = TravelActions.Option(view, draft, board.ActionDie);
             if (option == null)
                 return;
@@ -38,6 +42,7 @@ namespace Wotr.Client
             var armySelected = board.Hover.Panel.Selected;
             board.Hover.Panel.Eligible = id => armyEligible(id) || !busy() && eligible.Contains(id);
             board.Hover.Panel.Selected = id => armySelected(id) || selected.Contains(id);
+            OfferMoves(eligible, selected);
             board.Hover.Panel.RefreshSelection();
             var sources = option.Travel.Select(t => new ArmyOption
             {
@@ -48,6 +53,22 @@ namespace Wotr.Client
             if (ContextArmySelection.Active(view, draft, board.ActionDie))
                 sources = sources.Concat(ContextArmySelection.Sources(view, board.ActionDie));
             board.Map.HighlightSources(sources, view.You);
+        }
+
+        // UI-465 (owner, 2026-11-03): Thranduil's lit figure says it moves with Far-sighted, on the map and in his region's
+        // panel, while its click starts that move (or puts him back into it); once chosen, its click leaves him behind.
+        private void OfferMoves(ISet<string> eligible, ISet<string> selected)
+        {
+            if (busy())
+                return;
+            Offers = FarSightedFigure.Offers(view, draft, board.ActionDie)
+                .Where(pair => eligible.Contains(pair.Key) && !selected.Contains(pair.Key))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            if (Offers.Count == 0)
+                return;
+            var offers = Offers;
+            var previous = board.Hover.Panel.Offer;
+            board.Hover.Panel.Offer = id => offers.TryGetValue(id, out var offer) ? offer : previous(id);
         }
 
         public bool Figure(string id)
