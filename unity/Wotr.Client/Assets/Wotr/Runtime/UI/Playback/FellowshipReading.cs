@@ -50,5 +50,12 @@ namespace Wotr.Client
             return PresentationTargets.First(root.Q("fellowship-portrait-" + id),
                 root.Q("fellowship-portrait-" + CharacterLibrary.Identity(id)), Panel.Status);
         }
+
+        // UI-462: a Companion's portrait in the roster, laid out or not yet (one the staged roster has just added).
+        public VisualElement Roster(string id)
+        {
+            var root = Panel.Root;
+            return root.Q("fellowship-portrait-" + id) ?? root.Q("fellowship-portrait-" + CharacterLibrary.Identity(id));
+        }
     }
 }

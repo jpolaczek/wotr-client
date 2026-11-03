@@ -80,6 +80,8 @@ namespace Wotr.Client
         public HandDrawer HandDrawer { get; }
         // UI-326: two card backs dissolving where discarded cards leave.
         public CardDissolve Dissolve { get; }
+        // UI-463: the player's own card that stays on the table flies from its place in the hand into the Effects tab.
+        public PlayedCardFlight PlayedCards { get; }
         // UI-332: a tile the Hunt pool gains shows its face and drops into the Hunt plaque.
         public HuntTileDrop HuntDrops { get; }
         public DeckView Decks { get; } = new DeckView();
@@ -421,6 +423,8 @@ namespace Wotr.Client
             AttachDieGlows();
             Dissolve = new CardDissolve(ReducedMotion);
             Root.Add(Dissolve.Root);
+            PlayedCards = new PlayedCardFlight(ReducedMotion, tableEffects);
+            Root.Add(PlayedCards.Root);
             HuntDrops = new HuntTileDrop(BoardMiddle, () => Hunt.Tab, ReducedMotion);
             Root.Add(HuntDrops.Root);
             Root.Add(Menu.Root);
@@ -669,6 +673,7 @@ namespace Wotr.Client
             HuntDrops.Settle(view.HuntPool, quiet);
             HandDrawer.Apply(view);
             tableEffects.Apply(view);
+            PlayedCards.Settle(view, quiet);
             mapEffects.Apply(view);
             BattleReport.Apply(view);
             Nations.Apply(view);
@@ -797,6 +802,16 @@ namespace Wotr.Client
         {
             var card = Hand.Q<Button>(id);
             Dissolve.Mark(id, card?.Q("hand-card-face") ?? card, View?.Revision ?? -1);
+        }
+
+        // UI-463 (owner, 2026-11-03): a hand card the player is playing is marked where it stands now (its unrolled face,
+        // else its slot); the view in which it stays on the player's own table flies it into the Effects tab.
+        public void MarkPlayedCard(string id)
+        {
+            if (View == null || string.IsNullOrEmpty(id) || !View.Hand.Contains(id))
+                return;
+            var card = Hand.Q<Button>(id);
+            PlayedCards.Mark(id, card?.Q("hand-card-face") ?? card, View);
         }
 
         // UI-324: the middle of the board a window opens in — between the top bar and the console, between the side

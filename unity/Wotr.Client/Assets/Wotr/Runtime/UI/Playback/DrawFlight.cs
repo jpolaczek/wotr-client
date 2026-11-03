@@ -25,6 +25,8 @@ namespace Wotr.Client
         // UI-344: a Corruption tile's back flies the same way, round and smaller.
         private readonly string backClass;
         private readonly Vector2 backSize;
+        // UI-462 (owner, 2026-11-03): what a flying piece wears beyond its class (Sméagol's portrait, his artwork).
+        private readonly Action<VisualElement> dress;
         private readonly VisualElement host;
         private readonly Func<VisualElement> count;
         private readonly Action<int> landed;
@@ -46,12 +48,13 @@ namespace Wotr.Client
         }
 
         // `origins` are the decks' plaques in the order of the cards; `landed` gets each landing's index, `done` follows the
-        // last one, `end` the beat's end.
+        // last one, `end` the beat's end; `dress` fills each flying piece as it leaves.
         public DrawFlight(double now, VisualElement host, Func<VisualElement> count, IReadOnlyList<VisualElement> origins, Action light,
-            Action<int> landed, Action done, Action end, string back = BackClass, Vector2? size = null)
+            Action<int> landed, Action done, Action end, string back = BackClass, Vector2? size = null, Action<VisualElement> dress = null)
         {
             backClass = back;
             backSize = size ?? CardBack;
+            this.dress = dress;
             this.host = host;
             this.count = count;
             this.landed = landed;
@@ -100,6 +103,7 @@ namespace Wotr.Client
             back.style.width = backSize.x;
             back.style.height = backSize.y;
             back.style.opacity = 0;
+            dress?.Invoke(back);
             host.Add(back);
             host.BringToFront();
             flight.Back = back;

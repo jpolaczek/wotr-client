@@ -753,7 +753,8 @@ The watching board shows the Fellowship's recorded changes on their own objects,
     one.
   - Hiding or revealing in place marks the plaque's Ring.
   - Entering Mordor puts the figure on the Mordor track and traces the panel's Mordor row. The camera stays.
-- **The roster.** A casualty is marked on its portrait and then leaves the roster. A new Guide takes the badge.
+- **The roster.** A casualty is marked on its portrait and then leaves the roster. A new Guide takes the badge; one who
+  is no Companion yet (Sméagol) first flies from his Hunt tile into the roster (UI-462, [UX_SPEC](UX_SPEC.md#ui-462)).
 - **Once.** The released view does not stage the tracks again (AUDIO-06's two stages run only when no presentation
   showed them). Skip shows the latest tracks at once.
 - **Privacy.** A hidden move shows no route, region or trace on the map.

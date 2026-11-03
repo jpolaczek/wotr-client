@@ -390,6 +390,8 @@ their backs to the player that dissolve in the air".
   drawn; Skip of a presentation clears it.
 - The opponent's presented discard dissolves a smaller pair out of its hand count in the top bar as the count drops
   ([OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md)).
+- UI-463 uses the same mark-and-settle pattern for the player's own card that goes to the Effects panel: it flies from
+  its place in the hand into the Effects tab (`PlayedCardFlight`, [UX_SPEC](UX_SPEC.md#ui-463)).
 
 ## The Lords' optional declines and the Balrog card — UI-347 (2026-10-27)
 

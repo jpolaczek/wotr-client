@@ -11,16 +11,16 @@ namespace Wotr.Client
     // Box; a roll shows its dice and successes with one dice sound; the drawn tile turns face up; the damage is set; a
     // response marks its object (the Ring, a portrait, a table card); a casualty leaves the Fellowship's roster; a new
     // Guide takes the badge. The tracks, a reveal and the progress move with the Fellowship's change after the Hunt
-    // (FellowshipPresenter). The window hosts no choice here: a real response opens at the release.
+    // (FellowshipPresenter). The window hosts no choice here: a real response opens at the release. UI-462: a new Guide
+    // who is no Companion yet (Sméagol) joins the roster first (FellowshipJoin).
     public sealed class HuntPresenter : ICuePresenter
     {
-
-
         private readonly BoardScreen board;
         private readonly StagedBoard staged;
         private readonly FellowshipReading reading;
         private readonly PresentationSoundSink sounds;
         private readonly PresentationMark mark;
+        private readonly FellowshipJoin join;
 
         public HuntPresenter(BoardScreen board, StagedBoard staged, PresentationLayer layer, FellowshipReading reading,
             PresentationSoundSink sounds)
@@ -30,6 +30,7 @@ namespace Wotr.Client
             this.reading = reading;
             this.sounds = sounds;
             mark = new PresentationMark(layer);
+            join = new FellowshipJoin(board, staged, reading, mark);
         }
 
         // How long an entry holds; the tracks, the reveal, the progress and a Companion's placing have their own objects.
@@ -49,11 +50,17 @@ namespace Wotr.Client
                 return null;
             staged.Hunt(cue.HuntChainId, entry);
             board.StageHunt(staged.View);
+            if (entry.Kind == HuntReportKind.GuideChanged && join.Joins(entry.Outcome.GuideId))
+                return join.Begin(entry.Outcome.GuideId, now);
             var steps = Steps(cue, entry);
             return steps.Count == 0 ? null : new StepsBeat(now, EndRing, steps);
         }
 
-        public void Released() => EndRing();
+        public void Released()
+        {
+            join.End();
+            EndRing();
+        }
 
         private List<(Action Start, double Seconds)> Steps(PresentationCue cue, HuntReportEntryView entry)
         {

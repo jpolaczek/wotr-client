@@ -224,3 +224,13 @@
     scale: 1.12 1.12;
     filter: blur(6px);
 }
+/* UI-463: the player's own card that stays on the table — its stand-in (Presentation.uss) leaves its place in the hand and
+   shrinks into the Effects tab (PlayedCardFlight moves only its translate, scale and opacity), above the HUD, never taking
+   the pointer; nothing flies under Skip animations. */
+.played-card-flight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}

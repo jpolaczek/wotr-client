@@ -109,6 +109,32 @@ namespace Wotr.Client
         // UI-310: a new Guide recorded by the Hunt; the tracks wait for the Fellowship's own change.
         public void Guide(string id) => View.Fellowship.Guide = id;
 
+        // UI-462: the roster as the Fellowship panel draws it — the Free Peoples' own Companions, the Shadow's identities.
+        public bool InRoster(string id) => View.You == Side.FreePeoples
+            ? View.OwnCompanions.Any(c => c.Id == id)
+            : View.Fellowship.CompanionIdentities.Contains(CharacterLibrary.Identity(id));
+
+        // UI-462 (owner, 2026-11-03): a Companion the Hunt brings into the Fellowship (Sméagol's tile, LORDS pp. 21-22)
+        // stands in the staged roster before he takes the Guide's badge; the Free Peoples hold him as their own figure.
+        public void Join(string id)
+        {
+            if (InRoster(id))
+                return;
+            var fellowship = View.Fellowship;
+            var identity = CharacterLibrary.Identity(id);
+            if (!fellowship.CompanionIdentities.Contains(identity))
+            {
+                fellowship.CompanionIdentities.Add(identity);
+                fellowship.CompanionCount++;
+            }
+            if (View.You == Side.FreePeoples)
+                View.OwnCompanions.Add(new CharacterView
+                {
+                    Id = id, DefinitionId = id, Side = Side.FreePeoples, Location = "fellowship",
+                    Level = CharacterLibrary.Find(id)?.Level ?? 0
+                });
+        }
+
         // UI-310: a Companion leaving the Fellowship through the Hunt (a casualty, a Hobbit separating as its guide). UI-344:
         // or out of play (Sméagol), named by the version his record gives.
         public void Leave(string characterId, string definitionId = "")

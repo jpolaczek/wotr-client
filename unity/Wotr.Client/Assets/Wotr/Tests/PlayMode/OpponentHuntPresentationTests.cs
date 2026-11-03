@@ -25,6 +25,7 @@ namespace Wotr.PlayTests
         private const string Legolas = "base.character.legolas";
         private const string Merry = "base.character.merry";
         private const string Mithril = "base.fp.character.05";
+        private const string Smeagol = "lords.character.smeagol";
 
         [UnityTest]
         public IEnumerator AMissOpensTheHuntShowsTheRollAndOnlyThenMovesTheProgress()
@@ -223,6 +224,94 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-462 (owner, 2026-11-03: "we need a graphical animation presenting Sméagol joining the Fellowship"): his tile's
+        // new Guide is no Companion yet — the tile glows, his portrait flies out of it into his new place in the roster, which
+        // stays empty until it lands, and there takes the Guide's badge.
+        [UnityTest]
+        public IEnumerator SmeagolsPortraitFliesFromHisTileIntoTheRosterAndTakesTheBadge()
+        {
+            using var stage = Watching();
+            yield return stage.Ready();
+            var steps = Joins(stage, out var latest);
+            stage.Play(latest, null, steps);
+            yield return stage.Until(() => Joining(stage) != null);
+            var portrait = Portrait(stage, "smeagol");
+            Assert.IsNotNull(portrait, "His place in the roster is there as he flies.");
+            Assert.AreEqual(0f, portrait.resolvedStyle.opacity, "It stays empty until he lands.");
+            Assert.IsFalse(portrait.ClassListContains("current-guide"), "The badge waits for him.");
+            Assert.IsTrue(Portrait(stage, "gimli").ClassListContains("current-guide"), "Gimli still guides.");
+            Assert.IsNotNull(Joining(stage).Q(className: "figure-art-image"), "The flying portrait wears his artwork.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Hunt.Tile.Root), "The tile he comes from glows.");
+            var tile = stage.Board.Hunt.Tile.Root.worldBound.center;
+            var cell = portrait.worldBound.center;
+            yield return stage.Until(() => Joining(stage) is not { } flying ||
+                Vector2.Distance(flying.worldBound.center, cell) < Vector2.Distance(tile, cell) * .6f);
+            Assert.IsNotNull(Joining(stage), "He is on his way.");
+            LayoutTests.Save(stage.Texture, "ui462-join-flight.png");
+            yield return stage.Until(() => Portrait(stage, "smeagol").ClassListContains("current-guide"));
+            Assert.IsNull(Joining(stage), "He has landed.");
+            Assert.AreEqual(1f, Portrait(stage, "smeagol").resolvedStyle.opacity, "His portrait shows.");
+            Assert.IsFalse(Portrait(stage, "gimli").ClassListContains("current-guide"), "One Guide.");
+            Assert.IsTrue(stage.Playback.Holding, "He joins inside the presentation.");
+            yield return stage.Until(() => PresentationGlow.IsLit(Portrait(stage, "smeagol")));
+            yield return new WaitForSecondsRealtime(.2f);
+            LayoutTests.Save(stage.Texture, "ui462-join-landed.png");
+            yield return stage.Released();
+            Assert.IsTrue(Portrait(stage, "smeagol").ClassListContains("current-guide"));
+            Assert.AreEqual(5, stage.Board.Fellowship.Root.Query(className: "companion-token").ToList().Count, "Five Companions.");
+        }
+
+        // UI-462: the player whose own move drew the tile sees him join too — the Hunt is a shared resolution.
+        [UnityTest]
+        public IEnumerator TheFreePeoplesWhoseMoveDrewHisTileSeeHimJoinToo()
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, Side.FreePeoples);
+            var fellowship = stage.Before.Fellowship;
+            fellowship.RegionId = "rivendell";
+            fellowship.Guide = Gimli;
+            fellowship.CompanionIdentities.AddRange(new[] { "gimli", "legolas" });
+            fellowship.CompanionCount = 2;
+            foreach (var id in new[] { Gimli, Legolas })
+                stage.Before.OwnCompanions.Add(new CharacterView { Id = id, DefinitionId = id, Side = Side.FreePeoples, Location = "fellowship", Level = 2 });
+            yield return stage.Ready();
+            var steps = Joins(stage, out var latest);
+            steps[0].Actor = Side.FreePeoples;
+            steps[0].Costs.Clear();
+            latest.OwnCompanions.Add(new CharacterView
+            {
+                Id = Smeagol, DefinitionId = Smeagol, Side = Side.FreePeoples, Location = "fellowship"
+            });
+            stage.Play(latest, null, steps);
+            yield return stage.Until(() => Joining(stage) != null);
+            Assert.AreEqual(0f, Portrait(stage, Smeagol).resolvedStyle.opacity, "His own roster's place waits for him.");
+            yield return stage.Until(() => Portrait(stage, Smeagol).ClassListContains("current-guide"));
+            Assert.IsNull(Joining(stage));
+            yield return stage.Released();
+            Assert.IsTrue(Portrait(stage, Smeagol).ClassListContains("current-guide"));
+        }
+
+        // UI-462 under Skip animations: no flight — he stands in the roster with the badge and the mark at once.
+        [UnityTest]
+        public IEnumerator UnderSkipAnimationsSmeagolStandsInTheRosterWithTheBadgeAtOnce()
+        {
+            using var stage = Watching(reduced: true);
+            yield return stage.Ready();
+            var steps = Joins(stage, out var latest);
+            stage.Play(latest, null, steps);
+            var flew = false;
+            var deadline = Time.realtimeSinceStartup + 10;
+            while (Portrait(stage, "smeagol")?.ClassListContains("current-guide") != true && Time.realtimeSinceStartup < deadline)
+            {
+                flew |= Joining(stage) != null;
+                yield return null;
+            }
+            Assert.IsFalse(flew, "No flight.");
+            Assert.IsTrue(Portrait(stage, "smeagol").ClassListContains("current-guide"), "He takes the badge.");
+            Assert.AreEqual(1f, Portrait(stage, "smeagol").resolvedStyle.opacity, "Shown at once.");
+            yield return stage.Until(() => PresentationGlow.IsLit(Portrait(stage, "smeagol")));
+            yield return stage.Released();
+        }
+
         [UnityTest]
         public IEnumerator ATableCardAnsweringTheHuntIsMarkedAtTheEffectsTab()
         {
@@ -340,9 +429,9 @@ namespace Wotr.PlayTests
         }
 
         // The Shadow watches a hidden Fellowship at Rivendell: progress 1, corruption 2, Gimli its Guide, four Companions.
-        internal static PresentedBoardStage Watching(bool revealed = false, int width = 1366, float scale = 1f)
+        internal static PresentedBoardStage Watching(bool revealed = false, int width = 1366, float scale = 1f, bool reduced = false)
         {
-            var stage = new PresentedBoardStage(width, scale, false, Side.Shadow);
+            var stage = new PresentedBoardStage(width, scale, reduced, Side.Shadow);
             var fellowship = stage.Before.Fellowship;
             fellowship.RegionId = "rivendell";
             fellowship.Progress = 1;
@@ -376,6 +465,33 @@ namespace Wotr.PlayTests
             latest = script.Latest;
             return steps;
         }
+
+        // UI-462: the Free Peoples' move draws Sméagol's tile — no damage, the tile leaves the game and Sméagol joins the
+        // Fellowship as its Guide (lords-smeagol-joins); the Shadow's latest roster names him by identity.
+        private static ActionLogStep[] Joins(PresentedBoardStage stage, out PlayerView latest)
+        {
+            var roll = Snapshot("BeforeDraw", 6, 2);
+            var script = new Script(stage).Entry(HuntReportKind.Started, Snapshot("BeforeDraw")).Entry(HuntReportKind.Rolled, roll)
+                .Entry(HuntReportKind.TileDrawn, SmeagolTile(roll)).Then(o => o.GuideId = Smeagol)
+                .Entry(HuntReportKind.GuideChanged, character: Smeagol).Entry(HuntReportKind.HuntCompleted, Done(SmeagolTile(roll)));
+            var steps = script.Finish();
+            script.Latest.Fellowship.CompanionIdentities.Add("smeagol");
+            script.Latest.Fellowship.CompanionCount += 1;
+            latest = script.Latest;
+            return steps;
+        }
+
+        private static HuntView SmeagolTile(HuntView roll)
+        {
+            var tile = Copy(roll);
+            tile.Stage = "Table";
+            tile.TileId = "lords.hunt.smeagol.1";
+            tile.Face = new HuntTileFaceView { Pool = "smeagol", Value = "0" };
+            return tile;
+        }
+
+        // UI-462: the portrait flying into the roster.
+        private static VisualElement Joining(PresentedBoardStage stage) => stage.Board.Dissolve.Root.Q(className: FellowshipJoin.PortraitClass);
 
         private static HuntView Snapshot(string stage, params int[] results) => new HuntView
         {

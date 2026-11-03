@@ -187,12 +187,13 @@ namespace Wotr.Client
             var council = CouncilTravel.Hint(view, draft);
             if (council.Length > 0)
                 return council;
+            // A Council token's political step asks for its nation before any route (UseCouncilToken is a target route).
+            if (ExpansionDraft.CouncilPoliticsPending(draft))
+                return ExpansionDraft.CouncilPoliticsHint;
             // UI-456 (owner): a move of figures to a destination says in the console where its figures are chosen.
             var figures = TravelDraft.TargetRoute(draft.Kind) ? FellowshipDraft.Hint(draft, view) : "";
             if (figures.Length > 0)
                 return figures;
-            if (ExpansionDraft.CouncilPoliticsPending(draft))
-                return ExpansionDraft.CouncilPoliticsHint;
             if (draft.Kind == CommandKind.SelectGuide && ContextualFellowship)
                 return FellowshipGuideText.ChooseHint;
             if (CompanionSetupPresentation.Versions(view) && draft.Kind == CommandKind.ChooseCompanionVersions)

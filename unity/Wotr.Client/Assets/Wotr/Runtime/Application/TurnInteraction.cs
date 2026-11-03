@@ -1195,6 +1195,9 @@ namespace Wotr.Client
             // UI-404: the figures this step sends that the player holds off the table fly on from where they are held.
             if (!recovering)
                 board.Map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
+            // UI-463: the hand card this step plays flies into the Effects tab once the view shows it on the table.
+            if (!recovering)
+                board.MarkPlayedCard(command.Payload.CardId);
             Render();
             // UI-454: the recruits this step sends that still fly from the Reserve to their planned figure (a ruler's last
             // figure, a plan confirmed with ✓) fly on to the place the view gives them.

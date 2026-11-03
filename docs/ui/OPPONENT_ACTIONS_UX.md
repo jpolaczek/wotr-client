@@ -543,7 +543,8 @@ Code: `Runtime/UI/Playback/HuntPresenter.cs`, `FellowshipPresenter.cs` and `Fell
   - A response marks its object: the Fellowship's Ring, the Guide's or a Companion's portrait, or a table card at the
     Effects tab.
   - A casualty is marked on its portrait, then leaves the roster.
-  - A new Guide takes the badge on its portrait.
+  - A new Guide takes the badge on its portrait. UI-462: Sméagol, whom his tile brings in, flies as a portrait from the
+    drawn tile into his new place in the roster first, for both players ([UX_SPEC](UX_SPEC.md#ui-462)).
   - The completed Hunt keeps its result in the open window, as today.
   - The window hosts no choice here: a real response opens at the release.
 - **The Fellowship.**

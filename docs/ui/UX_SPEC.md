@@ -3707,3 +3707,78 @@ Playtest (owner's checklist):
   alone with that drop.
 - [ ] Same scenario, a fresh start: click the die and the Moria army, then Dimrill Dale. Expect: the whole force attacks
   the Elves. Unmarking the Balrog first darkens Dimrill Dale: his soldiers move only with him.
+
+<a id="ui-462"></a>
+## Sméagol flies into the Fellowship — UI-462 (2026-11-03)
+
+The owner (translated): "we need a graphical animation presenting Sméagol joining the Fellowship."
+
+- **The join.** Sméagol's Hunt tile brings him into the Fellowship as its Guide (LORDS pp. 21-22); the server records the
+  drawn tile, then the Guide change, in the shared Hunt report. In the Hunt's presentation a Guide change whose Guide is
+  no Companion of the staged roster yet is a join (`FellowshipJoin`): the Fellowship panel opens, the drawn tile glows, a
+  portrait plate with his artwork rises out of the tile and flies, eased and shrinking, into his new place at the end of
+  the roster (`DrawFlight` with a dress hook), which stands empty until it lands; then his portrait shows, takes the
+  Guide's badge from the previous Guide and glows (`StagedBoard.Join`, `StagedBoard.Guide`). A Guide already in the
+  roster keeps UI-310's badge step; Gollum, who has no portrait, never joins.
+- **Both players.** A Hunt is a shared resolution (`PresentationSelection`), so the Free Peoples whose move drew the tile
+  see the flight as the Shadow does; their roster holds him as their own Companion, the Shadow's by his identity.
+- **Skip animations** (Reduced motion): no flight; once the panel has settled he stands in the roster with the badge and
+  the mark at once. Skip or a rebase ends the flight: his portrait shows and the release draws the latest roster.
+- Only translate, scale and opacity move, above the HUD, never taking the pointer. No server or contract change.
+
+Screenshots: `ui462-join-flight.png`, `ui462-join-landed.png` (the presented board), `ui462-network-flight.png`,
+`ui462-network-landed.png` (`lords-smeagol-joins`, the Shadow's board).
+
+Tests: PlayMode `OpponentHuntPresentationTests` (`SmeagolsPortraitFliesFromHisTileIntoTheRosterAndTakesTheBadge`,
+`TheFreePeoplesWhoseMoveDrewHisTileSeeHimJoinToo`, `UnderSkipAnimationsSmeagolStandsInTheRosterWithTheBadgeAtOnce`;
+`ANewGuideTakesTheBadgeOnItsPortrait` unchanged), `SmeagolJoinNetworkTests` (`lords-smeagol-joins`: both boards fly him
+in and end with him guiding), `OpponentResourcePresentationTests` and `OpponentExpansionPresentationTests` (the other
+`DrawFlight` beats).
+
+Playtest (owner's checklist):
+- [ ] `lords-smeagol-joins` (Free Peoples). Click the Character die and move the Fellowship. Expect: the Hunt window rolls
+  and turns up Sméagol's tile; the Fellowship panel opens, the tile glows and his portrait flies out of it into a new,
+  empty place at the end of the roster; there it shows with the Guide badge and glows, and Strider loses the badge.
+- [ ] Same scenario watched from the Shadow (switch side in the test menu, or a second client). Expect: the same flight
+  on the Shadow's board.
+- [ ] Same scenario with Skip animations on. Expect: no flight; once the panel opens Sméagol stands in the roster with the
+  Guide badge, lit.
+- [ ] Same scenario, Skip (or Esc) during the flight. Expect: the flight ends at once and Sméagol stands in the roster as
+  the Guide.
+
+<a id="ui-463"></a>
+## A played card goes to the Effects tab — UI-463 (2026-11-03)
+
+The owner (translated): "let's add an animation when playing a card makes it go to Effects."
+
+- **The flight.** The opponent's table card already shrinks into the Effects tab, which glows (UI-316); the player's own
+  play is never presented (`PresentationSelection`), so the card only vanished from the hand. Now `PlayedCardFlight`, on
+  UI-326's mark-and-settle pattern, marks the hand card where it stands when its play is sent (`TurnInteraction` →
+  `BoardScreen.MarkPlayedCard`: the card the command names, its unrolled face or its slot) and settles with the view in
+  which it has left the hand and a new source of the player's own with its id stands among the effects
+  (`EffectsPresentation.Sources`: a table card, or an Event's lasting effect). Its parchment stand-in with the card's
+  title (UI-324) appears at that place and shrinks, eased as a presented card (`CardFlight`, 0.6 s), into the Effects
+  tab, or into its tile while the panel is open; the tab then glows for 0.8 s.
+- **Only a card that goes to Effects.** A card still in the hand at a newer revision is forgotten (a refused play); a card
+  that left for anything else (an Event that does not stay, a combat card, a discard) is forgotten once its resolution no
+  longer leads the effect trail; a quiet view (a reconnect, the first view) plays nothing.
+- **Skip animations** (Reduced motion): no flight; the tab glows only.
+- Only translate, scale and opacity move (the stand-in's place and size are set once), above the HUD, never taking the
+  pointer; nothing waits for it. No server or contract change.
+
+Screenshots: `ui463-flight.png`, `ui463-landed.png` (`PlayedCardFlightTests`), `ui463-network-flight.png`,
+`ui463-network-landed.png` (`lords-card-we-wont-go-back-event`, the Shadow's board).
+
+Tests: PlayMode `PlayedCardFlightTests` (the flight toward the tab, shrinking, the glow and its end; a kept, resolved,
+opponent's or quiet card plays nothing; Skip animations' glow only), `PlayedCardFlightNetworkTests`
+(`lords-card-we-wont-go-back-event`: the Character die, one click on the card, the flight and the Shadow's table),
+`CardDissolveTests`, `OpponentCardPresentationTests`.
+
+Playtest (owner's checklist):
+- [ ] `lords-card-we-wont-go-back-event` (Shadow). Click the Character die, open the hand and click We Won't Go Back.
+  Expect: the card leaves its place in the hand as a small parchment card with its title, which shrinks and glides into
+  the Effects tab on the left; the tab then glows and counts one more source.
+- [ ] Same scenario with the Effects panel pinned open. Expect: the card glides into its new tile in the panel and the tab
+  glows.
+- [ ] Same scenario with Skip animations on. Expect: no flight; the card leaves the hand and the Effects tab glows briefly.
+- [ ] Any Event card that does not stay on the table (e.g. a recruiting Event). Expect: nothing flies to the Effects tab.
