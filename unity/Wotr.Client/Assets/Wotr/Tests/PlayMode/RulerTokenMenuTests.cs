@@ -261,23 +261,33 @@ namespace Wotr.PlayTests
             await Task.Delay(800, token);
             CollectionAssert.Contains(board.Map.DraftOverlay.PlannedRegions, region, "The figure's click places it in the chosen settlement.");
             CollectionAssert.DoesNotContain(board.Map.DraftOverlay.ChosenRegions, region, "A full settlement no longer waits.");
-            // UI-393 (owner): the next figure is dragged to another lit settlement as its own icon; its slot shows that it
-            // was lifted, and the drop places it there.
+            // UI-393 (owner), UI-454 (owner, 2026-11-03): the next figure is carried to another lit settlement — over the
+            // Reserve as its own icon, its slot showing that it was lifted, over the map as its miniature with the landing
+            // mark under it — and the drop places it there.
             var second = board.Map.DraftOverlay.Targets.First(target => target != region);
             var next = board.Reinforcements.Root.Query<Button>(className: "reserve-token").ToList()
                 .First(button => button.name.StartsWith("character-reserve-dwarves-") && button.enabledInHierarchy && button.userData != null);
             var destination = MapContourProbe.ReachRegion(board.Map, second);
             MapContourProbe.BeginDrag(board, next);
             await Task.Delay(100, token);
-            var lifted = board.Root.Q<Image>("drag-figure");
-            Assert.AreEqual(DisplayStyle.Flex, lifted.style.display.value, "The figure's icon follows the pointer.");
-            Assert.AreSame(next.Q<Image>(className: "reserve-token-figure").sprite, lifted.sprite, "It is the pressed figure's own art.");
+            var carry = board.Map.RecruitCarry;
+            Assert.IsTrue(carry.Active, "The Reserve figure is taken up.");
+            Assert.AreEqual(DisplayStyle.Flex, carry.Icon.style.display.value, "The figure's icon follows the pointer.");
+            Assert.AreSame(next.Q<Image>(className: "reserve-token-figure").sprite, ((Image)carry.Icon).sprite,
+                "It is the pressed figure's own art.");
             Assert.IsTrue(next.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
             LayoutTests.Save(client.Panel.targetTexture, "ui393-lifted-figure.png");
+            MapContourProbe.Carry(board, destination);
+            await Task.Delay(100, token);
+            Assert.IsTrue(carry.OverMap, "Over the map it is its miniature.");
+            Assert.AreEqual(second, board.Map.DragTarget, "The settlement under it lights as a carried figure's target.");
+            Assert.AreEqual(DisplayStyle.Flex, board.Map.Q("landing-mark").style.display.value, "The landing mark lies on its place.");
+            StringAssert.StartsWith("Recruit ", board.Map.Q<Label>("landing-caption").text);
+            LayoutTests.Save(client.Panel.targetTexture, "ui454-iron-guard-carried.png");
             var revision = board.View.Revision;
             MapContourProbe.Drop(board, destination);
             await Task.Delay(800, token);
-            Assert.AreEqual(DisplayStyle.None, lifted.style.display.value);
+            Assert.IsFalse(carry.Active);
             Assert.IsFalse(next.ClassListContains(DraftInput.LiftedClass));
             // UI-450 (owner): Iron Guard's second figure is its last, so its drop sends the recruitment, no ✓.
             for (var wait = 0; wait < 50 && board.View.Revision == revision; wait++)

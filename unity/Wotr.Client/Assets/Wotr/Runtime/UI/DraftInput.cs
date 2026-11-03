@@ -129,11 +129,14 @@ namespace Wotr.Client
         // The map's armies and characters, which IFigureDrag carries.
         private static bool MapFigure(DraftObject item) => item is DraftObject.Army or DraftObject.Miniature;
 
-        // The press becomes a drag; a figure only when it lifts (UI-405), otherwise its press stays a click.
+        // The press becomes a drag; a figure only when it lifts (UI-405), otherwise its press stays a click. UI-454: a Reserve
+        // figure is carried as itself when it lifts (its slot shows that it was lifted); otherwise it stays UI-393's drag.
         private bool StartDrag()
         {
             if (MapFigure(source.Object) && !Lifts())
                 return false;
+            if (source.Object == DraftObject.Reserve && Lifts())
+                sourceElement?.AddToClassList(LiftedClass);
             dragging = true;
             clicks.Cancel();
             DragChanged?.Invoke(source);
@@ -241,7 +244,8 @@ namespace Wotr.Client
             }
         }
 
-        // UI-393: the figure's own art follows the pointer, a little larger, and its slot dims while it is away.
+        // UI-393: the figure's own art follows the pointer, a little larger, and its slot dims while it is away. UI-454: it
+        // moves by translate only; its size is set once, as it is taken up.
         private bool Lift(Vector2 local)
         {
             var art = source.Object == DraftObject.Reserve ? sourceElement?.Q<Image>(className: "reserve-token-figure") : null;
@@ -251,14 +255,15 @@ namespace Wotr.Client
             {
                 lifted.sprite = art.sprite;
                 liftedSize = art.worldBound.size * 1.15f;
+                lifted.style.left = 0;
+                lifted.style.top = 0;
                 lifted.style.width = liftedSize.x;
                 lifted.style.height = liftedSize.y;
                 lifted.style.display = DisplayStyle.Flex;
                 lifted.BringToFront();
                 sourceElement.AddToClassList(LiftedClass);
             }
-            lifted.style.left = local.x - liftedSize.x / 2;
-            lifted.style.top = local.y - liftedSize.y / 2;
+            lifted.style.translate = new Translate(local.x - liftedSize.x / 2, local.y - liftedSize.y / 2);
             return true;
         }
 

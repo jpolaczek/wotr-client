@@ -44,17 +44,27 @@ namespace Wotr.Client
         public static FlightMiniature Army(IReadOnlyList<BoardFigureMove> group, bool chosen, ArmyMarker destination)
         {
             var to = group[0].To;
-            var feet = MapArmyArtwork.Feet(to.Garrison, true);
+            return OnBase(to.Side, to.Garrison, chosen, Flying(group, destination));
+        }
+
+        // UI-454 (owner, 2026-11-03): one recruit flying from its Reserve slot, on the base of the field army it will stand in.
+        public static FlightMiniature Recruit(ArmyUnit unit, Side side) =>
+            OnBase(side, false, false, ArmyMarker.From("", side, false, new[] { unit }));
+
+        // Units drawn by MapArmyArtwork on an army's base of the side's colours (a garrison's crenellated one).
+        private static FlightMiniature OnBase(Side side, bool garrison, bool chosen, ArmyMarker army)
+        {
+            var feet = MapArmyArtwork.Feet(garrison, true);
             var miniature = new FlightMiniature(MapArmyArtwork.HolderSize, feet, MapArmyArtwork.DesignUnit, ArmyShadowClass, 1);
             var button = miniature.Element;
             button.AddToClassList("army");
-            button.AddToClassList(to.Side == Side.FreePeoples ? "fp" : "sh");
-            button.EnableInClassList("garrison", to.Garrison);
+            button.AddToClassList(side == Side.FreePeoples ? "fp" : "sh");
+            button.EnableInClassList("garrison", garrison);
             button.EnableInClassList("selected-force", chosen);
             var artwork = new MapArmyArtwork(button);
             artwork.Layout(true);
-            artwork.Apply(Flying(group, destination));
-            miniature.Visible = MapArmyArtwork.Visible(to.Garrison, true);
+            artwork.Apply(army);
+            miniature.Visible = MapArmyArtwork.Visible(garrison, true);
             return miniature;
         }
 

@@ -3395,7 +3395,8 @@ analogous effects.
   recruitment and the Council's homelands. A move's targets keep their lighter fill.
 - **The view comes to them once per decision** (`TurnInteraction.RevealPlacements`): a card's, a ruler's or the Council's
   placement brings every region it may take into the free map (none under a panel or off the view); a die's own Muster
-  in the player's action moves nothing.
+  in the player's action moves nothing, nor does its next step (the second recruitment point, `DecisionKind.ActionSequence`;
+  fixed with UI-454, `T22BoardNetworkTests.TwoNationsRecruitAtDifferentSettlementsWithOneRemainingRegular`).
 - **Left as they are** (to decide): a figure whose destination is fixed by its card (`ReserveFigures`: Glorfindel,
   Thranduil's Archers, Brand's Men…, Gothmog's Fling, the Black Captain) lights its Reserve token, not a region — its
   region's click would do nothing; a ruler-token Muster lights its regions once its figure is chosen.
@@ -3421,3 +3422,43 @@ Playtest (owner's checklist):
 Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget` (a placement target pulses, a move's does
 not, no repaint for the same set); PlayMode `GlowingHintAuditTests` (Monsters Roused), `MusterNetworkTests`,
 `FateCardsNetworkTests`, `MapContourRenderingTests`, `CouncilHomelandPanelNetworkTests`.
+
+<a id="a-recruit-flies-from-the-reserve-or-is-carried-there--ui-454"></a>
+## A recruit flies from the Reserve, or is carried there — UI-454 (2026-11-03)
+
+The owner (translated): "When recruiting units we want animation. If the user just picks with a click, the unit should
+glide smoothly from its Reserve slot to its proper place on the board (like drawn cards), and there should also be the
+option to drag the unit on exactly the same principle as moving it on the map." This supersedes UI-421's decision 2 ("the
+reserve keeps its gestures", UI-393) for the Reserve's figures.
+
+- **A click flies it.** A recruit placed by clicks (its Reserve figure and a lit settlement, a settlement and then the
+  figure, or a figure with one legal settlement) flies as the miniature it will be: it rises out of its slot's picture
+  (the Reserve tab while the panel is closed), grows to the figures' scale, arcs and lands with UI-404's profile on the
+  place it will stand on, above the HUD, following the camera. A Muster recruit is sent at once and lands on its force's
+  place, which shows faintly until it lands, as for any flight; no second arrival in place. A planned recruit (a card's or
+  an ability's plan) lands on its faint planned figure, which shows it once it has landed. Taking it back, a refused
+  step, a disconnect or a view without it ends the flight.
+- **A drag carries it.** A press on a Reserve figure that crosses the drag threshold takes it up and arms it without
+  placing it, so exactly its settlements light. Over the Reserve and the HUD it is its picture; over the map it is its
+  miniature, held up like a carried army, the settlement under it lit as a carried figure's target, the landing mark
+  with "Recruit Rohan Elite" on its place, and the map pans at its edge. A drop on a lit settlement is that settlement's
+  click (the same step, the same payload) and the recruit flies on from where it was dropped; any other release, or Esc,
+  puts the draft back and the figure glides back to its slot. A figure only a click chooses (a Kings card's branch, The
+  Black Captain Commands, Gothmog's ability, a card's figure that already has its region) keeps UI-393's drag.
+- **Skip animations** (Reduced motion): nothing flies; the recruit stands on its place at once, as before.
+
+Details and tests: [TABLETOP_FIGURES_UX](TABLETOP_FIGURES_UX.md), "As built (UI-454)".
+
+Playtest (owner's checklist):
+- [ ] `fp-muster-recruit` (the Free Peoples). Choose the Muster die, open the Reserve, click a Regular, then a lit
+  settlement. Expect: the figure rises out of its slot, flies in an arc above the panel and lands on the settlement's
+  army, which shows faintly until it lands; nothing appears a second time. Then carry the next figure: over the Reserve
+  it is its picture, over the map its miniature with the green ring and "Recruit …" under it; dropped on a lit
+  settlement it recruits there and settles from where it was dropped; dropped elsewhere or with Esc it glides back.
+- [ ] `kings-brand-call-to-arms`. Use Brand's Call to Arms; click a lit settlement, then a figure. Expect: it flies to the
+  faint planned figure, which appears as it lands; carry the next one to another lit settlement the same way; its ×
+  takes it back.
+- [ ] `fate-card-monsters-roused`. Choose a half, then recruit by clicks and by carrying. Expect: each recruit flies or is
+  carried to its region and its faint planned figure appears as it lands.
+- [ ] Any of these with Skip animations on. Expect: no flight; the figure stands on its place (or its faint planned
+  figure) at once.

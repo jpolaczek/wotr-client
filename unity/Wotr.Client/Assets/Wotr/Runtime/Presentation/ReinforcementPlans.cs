@@ -24,6 +24,10 @@ namespace Wotr.Client
         public static bool Remove(TurnDraft draft, PlayerView view, string id) =>
             Source(view, draft)?.Remove(draft, view, id) == true;
 
+        // UI-454: a figure taken up to be carried is armed for its drop, never placed.
+        public static bool Arm(TurnDraft draft, PlayerView view, string id) =>
+            Source(view, draft)?.Arm(draft, view, id) == true;
+
         // The × of a map ghost returns every figure planned for that region in one undo step.
         public static bool RemoveRegion(TurnDraft draft, PlayerView view, BoardPresentation data, string region)
         {

@@ -31,6 +31,9 @@ namespace Wotr.Client
         private readonly DraftInput input;
         // UI-405: the map's armies and characters picked up and carried; a drop is the target's click.
         private readonly FigureLiftInteraction lift;
+        // UI-454: a Reserve figure carried onto the map the same way, and the recruits flying from their Reserve slot.
+        private readonly ReserveCarryInteraction reserveCarry;
+        private readonly RecruitFlightInteraction recruitFlights;
         // UI-405: a figure's click made to lift it never sends a step; one that would is undone and stays a click.
         private bool lifting;
         private bool liftWouldSend;
@@ -111,8 +114,9 @@ namespace Wotr.Client
                 () => SelectionBusy);
             muster = new MusterContextInteraction(board, EditSelection,
                 () => SelectionBusy);
+            recruitFlights = new RecruitFlightInteraction(board);
             reinforcements = new ReinforcementsInteraction(board, EditChoice, () => SelectionBusy, () => muster.BacksReserve,
-                id => muster.RecruitAtOnly(id), ChooseComponent, CompleteChoice, branchCarry);
+                id => muster.RecruitAtOnly(id), ChooseComponent, CompleteChoice, branchCarry, recruitFlights);
             politics = new PoliticalContextInteraction(board, EditSelection, () => SelectionBusy);
             travel = new TravelContextInteraction(board, EditSelection,
                 () => SelectionBusy);
@@ -133,10 +137,12 @@ namespace Wotr.Client
             context.FigureSelector = id => councilTravel.Figure(id) || flights.Figure(id) || cardFigures.Figure(id) ||
                 cardArmies.Figure(id) || travel.Figure(id) || figureAbilities.Figure(id);
             lift = new FigureLiftInteraction(board, draft, () => view, () => SelectionBusy, SelectToLift, ChooseRegion, Restore);
+            reserveCarry = new ReserveCarryInteraction(board, draft, () => view, () => SelectionBusy, reinforcements.Arm, ChooseRegion,
+                Restore, recruitFlights);
             // UI-142: no double-click; the scope lets the input suppress a fast second click after a committed step.
             input = new DraftInput(board.Root, Confirm, Back, Drop,
                 () => view == null ? "" : view.MatchId + "/" + view.Revision + "/" + view.Decision?.Id + "/" + connectionEpoch,
-                lift);
+                new FigureDragRoute(lift, reserveCarry));
             input.DragChanged += board.Nations.PreviewDrag;
             input.DragChanged += board.Battles.PreviewDrag;
             input.DragChanged += board.HandDrawer.PreviewDrag;
@@ -484,9 +490,12 @@ namespace Wotr.Client
 
         private bool Drop(DraftToken source, DraftToken target)
         {
-            // UI-405: a carried army or character is dropped as its target's click (FigureLiftInteraction), busy or not.
+            // UI-405: a carried army or character is dropped as its target's click (FigureLiftInteraction), busy or not;
+            // UI-454: so is a carried Reserve figure (ReserveCarryInteraction).
             if (lift.Carrying)
                 return lift.Drop(target);
+            if (reserveCarry.Carrying)
+                return reserveCarry.Drop(target);
             if (CommandBusy || view == null)
                 return false;
             if (draft.Kind == CommandKind.DiscardCards)
@@ -594,7 +603,7 @@ namespace Wotr.Client
             if (!version.IsNewer(latest))
                 return;
             // UI-405: a new revision ends a carried figure's gesture first, so its pre-press draft meets the new view.
-            if (lift.Carrying && latest.Revision != view?.Revision)
+            if ((lift.Carrying || reserveCarry.Carrying) && latest.Revision != view?.Revision)
                 input.CancelGesture();
             view = latest;
             if (view.Revision != version.Revision)
@@ -1111,12 +1120,16 @@ namespace Wotr.Client
         {
             var decision = view?.Decision;
             var targets = board.Map.DraftOverlay.PlacementTargets;
-            if (decision == null || decision.Kind == DecisionKind.Action || targets.Count == 0 || decision.Id == placementsRevealed ||
+            if (decision == null || DieAction(decision) || targets.Count == 0 || decision.Id == placementsRevealed ||
                 view.DecisionOwner != view.You || board.Map.contentRect.width <= 0)
                 return;
             placementsRevealed = decision.Id;
             board.Map.Reveal(targets.ToList());
         }
+
+        // The player's action, or its next step (a Muster die's second recruitment point): the die's own placements.
+        private static bool DieAction(DecisionView decision) =>
+            decision.Kind is DecisionKind.Action or DecisionKind.ActionSequence;
 
         private string AllocationHint(ActionOption allocation, string id)
         {
@@ -1213,6 +1226,10 @@ namespace Wotr.Client
             if (!recovering)
                 board.Map.ExpectFlights(LiftedFigures.OnTheirWay(view, draft));
             Render();
+            // UI-454: the recruits this step sends that still fly from the Reserve to their planned figure (a ruler's last
+            // figure, a plan confirmed with ✓) fly on to the place the view gives them.
+            if (!recovering)
+                board.Map.ReserveFlights.Send(command.Payload.Placements.Select(placement => placement.UnitId));
             try
             {
                 var receipt = recovering ? await sender.Recover(lifetime.Token) : await sender.Send(command, lifetime.Token);
@@ -1261,6 +1278,7 @@ namespace Wotr.Client
             if (persistence != null)
                 persistence.Changed -= Render;
             lift.Dispose();
+            reserveCarry.Dispose();
             if (saveDraft && view != null)
                 PersistDraft();
             board.Escape.CancelGesture = null;

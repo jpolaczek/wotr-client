@@ -16,6 +16,93 @@ namespace Wotr.PlayTests
         [UnityTest] public IEnumerator LoneLeaderIsLegalWarnedRemovedAndFinishKeepsPaidStep() => Wait(Leader());
         [UnityTest] public IEnumerator HoverIsReadOnlyAndCrestDragAdvancesOnlyLegalTrack() => Wait(Politics());
         [UnityTest] public IEnumerator RecruitmentOverflowWaitsForFinishAndExactFigureReturn() => Wait(Excess());
+        [UnityTest] public IEnumerator UI454AClickedRecruitFliesFromItsReserveSlotToItsPlace() => Wait(ClickFlight());
+        [UnityTest] public IEnumerator UI454UnderReducedMotionARecruitIsPlacedWithoutAFlight() => Wait(ReducedFlight());
+
+        // UI-454 (owner, 2026-11-03): a recruit chosen by clicks — its Reserve figure, then a lit settlement — flies from its
+        // slot to the place it stands on: it first stands on the slot's picture, comes nearer the place frame by frame, lands
+        // on it at the figures' scale and goes, and the view that brings it shows no second arrival in place.
+        private static async Task ClickFlight()
+        {
+            using var room = await Connect("ui17-board-recruit", ScenarioKind.BaseAcceptance);
+            SelectDie(room.Fp);
+            var board = room.Fp.Board;
+            var map = board.Map;
+            var regular = await Reserve(room, "minas-tirith", UnitKind.Regular);
+            var id = ((Wotr.Client.DraftToken)regular.userData).Id;
+            CardNetworkTests.Click(regular);
+            await room.Settle();
+            board.Hover.Close();
+            await room.Settle();
+            var art = regular.Q<Image>(className: "reserve-token-figure");
+            var slot = new Rect(map.WorldToLocal(art.worldBound.min), art.worldBound.size);
+            var revision = board.View.Revision;
+            Wotr.Client.ReserveFlightSnapshot? landed = null;
+            map.ReserveFlights.Landed += flight => landed = flight;
+            map.Select("minas-tirith");
+            var first = map.ReserveFlights.Flight(id);
+            Assert.IsTrue(first.HasValue, "The clicked recruit flies.");
+            Assert.IsTrue(new Rect(slot.x - 2, slot.y - 2, slot.width + 4, slot.height + 4).Contains(first.Value.From),
+                $"It first stands on its slot's picture ({first.Value.From} in {slot}).");
+            var element = map.parent.Q("reserve-flight-" + id);
+            Assert.IsNotNull(element, "It flies in the carry layer, above the HUD.");
+            // MapCarryLayer.LayerName (UI-444), read here by its value.
+            Assert.AreEqual("map-hand-carried", element.parent?.name);
+            var distances = new System.Collections.Generic.List<float>();
+            var saved = 0;
+            var started = Time.realtimeSinceStartup;
+            while (map.ReserveFlights.Flight(id) is { } flight && Time.realtimeSinceStartup - started < 6)
+            {
+                distances.Add(Vector2.Distance(flight.Feet, flight.To));
+                Assert.IsNull(map.Figures.Flight("unit:" + id), "No second arrival in place.");
+                if (saved == 0 && flight.Progress > .3f || saved == 1 && flight.Progress > .6f)
+                    LayoutTests.Save(room.Fp.Viewport, saved++ == 0 ? "ui454-flight-rise.png" : "ui454-flight-arc.png");
+                await Task.Delay(16, room.Token);
+            }
+            Assert.IsNull(map.ReserveFlights.Flight(id), "The flight goes once it has landed.");
+            Assert.IsNull(map.parent.Q("reserve-flight-" + id));
+            Assert.Greater(distances.Count, 5, "It flies over several frames.");
+            Assert.Less(distances[distances.Count / 2], distances[0], "It comes nearer its place.");
+            Assert.IsTrue(landed.HasValue, "It landed and handed the recruit to its place.");
+            var last = landed.Value;
+            Assert.AreEqual(id, last.UnitId);
+            Assert.IsTrue(last.Landed, "Its last frame is the landed one.");
+            Assert.LessOrEqual(Vector2.Distance(last.Feet, last.To), 2, "It lands on its place.");
+            Assert.AreEqual(map.Stands.FigureScale, last.Scale, .01f, "At the figures' scale.");
+            Assert.AreEqual(1, last.Opacity, .01f, "In full.");
+            await room.At(revision + 1);
+            LayoutTests.Save(room.Fp.Viewport, "ui454-flight-landed.png");
+            Assert.AreEqual("minas-tirith", board.View.Units.Single(u => u.Id == id).Location);
+            Assert.IsFalse(map.Figures.Arriving("minas-tirith", Side.FreePeoples, false), "The place shows in full.");
+        }
+
+        // UI-454: Skip animations (Reduced motion) places the recruit at once, as before: nothing flies from the slot.
+        private static async Task ReducedFlight()
+        {
+            using var room = await Connect("ui17-board-elite", ScenarioKind.BaseAcceptance);
+            SelectDie(room.Fp);
+            var board = room.Fp.Board;
+            board.Root.AddToClassList("reduced-motion");
+            try
+            {
+                var regular = await Reserve(room, "minas-tirith", UnitKind.Regular);
+                var id = ((Wotr.Client.DraftToken)regular.userData).Id;
+                CardNetworkTests.Click(regular);
+                await room.Settle();
+                board.Hover.Close();
+                await room.Settle();
+                var revision = board.View.Revision;
+                board.Map.Select("minas-tirith");
+                Assert.AreEqual(0, board.Map.ReserveFlights.Count, "Nothing flies under Reduced motion.");
+                await room.At(revision + 1);
+                Assert.AreEqual(0, board.Map.ReserveFlights.Count);
+                Assert.AreEqual("minas-tirith", board.View.Units.Single(u => u.Id == id).Location);
+            }
+            finally
+            {
+                board.Root.RemoveFromClassList("reduced-motion");
+            }
+        }
 
         private static async Task Elite()
         {

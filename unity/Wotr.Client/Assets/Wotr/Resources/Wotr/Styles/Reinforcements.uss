@@ -167,3 +167,10 @@
 .drag-figure { position: absolute; opacity: 0.95; }
 .reserve-token.drag-lifted > .reserve-token-figure { opacity: 0.25; }
 .reserve-token.drag-lifted > .reserve-token-glow { opacity: 0; }
+/* UI-454 (owner, 2026-11-03): a carried Reserve figure dropped where nothing takes it glides back to its slot as its icon
+   (MapRecruitCarry.Return); the class is set for that glide alone, and only under .motion-enabled does it move. */
+.motion-enabled .carried-recruit-icon.carried-recruit-returning {
+    transition-property: translate;
+    transition-duration: 0.22s;
+    transition-timing-function: ease-in-out-sine;
+}

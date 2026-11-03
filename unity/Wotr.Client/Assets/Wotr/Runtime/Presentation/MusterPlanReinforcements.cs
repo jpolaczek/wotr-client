@@ -40,6 +40,9 @@ namespace Wotr.Client
 
         public bool Choose(TurnDraft draft, PlayerView view, string id) => RecruitDraft.Select(draft, view, id);
 
+        // UI-454: a Muster plan's click only arms the figure, so carrying it arms it the same way.
+        public bool Arm(TurnDraft draft, PlayerView view, string id) => RecruitDraft.Select(draft, view, id);
+
         public bool Remove(TurnDraft draft, PlayerView view, string id)
         {
             if (draft.Payload.Placements.All(p => p.UnitId != id))

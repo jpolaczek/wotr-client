@@ -99,6 +99,12 @@ namespace Wotr.Client
         public MapStandLayout Stands { get; }
         // UI-403: the figures lifted off the table, and where they would land.
         internal MapFigureHand Hand { get; }
+        // UI-444, UI-454: the layer over the map, in front of the HUD, for what is carried or flies from the Reserve.
+        internal MapCarryLayer CarryLayer { get; }
+        // UI-454 (owner, 2026-11-03): recruits flying from their Reserve slot to the map, and the Reserve figure carried
+        // onto it.
+        public ReserveFlights ReserveFlights { get; }
+        public MapRecruitCarry RecruitCarry { get; }
         internal MapLandingMark Landing { get; }
         // UI-402: every character's own miniature.
         internal MapCharacterFigures Characters { get; }
@@ -147,6 +153,8 @@ namespace Wotr.Client
             {
                 CancelPress();
                 CancelPan();
+                ReserveFlights?.Dispose();
+                RecruitCarry?.Remove();
                 Figures?.Dispose();
                 Renderer.Dispose();
             });
@@ -188,7 +196,8 @@ namespace Wotr.Client
             MordorTrack = new MapMordorTrack(this);
             // UI-401: one y-sorted layer for everything that stands on the map, under the overlays.
             Stands = new MapStandLayout(this);
-            Hand = new MapFigureHand(this);
+            CarryLayer = new MapCarryLayer(this);
+            Hand = new MapFigureHand(this, CarryLayer);
             Hand.Changed += ApplyLiftMask;
             Landing = new MapLandingMark(this, Stands.Layer, Hand.Layer);
             Characters = new MapCharacterFigures(this, figure => MiniatureSelected?.Invoke(figure));
@@ -207,6 +216,8 @@ namespace Wotr.Client
             SovereignMarkers = new MapSovereignMarkers(this);
             SovereignMarkers.Apply(Data);
             PlannedJourneys = new MapPlannedRecruits(this, "planned-journey", removable: false);
+            ReserveFlights = new ReserveFlights(this, CarryLayer);
+            RecruitCarry = new MapRecruitCarry(this, CarryLayer);
         }
 
         private void PointerDown(PointerDownEvent e)
@@ -361,8 +372,13 @@ namespace Wotr.Client
 
         // On a hovered legal target: the landing mark on the prospective place (an army's, or a lone character's next
         // place), green for a move and red for an attack, and the caption above the lifted figure.
-        private void UpdateLanding()
+        internal void UpdateLanding()
         {
+            if (RecruitCarry?.Active == true)
+            {
+                ShowRecruitLanding(LandingRegion);
+                return;
+            }
             var caption = "";
             var region = LandingRegion;
             var shown = landingCaptions != null && contentRect.width > 0 && region.Length > 0 &&
@@ -378,6 +394,35 @@ namespace Wotr.Client
             Landing.Show(Camera.ToScreen(place), scale, landingCaptions.Attacks.Contains(region), caption, Hand.RaisedBounds,
                 contentRect);
         }
+
+        // UI-454 (owner, 2026-11-03): under a Reserve figure carried over a lit target, the landing mark lies on the place
+        // its recruit would stand on and its caption ("Recruit Rohan Elite") hangs above the carried miniature.
+        private void ShowRecruitLanding(string region)
+        {
+            if (contentRect.width <= 0 || region.Length == 0 || !DraftOverlay.Targets.Contains(region) || !RecruitCarry.OverMap)
+            {
+                Landing.Hide();
+                return;
+            }
+            Landing.Show(Camera.ToScreen(RecruitCarry.Place(region)), Stands.FigureScale, false, RecruitCarry.Caption,
+                RecruitCarry.RaisedBounds, contentRect);
+        }
+
+        // UI-454: where a recruit sent to a region arrives: on the side's field force there, otherwise where an army would.
+        internal Vector2 RecruitPlace(string region, Side side) => ForceFeet(region, side, false) ?? LandingPlace(region);
+
+        // UI-454: the place of the force a unit (by id) stands in; null while the map shows no such unit.
+        internal Vector2? UnitFeet(string unitId)
+        {
+            foreach (var marker in markers.Values)
+                foreach (var unit in marker.Army.Units)
+                    if (unit.Id == unitId)
+                        return marker.Stand.Feet;
+            return null;
+        }
+
+        // UI-454: Skip animations (Reduced motion) is on for this map's screen.
+        internal bool MotionReduced => Reduced();
 
         // UI-405: the name of the stand a figure's press lifts from (an army's marker, a character's miniature); "" for
         // anything else.
@@ -609,6 +654,7 @@ namespace Wotr.Client
             PlannedJourneys?.Layout();
             HistoryOverlay?.Layout();
             Figures?.Layout();
+            ReserveFlights?.Layout();
             covered.AddRange(used);
             Names.Layout(Camera, contentRect, covered);
             Redraw();

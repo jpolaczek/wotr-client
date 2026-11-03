@@ -14,7 +14,8 @@ namespace Wotr.Client
     // A figure the player holds off the table (UI-403's hand, a planned ghost) is expected (Expect): its flight starts
     // where it is and as it is held, never from its source, and a projection that moves a flying figure again takes it
     // over where it is in the air (UI-95). Reduced motion and Skip are unchanged: an arrival in place, and the result at
-    // once.
+    // once. UI-454 (owner, 2026-11-03): a recruit flying from its Reserve slot (Bring) arrives with that flight, never a
+    // second time in place.
     public sealed class MapFigureMotion : IDisposable
     {
         // UI-404: how long a held figure waits for the view that flies it before it is put back on its base.
@@ -39,6 +40,10 @@ namespace Wotr.Client
         // UI-404: where each expected figure starts, and until when it is expected.
         private readonly Dictionary<string, (FlightStart Start, double Until)> expected =
             new Dictionary<string, (FlightStart, double)>();
+        // UI-454 (owner, 2026-11-03): the recruits (by figure key) a Reserve flight brings, until when; and the arrivals a view
+        // brought for them, which wait for that flight instead of fading in on their place.
+        private readonly Dictionary<string, double> bringing = new Dictionary<string, double>();
+        private readonly Dictionary<string, BoardFigureMove> brought = new Dictionary<string, BoardFigureMove>();
         private readonly IVisualElementScheduledItem timer;
         private readonly IVisualElementScheduledItem expiry;
         private bool disposed;
@@ -86,7 +91,7 @@ namespace Wotr.Client
             var sameGame = current?.MatchId == view.MatchId && current.Viewer == view.You;
             if (sameGame && view.Revision <= current.Revision)
                 return;
-            var moves = changes.Apply(view, map.Data.Regions.ContainsKey);
+            var moves = TakeBrought(changes.Apply(view, map.Data.Regions.ContainsKey));
             var released = presented;
             presented = false;
             // UI-95: a projection that leaves every flying figure at its destination lets the flights finish.
@@ -94,6 +99,53 @@ namespace Wotr.Client
                 return;
             var snapshot = changes.Current;
             Present(moves, flight => sameGame && flight.Holds(snapshot));
+        }
+
+        // UI-454: a recruit a Reserve flight brings arrives with that flight, never on its own: once a newer view has it on
+        // the board, its arrival waits for that flight, its place showing faintly (Arriving), until the flight reports it
+        // Brought. A newer view without it will not bring it: it lapses, and its flight fades out.
+        private IReadOnlyList<BoardFigureMove> TakeBrought(IReadOnlyList<BoardFigureMove> moves)
+        {
+            if (bringing.Count == 0)
+                return moves;
+            var snapshot = changes.Current;
+            var unbrought = new List<string>();
+            var taken = false;
+            foreach (var key in bringing.Keys)
+            {
+                if (snapshot != null && snapshot.Figures.TryGetValue(key, out var position))
+                {
+                    brought[key] = new BoardFigureMove(position, position);
+                    taken = true;
+                }
+                else
+                    unbrought.Add(key);
+            }
+            bringing.Clear();
+            Ended(unbrought);
+            if (!taken)
+                return moves;
+            Track();
+            map.Refresh();
+            return moves.Where(move => !brought.ContainsKey(move.To.Key)).ToList();
+        }
+
+        // UI-454 (owner, 2026-11-03): a Reserve flight (ReserveFlights) brings this recruit (by figure key) to the map; the
+        // view that brings it lets the flight show its arrival. Kept for ExpectSeconds, like an expected figure.
+        public void Bring(string key)
+        {
+            bringing[key] = Now + ExpectSeconds;
+            expiry.Resume();
+        }
+
+        // UI-454: the Reserve flight bringing this recruit landed or ended: its place shows in full.
+        public void Brought(string key)
+        {
+            bringing.Remove(key);
+            if (!brought.Remove(key) || disposed)
+                return;
+            Track();
+            map.Refresh();
         }
 
         private bool FlightsHold(BoardFigureSnapshot snapshot)
@@ -189,19 +241,23 @@ namespace Wotr.Client
             var due = expected.Where(pair => pair.Value.Until <= now).Select(pair => pair.Key).ToList();
             foreach (var key in due)
                 expected.Remove(key);
-            Ended(due);
+            var late = bringing.Where(pair => pair.Value <= now).Select(pair => pair.Key).ToList();
+            foreach (var key in late)
+                bringing.Remove(key);
+            Ended(due.Concat(late).ToList());
         }
 
         private void LapseAll()
         {
-            var keys = expected.Keys.ToList();
+            var keys = expected.Keys.Concat(bringing.Keys).ToList();
             expected.Clear();
+            bringing.Clear();
             Ended(keys);
         }
 
         private void Ended(IReadOnlyCollection<string> keys)
         {
-            if (expected.Count == 0)
+            if (expected.Count == 0 && bringing.Count == 0)
                 expiry.Pause();
             if (keys.Count > 0 && !disposed)
                 Lapsed?.Invoke(keys);
@@ -216,6 +272,8 @@ namespace Wotr.Client
             revealedRegions.Clear();
             foreach (var flight in flights)
                 revealedRegions.Add(flight.Moves[0].To.Region);
+            foreach (var move in brought.Values)
+                revealedRegions.Add(move.To.Region);
             AddFlights(moves, inAir, ReducedMotion());
             Track();
             if (flights.Count > 0)
@@ -293,7 +351,7 @@ namespace Wotr.Client
                     start ??= held.Start;
                 }
             }
-            if (expected.Count == 0)
+            if (expected.Count == 0 && bringing.Count == 0)
                 expiry.Pause();
             return start ?? FlightStart.Of(map.FlightPlaces.Source(group[0].From), FlightPose.Standing);
         }
@@ -323,6 +381,9 @@ namespace Wotr.Client
                     moves.Add(move);
                     Track(move);
                 }
+            // UI-454: a recruit a Reserve flight brings waits for it like any flight's figure.
+            foreach (var move in brought.Values)
+                Track(move);
             Moves = moves;
         }
 
@@ -397,6 +458,7 @@ namespace Wotr.Client
                 flight.Remove();
             Root.Clear();
             flights.Clear();
+            brought.Clear();
             revealedRegions.Clear();
             Track();
             if (hadArrivals && !disposed)

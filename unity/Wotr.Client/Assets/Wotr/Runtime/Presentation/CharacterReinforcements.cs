@@ -84,6 +84,9 @@ namespace Wotr.Client
         public bool Choose(TurnDraft draft, PlayerView view, string id) =>
             CharacterRecruitDraft.Select(draft, Choice(view, draft), id);
 
+        public bool Arm(TurnDraft draft, PlayerView view, string id) =>
+            CharacterRecruitDraft.Arm(draft, Choice(view, draft), id);
+
         public bool Remove(TurnDraft draft, PlayerView view, string id)
         {
             if (draft.Payload.Placements.All(p => p.UnitId != id))

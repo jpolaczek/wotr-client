@@ -50,6 +50,9 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-454: each offered figure already has its region, so a click plans it; nothing is carried.
+        public bool Arm(TurnDraft draft, PlayerView view, string id) => false;
+
         public bool Remove(TurnDraft draft, PlayerView view, string id)
         {
             if (!draft.Payload.Ids.Contains(id))

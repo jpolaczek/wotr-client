@@ -262,6 +262,14 @@ namespace Wotr.Client
             }
         }
 
+        // UI-454 (owner, 2026-11-03): where a lone figure's box stands on its base, in the holder's design points — what a
+        // recruit flying from its Reserve slot matches to the slot's own picture of it.
+        public static Rect LoneFigure(FigureArt appearance)
+        {
+            var size = FigureSize(FigureStature.Of(appearance), Aspect(FigureArtwork.Sprite(appearance)));
+            return new Rect(StandFeet.x - size.x / 2, StandFeet.y + FrontFeet - size.y, size.x, size.y);
+        }
+
         // A figure's box at its stature; a cell wider than the stand and its overhang is drawn smaller.
         private static Vector2 FigureSize(float stature, float aspect)
         {

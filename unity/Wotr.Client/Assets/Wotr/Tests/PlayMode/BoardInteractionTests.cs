@@ -1099,6 +1099,86 @@ namespace Wotr.PlayTests
 
         private static float Luminance(Color color) => 0.2126f * color.linear.r + 0.7152f * color.linear.g + 0.0722f * color.linear.b;
 
+        // UI-454 (owner, 2026-11-03: "drag the unit on exactly the same principle as moving it on the map"): a Reserve figure
+        // pressed and moved past the drag threshold is taken up — over the panel as its picture, over the map as its
+        // miniature in the carry layer, the lit settlement under it lit as a carried figure's target, the landing mark with
+        // "Recruit Gondor Elite" on its place — and its drop sends exactly the step its clicks send. Esc sends nothing and puts
+        // the draft back.
+        [UnityTest]
+        public IEnumerator UI454AReserveFigureIsCarriedAsAMiniatureAndItsDropSendsTheClicksStep()
+        {
+            using var test = new Harness();
+            yield return OpenEliteReserve(test.Board);
+            var map = test.Board.Map;
+            Click(test.Board.Reinforcements.Root.Q<Button>("reserve-token-gondor-Elite"));
+            yield return Settle();
+            MapContourProbe.Click(map, MapContourProbe.Terrain(map, "minas-tirith"));
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(1, test.Backend.Commands, "The two clicks send the step.");
+            var clicked = JsonConvert.SerializeObject(test.Backend.Last.Payload);
+
+            test.Reset();
+            yield return OpenEliteReserve(test.Board);
+            var token = test.Board.Reinforcements.Root.Q<Button>("reserve-token-gondor-Elite");
+            BeginDrag(test.Board, token);
+            yield return null;
+            CheckReserveIcon(test.Board, token);
+            LayoutTests.Save(test.Viewport, "ui454-carry-icon.png");
+            var destination = MapContourProbe.Terrain(map, "minas-tirith");
+            MapContourProbe.Carry(test.Board, destination);
+            yield return Settle();
+            var carry = map.RecruitCarry;
+            Assert.IsTrue(carry.OverMap, "Over the map it is the miniature it will be.");
+            Assert.AreEqual(DisplayStyle.None, carry.Icon.style.display.value);
+            Assert.AreEqual(DisplayStyle.Flex, carry.Piece.style.display.value);
+            Assert.AreEqual("map-hand-carried", carry.Piece.parent?.name, "Carried above the HUD, as a map figure is.");
+            Assert.IsNotNull(carry.Piece.Q(className: "army-stand"), "The miniature stands on its base.");
+            Assert.AreEqual("minas-tirith", map.DragTarget);
+            Assert.AreEqual(MapRegionEmphasis.CarriedTarget, map.Renderer.CurrentEmphasis("minas-tirith"),
+                "The lit settlement under it lights as a carried figure's target.");
+            Assert.AreEqual(DisplayStyle.Flex, map.Q("landing-mark").style.display.value, "The landing mark lies on its place.");
+            var caption = map.Q<Label>("landing-caption");
+            Assert.AreEqual("Recruit Gondor Elite", caption.text);
+            Assert.AreEqual(carry.Piece.worldBound.center.x, caption.worldBound.center.x, 2,
+                $"The caption hangs above the carried miniature ({carry.Piece.worldBound} / {caption.worldBound}).");
+            Assert.LessOrEqual(caption.worldBound.yMax, carry.Piece.worldBound.yMin + 2, "…and above its raised figure.");
+            Assert.AreEqual(1, test.Backend.Commands, "Nothing is sent while it is carried.");
+            LayoutTests.Save(test.Viewport, "ui454-carry-miniature.png");
+            MapContourProbe.Drop(test.Board, destination);
+            yield return new WaitForSecondsRealtime(.2f);
+            Assert.AreEqual(2, test.Backend.Commands, "The drop is the step, with no Confirm.");
+            Assert.AreEqual(clicked, JsonConvert.SerializeObject(test.Backend.Last.Payload), "The drop sends what the clicks send.");
+            Assert.IsFalse(carry.Active);
+            Assert.IsNull(carry.Piece, "The carried miniature hands over to the recruit's flight.");
+            Assert.IsFalse(test.Board.Root.HasPointerCapture(PointerId.mousePointerId));
+
+            test.Reset();
+            yield return OpenEliteReserve(test.Board);
+            token = test.Board.Reinforcements.Root.Q<Button>("reserve-token-gondor-Elite");
+            BeginDrag(test.Board, token);
+            yield return null;
+            MapContourProbe.Carry(test.Board, destination);
+            yield return Settle();
+            Escape(test.Board);
+            yield return Settle();
+            Assert.AreEqual(2, test.Backend.Commands, "Esc sends nothing.");
+            Assert.IsFalse(carry.Active);
+            Assert.IsNull(map.DragTarget);
+            Assert.IsFalse(token.ClassListContains("selected"), "The draft is as it was before the press: nothing is armed.");
+            Assert.IsFalse(token.ClassListContains(DraftInput.LiftedClass));
+        }
+
+        private static IEnumerator OpenEliteReserve(BoardScreen board)
+        {
+            yield return Settle();
+            MapContourProbe.ReachRegion(board.Map, "minas-tirith");
+            yield return Settle();
+            OpenReserve(board, "pelargir");
+            yield return Settle();
+            board.Hover.Close();
+            yield return Settle();
+        }
+
         [UnityTest]
         public IEnumerator EliteDragAndPoliticalEmblemNeedOnlyOneCommitEach()
         {
@@ -1229,18 +1309,27 @@ namespace Wotr.PlayTests
         {
             BeginDrag(board, source);
             yield return null;
-            // UI-393 (owner): a reserve figure travels as its own icon, and its slot shows that it was lifted.
             if (source.ClassListContains("reserve-token"))
-            {
-                var lifted = board.Root.Q<Image>("drag-figure");
-                Assert.AreEqual(DisplayStyle.Flex, lifted.style.display.value, "The figure's icon follows the pointer.");
-                Assert.AreSame(source.Q<Image>(className: "reserve-token-figure").sprite, lifted.sprite, "It is the pressed figure's own art.");
-                Assert.IsTrue(source.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
-            }
+                CheckReserveIcon(board, source);
             var destination = MapContourProbe.Terrain(board.Map, region);
             Assert.AreSame(board.Map, board.Map.panel.Pick(destination));
             MapContourProbe.Drop(board, destination);
             yield return null;
+        }
+
+        // UI-393 (owner), UI-454: over the Reserve panel a carried Reserve figure travels as its own picture, a little larger,
+        // above the HUD, and its slot shows that it was lifted.
+        private static void CheckReserveIcon(BoardScreen board, VisualElement source)
+        {
+            var carry = board.Map.RecruitCarry;
+            Assert.IsTrue(carry.Active, "The Reserve figure is carried.");
+            Assert.IsFalse(carry.OverMap);
+            Assert.AreEqual(DisplayStyle.Flex, carry.Icon.style.display.value, "Over the panel it is its slot's picture.");
+            Assert.AreSame(source.Q<Image>(className: "reserve-token-figure").sprite, ((Image)carry.Icon).sprite,
+                "It is the pressed figure's own art.");
+            // MapCarryLayer.LayerName (UI-444), read here by its value.
+            Assert.AreEqual("map-hand-carried", carry.Icon.parent?.name, "It is carried above the HUD.");
+            Assert.IsTrue(source.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
         }
 
         private static void BeginDrag(BoardScreen board, VisualElement source)

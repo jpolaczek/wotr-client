@@ -55,6 +55,17 @@ namespace Wotr.Client
             return true;
         }
 
+        // UI-454 (owner, 2026-11-03): a token taken up to be carried is armed, never placed in the chosen region nor
+        // released, so the settlements it may be dropped on light.
+        public static bool Arm(TurnDraft draft, CharacterActionOption choice, string id)
+        {
+            if (choice == null || !choice.Recruitment.Any(g => g.ReserveIds.Contains(id) && g.Targets.Any(r => CanPlace(draft, choice, id, r))))
+                return false;
+            if (draft.ReserveId != id)
+                draft.Change(_ => draft.ReserveId = id);
+            return true;
+        }
+
         public static bool Region(TurnDraft draft, CharacterActionOption choice, string region)
         {
             if (!Targets(draft, choice).Contains(region))

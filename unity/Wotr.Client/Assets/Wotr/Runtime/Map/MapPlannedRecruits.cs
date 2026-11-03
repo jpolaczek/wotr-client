@@ -14,11 +14,19 @@ namespace Wotr.Client
     {
         // The faint planned figures (Styles/Armies.uss); since UI-403 no other figure on the map is drawn faintly.
         public const string GhostClass = "planned-ghost";
+        // Their opacity (Styles/Armies.uss, .army.planned-ghost), which a recruit flying to its ghost lands at (UI-454).
+        public const float GhostOpacity = .6f;
         public event Action<string> Removed;
         private readonly MapCanvas map;
         private readonly Dictionary<string, Ghost> ghosts = new Dictionary<string, Ghost>();
         private readonly List<string> stale = new List<string>();
         private readonly HashSet<string> figureIds = new HashSet<string>();
+        // UI-454 (owner, 2026-11-03): planned recruits still flying from their Reserve slot; their ghost shows them once they
+        // land. The last placements applied, so a landing shows them again.
+        private readonly HashSet<string> withheld = new HashSet<string>();
+        private IReadOnlyList<PlannedReinforcement> placed = Array.Empty<PlannedReinforcement>();
+        private Side placedSide;
+        private bool placedInteractive;
 
         private readonly string prefix;
         private readonly bool removable;
@@ -38,8 +46,29 @@ namespace Wotr.Client
 
         // UI-416 (owner): a planned character keeps its own figure (Marker); by nation and kind alone the Balrog's planned move
         // showed a Nazgûl.
-        public void Apply(IReadOnlyList<PlannedReinforcement> placements, Side side, bool interactive) =>
-            Apply(placements.GroupBy(p => p.RegionId).ToDictionary(g => g.Key, g => Marker(g.Key, side, g.ToList())), interactive);
+        public void Apply(IReadOnlyList<PlannedReinforcement> placements, Side side, bool interactive)
+        {
+            placed = placements;
+            placedSide = side;
+            placedInteractive = interactive;
+            withheld.IntersectWith(placements.Select(p => p.UnitId));
+            Apply(placements.Where(p => !withheld.Contains(p.UnitId)).GroupBy(p => p.RegionId)
+                .ToDictionary(g => g.Key, g => Marker(g.Key, side, g.ToList())), interactive);
+        }
+
+        // UI-454: a planned recruit flies from its Reserve slot; its ghost leaves it out until it lands (Release).
+        public void Withhold(string unitId)
+        {
+            if (withheld.Add(unitId) && placed.Any(p => p.UnitId == unitId))
+                Apply(placed, placedSide, placedInteractive);
+        }
+
+        // UI-454: the recruit's flight landed (or ended): its ghost shows it, while it is still planned.
+        public void Release(string unitId)
+        {
+            if (withheld.Remove(unitId) && placed.Any(p => p.UnitId == unitId))
+                Apply(placed, placedSide, placedInteractive);
+        }
 
         // UI-294: ghosts of other figures, such as the companions a card's journey moves: one marker per region.
         public void Apply(IReadOnlyDictionary<string, ArmyMarker> markers, bool interactive)

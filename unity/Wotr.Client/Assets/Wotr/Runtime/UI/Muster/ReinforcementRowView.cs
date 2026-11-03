@@ -52,6 +52,7 @@ namespace Wotr.Client
 
         public void Apply(ReinforcementRow row, ReinforcementsState state)
         {
+            Nation = row.Nation;
             name.text = row.Name;
             Root.tooltip = Tooltip(row);
             Root.EnableInClassList("recruitable", state.Open && state.Interactive && row.CanRecruit && !row.Elsewhere);
@@ -81,6 +82,21 @@ namespace Wotr.Client
             return string.Join("\n", lines);
         }
 
+        // UI-454: the nation whose reserves this row shows.
+        public string Nation { get; private set; } = "";
+
+        // UI-454 (owner, 2026-11-03): the picture of the shown token holding a reserve figure (by id), or of a kind; null
+        // when no such token shows. A recruit's flight and a carried figure start from it.
+        public Image Art(string reserveId)
+        {
+            foreach (var pair in tokens)
+                if (shown.Contains(pair.Key) && (pair.Value.Button.userData as DraftToken)?.Id == reserveId)
+                    return pair.Value.Art;
+            return null;
+        }
+
+        public Image Art(UnitKind kind) => shown.Contains(kind) && tokens.TryGetValue(kind, out var token) ? token.Art : null;
+
         private Token TokenFor(UnitKind kind)
         {
             if (tokens.TryGetValue(kind, out var token))
@@ -94,6 +110,7 @@ namespace Wotr.Client
         private sealed class Token
         {
             public Button Button { get; }
+            public Image Art => image;
             private readonly Image image = FigureArtwork.Image(FigureAppearance.FreeRegular);
             private readonly Label count = new Label { name = "reserve-token-count", pickingMode = PickingMode.Ignore };
 

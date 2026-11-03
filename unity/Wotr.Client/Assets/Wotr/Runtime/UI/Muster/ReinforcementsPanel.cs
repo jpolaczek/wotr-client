@@ -152,6 +152,30 @@ namespace Wotr.Client
 
         public void ConfirmLegal(bool value) => legal = value;
 
+        // UI-454 (owner, 2026-11-03): the picture of a reserve figure's token while the open panel shows it — by the figure's
+        // id (a carried figure) or by its nation and kind (a recruit's flight); null otherwise.
+        public Image Art(string reserveId)
+        {
+            if (!Showing)
+                return null;
+            foreach (var view in views.Values)
+                if (view.Art(reserveId) is { } art)
+                    return art;
+            return null;
+        }
+
+        public Image Art(string nation, Wotr.Contracts.UnitKind kind)
+        {
+            if (!Showing)
+                return null;
+            foreach (var view in views.Values)
+                if (view.Nation == nation && view.Art(kind) is { } art)
+                    return art;
+            return null;
+        }
+
+        private bool Showing => IsOpen && !Appearance.Closed(Root);
+
         // UI-381: the plan may be recruited with the console's ✓.
         public bool ConfirmReady => confirmable && legal;
 

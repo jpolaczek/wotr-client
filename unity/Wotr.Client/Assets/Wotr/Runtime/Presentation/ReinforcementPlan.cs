@@ -41,5 +41,8 @@ namespace Wotr.Client
         ReinforcementPlan Build(PlayerView view, TurnDraft draft, BoardPresentation data);
         bool Choose(TurnDraft draft, PlayerView view, string id);
         bool Remove(TurnDraft draft, PlayerView view, string id);
+        // UI-454 (owner, 2026-11-03): a figure taken up to be carried is armed as its click would arm it, never placed; false
+        // when nothing arms it (a figure that already has its region).
+        bool Arm(TurnDraft draft, PlayerView view, string id);
     }
 }

@@ -20,7 +20,9 @@ mark are drawn as SVG, since they must be exact and translucent. Prompts and che
    scales the figure up and raises it; the shadow stays on the ground. No 3D scene.
 2. **Drag and click, for units and characters only** (armies, Nazgûl, companions, minions). Dice, cards, tokens and the
    reserve keep their gestures (the reserve drag is UI-393). Clicks remain the full path (R16); clicking a source lifts
-   the figure in place too.
+   the figure in place too. *Superseded for the Reserve's figures by UI-454 (owner, 2026-11-03): a Reserve figure is
+   carried onto the map on the same principle as a map figure, and a recruit placed by clicks flies from its slot; see
+   "As built (UI-454)" below.*
 3. **Two zoom levels stay.** Below the threshold the token remains, but it becomes a physical object (thickness, rim,
    contact shadow).
 4. **Scope.** Armies, characters, the Fellowship figure (look and flight; it is not dragged), settlements and control
@@ -445,6 +447,80 @@ Tests: `BoardInteractionTests.UI405EdgePanMovesTheMapUnderACarriedFigureAfterADw
 edge-pan frames (`TabletopFrameChecks.AssertCarriedWhole`: in the carry layer in front of everything on the board,
 every drawn part inside the screen, moved from under the pointer only inward and only when it would cross the edge);
 the press-lift and Esc checks find the carried piece in the board's root.
+
+**As built (UI-454, 2026-11-03, owner: "when recruiting units we want animation; if the user just picks with a click, the
+unit should glide smoothly from its Reserve slot to its proper place on the board, like drawn cards, and there should
+also be the option to drag the unit on exactly the same principle as moving it on the map").** It supersedes decision 2
+for the Reserve's figures.
+
+- **The carry layer** (`Runtime/Map/Figures/MapCarryLayer.cs`) is UI-444's layer made shared: the hand's carried pieces,
+  the carried Reserve figure and the recruits' flights stand in it, above the HUD, in map-local points; `Inward` is
+  UI-444's keep-on-screen shift.
+- **Which recruits fly** (`Runtime/Application/RecruitPlacementWatch.cs`, `RecruitFlightInteraction.cs`). Every refresh of
+  the Reserve (`ReinforcementsInteraction.Refresh`, before the panel changes) hands over the units the draft's recruitment
+  places now — a card's or an ability's plan (`ReinforcementPlan.Placements`, not the characters a plan moves), or the
+  Muster die's step (`draft.Payload.Placements`, sent at once) — with its scope (the match, the side, the decision and
+  plan or Muster). A unit not placed at the last look launches a flight; a planned one no longer placed ends its flight
+  (fade out). A new scope only sets the baseline, so a restored draft, a new decision or a reconnection flies nothing.
+- **Where it starts** (`ReserveFlightStart.OnSlot`). The slot's picture of the figure (`ReinforcementsPanel.Art(nation,
+  kind)`, the token's `reserve-token-figure` while the open panel shows it; otherwise the Reserve tab): the miniature's
+  lone figure (`MapArmyArtwork.LoneFigure`) is laid exactly over the picture's drawn part — scale = the drawn height ÷
+  the figure's height, the figure's feet on the picture's lower edge. A recruit dropped by a carry starts where the
+  carried miniature shows, held up (Lift 1 and UI-428's extra height, as `MapHandPiece.Handoff`), at the figures' scale.
+- **The flight** (`Runtime/Map/Figures/ReserveFlight.cs`, `ReserveFlights.cs`). The miniature it will be
+  (`FlightMiniature.Recruit`: the unit on a field army's base) in a `MapStand` holder with UI-404's `flight-lift` pose and
+  `flight-shadow`, named `reserve-flight-<unit id>`, classed `figure-flight`. `FlightProfile` drives it: the lift in place
+  (from a slot it fades in over the lift, rising out of the picture), the arc of `clamp(.12 × screen distance, 20, 80)`
+  px, the landing and settle; the duration is UI-404's from the board distance. The ground runs from the start to the
+  destination's point on the screen now (`Camera.ToScreen` on every layout, so a pan or zoom is followed) and the scale
+  from the start's to `Stands.FigureScale`; the last frame stands on the place at the figures' scale. Per frame: the
+  holder's translate and scale, the pose's translate and scale, the shadow's scale and opacity and the root's opacity,
+  each only when it changes; `MapCanvas.Refresh` lays them out on camera moves.
+- **A Muster recruit** lands on its force's place: `MapCanvas.UnitFeet` once the map shows the unit, before that
+  `RecruitPlace` (its side's field force there, else `LandingPlace`). At launch `MapFigureMotion.Bring(key)` (kept 5 s):
+  the view that has the unit on the board takes its arrival out of the projection's moves (no `figure-arrival` fade in
+  place, no UI-334 emergence) and tracks it as an arrival, so its force shows faintly (.25) as for any flight. The flight
+  stays on its place after landing until the map has shown the unit for a whole frame, then goes and reports `Brought`:
+  the force shows in full. A rejected receipt (`Figures.Lapse`), a disconnect, a reset, the expiry, or a newer view
+  without the unit on the board (a lone Leader removed at once) lapse it (`Lapsed`): the flight fades out in 0.2 s.
+- **A planned recruit** lands on its region's planned place (`Stands(region).Planned`), fading to the ghosts' .6 opacity
+  as it lands; its ghost leaves it out while it flies (`MapPlannedRecruits.Withhold`) and shows it once it lands
+  (`Release`). When the step that sends the plan leaves while it still flies (a ruler's last figure, whose click sends
+  the recruitment, UI-450; a ✓), `TurnInteraction.Submit` hands it over (`ReserveFlights.Send`): it flies on, in full, to
+  the place the view gives it, which waits for it as a Muster recruit's does.
+- **Carried** (`Runtime/Application/ReserveCarryInteraction.cs`, `Runtime/Map/Figures/MapRecruitCarry.cs`,
+  `FigureDragRoute`). DraftInput asks one `IFigureDrag` (`FigureDragRoute`): a Reserve press goes to
+  `ReserveCarryInteraction`, an army or character to `FigureLiftInteraction`. Begin keeps a checkpoint and arms the
+  figure as its click would but never places or sends it (`ReinforcementsInteraction.Arm`: `MusterActions.Select`, or the
+  plan source's new `Arm` — `EventRecruitDraft.Arm`, `CharacterRecruitDraft.Arm`, a Muster plan's `RecruitDraft.Select`;
+  an Effects card's figure that already has its region, a Kings card's branch, The Black Captain Commands and Gothmog's
+  ability arm nothing). Without a lit target, or when nothing arms it, the checkpoint is put back and the press stays
+  UI-393's drag. Accepted, the slot takes `drag-lifted` and the figure is carried in the carry layer: over the Reserve and
+  the HUD as its picture 1.15× (`carried-recruit-icon`, centred under the pointer by translate); over the map (the pick
+  is the map or a figure on it) as its miniature (`carried-recruit`, the hand's `figure-hand-piece figure-lifted
+  hand-carried` pose: 1.10, 34 points up, the shadow on the table), its feet under the pointer, shifted inward to show
+  whole. The region under it is the drag target (`SetDragTarget`: `CarriedTarget` on a lit settlement); on a lit one the
+  landing mark lies on the place its recruit would stand on (the planned place for a plan) with the caption "Recruit
+  <figure>" (`TooltipText.Unit`) above the miniature; edge pan samples the pointer. Switching looks writes display only
+  when it crosses the map's edge.
+- **Drop and cancel.** A drop on a lit target while nothing is busy calls `TurnInteraction.ChooseRegion` — the region's
+  click — so the step and payload are the click's; the recruit's flight starts where the carried miniature showed
+  (`RecruitFlightInteraction.Carried`). A drop that places nothing, Esc, focus loss, a cancelled pointer or a new revision
+  put the checkpoint back and the picture glides back to its slot (`carried-recruit-returning`, 0.22 s under
+  `.motion-enabled`) and goes.
+- **Reduced motion and Skip animations**: no flight is launched (`MapCanvas.MotionReduced`), the Muster recruit arrives in
+  place as before and a planned ghost shows at once; a flight in the air lands at once.
+- **Tests.** EditMode `RecruitPlacementWatchTests` (the baseline, new and taken-back recruits, a new scope),
+  `ReserveFlightTests` (a Muster recruit arrives with its flight and never again in place; a view without it lapses it; a
+  planned ghost shows it only once its flight lands; the start on the slot's picture at its scale). PlayMode
+  `MusterNetworkTests.UI454AClickedRecruitFliesFromItsReserveSlotToItsPlace` (on the slot's picture first, in the carry
+  layer, nearer its place frame by frame, landed within 2 px at the figures' scale, gone, no arrival in place; pictures
+  `ui454-flight-rise`, `-arc`, `-landed`) and `UI454UnderReducedMotionARecruitIsPlacedWithoutAFlight`;
+  `BoardInteractionTests.UI454AReserveFigureIsCarriedAsAMiniatureAndItsDropSendsTheClicksStep` (the icon over the panel,
+  the miniature in the carry layer over the map, `CarriedTarget`, the landing mark with "Recruit Gondor Elite", the drop's
+  payload equal to the clicks', Esc sends nothing; pictures `ui454-carry-icon`, `ui454-carry-miniature`) and
+  `EliteDragAndPoliticalEmblemNeedOnlyOneCommitEach`; `RulerTokenMenuTests.DainsIronGuardStartsFromItsIconInTheCharactersTab`
+  (Iron Guard's figure carried over the map, `ui454-iron-guard-carried`); `ExpansionAbilityNetworkTests`.
 
 ## Flight profile (UI-404)
 
@@ -1014,4 +1090,5 @@ flows, Kings03/04, GuideDraw, CharacterRoster, BoardCompletion and others). Of t
 - ARMY_MAP_UX: "armies are never dragged" — idem.
 - BOARD_INTERACTION_UX (UI-105, UI-128 sections) — idem.
 - Dice, cards, tokens and reserves keep their gestures; so do the region panel's figure chips, the Characters rows and
-  the Fellowship portraits.
+  the Fellowship portraits. *Reserves: superseded by UI-454 (owner, 2026-11-03) — a Reserve figure is carried onto the map
+  as a miniature, and a clicked recruit flies from its slot ("As built (UI-454)").*

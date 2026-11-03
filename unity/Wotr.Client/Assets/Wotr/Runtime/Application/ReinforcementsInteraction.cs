@@ -19,6 +19,8 @@ namespace Wotr.Client
         private readonly Action<ComponentAction> ability;
         private readonly Action<Action> complete;
         private readonly BranchCarry carry;
+        // UI-454: a recruit just placed flies from its Reserve slot to the map.
+        private readonly RecruitFlightInteraction flights;
         private PlayerView view;
         private TurnDraft draft;
         private List<ComponentAction> abilities = new List<ComponentAction>();
@@ -31,7 +33,7 @@ namespace Wotr.Client
         public bool Planning => view != null && ReinforcementPlans.Active(view, draft);
 
         public ReinforcementsInteraction(BoardScreen board, Action<Action> edit, Func<bool> busy, Func<bool> muster, Func<string, bool> recruitAtOnly,
-            Action<ComponentAction> ability, Action<Action> complete, BranchCarry carry)
+            Action<ComponentAction> ability, Action<Action> complete, BranchCarry carry, RecruitFlightInteraction flights)
         {
             this.board = board;
             this.edit = edit;
@@ -41,6 +43,7 @@ namespace Wotr.Client
             this.ability = ability;
             this.complete = complete;
             this.carry = carry;
+            this.flights = flights;
             board.Reinforcements.FigureChosen += Choose;
             board.Reinforcements.PlacementRemoved += Remove;
             board.Hover.Panel.SettlementInspected += Inspect;
@@ -57,10 +60,39 @@ namespace Wotr.Client
             // UI-271: Gothmog's ability stands beside the Muster rows while the die chosen can pay it.
             abilities = plan == null && muster() && draft.Kind == null
                 ? ComponentActions.For(view, draft).Where(CharacterAbilityPlaces.InReserve).ToList() : new List<ComponentAction>();
+            // UI-454: measured from the slots as they stand before this refresh changes the panel.
+            flights.Refresh(view, Recruits(plan), plan != null);
             board.Reinforcements.Apply(State(plan));
             board.Map.PlannedRecruits.Apply(plan?.Placements ?? Nothing, view.You, !busy());
             if (plan != null && !busy() && carry.Take(view, BranchCarry.Reserve) is { Length: > 0 } figure)
                 board.Root.schedule.Execute(() => PlanCarried(figure));
+        }
+
+        // UI-454: the units the draft's recruitment places now — a plan's (not the characters a plan moves), or the Muster
+        // die's step.
+        private IReadOnlyList<PlannedReinforcement> Recruits(ReinforcementPlan plan)
+        {
+            if (plan != null)
+                return plan.Placements.Where(placement => placement.CharacterId.Length == 0).ToList();
+            return MusterRecruiting() && draft.Kind == CommandKind.Recruit
+                ? ReinforcementPlans.Placements(view, board.Presentation, draft.Payload.Placements)
+                : Nothing;
+        }
+
+        // UI-454 (owner, 2026-11-03): a Reserve figure taken up to be carried is armed as its click arms it, but never placed
+        // or sent, so its lit settlements are where it may be dropped (no camera move: the player is carrying it). False for
+        // a figure only a click chooses — a Kings card's branch, The Black Captain Commands, Gothmog's ability, a card's
+        // figure that already has its region — or when nothing arms it.
+        public bool Arm(string id)
+        {
+            if (view == null || busy() || GothmogReinforcements.Ability(abilities, id) != null || BranchNation().Length > 0 ||
+                CaptainRecruit())
+                return false;
+            if (Planning)
+                edit(() => ReinforcementPlans.Arm(draft, view, id));
+            else if (muster())
+                edit(() => MusterActions.Select(draft, view, board.ActionDie, id));
+            return draft.ReserveId == id;
         }
 
         // UI-278 (D15): the figure whose click chose a Kings card's recruit is planned in its next step, when offered; a
