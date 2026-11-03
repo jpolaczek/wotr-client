@@ -3402,3 +3402,22 @@ analogous effects.
 
 Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget`; PlayMode `GlowingHintAuditTests` (Monsters
 Roused's halves, the deck choices), `MusterNetworkTests`, `FateCardsNetworkTests`.
+
+<a id="placement-targets-pulse--ui-453"></a>
+## Placement targets pulse — UI-453 (2026-11-03)
+
+The owner: "when choosing regions for Monsters Roused the regions are green but do not stand out enough; they should
+pulse". Over UI-452's stronger fill, every placement target (a recruitment, Monsters Roused's halves and plan, a ruler's
+recruitment, the Council's homelands) breathes: one retained layer above the region fills (`MapPlacementPulse`) paints
+them a bright green whose opacity fades fully in and out in the targets' 750 ms rhythm, beside their pulsing edge
+(UI-224). It is a class toggle with an opacity transition under .motion-enabled — Reduced motion keeps the regions lit
+and still — and the layer repaints only when the set changes, never while the camera moves. A move's targets keep their
+still fill.
+
+Playtest (owner's checklist):
+- [ ] `fate-card-monsters-roused`. Expect: both halves' regions green and breathing, then the plan's regions likewise;
+  with Skip animations on they stay brightly lit and still.
+
+Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget` (a placement target pulses, a move's does
+not, no repaint for the same set); PlayMode `GlowingHintAuditTests` (Monsters Roused), `MusterNetworkTests`,
+`FateCardsNetworkTests`, `MapContourRenderingTests`, `CouncilHomelandPanelNetworkTests`.

@@ -53,6 +53,15 @@ namespace Wotr.EditorTests
             map.Redraw();
             Assert.AreEqual(MapRegionEmphasis.Target, map.Renderer.CurrentEmphasis("osgiliath"));
             Assert.AreEqual(MapRegionEmphasis.PlacementTarget, map.Renderer.CurrentEmphasis("erebor"));
+            // UI-453 (owner): a placement target pulses; a move's target does not; the layer repaints only on a new set.
+            Assert.IsTrue(map.Renderer.PlacementPulses("erebor"));
+            Assert.IsFalse(map.Renderer.PlacementPulses("osgiliath"));
+            var repaints = map.Renderer.PlacementPulseRepaints;
+            map.Redraw();
+            Assert.AreEqual(repaints, map.Renderer.PlacementPulseRepaints, "The same set does not repaint.");
+            map.DraftOverlay.PlacementTargets.Clear();
+            map.Redraw();
+            Assert.IsFalse(map.Renderer.PlacementsPulsing, "No placement, no pulse.");
         }
 
         [Test]
