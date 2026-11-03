@@ -38,6 +38,9 @@ namespace Wotr.PlayTests
             Assert.IsTrue(board.OwnDice.Q<Button>(die).ClassListContains("fellowship-cost"));
             PointerGestureEvents.ClickAt(board.OwnDice.Q<Button>(die));
             await room.Settle();
+            // UI-461: the Will die moves or hides the Fellowship as a Character result, chosen in the console.
+            WillFaceGestures.Turn(room.Fp, DieFace.Character);
+            await room.Settle();
             Assert.IsTrue(board.Fellowship.Status.ClassListContains("legal-target"), "The plaque offers the Fellowship action.");
             Assert.IsTrue(board.Edges.Corner.ClassListContains(BoardEdgeLayout.UsableClass), "UI-290: the whole corner tab lights up.");
             Assert.AreEqual(DisplayStyle.Flex, board.Edges.Corner.Q("edge-corner-usable").resolvedStyle.display);

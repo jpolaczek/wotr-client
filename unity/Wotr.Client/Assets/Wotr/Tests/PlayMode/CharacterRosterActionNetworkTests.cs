@@ -133,10 +133,13 @@ namespace Wotr.PlayTests
             await ComponentGestures.Cost(room, room.Sh, cost.DieId);
             await Inspect(room, room.Sh, cost.RequiredCharacterId);
             Assert.IsFalse(Picked(room.Sh, cost.RequiredCharacterId), "The portrait must not choose Use Balrog automatically.");
-            // UI-440 (owner): the window's former Actions row stands in the icon row: Balrog Activation's variants side by side,
-            // the move alone lit; the widest row of any card stays one row in every layout.
+            // UI-459 (owner, 2026-11-03): no icon in the window moves him: Balrog Activation keeps its one slot, dark while he
+            // is active, and his figure on the map starts his move alone; the row stays one row in every layout.
             await Widest(room, room.Sh);
-            await UseVariant(room, room.Sh, "character-ability-balrog-activation-MoveShadowCharacters");
+            var inspector = board.Characters.Inspector;
+            Assert.IsNull(inspector.Root.Q<Button>("character-ability-balrog-activation-MoveShadowCharacters"));
+            Assert.IsFalse(inspector.Root.Q<Button>("character-ability-balrog-activation").ClassListContains(ChoiceGlow.ClassName),
+                "Nothing in the window moves the Balrog.");
             board.Characters.Close();
             await Pick(room, room.Sh, cost.RequiredCharacterId);
             var nazgul = board.View.Units.Single(u => u.Location == "moria" && u.Kind == UnitKind.Nazgul).Id;
@@ -323,25 +326,12 @@ namespace Wotr.PlayTests
             LayoutTests.Save(client.Viewport, "ui440-used-" + shots + ".png");
         }
 
-        // UI-440 (owner): a variant's icon is used like any other: lit, its click starts the variant's choice on the board.
-        private static async Task UseVariant(MatchTestRoom room, MountedMatchClient client, string icon)
-        {
-            var inspector = client.Board.Characters.Inspector;
-            Assert.IsEmpty(inspector.Actions.Query<Button>().ToList().Where(button => button.name.StartsWith("component-")),
-                "No separate ability button stands in the window.");
-            var button = inspector.Root.Q<Button>(icon);
-            Assert.IsTrue(button.ClassListContains(ChoiceGlow.ClassName), icon);
-            Assert.IsNotNull(button.Q(className: IconButton.BadgeClass), "A variant wears its badge.");
-            PointerGestureEvents.ClickAt(button);
-            await room.Settle();
-        }
-
-        // UI-440 (owner, 2026-11-02): the Balrog's seven icons (Balrog Activation's four variants with his three other
-        // abilities) stand in one row, each ability's icons adjacent in its group, in four layouts.
+        // UI-440 (owner, 2026-11-02): the Balrog's icons stand in one row, each ability's icons adjacent in its group, in four
+        // layouts; UI-459 (owner, 2026-11-03): Balrog Activation keeps one slot beside his three other abilities.
         private static async Task Widest(MatchTestRoom room, MountedMatchClient client)
         {
             var inspector = client.Board.Characters.Inspector;
-            Assert.AreEqual(7, inspector.Abilities.Icons.Count(), "The most icons a card shows.");
+            Assert.AreEqual(4, inspector.Abilities.Icons.Count(), "Balrog Activation's one slot and his three other abilities.");
             await SkillIconLayouts.Capture(room, client, "widest-balrog", () => OneRow(inspector));
         }
 

@@ -25,7 +25,7 @@ Controls intended exclusively for the other side are hidden, also in the panels 
 <a id="u02--kość-gest-komenda"></a>
 ## U02 — die, gesture, command
 
-We choose a specific die. Army/Muster and Will of the West immediately highlight all legal applications (UI-28), without separate choice of categories. A gesture on army, reserve, track, character, Fellowship, card or deck determines the use of the same dice. The usual Army movement by Will uses Army; the character's journey uses Character. Special abilities and valuable resources still require your own open choice. Tooltip dice provides applications without redundant Action die/Available. The paid sequence retains the type and budget saved; the unsent intent can be replaced by another object.
+We choose a specific die. Army/Muster immediately highlights all legal applications (UI-28), without separate choice of categories. Since UI-461 (owner, 2026-11-03) a Will of the West die first lights only what it does as itself (Gandalf the White's or Aragorn's entry, the Balrog's deactivation, a removal paid with Will of the West, any-die uses); the console's face menu turns it into Character, Army, Muster or Event, and then it lights exactly what such a die does ([UI-461](#ui-461)). A gesture on army, reserve, track, character, Fellowship, card or deck determines the use of the same dice. Special abilities and valuable resources still require your own open choice. Tooltip dice provides applications without redundant Action die/Available. The paid sequence retains the type and budget saved; the unsent intent can be replaced by another object.
 
 Clicks are the full path of each operation; drag is the shortcut. The end-click of the target or legal drop takes a complete step without additional Confirm. An incomplete gesture collects the next required selection. A wrong target does not release the resource. A preview of known effects appears before the gesture, without promising the result of RNG. Clicking sends through the previously secure sender and retriever; UI does not approve the result itself.
 
@@ -164,7 +164,7 @@ Policy: click or Enter/Space On the left, the Politics page opens all tracks on 
 
 Muster, Army/Muster or Will → arrow on the next field of the nation, all in the same panel as Activate ( UI-26 . from UI-144 (user decision) we do not mark the nation first: after choosing the cost of each own nation that die can move according to the server option, immediately shows the arrow “→” in the next field, and its click takes a step without Confirm. A click of a token such a nation takes the same step. Drag of the token into the field becomes a shortcut: distinguishes the target of the drag chip and drop sends a step; canceling or illegal drop does not change anything. The nations of the opponent do not have arrows. There is no separate inspector, the list action or the Confirm button. A chip click without legal context leaves the panel; the tooltip explains the state and requirements, does not choose as the player dice The restored draft distinguishes the arrow of its nation. From UI-148 played card who is waiting for the choice of the nation (e.g. the Wisdom of Elrond, `NationTargets` server), opens Politics with highlighted nations, once per play; closed by the player the panel does not return on another revision. The token click selects the nation so far. The policy council uses the same tracks after the open selection of its token action , without a replacement dice A passive nation can approach the field before the war.
 
-UI-27 removes the former lower renderer of the narodu/toru. selection No complete cost or restore the draft does not switch the policy to the bottom panel: a short tip points to a specific dice. UI-28 removes an additional selection of its categories. Track, token and target remain exclusively in the Politics. Recovery of the uncertain response of the server retains its own message and Check result.
+UI-27 removes the former lower renderer of the narodu/toru. selection No complete cost or restore the draft does not switch the policy to the bottom panel: a short tip points to a specific dice. UI-28 removes an additional selection of its categories; UI-461 brings it back for Will of the West only, as the console's face menu (a Will die moves a nation as a Muster result). Track, token and target remain exclusively in the Politics. Recovery of the uncertain response of the server retains its own message and Check result.
 
 From UI-144 Actiate stands without clicking on any passive nation that the server allows to activate (Narya); it is available when selected die can pay, otherwise excluded with explanation. Narya performs existing legal action with selected dice ; tooltip warns of the handover of the Ring, issue dice and entering the war. A nation without such an option has no button, and the source of activation explains the tooltip of its token. There is no any activation of the nation dice Muster or Will. Automatic effects Fellowship , Companion , enemy actions and effects cards Still running the server.
 
@@ -3623,3 +3623,87 @@ Playtest (owner's checklist):
 - [ ] `kings-event-return-to-valinor` (the Shadow plays it; then the Free Peoples). Expect: the Lórien losses window is
   about as wide as its heading and figures, with no wide empty area; Apply losses works as before.
 - [ ] `lords-card-madness-and-horror-event` (or any other event with losses). Expect: the same fitted window.
+
+<a id="ui-461"></a>
+## Will of the West is itself until the console turns it — UI-461 (2026-11-03)
+
+The owner's playtest of `lords-fp-balrog-deactivate` (translated): "Will of the West can turn into another die but can also
+be used by itself, e.g. for Gandalf's skill. Now we don't choose which die WotW turns into: all possible options are lit
+and the die is chosen from what we do. That's a problem because there are different possibilities, e.g. an army move with
+a leader can be done with more than one die. We need the previous small menu at the bottom (console) that let us choose the
+new face WotW turns into, while the additional effects coming directly from WotW (like deactivating the Balrog) light on
+the table; if the player picks one of them the die is spent and the player needn't choose anything." It replaces UI-28's
+"all uses at once" for Will of the West only; Army/Muster keeps it.
+
+- **As itself** (`WillOfTheWestUses`, presentation only — the server lists the dice of every use and validates every
+  payment): a chosen Will die lights Gandalf the White's and Aragorn's entry, the Balrog's deactivation (LORDS pp. 23–25:
+  a Will of the West result, or a Character result while Gandalf the Grey is in his region; the server pays Will of the
+  West as itself), the removals of Denethor's Folly, The King's Welcome, the Gates, the Palantír cards and the Lore without
+  a Ring, and what any die pays (a political ability, a Council messenger, Narya, a region's protection). One click on such
+  an object spends the die; the console's hint says so.
+- **The face menu** (`ConsoleFaceMenu`, `WillFaceChoices`): four fixed medallions — Character, Army, Muster, Event — at
+  the start of the console's line, beside the hint (where the line is too narrow for both, as with Lords at 1366 × 768 and
+  125 %, in the strip just above the console, as TEST-15's options); a result with no use now is disabled, not hidden. A click turns the die
+  into that result: the board lights exactly what such a die does (UI-389) and the as-itself uses go dark. A second click
+  on the chosen result, or ↶, makes it Will of the West itself again; a second click on the die releases it. Details:
+  [TURN_CONSOLE_UX](TURN_CONSOLE_UX.md#ui-461).
+- **The cost the server gets**: the chosen result is a local part of the draft (`TurnDraft.WillFace`, saved with it, never
+  sent); the command carries it as its cost — an army move's `MovementCost` (Army: up to two moves; Character: one move of
+  a led army), a card's `CardCost`, a draw, a recruitment or a political step. A started action names its result, so a
+  restored draft needs no menu (`ActionDieContext.BindCost`). No contract or server change.
+
+Screenshots: `ui461-as-itself-{1366,1920}-{1.00,1.25}.png` (the menu and the lit Balrog), `ui461-will-character.png`,
+`ui461-will-army.png`, `ui136-will-options.png`.
+
+Tests: EditMode `WillFaceTests`, `DieOptionsTests`, `ContextInteractionTests`, `CardActionTests`, `FellowshipDraftTests`,
+`TravelActionTests`, `PoliticalActionTests`; PlayMode `WillOfTheWestFaceNetworkTests` (`lords-fp-balrog-deactivate`:
+deactivation with one click, a Character and an Army march, Back, the menu's layout in four sizes),
+`MultiUseDiceNetworkTests`, `BoardInteractionTests`, `T22BoardNetworkTests`, `FellowshipPanelNetworkTests`,
+`ExpansionAbilityNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `lords-fp-balrog-deactivate` (Free Peoples). Click the Will of the West die. Expect: four medallions at the start of
+  the console's line, none pressed; no army glows; the Balrog's figure in Dimrill Dale glows with "Click to deactivate the
+  Balrog". Click it: the die is spent and the Balrog is eliminated, with no menu choice.
+- [ ] Same scenario, a fresh start: click the Will die, then Character in the menu. Expect: Character stays pressed;
+  Gandalf, the Fellowship and led armies light; the Balrog's figure goes dark. Click Character again (or ↶): the die is
+  Will of the West itself again.
+- [ ] Any base-game action phase with a Will of the West die and an army with a leader (e.g. Minas Tirith): choose the
+  die, then Army, click the army and a region — the move leaves one more army move (Finish ends it); start again with
+  Character instead — one move of the led army spends the die.
+
+<a id="ui-459"></a>
+## The Balrog's force marks who goes — UI-459 (2026-11-03)
+
+The owner's playtest of `lords-sh-use-balrog-active` (translated): "Moving the Balrog alone or with the army should not be
+chosen by clicking the skill icon in different versions; when we click the units a window with them opens where we mark
+who goes and who doesn't, then the move is done as always, by click or drag."
+
+- **The die is its ability** (`ActionDieContext.Implied`): when every movement cost the server offers a die names one
+  ability — the Balrog die's Use Balrog — choosing the die binds it, so his force lights on the map with no icon first.
+  Balrog Activation's move, attack and move-alone variants are gone from the Characters window and the region panel
+  (`AbilityVariants`, `ComponentActions`); its one slot keeps the activation (level 0) and the Free Peoples'
+  deactivation. Great Sorcery and the Mouth of Sauron keep their icons.
+- **One selection** (`BalrogSelection`): a click on his army marks every figure that can move (UI-127) and opens his
+  region's panel, where a click leaves a figure behind or takes it along. With only the Balrog marked he moves alone (the
+  server's travel of the Balrog, `LordsArmyCosts.ValidTravel`) and his route's regions light; with soldiers marked too he
+  moves or attacks with them (an army move whose Character cost includes him, `ValidArmy`); soldiers without him have no
+  target; the Nazgûl never travels with him (no army unit, no target). The move is then made as always: a click on a
+  lit region, or the Balrog's miniature carried there (UI-405). Server unchanged.
+- The console's hint: "Click the Balrog’s army to select all of it · mark who goes in its panel; the Balrog alone moves by
+  himself".
+
+Screenshots: `ui459-army-marked.png`, `ui459-alone-marked.png`.
+
+Tests: EditMode `BalrogSelectionTests`, `ComponentActionTests`; PlayMode `BalrogMoveNetworkTests`
+(`lords-sh-use-balrog-active`: alone by the panel and a click, alone carried, the whole army's attack and the army without
+him), `ExpansionCostNetworkTests`, `CharacterRosterActionNetworkTests`.
+
+Playtest (owner's checklist):
+- [ ] `lords-sh-use-balrog-active` (Shadow). Click the Balrog die. Expect: no Balrog icon lights in the Characters tab or
+  the region panel; the Moria army glows. Click it: the panel lists the Balrog and his Orcs, all marked. Click each Orc to
+  leave it behind: the Balrog alone stays marked and his reachable regions light; click one — he moves alone, the Orcs stay.
+- [ ] Same scenario, a fresh start: click the die, then carry the Balrog's miniature to a lit region. Expect: he moves
+  alone with that drop.
+- [ ] Same scenario, a fresh start: click the die and the Moria army, then Dimrill Dale. Expect: the whole force attacks
+  the Elves. Unmarking the Balrog first darkens Dimrill Dale: his soldiers move only with him.

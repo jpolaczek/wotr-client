@@ -113,6 +113,16 @@
     text-overflow: ellipsis;
 }
 
+/* UI-461 (owner, 2026-11-03): the Will of the West face menu stands at the start of the hint's line, in the hint's
+   height: four medallions (the Elven Ring picker's .ring-face) that never resize the console; the chosen result is pressed in. */
+.console-line > .console-will-faces { flex-shrink: 0; }
+.console-will-faces { height: 38px; min-height: 38px; max-height: 38px; margin: 6px 0 0 4px; flex-direction: row; align-items: center; }
+#board-screen .console-will-faces .will-face { margin: 0 2px; }
+#board-screen .console-will-faces .will-face.will-face-chosen { background-image: resource("Wotr/Art/UI/dice/medallion-free-selected"); }
+/* A line too narrow for the medallions beside the hint (Lords or Kings at 1366×768 and 125 %) raises them into the strip
+   above the console (ConsoleOptionsFit), at the same size. */
+.console-options-strip > .console-will-faces { margin: 0 4px; }
+
 /* UI-214: a card's object-less options take the hint's place and size: up to three buttons in one row. */
 .console-options { height: 38px; min-height: 38px; max-height: 38px; margin: 6px 4px 0 6px; flex-direction: row; align-items: center; }
 /* TEST-15: options too wide for the console's line stand in a strip just above the console, at their full text; the

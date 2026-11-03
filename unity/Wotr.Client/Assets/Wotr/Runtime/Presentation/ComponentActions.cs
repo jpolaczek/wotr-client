@@ -12,8 +12,9 @@ namespace Wotr.Client
                 yield break;
             var council = ResourcePresentation.CouncilPending(draft) ? draft.Payload.CouncilTokenId : "";
             var locations = view.Characters.ToDictionary(c => c.Id, c => c.Location);
+            var die = ActionDieContext.Of(view, draft);
             foreach (var option in DraftOptions.All(view, draft))
-                foreach (var item in Owners(view, draft, option))
+                foreach (var item in Owners(view, draft, option, die))
                 {
                     if (council.Length > 0)
                     {
@@ -52,9 +53,13 @@ namespace Wotr.Client
             return printed == null || printed == character.Title ? "" : printed;
         }
 
-        private static IEnumerable<ComponentAction> Owners(PlayerView view, TurnDraft draft, ActionOption option)
+        // UI-461 (owner, 2026-11-03): a Will die lights what it pays as itself, or as the result the face menu chose.
+        // UI-459 (owner, 2026-11-03): a die that is its ability (the Balrog die's Use Balrog) moves on the map, so its
+        // moves stand as no icon.
+        private static IEnumerable<ComponentAction> Owners(PlayerView view, TurnDraft draft, ActionOption option, ActionDieContext context)
         {
             var die = draft.Payload.DieId;
+            var implied = context.Implied ? context.AbilityId : "";
             if (CharacterDraft.UsesCharacters(option.Kind))
                 foreach (var character in option.CharacterActions)
                     yield return new ComponentAction
@@ -67,9 +72,9 @@ namespace Wotr.Client
                         Badge = option.Kind == CommandKind.EnterCharacter ? "" : AbilityBadges.For(option.Kind, character.AbilityId),
                         Definition = CharacterLibrary.Version(view, character.CharacterId),
                         Detail = TooltipText.Parts(character.Title, character.Detail),
-                        Character = character, Enabled = character.Dice.Contains(die)
+                        Character = character, Enabled = character.Dice.Contains(die) && context.Takes(option.Kind, character)
                     };
-            foreach (var cost in option.MovementCosts.Where(c => c.AbilityId.Length > 0 && c.DieId == die))
+            foreach (var cost in option.MovementCosts.Where(c => c.AbilityId.Length > 0 && c.DieId == die && c.AbilityId != implied))
                 yield return new ComponentAction
                 {
                     Key = option.Kind + "-" + cost.AbilityId,
@@ -80,7 +85,7 @@ namespace Wotr.Client
                     Badge = AbilityBadges.For(option.Kind, cost.AbilityId),
                     Definition = CharacterLibrary.Version(view, cost.RequiredCharacterId.Length > 0 ? cost.RequiredCharacterId : "base.character.mouth-of-sauron"),
                     Detail = (CharacterAbilityLibrary.Title(cost.AbilityId) ?? FigureGrid.Name(cost.AbilityId)) + " · " + TravelLabel(option.Kind),
-                    AbilityId = cost.AbilityId, Movement = cost, Enabled = true
+                    AbilityId = cost.AbilityId, Movement = cost, Enabled = !context.Will || context.Supports(cost.Face)
                 };
             if (option.RulerTravel != null && option.RulerTravel.Dice.Contains(die))
                 yield return new ComponentAction
@@ -125,7 +130,7 @@ namespace Wotr.Client
                 {
                     Key = "remove-" + id, Owner = CardLibrary.Title(id), Symbol = "×", CardId = id,
                     Detail = "Remove " + CardLibrary.Title(id) + " · Spend the selected die and any Ring or cards its removal needs",
-                    Enabled = option.EligibleDice.Contains(die)
+                    Enabled = option.EligibleDice.Contains(die) && (!context.Will || WillOfTheWestUses.Pays(option.Kind, context.WillFace))
                 };
         }
 

@@ -14,26 +14,33 @@ namespace Wotr.Client
     // The strip stands on the bottom row's fixed top edge (Console.uss); only its left edge follows the status column. Text
     // is measured and the strip placed outside layout callbacks (doing either inside one would start another layout pass),
     // only while options or committed steps are shown and only when the line's width, the steps or the options change.
+    // UI-461 (owner, 2026-11-03): the Will of the West face menu stands in the strip too when the line cannot hold its four
+    // medallions beside a readable hint (a Lords or Kings game at 1366×768 and 125 %).
     internal sealed class ConsoleOptionsFit
     {
         private const float TrailShare = .45f;
         // Moving the options changes the console's width a little; they come back to the line only with this much room
         // to spare, so the choice never flips back and forth.
         private const float Hysteresis = 24;
+        // The hint keeps at least this much of the line beside the face menu.
+        private const float HintRoom = 120;
         private readonly VisualElement line;
         private readonly VisualElement trail;
         private readonly VisualElement options;
+        private readonly VisualElement faces;
         private readonly IVisualElementScheduledItem measure;
 
         public VisualElement Strip { get; } = new VisualElement { name = "console-options-raised" };
         public bool Raised { get; private set; }
         public bool TrailRaised { get; private set; }
+        public bool FacesRaised { get; private set; }
 
-        public ConsoleOptionsFit(VisualElement line, VisualElement trail, VisualElement options)
+        public ConsoleOptionsFit(VisualElement line, VisualElement trail, VisualElement options, VisualElement faces)
         {
             this.line = line;
             this.trail = trail;
             this.options = options;
+            this.faces = faces;
             Strip.AddToClassList("console-options-strip");
             Strip.style.display = DisplayStyle.None;
             measure = line.schedule.Execute(Measure);
@@ -48,7 +55,7 @@ namespace Wotr.Client
             if (Active())
                 measure.ExecuteLater(0);
             else
-                Place(false, false);
+                Place(false, false, false);
         }
 
         private void Changed(GeometryChangedEvent evt)
@@ -58,22 +65,27 @@ namespace Wotr.Client
         }
 
         // Options or committed steps are shown, or something still stands in the strip.
-        private bool Active() => Shown() || Visible(trail) || Raised || TrailRaised;
+        private bool Active() => Shown() || Visible(trail) || Visible(faces) || Raised || TrailRaised || FacesRaised;
 
         private void Measure()
         {
             if (!Shown())
             {
-                Place(false, TrailTooWide());
+                Place(false, TrailTooWide(), FacesTooWide());
                 return;
             }
             var spare = Available() - Needed();
             var raise = Raised ? spare < Hysteresis : spare < 0;
-            Place(raise, raise && Visible(trail) && Steps() > line.contentRect.width);
+            Place(raise, raise && Visible(trail) && Steps() > line.contentRect.width, FacesTooWide());
         }
 
-        private void Place(bool raise, bool liftTrail)
+        private void Place(bool raise, bool liftTrail, bool liftFaces)
         {
+            if (liftFaces != FacesRaised)
+            {
+                FacesRaised = liftFaces;
+                (liftFaces ? Strip : line).Insert(liftFaces ? 0 : line.IndexOf(trail) + 1, faces);
+            }
             if (raise != Raised)
             {
                 Raised = raise;
@@ -84,8 +96,9 @@ namespace Wotr.Client
                 TrailRaised = liftTrail;
                 (liftTrail ? Strip : line).Insert(0, trail);
             }
-            Strip.style.display = Raised || TrailRaised ? DisplayStyle.Flex : DisplayStyle.None;
-            if (Raised || TrailRaised)
+            var strip = Raised || TrailRaised || FacesRaised;
+            Strip.style.display = strip ? DisplayStyle.Flex : DisplayStyle.None;
+            if (strip)
                 AlignLeft();
         }
 
@@ -97,6 +110,21 @@ namespace Wotr.Client
             var share = line.contentRect.width * TrailShare;
             return TrailRaised ? Steps() + Hysteresis > share : Steps() > share;
         }
+
+        // UI-461: the shown face menu with less room in the line than its medallions and the hint's minimum; back in the line
+        // only with room to spare.
+        private bool FacesTooWide()
+        {
+            if (!Visible(faces))
+                return false;
+            var steps = Visible(trail) && !TrailRaised ? Mathf.Min(line.contentRect.width * TrailShare, Steps()) : 0;
+            var room = line.contentRect.width - steps - FacesWidth() - HintRoom;
+            return FacesRaised ? room < Hysteresis : room < 0;
+        }
+
+        // The medallions at their fixed size with their margins, and the menu's own.
+        private float FacesWidth() =>
+            faces.Children().Sum(slot => slot.resolvedStyle.width + Margins(slot)) + Margins(faces);
 
         private bool Shown() => options.style.display == DisplayStyle.Flex && options.childCount > 0;
 
@@ -112,7 +140,8 @@ namespace Wotr.Client
         private float Available()
         {
             var steps = Visible(trail) ? Mathf.Min(line.contentRect.width * TrailShare, Steps()) : 0;
-            return line.contentRect.width - steps;
+            var menu = Visible(faces) && !FacesRaised ? FacesWidth() : 0;
+            return line.contentRect.width - steps - menu;
         }
 
         // The committed steps at their full text.

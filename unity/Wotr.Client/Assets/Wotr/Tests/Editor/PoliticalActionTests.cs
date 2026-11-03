@@ -21,6 +21,8 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             var context = new ActionDieContext();
             context.Sync(view, "muster");
+            Assert.IsFalse(PoliticalActions.Advance(draft, view, context, "elves"), "UI-461: Will of the West itself takes no step.");
+            context.Sync(view, "muster", "", DieFace.Muster);
             Assert.IsTrue(PoliticalActions.Advance(draft, view, context, "elves"));
             Assert.IsTrue(PoliticalActions.Advance(draft, view, context, north.Id));
             Assert.AreEqual(north.Id, draft.Payload.NationId);

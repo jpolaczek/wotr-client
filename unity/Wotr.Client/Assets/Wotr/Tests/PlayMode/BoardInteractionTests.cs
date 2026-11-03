@@ -770,8 +770,15 @@ namespace Wotr.PlayTests
                 yield return Settle();
                 Click(test.Board.OwnDice.Q<Button>("will"));
                 yield return Settle();
+                // UI-461 (owner, 2026-11-03): Will of the West itself brings in a character; the console turns it into a
+                // Character result that moves the Fellowship.
+                Assert.IsTrue(characters.ClassListContains(DieOptionGlow.LitClass), "It can bring in a character as itself.");
+                Assert.IsFalse(fellowship.ClassListContains(DieOptionGlow.LitClass), "Moving the Fellowship takes a Character result.");
+                Assert.IsTrue(test.Board.Console.Status.Faces.Shown);
+                Click(test.Board.Console.Status.Faces[DieFace.Character]);
+                yield return Settle();
                 Assert.IsTrue(fellowship.ClassListContains(DieOptionGlow.LitClass), "Will of the West can move the Fellowship.");
-                Assert.IsTrue(characters.ClassListContains(DieOptionGlow.LitClass), "It can also bring in a character.");
+                Assert.IsFalse(characters.ClassListContains(DieOptionGlow.LitClass), "Gandalf the White enters with Will of the West itself.");
                 Assert.AreEqual(DisplayStyle.Flex, fellowship.Q(DieOptionGlow.HaloClass).resolvedStyle.display,
                     "The Fellowship plaque keeps its halo.");
                 LayoutTests.Save(test.Viewport, "ui136-will-options.png");
@@ -1229,6 +1236,9 @@ namespace Wotr.PlayTests
                 StringAssert.Contains("Fixture Special", test.Board.OwnDice.Q<Button>("special").tooltip);
                 Assert.IsEmpty(test.Board.Hover.Panel.Root.Query<Button>(className: "selected").ToList());
                 Click(test.Board.OwnDice.Q<Button>("wild"));
+                yield return Settle();
+                // UI-461: the Will die marches as the Army result the console's menu turned it into.
+                Click(test.Board.Console.Status.Faces[DieFace.Army]);
                 yield return Settle();
                 yield return MatchTestRoom.Wait(ArmyGestures.All(test.Board, "minas-tirith"));
                 yield return Settle();

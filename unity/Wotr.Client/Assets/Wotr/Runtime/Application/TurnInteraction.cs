@@ -60,6 +60,8 @@ namespace Wotr.Client
         private readonly SovereignInteraction sovereigns;
         private readonly ComponentContextInteraction components;
         private readonly ConsoleOptionsInteraction consoleOptions;
+        // UI-461: the console's Will of the West face menu.
+        private readonly WillFaceInteraction willFaces;
         private readonly TurnConsoleInteraction console;
         private readonly RingInteraction rings;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
@@ -108,6 +110,7 @@ namespace Wotr.Client
             tray.ConfirmChanged += board.Fellowship.DeclareReady;
             board.Fellowship.DeclareConfirmed += Confirm;
             context = new ActionContextInteraction(board, Edit, () => SelectionBusy);
+            willFaces = new WillFaceInteraction(board, Edit, () => SelectionBusy);
             cards = new CardContextInteraction(board, EditSelection,
                 () => SelectionBusy, ShowChoiceProblem, branchCarry);
             battles = new BattleContextInteraction(EditSelection,
@@ -455,9 +458,10 @@ namespace Wotr.Client
                 draft.Clear();
             else if (draft.Kind is CommandKind.PlayEvent or CommandKind.DrawCard)
             {
-                var cost = draft.Fork().Payload;
+                var cost = draft.Fork();
                 draft.Clear();
-                draft.Change(p => { p.DieId = cost.DieId; p.Face = cost.Face; p.AbilityId = cost.AbilityId; p.RulerTokenId = cost.RulerTokenId; });
+                draft.Change(p => { p.DieId = cost.Payload.DieId; p.Face = cost.Payload.Face; p.AbilityId = cost.Payload.AbilityId; p.RulerTokenId = cost.Payload.RulerTokenId; });
+                KeepWillFace(cost);
             }
             else
                 draft.Back();
@@ -480,12 +484,20 @@ namespace Wotr.Client
                 return false;
             Edit(() =>
             {
-                var cost = draft.Fork().Payload;
+                var cost = draft.Fork();
                 draft.Clear();
-                draft.Change(p => { p.DieId = cost.DieId; p.AbilityId = cost.AbilityId; });
+                draft.Change(p => { p.DieId = cost.Payload.DieId; p.AbilityId = cost.Payload.AbilityId; });
+                KeepWillFace(cost);
                 EnsureMandatoryDraft();
             });
             return true;
+        }
+
+        // UI-461: a step undone back to the die keeps the result its Will of the West face menu chose.
+        private void KeepWillFace(TurnDraft before)
+        {
+            if (before.WillFace.HasValue)
+                draft.TurnWill(before.WillFace);
         }
 
         private bool TryBack()
@@ -922,6 +934,11 @@ namespace Wotr.Client
                 tray.Preview(false, "Choose a highlighted object · Its gesture determines how this die is used.");
                 return;
             }
+            if (WillFaceChoices.Shown(view, draft, board.ActionDie) && !board.ActionDie.WillFace.HasValue)
+            {
+                tray.Preview(false, WillFaceChoices.Hint);
+                return;
+            }
             if (directArmy)
             {
                 tray.Preview(false, notice.Length > 0 ? notice : ArmyActionTargets.Hint(draft, view, board.ActionDie));
@@ -992,6 +1009,7 @@ namespace Wotr.Client
             board.Map.OfferForces(ForceOffers());
             lore.Refresh(view, draft);
             consoleOptions.Refresh(view, draft, !SelectionBusy);
+            willFaces.Refresh(view, draft, !SelectionBusy);
             var directArmy = context.ArmyActive && draft.Kind is null or CommandKind.MoveArmies or CommandKind.AttackArmy ||
                 view.Decision?.Kind == DecisionKind.ActionSequence && view.ActionSequence?.Kind == CommandKind.MoveArmies;
             board.Root.EnableInClassList("direct-army", directArmy || travel.Active);
@@ -1263,6 +1281,7 @@ namespace Wotr.Client
             board.Map.MiniatureSelected -= ChooseMiniature;
             components.Dispose();
             consoleOptions.Dispose();
+            willFaces.Dispose();
             rings.Dispose();
             lore.Dispose();
             councilTravel.Dispose();

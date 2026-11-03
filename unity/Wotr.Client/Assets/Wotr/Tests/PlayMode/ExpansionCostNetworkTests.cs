@@ -29,8 +29,14 @@ namespace Wotr.PlayTests
                 var component = "MoveArmies-" + cost.AbilityId;
                 var origin = source == "balrog" ? "moria" : "osgiliath";
                 var target = source == "balrog" ? "dimrill-dale" : "south-ithilien";
-                Assert.AreEqual(origin, client.Board.Hover.Panel.ActionRegion(component));
-                await ComponentGestures.Select(client, component);
+                // UI-459 (owner, 2026-11-03): the Balrog die is its Use Balrog: no icon, his force is chosen on the map.
+                if (source == "balrog")
+                    Assert.IsEmpty(client.Board.Hover.Panel.ActionRegion(component), "No icon chooses the Balrog's move.");
+                else
+                {
+                    Assert.AreEqual(origin, client.Board.Hover.Panel.ActionRegion(component));
+                    await ComponentGestures.Select(client, component);
+                }
                 var soldier = view.Units.Single(u => u.Location == origin && u.Kind == UnitKind.Regular).Id;
                 FellowshipGestures.Figure(client, origin, soldier);
                 if (cost.RequiredCharacterId.Length > 0)
@@ -60,7 +66,8 @@ namespace Wotr.PlayTests
                 var option = client.Board.View.Options.Single(o => o.Kind == CommandKind.MoveShadowCharacters);
                 var cost = option.MovementCosts.Single(c => c.AbilityId == "use-balrog");
                 await ComponentGestures.Cost(room, client, cost.DieId);
-                await ComponentGestures.Select(client, "MoveShadowCharacters-use-balrog");
+                // UI-459: his figure's click alone starts his move alone; no icon chooses it.
+                Assert.IsEmpty(client.Board.Hover.Panel.ActionRegion("MoveShadowCharacters-use-balrog"));
                 FellowshipGestures.Figure(client, "moria", cost.RequiredCharacterId);
                 var nazgul = client.Board.View.Units.Single(u => u.Location == "moria" && u.Kind == UnitKind.Nazgul).Id;
                 Assert.IsTrue(client.Board.Hover.Panel.Root.Q<Button>("hover-figure-" + nazgul).ClassListContains("eligible-figure"),

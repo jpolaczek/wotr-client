@@ -43,7 +43,7 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(room.Fp.Board.OwnDice.Query<Button>(className: "selected").ToList(),
                 "Army and Will of the West are strategically different costs.");
             var die = before.Dice.Single(d => d.Owner == Side.FreePeoples && d.Face == DieFace.WillOfTheWest).Id;
-            ArmyGestures.Die(room.Fp, die, DieFace.Character);
+            ArmyGestures.Die(room.Fp, die, DieFace.Army);
             await ArmyGestures.All(room.Fp, "minas-tirith");
             await room.Settle();
             foreach (var id in stay)

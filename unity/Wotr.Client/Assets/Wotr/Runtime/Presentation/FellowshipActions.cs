@@ -17,6 +17,7 @@ namespace Wotr.Client
                 draft?.Kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.DeclareFellowship or
                     CommandKind.RevealFellowship or CommandKind.SeparateCompanions or CommandKind.SelectGuide or CommandKind.EnterMordor);
 
+        // Hiding takes the die the server lists (any die with Strider as Guide); UI-461: a Will die hides as a Character.
         public static ActionOption Option(PlayerView view, ActionDieContext context, CommandKind kind, TurnDraft draft = null)
         {
             if (view?.Decision == null || view.DecisionOwner != view.You)
@@ -24,7 +25,7 @@ namespace Wotr.Client
             var options = draft == null ? view.Options : new[] { DraftOptions.For(view, draft, kind) }.Where(o => o != null);
             return options.FirstOrDefault(o => o.Kind == kind && o.Enabled &&
                 (o.EligibleDice.Count == 0 || o.EligibleDice.Contains(context.DieId) &&
-                    (kind == CommandKind.HideFellowship || context.Supports(DieFace.Character))));
+                    (kind == CommandKind.HideFellowship && !context.Will || context.Supports(DieFace.Character))));
         }
 
         public static bool Choose(PlayerView view, TurnDraft draft, ActionDieContext context, CommandKind kind)

@@ -29,7 +29,8 @@ namespace Wotr.Client
         {
             view = latest;
             draft = selection;
-            board.ActionDie.Sync(view, ResourcePresentation.CouncilPending(draft) ? "" : draft.Payload.DieId, draft.Payload.RulerTokenId);
+            board.ActionDie.Sync(view, ResourcePresentation.CouncilPending(draft) ? "" : draft.Payload.DieId, draft.Payload.RulerTokenId,
+                draft.WillFace);
             board.ActionDie.BindCost(view, draft);
             var eligible = ArmyActive ? ContextArmySelection.Eligible(view, board.ActionDie) : new HashSet<string>();
             var current = ArmyActive ? ArmyDraft.Current(draft) : null;
@@ -124,7 +125,8 @@ namespace Wotr.Client
         private void SelectAll(string region, bool garrison) => ToggleAll(region, garrison);
 
         // UI-105: figures chosen in one region move together. An army selection keeps a Nazgûl or a character the
-        // player adds to it, and a character group chosen first joins the army as soon as a soldier is added.
+        // player adds to it, and a character group chosen first joins the army as soon as a soldier is added. UI-459: an
+        // army selection of the Balrog die left with only the Balrog becomes his move alone (BalrogSelection).
         public bool SelectFigure(string id)
         {
             if (view == null || busy())
@@ -132,7 +134,11 @@ namespace Wotr.Client
             var army = ArmyActive ? ContextArmySelection.Eligible(view, board.ActionDie) : new HashSet<string>();
             if (army.Contains(id) && Gathering(id))
             {
-                edit(() => draft.Gesture(() => ContextArmySelection.Select(draft, view, board.ActionDie, id)));
+                edit(() => draft.Gesture(() =>
+                {
+                    ContextArmySelection.Select(draft, view, board.ActionDie, id);
+                    BalrogSelection.Normalize(draft, view, board.ActionDie);
+                }));
                 return true;
             }
             if (FigureSelector?.Invoke(id) == true)

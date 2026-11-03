@@ -219,6 +219,8 @@ namespace Wotr.Client
                 RegionForceChoices.Hint(view, draft), BlackCaptainOrder.Hint(view), LureChoice.Hint(view), MonstersHalves.Hint(view),
                 RingRecovery.Hint(view, draft), InspectedHand.Cards(view).Count > 0 ? "Click a Shadow card in your hand drawer to discard it" : "",
                 BalrogCardOrder.Hint(view), KingsCardChoices.Hint(view),
+                // UI-459: the Balrog die waits for his force on the map.
+                BalrogSelection.Hint(view, draft),
                 ResourcePresentation.PoolHint(view)
             })
                 if (hint.Length > 0)

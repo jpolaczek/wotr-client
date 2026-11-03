@@ -19,6 +19,8 @@ namespace Wotr.Client
         // UI-297: the current effect's committed steps ("✓ Book of Mazarbul"), recalled here only; a click shows the card
         // and the next click closes it.
         public VisualElement Trail { get; } = new VisualElement { name = "console-trail" };
+        // UI-461 (owner, 2026-11-03): the Will of the West face menu at the start of the hint's line.
+        public ConsoleFaceMenu Faces { get; } = new ConsoleFaceMenu();
         private readonly VisualElement line = new VisualElement { name = "console-line" };
         private string trailKey = "";
         private Button presented;
@@ -57,13 +59,14 @@ namespace Wotr.Client
             Trail.AddToClassList("console-trail");
             Trail.style.display = DisplayStyle.None;
             line.Add(Trail);
+            line.Add(Faces.Root);
             Hint.AddToClassList("console-hint");
             line.Add(Hint);
             Options.AddToClassList("console-options");
             optionsPulse = new ChoicePulse(Options);
             Options.style.display = DisplayStyle.None;
             line.Add(Options);
-            fit = new ConsoleOptionsFit(line, Trail, Options);
+            fit = new ConsoleOptionsFit(line, Trail, Options, Faces.Root);
         }
 
         // TEST-15: options too wide for the line stand above the console; the board hosts that strip.
@@ -193,6 +196,15 @@ namespace Wotr.Client
             button.name = option.Name;
             button.AddToClassList("console-option");
             return button;
+        }
+
+        // UI-461: the face menu's slots; the menu stands in the line, or above the console when the line is too narrow.
+        public void SetFaces(IReadOnlyList<WillFaceSlot> faces, bool enabled)
+        {
+            var shown = Faces.Shown;
+            Faces.Apply(faces, enabled);
+            if (shown != Faces.Shown)
+                fit.Refit();
         }
 
         public void SetHint(string text, string detail = "")

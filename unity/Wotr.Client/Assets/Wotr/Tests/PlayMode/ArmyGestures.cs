@@ -10,9 +10,12 @@ namespace Wotr.PlayTests
 {
     internal static class ArmyGestures
     {
+        // The die chosen for a use of that face; UI-461: a Will of the West die is turned into it in the console's menu.
         public static void Die(MountedMatchClient client, string id, DieFace face = DieFace.Army)
         {
             CardNetworkTests.Click(client.Board.OwnDice.Q<Button>(id));
+            if (client.Board.View.Dice.Single(d => d.Id == id).Face == DieFace.WillOfTheWest)
+                WillFaceGestures.Turn(client, face);
         }
 
         public static Task All(MountedMatchClient client, string region, bool garrison = false)

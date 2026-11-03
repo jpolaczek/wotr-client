@@ -18,7 +18,8 @@ The decisions of the user from this conversation:
    never grows (section E).
    **Since UI-210 (user decision, 2026-10-16), card decisions never open the decision window:**
    their objects are highlighted, object-less options and ✓ Confirm choice sit in the console.
-   See [CARD_CHOICES_UX](CARD_CHOICES_UX.md).
+   See [CARD_CHOICES_UX](CARD_CHOICES_UX.md). **Since UI-461 (owner, 2026-11-03)** the result a chosen
+   Will of the West die turns into is chosen in the console's small face menu ([UI-461](#ui-461)).
 
 <a id="zasady-układu-decyzja-użytkownika-z-2026-10-14"></a>
 ### Layout rules (user decision with 2026-10-14)
@@ -690,3 +691,36 @@ Tests: EditMode `DraftCancelTests` (the fifth button and its line, the whole dra
 action sequence), `WindowListsTests`; PlayMode `ConsoleCancelNetworkTests.ASeparationIsCancelledFromTheConsolesFixedCancel`
 (`fp-character-separate-companions`), `TurnConsoleLayoutTests` (Cancel shown under the four in eight layouts, every
 control in its place with and without a die), `FellowshipNetworkTests`, `CharacterNetworkTests`.
+
+<a id="ui-461"></a>
+## The Will of the West face menu — UI-461 (2026-11-03)
+
+The owner (translated): "Will of the West can turn into another die but can also be used by itself, e.g. for Gandalf's
+skill. Now we don't choose which die WotW turns into: all possible options are lit and the die is chosen from what we do.
+That's a problem because there are different possibilities, e.g. an army move with a leader can be done with more than
+one die. We need the previous small menu at the bottom (console) that let us choose the new face WotW turns into, while
+the additional effects coming directly from WotW (like deactivating the Balrog) light on the table; if the player picks
+one of them the die is spent and the player needn't choose anything." This is the owner's exception to rule 5 (choices
+stand at their objects): the result of a Will die has no object of its own.
+
+- **Its place** (`ConsoleFaceMenu`, `console-will-faces`): four fixed medallions — Character, Army, Muster, Event
+  (`will-face-character` …) — at the start of the status line, in the hint's 38 pt height; the hint keeps the rest of the
+  line and goes on saying what the die lights. Where the line cannot hold the medallions beside 120 pt of hint (Lords or
+  Kings at 1366 × 768 and 125 %), the menu stands in TEST-15's strip just above the console (`ConsoleOptionsFit`). The
+  menu stands only while a chosen Will die waits for its use (no action started), so the bottom bar never changes height.
+- **Its states** (`WillFaceChoices`): a result with no use now is disabled, never hidden; the results a click may give glow
+  until one is chosen; the chosen one stays pressed in (`will-face-chosen`). A click turns the die into that result and the
+  board lights exactly what a die of that result does (UI-389); a second click on the chosen result, or ↶, makes it Will of
+  the West itself again; a second click on the die releases it (UI-386). Nothing is sent.
+- **As itself** (`WillOfTheWestUses`): before a result is chosen the die lights only what it does as itself — Gandalf the
+  White's and Aragorn's entry, the Balrog's deactivation, the removals of Denethor's Folly, The King's Welcome, the Gates,
+  the Palantír cards and the Lore without a Ring — and what any die does (a political ability, Narya, a region's
+  protection); one click on such an object spends the die, and the console's hint says so. Once turned, the uses of Will
+  of the West itself go dark.
+- **What reaches the server**: nothing new. The chosen result is a local part of the draft (`TurnDraft.WillFace`, kept in
+  the saved draft); the command carries it as its cost — an army move's `MovementCost` (Army for two moves, Character for
+  one led move), a card's `CardCost`, or its kind — and the server pays the die as that result.
+
+Tests: EditMode `WillFaceTests`, `DieOptionsTests`, `ContextInteractionTests`, `CardActionTests`, `FellowshipDraftTests`,
+`TravelActionTests`, `PoliticalActionTests`; PlayMode `WillOfTheWestFaceNetworkTests` (`lords-fp-balrog-deactivate`: the
+menu at 1366 × 768 and 1920 × 1080, scale 1 and 1.25), `MultiUseDiceNetworkTests`, `BoardInteractionTests`.

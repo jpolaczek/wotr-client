@@ -14,6 +14,8 @@ namespace Wotr.Tests
             var context = new ActionDieContext();
             Assert.IsFalse(CardActions.Start(draft, view, context, "card"));
             context.Sync(view, "wild");
+            Assert.IsFalse(CardActions.Start(draft, view, context, "card"), "UI-461: Will of the West itself plays no card.");
+            context.Sync(view, "wild", "", DieFace.Event);
             Assert.IsTrue(CardActions.Start(draft, view, context, "card"));
             Assert.AreEqual("wild", draft.Payload.DieId);
             Assert.AreEqual(DieFace.Event, draft.Payload.CardCost);
@@ -26,9 +28,11 @@ namespace Wotr.Tests
             var view = View();
             var draft = new TurnDraft();
             var context = new ActionDieContext();
-            context.Sync(view, "wild");
+            context.Sync(view, "wild", "", DieFace.Army);
             Assert.IsFalse(CardActions.Start(draft, view, context, "card", DieFace.Army));
             Assert.IsNull(draft.Kind);
+            Assert.IsFalse(CardActions.Start(draft, view, context, "card", DieFace.Character), "An Army result pays no Character cost.");
+            context.Sync(view, "wild", "", DieFace.Character);
             Assert.IsTrue(CardActions.Start(draft, view, context, "card", DieFace.Character));
             Assert.AreEqual("wild", draft.Payload.DieId);
             Assert.AreEqual(DieFace.Character, draft.Payload.CardCost);

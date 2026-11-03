@@ -17,7 +17,7 @@ namespace Wotr.Client
             if (view?.Decision == null || view.DecisionOwner != view.You ||
                 view.Decision.Kind is not (DecisionKind.Action or DecisionKind.ActionSequence) ||
                 !ActionDieContext.DirectIntent(draft) ||
-                draft.Payload.AbilityId != context.AbilityId)
+                !context.Matches(draft.Payload.AbilityId))
                 return null;
             var kind = view.You == Side.FreePeoples ? CommandKind.MoveCompanions : CommandKind.MoveShadowCharacters;
             if (view.ActionSequence != null && view.ActionSequence.Kind != kind)

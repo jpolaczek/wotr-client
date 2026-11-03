@@ -104,6 +104,8 @@ namespace Wotr.EditorTests
             var draft = new TurnDraft();
             Assert.IsFalse(FellowshipActions.Choose(view, draft, context, CommandKind.MoveFellowship));
             context.Sync(view, "wild");
+            Assert.IsFalse(FellowshipActions.Choose(view, draft, context, CommandKind.MoveFellowship), "UI-461: as itself it does not move.");
+            context.Sync(view, "wild", "", DieFace.Character);
             Assert.IsTrue(FellowshipActions.Choose(view, draft, context, CommandKind.MoveFellowship));
             Assert.AreEqual("wild", draft.Payload.DieId);
             Assert.IsEmpty(draft.Payload.Route);

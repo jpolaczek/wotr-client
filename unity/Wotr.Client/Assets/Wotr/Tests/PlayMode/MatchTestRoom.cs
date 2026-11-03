@@ -103,6 +103,35 @@ namespace Wotr.PlayTests
             catch { room.Dispose(); throw; }
         }
 
+        // UI-459/UI-461: a scenario of the server's test catalog (TEST-01), started through the test mode: the Free Peoples
+        // user's session owns the test match and its seat plays the other side, each on its own mounted client.
+        public static async Task<MatchTestRoom> ConnectCatalog(string scenario, bool openPanels = true)
+        {
+            var path = Environment.GetEnvironmentVariable("WOTR_CLIENT_TEST_CONFIG");
+            if (string.IsNullOrEmpty(path))
+                Assert.Ignore("Run scripts/test-client.sh for real server integration.");
+            var fixture = JsonConvert.DeserializeObject<Fixture>(File.ReadAllText(path));
+            var room = new MatchTestRoom();
+            room.openPanels = openPanels;
+            try
+            {
+                var owner = await room.Session(fixture.Address, fixture.FreePeoplesUser, fixture.Password, null);
+                var session = await TestScenarioApi.Start(owner, scenario, room.Token);
+                var seat = owner.WithSession(session.Seat);
+                room.privateSessions.Add(seat);
+                var free = session.OwnerSide == Side.FreePeoples;
+                room.Fp = await room.Mount(free ? owner : seat, session.MatchId, null);
+                room.Sh = await room.Mount(free ? seat : owner, session.MatchId, null);
+                room.Fp.Connection.Start();
+                room.Sh.Connection.Start();
+                await room.Until(() => room.Fp.Connected > 0 && room.Sh.Connected > 0);
+                await room.Settle();
+                await room.OpenBattles();
+                return room;
+            }
+            catch { room.Dispose(); throw; }
+        }
+
         private async Task<GameApi> Session(string address, string user, string password, HttpMessageHandler handler)
         {
             if (handler == null) return await BattleTestSessions.Login(address, user, password, Token);

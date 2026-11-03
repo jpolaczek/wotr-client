@@ -46,6 +46,8 @@ namespace Wotr.Client
         public static string Hint(TurnDraft draft, PlayerView view, ActionDieContext context)
         {
             var move = ArmyDraft.Current(draft);
+            if (move == null && context.Implied)
+                return BalrogSelection.Hint(view, context);
             if (move == null)
                 return ContextArmySelection.RequiresCommander(view, context)
                     ? "Click an army with a commander to select all of it" : "Click your army to select all of it";

@@ -196,6 +196,8 @@ namespace Wotr.EditorTests
 
         private static UnityEngine.Texture2D Picture(string resource) => UnityEngine.Resources.Load<UnityEngine.Texture2D>(resource);
 
+        // UI-459 (owner, 2026-11-03): the Balrog die is its Use Balrog ability: no icon chooses it, and the map moves him
+        // alone with it while the Nazgûl stays unavailable.
         [Test]
         public void SpecialTravelBindsItsSymbolAndKeepsUnrelatedFiguresUnavailable()
         {
@@ -209,11 +211,14 @@ namespace Wotr.EditorTests
             view.Options.Add(option);
             var draft = new TurnDraft();
             draft.Change(p => p.DieId = "cost");
-            Assert.IsTrue(ComponentActions.Select(view, draft, ComponentActions.For(view, draft).Single()));
+            Assert.IsEmpty(ComponentActions.For(view, draft), "The Balrog's moves stand as no icon.");
             var context = new ActionDieContext();
             context.Sync(view, draft.Payload.DieId);
             context.BindCost(view, draft);
+            Assert.IsTrue(context.Implied);
+            Assert.AreEqual("use-balrog", context.AbilityId);
             Assert.AreEqual(DieFace.Character, context.Face);
+            Assert.IsFalse(DieOptions.For(view, draft, context).Characters, "The Balrog moves on the map, not from the Characters tab.");
             Assert.IsFalse(TravelActions.CanSelect(view, draft, context, "nazgul"));
             Assert.IsTrue(TravelActions.Select(view, draft, context, "balrog"));
             Assert.AreEqual("use-balrog", draft.Payload.AbilityId);

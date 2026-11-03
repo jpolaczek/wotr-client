@@ -46,7 +46,7 @@ namespace Wotr.Client
             var offers = new Dictionary<string, Offer>();
             if (view?.Decision?.Kind != DecisionKind.Action || view.DecisionOwner != view.You || die == null || die.DieId.Length == 0)
                 return offers;
-            foreach (var choice in Choices(view).Where(c => c.Dice.Contains(die.DieId)))
+            foreach (var choice in Choices(view).Where(c => die.Pays(CommandKind.UseCharacterAbility, c)))
                 if (Nations.TryGetValue(choice.AbilityId, out var nation) && !offers.ContainsKey(nation))
                     offers[nation] = new Offer { Nation = nation, Choice = choice, Activates = Activating.Contains(choice.AbilityId) };
             return offers;

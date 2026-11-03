@@ -51,14 +51,16 @@ namespace Wotr.Client
             options.Any(o => o.Kind == kind && die.Allows(o));
 
         // Entry and abilities list their dice per character rather than on the option. UI-366: a political ability lights
-        // Politics, where its nation's track uses it, rather than Characters.
+        // Politics, where its nation's track uses it, rather than Characters. UI-461: a Will die pays what its result does.
         private static bool CharacterAction(IEnumerable<ActionOption> options, ActionDieContext die) => options
             .Where(o => o.Enabled && o.Kind is CommandKind.EnterCharacter or CommandKind.UseCharacterAbility)
-            .SelectMany(o => o.CharacterActions).Any(c => c.Dice.Contains(die.DieId) && !CharacterPolitics.IsPolitical(c.AbilityId));
+            .Any(o => o.CharacterActions.Any(c => die.Pays(o.Kind, c) && !CharacterPolitics.IsPolitical(c.AbilityId)));
 
-        // A move paid by a character's ability is listed under that character (ComponentActions).
+        // A move paid by a character's ability is listed under that character (ComponentActions). UI-459: a die that is
+        // its ability (the Balrog die) moves on the map, so it does not light the tab.
         private static bool CharacterMove(IEnumerable<ActionOption> options, ActionDieContext die) => options
             .Where(o => o.Enabled)
-            .SelectMany(o => o.MovementCosts).Any(c => c.AbilityId.Length > 0 && c.DieId == die.DieId);
+            .SelectMany(o => o.MovementCosts).Any(c => c.AbilityId.Length > 0 && c.DieId == die.DieId &&
+                !(die.Implied && c.AbilityId == die.AbilityId) && (!die.Will || die.Supports(c.Face)));
     }
 }

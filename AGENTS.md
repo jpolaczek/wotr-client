@@ -115,7 +115,8 @@ Links to server documents target the commit in `docs/repositories/wotr-server.js
   on the board; otherwise the map, the UI and tooltips signal the option (the lit object's tooltip
   names the action and the effect that offers it) and a click on the lit object sends exactly what
   the button sent. A Finish that ends an event is the console's ✓; a decline of a response stays
-  Pass / Skip effect. Since UI-455 (owner, 2026-11-03) the console's small, always present Cancel under its four actions
+  Pass / Skip effect. Owner exception (UI-461, 2026-11-03): a chosen Will of the West die lights only its as-itself uses
+  until the console's small face menu turns it into Character, Army, Muster or Event (TURN_CONSOLE_UX). Since UI-455 (owner, 2026-11-03) the console's small, always present Cancel under its four actions
   drops the whole unsent draft and is greyed while there is nothing to cancel; no panel or console line has its own
   Cancel, and every step's instruction is the console's hint, not a panel's line (UI-456).
   Details and implementation boundary: UX_SPEC and UI-14–UI-24.

@@ -81,7 +81,9 @@ namespace Wotr.Client
         private static string DecisionGuidance(PlayerView view, ActionDieContext die) => view.Decision.Kind switch
         {
             DecisionKind.Action when die.DieId.Length == 0 => "Choose an action die, then what it acts on: the map, a card or a panel.",
-            DecisionKind.Action => "Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),
+            // UI-461: a Will die waits for its result in the console's face menu, or for a use of itself.
+            DecisionKind.Action when die.Will && !die.WillFace.HasValue => WillFaceChoices.Hint,
+            DecisionKind.Action =>"Choose what this die acts on: the highlighted map, cards and panels." + FellowshipDieGuidance(view, die),
             DecisionKind.FellowshipPhase => FellowshipGuidance(view),
             DecisionKind.AllocateHunt => "Click dice to place them in the Hunt Box, then click the Hunt plaque to allocate and roll.",
             DecisionKind.Guide => FellowshipGuideText.ChooseHint,
@@ -127,8 +129,9 @@ namespace Wotr.Client
 
         private static bool Offered(PlayerView view, CommandKind kind) => view.Options.Any(o => o.Kind == kind && o.Enabled);
 
+        // UI-459: a die that is its ability keeps its own face's name (the Balrog die's Use Balrog), not the cost it moves with.
         private static string DieText(ActionDieContext die) =>
-            die.DieId.Length == 0 || !die.Face.HasValue ? "" : " · " + FaceName(die.Face.Value) + " die";
+            die.DieId.Length == 0 || !die.Face.HasValue ? "" : " · " + FaceName(die.Implied ? DieFace.UseBalrog : die.Face.Value) + " die";
 
         // The steps of a die already spent in part: the second march, recruitment points, groups of characters.
         private static string Progress(PlayerView view)
@@ -164,6 +167,7 @@ namespace Wotr.Client
         {
             DieFace.ArmyMuster => "Army/Muster",
             DieFace.WillOfTheWest => "Will of the West",
+            DieFace.UseBalrog => "Use Balrog",
             _ => face.ToString()
         };
 

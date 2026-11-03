@@ -5,8 +5,10 @@ namespace Wotr.Client
 {
     // UI-440 (owner): an ability whose commands do different things stands as one icon per variant, side by side in one
     // group, each badged with what it does (AbilityBadges); the group's slots are fixed, so nothing shifts while a variant
-    // is not offered. An action names its variant by its command's ability id (Voice, Fling, the Balrog's activation) or
-    // by its command kind (the moves and attacks of a Muster die, Great Sorcery, the Balrog and Far-sighted).
+    // is not offered. An action names its variant by its command's ability id (Voice, Fling) or by its command kind (the
+    // moves and attacks of a Muster die, Great Sorcery and Far-sighted). UI-459 (owner, 2026-11-03): the Balrog's moves
+    // are no icons any more — the Balrog die lights his force on the map and his region's panel marks who goes
+    // (BalrogSelection) — so Balrog Activation keeps one slot, his activation or deactivation.
     public static class AbilityVariants
     {
         public sealed class Variant
@@ -23,22 +25,12 @@ namespace Wotr.Client
             public string Badge { get; }
         }
 
-        // The Balrog activates or deactivates with one command at a time: one slot, no badge.
-        public const string Activation = "activation";
-
         private static readonly Variant[] Single = { new Variant("", "", "") };
 
         private static readonly IReadOnlyDictionary<string, Variant[]> Groups = new Dictionary<string, Variant[]>
         {
             ["muster-each-isengard-settlement-or-upgrade-two"] = Recruitment("voice"),
             ["fling-them-into-the-fray"] = Recruitment("gothmog"),
-            ["balrog-activation"] = new[]
-            {
-                new Variant(Activation, "Activate or deactivate", ""),
-                Kind(CommandKind.MoveArmies, "Move an army"),
-                Kind(CommandKind.AttackArmy, "Attack"),
-                Kind(CommandKind.MoveShadowCharacters, "Move alone")
-            },
             ["muster-as-army-once-per-turn"] = Armies(),
             ["great-sorcery"] = Armies(),
             ["far-sighted"] = new[]
@@ -61,8 +53,6 @@ namespace Wotr.Client
             if (!Grouped(printedAbility))
                 return "";
             var command = action.Character?.AbilityId ?? "";
-            if (command is CharacterAbilityPlaces.ActivateBalrog or CharacterAbilityPlaces.DeactivateBalrog)
-                return Activation;
             return command.Length > 0 ? command : action.Kind.ToString();
         }
 
