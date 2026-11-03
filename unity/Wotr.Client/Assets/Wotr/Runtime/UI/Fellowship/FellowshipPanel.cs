@@ -50,10 +50,15 @@ namespace Wotr.Client
         private VisualElement tray;
         private VisualElement dock;
         private PlayerView view;
+        // UI-448: the declaration is being drawn; Declare then sends it, and Declare before it brings the camera here.
+        private bool declaring;
+        private readonly Action focus;
+        public event Action DeclareConfirmed;
         private double Now => Time.realtimeSinceStartupAsDouble;
 
         public FellowshipPanel(Action focus, MapCanvas map)
         {
+            this.focus = focus;
             this.map = map;
             Root.AddToClassList("fellowship-panel");
             Root.style.display = DisplayStyle.None;
@@ -81,13 +86,30 @@ namespace Wotr.Client
             Root.Add(status.Root);
             Root.Add(roster.Root);
             Root.Add(controls.Root);
-            controls.Selected += kind => ActionSelected?.Invoke(kind);
+            controls.Selected += Controlled;
             status.MoveRequested += () => ActionSelected?.Invoke(CommandKind.MoveFellowship);
             roster.Selected += Portrait;
             Versions.Changed += roster.Compare;
             roster.GuideChosen += id => GuideChosen?.Invoke(id);
             RegisterHover();
         }
+
+        // UI-448 (owner): Declare beside Finish phase starts the declaration and brings the camera to the Fellowship; while
+        // the route is drawn it sends the declaration as the tray's ✓ does.
+        private void Controlled(CommandKind kind)
+        {
+            if (kind == CommandKind.DeclareFellowship && declaring)
+            {
+                DeclareConfirmed?.Invoke();
+                return;
+            }
+            ActionSelected?.Invoke(kind);
+            if (kind == CommandKind.DeclareFellowship)
+                focus?.Invoke();
+        }
+
+        // UI-448: the tray's ✓ can send the drafted declaration now.
+        public void DeclareReady(bool ready) => controls.DeclareReady(ready);
 
         // UI-441: the companions with a skill usable now glow on their portraits, and why (UsableSkills).
         public void LightSkills(IReadOnlyDictionary<string, string> lines) => roster.LightSkills(lines);
@@ -150,6 +172,8 @@ namespace Wotr.Client
         public void Context(PlayerView latest, TurnDraft draft, ActionDieContext context, bool enabled)
         {
             var route = draft.Kind is CommandKind.DeclareFellowship or CommandKind.RevealFellowship;
+            declaring = draft.Kind == CommandKind.DeclareFellowship;
+            Root.EnableInClassList("fellowship-declaring", declaring);
             var separation = draft.Kind == CommandKind.SeparateCompanions ||
                 latest.Decision?.Kind == DecisionKind.CompanionSeparation;
             Root.EnableInClassList("fellowship-route", route);
@@ -167,7 +191,8 @@ namespace Wotr.Client
             Root.EnableInClassList("fellowship-versions", versions);
             Root.EnableInClassList("fellowship-homelands", CompanionSetupPresentation.Homelands(latest));
             roster.Context(latest, draft, context, enabled && !hunt, Versions.Figure);
-            var rosterVisible = !route && latest.Decision?.Presentation != "FellowshipCompanions";
+            // UI-448 (owner): the members stay in view while the Fellowship's position is declared or revealed.
+            var rosterVisible = latest.Decision?.Presentation != "FellowshipCompanions";
             roster.Root.style.display = rosterVisible ? DisplayStyle.Flex : DisplayStyle.None;
             status.Compact(route || separation || draft.Kind == CommandKind.SelectGuide, latest.Hunt != null, rosterVisible && roster.ShowsGuide);
             var owns = FellowshipActions.UsesPanel(latest, draft);

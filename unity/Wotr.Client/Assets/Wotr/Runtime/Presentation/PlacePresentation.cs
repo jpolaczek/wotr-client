@@ -36,6 +36,17 @@ namespace Wotr.Client
 
         public static string Resource(string key) => Folder + key;
 
+        // UI-449 (owner): where a Characters row's click brings the camera — the region of a character on the board, the
+        // Fellowship's for a companion inside it (as this player sees it); "" for one off the board.
+        public static string CameraRegion(PlayerView view, CharacterRosterView row, IReadOnlyDictionary<string, RegionDefinition> regions)
+        {
+            var place = For(row, regions);
+            if (place.OnMap)
+                return place.RegionId;
+            var fellowship = view?.Fellowship?.RegionId ?? "";
+            return row.Lifecycle == CharacterRosterLifecycle.InFellowship && regions.ContainsKey(fellowship) ? fellowship : "";
+        }
+
         public static PlaceView For(CharacterRosterView row, IReadOnlyDictionary<string, RegionDefinition> regions)
         {
             if (row.Lifecycle == CharacterRosterLifecycle.OnBoard && regions.TryGetValue(row.RegionId, out var region))

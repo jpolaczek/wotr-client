@@ -34,18 +34,29 @@ namespace Wotr.PlayTests
                 var nation = dain ? "dwarves" : "north";
                 var local = choice.RulerRecruitment.LocalRegion;
                 var remote = choice.RulerRecruitment.Settlements.First(r => r != local);
-                foreach (var placement in dain
+                // UI-450 (owner): the Reserve is open at once; each figure stands with its click and the last one sends the
+                // recruitment without a ✓. The layout and a reconnect are checked with the last figure still to place.
+                Assert.IsTrue(client.Board.Reinforcements.IsOpen, "The ability's click opens the Reserve.");
+                var placements = dain
                     ? new[] { (local, UnitKind.Elite), (remote, UnitKind.Leader) }
-                    : new[] { (local, UnitKind.Regular), (remote, UnitKind.Leader), (local, UnitKind.Regular) })
-                {
-                    client.Board.Map.Select(placement.Item1);
-                    Click(client, "character-reserve-" + nation + "-" + placement.Item2);
-                }
+                    : new[] { (local, UnitKind.Regular), (remote, UnitKind.Leader), (local, UnitKind.Regular) };
                 var before = client.Board.View.Units.Count(u => u.Nation == nation && u.Location == "reserve");
-                Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + choice.Dice.Single()), "UI-239: the only die is taken for the player.");
-                await Layout(room, client, dain ? "dain" : "brand", "t34");
-                await Reconnect(room, client);
-                await room.Confirm(client);
+                var start = client.Board.View.Revision;
+                for (var index = 0; index < placements.Length; index++)
+                {
+                    if (index == placements.Length - 1)
+                    {
+                        Assert.IsNull(client.Board.Tray.Q<Button>("cost-" + choice.Dice.Single()), "UI-239: the only die is taken for the player.");
+                        await Layout(room, client, dain ? "dain" : "brand", "t34");
+                        await Reconnect(room, client);
+                    }
+                    var revision = client.Board.View.Revision;
+                    client.Board.Map.Select(placements[index].Item1);
+                    Click(client, "character-reserve-" + nation + "-" + placements[index].Item2);
+                    if (index < placements.Length - 1)
+                        Assert.AreEqual(revision, client.Board.View.Revision, "A figure before the last is only placed.");
+                }
+                await room.At(start + 1);
                 Assert.AreEqual(before - (dain ? 2 : 3), room.Sh.Board.View.Units.Count(u => u.Nation == nation && u.Location == "reserve"));
                 Assert.AreEqual(DieLocation.Spent, room.Sh.Board.View.Dice.Single(d => d.Id == choice.Dice.Single()).Location);
             }

@@ -31,9 +31,10 @@ namespace Wotr.Client
 
         // UI-108: an entry starts with a double-click in the Characters list and ends on the map, so it never
         // hosts its decision in the inspector.
+        // UI-450 (owner): nor does a ruler's recruiting ability, made in the Reserve with the console's ↶ and no new buttons.
         public static bool OwnsDecision(PlayerView view, TurnDraft draft) =>
             view?.Decision?.Kind == DecisionKind.Action && !view.Winner.HasValue && draft.Kind != CommandKind.EnterCharacter &&
-            DecisionFigure(view, draft).Length > 0;
+            DecisionFigure(view, draft).Length > 0 && !CharacterRecruitDraft.Ruler(view, draft);
 
         // The Characters row of the entering version: UI-438, the character's one row, whichever version enters.
         public static string EnteringFigure(PlayerView view, TurnDraft draft) =>

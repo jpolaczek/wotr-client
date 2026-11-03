@@ -23,11 +23,18 @@ namespace Wotr.Client
         public string HideTooltip { get; private set; } = HideDescription;
         private readonly Dictionary<CommandKind, Button> actions = new Dictionary<CommandKind, Button>();
         private readonly Label hint = new Label { name = "fellowship-action-hint" };
+        // UI-448: the declaration is being drawn, the board takes input, and the drawn declaration can be sent now (the
+        // tray's ✓ is enabled).
+        private bool declaring, inputEnabled, declareReady;
+        private Button Declare => actions[CommandKind.DeclareFellowship];
 
         public FellowshipControls()
         {
-            // UI-236: the figure on the map declares and the Mordor track's gate enters; no buttons here for them.
+            // UI-236: the Mordor track's gate enters; no button here for it. UI-448 (owner): Declare stands beside Finish
+            // phase, in one row — it starts the declaration (and brings the camera to the Fellowship), and while the route
+            // is drawn it sends it; the figure on the map still declares too.
             // UI-249: a glowing portrait chooses the Guide; no Change guide button.
+            Add(Row, CommandKind.DeclareFellowship, "Declare", "fellowship-declare");
             Add(Row, CommandKind.ContinueFellowship, "Finish phase", "fellowship-continue");
             Root.Add(Row);
             Root.Add(hint);
@@ -58,24 +65,55 @@ namespace Wotr.Client
                 (FellowshipActions.Option(view, context, CommandKind.HideFellowship, draft) != null || cardHide.Length > 0);
             HideTooltip = cardHide.Length > 0 ? FellowshipCardActions.Description(cardHide) : HideDescription;
             Offers = MoveOffered || HideOffered;
+            declaring = draft.Kind == CommandKind.DeclareFellowship;
+            inputEnabled = enabled;
             foreach (var item in actions)
             {
-                var legal = own && FellowshipActions.Option(view, context, item.Key, draft) != null;
+                var legal = own && !declaring && FellowshipActions.Option(view, context, item.Key, draft) != null;
                 Offers |= legal && enabled;
                 item.Value.SetEnabled(enabled && legal);
                 item.Value.EnableInClassList("legal-target", legal);
-                // UI-287: Finish phase keeps its place outside the Fellowship phase, greyed out with its reason.
-                item.Value.style.display = own && !route ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = legal ? Description(view, item.Key) : Unavailable;
+                // UI-287: Finish phase keeps its place outside the Fellowship phase, greyed out with its reason; UI-448: so
+                // does it beside Declare while the declaration is drawn.
+                item.Value.style.display = own && (!route || declaring) ? DisplayStyle.Flex : DisplayStyle.None;
+                item.Value.tooltip = legal ? Description(view, item.Key) : UnavailableTooltip(item.Key);
             }
+            if (declaring)
+                RefreshDeclare();
+            else
+                ChoiceGlow.Apply(Declare, false);
             hint.text = FellowshipActions.ActionHint(view, draft, context);
             hint.style.display = own && !route && inActions && !docked ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         public const string Unavailable = "Finish phase · Only in your Fellowship phase, to keep the current Guide.";
+        public const string DeclareUnavailable = "Declare · Only while the hidden Fellowship may declare its position.";
+        public const string DeclareStart = "Declare · Select the Fellowship and choose its route on the map";
+        public const string DeclareSend = "Declare · The Fellowship stands at the route's end and stays hidden; its Progress returns to 0";
+        public const string DeclareWaiting = "Declare · Draw the route on the map first";
+
+        private static string UnavailableTooltip(CommandKind kind) => kind == CommandKind.DeclareFellowship ? DeclareUnavailable : Unavailable;
+
+        // UI-448: while the declaration is drawn, Declare sends it once the tray's ✓ could.
+        public void DeclareReady(bool ready)
+        {
+            declareReady = ready;
+            if (declaring)
+                RefreshDeclare();
+        }
+
+        private void RefreshDeclare()
+        {
+            var ready = inputEnabled && declareReady;
+            Declare.SetEnabled(ready);
+            Declare.EnableInClassList("legal-target", ready);
+            ChoiceGlow.Apply(Declare, ready);
+            Declare.tooltip = ready ? DeclareSend : DeclareWaiting;
+        }
 
         private static string Description(PlayerView view, CommandKind kind) => kind switch
         {
+            CommandKind.DeclareFellowship => DeclareStart,
             CommandKind.MoveFellowship when view.Fellowship.MordorStep.HasValue => "Click to move the Fellowship on the Mordor track · " +
                 "No Hunt roll; draw and resolve a Hunt tile before any advance, even with no dice in the Hunt",
             CommandKind.MoveFellowship => FellowshipActions.MoveTooltip,

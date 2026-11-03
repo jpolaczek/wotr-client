@@ -173,7 +173,10 @@ namespace Wotr.Client
             {
                 if (busy() || draft.Kind != CommandKind.ChooseCouncilHomelands || homelands.CharacterActions.All(c => c.CharacterId != id))
                     return;
-                if (draft.Payload.CharacterId != id)
+                // UI-451: a shared homeland waiting for its companion takes the clicked one.
+                if (CouncilDraft.Waiting(draft).Length > 0 && CouncilDraft.Candidates(draft, homelands, CouncilDraft.Waiting(draft)).Contains(id))
+                    edit(() => CouncilDraft.Portrait(draft, homelands, id), false);
+                else if (draft.Payload.CharacterId != id)
                     edit(() => draft.Change(p => p.CharacterId = id), false);
                 else if (CouncilHomelandPresentation.Placed(draft, id))
                     edit(() => CouncilDraft.Homeland(draft, id, ""), false);

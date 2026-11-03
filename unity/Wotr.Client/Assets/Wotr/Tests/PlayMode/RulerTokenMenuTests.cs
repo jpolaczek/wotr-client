@@ -67,7 +67,10 @@ namespace Wotr.PlayTests
             Assert.AreNotSame(board.Characters.DecisionHost, board.Tray.parent, "A read-only icon starts nothing.");
             PointerGestureEvents.ClickAt(chip);
             await Task.Delay(600, token);
-            Assert.AreSame(board.Characters.DecisionHost, board.Tray.parent, "The icon's click started " + ability + " in his window.");
+            // UI-450 (owner): the icon's click starts the ability with the Reserve open at once; the window keeps its form.
+            Assert.AreNotSame(board.Characters.DecisionHost, board.Tray.parent, "The window keeps its form.");
+            Assert.IsTrue(board.Reinforcements.IsOpen, "The icon's click opened the Reserve for " + ability + ".");
+            Assert.AreEqual(DisplayStyle.Flex, chip.resolvedStyle.display, "The window's icons stay.");
             Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Its places glow on the map.");
             Assert.IsNull(inspector.Q("character-ability-sheet"), "No text unrolls.");
             LayoutTests.Save(client.Panel.targetTexture, "ui380-" + king + "-ability.png");
@@ -239,9 +242,9 @@ namespace Wotr.PlayTests
             await Task.Delay(800, token);
             Assert.Greater(board.Map.DraftOverlay.Targets.Count, 0, "Iron Guard started: its settlements glow on the map.");
             LayoutTests.Save(client.Panel.targetTexture, "ui391-iron-guard-started.png");
-            // UI-392 (owner): the Reserve does not open by itself; its tab glows and a lit settlement's click opens it, the
-            // camera gliding there at the same zoom, and that settlement is marked as the chosen one until its figure.
-            Assert.IsFalse(board.Reinforcements.IsOpen, "No panel opens with the ability.");
+            // UI-450 (owner, superseding UI-392's "the Reserve does not open by itself"): the Reserve opens with the ability;
+            // a lit settlement's click still glides the camera there at the same zoom and marks it the chosen one.
+            Assert.IsTrue(board.Reinforcements.IsOpen, "The Reserve opens with the ability.");
             Assert.IsTrue(board.Reinforcements.Tab.ClassListContains("legal-target"), "The Reserve tab glows.");
             var region = board.Map.DraftOverlay.Targets.Contains("erebor") ? "erebor" : board.Map.DraftOverlay.Targets.First();
             var zoom = board.Map.Camera.Zoom;
@@ -271,11 +274,16 @@ namespace Wotr.PlayTests
             Assert.AreSame(next.Q<Image>(className: "reserve-token-figure").sprite, lifted.sprite, "It is the pressed figure's own art.");
             Assert.IsTrue(next.ClassListContains(DraftInput.LiftedClass), "Its slot shows that it was lifted.");
             LayoutTests.Save(client.Panel.targetTexture, "ui393-lifted-figure.png");
+            var revision = board.View.Revision;
             MapContourProbe.Drop(board, destination);
             await Task.Delay(800, token);
             Assert.AreEqual(DisplayStyle.None, lifted.style.display.value);
             Assert.IsFalse(next.ClassListContains(DraftInput.LiftedClass));
-            CollectionAssert.Contains(board.Map.DraftOverlay.PlannedRegions, second, "The drop places the figure there.");
+            // UI-450 (owner): Iron Guard's second figure is its last, so its drop sends the recruitment, no ✓.
+            for (var wait = 0; wait < 50 && board.View.Revision == revision; wait++)
+                await Task.Delay(100, token);
+            Assert.Greater(board.View.Revision, revision, "The last figure's drop sent the recruitment.");
+            Assert.IsTrue(board.View.Units.Any(unit => unit.Nation == "dwarves" && unit.Location == second), "The figure stands there.");
         }
 
         private static bool Shown(VisualElement element) => element != null && element.resolvedStyle.display == DisplayStyle.Flex &&

@@ -14,9 +14,14 @@ namespace Wotr.Client
             var option = CompanionSetupPresentation.HomelandOption(view);
             if (option == null || option.CharacterActions.Count == 0)
                 return "All companions stay with the Fellowship · ✓ confirms.";
+            // UI-451: a click on a lit homeland starts its companion there; a shared one waits for the companion's portrait.
+            var waiting = CouncilDraft.Waiting(draft);
+            if (waiting.Length > 0)
+                return "Click " + string.Join(" or ", CouncilDraft.Candidates(draft, option, waiting).Select(CharacterLibrary.ShortName)) +
+                    " in the Fellowship panel to start in this homeland · ✓ confirms.";
             var id = draft.Payload.CharacterId;
             if (option.CharacterActions.All(c => c.CharacterId != id))
-                return "Click a glowing companion in the Fellowship panel, then a lit homeland on the map; dragging the portrait works too · ✓ confirms.";
+                return "Click a lit homeland on the map to start its companion there; dragging a portrait works too · ✓ confirms.";
             var name = CharacterLibrary.ShortName(id);
             return Placed(draft, id)
                 ? "Click " + name + " again to keep this companion with the Fellowship, or another lit homeland · ✓ confirms."

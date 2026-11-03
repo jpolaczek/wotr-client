@@ -45,7 +45,7 @@ namespace Wotr.Client
             panel.ForceChoice = (side, garrison) => enabled ? RegionForceChoices.For(view, draft, panel.Region, garrison) : "";
             panel.ForceTooltip = id => RegionForceChoices.Tooltip(view, draft, id);
             panel.RefreshForces();
-            board.Console.Status.SetOptions(CardConsoleOptions.For(view, draft), enabled);
+            board.Console.Status.SetOptions(RouteCancel.Append(CardConsoleOptions.For(view, draft), view, draft), enabled);
             board.TableEffects.Offer(TableOffers(view, draft), enabled);
             board.TableEffects.Uses(enabled ? CardUses(view, draft) : new Dictionary<string, string>());
             OfferHuntRoll(enabled ? NazgulStrikeChoice.Roll(view, draft) : null);

@@ -238,6 +238,27 @@ namespace Wotr.EditorTests
             Assert.AreNotSame(gimli, inspector.Portrait.Shown);
         }
 
+        // UI-449 (owner): a row's click brings the camera to a character on the board, to the Fellowship for a companion in
+        // it, and nowhere for one off the board.
+        [Test]
+        public void ARowsCameraRegionIsWhereItsCharacterStands()
+        {
+            var view = Read("CharacterRosterWire.json");
+            var regions = BoardPresentation.Load().Regions;
+            foreach (var row in view.OwnCharacterRoster)
+            {
+                var region = PlacePresentation.CameraRegion(view, row, regions);
+                if (row.Lifecycle == CharacterRosterLifecycle.OnBoard)
+                    Assert.AreEqual(row.RegionId, region, row.FigureId + " on the board.");
+                else if (row.Lifecycle == CharacterRosterLifecycle.InFellowship)
+                    Assert.AreEqual(regions.ContainsKey(view.Fellowship.RegionId) ? view.Fellowship.RegionId : "", region, row.FigureId + " in the Fellowship.");
+                else
+                    Assert.IsEmpty(region, row.FigureId + " off the board.");
+            }
+            Assert.IsTrue(view.OwnCharacterRoster.Any(row => PlacePresentation.CameraRegion(view, row, regions).Length > 0),
+                "The fixture has a character the camera can reach.");
+        }
+
         private static ComponentAction Politics(string ability, bool enabled) => new ComponentAction
         {
             Key = "gimli-politics", Kind = CommandKind.UseCharacterAbility, Enabled = enabled, Detail = "Move the Dwarves one step toward war.",

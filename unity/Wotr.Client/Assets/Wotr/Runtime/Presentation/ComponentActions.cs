@@ -159,8 +159,10 @@ namespace Wotr.Client
 
         public static bool Immediate(PlayerView view, TurnDraft draft)
         {
+            // UI-450: a ruler's recruitment is sent by the click that places its last figure (a complete final click).
             if (CharacterDraft.UsesCharacters(draft.Kind))
-                return DraftOptions.For(view, draft) is { } option && CharacterDraft.Selected(draft, option) is { } choice && choice.Recruitment.Count == 0;
+                return DraftOptions.For(view, draft) is { } option && CharacterDraft.Selected(draft, option) is { } choice &&
+                    (choice.Recruitment.Count == 0 || choice.RulerRecruitment != null);
             return draft.Kind is CommandKind.Pass or CommandKind.DiscardDie or CommandKind.MoveFellowship or CommandKind.DiscardPalantir
                 or CommandKind.DiscardBaradPalantir or CommandKind.DiscardDenethor or CommandKind.DiscardLore
                 or CommandKind.DiscardGates or CommandKind.DiscardWelcome;

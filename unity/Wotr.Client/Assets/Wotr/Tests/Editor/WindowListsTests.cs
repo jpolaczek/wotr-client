@@ -26,23 +26,33 @@ namespace Wotr.EditorTests
             foreach (var name in new[] { "travel-stay", "travel-stay-all", "travel-standard", "travel-ruler" })
                 Assert.IsNull(root.Q<Button>(name), name + " is its object's click now.");
             Assert.IsNull(root.Q<Label>("travel-far-sighted"), "The standard move names no mode.");
-            Assert.IsNotNull(root.Q<Button>("route-cancel"), "Cancel stays: no object clears the separation's route.");
+            // UI-448 (owner): the separation's Cancel is the console's last option, not a panel button.
+            Assert.IsNull(root.Q<Button>("route-cancel"), "No Cancel in the panel.");
+            var cancel = RouteCancel.Option(view, draft);
+            Assert.AreEqual(RouteCancel.Name, cancel?.Name, "The console's Cancel clears the chosen companions.");
+            Assert.IsTrue(cancel.Enabled, "A chosen companion can be cleared.");
 
             draft.Change(p => p.AbilityId = FarSighted);
             root = Build(view, draft, contextual: false);
             Assert.AreEqual("Far-sighted · Range +1", root.Q<Label>("travel-far-sighted").text, "Thranduil's move names its mode.");
         }
 
+        // UI-448 (owner): a drawn route keeps only its summary in the panel; the console's ↶ undoes a step and its last option,
+        // Cancel, ends the declaration.
         [Test]
-        public void ADrawnRouteKeepsUndoStepAndCancel()
+        public void ADrawnRouteLeavesUndoAndCancelToTheConsole()
         {
             var view = Separation(withRuler: false);
             view.Options[0].Kind = CommandKind.DeclareFellowship;
             var draft = new TurnDraft();
             draft.Choose(CommandKind.DeclareFellowship);
             var root = Build(view, draft, contextual: true);
-            Assert.IsNotNull(root.Q<Button>("route-undo"), "The console's ↶ is off in the Fellowship panel.");
-            Assert.IsNotNull(root.Q<Button>("route-cancel"));
+            Assert.IsNull(root.Q<Button>("route-undo"), "No Undo step in the panel.");
+            Assert.IsNull(root.Q<Button>("route-cancel"), "No Cancel in the panel.");
+            Assert.IsNull(root.Q<Label>("fellowship-route-effect"), "No 'Declare position · Remain hidden' line.");
+            Assert.IsNotNull(root.Q<Label>("travel-summary"), "The route's summary stays.");
+            Assert.IsTrue(RouteCancel.Option(view, draft).Enabled, "Cancel ends the declaration, even before its first step.");
+            Assert.IsNull(RouteCancel.Option(view, new TurnDraft()), "No Cancel without a route.");
         }
 
         // Stay here was TravelDraft.Stay; the click on the lit origin region (TravelDraft.RouteTo) makes the same route.

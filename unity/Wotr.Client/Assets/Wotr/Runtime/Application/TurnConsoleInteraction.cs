@@ -246,7 +246,10 @@ namespace Wotr.Client
 
         // UI-298: the Fellowship panel shows no arrow for a move, hide or entry left after a failed send; the console's
         // Back drops it.
-        private bool FellowshipBack() => FellowshipActions.UsesPanel(view, draft) && FellowshipActions.SentOnClick(draft.Kind);
+        // UI-448 (owner): the console's ↶ also undoes a step of a drawn Fellowship route (a declared or revealed position, a
+        // separation), wherever it is drawn (the Fellowship or the Hunt panel), which no longer has its own Undo step.
+        private bool FellowshipBack() => FellowshipDraft.SingleRoute(draft.Kind) ||
+            FellowshipActions.UsesPanel(view, draft) && FellowshipActions.SentOnClick(draft.Kind);
 
         private bool Allocating() => HuntActions.Allocation(view) is { } option && draft.Kind == CommandKind.AllocateHunt &&
             draft.Ready(option);

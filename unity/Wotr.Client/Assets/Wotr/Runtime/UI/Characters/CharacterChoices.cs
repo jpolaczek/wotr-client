@@ -44,10 +44,11 @@ namespace Wotr.Client
                     change.name = "change-character-action";
                     portraits.Add(change);
                 }
-                // UI-131: the figures of a ruler's muster or the Balrog's companion are chosen in Reinforcements.
+                // UI-131: the figures of a ruler's muster or the Balrog's companion are chosen in Reinforcements; UI-450: a
+                // ruler's opens it by itself, so only the Balrog's keeps the button.
                 if (current.Recruitment.Count > 0)
                 {
-                    if (reinforcements != null)
+                    if (reinforcements != null && current.RulerRecruitment == null)
                         root.Add(reinforcements());
                     return;
                 }

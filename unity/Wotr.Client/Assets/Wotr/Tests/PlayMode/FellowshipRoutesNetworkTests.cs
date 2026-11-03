@@ -20,14 +20,33 @@ namespace Wotr.PlayTests
             var board = room.Fp.Board;
             var dice = board.View.Dice.Select(d => d.Location).ToArray();
             Assert.IsTrue(board.Fellowship.IsOpen);
-            Assert.IsNull(board.Fellowship.Root.Q<Button>("fellowship-declare"), "UI-236: no panel button declares.");
-            await FellowshipGestures.Declare(room.Fp);
+            // UI-448 (owner): Declare stands beside Finish phase, in one row.
+            var declare = board.Fellowship.Root.Q<Button>("fellowship-declare");
+            Assert.IsNotNull(declare, "Declare beside Finish phase.");
+            Assert.AreSame(board.Fellowship.Root.Q<Button>("fellowship-continue").parent, declare.parent, "In Finish phase's row.");
+            Assert.IsTrue(declare.enabledSelf, "The hidden Fellowship may declare.");
+            // Its click selects the Fellowship for the declaration and brings the camera to its region.
+            board.Map.FocusOn(UnityEngine.Vector2.zero, board.Map.FitZoom * 3);
             await room.Settle();
+            PointerGestureEvents.ClickAt(declare);
+            await room.Settle();
+            StringAssert.Contains("Choose a route", board.Tray.Q<Label>("travel-summary").text, "The declaration started.");
+            var region = board.View.Fellowship.RegionId;
+            var anchor = board.Map.Data.Shapes[region].Anchor;
+            Assert.IsTrue(board.Map.contentRect.Contains(board.Map.Camera.ToScreen(new UnityEngine.Vector2(anchor[0], anchor[1]))),
+                "The camera came to the Fellowship's region.");
+            Assert.AreSame(board.Fellowship.Root.Q<Button>("fellowship-continue").parent, declare.parent, "Declare keeps its row while declaring.");
             MapContourProbe.ReachRegion(board.Map, "minas-tirith");
             await room.Settle();
             var pan = board.Map.Camera.Pan;
             var zoom = board.Map.Camera.Zoom;
-            StringAssert.Contains("Remain hidden", board.Tray.Q<Label>("fellowship-route-effect").text);
+            // UI-448: no effect line, no Undo step or Cancel in the panel; Finish phase stays beside Declare, inactive.
+            Assert.IsNull(board.Tray.Q<Label>("fellowship-route-effect"));
+            Assert.IsNull(board.Tray.Q<Button>("route-undo"));
+            Assert.IsNull(board.Tray.Q<Button>("route-cancel"));
+            var finish = board.Fellowship.Root.Q<Button>("fellowship-continue");
+            Assert.AreEqual(DisplayStyle.Flex, finish.resolvedStyle.display, "Finish phase keeps its place.");
+            Assert.IsFalse(finish.enabledSelf, "Finish phase waits while the declaration is drawn.");
             Assert.AreEqual(0, room.Boundary.Commands);
             Assert.IsNull(room.Sh.Board.View.Decision);
             Assert.IsEmpty(room.Sh.Board.View.Options);

@@ -3290,3 +3290,115 @@ Playtest (owner's checklist):
 Tests: EditMode `CharacterRosterPanelTests.TheCharacterWindowShowsThePortraitOfTheVersionItShows`; PlayMode
 `CharacterWindowLayoutTests`, `CharacterRosterLayoutTests`, `CharacterRosterPanelNetworkTests`, `SovereignPanelNetworkTests`,
 `SovereignSectionLayoutTests`, `RulerTokenMenuTests`.
+
+<a id="the-fellowships-declaration-from-its-own-row--ui-448"></a>
+## The Fellowship's declaration from its own row — UI-448 (2026-11-03)
+
+The owner's playtest of the declaration ("Declare position · Remain hidden", "Hollin · Choose a route", Undo step and
+Cancel, "Trace a route · Using all of the Progress moves at once.", Declare): besides Finish phase a Declare that selects
+the Fellowship and brings the camera to it; no Undo step in the panel (the console's is used); Cancel to the console as a
+general option at the bottom; Declare in one row with the inactive Finish phase; no "Remain hidden … Progress" lines; the
+Fellowship must not disappear from this view. This supersedes UI-236's "no panel button declares".
+
+- **Declare beside Finish phase** (`FellowshipControls`, `fellowship-declare`, in Finish phase's row): while the hidden
+  Fellowship may declare, its click starts the declaration (as the figure on the map does) and brings the camera to the
+  Fellowship (the panel's locate). While the route is drawn the row stays — Finish phase greyed, Declare lit once the
+  declaration can be sent (the tray's ✓ state, `DecisionTray.ConfirmChanged`) and its click sends it.
+- **The panel keeps the route's summary only** (`FellowshipChoices.Route`): no "Declare position · Remain hidden" /
+  "Reveal position · Become revealed" line, no Undo step, no Cancel; while declaring, the tray's own Declare and its hint
+  are hidden in the panel (the console shows the hint). The Fellowship's members stay in view while a position is declared
+  or revealed.
+- **The console takes Back and Cancel**: its ↶ undoes a step of any drawn Fellowship route (declared or revealed position,
+  separation), wherever the route is drawn; Cancel is the console's last option while such a route is drawn
+  (`RouteCancel`, `console-cancel-route`): it ends the declaration, or clears a mandatory route or the chosen companions.
+
+Playtest (owner's checklist):
+- [ ] A Fellowship phase with the Fellowship hidden. Expect: Declare beside Finish phase; its click brings the camera to
+  the Fellowship and starts the route; the members stay in the panel; ↶ undoes a step, the console's Cancel ends the
+  declaration; Declare (lit) sends it.
+
+Tests: EditMode `WindowListsTests.ADrawnRouteLeavesUndoAndCancelToTheConsole`; PlayMode `FellowshipRoutesNetworkTests`
+(Declare in Finish phase's row, the camera at the Fellowship, Finish phase greyed), `FellowshipNetworkTests` (↶ and the
+console's Cancel), `FellowshipLayoutTests` (↶ during a reveal), `CharacterNetworkTests` (a forced separation's Cancel).
+
+<a id="a-characters-row-brings-the-camera-to-it--ui-449"></a>
+## A character's row brings the camera to it — UI-449 (2026-11-03)
+
+The owner: a click on a character in the Characters tab that is on the board moves the camera to it. A row's click now
+also focuses the map on the character's region (`PlacePresentation.CameraRegion`: its region on the board; the
+Fellowship's for a companion inside it, as this player sees it); a character off the board moves nothing, and an
+inspection opened any other way (a hover, a window's Show) never moves the camera.
+
+Tests: EditMode `CharacterRosterPanelTests.ARowsCameraRegionIsWhereItsCharacterStands`; PlayMode
+`CharacterRosterPanelNetworkTests` (Gimli's and Dáin's rows bring their regions into view).
+
+<a id="a-recruiting-ability-opens-the-reserve--ui-450"></a>
+## A recruiting ability opens the Reserve at once — UI-450 (2026-11-03)
+
+The owner, about Brand's Call to Arms (the window turned into "On the board", "Abilities", a flag and a back button; the
+flag opened the Reserve; Confirm sent three figures at once): the Reserve opens right after the skill's click, the
+character's window keeps its form with no new buttons, recruitment is instant once a region is chosen, no Undo step in
+the window (the bottom panel's), and the same for every analogous case (Dáin's Iron Guard).
+
+- **The Reserve opens at once** (`CharacterRecruitDraft.Ruler`): a ruler's recruiting ability (Call to Arms, Iron Guard,
+  Mustering of the Mark — from its icon or its Ruler token) no longer moves the decision into the character's window
+  (`CharacterRosterActions.OwnsDecision`), so the window keeps its form, and the Reserve opens by itself; the flag button
+  is gone (the Balrog's entry keeps it).
+- **Each figure with its click; the last one sends** (`ComponentActions.Immediate`): every figure placed stands on the map
+  at once as planned, and the click that places the last figure the ability needs sends the recruitment — no ✓. The
+  console's ↶ takes back a placed figure until then.
+- **Not per-figure commits.** The server takes the ability as one command with all its figures (the rules need the
+  ability's full count, KINGS; `SovereignRecruitPlan`), so a figure placed is a planned figure until the last one; a
+  server-side step per figure (with no undo once placed) would be a change of its own.
+
+Playtest (owner's checklist):
+- [ ] `kings-brand-call-to-arms` (the Free Peoples). Click Brand's Call to Arms: the Reserve opens, his window stays as
+  it was. Place the North figures one by one on the lit settlements: each stands at once; the last one sends without a
+  ✓. ↶ before the last takes one back. The same with `kings-dain-iron-guard`.
+
+Tests: PlayMode `RulerTokenMenuTests`, `CharacterRosterActionNetworkTests`, `ExpansionAbilityNetworkTests`,
+`ExpansionTokenNetworkTests`, `UsableSkillLightNetworkTests`.
+
+<a id="the-councils-homelands-with-one-click--ui-451"></a>
+## The Council's homelands with one click — UI-451 (2026-11-03)
+
+The owner: when assigning homelands at the start for the members we separate, a click on the homeland moves that
+companion there, and the possible regions are marked more clearly.
+
+- **Every homeland lights at once** (`CouncilDraft.OpenHomelands`, as a placement target, UI-452's strong fill), and the
+  view comes to them once (UI-452's reveal); a companion's homeland where he is placed takes the gold edge.
+- **A click on a lit homeland starts its companion there** (`CouncilDraft.Region`): the selected companion when it is
+  his; else the one companion whose homeland it is and who is not there yet (Fate's Gimli moves between his two). The
+  Shire, shared by Merry and Pippin while both may start there, waits with its gold edge for the portrait of the one to
+  start there (the console names them). A portrait's click still selects, and its second click keeps a placed companion
+  with the Fellowship (UI-347); a drag still places.
+- **Still one ✓**: the draft collects the companions and the ✓ sends them together — how many leave decides the Shadow's
+  Council tokens.
+
+Playtest (owner's checklist):
+- [ ] `lords-council-homelands`. Expect: every homeland lit strongly; click Erebor: Gimli starts there (gold edge); click
+  Woodland Realm: Legolas. In `lords-council-setup` with both hobbits as alternates, click the Shire, then Merry: he
+  starts there.
+
+Tests: PlayMode `CouncilHomelandPanelNetworkTests`, `CouncilHomelandFateTests`, `CouncilHomelandLayoutTests`,
+`CouncilHomelandRecoveryTests`, `ExpansionDecisionNetworkTests`.
+
+<a id="every-placement-region-is-lit-clearly--ui-452"></a>
+## Every placement region is lit clearly — UI-452 (2026-11-03)
+
+The owner: with Monsters Roused mark clearly on the map every region where the recruitment may be made, and check the
+analogous effects.
+
+- **A placement target** (`MapDraftOverlay.PlacementTargets`, `MapRegionEmphasis.PlacementTarget`: green at .56 instead of
+  a move's .34, the targets' glowing edge): a Muster die's recruitment, a card's recruitment plan (Monsters Roused,
+  Misty Mountains, Orcs Multiplying, the Musterings, Kings and Fate recruitments), Monsters Roused's halves, a ruler's
+  recruitment and the Council's homelands. A move's targets keep their lighter fill.
+- **The view comes to them once per decision** (`TurnInteraction.RevealPlacements`): a card's, a ruler's or the Council's
+  placement brings every region it may take into the free map (none under a panel or off the view); a die's own Muster
+  in the player's action moves nothing.
+- **Left as they are** (to decide): a figure whose destination is fixed by its card (`ReserveFigures`: Glorfindel,
+  Thranduil's Archers, Brand's Men…, Gothmog's Fling, the Black Captain) lights its Reserve token, not a region — its
+  region's click would do nothing; a ruler-token Muster lights its regions once its figure is chosen.
+
+Tests: EditMode `MapTests.APlacementTargetIsLitMoreStronglyThanAMovesTarget`; PlayMode `GlowingHintAuditTests` (Monsters
+Roused's halves, the deck choices), `MusterNetworkTests`, `FateCardsNetworkTests`.

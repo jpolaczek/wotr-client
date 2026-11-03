@@ -141,11 +141,10 @@ namespace Wotr.Client
             root.Add(progress);
         }
 
+        // UI-448 (owner): the route's summary only — no "Declare position · Remain hidden" line, no Undo step (the console's
+        // Back undoes a step) and no Cancel (the console's Cancel option clears the route, RouteCancel).
         private void Route(VisualElement root)
         {
-            if (FellowshipDraft.LocationRoute(draft.Kind))
-                root.Add(new Label(draft.Kind == CommandKind.DeclareFellowship
-                    ? "Declare position · Remain hidden" : "Reveal position · Become revealed") { name = "fellowship-route-effect" });
             var row = BoardScreen.Row("travel-summary");
             root.Add(row);
             var summary = new Label { name = "travel-summary" };
@@ -161,25 +160,6 @@ namespace Wotr.Client
                     summary.tooltip = "Click a highlighted destination, or this region to stay." +
                         (summary.tooltip.Length > 0 ? "\n" + summary.tooltip : "");
             });
-            if (FellowshipDraft.SingleRoute(draft.Kind))
-            {
-                var actions = BoardScreen.Row();
-                // UI-105: only a drawn Fellowship route has steps to undo; a destination click moves at once.
-                if (FellowshipDraft.LocationRoute(draft.Kind))
-                {
-                    var undo = Choice("Undo step", "route-undo", () => false, () => FellowshipDraft.UndoRoute(draft));
-                    undo.tooltip = "Undo step · Remove the last region from the route";
-                    refresh.Add(() => undo.SetEnabled(draft.Payload.Route.Count > 0));
-                    actions.Add(undo);
-                }
-                var cancel = Choice("Cancel", "route-cancel", () => false, () => FellowshipDraft.CancelRoute(draft, view));
-                cancel.tooltip = draft.Kind == CommandKind.SeparateCompanions
-                    ? "Cancel · Clear the chosen companions and their route" : "Cancel · Clear the drawn route";
-                // UI-298: a forced separation starts with its companions chosen; Cancel waits until there is something to clear.
-                refresh.Add(() => cancel.SetEnabled(FellowshipDraft.CancelChanges(draft, view)));
-                actions.Add(cancel);
-                root.Add(actions);
-            }
         }
 
         private string Prompt => TravelDraft.TargetRoute(draft.Kind) ? "Choose a destination" : "Choose a route";

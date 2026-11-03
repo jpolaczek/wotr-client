@@ -42,6 +42,19 @@ namespace Wotr.EditorTests
             Assert.AreEqual(1, d.Armies.Count(a => a.RegionId == "helms-deep" && a.Garrison));
         }
 
+        // UI-452 (owner): a region a placement takes is lit as a target, more strongly than a move's.
+        [Test]
+        public void APlacementTargetIsLitMoreStronglyThanAMovesTarget()
+        {
+            var map = new MapCanvas(BoardPresentation.Load());
+            map.DraftOverlay.Targets.Add("osgiliath");
+            map.DraftOverlay.Targets.Add("erebor");
+            map.DraftOverlay.PlacementTargets.Add("erebor");
+            map.Redraw();
+            Assert.AreEqual(MapRegionEmphasis.Target, map.Renderer.CurrentEmphasis("osgiliath"));
+            Assert.AreEqual(MapRegionEmphasis.PlacementTarget, map.Renderer.CurrentEmphasis("erebor"));
+        }
+
         [Test]
         public void HoverIsSubtleAndNeverOverridesSelectionOrLegalTargets()
         {

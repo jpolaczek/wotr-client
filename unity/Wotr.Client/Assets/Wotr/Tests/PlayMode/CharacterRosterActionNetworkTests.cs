@@ -162,19 +162,25 @@ namespace Wotr.PlayTests
             await Inspect(room, room.Fp, "kings.sovereign.theoden");
             // UI-380: the token's ability stands on its chip (the command's "kings." prefix matches the printed id).
             await UseChip(room, room.Fp, "mustering-of-the-mark", "character-kings.sovereign.theoden-kings.mustering-of-the-mark", "theoden");
-            Assert.AreSame(board.Characters.DecisionHost, board.Tray.parent);
-            Assert.AreEqual(DisplayStyle.None, board.Characters.Inspector.Root.Q("character-limits").resolvedStyle.display);
+            // UI-450 (owner): the window keeps its form and the Reserve opens at once; each figure stands with its click and
+            // the last one sends the recruitment, its token and its die in one commit (no ✓).
+            Assert.AreNotSame(board.Characters.DecisionHost, board.Tray.parent, "The window keeps its form.");
+            Assert.IsTrue(board.Reinforcements.IsOpen, "The Reserve opens at once.");
             var revision = board.View.Revision;
-            foreach (var region in new[] { "edoras", "helms-deep", "edoras" })
+            var regions = new[] { "edoras", "helms-deep", "edoras" };
+            for (var index = 0; index < regions.Length; index++)
             {
-                board.Map.Select(region);
+                if (index == regions.Length - 1)
+                {
+                    Assert.AreEqual(revision, room.Fp.Board.View.Revision, "Nothing is sent before the last figure.");
+                    await KingsCardNetworkChecks.Layout(room, room.Fp, "ruler", "ui67");
+                    await KingsCardNetworkChecks.Reconnect(room, room.Fp);
+                }
+                room.Fp.Board.Map.Select(regions[index]);
                 await room.Settle();
-                PointerGestureEvents.ClickAt(board.Reinforcements.Root.Q<Button>("character-reserve-rohan-Regular"));
+                PointerGestureEvents.ClickAt(room.Fp.Board.Reinforcements.Root.Q<Button>("character-reserve-rohan-Regular"));
             }
-            Assert.AreEqual(revision, board.View.Revision, "Collective recruitment has one commit.");
-            await CharacterRosterActionLayoutChecks.Capture(room, room.Fp, "ruler");
-            await KingsCardNetworkChecks.Reconnect(room, room.Fp);
-            await room.Confirm(room.Fp);
+            await room.At(revision + 1);
             Assert.AreEqual("dismay", room.Sh.Board.View.RulerTokens.Single(t => t.Id == token).Location);
             Assert.AreEqual(DieFace.Muster, room.Sh.Board.View.Dice.Single(d => d.Id == die).Face);
             T22NetworkActions.Spent(room, Side.FreePeoples, die);

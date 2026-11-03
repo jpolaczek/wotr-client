@@ -101,6 +101,9 @@ namespace Wotr.Client
             tray.Confirm += Confirm;
             tray.ReinforcementsRequested += board.Reinforcements.Show;
             tray.ConfirmChanged += board.Reinforcements.ConfirmLegal;
+            // UI-448: the Fellowship's Declare beside Finish phase sends the drawn declaration as the tray's ✓ does.
+            tray.ConfirmChanged += board.Fellowship.DeclareReady;
+            board.Fellowship.DeclareConfirmed += Confirm;
             context = new ActionContextInteraction(board, Edit, () => SelectionBusy);
             cards = new CardContextInteraction(board, EditSelection,
                 () => SelectionBusy, ShowChoiceProblem, branchCarry);
@@ -411,6 +414,9 @@ namespace Wotr.Client
             if (FellowshipActions.UsesPanel(view, next))
                 board.Fellowship.Open();
             EditSelection(() => draft.Adopt(next), ComponentActions.Immediate(view, next));
+            // UI-450 (owner): a ruler's recruiting ability opens the Reserve at once, where its figures are chosen.
+            if (CharacterRecruitDraft.Ruler(view, draft))
+                board.Reinforcements.Show();
         }
 
         private void SubmitPreparedStep()
@@ -432,6 +438,9 @@ namespace Wotr.Client
             if (sender.Pending != null || previewLegal)
                 _ = Submit();
         }
+
+        // UI-452: the decision whose placement regions the view was brought to.
+        private string placementsRevealed = "";
 
         private void Back() => Edit(() =>
         {
@@ -724,6 +733,12 @@ namespace Wotr.Client
             if (choice.Kind == ConsoleOptionKind.Action && choice.Command.HasValue)
             {
                 Choose(choice.Command.Value);
+                return;
+            }
+            // UI-448: the console's Cancel clears the drawn route (or the chosen companions), as the panel's Cancel did.
+            if (choice.Kind == ConsoleOptionKind.CancelRoute)
+            {
+                Edit(() => FellowshipDraft.CancelRoute(draft, view));
                 return;
             }
             if (choice.Kind == ConsoleOptionKind.Reaction)
@@ -1086,6 +1101,21 @@ namespace Wotr.Client
             councilTravel.Refresh(view, draft, online && !CommandBusy);
             RevealRecovery();
             board.Map.DraftOverlay.Apply(view, draft, context.ArmyActive || muster.Active ? board.ActionDie : null);
+            RevealPlacements();
+        }
+
+        // UI-452 (owner): a decision that places figures or companions (a card's or a ruler's recruitment, Monsters Roused,
+        // the Council's homelands) brings the view once to every region it may take, so none stands under a panel or off the
+        // view; a die's own Muster in the player's action moves nothing.
+        private void RevealPlacements()
+        {
+            var decision = view?.Decision;
+            var targets = board.Map.DraftOverlay.PlacementTargets;
+            if (decision == null || decision.Kind == DecisionKind.Action || targets.Count == 0 || decision.Id == placementsRevealed ||
+                view.DecisionOwner != view.You || board.Map.contentRect.width <= 0)
+                return;
+            placementsRevealed = decision.Id;
+            board.Map.Reveal(targets.ToList());
         }
 
         private string AllocationHint(ActionOption allocation, string id)
@@ -1245,6 +1275,7 @@ namespace Wotr.Client
             input.DragChanged -= SuspendPreviews;
             board.CardFinalized -= FinalizeCard;
             tray.CardFinalized -= FinalizeCard;
+            board.Fellowship.DeclareConfirmed -= Confirm;
             policy.Changed -= PolicyChanged;
             policy.Dispose();
             board.DieSelected -= ChooseDie;

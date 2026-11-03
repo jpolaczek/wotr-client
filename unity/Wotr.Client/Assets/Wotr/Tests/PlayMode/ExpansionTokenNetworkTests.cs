@@ -66,19 +66,26 @@ namespace Wotr.PlayTests
                 var selectedRuler = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples).Id;
                 await ComponentGestures.Cost(room, room.Fp, selectedRuler);
                 await ComponentGestures.Select(room.Fp, "character-kings.sovereign.theoden-kings.mustering-of-the-mark");
-                foreach (var region in new[] { "edoras", "helms-deep", "edoras" })
+                // UI-450 (owner): the Reserve opens at once and the character's window keeps its form; the last figure's
+                // click sends the recruitment (no ✓), so the layout and a reconnect are checked before it.
+                Assert.IsTrue(room.Fp.Board.Reinforcements.IsOpen, "The ability's click opens the Reserve.");
+                Assert.AreNotSame(room.Fp.Board.Characters.DecisionHost, room.Fp.Board.Tray.parent, "The window keeps its form.");
+                var start = room.Fp.Board.View.Revision;
+                var regions = new[] { "edoras", "helms-deep", "edoras" };
+                for (var index = 0; index < regions.Length; index++)
                 {
-                    room.Fp.Board.Map.Select(region);
+                    if (index == regions.Length - 1)
+                    {
+                        var cost = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
+                        Assert.IsNull(room.Fp.Board.Tray.Q<Button>("cost-" + cost.Id), "UI-239: the only die is taken for the player.");
+                        Assert.AreEqual(DieFace.Character, cost.Face, "The draft must not change the projected die.");
+                        await Layout(room, room.Fp, "ruler-recruit", "ui09");
+                        await Reconnect(room, room.Fp);
+                    }
+                    room.Fp.Board.Map.Select(regions[index]);
                     Click(room.Fp, "character-reserve-rohan-Regular");
                 }
-                Assert.AreSame(room.Fp.Board.Characters.DecisionHost, room.Fp.Board.Tray.parent,
-                    "The selected ability stays in its character inspector without a second action selection.");
-                var cost = room.Fp.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);
-                Assert.IsNull(room.Fp.Board.Tray.Q<Button>("cost-" + cost.Id), "UI-239: the only die is taken for the player.");
-                Assert.AreEqual(DieFace.Character, cost.Face, "The draft must not change the projected die.");
-                await Layout(room, room.Fp, "ruler-recruit", "ui09");
-                await Reconnect(room, room.Fp);
-                await room.Confirm(room.Fp);
+                await room.At(start + 1);
                 Assert.AreEqual(edoras + 2, room.Sh.Board.View.Units.Count(u => u.Location == "edoras"));
                 Assert.AreEqual("dismay", room.Sh.Board.View.RulerTokens.Single(t => t.Id.EndsWith("theoden")).Location);
                 var die = room.Sh.Board.View.Dice.Single(d => d.Source == "ruler" && d.Owner == Side.FreePeoples);

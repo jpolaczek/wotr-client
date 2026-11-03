@@ -559,7 +559,10 @@
 .fellowship-panel .draft-status { white-space: normal; }
 .fellowship-panel.fellowship-route { width: 360px; }
 .fellowship-route .travel-summary { flex-wrap: wrap; }
-.fellowship-panel #fellowship-route-effect { color: rgb(231, 209, 160); white-space: normal; }
+/* UI-448 (owner): while the declaration is drawn, the panel keeps the route's summary only — Declare (beside Finish
+   phase) sends it and the console holds the hint, Back and Cancel. */
+#board-screen .fellowship-panel.fellowship-declaring #confirm-decision,
+#board-screen .fellowship-panel.fellowship-declaring .draft-status { display: none; }
 .fellowship-panel .companion-token {
     width: 68px;
     min-width: 32px;

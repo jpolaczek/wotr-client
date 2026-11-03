@@ -170,7 +170,9 @@ namespace Wotr.PlayTests
                 PointerGestureEvents.ClickAt(Portrait(board, id));
             await settle();
             Assert.AreEqual(camera, board.Map.Camera.Pan, "Selecting a portrait never moves the camera.");
-            Assert.IsTrue(board.Map.DraftOverlay.Targets.Contains(region));
+            // UI-451: a homeland lights while a companion may start there; the one he already stands in keeps the gold edge.
+            Assert.IsTrue(board.Map.DraftOverlay.Targets.Contains(region) || board.Map.DraftOverlay.ChosenRegions.Contains(region),
+                region + " is lit as a homeland.");
             // Reach the actual contour using the same bounded camera navigation as a player.
             MapContourProbe.ReachRegion(board.Map, region);
             await settle();

@@ -215,10 +215,10 @@ namespace Wotr.PlayTests
                 yield return Settle();
                 Assert.IsTrue(client.Board.Cards.Pinned);
                 Assert.IsNotNull(client.Board.Tray.Q<Button>("confirm-decision"), "UI-219: a drawn route is sent with ✓.");
-                PointerGestureEvents.ClickAt(client.Board.Tray.Q<Button>("route-undo"));
-                yield return Settle();
-                StringAssert.Contains("North Anduin Vale", client.Board.Tray.Q<Label>("travel-summary").text);
-                Assert.IsTrue(client.Board.Map.DraftOverlay.Targets.Contains("dol-guldur"));
+                // UI-448: the panel has no Undo step; the console's ↶ undoes the route's last step, which needs a connection
+                // (this client is offline) and is clicked on a real server in FellowshipNetworkTests.
+                Assert.IsNull(client.Board.Tray.Q<Button>("route-undo"), "No Undo step in the panel.");
+                Assert.IsNull(client.Board.Tray.Q<Button>("route-cancel"), "No Cancel in the panel.");
             }
         }
 

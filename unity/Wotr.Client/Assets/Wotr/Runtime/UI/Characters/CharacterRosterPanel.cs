@@ -30,6 +30,8 @@ namespace Wotr.Client
         public Func<IEnumerable<Rect>> FixedOcclusions { get; set; }
         private readonly DrawerHover hover;
         private readonly BoardPresentation data;
+        // UI-449: brings the camera to a region (the map's focus).
+        private readonly Action<string> locate;
         private readonly Dictionary<string, CharacterRosterRow> rows = new Dictionary<string, CharacterRosterRow>();
         private readonly Dictionary<CharacterRosterSection, VisualElement> sections = new Dictionary<CharacterRosterSection, VisualElement>();
         private readonly Foldout removed = new Foldout { text = "Removed", value = false, name = "characters-removed" };
@@ -63,6 +65,7 @@ namespace Wotr.Client
         public CharacterRosterPanel(VisualElement surface, BoardPresentation data, Action<string> focus)
         {
             this.data = data;
+            locate = focus;
             Tab = BoardScreen.Button("Characters", Open);
             Tab.name = "characters-tab";
             Tab.AddToClassList("characters-tab");
@@ -376,7 +379,10 @@ namespace Wotr.Client
                 if (Enterable(id))
                     EntryRequested?.Invoke(id);
                 else
+                {
                     Show(id, true, row);
+                    LocateOnBoard(id);
+                }
             };
             row.RegisterCallback<NavigationSubmitEvent>(e =>
             {
@@ -385,6 +391,16 @@ namespace Wotr.Client
                 EntryRequested?.Invoke(id);
                 e.StopImmediatePropagation();
             }, TrickleDown.TrickleDown);
+        }
+
+        // UI-449 (owner): a row's click on a character in play also brings the camera to its figure; one off the board
+        // moves nothing (an inspection opened any other way never moves the camera).
+        private void LocateOnBoard(string id)
+        {
+            var entry = view?.OwnCharacterRoster.FirstOrDefault(row => row.FigureId == id);
+            var region = entry == null ? "" : PlacePresentation.CameraRegion(view, entry, data.Regions);
+            if (region.Length > 0)
+                locate(region);
         }
 
         public void Observe(VisualElement element, string id)

@@ -138,6 +138,9 @@ namespace Wotr.PlayTests
             await room.Settle();
             Assert.AreEqual("base.character.gimli", board.Characters.Inspector.FigureId);
             Assert.AreEqual(DisplayStyle.Flex, board.Characters.Inspector.Root.resolvedStyle.display);
+            // UI-449 (owner): the row's click brings the camera to a character on the board; nothing after it moves the camera.
+            AssertCameraOnCharacter(board, "base.character.gimli");
+            pan = board.Map.Camera.Pan;
             await ComponentGestures.Hover(board.Characters.Inspector.Root.Q("character-statistics"));
             Assert.AreEqual(DisplayStyle.Flex, board.Characters.Root.resolvedStyle.display);
             var ability = board.Characters.Inspector.Root.Q<Button>("character-ability-combat-strength-plus-one");
@@ -271,6 +274,9 @@ namespace Wotr.PlayTests
                     PointerGestureEvents.ClickAt(portrait);
                     await room.Settle();
                     Assert.AreEqual(id, board.Characters.Inspector.FigureId);
+                    // UI-449: the row's click brings the camera to the king on the board; a hover or Show never did.
+                    AssertCameraOnCharacter(board, id);
+                    pan = board.Map.Camera.Pan;
                 }
                 Assert.AreEqual(pan, board.Map.Camera.Pan);
                 Assert.AreEqual(revision, board.View.Revision);
@@ -288,6 +294,18 @@ namespace Wotr.PlayTests
                 Assert.GreaterOrEqual(SkillIcon.Glyph(icon).worldBound.width, 14.5f, icon.name);
                 Assert.AreEqual(0f, icon.resolvedStyle.borderTopWidth, icon.name);
             }
+        }
+
+        // UI-449: a character on the board (or in the Fellowship, whose region this player sees) stands in the camera's view.
+        private static void AssertCameraOnCharacter(BoardScreen board, string id)
+        {
+            var row = board.View.OwnCharacterRoster.Single(entry => entry.FigureId == id);
+            var region = PlacePresentation.CameraRegion(board.View, row, board.Presentation.Regions);
+            if (region.Length == 0)
+                return;
+            var anchor = board.Map.Data.Shapes[region].Anchor;
+            Assert.IsTrue(board.Map.contentRect.Contains(board.Map.Camera.ToScreen(new Vector2(anchor[0], anchor[1]))),
+                id + "'s region " + region + " is in view after the row's click.");
         }
     }
 }

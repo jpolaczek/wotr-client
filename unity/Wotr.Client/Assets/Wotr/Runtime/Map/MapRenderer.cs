@@ -185,6 +185,8 @@ namespace Wotr.Client
                 return MapRegionEmphasis.Attack;
             if (draft?.PlannedRegions.Contains(id) == true || draft?.ChosenRegions.Contains(id) == true)
                 return MapRegionEmphasis.Selected;
+            if (draft?.PlacementTargets.Contains(id) == true)
+                return MapRegionEmphasis.PlacementTarget;
             if (draft?.Targets.Contains(id) == true)
                 return MapRegionEmphasis.Target;
             if (draft?.SourceRegions.Contains(id) == true)
