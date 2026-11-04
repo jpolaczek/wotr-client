@@ -16,6 +16,7 @@ namespace Wotr.Client
         private const float RingGap = 3;
         private const float SettlementRing = 15;
         private const float PortraitGap = 6;
+        private const float AboveGap = 8;
         private readonly MapCanvas map;
         private readonly List<TraceSet> sets = new List<TraceSet>();
         private readonly IVisualElementScheduledItem layout;
@@ -91,6 +92,7 @@ namespace Wotr.Client
             private readonly List<(VisualElement Element, string Region, Side Side, bool Garrison, Rect Safe)> portraits =
                 new List<(VisualElement, string, Side, bool, Rect)>();
             private readonly List<(ObjectGlow Glow, string Region)> fellowships = new List<(ObjectGlow, string)>();
+            private readonly List<(VisualElement Element, string Region)> above = new List<(VisualElement, string)>();
             private bool ended;
             public VisualElement Root { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
             public VisualElement Plates { get; } = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -190,6 +192,15 @@ namespace Wotr.Client
                 return this;
             }
 
+            // UI-492: a plate centred above a region's anchor (a card's dice), whichever force stands there.
+            public TraceSet Above(string region, VisualElement plate)
+            {
+                Plates.Add(plate);
+                above.Add((plate, region));
+                Layout();
+                return this;
+            }
+
             // UI-309: the Fellowship's figure on its region (a separation's public origin) glows (UI-314).
             public TraceSet Fellowship(string region)
             {
@@ -254,6 +265,12 @@ namespace Wotr.Client
                 }
                 foreach (var (glow, region) in fellowships)
                     glow.Follow(owner.map.FellowshipMarker.Bounds(region).HasValue ? owner.map.FellowshipMarker.Root : null);
+                foreach (var (element, region) in above)
+                {
+                    var anchor = owner.Anchor(region);
+                    element.style.left = anchor.x;
+                    element.style.top = anchor.y - AboveGap;
+                }
                 Root.MarkDirtyRepaint();
             }
 

@@ -196,9 +196,10 @@ namespace Wotr.Client
                 CloseTransient();
         }
 
+        // UI-490 (owner, 2026-11-04): a card the presentation shows waits for the player's return like the rest of it.
         private void FocusChanged(bool focused)
         {
-            if (!focused)
+            if (!focused && !Root.ClassListContains(CardRevealPresenter.PresentedClass))
             {
                 CloseTransient();
             }

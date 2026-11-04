@@ -16,18 +16,20 @@ namespace Wotr.PlayTests
     // rounds play in the existing battle window, from public snapshots — a committed card stays a back, both cards turn
     // face up together, a roll rings the dice it changed, committed casualties are marked before they leave (a downgrade
     // as its replacement), a character lost with its army is ringed on its portrait, later rounds stay in the same
-    // window, and a retreat or an advance returns to the map. Frames go to .artifacts/screenshots (ui311-*).
+    // window, and a retreat or an advance returns to the map. Frames go to .artifacts/screenshots (ui311-*). TEST-20 (owner,
+    // 2026-11-04): each scene also plays with the Shadow watching the Free Peoples attack.
     public sealed class OpponentBattlePresentationTests
     {
         private const string BattleId = "presented-battle";
         private const string WitchKing = "base.character.witch-king";
+        private const string Gimli = "base.character.gimli";
         internal const string ShadowCard = "base.sh.strategy.13";
         internal const string FreeCard = "base.fp.strategy.14";
 
         [UnityTest]
-        public IEnumerator TheAttackOpensTheBattleWindowAfterItsTraceAndTheReleaseGivesBackTheControls()
+        public IEnumerator TheAttackOpensTheBattleWindowAfterItsTraceAndTheReleaseGivesBackTheControls([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return stage.Ready();
             stage.Play(fight.Latest(), "grey-havens", fight.Steps.ToArray());
             yield return stage.Until(() => stage.Board.Battles.IsOpen && stage.Board.Battles.Presenting);
@@ -42,9 +44,9 @@ namespace Wotr.PlayTests
         // UI-335 (owner 2026-10-25): the presented round and the decision share the window's one ribbon — the decision only
         // joins it — so a stage reached in the presentation is not glided to again at the release.
         [UnityTest]
-        public IEnumerator ThePresentedRoundAndTheDecisionShareOneRibbon()
+        public IEnumerator ThePresentedRoundAndTheDecisionShareOneRibbon([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return stage.Ready();
             stage.Play(fight.Latest(), "grey-havens", fight.Steps.ToArray());
             yield return stage.Until(() => stage.Board.Battles.IsOpen && stage.Board.Battles.Presenting);
@@ -59,17 +61,17 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator TheCommittedCardStaysABackUntilBothCardsTurnFaceUpTogether()
+        public IEnumerator TheCommittedCardStaysABackUntilBothCardsTurnFaceUpTogether([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
-            round.Decide(Side.Shadow);
+            round.Decide(stage.Opponent);
             round.Record(battle =>
             {
                 battle.Stage = "DefenderCard";
                 Commit(battle.Attacker);
-            }).Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 1 });
+            }).Facts.Cards.Add(new ActionCardFact { Owner = stage.Opponent, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 1 });
             round.Record(battle => Commit(battle.Defender));
             round.Reveal(Side.Shadow, ShadowCard);
             round.Reveal(Side.FreePeoples, FreeCard);
@@ -82,16 +84,16 @@ namespace Wotr.PlayTests
             Assert.IsTrue(Card(stage, "defender").ClassListContains("battle-card-revealed"), "Both cards turn face up together.");
             StringAssert.Contains("Initiative", Card(stage, "attacker").text, "The initiative reads on the card.");
             yield return stage.Until(() => Card(stage, "attacker")?.ClassListContains(BattlePresenter.CardMarkClass) == true);
-            LayoutTests.Save(stage.Texture, "ui311-reveal.png");
+            stage.Save("ui311-reveal.png");
             yield return stage.Until(() => Card(stage, "attacker")?.ClassListContains(BattlePresenter.CardMarkClass) != true);
             Assert.GreaterOrEqual(Time.realtimeSinceStartup - started, 2.8f, "The reveal holds about 3 s.");
             yield return stage.Released();
         }
 
         [UnityTest]
-        public IEnumerator AClickOnARevealedCardOpensItReadOnlyAndHoldsThePresentation()
+        public IEnumerator AClickOnARevealedCardOpensItReadOnlyAndHoldsThePresentation([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
             round.Reveal(Side.Shadow, ShadowCard);
@@ -100,7 +102,7 @@ namespace Wotr.PlayTests
             stage.Play(round.Latest(), null, round.Steps.ToArray());
             yield return stage.Until(() => Card(stage, "attacker")?.ClassListContains("battle-card-revealed") == true);
             PointerGestureEvents.ClickAt(Card(stage, "attacker"));
-            yield return stage.Until(() => stage.Board.Cards.CardId == ShadowCard && stage.Board.Cards.Root.style.display.value == DisplayStyle.Flex);
+            yield return stage.Until(() => stage.Board.Cards.CardId == CardOf(stage.Opponent) && stage.Board.Cards.Root.style.display.value == DisplayStyle.Flex);
             Assert.AreEqual(DisplayStyle.None, stage.Board.Cards.Root.Q(className: "card-toolbar").resolvedStyle.display, "Read-only: no Play bar.");
             yield return new WaitForSecondsRealtime(4f);
             Assert.IsTrue(stage.Playback.Holding, "The presentation holds while the card is read.");
@@ -109,9 +111,9 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator ARollRingsTheDiceItChangedAndARerollOnlyItsDie()
+        public IEnumerator ARollRingsTheDiceItChangedAndARerollOnlyItsDie([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
             round.Record(battle => Roll(battle.Attacker, "a", 6, 5, 2, 1));
@@ -126,7 +128,7 @@ namespace Wotr.PlayTests
             stage.Play(round.Latest(), null, round.Steps.ToArray());
             yield return stage.Until(() => Rolled(stage).Count == 4);
             CollectionAssert.AreEquivalent(new[] { "battle-die-a0", "battle-die-a1", "battle-die-a2", "battle-die-a3" }, Rolled(stage), "The attacker's roll.");
-            LayoutTests.Save(stage.Texture, "ui311-roll.png");
+            stage.Save("ui311-roll.png");
             yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d0", "battle-die-d1" }));
             yield return stage.Until(() => Rolled(stage).SequenceEqual(new[] { "battle-die-d1" }));
             Assert.IsTrue(stage.Playback.Holding, "The reroll rings only its die.");
@@ -134,9 +136,9 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator ACancelledCardIsRingedWithItsCancellation()
+        public IEnumerator ACancelledCardIsRingedWithItsCancellation([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             fight.Record(Faces);
             yield return Open(stage, fight);
             var round = fight.Next();
@@ -148,15 +150,16 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator CommittedLossesAreMarkedBeforeTheyLeaveWithADowngradeAsItsReplacement()
+        public IEnumerator CommittedLossesAreMarkedBeforeTheyLeaveWithADowngradeAsItsReplacement([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
-            var regular = round.Units("sauron", UnitKind.Regular).First();
-            var elite = round.Units("sauron", UnitKind.Elite).First();
-            var replacement = stage.Reserve("sauron", UnitKind.Regular, 1).Single();
-            var losses = round.Decide(Side.Shadow);
+            var nation = stage.Main;
+            var regular = round.Units(nation, UnitKind.Regular).First();
+            var elite = round.Units(nation, UnitKind.Elite).First();
+            var replacement = stage.Reserve(nation, UnitKind.Regular, 1).Single();
+            var losses = round.Decide(stage.Opponent);
             losses.Facts.LossDetails.Add(new ActionLossFact { Figure = stage.Unit(regular), Operation = BattleLossKind.Remove, RegionId = "minas-morgul", Hits = 1 });
             losses.Facts.LossDetails.Add(new ActionLossFact
             {
@@ -166,7 +169,7 @@ namespace Wotr.PlayTests
             round.Change(battle =>
             {
                 battle.Attacker.Units.RemoveAll(u => u.Id == regular || u.Id == elite);
-                battle.Attacker.Units.Add(new UnitView { Id = replacement, Nation = "sauron", Kind = UnitKind.Regular, Side = Side.Shadow, Location = "minas-morgul" });
+                battle.Attacker.Units.Add(new UnitView { Id = replacement, Nation = nation, Kind = UnitKind.Regular, Side = stage.Opponent, Location = "minas-morgul" });
                 battle.Attacker.ParticipantIds = battle.Attacker.Units.Select(u => u.Id).ToList();
             });
             var final = round.Latest();
@@ -174,28 +177,28 @@ namespace Wotr.PlayTests
             PresentedBoardStage.Place(final, new[] { replacement }, "minas-morgul");
             stage.Play(final, null, round.Steps.ToArray());
             // UI-337: one hit per committed loss, in the recorded order — first the Regular…
-            yield return stage.Until(() => Struck(stage, "sauron-Regular"));
+            yield return stage.Until(() => Struck(stage, nation + "-Regular"));
             var burst = stage.Board.Root.Q(BattleHits.BurstName);
             Assert.IsNotNull(burst, "A hit bursts over the struck stack.");
-            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-attacker").Q("battle-figure-sauron-Regular").worldBound
+            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-attacker").Q("battle-figure-" + nation + "-Regular").worldBound
                 .Contains(burst.worldBound.center), "The hit lands on the stack.");
-            Assert.AreEqual("×3", Figure(stage, "attacker", "sauron-Regular"), "The figure stands while it is hit.");
-            Assert.IsFalse(Struck(stage, "sauron-Elite"), "One loss at a time.");
-            Assert.IsFalse(stage.Board.Battles.Presented.Q("battle-figure-sauron-Regular").ClassListContains(BattleHits.LeavingClass),
+            Assert.AreEqual("×3", Figure(stage, "attacker", nation + "-Regular"), "The figure stands while it is hit.");
+            Assert.IsFalse(Struck(stage, nation + "-Elite"), "One loss at a time.");
+            Assert.IsFalse(stage.Board.Battles.Presented.Q("battle-figure-" + nation + "-Regular").ClassListContains(BattleHits.LeavingClass),
                 "Two Regulars stay.");
-            LayoutTests.Save(stage.Texture, "ui337-hit-regular.png");
-            yield return stage.Until(() => Figure(stage, "attacker", "sauron-Regular") == "×2");
-            Assert.AreEqual("×1", Figure(stage, "attacker", "sauron-Elite"), "The Elite is not hit yet.");
+            stage.Save("ui337-hit-regular.png");
+            yield return stage.Until(() => Figure(stage, "attacker", nation + "-Regular") == "×2");
+            Assert.AreEqual("×1", Figure(stage, "attacker", nation + "-Elite"), "The Elite is not hit yet.");
             // …then the Elite, the last of its stack, which fades and becomes a Regular.
-            yield return stage.Until(() => Struck(stage, "sauron-Elite"));
-            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-figure-sauron-Elite").ClassListContains(BattleHits.LeavingClass));
+            yield return stage.Until(() => Struck(stage, nation + "-Elite"));
+            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-figure-" + nation + "-Elite").ClassListContains(BattleHits.LeavingClass));
             yield return null;
             yield return null;
-            LayoutTests.Save(stage.Texture, "ui337-hit-elite.png");
-            yield return stage.Until(() => Figure(stage, "attacker", "sauron-Elite") == null);
-            Assert.AreEqual("×3", Figure(stage, "attacker", "sauron-Regular"), "One Regular left, one replaced the Elite.");
+            stage.Save("ui337-hit-elite.png");
+            yield return stage.Until(() => Figure(stage, "attacker", nation + "-Elite") == null);
+            Assert.AreEqual("×3", Figure(stage, "attacker", nation + "-Regular"), "One Regular left, one replaced the Elite.");
             Assert.IsNull(stage.Board.Root.Q(BattleHits.BurstName), "The hit is over.");
-            LayoutTests.Save(stage.Texture, "ui337-downgraded.png");
+            stage.Save("ui337-downgraded.png");
             yield return stage.Released();
         }
 
@@ -203,13 +206,14 @@ namespace Wotr.PlayTests
             stage.Board.Battles.Presented.Q("battle-attacker")?.Q("battle-figure-" + kind)?.ClassListContains(BattleHits.HitClass) == true;
 
         [UnityTest]
-        public IEnumerator TheWitchKingLostWithHisArmyIsRingedOnHisPortrait()
+        public IEnumerator TheWitchKingLostWithHisArmyIsRingedOnHisPortrait([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
-            var king = PresentedBoardStage.Figure(stage.Before.Characters.Single(c => c.Id == WitchKing));
-            round.Decide(Side.Shadow).Facts.Figures.Add(new ActionFigureChange { Before = king, After = king, From = "minas-morgul", To = "casualties" });
+            var commander = Commander(stage);
+            var king = PresentedBoardStage.Figure(stage.Before.Characters.Single(c => c.Id == commander));
+            round.Decide(stage.Opponent).Facts.Figures.Add(new ActionFigureChange { Before = king, After = king, From = "minas-morgul", To = "casualties" });
             round.Change(battle =>
             {
                 battle.Attacker.Units.Clear();
@@ -217,18 +221,18 @@ namespace Wotr.PlayTests
                 battle.Attacker.ParticipantIds.Clear();
             });
             var final = round.Latest();
-            final.Characters.RemoveAll(c => c.Id == WitchKing);
+            final.Characters.RemoveAll(c => c.Id == commander);
             stage.Play(final, null, round.Steps.ToArray());
-            yield return stage.Until(() => stage.Board.Battles.Presented.Q("portrait-" + WitchKing) is { } portrait &&
+            yield return stage.Until(() => stage.Board.Battles.Presented.Q("portrait-" + commander) is { } portrait &&
                 PresentationGlow.IsLit(portrait));
-            LayoutTests.Save(stage.Texture, "ui311-character-lost.png");
+            stage.Save("ui311-character-lost.png");
             yield return stage.Released();
         }
 
         [UnityTest]
-        public IEnumerator ALaterRoundStaysInTheSameWindow()
+        public IEnumerator ALaterRoundStaysInTheSameWindow([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             fight.Record(Faces);
             yield return Open(stage, fight);
             var window = stage.Board.Battles.Root.worldBound;
@@ -253,13 +257,14 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator ARetreatAndAnAdvanceReturnToTheMap()
+        public IEnumerator ARetreatAndAnAdvanceReturnToTheMap([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
+            var there = stage.Army("osgiliath");
             var round = fight.Next();
-            var defenders = stage.Before.Units.Where(u => u.Location == "osgiliath" && u.Side == Side.FreePeoples).Select(u => u.Id).ToList();
-            var attackers = round.Units("sauron", null);
+            var defenders = stage.Before.Units.Where(u => u.Location == "osgiliath" && u.Side == stage.Viewer).Select(u => u.Id).ToList();
+            var attackers = round.Units(stage.Main, null);
             round.Record(battle => battle.Stage = "Advance").Movements.Add(new ActionMovement
             {
                 Kind = ActionMovementKind.Retreat, From = "osgiliath", To = "minas-tirith", Participants = defenders.Select(stage.Unit).ToList()
@@ -275,22 +280,22 @@ namespace Wotr.PlayTests
             yield return stage.Until(() => stage.Flying("minas-tirith"));
             // UI-333: the battle is decided and the next scene (the retreat on the map) begins: its window steps aside.
             Assert.IsFalse(stage.Board.Battles.IsOpen, "The finished battle's window closes as the next scene starts.");
-            LayoutTests.Save(stage.Texture, "ui333-window-closed.png");
+            stage.Save("ui333-window-closed.png");
             yield return stage.Until(() => stage.Flying("osgiliath"));
             Assert.IsFalse(stage.Board.Battles.IsOpen, "It stays closed for the advance.");
             yield return stage.Released();
-            Assert.AreEqual(attackers.Count, stage.Army("osgiliath"));
+            Assert.AreEqual(there + attackers.Count, stage.Army("osgiliath"));
         }
 
         // UI-333: a battle window the player dragged to a place of their own stays through the next scenes.
         [UnityTest]
-        public IEnumerator AMovedBattleWindowStaysWhenTheNextSceneStarts()
+        public IEnumerator AMovedBattleWindowStaysWhenTheNextSceneStarts([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             stage.Board.Windows.Remember(stage.Board.Battles.Root.name, new Vector2(40, 60));
             var round = fight.Next();
-            var attackers = round.Units("sauron", null);
+            var attackers = round.Units(stage.Main, null);
             round.Record(battle => battle.Stage = "Complete").Movements.Add(new ActionMovement
             {
                 Kind = ActionMovementKind.Advance, From = "minas-morgul", To = "osgiliath", Participants = attackers.Select(stage.Unit).ToList()
@@ -304,15 +309,15 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator ASiegeExtensionShowsItsFigureChangeInTheWindow()
+        public IEnumerator ASiegeExtensionShowsItsFigureChangeInTheWindow([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = Attack(out var fight);
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
-            var elite = round.Units("sauron", UnitKind.Elite).Single();
-            var regular = stage.Reserve("sauron", UnitKind.Regular, 1).Single();
-            var extend = round.Decide(Side.Shadow);
-            extend.Costs.Add(new ActionCost { Kind = ActionCostKind.Figure, Id = elite, Owner = Side.Shadow, Source = "extend-siege" });
+            var elite = round.Units(stage.Main, UnitKind.Elite).Single();
+            var regular = stage.Reserve(stage.Main, UnitKind.Regular, 1).Single();
+            var extend = round.Decide(stage.Opponent);
+            extend.Costs.Add(new ActionCost { Kind = ActionCostKind.Figure, Id = elite, Owner = stage.Opponent, Source = "extend-siege" });
             extend.Facts.Figures.Add(stage.Change(elite, "minas-morgul", "reserve"));
             extend.Facts.Figures.Add(stage.Change(regular, "reserve", "minas-morgul"));
             round.Change(battle => battle.Round = 2);
@@ -326,10 +331,120 @@ namespace Wotr.PlayTests
             yield return stage.Released();
         }
 
+        // UI-491 (owner, 2026-11-04): a quiet decision reads as one short caption on its side's column, and the ribbon steps as
+        // ever. The commands that come with a scene of their own have none.
         [UnityTest]
-        public IEnumerator SkipEndsOnTheLatestStateAndGivesTheControlsBack()
+        public IEnumerator AQuietDecisionStandsAsOneCaptionOnItsSidesColumn([Values(Side.FreePeoples, Side.Shadow)] Side viewer,
+            [Values(CommandKind.HoldBattle, CommandKind.ContinueBattle, CommandKind.StopBattle, CommandKind.FightFieldBattle, CommandKind.UseEvilKnowledge)]
+            CommandKind command)
+        {
+            using var stage = Attack(out var fight, viewer: viewer);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            var decision = round.Decide(stage.Opponent);
+            decision.Command = command;
+            round.Change(battle => battle.Stage = "NextRound");
+            var stageBefore = StageName(stage);
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            var plate = default(Label);
+            yield return stage.Until(() => (plate = stage.Board.Root.Q<Label>(BattlePresenter.PlateName)) != null);
+            var started = Time.realtimeSinceStartup;
+            Assert.AreEqual(BattleChoiceCaption.Of(command), plate.text);
+            Assert.AreEqual(PickingMode.Ignore, plate.pickingMode, "Nothing to click.");
+            Assert.AreEqual(1, stage.Board.Root.Query(BattlePresenter.PlateName).ToList().Count, "One caption.");
+            Assert.AreEqual(stageBefore, StageName(stage), "It comes before what the decision causes.");
+            yield return new WaitForSecondsRealtime(.25f);
+            Assert.IsTrue(stage.Board.Battles.Presented.Q("battle-attacker").worldBound.Overlaps(plate.worldBound), "On the side that decided.");
+            if (command == CommandKind.HoldBattle)
+                LayoutTests.Save(stage.Texture, "ui491-caption-" + viewer + ".png");
+            yield return stage.Until(() => stage.Board.Root.Q(BattlePresenter.PlateName) == null);
+            Assert.AreEqual(BattlePresenter.ChoiceSeconds, Time.realtimeSinceStartup - started, .35f, "A short beat.");
+            yield return stage.Released();
+            Assert.IsEmpty(stage.Lit);
+        }
+
+        [UnityTest]
+        public IEnumerator NoCardIsACaptionAndACommittedCardStaysABackWithoutOne([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = Attack(out var fight, viewer: viewer);
+            yield return Open(stage, fight);
+            var round = fight.Next();
+            var none = round.Decide(stage.Opponent);
+            none.Command = CommandKind.CommitCombatCard;
+            none.Facts.Cards.Add(new ActionCardFact { Owner = stage.Opponent, Use = ActionCardUse.CombatCommit, Deck = "", Count = 0 });
+            round.Change(battle => battle.Stage = "DefenderCard");
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            yield return stage.Until(() => stage.Board.Root.Q<Label>(BattlePresenter.PlateName)?.text == "No card");
+            yield return new WaitForSecondsRealtime(.25f);
+            LayoutTests.Save(stage.Texture, "ui491-no-card-" + viewer + ".png");
+            yield return stage.Released();
+            var next = round.Next();
+            var committed = next.Decide(stage.Opponent);
+            committed.Command = CommandKind.CommitCombatCard;
+            committed.Facts.Cards.Add(new ActionCardFact { Owner = stage.Opponent, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 1 });
+            next.Change(battle =>
+            {
+                battle.Stage = "DefenderCard";
+                battle.Round = 2;
+                Commit(battle.Attacker);
+            });
+            stage.Play(next.Latest(), null, next.Steps.ToArray());
+            yield return stage.Until(() => Card(stage, "attacker")?.ClassListContains("battle-card-back") == true);
+            Assert.IsNull(stage.Board.Root.Q(BattlePresenter.PlateName), "A committed card is hidden: no caption.");
+            Assert.IsFalse(Card(stage, "attacker").text.Contains("Initiative"), "And no identity.");
+            yield return stage.Released();
+        }
+
+        // UI-491: the player's closed window hosts nothing, and takes no time.
+        [UnityTest]
+        public IEnumerator AClosedWindowWaitsForNoCaption()
         {
             using var stage = Attack(out var fight);
+            yield return Open(stage, fight);
+            stage.Board.Battles.Close();
+            var round = fight.Next();
+            round.Decide(stage.Opponent).Command = CommandKind.HoldBattle;
+            round.Change(battle => battle.Stage = "NextRound");
+            stage.Play(round.Latest(), null, round.Steps.ToArray());
+            for (var frame = 0; frame < 10 && stage.Playback.Holding; frame++)
+            {
+                Assert.IsNull(stage.Board.Root.Q(BattlePresenter.PlateName));
+                yield return null;
+            }
+            yield return stage.Released();
+        }
+
+        // UI-493 (owner, 2026-11-04): the hand count steps as the card goes down, keeping its deck, and never names it.
+        [UnityTest]
+        public IEnumerator TheHandCountStepsWithTheCommittedCard([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = Attack(out var fight, viewer: viewer);
+            stage.Hands(4, 4);
+            yield return Open(stage, fight);
+            var count = stage.Board.TopBar.Opponent.Root.Q("opponent-cards").Q<Label>(className: "summary-value");
+            Assert.AreEqual("4", count.text);
+            var round = fight.Next();
+            round.Decide(stage.Opponent).Facts.Cards.Add(new ActionCardFact { Owner = stage.Opponent, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 1 });
+            round.Change(battle =>
+            {
+                battle.Stage = "DefenderCard";
+                Commit(battle.Attacker);
+            });
+            var latest = round.Latest();
+            latest.Players.Single(p => p.Side == stage.Opponent).HandCount = 3;
+            stage.Play(latest, null, round.Steps.ToArray());
+            yield return stage.Until(() => count.text == "3");
+            Assert.IsTrue(stage.Playback.Holding, "It steps in the presentation.");
+            Assert.AreEqual(4, stage.Board.View.Players.Single(p => p.Side == stage.Opponent).HandCount, "The board's view waits.");
+            yield return stage.Until(() => Card(stage, "attacker")?.ClassListContains("battle-card-back") == true);
+            yield return stage.Released();
+            Assert.AreEqual("3", count.text, "The release does not count it again.");
+        }
+
+        [UnityTest]
+        public IEnumerator SkipEndsOnTheLatestStateAndGivesTheControlsBack([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = Attack(out var fight, viewer: viewer);
             yield return Open(stage, fight);
             var round = fight.Next();
             round.Reveal(Side.Shadow, ShadowCard);
@@ -354,7 +469,7 @@ namespace Wotr.PlayTests
             yield return Clip(stage, () => frame++);
             var round = fight.Next();
             round.Record(battle => Commit(battle.Attacker))
-                .Facts.Cards.Add(new ActionCardFact { Owner = Side.Shadow, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 1 });
+                .Facts.Cards.Add(new ActionCardFact { Owner = stage.Opponent, Use = ActionCardUse.CombatCommit, Deck = "strategy", Count = 1 });
             round.Record(battle => Commit(battle.Defender));
             round.Reveal(Side.Shadow, ShadowCard);
             round.Reveal(Side.FreePeoples, FreeCard);
@@ -384,17 +499,20 @@ namespace Wotr.PlayTests
 
         // The Free Peoples watch the Shadow's attack on Osgiliath: Sauron's three Regulars, an Elite and the Witch-king from
         // Minas Morgul against Gondor's Regular and Elite. The attack's own step records the battle's opening state.
-        internal static PresentedBoardStage Attack(out Fight fight, int width = 1366, float scale = 1f)
+        // TEST-20: the Shadow may watch instead, Gondor's three Regulars, an Elite and Gimli attacking its Sauron Elite.
+        internal static PresentedBoardStage Attack(out Fight fight, int width = 1366, float scale = 1f, Side viewer = Side.FreePeoples)
         {
-            var stage = new PresentedBoardStage(width, scale, false);
-            stage.Put("sauron", UnitKind.Regular, "minas-morgul", 3);
-            stage.Put("sauron", UnitKind.Elite, "minas-morgul", 1);
-            stage.Put("gondor", UnitKind.Elite, "osgiliath", 1);
-            PresentedBoardStage.Character(stage.Before, WitchKing, WitchKing, Side.Shadow, "minas-morgul");
-            fight = new Fight(stage, 1, Opening(stage.Before));
-            fight.Decide(Side.Shadow);
+            var stage = new PresentedBoardStage(width, scale, false, viewer);
+            stage.Put(stage.Main, UnitKind.Regular, "minas-morgul", 3);
+            stage.Put(stage.Main, UnitKind.Elite, "minas-morgul", 1);
+            stage.Put(stage.Own, UnitKind.Elite, "osgiliath", 1);
+            PresentedBoardStage.Character(stage.Before, Commander(stage), Commander(stage), stage.Opponent, "minas-morgul");
+            fight = new Fight(stage, 1, Opening(stage));
+            fight.Decide(stage.Opponent);
             return stage;
         }
+
+        private static string Commander(PresentedBoardStage stage) => stage.Opponent == Side.Shadow ? WitchKing : Gimli;
 
         // The attack's revision plays and its window stays open; the next revisions continue the battle.
         internal static IEnumerator Open(PresentedBoardStage stage, Fight fight)
@@ -405,10 +523,10 @@ namespace Wotr.PlayTests
             Assert.IsTrue(stage.Board.Battles.IsOpen, "The battle's window is open.");
         }
 
-        private static BattleView Opening(PlayerView view) => new BattleView
+        private static BattleView Opening(PresentedBoardStage stage) => new BattleView
         {
             Id = BattleId, RegionId = "osgiliath", Round = 1, Stage = "AttackerCard", Mode = BattleMode.Field,
-            Attacker = Force(view, Side.Shadow, "minas-morgul"), Defender = Force(view, Side.FreePeoples, "osgiliath")
+            Attacker = Force(stage.Before, stage.Opponent, "minas-morgul"), Defender = Force(stage.Before, stage.Viewer, "osgiliath")
         };
 
         private static BattleForceView Force(PlayerView view, Side side, string region)
@@ -429,13 +547,15 @@ namespace Wotr.PlayTests
             force.CardBack = "strategy";
         }
 
+        private static string CardOf(Side side) => side == Side.Shadow ? ShadowCard : FreeCard;
+
         internal static void Faces(BattleView battle)
         {
             battle.CardsRevealed = true;
             battle.Stage = "BeforeRoll";
             battle.Attacker.CardCommitted = battle.Defender.CardCommitted = true;
-            battle.Attacker.CardId = ShadowCard;
-            battle.Defender.CardId = FreeCard;
+            battle.Attacker.CardId = CardOf(battle.Attacker.Side);
+            battle.Defender.CardId = CardOf(battle.Defender.Side);
         }
 
         internal static void Roll(BattleForceView force, string prefix, params int[] results)
@@ -446,6 +566,9 @@ namespace Wotr.PlayTests
             }).ToList();
             force.Hits = results.Count(result => result >= 5);
         }
+
+        private static string StageName(PresentedBoardStage stage) =>
+            stage.Board.Battles.Ribbon.Root.Q(className: "current-stage")?.name ?? "";
 
         private static Button Card(PresentedBoardStage stage, string role) => stage.Board.Battles.Presented.Q<Button>("battle-card-" + role);
 

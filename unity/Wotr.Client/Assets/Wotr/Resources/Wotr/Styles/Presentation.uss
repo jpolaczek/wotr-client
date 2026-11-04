@@ -471,3 +471,23 @@
     justify-content: center;
     -unity-background-scale-mode: scale-to-fit;
 }
+
+/* UI-492: a card's dice at its region (or in the middle of the map) for a moment. */
+.presentation-card-roll {
+    position: absolute;
+    flex-direction: row;
+    padding: 3px 4px;
+    border-radius: 4px;
+    background-color: rgba(26, 24, 23, 0.92);
+    translate: -50% -100%;
+}
+.presentation-card-roll > .battle-pips {
+    width: 26px;
+    height: 26px;
+    margin: 0 1px;
+}
+
+/* UI-493: the name of a table card leaving, beside the Effects tab. */
+.presentation-caption.presentation-caption-name {
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}

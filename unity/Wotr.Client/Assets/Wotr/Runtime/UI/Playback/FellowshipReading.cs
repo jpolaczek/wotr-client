@@ -27,6 +27,7 @@ namespace Wotr.Client
             {
                 Panel.Open();
                 opened = Panel.IsOpen;
+                Panel.Presented = opened;
                 // The open Hunt window steps aside once the panel is laid out, as it avoids every open panel.
                 if (opened)
                     Panel.Root.schedule.Execute(board.Hunt.Position);
@@ -36,6 +37,7 @@ namespace Wotr.Client
 
         public void Released()
         {
+            Panel.Presented = false;
             if (opened && Panel.IsOpen && !Panel.Held)
                 Panel.Close();
             opened = false;

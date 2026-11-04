@@ -109,7 +109,10 @@ namespace Wotr.Client
             ["deactivate-balrog"] = "balrog-activation",
             ["use-balrog"] = "balrog-activation",
             ["gothmog-recruit"] = "fling-them-into-the-fray",
-            ["gothmog-upgrade"] = "fling-them-into-the-fray"
+            ["gothmog-upgrade"] = "fling-them-into-the-fray",
+            // UI-493 (owner, 2026-11-04): Saruman's printed ability, the source his two commands name.
+            ["voice-recruit"] = "muster-each-isengard-settlement-or-upgrade-two",
+            ["voice-upgrade"] = "muster-each-isengard-settlement-or-upgrade-two"
         };
 
         // The Kings' Ruler abilities are recorded as "kings.<ability>".

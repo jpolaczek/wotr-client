@@ -37,6 +37,8 @@ namespace Wotr.Client
         public bool Held { get; private set; }
         public bool IsOpen => view != null && (Held || hover.Visible.Length > 0);
         public bool Pinned { get; private set; }
+        // UI-490 (owner, 2026-11-04): a presentation reads the panel now, so a lost focus leaves it open for the player's return.
+        public bool Presented { get; set; }
         public FloatingWindow Window { get; set; }
         private readonly MapCanvas map;
         private readonly HoverState hover = new HoverState();
@@ -276,7 +278,7 @@ namespace Wotr.Client
 
         private void FocusChanged(bool focused)
         {
-            if (!focused && !Pinned)
+            if (!focused && !Pinned && !Presented)
                 Close();
         }
 

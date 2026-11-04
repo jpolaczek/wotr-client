@@ -120,16 +120,26 @@ namespace Wotr.Client
             return ActionCardText.Region(region, data);
         }
 
+        private const string Withdraws = " · Defender withdraws into the stronghold";
+
         private static string BattleResult(List<ActionLogStep> battle)
         {
             var retreat = battle.SelectMany(step => step.Movements).FirstOrDefault(move => move.Kind == ActionMovementKind.Retreat);
+            // UI-489 (owner, 2026-11-04): a retreat that stays in its region is a withdrawal, whichever decision offered it
+            // (Scouts too). Saved histories record no Movement for it and keep the command's line.
             if (retreat?.Participants.Count > 0)
-                return " · " + ActionCardText.Actor(retreat.Participants[0].Side) + " retreats";
+                return retreat.From == retreat.To ? Withdraws : " · " + ActionCardText.Actor(retreat.Participants[0].Side) + " retreats";
+            // TEST-20 (owner, 2026-11-04): a pennant holds only the opponent's own steps and the Movement sits on the automatic
+            // step after them, so the decision's command tells it too (a stay moves nothing and has no figures).
+            var retreating = battle.FirstOrDefault(step => step.Command == CommandKind.RetreatBattle);
+            if (retreating != null)
+                return " · " + ActionCardText.Actor(retreating.Actor) + " retreats";
             if (battle.Any(step => step.Command == CommandKind.StopBattle))
                 return " · Attack stopped";
             if (battle.Any(step => step.Command == CommandKind.RetreatIntoSiege))
-                return " · Defender withdraws into the stronghold";
-            if (battle.SelectMany(step => step.Movements).Any(move => move.Kind == ActionMovementKind.Advance))
+                return Withdraws;
+            if (battle.SelectMany(step => step.Movements).Any(move => move.Kind == ActionMovementKind.Advance && move.Participants.Count > 0) ||
+                battle.Any(step => step.Command == CommandKind.AdvanceBattle && step.Facts.Figures.Count > 0))
                 return " · Attacker advances";
             var round = battle.Select(step => step.Facts.Battle?.Round ?? 0).DefaultIfEmpty(0).Max();
             return round > 0 ? " · Round " + round : "";

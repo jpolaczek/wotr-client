@@ -15,7 +15,8 @@ namespace Wotr.PlayTests
 {
     // UI-306/UI-307: one mounted board receiving the Shadow's recorded steps while it presents the Free Peoples' earlier
     // view, at one layout; the presentation tests drive it. UI-309: the Shadow may watch instead, with the Free Peoples'
-    // Will of the West die in play.
+    // Will of the West die in play. TEST-20: Main and Second are the acting side's nations, Own the viewer's, so a suite
+    // plays one scene for both viewers.
     internal sealed class PresentedBoardStage : IDisposable
     {
         public const string Die = "shadow-army";
@@ -36,6 +37,9 @@ namespace Wotr.PlayTests
         public Side Viewer { get; }
         public Side Opponent => Viewer == Side.FreePeoples ? Side.Shadow : Side.FreePeoples;
         public string OpponentDie => Viewer == Side.FreePeoples ? Die : FreeDie;
+        public string Main => Opponent == Side.Shadow ? "sauron" : "gondor";
+        public string Second => Opponent == Side.Shadow ? "isengard" : "rohan";
+        public string Own => Viewer == Side.FreePeoples ? "gondor" : "sauron";
 
         public PresentedBoardStage(int width, float scale, bool reduced, Side viewer = Side.FreePeoples)
         {
@@ -62,6 +66,20 @@ namespace Wotr.PlayTests
             view.Decision = null;
             view.Options.Clear();
             view.Dice.Add(new DieView { Id = FreeDie, Owner = Side.FreePeoples, Face = DieFace.WillOfTheWest, Source = "standard", Location = DieLocation.Available });
+        }
+
+        // A frame of the Free Peoples' board: the mirrored run of a scene writes none of its own.
+        public void Save(string file)
+        {
+            if (Viewer == Side.FreePeoples)
+                LayoutTests.Save(Texture, file);
+        }
+
+        // Both players' hands, so a beat at the opponent's card count has a number to step.
+        public void Hands(int free, int shadow)
+        {
+            before.Players.Add(new PlayerSummary { Side = Side.FreePeoples, HandCount = free });
+            before.Players.Add(new PlayerSummary { Side = Side.Shadow, HandCount = shadow });
         }
 
         public List<string> Put(string nation, UnitKind kind, string region, int count)

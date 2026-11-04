@@ -168,12 +168,18 @@ namespace Wotr.PlayTests
                         hidden = view;
                 }
                 room.Fp.Connection.Updated += Seen;
+                // UI-493 (owner, 2026-11-04): the public count holds the table card that may be played, so the Free Peoples'
+                // board steps it with the commit like any other card's, and the server's next view agrees.
+                var hand = room.Fp.Board.View.Players.Single(p => p.Side == Side.Shadow).HandCount;
+                var count = room.Fp.Board.TopBar.Opponent.Root.Q("opponent-cards").Q<Label>(className: "summary-value");
                 PointerGestureEvents.ClickAt(choice);
                 await room.Until(() => room.Sh.Board.View.Revision > revision);
+                await room.Until(() => count.text == (hand - 1).ToString());
                 Assert.IsEmpty(room.Sh.Board.Cards.CardId);
                 await room.NoCard(room.Fp);
                 room.Fp.Connection.Updated -= Seen;
                 Assert.IsNotNull(hidden);
+                Assert.AreEqual(hand - 1, hidden.Players.Single(p => p.Side == Side.Shadow).HandCount, "The staged count was the true one.");
                 Assert.IsTrue(hidden.Effects.Any(e => e.SourceId == "base.sh.character.17"));
                 Assert.IsNull(hidden.Battle.Attacker.CardId);
                 Assert.IsFalse(room.Sh.Board.View.Effects.Any(e => e.SourceId == "base.sh.character.17"));

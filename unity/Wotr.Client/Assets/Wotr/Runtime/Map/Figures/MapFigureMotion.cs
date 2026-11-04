@@ -72,7 +72,28 @@ namespace Wotr.Client
             });
         }
 
-        private static double Now => Time.realtimeSinceStartupAsDouble;
+        private static double Clock => Time.realtimeSinceStartupAsDouble;
+        private double frozenAt = -1;
+        private double frozenFor;
+
+        // UI-490: the flights' own clock, which stands still while a paused presentation holds them in the air.
+        private double Now => (frozenAt >= 0 ? frozenAt : Clock) - frozenFor;
+
+        // UI-490 (owner, 2026-11-04): whether a presentation is playing, so a lost focus pauses its flights instead of ending them.
+        public Func<bool> PresentationHolds { get; set; }
+
+        public void Freeze(bool frozen)
+        {
+            if (frozen == frozenAt >= 0)
+                return;
+            if (frozen)
+            {
+                frozenAt = Clock;
+                return;
+            }
+            frozenFor += Clock - frozenAt;
+            frozenAt = -1;
+        }
 
         public void SetConnected(bool connected)
         {
@@ -446,6 +467,12 @@ namespace Wotr.Client
 
         private void FocusChanged(bool focused)
         {
+            if (PresentationHolds?.Invoke() == true)
+            {
+                Freeze(!focused);
+                return;
+            }
+            Freeze(false);
             if (!focused)
                 Reset();
         }

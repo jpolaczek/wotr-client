@@ -45,7 +45,7 @@ namespace Wotr.PlayTests
                 });
                 await session.Until(() => fp.Playback.Holding && fp.Board.Map.Q("observed-delta") != null);
                 var delta = fp.Board.Map.Q("observed-delta");
-                // UI-485: the server records this recruit twice (a pinned backend and recorded histories keep that shape).
+                // UI-485: the server records this recruit once since EXP-20; recorded histories keep the old double shape.
                 Assert.AreEqual("+1", delta.Q<Label>("observed-delta-count").text, "One Regular, exactly.");
                 Assert.IsNotNull(delta.Q(className: "nation-emblem-" + recruit.Nation), "The badge shows the recruit's nation.");
                 Assert.AreEqual(shown + 1, fp.Board.Presentation.FigureCount(target, actor), "The stack counts it once.");

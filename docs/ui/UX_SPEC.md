@@ -4654,3 +4654,99 @@ Tests: EditMode `OpponentPresentationModelTests` (`TheShadowSeesTheFreePeoplesRo
 `TheOpponentsDrawsAndDiceFollowWhenOurClickEndedTheTurn`, `OurOwnPaymentWithTheOpponentsDieStaysOurs`,
 `MordorInactivityShowsOnOurOwnStepAndOtherTracksDoNot`); PlayMode `OpponentOwnClickPresentationTests` (both viewers),
 `OpponentSpentDieNetworkTests.TheEndOfTheTurnAndTheRollShowOnTheClickersOwnBoard`; frames `ui488-*`.
+
+<a id="a-retreat-into-a-siege-has-its-scene--ui-489"></a>
+## A retreat into a siege has its scene — UI-489 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 6): figures hopped onto the walls at the release. On the server's new record (EXP-20) a withdrawal plays the
+ordinary retreat's scene: the force glows in the field, the camera frames the region, the figures rise and land on the walls. The player's own click plays it too, with
+the camera theirs, as with an ordinary retreat; Scouts' Withdraw into siege is the same. The pennant reads "Defender withdraws into the stronghold", not "retreats".
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-retreat-into-a-siege-has-its-scene--ui-489).
+
+Playtest (owner's checklist):
+- [ ] A battle scenario with an army attacking a stronghold (`shelter-stay` on the test server), watched as the attacker. The defender withdraws. Expect: their force glows in the
+  field, then flies onto the walls of the same region; the pennant's tooltip says "withdraws into the stronghold".
+- [ ] Same, from the defender's own board. Expect: the same flight, and the camera stays where you left it.
+- [ ] `strategy-scouts`, the Free Peoples clicking the battle's own region. Expect: the same scene on both boards.
+- [ ] Skip animations on. Expect: no flight; the figures stand on the walls, glowing.
+
+Tests: EditMode `OpponentPresentationModelTests.AWithdrawalIsAShelterRetreatForBothPlayers`, `ActionResultTextTests`; PlayMode `OpponentArmyPresentationTests` (both viewers),
+`OpponentFreePeoplesActingNetworkTests` (`AWithdrawalFliesOntoTheWallsForBothPlayers`, `ScoutsWithdrawalIsTheSameScene`); frames `ui489-*`.
+
+<a id="looking-away-pauses--ui-490"></a>
+## Looking away pauses — UI-490 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 4): alt-tab ended the opponent's presentation and showed the latest state. Now it pauses, with the card, the panels and a flight
+in the air standing as they were, and resumes on the return. A backlog of more than 20 cues (about half a minute of catching up) is not replayed: that absence shows the latest
+state, as before. The alert that it is your decision still sounds in the background, once. A reconnect and a return to an async game stay as they were.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#looking-away-pauses--ui-490).
+
+Playtest (owner's checklist):
+- [ ] Two clients, `sh-muster-event`. Play the Event as the Shadow and alt-tab on the Free Peoples' board while the card is being read; come back after ten seconds. Expect: the card
+  still stands, its reading goes on, then it docks and the recruits follow. Say if resuming feels right, or if it should start the beat over.
+- [ ] `sh-army-move`. Alt-tab while the army flies. Expect: on the return it is where it stopped, and it lands.
+- [ ] With "Background alerts" on, wait on another window for the opponent's action that passes the decision to you. Expect: the alert sounds at once, the presentation plays on your
+  return, then your decision opens, without a second alert.
+- [ ] Skip on the return. Expect: the latest state at once, and your next click reaches nothing it should not.
+- [ ] Say if 20 cues is the right cap; the normal game rarely gets near it.
+
+Tests: EditMode `OpponentPresentationQueueTests`, `GameSoundsTests`; PlayMode `OpponentFocusPresentationTests`; frames `ui490-*`.
+
+<a id="a-quiet-battle-decision-reads--ui-491"></a>
+## A quiet battle decision reads — UI-491 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 7): Hold, Continue, Stop, Fight in the field, Evil Knowledge and No card now stand as one short caption ("Holds", "Stops", "No card"…) on the deciding
+side's column for 0.8 s, before the ribbon steps. A committed card still has no caption and stays a back until its reveal.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-quiet-battle-decision-reads--ui-491).
+
+Playtest (owner's checklist):
+- [ ] `sh-army-attack`, watched as the Free Peoples, fought through two rounds. Expect: "No card" when the Shadow declines; "Continues" when it goes on; on the Shadow's board "Holds" when you
+  hold. Each on the deciding side's column, before the ribbon moves.
+- [ ] A round whose last commit is "No card". Expect: the caption before the dice roll, not after.
+- [ ] A committed card. Expect: no caption, only its back.
+- [ ] Say if 0.8 s per decision reads well, and if a round feels slower.
+
+Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentBattlePresentationTests` (both viewers), `OpponentFreePeoplesActingNetworkTests` (No card, both directions); frames `ui491-*`.
+
+<a id="a-cards-dice-are-shown--ui-492"></a>
+## A card's dice are shown — UI-492 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 8): the dice a card rolls outside a battle now stand as a plate of die faces above the region for about a second, with the dice sound, before
+the losses they cause; the faces that hit wear the battle dice's hit face. A roll with no region (a healing roll) stands in the middle of the map.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-cards-dice-are-shown--ui-492).
+
+Playtest (owner's checklist):
+- [ ] `layout-dreadful-spells-siege` with two clients. The Shadow plays Dreadful Spells. Expect on the Free Peoples' board: after the card, the camera at Parth Celebrant, three dice above it with the
+  hits lit, the dice sound, then your losses decision.
+- [ ] `dead-men` on the test server, watched as the Shadow. Expect: one die at Pelargir (Dead Men has no target number, so it is plain), then your losses.
+- [ ] A Fellowship card that rolls to heal, watched as the Shadow. Expect: the dice in the middle of the map.
+- [ ] Say if a second is enough to read the dice.
+
+Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentCardRollPresentationTests` (both viewers); `OpponentFreePeoplesActingNetworkTests`; frames `ui492-*`.
+
+<a id="the-rest-of-a-cards-way--ui-493"></a>
+## The rest of a card's way — UI-493 (2026-11-04)
+
+The owner's decision on the opponent audit (gaps 9, 10, 11): a table card leaving while the Effects panel is closed names itself beside the lit tab for 1.5 s ("− Flocks of Crebain"); Voice of Saruman's
+source is Saruman, whose moment now stands over his force; the opponent's hand count steps as an Event sets out or a Combat card is committed, not seconds later at the release. A table card played as a
+combat card steps it too: the public count already holds it.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#the-rest-of-a-cards-way--ui-493).
+
+Playtest (owner's checklist):
+- [ ] `sh-muster-event`, watched as the Free Peoples. Expect: the card count steps as the card leaves it, and not again at the end.
+- [ ] `sh-army-attack`, the Shadow committing a card. Expect: the count steps as its back appears.
+- [ ] `effects-palantir` (or any table card removed) with the Effects panel closed. Expect: the tab lights and the card's name stands beside it for 1.5 s. With the panel open: its tile lights, no name.
+- [ ] `ability-voice-recruit-full`, watched as the Free Peoples. Expect: Saruman's portrait and name stand over his force before the recruits.
+
+Tests: EditMode `OpponentExpansionCueTests`, `CharacterPresentationTests`; PlayMode `OpponentCardPresentationTests`, `OpponentBattlePresentationTests` (both viewers), `Shadow03NetworkTests.TableBalrog…`,
+`OpponentCharacterPresentationNetworkTests.VoiceOfSarumanNamesItsSourceOnTheWatchingBoard`; frames `ui493-*`.
+
+<a id="both-viewers--test-20"></a>
+## The opponent suites watch from both sides — TEST-20 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 12). The Army, Recruitment, Card, Resource and Battle suites play each scene for both viewers; `OpponentFreePeoplesActingNetworkTests` has the Shadow
+watch a march, a political step, an Event, a Ring, Dead Men's die and a capture on the real server; recorded `muster-recruit` and `event-loss` fixtures join the model tests. They found no wrong scene for either viewer, and one bug, fixed: a retreat's or
+an advance's pennant read only "Battle at X · Round N". Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#both-viewers--test-20).
+
+Playtest (owner's checklist):
+- [ ] Nothing new to play; a game played as the Shadow against the Free Peoples should read as clearly as the other way round. Say if any scene does not.

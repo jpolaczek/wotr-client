@@ -13,35 +13,36 @@ namespace Wotr.PlayTests
     // UI-307 on a mounted board: the Shadow's recorded recruitment, upgrade, removal and political changes presented to the
     // Free Peoples. Region, unit type, nation and amount read from the stack and its delta badge; an upgrade is a
     // replacement; distant sites follow one source; the Politics panel opens read-only and shows activation, then the
-    // token's steps, and war with its caption; the release and Skip end on the latest counts and tracks.
+    // token's steps, and war with its caption; the release and Skip end on the latest counts and tracks. TEST-20 (owner,
+    // 2026-11-04): each scene also plays with the Shadow watching the Free Peoples.
     public sealed class OpponentRecruitmentPoliticsTests
     {
         [UnityTest]
-        public IEnumerator TwoDistantRecruitmentSitesFollowOneSourceAndSettleToTheirCounts()
+        public IEnumerator TwoDistantRecruitmentSitesFollowOneSourceAndSettleToTheirCounts([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
             yield return stage.Ready();
-            var reserve = stage.Reserve("sauron", UnitKind.Regular, 6);
+            var reserve = stage.Reserve(stage.Main, UnitKind.Regular, 6);
             var latest = stage.Latest();
             PresentedBoardStage.Place(latest, reserve.Take(3), "dol-guldur");
             PresentedBoardStage.Place(latest, reserve.Skip(3), "mount-gundabad");
             var before = stage.Buttons();
-            stage.Play(latest, "grey-havens", stage.Recruits(Cost(stage.Step(1)), reserve.Take(3), "dol-guldur"),
+            stage.Play(latest, "grey-havens", stage.Recruits(stage.Paid(stage.Step(1), DieFace.Muster), reserve.Take(3), "dol-guldur"),
                 stage.Recruits(stage.Step(2), reserve.Skip(3), "mount-gundabad"));
             yield return stage.Until(() => Delta(stage, "+3") != null && stage.Army("dol-guldur") == 3);
             var first = Delta(stage, "+3");
-            Assert.IsNotNull(first.Q(className: "nation-emblem-sauron"), "The badge carries the nation's crest.");
+            Assert.IsNotNull(first.Q(className: "nation-emblem-" + stage.Main), "The badge carries the nation's crest.");
             Assert.IsNotNull(first.Q(className: "observed-delta-figure"), "and the unit's figure.");
             Assert.AreEqual(0, stage.Army("mount-gundabad"), "The second site waits for its own beat.");
             Assert.AreEqual(before + 1, stage.Buttons(), "Only the Skip target is added.");
             yield return new WaitForSecondsRealtime(.2f);
-            LayoutTests.Save(stage.Texture, "ui307-recruit-1-dol-guldur.png");
+            stage.Save("ui307-recruit-1-dol-guldur.png");
             yield return stage.Until(() => stage.Army("mount-gundabad") == 3);
             Assert.IsTrue(stage.Presenters.Camera.SafeArea().Contains(stage.Board.Map.Camera.ToScreen(stage.Anchor("mount-gundabad"))),
                 "The camera visits the second site.");
             Assert.AreEqual(1, stage.Board.Root.Query(CostEmphasis.MarkName).ToList().Count, "One charged source for both sites.");
             yield return new WaitForSecondsRealtime(.2f);
-            LayoutTests.Save(stage.Texture, "ui307-recruit-2-mount-gundabad.png");
+            stage.Save("ui307-recruit-2-mount-gundabad.png");
             yield return stage.Released();
             stage.AssertFinal(latest);
             Assert.AreEqual(before, stage.Buttons(), "No control remains.");
@@ -51,11 +52,11 @@ namespace Wotr.PlayTests
         // UI-314 (owner review): the recruited force glows around its own figures — no frame — and keeps glowing for 1.5 s
         // after its new figures land; nothing glows after the release.
         [UnityTest]
-        public IEnumerator NewRecruitsGlowAroundTheirFiguresForAMomentAfterLanding()
+        public IEnumerator NewRecruitsGlowAroundTheirFiguresForAMomentAfterLanding([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
             yield return stage.Ready();
-            var reserve = stage.Reserve("sauron", UnitKind.Regular, 2);
+            var reserve = stage.Reserve(stage.Main, UnitKind.Regular, 2);
             var latest = stage.Latest();
             PresentedBoardStage.Place(latest, reserve, "dol-guldur");
             stage.Play(latest, "between:dol-guldur:dol-guldur", stage.Recruits(stage.Step(1), reserve, "dol-guldur"));
@@ -64,7 +65,7 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(stage.Board.Map.Query(className: "observed-ring").ToList(), "No frame around the force.");
             yield return new WaitForSecondsRealtime(1.2f);
             Assert.IsTrue(stage.Presenters.Trace.Lit.Any(), "The recruits still glow after they have landed.");
-            LayoutTests.Save(stage.Texture, "ui314-recruit-glow.png");
+            stage.Save("ui314-recruit-glow.png");
             yield return stage.Released();
             Assert.GreaterOrEqual(Time.realtimeSinceStartup - started,
                 FigureChangePresenter.LandingSeconds + FigureChangePresenter.ArrivalGlowSeconds - .1f, "The glow holds 1.5 s after the landing.");
@@ -73,12 +74,12 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator SeveralNationsArrivingInOneRegionShowOneEntryEach()
+        public IEnumerator SeveralNationsArrivingInOneRegionShowOneEntryEach([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
             yield return stage.Ready();
-            var sauron = stage.Reserve("sauron", UnitKind.Regular, 2);
-            var isengard = stage.Reserve("isengard", UnitKind.Elite, 1);
+            var sauron = stage.Reserve(stage.Main, UnitKind.Regular, 2);
+            var isengard = stage.Reserve(stage.Second, UnitKind.Elite, 1);
             var latest = stage.Latest();
             PresentedBoardStage.Place(latest, sauron.Concat(isengard), "dol-guldur");
             stage.Play(latest, "between:dol-guldur:dol-guldur", stage.Recruits(stage.Step(1), sauron.Concat(isengard), "dol-guldur"));
@@ -86,19 +87,19 @@ namespace Wotr.PlayTests
             var entries = stage.Board.Map.Q("observed-delta").Query(className: "observed-delta-entry").ToList();
             Assert.AreEqual(2, entries.Count);
             CollectionAssert.AreEquivalent(new[] { "+2", "+1" }, entries.Select(e => e.Q<Label>("observed-delta-count").text));
-            Assert.IsNotNull(entries.Single(e => e.Q<Label>("observed-delta-count").text == "+1").Q(className: "nation-emblem-isengard"));
+            Assert.IsNotNull(entries.Single(e => e.Q<Label>("observed-delta-count").text == "+1").Q(className: "nation-emblem-" + stage.Second));
             Assert.AreEqual(3, stage.Army("dol-guldur"));
             yield return stage.Released();
             stage.AssertFinal(latest);
         }
 
         [UnityTest]
-        public IEnumerator AnUpgradeReplacesItsRegularAndARemovalLeavesTheStack()
+        public IEnumerator AnUpgradeReplacesItsRegularAndARemovalLeavesTheStack([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
-            var regulars = stage.Put("sauron", UnitKind.Regular, "dol-guldur", 2);
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var regulars = stage.Put(stage.Main, UnitKind.Regular, "dol-guldur", 2);
             yield return stage.Ready();
-            var elite = stage.Reserve("sauron", UnitKind.Elite, 1).Single();
+            var elite = stage.Reserve(stage.Main, UnitKind.Elite, 1).Single();
             var latest = stage.Latest();
             PresentedBoardStage.Place(latest, new[] { regulars[0] }, "reserve");
             PresentedBoardStage.Place(latest, new[] { elite }, "dol-guldur");
@@ -114,7 +115,7 @@ namespace Wotr.PlayTests
             var entry = stage.Board.Map.Q("observed-delta").Q(className: "observed-delta-entry");
             Assert.AreEqual(2, entry.Query(className: "observed-delta-figure").ToList().Count, "Regular → Elite.");
             yield return new WaitForSecondsRealtime(.2f);
-            LayoutTests.Save(stage.Texture, "ui307-upgrade.png");
+            stage.Save("ui307-upgrade.png");
             yield return stage.Released();
             stage.AssertFinal(latest);
             var removal = stage.Next(latest);
@@ -129,52 +130,52 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator ActivationThenAdvancementShowBothChangesAndReachingWarIsCaptioned()
+        public IEnumerator ActivationThenAdvancementShowBothChangesAndReachingWarIsCaptioned([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
-            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var sauron = stage.Before.Nations.Single(n => n.Id == stage.Main);
             sauron.Active = false;
             sauron.StepsToWar = 2;
             yield return stage.Ready();
             var latest = stage.Latest();
-            Nation(latest, "sauron", true, 0);
+            Nation(latest, stage.Main, true, 0);
             var before = stage.Buttons();
-            stage.Play(latest, null, Politics(stage.Step(1), "sauron", false, 2, true, 1), Politics(stage.Step(2), "sauron", true, 1, true, 0));
+            stage.Play(latest, null, Politics(stage.Step(1), stage.Main, false, 2, true, 1), Politics(stage.Step(2), stage.Main, true, 1, true, 0));
             var panel = stage.Board.Nations;
-            var token = panel.Drawer.Q<Button>("nation-status-sauron");
+            var token = panel.Drawer.Q<Button>("nation-status-" + stage.Main);
             yield return stage.Until(() => panel.Drawer.style.display.value == DisplayStyle.Flex);
             Assert.IsTrue(token.ClassListContains("passive-nation"), "The token starts as it was presented.");
             yield return stage.Until(() => token.ClassListContains("active-nation"));
             Assert.IsTrue(panel.Drawer.ClassListContains(PoliticsPresenter.MovingClass), "UI-319: the crest crossfades instead of swapping.");
-            Assert.IsFalse(panel.Drawer.Q("nation-track-sauron").ClassListContains("nation-at-war"), "Activation alone is not war.");
-            LayoutTests.Save(stage.Texture, "ui307-politics-1-activation.png");
+            Assert.IsFalse(panel.Drawer.Q("nation-track-" + stage.Main).ClassListContains("nation-at-war"), "Activation alone is not war.");
+            stage.Save("ui307-politics-1-activation.png");
             yield return stage.Until(() => stage.Board.Root.Q(PoliticsPresenter.CaptionName) != null);
             Assert.AreEqual("At war", stage.Board.Root.Q<Label>(PoliticsPresenter.CaptionName).text);
-            Assert.IsTrue(panel.Drawer.Q("nation-track-sauron").ClassListContains("nation-at-war"));
+            Assert.IsTrue(panel.Drawer.Q("nation-track-" + stage.Main).ClassListContains("nation-at-war"));
             Assert.AreEqual(before + 1, stage.Buttons(), "No Politics or Continue control is added, only Skip.");
             yield return new WaitForSecondsRealtime(.3f);
-            LayoutTests.Save(stage.Texture, "ui307-politics-2-war.png");
+            stage.Save("ui307-politics-2-war.png");
             yield return stage.Released();
             Assert.IsTrue(Appearance.Closed(panel.Drawer), "The panel the presentation opened closes again.");
             Assert.IsNull(stage.Board.Root.Q(PoliticsPresenter.CaptionName), "The caption ends with its beat.");
-            Assert.IsTrue(panel.Drawer.Q("nation-track-sauron").ClassListContains("nation-at-war"), "The released row is at war.");
+            Assert.IsTrue(panel.Drawer.Q("nation-track-" + stage.Main).ClassListContains("nation-at-war"), "The released row is at war.");
         }
 
         // UI-315 (owner review): the panel the step opens settles, the nation's token glows before it moves, slides to its
         // new station while lit and stays lit there — the step is seen, not flashed.
         [UnityTest]
-        public IEnumerator AStepToWarLightsTheTokenBeforeItSlidesAndHoldsItLit()
+        public IEnumerator AStepToWarLightsTheTokenBeforeItSlidesAndHoldsItLit([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
-            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var sauron = stage.Before.Nations.Single(n => n.Id == stage.Main);
             sauron.Active = true;
             sauron.StepsToWar = 2;
             yield return stage.Ready();
             var latest = stage.Latest();
-            Nation(latest, "sauron", true, 1);
-            var token = stage.Board.Nations.Drawer.Q<Button>("nation-status-sauron");
+            Nation(latest, stage.Main, true, 1);
+            var token = stage.Board.Nations.Drawer.Q<Button>("nation-status-" + stage.Main);
             var started = Time.realtimeSinceStartup;
-            stage.Play(latest, null, Politics(stage.Step(1), "sauron", true, 2, true, 1));
+            stage.Play(latest, null, Politics(stage.Step(1), stage.Main, true, 2, true, 1));
             yield return stage.Until(() => PresentationGlow.IsLit(token));
             Assert.GreaterOrEqual(Time.realtimeSinceStartup - started, PresentationPace.PanelSettleSeconds - .1f,
                 "The panel the step opened settles before the token is marked.");
@@ -187,9 +188,9 @@ namespace Wotr.PlayTests
             Assert.IsFalse(token.ClassListContains(PoliticsPresenter.FlareClass), "It settles back as it slides.");
             yield return new WaitForSecondsRealtime((float)PresentationPace.ChangeSeconds);
             Assert.IsTrue(PresentationGlow.IsLit(token), "It stays lit at its new station.");
-            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Nations.Drawer.Q("nation-track-sauron")), "The chosen nation's row is lit.");
+            Assert.IsTrue(PresentationGlow.IsLit(stage.Board.Nations.Drawer.Q("nation-track-" + stage.Main)), "The chosen nation's row is lit.");
             Assert.IsTrue(stage.Playback.Holding, "The hold belongs to the beat.");
-            LayoutTests.Save(stage.Texture, "ui315-politics-held.png");
+            stage.Save("ui315-politics-held.png");
             yield return stage.Released();
             Assert.IsEmpty(stage.Lit);
         }
@@ -197,20 +198,20 @@ namespace Wotr.PlayTests
         // UI-342 (owner 2026-10-26: "let's not wait for the end of the opponent's turn to close the politics track; close it
         // when the next animation begins"): the panel the presentation opened closes as the next step's scene begins.
         [UnityTest]
-        public IEnumerator ThePanelThePresentationOpenedClosesAsTheNextSceneBegins()
+        public IEnumerator ThePanelThePresentationOpenedClosesAsTheNextSceneBegins([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
-            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var sauron = stage.Before.Nations.Single(n => n.Id == stage.Main);
             sauron.Active = true;
             sauron.StepsToWar = 2;
             yield return stage.Ready();
-            var reserve = stage.Reserve("sauron", UnitKind.Regular, 2);
+            var reserve = stage.Reserve(stage.Main, UnitKind.Regular, 2);
             var latest = stage.Latest();
-            Nation(latest, "sauron", true, 1);
+            Nation(latest, stage.Main, true, 1);
             PresentedBoardStage.Place(latest, reserve, "dol-guldur");
-            stage.Play(latest, null, Politics(stage.Step(1), "sauron", true, 2, true, 1), stage.Recruits(stage.Step(2), reserve, "dol-guldur"));
+            stage.Play(latest, null, Politics(stage.Step(1), stage.Main, true, 2, true, 1), stage.Recruits(stage.Step(2), reserve, "dol-guldur"));
             var drawer = stage.Board.Nations.Drawer;
-            var token = drawer.Q<Button>("nation-status-sauron");
+            var token = drawer.Q<Button>("nation-status-" + stage.Main);
             yield return stage.Until(() => PresentationGlow.IsLit(token));
             Assert.IsFalse(Appearance.Closed(drawer), "The panel stands through its own step.");
             yield return stage.Until(() => Appearance.Closed(drawer));
@@ -220,10 +221,10 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator APanelThePlayerOpenedStaysAndOneTheyClosedIsNotReopened()
+        public IEnumerator APanelThePlayerOpenedStaysAndOneTheyClosedIsNotReopened([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
-            foreach (var id in new[] { "sauron", "isengard" })
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            foreach (var id in new[] { stage.Main, stage.Second })
             {
                 var nation = stage.Before.Nations.Single(n => n.Id == id);
                 nation.StepsToWar = 2;
@@ -233,16 +234,16 @@ namespace Wotr.PlayTests
             panel.Open();
             yield return null;
             var latest = stage.Latest();
-            Nation(latest, "sauron", true, 1);
-            stage.Play(latest, null, Politics(stage.Step(1), "sauron", true, 2, true, 1));
+            Nation(latest, stage.Main, true, 1);
+            stage.Play(latest, null, Politics(stage.Step(1), stage.Main, true, 2, true, 1));
             yield return stage.Released();
             Assert.AreEqual(DisplayStyle.Flex, panel.Drawer.style.display.value, "The player's open panel stays open.");
             panel.Close();
             yield return null;
             var next = stage.Next(latest);
-            Nation(next, "sauron", true, 0);
-            Nation(next, "isengard", true, 1);
-            stage.Play(next, null, Politics(stage.Step(1, 2), "sauron", true, 1, true, 0), Politics(stage.Step(2, 2), "isengard", true, 2, true, 1));
+            Nation(next, stage.Main, true, 0);
+            Nation(next, stage.Second, true, 1);
+            stage.Play(next, null, Politics(stage.Step(1, 2), stage.Main, true, 1, true, 0), Politics(stage.Step(2, 2), stage.Second, true, 2, true, 1));
             yield return stage.Until(() => panel.Drawer.style.display.value == DisplayStyle.Flex);
             panel.Close();
             yield return new WaitForSecondsRealtime(2f);
@@ -251,22 +252,22 @@ namespace Wotr.PlayTests
         }
 
         [UnityTest]
-        public IEnumerator SkipEndsOnTheLatestCountsAndTracksWithoutAReplay()
+        public IEnumerator SkipEndsOnTheLatestCountsAndTracksWithoutAReplay([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
         {
-            using var stage = new PresentedBoardStage(1366, 1f, false);
-            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var sauron = stage.Before.Nations.Single(n => n.Id == stage.Main);
             sauron.StepsToWar = 2;
             yield return stage.Ready();
-            var reserve = stage.Reserve("sauron", UnitKind.Regular, 3);
+            var reserve = stage.Reserve(stage.Main, UnitKind.Regular, 3);
             var latest = stage.Latest();
             PresentedBoardStage.Place(latest, reserve, "dol-guldur");
-            Nation(latest, "sauron", true, 1);
-            stage.Play(latest, "grey-havens", stage.Recruits(Cost(stage.Step(1)), reserve, "dol-guldur"), Politics(stage.Step(2), "sauron", true, 2, true, 1));
+            Nation(latest, stage.Main, true, 1);
+            stage.Play(latest, "grey-havens", stage.Recruits(stage.Paid(stage.Step(1), DieFace.Muster), reserve, "dol-guldur"), Politics(stage.Step(2), stage.Main, true, 2, true, 1));
             yield return stage.Until(() => stage.Presenters.Skip.Button.parent != null);
             PointerGestureEvents.ClickAt(stage.Presenters.Skip.Button);
             yield return stage.Released();
             stage.AssertFinal(latest);
-            Assert.AreEqual(1, stage.Board.View.Nations.Single(n => n.Id == "sauron").StepsToWar);
+            Assert.AreEqual(1, stage.Board.View.Nations.Single(n => n.Id == stage.Main).StepsToWar);
             Assert.IsTrue(Appearance.Closed(stage.Board.Nations.Drawer));
             yield return stage.NothingFlies();
         }
@@ -275,17 +276,17 @@ namespace Wotr.PlayTests
         public IEnumerator RecruitmentAndPoliticsAreRecordedAsMutedClips()
         {
             using var stage = new PresentedBoardStage(1920, 1.25f, false);
-            var sauron = stage.Before.Nations.Single(n => n.Id == "sauron");
+            var sauron = stage.Before.Nations.Single(n => n.Id == stage.Main);
             sauron.Active = false;
             sauron.StepsToWar = 1;
             yield return stage.Ready();
-            var reserve = stage.Reserve("sauron", UnitKind.Regular, 6);
+            var reserve = stage.Reserve(stage.Main, UnitKind.Regular, 6);
             var latest = stage.Latest();
             PresentedBoardStage.Place(latest, reserve.Take(3), "dol-guldur");
             PresentedBoardStage.Place(latest, reserve.Skip(3), "mount-gundabad");
-            Nation(latest, "sauron", true, 0);
-            stage.Play(latest, "grey-havens", stage.Recruits(Cost(stage.Step(1)), reserve.Take(3), "dol-guldur"),
-                stage.Recruits(stage.Step(2), reserve.Skip(3), "mount-gundabad"), Politics(stage.Step(3), "sauron", false, 1, true, 0));
+            Nation(latest, stage.Main, true, 0);
+            stage.Play(latest, "grey-havens", stage.Recruits(stage.Paid(stage.Step(1), DieFace.Muster), reserve.Take(3), "dol-guldur"),
+                stage.Recruits(stage.Step(2), reserve.Skip(3), "mount-gundabad"), Politics(stage.Step(3), stage.Main, false, 1, true, 0));
             var frame = 0;
             while (stage.Playback.Holding && frame < 80)
             {
@@ -415,12 +416,6 @@ namespace Wotr.PlayTests
             nation.StepsToWar = steps;
         }
 
-        private static ActionLogStep Cost(ActionLogStep step)
-        {
-            step.Costs.Add(new ActionCost { Kind = ActionCostKind.Die, Id = PresentedBoardStage.Die, Owner = Side.Shadow, Face = DieFace.Muster, Use = DieFace.Muster });
-            return step;
-        }
-
         private static ActionLogStep Politics(ActionLogStep step, string id, bool wasActive, int previous, bool active, int steps)
         {
             step.Facts.Nations.Add(new ActionNationChange
@@ -434,6 +429,6 @@ namespace Wotr.PlayTests
             .FirstOrDefault(delta => delta.Query<Label>("observed-delta-count").ToList().Any(label => label.text == count));
 
         private static ArmyMarker Marker(PresentedBoardStage stage, string region) =>
-            stage.Board.Presentation.Armies.Single(a => a.RegionId == region && a.Side == Side.Shadow && !a.Garrison);
+            stage.Board.Presentation.Armies.Single(a => a.RegionId == region && a.Side == stage.Opponent && !a.Garrison);
     }
 }

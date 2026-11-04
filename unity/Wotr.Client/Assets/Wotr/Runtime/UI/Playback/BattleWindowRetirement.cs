@@ -34,7 +34,7 @@ namespace Wotr.Client
         // siege's figure changes.
         private static bool Shows(PresentationCue cue, string battle) => cue.BattleId == battle && cue.Kind is
             PresentationCueKind.Attack or PresentationCueKind.Battle or PresentationCueKind.Card or PresentationCueKind.Losses or
-            PresentationCueKind.Removal or PresentationCueKind.Recruit or PresentationCueKind.Upgrade;
+            PresentationCueKind.Removal or PresentationCueKind.Recruit or PresentationCueKind.Upgrade or PresentationCueKind.BattleChoice;
 
         // Over in the latest view, and nothing more of it queued but its state after the decision (an advance, the end),
         // which the window would show unchanged.

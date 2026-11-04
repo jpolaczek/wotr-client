@@ -61,6 +61,17 @@ namespace Wotr.Client
             sounds.Request(request);
         }
 
+        // UI-490 (owner, 2026-11-04): a presentation waiting for the player's return must not hold back the alert that brings
+        // them back. The decision passing to them or the game's end sounds as it arrives, and not again at the release.
+        public void Away(PlayerView view)
+        {
+            if (seen == null || catchingUp || !personal)
+                return;
+            foreach (var request in SoundFacts.Between(seen, view))
+                if (SoundCues.HeardInBackground(request.Cue))
+                    Play(request);
+        }
+
         // A new projection of this game, after the board applied it.
         public void Update(PlayerView view)
         {

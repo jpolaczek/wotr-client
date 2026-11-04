@@ -37,9 +37,11 @@ namespace Wotr.Client
             {
                 var cues = Costs(step, memory, you)
                     .Concat(Cards(step, you))
+                    .Concat(Rolls(step))
                     .Concat(Movements(step))
                     .Concat(figures.TryGetValue(step, out var anchored) ? anchored : Enumerable.Empty<PresentationCue>())
                     .Concat(Losses(step))
+                    .Concat(BattleChoices(step))
                     .Concat(Battle(step, memory))
                     .Concat(Hunt(step))
                     .Concat(Fellowship(step))
@@ -64,10 +66,26 @@ namespace Wotr.Client
                     }
                 }
             }
-            return DiceLast(FinalBattleStatesLast(AfterTheirHunt(released)));
+            return DiceLast(FinalBattleStatesLast(AfterTheirHunt(RollsBeforeTheirEffects(released))));
         }
 
         private const string MordorInactivity = "MordorInactivity";
+        private const string EventLosses = "EventLosses";
+
+        // UI-492 (owner, 2026-11-04): the board's difference records a card's casualties on the command's first step, but
+        // its dice were rolled before them, so a roll plays before the first figure change in its region.
+        private static List<PresentationCue> RollsBeforeTheirEffects(List<PresentationCue> cues)
+        {
+            foreach (var roll in cues.Where(cue => cue.Kind == PresentationCueKind.Roll).ToList())
+            {
+                var effect = cues.FindIndex(cue => cue.Figures.Count > 0 && cue.Regions.Intersect(roll.Regions).Any());
+                if (effect < 0 || effect > cues.IndexOf(roll))
+                    continue;
+                cues.Remove(roll);
+                cues.Insert(effect, roll);
+            }
+            return cues;
+        }
 
         // UI-487/UI-488 (owner, 2026-11-04): the board's difference records a revision's dice on its first step, but they
         // move at its end. The action's die leaves after the action's last effect (a Fellowship move's die enters the Hunt
@@ -163,6 +181,18 @@ namespace Wotr.Client
             }
         }
 
+        // UI-492 (owner, 2026-11-04): a card's dice are public, and a battle's show in its window. The losses they cause
+        // repeat them on a later step (EventLosses.Apply), which is no second roll.
+        private static IEnumerable<PresentationCue> Rolls(ActionLogStep step)
+        {
+            if (step.Facts.Rolls.Count == 0 || InBattle(step) || step.Kind == EventLosses)
+                yield break;
+            var payload = new CuePayload { HitTarget = step.Facts.HitTarget };
+            payload.Rolls.AddRange(step.Facts.Rolls);
+            payload.Regions.AddRange(step.Facts.Targets.Count > 0 ? step.Facts.Targets : step.Context.Regions);
+            yield return new PresentationCue(step, PresentationCueKind.Roll, step.Id, payload);
+        }
+
         private static IEnumerable<PresentationCue> Movements(ActionLogStep step)
         {
             foreach (var move in step.Movements)
@@ -230,6 +260,18 @@ namespace Wotr.Client
             payload.Regions.AddRange(step.Facts.LossDetails.Select(loss => loss.RegionId));
             var key = string.Join(",", step.Facts.LossDetails.Select(loss => loss.Figure.Id + ":" + loss.Operation).OrderBy(id => id, System.StringComparer.Ordinal));
             yield return new PresentationCue(step, PresentationCueKind.Losses, key, payload);
+        }
+
+        // UI-491 (owner, 2026-11-04): a decision that changes nothing visible reads from one short caption, before what it
+        // causes. Its key is one per side and round: the record may repeat a commit, and a later round decides anew. A
+        // committed card is no quiet decision: it stays a back until its reveal.
+        private static IEnumerable<PresentationCue> BattleChoices(ActionLogStep step)
+        {
+            if (step.Context.BattleId.Length == 0 || !step.Actor.HasValue || !BattleChoiceCaption.Quiet(step))
+                yield break;
+            var round = step.Facts.Battle?.Round ?? step.Context.BattleRound ?? 0;
+            yield return new PresentationCue(step, PresentationCueKind.BattleChoice,
+                step.Command + "/" + step.Actor + "/" + step.Context.BattleId + "/" + round, new CuePayload());
         }
 
         // The first public snapshot of a battle is its attack (no attack movement is recorded) when it is the opening one;

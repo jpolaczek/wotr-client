@@ -148,32 +148,218 @@ namespace Wotr.EditorTests
             Assert.AreEqual("next", Key(playback.Current), "A later event presents again.");
         }
 
-        [TestCase("Reconnecting")]
-        [TestCase("focus")]
-        public void ADisconnectOrALostFocusShowsTheLatestStateAtOnce(string loss)
+        [Test]
+        public void ADisconnectShowsTheLatestStateAtOnce()
         {
             var presenter = Timed(PresentationCueKind.March, 5);
             playback.Receive(View(1));
             playback.Enqueue(new[] { March(1, "move") });
             playback.HistoryRead(1);
             Tick(0);
-            if (loss == "focus")
-                playback.SetFocus(false);
-            else
-                playback.SetConnection(loss);
+            playback.SetConnection("Reconnecting");
             Assert.AreEqual(1, presenter.Finished);
             CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
             CollectionAssert.AreEqual(new[] { true, false }, holds);
             playback.Receive(View(2));
             playback.Enqueue(new[] { March(2, "missed") });
             CollectionAssert.AreEqual(new long[] { 0, 1, 2 }, presented, "The catch-up view is shown without a catch-up.");
-            if (loss == "focus")
-                playback.SetFocus(true);
-            else
-                playback.SetConnection("Connected");
+            playback.SetConnection("Connected");
             playback.Enqueue(new[] { March(2, "missed") });
             Tick(0);
             CollectionAssert.AreEqual(new[] { "move" }, presenter.Begun);
+        }
+
+        // UI-490 (owner, 2026-11-04): looking away pauses the presentation; the beat resumes with the time it had left.
+        [Test]
+        public void ALostFocusPausesTheBeatAndTheReturnResumesItWhereItWas()
+        {
+            var presenter = Timed(PresentationCueKind.March, 1);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(0);
+            Tick(.4);
+            playback.SetFocus(false);
+            Tick(.1);
+            Tick(600);
+            Assert.AreEqual("move", Key(playback.Current), "The beat waits for the player.");
+            Assert.AreEqual(0, presenter.Finished, "It is neither ended nor counted down.");
+            CollectionAssert.AreEqual(new long[] { 0 }, presented, "The board keeps the presented view.");
+            CollectionAssert.AreEqual(new[] { true }, holds, "The gate stays closed.");
+            Assert.IsTrue(playback.Presenting, "The Skip target stays for the return.");
+            now += 30;
+            playback.SetFocus(true);
+            Tick(0);
+            Tick(.5);
+            Assert.AreEqual("move", Key(playback.Current), "A clock jump on the return does not count: 0.6 s are still to come.");
+            Tick(.2);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented, "It ends and the release follows.");
+            CollectionAssert.AreEqual(new[] { true, false }, holds, "The gate opens once.");
+        }
+
+        [Test]
+        public void WhatArrivesWhileAwayQueuesBehindTheBeatAndOnlyTheNewestViewIsReleased()
+        {
+            var presenter = Timed(PresentationCueKind.March, .5);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "first") });
+            playback.HistoryRead(1);
+            Tick(0);
+            playback.SetFocus(false);
+            playback.Receive(View(2));
+            playback.Enqueue(new[] { March(2, "second") });
+            playback.HistoryRead(2);
+            Tick(60);
+            CollectionAssert.AreEqual(new[] { "first" }, presenter.Begun, "Nothing new begins while the player is away.");
+            CollectionAssert.AreEqual(new long[] { 0 }, presented);
+            playback.SetFocus(true);
+            Tick(0);
+            Tick(.5);
+            Assert.AreEqual("second", Key(playback.Current), "The next one follows on the return.");
+            Tick(.5);
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 2 }, presented, "A coalesced revision is never applied on its own.");
+        }
+
+        [Test]
+        public void AViewAloneArrivingWhileAwayPlaysOnTheReturn()
+        {
+            var presenter = Timed(PresentationCueKind.March, .5);
+            playback.SetFocus(false);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(60);
+            CollectionAssert.IsEmpty(presenter.Begun);
+            CollectionAssert.AreEqual(new long[] { 0 }, presented);
+            playback.SetFocus(true);
+            Tick(0);
+            CollectionAssert.AreEqual(new[] { "move" }, presenter.Begun, "The player sees what the opponent did.");
+        }
+
+        [Test]
+        public void AQuietRevisionIsReleasedWhileAwaySoItsDecisionIsNotHeldBack()
+        {
+            Timed(PresentationCueKind.March, .5);
+            playback.SetFocus(false);
+            playback.Receive(View(1));
+            CollectionAssert.AreEqual(new long[] { 0 }, presented, "Its history may still bring cues.");
+            playback.HistoryRead(1);
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+            CollectionAssert.AreEqual(new[] { true, false }, holds);
+            playback.Receive(View(2));
+            Tick(PresentationPlayback.HistoryWait);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2 }, presented, "A history that does not come waits its second, as ever.");
+        }
+
+        [Test]
+        public void TheCapGivesUpABacklogOverItForTheLatestStateUntilTheReturn()
+        {
+            var presenter = Timed(PresentationCueKind.March, 1);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "first") });
+            playback.HistoryRead(1);
+            Tick(0);
+            playback.SetFocus(false);
+            playback.Receive(View(2));
+            playback.Enqueue(Backlog(2, PresentationPlayback.MostCuesAway));
+            CollectionAssert.AreEqual(new long[] { 0 }, presented, "Up to the cap everything waits.");
+            Assert.AreEqual(PresentationPlayback.MostCuesAway, playback.Queued);
+            playback.Receive(View(3));
+            playback.Enqueue(new[] { March(3, "too-many") });
+            Assert.AreEqual(1, presenter.Finished, "One cue over the cap ends the beat…");
+            CollectionAssert.AreEqual(new long[] { 0, 3 }, presented, "…and shows the latest state.");
+            CollectionAssert.AreEqual(new[] { true, false }, holds);
+            Assert.AreEqual(0, playback.Queued);
+            playback.Receive(View(4));
+            playback.Enqueue(new[] { March(4, "still-away") });
+            CollectionAssert.AreEqual(new long[] { 0, 3, 4 }, presented, "The rest of this absence shows at once.");
+            playback.SetFocus(true);
+            Tick(0);
+            CollectionAssert.AreEqual(new[] { "first" }, presenter.Begun, "Nothing of it replays.");
+            playback.Receive(View(5));
+            playback.Enqueue(new[] { March(5, "next") });
+            playback.HistoryRead(5);
+            Tick(0);
+            Assert.AreEqual("next", Key(playback.Current), "The next live event presents again.");
+        }
+
+        [Test]
+        public void ABacklogAlreadyOverTheCapWhenTheFocusGoesIsGivenUp()
+        {
+            var presenter = Timed(PresentationCueKind.March, 1);
+            playback.Receive(View(1));
+            playback.Enqueue(Backlog(1, PresentationPlayback.MostCuesAway + 2));
+            playback.HistoryRead(1);
+            Tick(0);
+            playback.SetFocus(false);
+            Assert.AreEqual(1, presenter.Finished);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+        }
+
+        [Test]
+        public void SkipReleasesWhileAwayAndAfterTheReturn()
+        {
+            var presenter = Timed(PresentationCueKind.March, 5);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(0);
+            playback.SetFocus(false);
+            playback.Skip();
+            Assert.AreEqual(1, presenter.Finished);
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented, "Skip releases whether or not the window has focus.");
+            playback.SetFocus(true);
+            playback.Receive(View(2));
+            playback.Enqueue(new[] { March(2, "next") });
+            playback.HistoryRead(2);
+            Tick(0);
+            playback.SetFocus(false);
+            playback.SetFocus(true);
+            playback.Skip();
+            Tick(0);
+            CollectionAssert.AreEqual(new long[] { 0, 1, 2 }, presented, "A focus change on the way does not break it.");
+            CollectionAssert.AreEqual(new[] { true, false, true, false }, holds);
+        }
+
+        [Test]
+        public void ADisconnectWhileAwayShowsTheLatestStateAndNothingReplaysOnTheReturn()
+        {
+            var presenter = Timed(PresentationCueKind.March, 5);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(0);
+            playback.SetFocus(false);
+            playback.SetConnection("Reconnecting");
+            CollectionAssert.AreEqual(new long[] { 0, 1 }, presented);
+            playback.SetConnection("Connected");
+            playback.SetFocus(true);
+            Tick(1);
+            CollectionAssert.AreEqual(new[] { "move" }, presenter.Begun);
+        }
+
+        // What brings the player back is not held: the coordinator names each view that waits for them.
+        [Test]
+        public void AViewThatWaitsForThePlayersReturnIsNamedForItsAlert()
+        {
+            Timed(PresentationCueKind.March, 5);
+            var named = new List<long>();
+            playback.HeldAway += view => named.Add(view.Revision);
+            playback.Receive(View(1));
+            playback.Enqueue(new[] { March(1, "move") });
+            playback.HistoryRead(1);
+            Tick(0);
+            CollectionAssert.IsEmpty(named, "With the player looking there is nothing to alert.");
+            playback.SetFocus(false);
+            CollectionAssert.AreEqual(new long[] { 1 }, named, "The view already waiting, as the focus goes.");
+            playback.Receive(View(2));
+            CollectionAssert.AreEqual(new long[] { 1, 2 }, named, "A newer one as it arrives.");
+            playback.SetFocus(true);
+            playback.Receive(View(3));
+            CollectionAssert.AreEqual(new long[] { 1, 2 }, named);
         }
 
         [Test]
@@ -327,6 +513,9 @@ namespace Wotr.EditorTests
             });
             return Cues(revision, step).Single();
         }
+
+        private static PresentationCue[] Backlog(long revision, int count) =>
+            Enumerable.Range(0, count).Select(index => March(revision, "cue-" + index)).ToArray();
 
         private static PresentationCue Cost(long revision)
         {

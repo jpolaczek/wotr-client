@@ -14,10 +14,14 @@ namespace Wotr.Client
     // UI-316 (owner review): the card grows out of the opponent's hand count into its reading place and stands there for
     // the 3 s; then it shrinks into where it goes — the console trail it docks in, or the Effects tab for a card that stays
     // on the table (the tab then lights up) — and the trail's new source glows. A card the player pinned stands for them.
+    // UI-493 (owner, 2026-11-04): the hand count steps as the card leaves it, and a table card leaving while the Effects panel
+    // is closed names itself beside the tab, for it has no tile to light.
     public sealed class CardRevealPresenter : ICuePresenter
     {
         public const double HoldSeconds = 3;
         public const double TableSeconds = .8;
+        public const double RemovedSeconds = 1.5;
+        public const string RemovedPlateName = "presentation-table-plate";
         public const string PresentedClass = "presented-card";
         public const string StandInName = "presentation-card-stand-in";
         // The part of the way out over which the card and its stand-in cross-fade.
@@ -25,9 +29,11 @@ namespace Wotr.Client
         public const string PlayedNote = "Event played";
         private const float Inset = 8;
         private readonly BoardScreen board;
+        private readonly StagedBoard staged;
         private readonly PresentationPlayback playback;
         private readonly PresentationCamera camera;
         private readonly PresentationLayer layer;
+        private readonly PresentationMarks marks;
         private readonly ObjectGlow dockGlow = new ObjectGlow();
         private RevealBeat reveal;
         private string revealed = "";
@@ -35,12 +41,15 @@ namespace Wotr.Client
         private string dockedAction = "";
         private string docked = "";
 
-        public CardRevealPresenter(BoardScreen board, PresentationPlayback playback, PresentationCamera camera, PresentationLayer layer)
+        public CardRevealPresenter(BoardScreen board, StagedBoard staged, PresentationPlayback playback, PresentationCamera camera,
+            PresentationLayer layer)
         {
             this.board = board;
+            this.staged = staged;
             this.playback = playback;
             this.camera = camera;
             this.layer = layer;
+            marks = new PresentationMarks(layer, RemovedPlateName);
             Cards.Root.RegisterCallback<ClickEvent>(PinRevealed);
         }
 
@@ -60,7 +69,7 @@ namespace Wotr.Client
             {
                 ActionCardUse.Event => Reveal(cue, now),
                 ActionCardUse.TableEntered => Table(board.TableEffects.Tab, now),
-                ActionCardUse.TableRemoved => Table(Tile(card.Id), now),
+                ActionCardUse.TableRemoved => Removed(card.Id, now),
                 _ => null
             };
         }
@@ -69,6 +78,7 @@ namespace Wotr.Client
         public void Released()
         {
             dockGlow.End();
+            marks.End();
             reveal = null;
             board.Console.Status.EndSource();
             if (Shown(revealed) && !Cards.Pinned)
@@ -80,6 +90,7 @@ namespace Wotr.Client
         private IPresentationBeat Reveal(PresentationCue cue, double now)
         {
             revealed = cue.Card.Id;
+            LeaveHand(cue.Card);
             var area = StageArea();
             var flight = new CardFlight(Cards.Root, board.ReducedMotion());
             flight.Hide();
@@ -90,6 +101,13 @@ namespace Wotr.Client
                 Cards.PlaceIn(area.Value);
             reveal = new RevealBeat(this, revealed, cue.ActionId, cue.Card.Owner, flight, StaysOnTable(cue), now);
             return reveal;
+        }
+
+        // UI-493: the count steps as the card sets out, so it never lags the card in the air.
+        private void LeaveHand(ActionCardFact card)
+        {
+            staged.Hand(card.Owner, -1, card.Deck);
+            board.StageHand(card.Owner, staged.View);
         }
 
         // A card that stays on the table goes to the Effects tab; any other Event docks in the console trail.
@@ -136,6 +154,27 @@ namespace Wotr.Client
             var glow = new ObjectGlow();
             glow.Follow(target);
             return new GlowBeat(glow, now, TableSeconds);
+        }
+
+        // Its tile lights while the panel is open; a closed panel's tab lights with the card's name beside it, a little longer.
+        private IPresentationBeat Removed(string id, double now)
+        {
+            var target = Tile(id);
+            var tab = board.TableEffects.Tab;
+            if (target != tab)
+                return Table(target, now);
+            var glow = new ObjectGlow();
+            glow.Follow(tab);
+            marks.Place(() => marks.Plate(tab, RemovedPlate(id), PlateSide.After));
+            return new GlowBeat(glow, now, RemovedSeconds, marks.End);
+        }
+
+        private static Label RemovedPlate(string id)
+        {
+            var plate = new Label("− " + CardLibrary.Title(id));
+            plate.AddToClassList(PoliticsPresenter.CaptionName);
+            plate.AddToClassList("presentation-caption-name");
+            return plate;
         }
 
         // "A click on the shown card pins it"; the presentation then holds until it is closed.
@@ -408,10 +447,12 @@ namespace Wotr.Client
         {
             private readonly ObjectGlow glow;
             private readonly double end;
+            private readonly System.Action ended;
 
-            public GlowBeat(ObjectGlow glow, double now, double seconds)
+            public GlowBeat(ObjectGlow glow, double now, double seconds, System.Action ended = null)
             {
                 this.glow = glow;
+                this.ended = ended;
                 end = now + seconds;
             }
 
@@ -419,11 +460,15 @@ namespace Wotr.Client
             {
                 if (now < end)
                     return false;
-                glow.End();
+                Finish();
                 return true;
             }
 
-            public void Finish() => glow.End();
+            public void Finish()
+            {
+                glow.End();
+                ended?.Invoke();
+            }
         }
     }
 }

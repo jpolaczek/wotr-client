@@ -122,6 +122,9 @@ namespace Wotr.EditorTests
             Assert.AreEqual("balrog", CharacterLibrary.AbilityHolder("deactivate-balrog"));
             Assert.AreEqual("gothmog", CharacterLibrary.AbilityHolder("gothmog-recruit"));
             Assert.AreEqual("theoden", CharacterLibrary.AbilityHolder("kings.mustering-of-the-mark"));
+            // UI-493 (owner, 2026-11-04): Voice of Saruman names its source.
+            Assert.AreEqual("saruman", CharacterLibrary.AbilityHolder("voice-recruit"));
+            Assert.AreEqual("saruman", CharacterLibrary.AbilityHolder("voice-upgrade"));
             Assert.IsNull(CharacterLibrary.AbilityHolder("kings.palantir.muster-as-event"), "A table card's conversion names no one.");
         }
 

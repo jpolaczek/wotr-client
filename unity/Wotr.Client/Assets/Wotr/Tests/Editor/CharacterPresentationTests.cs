@@ -50,7 +50,7 @@ namespace Wotr.EditorTests
             Assert.AreEqual("gimli", CharacterLibrary.AbilityHolder("politics-dwarves-at-erebor"));
             Assert.AreEqual("legolas", CharacterLibrary.AbilityHolder("politics-elves-at-stronghold"));
             Assert.IsNull(CharacterLibrary.AbilityHolder("combat-strength-plus-one"), "Several identities share it.");
-            Assert.IsNull(CharacterLibrary.AbilityHolder("voice-recruit"), "The catalog does not list it.");
+            Assert.IsNull(CharacterLibrary.AbilityHolder("no-such-ability"), "The catalog does not list it.");
         }
 
         [Test]

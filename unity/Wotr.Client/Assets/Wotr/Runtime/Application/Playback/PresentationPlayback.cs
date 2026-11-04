@@ -9,14 +9,19 @@ namespace Wotr.Client
     // or its history is still being read (at most HistoryWait), the board keeps presenting the earlier view and every
     // command path is held; then the latest view is applied once, with its revision, private version and decision. Skip
     // drains the beat and the backlog to the latest view on the next tick, so the skip click cannot reach a control the
-    // release opens. Without a registered presenter, or when the session is not live (offline, reconnecting, an
-    // unfocused window), a view is applied at once, exactly as before UI-304; cues of a presented revision are dropped,
-    // so a late history page never plays an old move. Every presenter that shows a cue plays its beat in registration
-    // order (UI-305: the camera, then the family's effect), on a presentation clock that stops while Paused (the player
-    // reads a card).
+    // release opens. Without a registered presenter, or when the session is not live (offline, reconnecting), a view is
+    // applied at once, exactly as before UI-304; cues of a presented revision are dropped, so a late history page never
+    // plays an old move. Every presenter that shows a cue plays its beat in registration order (UI-305: the camera, then
+    // the family's effect), on a presentation clock that stops while Paused (the player reads a card).
+    // UI-490 (owner, 2026-11-04): the clock also stops while the window has no focus, and the presentation resumes where it
+    // was on the player's return, with what arrived meanwhile behind it. Only a backlog over MostCuesAway is given up: the
+    // latest state, as a lost focus always showed before, until the player returns.
     public sealed class PresentationPlayback : IDisposable
     {
         public const double HistoryWait = 1.0;
+        // UI-490: a cue plays for 1.5–2 s at the shipped pace, so this is about half a minute of catching up on return:
+        // three or four of the opponent's actions. Beyond it the player gets the latest state and the pennants.
+        public const int MostCuesAway = 20;
         private const int ApplyAttempts = 3;
         private readonly Action<PlayerView> present;
         private readonly Action<bool> hold;
@@ -30,6 +35,8 @@ namespace Wotr.Client
         private double receivedAt;
         private long historyRevision = -1;
         private bool connected, focused = true, skipped, disposed;
+        // UI-490: the backlog of this absence went over the cap; everything shows at once until the player returns.
+        private bool givenUp;
         private int failures;
         public PlayerView Latest { get; private set; }
         public long PresentedRevision { get; private set; } = -1;
@@ -37,8 +44,10 @@ namespace Wotr.Client
         public bool Holding { get; private set; }
         // A cue is shown or waits: the Skip target exists only then, not while a quiet revision's history is read.
         public bool Presenting => Holding && (Current != null || queue.Count > 0);
-        public bool Live => connected && focused;
+        public bool Live => connected;
         public Func<bool> Paused { get; set; }
+        // UI-490: a view that waits for the player's return, as it arrives or as the focus goes.
+        public event Action<PlayerView> HeldAway;
         // The latest view was applied: per-presentation state (a source symbol, a camera takeover) ends here.
         public event Action Released;
         public int Queued => queue.Count;
@@ -64,23 +73,24 @@ namespace Wotr.Client
             if (Latest == null || view.Revision != Latest.Revision)
                 receivedAt = clock();
             Latest = view;
-            if (Holding)
-                return;
-            if (!Live || presenters.Count == 0 || view.Revision <= PresentedRevision)
+            if (!Holding && (!Live || givenUp || presenters.Count == 0 || view.Revision <= PresentedRevision))
             {
                 Present(view);
                 return;
             }
             SetHold(true);
+            if (!focused)
+                HeldAway?.Invoke(view);
         }
 
         public void Enqueue(IReadOnlyList<PresentationCue> cues)
         {
-            if (disposed || !Live || presenters.Count == 0)
+            if (disposed || !Live || givenUp || presenters.Count == 0)
                 return;
             foreach (var cue in cues)
                 if (cue.Revision > PresentedRevision)
                     queue.Enqueue(cue);
+            CapBacklog();
         }
 
         // The history feed is complete up to this revision.
@@ -103,19 +113,24 @@ namespace Wotr.Client
                 Release();
                 return;
             }
-            var paused = Paused?.Invoke() == true;
+            var reading = Paused?.Invoke() == true;
+            var paused = reading || !focused;
             if (lastTick.HasValue && !paused)
                 elapsed += now - lastTick.Value;
             lastTick = now;
             if (paused)
+            {
+                // UI-490: a quiet revision has nothing to wait for, so its decision and its alert come when they are due.
+                if (!reading && !Presenting)
+                    ReleaseOnceRead(now);
                 return;
+            }
             if (beat != null && !Advance(elapsed))
                 return;
             beat = null;
             if (StartNext(elapsed))
                 return;
-            if (historyRevision >= Latest.Revision || now - receivedAt >= HistoryWait)
-                Release();
+            ReleaseOnceRead(now);
         }
 
         // Skip (OPPONENT_ACTIONS_UX §6.3): the beat and the backlog end now and the latest view follows on the next tick.
@@ -136,11 +151,23 @@ namespace Wotr.Client
                 Rebase();
         }
 
+        // UI-490: the presentation waits for the player, and neither the time away nor a clock jump on return counts. The
+        // history gets its second again on return, so a page that was late meanwhile still plays.
         public void SetFocus(bool value)
         {
+            if (focused == value)
+                return;
             focused = value;
-            if (!Live)
-                Rebase();
+            lastTick = null;
+            if (value)
+            {
+                givenUp = false;
+                receivedAt = clock();
+                return;
+            }
+            CapBacklog();
+            if (Holding)
+                HeldAway?.Invoke(Latest);
         }
 
         public void Dispose()
@@ -152,7 +179,22 @@ namespace Wotr.Client
             queue.Clear();
         }
 
-        // A disconnect or a lost focus shows the latest state without any catch-up.
+        // UI-490: a long absence does not replay minutes. Over the cap, this absence shows the latest state.
+        private void CapBacklog()
+        {
+            if (focused || queue.Count <= MostCuesAway)
+                return;
+            givenUp = true;
+            Rebase();
+        }
+
+        private void ReleaseOnceRead(double now)
+        {
+            if (historyRevision >= Latest.Revision || now - receivedAt >= HistoryWait)
+                Release();
+        }
+
+        // A disconnect, or a backlog over the cap of an absence, shows the latest state without any catch-up.
         private void Rebase()
         {
             queue.Clear();
