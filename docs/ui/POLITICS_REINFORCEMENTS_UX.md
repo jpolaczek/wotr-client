@@ -17,7 +17,7 @@ User application from 2026-10-15 (Politics panel discharge):
 
 - Politics (`PoliticalPanel`, `NationTrackRow`): The line is a name, four steps and a hidden
   “Activate” button (78 pt reserved also when it is not there). The steps are `.action` buttons with
-  `frames/button` frame, so they look like a row of buttons. The small 9-slice frame looks like a
+  the shared button frame (`frontend/button` since UI-471), so they look like a row of buttons. The small 9-slice frame looks like a
   stacked one. The step forward shows “→” in the next step.
 - Meals (`ReinforcementsPanel`, UI-130–UI-135): separate window `FloatingWindow` opened alone at its
   own dice Muster or recruitment plan. Nation line: coat of arms, name, mini-tor of politics

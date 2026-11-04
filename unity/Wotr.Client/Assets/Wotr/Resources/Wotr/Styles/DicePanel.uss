@@ -56,19 +56,9 @@
     margin: 0 0 0 3px;
     padding: 0 3px;
     font-size: 12px;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .dice-panel .dice-header Button:hover,
-#board-screen .dice-panel .dice-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 
 /* Medallions. Three classes beat the older two-class die rules; the later planning rules still compact them. */
 .dice-panel .available-dice .die.die-free,
@@ -187,7 +177,7 @@
 .die.lords-die.set-aside { opacity: 0.5; -unity-background-image-tint-color: rgb(140, 140, 140); }
 .die.lords-die.set-aside > * { -unity-background-image-tint-color: rgb(150, 150, 150); }
 
-/* Counters: icon and count on a gilt-edged button; a click still opens both pools. */
+/* Counters: icon and count on a thin button (UI-471); a click still opens both pools. */
 #board-screen .dice-panel .resource-locations { margin: 2px 0 0 0; }
 #board-screen .dice-panel .resource-locations .action {
     flex-grow: 1;
@@ -201,19 +191,9 @@
     font-size: 14px;
     -unity-font-style: bold;
     -unity-text-align: middle-left;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .dice-panel .resource-locations .action:hover,
-#board-screen .dice-panel .resource-locations .action:focus { background-image: resource("Wotr/Art/UI/frames/button-hover"); }
 #board-screen .dice-panel .resource-locations .action:last-child { margin-right: 0; }
 /* UI-230: the location counts are information only, pictures with a number rather than buttons. */
 #board-screen .dice-panel .resource-locations .action.read-only,

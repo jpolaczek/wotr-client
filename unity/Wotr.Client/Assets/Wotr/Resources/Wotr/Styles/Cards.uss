@@ -177,19 +177,9 @@
 #board-screen .card-inspector .card-effect.playable-effect { border-left-color: rgb(46, 112, 84); background-color: rgba(46, 112, 84, 0.12); }
 #board-screen .card-inspector .card-rules { color: rgb(58, 42, 24); }
 #board-screen .card-inspector .card-header Button {
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .card-inspector .card-header Button:hover,
-#board-screen .card-inspector .card-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 
 
 /* UI-111: cards that cannot be committed in this battle stay visible but dimmed, with their unmet condition. */

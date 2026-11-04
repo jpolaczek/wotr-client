@@ -89,8 +89,8 @@ Implementation ( UI-114 ): one behaviour `PressFeedback` ( `Runtime/UI/PressFeed
 - Losses: figure as illustrated chips with state overlay (keep → missing, downgrade → arrow down,
   remove → cross) and operation number; budget hits as wax seals “assigned/remaining”; legend as
   icons; one Apply looses. Preview server remains in tooltipach.
-- End of battle: Continue/Stop/Hold/Retreat/Advance/Extend siege as buttons with `frames/button`
-  frame and icon; cost of the elite as a preview of figure; retreat still indicates the region on
+- End of battle: Continue/Stop/Hold/Retreat/Advance/Extend siege as buttons with the shared button frame
+  (`frontend/button` since UI-471) and icon; cost of the elite as a preview of figure; retreat still indicates the region on
   the map.
 - Report battle: parchment-only chronicle (`frames/panel` + `cards/parchment`), header with mode,
   rounds as bookmarks ‹ Round 2/3 ›, same power layout (read only), steps as entries with icons.
@@ -113,7 +113,7 @@ Category `graphicalassets/ui/src/battle/`, entries in `assets.json`, contract in
 | Casualties | `loss-keep`, `loss-downgrade`, `loss-remove`, `hit-seal` | `spent` |
 | Stages ribbon | `stage-ribbon`, `stage-marker`, `stage-cards`, `stage-roll`, `stage-reroll`, `stage-losses`, `stage-next` | — |
 | Report | `chronicle-header`, `round-tab` | `selected` |
-| Press (UI-114) | variants `pressed` for `frames/button`, `frames/button-square`, `dice/medallion`, `cards/parchment` | — |
+| Press (UI-114) | variants `pressed` for `frontend/button` (UI-471), `dice/medallion`, `cards/parchment` | — |
 
 Portraits and backgrounds ( UI-120 ): `graphicalassets/portraits/` with an atlas PNG , JSON rects, prompts and manifesto SHA-256 pattern `figures/` and `fellowship/` ; keys after the name of the characters common to base game and Lords: gimli, boromir, legolas, gandalf-grey, gandalf-white, strider, aragon, Pippin, merry, gollum, smeagol, ring-bearers, elrond, galladriel, balrog, gothmog, saruman, mouth-of-sauron, witch-king. `PortraitArtwork` pattern `FigureArtwork` Generating bitmap requires a tool outside Claude session; to deliver them, placeholders operate SVG ed UI-115 , a UI-120 remains blocked with ready-to-use props.
 

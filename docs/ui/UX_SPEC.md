@@ -130,13 +130,13 @@ Decision of the user from 2026-10-14: The game does not use two clicks. The clic
 User decision with 2026-10-14: the buttons are uniform, most are graphics with a tooltip explaining the symbol, and the buttons with the label have an illustrated frame matching the strategic fantasy game.
 
 - Icon button (`IconButton`): icon action with `graphicalassets/ui/src/actions` on the frame
-  `frames/button-square` (hover, push), with mandatory tooltip. Replaces characters ×, ‹, ›,  ✓, ⁇
+  `frontend/button` since UI-471, before it `frames/button-square` (hover, push), with mandatory tooltip. Replaces characters ×, ‹, ›,  ✓, ⁇
   /◆, ⁇, ⁇, ?, +/−, ⁇, ⁇ /☐ and words Back, Close, Retry, Refresh, Location, Why?, Pin, Older,
   Previous, Next and the button “Reinforcements” in the tray. pass and rejection dice have their own
   icons; the development of the log entry switches the icon more/less. cards version Companion and
   the country of the Council is an icon; reroll becomes a word ("Keep roll" / "Reroll
   selected"), because the label says what it will do to press.
-- Label button (`.action`): `frames/button` frame with hover, selected and pressed variants (UI-114
+- Label button (`.action`): `frontend/button` frame since UI-471, before it `frames/button`, with hover, selected and pressed variants (UI-114
   dims and lowers), gold label with shadow in plain thickness (thickness widened narrow labels and
   came on the nation's tab); buttons with their own graphics (dice, card, figure, chips) retain it.
 - Exceptions: “Back · Cancel game / Leave game” in the waiting room becomes a label because the word
@@ -4019,3 +4019,87 @@ layouts), `TestScenarioNetworkTests`, `WaitingRoomRulesTests`, `ConfigurationLay
 (`MenuBrowserNetworkTests.Scrolling…`, `WaitingRoomRemovalNetworkTests.TheHostRemoves…`, `ReturnListTests.BothPlayers…`,
 `BoardMenuNetworkTests.MenuReceives…`: status texts and timeouts, not styles). Screenshots:
 `.artifacts/screenshots/ui470-before-*.png` and `ui470-after-*.png`.
+
+## The game's buttons in the menus' thin line — UI-471 (2026-11-03)
+
+First task of the game chrome migration (UI-471–UI-479). The owner: "update the game interface so it uses the same styles
+and buttons as the main menu; we do not change the graphics of the map, characters, icons etc., only the tabs'
+backgrounds, frames and buttons." This task changes every game button's chrome and creates the shared tokens. Panels,
+windows, the rail, the console's frame, the battle's insides, notices and the top bar's plate keep their art until their
+own tasks; their buttons change now. Sizes, paddings and positions are unchanged.
+
+What changed:
+- `.action`, icon buttons and every context override wear `frontend/button` (64×32 pt, 6-point slices, 12 texture pixels at
+  scale 0.5) instead of `frames/button` and `frames/button-square`. Hover is `button-hover`; a press is `button-pressed`
+  and still sinks a point (UI-113); a chosen button is `button-selected`, the warm field with a bright line, instead of
+  red lacquer. Disabled is greyed. An icon on an icon button stays as it was.
+- Words are the menus' muted parchment, not bright gold: `rgb(228, 216, 188)`, lighter on hover, warm when chosen, grey when
+  disabled. Keyboard focus brightens the words only on a text button, so a clicked button does not look held; an icon
+  button has no words, so focus lightens its line.
+- A chosen button's old 2-point gold rim keeps its width in the layout and is transparent, so nothing moves and gold stays
+  the sign of a legal target: a legal target keeps its thick gold rim and warm plate (UI-193, UI-223, UI-372, UI-384).
+- The context overrides lost their copies of the art: they now only size and place the button, and the shared states apply.
+- Buttons that stand directly on the bright map (the map legend and political view, chat, the Cards tab, the Victory tab,
+  the notices' log and battle icons, the decision notice, Retry) have a nearly opaque dark field under the line
+  (`--game-button-fill-over-map`, 0.92) and a 2-point radius matching the art's corners. `MapLegend` lost its inline colours.
+- A figure or die on a `.action` that wore the old lacquer plate behind its picture (the battle's dice and losses, the
+  Fellowship's portraits, the region panel's figures, Hunt responses) now stands on the thin plate. The picture itself is
+  unchanged.
+
+The shared tokens. `Styles/GameChrome.uss` is imported first by `Wotr.uss` and declares USS custom properties on
+`.client-interface` and `.board-screen`; they are inherited by everything below. UI Toolkit in Unity 6000.6 resolves `var()`
+for `background-image` with `resource()`, for the slices, for `-unity-slice-scale` and for colours (`GameButtonChromeTests`
+reads the resolved values), so a later task changes one line:
+- Art: `--game-button`, `--game-button-hover`, `--game-button-pressed`, `--game-button-selected`.
+- Slices: `--game-button-slice` (12), `--game-button-slice-scale` (0.5px).
+- Words: `--game-button-text`, `--game-button-text-hover`, `--game-button-text-focus`, `--game-button-text-selected`,
+  `--game-button-text-disabled`.
+- Over the map: `--game-button-fill-over-map`.
+
+Rules for the next tasks (UI-472–UI-479):
+- Add a surface's art and colours as `--game-<surface>…` tokens in `GameChrome.uss` and use `var()` in its rules. A token
+  has no fallback outside those two roots.
+- Never put `menu-chrome` on the board's root: `.menu-chrome .action` would repaint dice, cards and tokens.
+- Do not give a context rule `background-image`, `color` or slices for a button: it would beat the states. Size it only.
+- The states of `.action` (`:hover`, `:focus`, `.selected`, `.pressed`, `:disabled`) have two classes and stand in the first
+  sheet on purpose, so that any art button's rule of two classes or more wins and a press never paints the chrome over
+  its picture. The base `.action` stays in `Wotr.uss` at its old place in the cascade. `Interaction.uss` and `SkillIcons.uss`
+  stay last. Static USS only, no CSS filter.
+
+Art buttons. `docs/ui/BUTTONS.md` counts 70 `art` buttons, but an audit of every `.action` the tests below render showed that
+few inherit `.action`'s slices: dice (`BoardScreen.Die`), Council and Ruler tokens, rings, skill icons and map figures are
+not `.action` at all; cards, decks, battle cards, reserve slots, rail tabs and character rows already set their own slices.
+Only two kinds inherited them: the Politics panel's `nation-token` and the region panel's `moved` tick. Both now set the
+same 24 texture pixels beside their picture, so they render as before. `.battle-hit` gained a class so the hover's words
+do not beat its green. `frames/button` and `frames/button-square` stay in the art kit, unreferenced.
+
+Tests: `GameButtonChromeTests` (new) reads what UI Toolkit resolved for a text and an icon button in every state and for an
+art button; `LeftRailLayoutTests` and `RightColumnLayoutTests` now expect the shared button art in panel headers. Results
+(2026-11-04): EditMode 1504/1504. PlayMode, one class per run, passing: `GameButtonChromeTests`, `DicePanelLayoutTests`,
+`TabletopObjectsTests`, `TurnConsoleLayoutTests`, `ConsoleCancelNetworkTests`, `BattleLayoutTests`, `LeftRailLayoutTests`,
+`RightColumnLayoutTests`, `TopBarLayoutTests`, `ActionNoticeLayoutTests`, `BoardChromeLayoutTests`, `BoardMenuLayoutTests`,
+`GlowingHintAuditTests`, `FateCardsNetworkTests`, `CharacterWindowLayoutTests`, `CharacterRosterPanelNetworkTests`,
+`CharacterRosterActionNetworkTests`, `RulerTokenMenuTests`, `ExpansionDecisionNetworkTests`, `KingsDecisionNetworkTests`,
+`T22AbilityNetworkTests`, `PressFeedbackClickTests`, `NoFocusOutlineTests`, `PoliticalPanelTests`. Two failures also occur
+without this task's changes: `BoardCompletionLayoutTests.FullRosterVersions…` (same values before the change) and
+`FarSightedObjectTests.ThranduilsPicture…` ("Missing component far-sighted-SeparateCompanions", also 2/2 with HEAD's
+stylesheets). A temporary audit (removed) of what every `.action` resolved to while 26 classes ran, before and after, found
+no art button with a changed picture or slices. Over the 18 classes with sizes recorded on both sides, 173 of 176 kinds of
+button showed only known sizes; the other three (`pool-Hunt`, `pool-Spent`, a Kings roster row) were one-off samples that fit
+a value pulse and a panel's slide. Screenshots: `.artifacts/screenshots/ui471-before-*.png` and `ui471-after-*.png`.
+
+Playtest (owner's checklist):
+- [ ] Start a game at 1366×768. Expect: Menu, the console's four squares and Cancel as dark fields with one thin muted-gold
+  line, the words in muted parchment; the panels, the console's frame and the top bar's plate as they were.
+- [ ] Hover, press and release a console square and Menu. Expect: the line lightens on hover; the field darkens and the
+  button sinks a point while held; moving off while held does nothing.
+- [ ] Open Politics, Characters and a card. Expect: thin header buttons in their old places; a pinned card's pin on the warm
+  field.
+- [ ] Fight a battle to its footer choices (Continue, Retreat…) and assign losses. Expect: thin footer buttons with their
+  icons; figures and dice on thin plates; a chosen loss with its gold rim on the warm field, not red.
+- [ ] Choose an action that offers a legal target among text buttons or tabs. Expect: the thick gold rim that pulses,
+  clearly different from a chosen button's warm field and thin bright line.
+- [ ] Look at the map legend, the political view, the chat icon, the Cards tab and the log icon over the brightest parchment.
+  Expect: a dark field and a readable line and icon.
+- [ ] Press a nation's token in Politics, a reserve figure and a hand card. Expect: their own pictures throughout.
+- [ ] Repeat one screen at 125 %. Expect: nothing clipped, every control in its usual place.

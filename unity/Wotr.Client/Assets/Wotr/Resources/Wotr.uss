@@ -1,3 +1,5 @@
+/* UI-471: the game chrome's shared tokens and the buttons' states; first, so every later rule may override them. */
+@import url("Wotr/Styles/GameChrome.uss");
 /* UI-86: the illustrated top bar has its own sheet; imports must precede all rules. */
 @import url("Wotr/Styles/TopBar.uss");
 @import url("Wotr/Styles/LeftRail.uss");
@@ -158,37 +160,30 @@
     flex-shrink: 0;
 }
 
-/* UI-138: every text button wears the framed lacquer of frames/button (gilt edge, studs), with its hover art;
-   a press tints and sinks it (Styles/Interaction.uss). Buttons with art of their own override the image. */
+/* UI-471: every button wears the menus' thin line from the shared tokens (Styles/GameChrome.uss, with the states). Buttons
+   with art of their own override the image and set their slices beside it. */
 .action {
     min-width: 38px;
     min-height: 36px;
     padding-left: 12px;
     padding-right: 12px;
-    color: rgb(241, 227, 181);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+    color: var(--game-button-text);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-button);
+    -unity-slice-top: var(--game-button-slice);
+    -unity-slice-right: var(--game-button-slice);
+    -unity-slice-bottom: var(--game-button-slice);
+    -unity-slice-left: var(--game-button-slice);
+    -unity-slice-scale: var(--game-button-slice-scale);
     border-width: 0;
 }
 
-.action:hover {
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-hover");
-}
-
-.action.selected { background-image: resource("Wotr/Art/UI/frames/button-selected"); }
 /* UI-235: a control that cannot act now is its picture only: no frame, hover or press. */
 #board-screen .action.read-only,
 #board-screen .action.read-only:hover,
 #board-screen .action.read-only:focus,
 #board-screen .action.read-only.pressed { background-image: none; -unity-background-image-tint-color: rgb(255, 255, 255); }
-.action:disabled { color: rgb(158, 150, 128); -unity-background-image-tint-color: rgb(150, 150, 150); }
 
 
 .fp {
@@ -1003,7 +998,7 @@
 #board-screen .politics-panel .nation-actions .skill-icon.nation-activate { width: 26px; height: 26px; }
 #board-screen .politics-panel .nation-actions .icon-button:disabled { opacity: 0.35; }
 #board-screen .politics-panel .nation-actions .icon-button.legal-target {
-    border-width: 0; background-image: resource("Wotr/Art/UI/frames/button-square-hover");
+    border-width: 0; background-image: var(--game-button-hover);
 }
 .action-progress { flex-direction: row; align-items: center; flex-shrink: 0; }
 .action-progress .march-step { font-size: 24px; width: 34px; height: 32px; margin: 0; -unity-text-align: middle-center; color: rgb(245, 212, 133); }

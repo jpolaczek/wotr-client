@@ -334,6 +334,10 @@
 .region-hover .hover-portrait.moved {
     opacity: 0.55;
     background-image: resource("Wotr/Art/UI/armies/moved-check");
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
     background-size: 12px 12px;
     background-repeat: no-repeat;
     background-position-x: right;

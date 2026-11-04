@@ -240,24 +240,9 @@
     margin: 0;
     padding: 0;
     font-size: 15px;
-    color: rgb(241, 227, 181);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#open-board-menu:hover,
-#open-board-menu:focus {
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-hover");
-}
-#open-board-menu:active { background-color: rgba(0, 0, 0, 0); -unity-background-image-tint-color: rgb(222, 214, 196); }
 
 /* Narrow bars keep icons, values and plaques; spacing tightens and the dice owner label gives way. */
 .topbar-compact .summary-chip { padding: 0 3px; }

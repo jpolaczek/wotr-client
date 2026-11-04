@@ -29,20 +29,10 @@
     padding: 0;
     flex-shrink: 0;
     border-width: 0;
-    border-radius: 0;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     align-items: center;
     justify-content: center;
 }
-#board-screen .notification-bar .notice-icon-button:hover,
-#board-screen .notification-bar .notice-icon-button:focus,
-#board-screen .notification-bar .notice-icon-button.selected { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+#board-screen .notification-bar .notice-icon-button:focus { background-image: var(--game-button-hover); }
 .notice-icon {
     width: 20px;
     height: 20px;
@@ -170,19 +160,9 @@
 }
 #board-screen .action-summary > .window-header Button {
     min-height: 0;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
 }
-#board-screen .action-summary > .window-header Button:hover,
-#board-screen .action-summary > .window-header Button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 /* UI-177: the pin and the close cross are large and clear, the cross in the top right corner of the card. */
 #board-screen .action-summary > .window-header .action.icon-button { width: 30px; min-width: 30px; height: 30px; min-height: 30px; margin: 0 0 0 4px; }
 #board-screen .action-summary > .window-header .icon-button > .icon-glyph { width: 22px; height: 22px; max-width: 22px; max-height: 22px; }

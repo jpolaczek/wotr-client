@@ -161,7 +161,7 @@ namespace Wotr.PlayTests
             Inside(icon.worldBound, header.worldBound, key + " icon · " + label);
             foreach (var button in header.Query<Button>().ToList().Where(Visible))
             {
-                Assert.That(Texture(button), Does.StartWith("button-square"), button.name + " · " + label);
+                Assert.That(Texture(button), Does.StartWith("button"), button.name + " wears the shared button art (UI-471) · " + label);
                 Assert.GreaterOrEqual(button.worldBound.height + 1, 24, button.name + " keeps the 24-point click target · " + label);
                 Inside(button.worldBound, header.worldBound, button.name + " · " + label);
             }

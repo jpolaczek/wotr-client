@@ -114,7 +114,7 @@ namespace Wotr.PlayTests
             Assert.AreEqual(PickingMode.Ignore, icon.pickingMode);
             foreach (var button in header.Query<Button>().ToList().Where(Visible))
             {
-                Assert.That(Texture(button), Does.StartWith("button-square"), button.name + " · " + label);
+                Assert.That(Texture(button), Does.StartWith("button"), button.name + " wears the shared button art (UI-471) · " + label);
                 Inside(button.worldBound, header.worldBound, button.name + " · " + label);
             }
         }

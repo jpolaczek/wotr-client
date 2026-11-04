@@ -1,4 +1,4 @@
-/* UI-138: icon buttons. A square gilt frame (frames/button-square, slices 8 points) holds an action icon
+/* UI-138: icon buttons. The shared thin frame (UI-471: the .action tokens of GameChrome.uss) holds an action icon
    (graphicalassets/ui/src/actions); the tooltip says what the symbol does. Context rules may resize them. */
 .action.icon-button {
     width: 28px;
@@ -9,17 +9,14 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
 }
-.action.icon-button:hover, .action.icon-button:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
-.action.icon-button.selected { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
-.action.icon-button:disabled { opacity: 0.45; }
+/* An icon has no words to brighten: keyboard focus lightens its line as hover does. A chosen one keeps its warm field. */
+.action.icon-button:hover, .action.icon-button:focus { background-image: var(--game-button-hover); }
+.action.icon-button.selected,
+.action.icon-button.selected:hover,
+.action.icon-button.selected:focus { background-image: var(--game-button-selected); }
+.action.icon-button:disabled { opacity: 0.45; -unity-background-image-tint-color: rgb(255, 255, 255); }
 .icon-button > .icon-glyph {
     width: 72%;
     height: 72%;

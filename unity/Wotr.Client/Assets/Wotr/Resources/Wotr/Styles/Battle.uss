@@ -72,19 +72,8 @@
     padding: 0;
     margin: 0 0 0 3px;
     font-size: 12px;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
 }
-.regional-battle .window-header .action:hover,
-.regional-battle .window-header .action:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
-.regional-battle .window-header .action.pressed { background-image: resource("Wotr/Art/UI/frames/button-square-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 
 /* The scene strip names the mode in pictures; the sides' emblems flank the current decision. */
 .battle-scene {
@@ -315,16 +304,8 @@
     min-height: 20px;
     padding: 0;
     margin: 0 0 0 4px;
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
 }
-.regional-battle .tray .battle-roll-page:hover, .regional-battle .tray .battle-roll-page:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 .regional-battle .tray .battle-die, .battle-report .battle-die {
     width: 52px;
     min-width: 52px;
@@ -344,7 +325,7 @@
 }
 .regional-battle .tray .battle-die.pressed { translate: 0 1px; background-color: rgba(0, 0, 0, 0); }
 .regional-battle .tray .battle-die:disabled { opacity: 1; }
-.battle-hit { color: rgb(181, 237, 176); }
+.action.battle-hit { color: rgb(181, 237, 176); }
 .battle-result-row { flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: center; height: 24px; }
 .battle-pips { width: 22px; height: 22px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; }
 .battle-pips.battle-pips-rerolled { width: 18px; height: 18px; }
@@ -563,25 +544,15 @@
 }
 .regional-battle .tray .battle-card.battle-card-revealed:hover, .regional-battle .tray .battle-card.battle-card-revealed:focus { -unity-background-image-tint-color: rgb(255, 250, 235); }
 
-/* No card / Stay and the other direct battle choices: framed buttons; No card carries its icon.
+/* No card / Stay and the other direct battle choices: thin buttons (UI-471); No card carries its icon.
    33px like .tray .action: at 1920×1080 and 125% one point is ~1.757 physical pixels, so 32px can round to 31.87. */
 .regional-battle .tray .battle-choice-footer .action {
     flex-shrink: 0;
     height: 33px;
     min-height: 33px;
     padding: 0 12px;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
 }
-.regional-battle .tray .battle-choice-footer .action:hover, .regional-battle .tray .battle-choice-footer .action:focus { background-image: resource("Wotr/Art/UI/frames/button-hover"); }
-.regional-battle .tray .battle-choice-footer .action.pressed { background-image: resource("Wotr/Art/UI/frames/button-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 .regional-battle .tray .battle-choice-footer .action:disabled { opacity: 0.55; }
 /* A button with a child element loses its text measure, so the iconed button carries its width. */
 .regional-battle .tray #battle-no-card { width: 112px; min-width: 112px; padding-left: 30px; -unity-text-align: middle-center; }
@@ -605,21 +576,14 @@
 /* UI-440 (owner): Evil Knowledge, an ability, is its bare skill icon (SkillIcon), centred in the footer's 33-point row. */
 #board-screen .regional-battle .tray .battle-choice-footer .skill-icon.battle-skill-choice { width: 32px; height: 32px; margin: 0 6px; align-self: center; }
 .regional-battle .tray #battle-stay { width: 96px; min-width: 96px; }
-/* UI-146: the advance's select/deselect-all toggle keeps the square icon frame inside the gilt footer. */
+/* UI-146: the advance's select/deselect-all toggle: its fixed square in the footer; on, the warm field (UI-471). */
 .regional-battle .tray .battle-choice-footer #battle-select-all {
     width: 34px;
     min-width: 34px;
     margin-right: 4px;
     padding: 0;
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
 }
-.regional-battle .tray .battle-choice-footer #battle-select-all:hover,
-.regional-battle .tray .battle-choice-footer #battle-select-all.all-selected { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
+.regional-battle .tray .battle-choice-footer #battle-select-all.all-selected { background-image: var(--game-button-selected); }
 .battle-direct-icon-continue { background-image: resource("Wotr/Art/UI/battle/continue"); }
 .battle-direct-icon-stop { background-image: resource("Wotr/Art/UI/battle/stop"); }
 .battle-direct-icon-hold { background-image: resource("Wotr/Art/UI/battle/hold"); }
@@ -663,18 +627,8 @@
     padding: 0;
     margin: 0 0 0 3px;
     font-size: 12px;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
 }
-.battle-chronicle > .window-header .action:hover, .battle-chronicle > .window-header .action:focus,
-.battle-chronicle .battle-report-navigation .action:hover, .battle-chronicle .battle-report-navigation .action:focus { background-image: resource("Wotr/Art/UI/frames/button-square-hover"); }
 .battle-chronicle .battle-report-navigation .action:disabled { opacity: 0.4; }
 .battle-chronicle #battle-report-status { font-size: 11px; color: rgb(214, 208, 184); margin: 2px 0 5px 0; }
 .battle-chronicle #retry-battle-report { height: 24px; min-height: 24px; padding: 0 10px; font-size: 11px; }
@@ -719,19 +673,10 @@
     min-height: 30px;
     padding-left: 30px;
     margin: 2px 0 4px 0;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     -unity-text-align: middle-center;
 }
 #board-screen .action-summary #open-archived-battle > .battle-direct-icon { position: absolute; left: 8px; top: 6px; width: 18px; height: 18px; -unity-background-scale-mode: scale-to-fit; }
-#board-screen .action-summary #open-archived-battle:hover, #board-screen .action-summary #open-archived-battle:focus { background-image: resource("Wotr/Art/UI/frames/button-hover"); }
 
 /* ---- UI-120: optional painted portraits and scenes ------------------------------------------------------ */
 .portrait-medallion.portrait-illustrated > .portrait-figure { left: 4px; right: 4px; top: 4px; bottom: 4px; }

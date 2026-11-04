@@ -17,18 +17,18 @@
 /* The held control sinks by a point; image-framed controls also darken. */
 .unity-button.pressed,
 .pressable.pressed { translate: 0 1px; -unity-background-image-tint-color: rgb(206, 196, 172); }
-/* UI-138: framed text and icon buttons press with their pressed art; the flat colour of old buttons is gone. */
+/* UI-138/UI-471: framed text and icon buttons press with their pressed art (.action.pressed in GameChrome.uss, under
+   the tint above, which an art button keeps as its only change); the flat colour of old buttons is gone. */
 .unity-button.action.pressed { background-color: rgba(0, 0, 0, 0); }
 #board-screen .unity-button.action.icon-button.pressed,
 .unity-button.action.icon-button.pressed {
-    background-image: resource("Wotr/Art/UI/frames/button-square-pressed");
+    background-image: var(--game-button-pressed);
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
 /* Framed art has a pressed rendering of its own (graphicalassets/ui/assets.json variants). */
 .board-left-tabs .edge-tab.pressed,
 .board-left-tabs .edge-tab.pressed:hover { background-image: resource("Wotr/Art/UI/rail/edge-tab-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
-#board-screen #open-board-menu.pressed { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/frames/button-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 .dice-panel .die.die-free.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-free-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 .dice-panel .die.die-shadow.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 #opponent-dice .die.pressed { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/dice/medallion-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }

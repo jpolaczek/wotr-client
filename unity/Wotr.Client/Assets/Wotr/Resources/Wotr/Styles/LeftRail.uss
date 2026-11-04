@@ -175,21 +175,8 @@
    the generic 36-point minimum of .action would overflow the 32-point band. */
 #board-screen .edge-left-panel .panel-header Button {
     min-height: 0;
-    color: rgb(241, 227, 181);
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square");
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
     border-width: 0;
     border-radius: 0;
-}
-#board-screen .edge-left-panel .panel-header Button:hover,
-#board-screen .edge-left-panel .panel-header Button:focus {
-    background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/button-square-hover");
 }
 
 /* Politics: rows in the colours of their side; UI-197: each nation's crest rides its side medallion along the track
@@ -227,6 +214,10 @@
     background-color: rgba(0, 0, 0, 0);
     background-image: resource("Wotr/Art/UI/tokens/politics-token-free");
     -unity-background-scale-mode: stretch-to-fill;
+    -unity-slice-top: 24;
+    -unity-slice-right: 24;
+    -unity-slice-bottom: 24;
+    -unity-slice-left: 24;
     border-width: 0;
 }
 #board-screen .politics-panel .shadow-nation .nation-token { background-image: resource("Wotr/Art/UI/tokens/politics-token-shadow"); }
@@ -488,7 +479,7 @@
 #board-screen .effects-panel .effect-source.action.read-only,
 #board-screen .effects-panel .effect-source.action.read-only:hover,
 #board-screen .effects-panel .effect-source.action.read-only:focus,
-#board-screen .effects-panel .effect-source.action.read-only.pressed { background-image: resource("Wotr/Art/UI/frames/button"); }
+#board-screen .effects-panel .effect-source.action.read-only.pressed { background-image: var(--game-button); }
 #board-screen .effects-panel .effect-source.effect-card-tile.action.read-only,
 #board-screen .effects-panel .effect-source.effect-card-tile.action.read-only:hover,
 #board-screen .effects-panel .effect-source.effect-card-tile.action.read-only:focus,

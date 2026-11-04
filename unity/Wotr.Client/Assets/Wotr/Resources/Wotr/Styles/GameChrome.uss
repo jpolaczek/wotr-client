@@ -1,0 +1,62 @@
+/* UI-471 (owner, 2026-11-03: "the game's interface uses the same styles and buttons as the main menu; we do not change the
+   map, characters, icons; only the tabs' backgrounds, frames and buttons"). The game's chrome takes its art and colours
+   from these tokens, so a later task swaps them here, in one place. Imported first by Wotr.uss: every later rule may
+   override what stands here, and an art button's own picture wins a tie with the states below. Never put menu-chrome on
+   the board's root: Menus.uss would repaint dice, cards and tokens. */
+
+/* USS custom properties are inherited: these two roots cover the board and the rare .action outside it (Already running,
+   the required update). UI Toolkit resolves var() for background-image, the slices and the colours in this Unity
+   (GameButtonChromeTests reads the resolved values). */
+.client-interface,
+.board-screen {
+    /* A button: the kit's frontend/button (64 x 32 points) on its 6-point slices, in texture pixels at 0.5 scale. */
+    --game-button: resource("Wotr/Art/UI/frontend/button");
+    --game-button-hover: resource("Wotr/Art/UI/frontend/button-hover");
+    --game-button-pressed: resource("Wotr/Art/UI/frontend/button-pressed");
+    --game-button-selected: resource("Wotr/Art/UI/frontend/button-selected");
+    --game-button-slice: 12;
+    --game-button-slice-scale: 0.5px;
+    /* Its words, as in the menus (Menus.uss): muted parchment, a little lighter on hover, warm when chosen, grey disabled. */
+    --game-button-text: rgb(228, 216, 188);
+    --game-button-text-hover: rgb(244, 232, 204);
+    --game-button-text-focus: rgb(250, 230, 172);
+    --game-button-text-selected: rgb(248, 230, 184);
+    --game-button-text-disabled: rgb(130, 122, 104);
+    --game-button-text-selected-disabled: rgb(170, 156, 124);
+    /* Under the art of a button that stands directly on the bright parchment map: the thin line needs a nearly opaque field. */
+    --game-button-fill-over-map: rgba(19, 18, 16, 0.92);
+}
+
+/* The states of .action; its base stays in Wotr.uss at its old place in the cascade. Each has two classes, in the first
+   sheet: any art button's rule of two classes or more wins, so a die, card, figure or token never takes the chrome's art.
+   Hover lightens the line and the field; keyboard focus brightens the words only, so a clicked button does not look held;
+   chosen is the warm field with a bright line, and its old 2-point rim stays in the layout but is transparent, because a
+   gold rim means a legal target (UI-193, UI-223, UI-372, UI-384); a press darkens the field and sinks a point (UI-113,
+   Interaction.uss). Art with texture slices of its own sets them beside its picture. */
+.action:hover {
+    color: var(--game-button-text-hover);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: var(--game-button-hover);
+}
+.action:focus { color: var(--game-button-text-focus); }
+.action.selected {
+    color: var(--game-button-text-selected);
+    background-image: var(--game-button-selected);
+    border-color: rgba(0, 0, 0, 0);
+}
+.action.pressed { background-image: var(--game-button-pressed); }
+.action:disabled { color: var(--game-button-text-disabled); -unity-background-image-tint-color: rgb(150, 150, 150); }
+.action.selected:disabled { color: var(--game-button-text-selected-disabled); }
+
+/* Buttons that stand directly on the map keep the thin line readable over the bright parchment. */
+#board-screen #map-legend-toggle,
+#board-screen #map-political-toggle,
+#board-screen .game-chat-icon,
+#board-screen .cards-tab,
+#board-screen .victory-tab,
+#board-screen .notification-bar .notice-icon-button,
+#board-screen .notification-bar .decision-notice,
+#board-screen #notification-retry {
+    background-color: var(--game-button-fill-over-map);
+    border-radius: 2px;
+}

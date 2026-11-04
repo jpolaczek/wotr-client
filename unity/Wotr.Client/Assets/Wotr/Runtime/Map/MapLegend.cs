@@ -23,8 +23,6 @@ namespace Wotr.Client
             Toggle.style.left = 12;
             Toggle.style.bottom = 12;
             Toggle.style.width = Toggle.style.height = 32;
-            Toggle.style.backgroundColor = new Color(.22f, .21f, .19f);
-            Toggle.style.color = new Color(.98f, .92f, .76f);
             Toggle.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             PoliticalToggle = IconButton.Create("political",
                 "Political view (P) · Regions in their nations' colours; stripes mark settlements held by the other side",
@@ -34,8 +32,6 @@ namespace Wotr.Client
             PoliticalToggle.style.left = 12;
             PoliticalToggle.style.bottom = 52;
             PoliticalToggle.style.width = PoliticalToggle.style.height = 32;
-            PoliticalToggle.style.backgroundColor = Toggle.style.backgroundColor;
-            PoliticalToggle.style.color = Toggle.style.color;
             PoliticalToggle.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             map.PoliticalViewChanged += SyncPoliticalToggle;
             SyncPoliticalToggle();
