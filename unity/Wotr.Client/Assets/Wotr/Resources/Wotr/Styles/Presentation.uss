@@ -340,12 +340,31 @@
     background-image: resource("Wotr/Art/UI/cards/back");
     -unity-background-scale-mode: stretch-to-fill;
 }
-.motion-enabled #opponent-cards {
+.motion-enabled #opponent-cards,
+.motion-enabled #opponent-spent,
+.motion-enabled #opponent-out,
+.motion-enabled #hunt-eye-count,
+.motion-enabled #hunt-free-count {
     transition-property: scale;
     transition-duration: 0.2s;
     transition-timing-function: ease-out-back;
 }
-.motion-enabled #opponent-cards.presentation-count-flash { scale: 1.25 1.25; }
+.motion-enabled #opponent-cards.presentation-count-flash,
+.motion-enabled #opponent-spent.presentation-count-flash,
+.motion-enabled #opponent-out.presentation-count-flash,
+.motion-enabled #hunt-eye-count.presentation-count-flash,
+.motion-enabled #hunt-free-count.presentation-count-flash { scale: 1.25 1.25; }
+
+/* UI-487: the action's die leaving the opponent's row for its count (SpentDieFlight, DrawFlight moves it). */
+.presentation-die-flight {
+    position: absolute;
+    border-radius: 14.5px;
+    background-image: resource("Wotr/Art/UI/dice/medallion");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+.presentation-die-flight.die-free { background-image: resource("Wotr/Art/UI/dice/medallion-free"); }
+.presentation-die-flight.die-shadow { background-image: resource("Wotr/Art/UI/dice/medallion-shadow"); }
+.presentation-die-flight .die-face { position: absolute; left: 4px; top: 4px; right: 4px; bottom: 4px; }
 
 /* UI-312: the opponent's draws or discards beside its hand count: small card backs and the signed count. */
 .presentation-card-backs {

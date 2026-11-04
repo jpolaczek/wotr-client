@@ -55,7 +55,8 @@ namespace Wotr.Client
         // as well (its die's cost comes first), so the panel does not close and open again within one step.
         public void Retire(PresentationCue cue, IEnumerable<PresentationCue> upcoming)
         {
-            if (!opened || cue.Kind == PresentationCueKind.Politics ||
+            // UI-487 (owner, 2026-11-04): the action's die leaving is its last beat, no next scene.
+            if (!opened || cue.Kind is PresentationCueKind.Politics or PresentationCueKind.SpentDie ||
                 upcoming.Any(next => next.Kind == PresentationCueKind.Politics && next.StepId == cue.StepId))
                 return;
             if (Visible)

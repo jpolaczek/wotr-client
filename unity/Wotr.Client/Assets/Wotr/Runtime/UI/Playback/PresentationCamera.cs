@@ -37,8 +37,7 @@ namespace Wotr.Client
             // UI-344: a Kings sovereign's change plays at his region on the map.
             PresentationCueKind.Sovereign => cue.BattleId.Length == 0,
             PresentationCueKind.Recruit or PresentationCueKind.Upgrade or PresentationCueKind.Removal or PresentationCueKind.Entry or
-                PresentationCueKind.Transformation or PresentationCueKind.Relocation or PresentationCueKind.Fellowship or
-                PresentationCueKind.Losses => cue.BattleId.Length == 0,
+                PresentationCueKind.Transformation or PresentationCueKind.Relocation or PresentationCueKind.Fellowship => cue.BattleId.Length == 0,
             _ => false
         };
 

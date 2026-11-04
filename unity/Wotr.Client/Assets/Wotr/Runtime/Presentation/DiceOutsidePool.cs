@@ -10,8 +10,10 @@ namespace Wotr.Client
         public static bool Offered(PlayerView view, DieView die) =>
             !InPool(die) && view.DecisionOwner == view.You && view.Options.Any(o => o.Enabled && Eligible(view, o, die.Id));
 
-        public static bool InPool(DieView die) =>
-            die.Location is DieLocation.Available or DieLocation.Unrolled or DieLocation.Resolving or DieLocation.AwaitingChoice;
+        public static bool InPool(DieView die) => InPool(die.Location);
+
+        public static bool InPool(DieLocation location) =>
+            location is DieLocation.Available or DieLocation.Unrolled or DieLocation.Resolving or DieLocation.AwaitingChoice;
 
         private static bool Eligible(PlayerView view, ActionOption option, string id) => option.EligibleDice.Contains(id) ||
             option.Kind == CommandKind.ChooseEffect && view.Decision?.Presentation is "ActionDie" or "DieAndResult" && option.EligibleIds.Contains(id);

@@ -168,7 +168,8 @@ namespace Wotr.Client
             var die = View.Dice.FirstOrDefault(d => d.Id == change.Id);
             if (die == null)
                 return;
-            if (change.After.HasValue)
+            // UI-488 (owner, 2026-11-04): a recovered die is blank again, as the released view shows it.
+            if (change.After.HasValue || change.To == DieLocation.Unrolled)
                 die.Face = change.After;
             die.Location = change.To;
         }

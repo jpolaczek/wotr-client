@@ -11,6 +11,25 @@ namespace Wotr.Client
     // eased and shrinking to the count's size, into the count — above the HUD, never taking the pointer and never showing an
     // identity. As a back lands the count flashes and its number steps; when the last has landed the beat holds the lit
     // count. Skip or a rebase ends it: the backs go and the release shows the latest state.
+    // UI-487 (owner, 2026-11-04): the times of one flight and how far its piece rises as it leaves.
+    public readonly struct FlightPace
+    {
+        public double Lead { get; }
+        public double Pull { get; }
+        public double Fly { get; }
+        public double Hold { get; }
+        public float Rise { get; }
+
+        public FlightPace(double lead, double pull, double fly, double hold, float rise)
+        {
+            Lead = lead;
+            Pull = pull;
+            Fly = fly;
+            Hold = hold;
+            Rise = rise;
+        }
+    }
+
     public sealed class DrawFlight : IPresentationBeat
     {
         public const string BackClass = "presentation-draw-back";
@@ -21,6 +40,7 @@ namespace Wotr.Client
         private const long FlashMilliseconds = 220;
         private const float Pull = 16;
         private static readonly Vector2 CardBack = new Vector2(34, 48);
+        private readonly FlightPace pace;
         private readonly List<Flight> flights = new List<Flight>();
         // UI-344: a Corruption tile's back flies the same way, round and smaller.
         private readonly string backClass;
@@ -33,7 +53,6 @@ namespace Wotr.Client
         private readonly Action done;
         private readonly Action end;
         private readonly double start;
-        private readonly double hold;
         private double? last;
         private bool ended;
 
@@ -50,8 +69,10 @@ namespace Wotr.Client
         // `origins` are the decks' plaques in the order of the cards; `landed` gets each landing's index, `done` follows the
         // last one, `end` the beat's end; `dress` fills each flying piece as it leaves.
         public DrawFlight(double now, VisualElement host, Func<VisualElement> count, IReadOnlyList<VisualElement> origins, Action light,
-            Action<int> landed, Action done, Action end, string back = BackClass, Vector2? size = null, Action<VisualElement> dress = null)
+            Action<int> landed, Action done, Action end, string back = BackClass, Vector2? size = null, Action<VisualElement> dress = null,
+            FlightPace? timing = null)
         {
+            pace = timing ?? new FlightPace(PresentationPace.MarkSeconds, PullSeconds, FlySeconds, PresentationPace.HoldSeconds, Pull);
             backClass = back;
             backSize = size ?? CardBack;
             this.dress = dress;
@@ -61,10 +82,9 @@ namespace Wotr.Client
             this.done = done;
             this.end = end;
             start = now;
-            hold = PresentationPace.HoldSeconds;
             light();
             for (var index = 0; index < origins.Count; index++)
-                flights.Add(new Flight { Origin = origins[index], Launch = PresentationPace.MarkSeconds + index * StaggerSeconds });
+                flights.Add(new Flight { Origin = origins[index], Launch = pace.Lead + index * StaggerSeconds });
             Advance(now);
         }
 
@@ -75,7 +95,7 @@ namespace Wotr.Client
             var time = now - start;
             for (var index = 0; index < flights.Count; index++)
                 Move(flights[index], index, time);
-            if (last.HasValue && time >= last.Value + hold)
+            if (last.HasValue && time >= last.Value + pace.Hold)
                 Finish();
             return ended;
         }
@@ -121,20 +141,20 @@ namespace Wotr.Client
                 return;
             if (flight.Back == null)
                 Launch(flight);
-            if (local < PullSeconds)
+            if (local < pace.Pull)
             {
-                var pulled = (float)(local / PullSeconds);
+                var pulled = (float)(local / pace.Pull);
                 flight.Back.style.opacity = pulled;
-                flight.Back.style.translate = new Translate(0, -Pull * pulled);
+                flight.Back.style.translate = new Translate(0, -pace.Rise * pulled);
                 return;
             }
-            var flown = Eased((local - PullSeconds) / FlySeconds);
-            var lifted = new Vector2(0, -Pull);
+            var flown = Eased((local - pace.Pull) / pace.Fly);
+            var lifted = new Vector2(0, -pace.Rise);
             var at = Vector2.Lerp(lifted, flight.Travel, flown);
             flight.Back.style.opacity = 1;
             flight.Back.style.translate = new Translate(at.x, at.y);
             flight.Back.style.scale = new Scale(Vector2.one * Mathf.Lerp(1, flight.Scale, flown));
-            if (local < PullSeconds + FlySeconds)
+            if (local < pace.Pull + pace.Fly)
                 return;
             Land(flight, index, time);
         }

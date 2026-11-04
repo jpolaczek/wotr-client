@@ -20,6 +20,9 @@ namespace Wotr.Client
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
         {
+            // UI-487 (owner, 2026-11-04): the battle's die leaving is its action's last beat, no next scene.
+            if (cue.Kind == PresentationCueKind.SpentDie)
+                return null;
             var window = board.Battles;
             var battle = window.BattleId;
             if (window.IsOpen && battle.Length > 0 && !Shows(cue, battle) && Over(battle) && !Moved())

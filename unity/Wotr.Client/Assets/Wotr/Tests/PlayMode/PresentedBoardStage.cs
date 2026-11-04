@@ -131,6 +131,13 @@ namespace Wotr.PlayTests
             return step;
         }
 
+        // UI-487: the opponent's die moved by this step, as the board's difference records it.
+        public ActionLogStep Moves(ActionLogStep step, DieLocation from, DieLocation to, DieFace? before, DieFace? after)
+        {
+            step.Facts.Dice.Add(new ActionDieChange { Id = OpponentDie, Owner = Opponent, Before = before, After = after, From = from, To = to });
+            return step;
+        }
+
         public int Characters(string region, Side side) =>
             Board.Presentation.Characters.Count(c => c.RegionId == region && c.Side == side);
 

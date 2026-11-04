@@ -80,7 +80,11 @@ namespace Wotr.PlayTests
                 var losses = room.Sh.Board.View.Options.Single(o => o.Kind == CommandKind.TakeEventLosses);
                 foreach (var id in losses.EligibleIds.Take(room.Sh.Board.View.EventLoss.Hits))
                     Click(room.Sh, "loss-" + id);
+                // UI-486 (owner, 2026-11-04): the Free Peoples watch the Shadow's casualties of their own Dead Men.
+                var watch = new ObservedDeltaWatch(room.Fp, "ui486-network-dead-men");
                 await room.Confirm(room.Sh);
+                await watch.Finish();
+                Assert.IsTrue(watch.Counts.Any(count => count.StartsWith("−")), "The Shadow's casualties have their scene: " + string.Join(",", watch.Counts));
                 var destination = room.Sh.Board.View.Options.Single().EligibleIds[0];
                 MapContourProbe.ClickRegion(room.Sh.Board.Map, destination);
                 await room.Confirm(room.Sh);

@@ -66,7 +66,8 @@ namespace Wotr.Client
             if (cue.Kind is PresentationCueKind.Upgrade or PresentationCueKind.Transformation)
                 return Replacements(cue);
             var sign = cue.Kind == PresentationCueKind.Removal ? -1 : 1;
-            return cue.Figures.Select(change => change.After ?? change.Before).Where(f => f != null)
+            // UI-485 (owner, 2026-11-04): a figure counts once, however many records its arrival has.
+            return FigureCues.Once(cue.Figures).Select(change => change.After ?? change.Before).Where(f => f != null)
                 .GroupBy(f => (Art: Art(f), Nation: f.NationId))
                 .Select(group => new FigureDelta { Art = group.Key.Art, Nation = group.Key.Nation, Count = sign * group.Count() });
         }

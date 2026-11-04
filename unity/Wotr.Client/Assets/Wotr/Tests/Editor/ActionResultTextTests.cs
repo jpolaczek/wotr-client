@@ -74,6 +74,22 @@ namespace Wotr.Client.Tests
             CollectionAssert.AreEqual(new[] { CharacterLibrary.Name("base.character.gandalf-white") + " enters · Fangorn" }, result.Lines);
         }
 
+        // UI-485 (owner, 2026-11-04): a recruit as the engine records it, twice with different origins, is one figure in the
+        // pennant and one line of the record; two recruits stay two.
+        [Test]
+        public void ARecruitRecordedTwiceCountsOnce()
+        {
+            var muster = Step(CommandKind.Recruit, Side.FreePeoples);
+            var one = new ActionParticipant { Id = "one", Side = Side.FreePeoples, NationId = "rohan", UnitKind = UnitKind.Regular };
+            var two = new ActionParticipant { Id = "two", Side = Side.FreePeoples, NationId = "rohan", UnitKind = UnitKind.Regular };
+            muster.Facts.Figures.Add(new ActionFigureChange { After = one, To = "edoras" });
+            muster.Facts.Figures.Add(new ActionFigureChange { Before = one, After = one, From = "reserve", To = "edoras" });
+            CollectionAssert.AreEqual(new[] { "+1 Regular · Edoras" }, ActionResultText.For(new[] { muster }, Data).Lines);
+            Assert.AreEqual(1, ActionFactText.Effects(muster, Data).Count(line => line.Contains("Edoras")), "One line of the record.");
+            muster.Facts.Figures.Add(new ActionFigureChange { Before = two, After = two, From = "reserve", To = "edoras" });
+            CollectionAssert.AreEqual(new[] { "+2 Regular · Edoras" }, ActionResultText.For(new[] { muster }, Data).Lines);
+        }
+
         [Test]
         public void FellowshipMoveTellsTheHuntResultAndTheHuntBoxCountsAddedDice()
         {

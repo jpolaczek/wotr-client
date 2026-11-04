@@ -21,11 +21,15 @@ namespace Wotr.Client
 
         // UI-318: the plaque's Eye medallion and its number, the one part a Shadow allocation changes.
         public VisualElement EyeCount => eyes.parent;
+        // UI-487 (owner, 2026-11-04): the count of a side's dice in the Box, where its die lands.
+        public VisualElement Count(Side side) => side == Side.FreePeoples ? freeCount : EyeCount;
 
         public HuntBoxView()
         {
             Counts.AddToClassList("hunt-box-counts");
-            Counts.Add(EdgePlaque.Value(Medallion(), eyes));
+            var eyeCount = EdgePlaque.Value(Medallion(), eyes);
+            eyeCount.name = "hunt-eye-count";
+            Counts.Add(eyeCount);
             freeCount = EdgePlaque.Value(FellowshipArtwork.Image("journey"), freeDice);
             freeCount.name = "hunt-free-count";
             Counts.Add(freeCount);

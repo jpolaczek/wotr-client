@@ -4564,3 +4564,93 @@ Playtest (owner's checklist):
 
 Tests: EditMode `UiArtKitTests`; PlayMode `DicePanelLayoutTests` (the side's band, both sides, four layouts), `RingUseNetworkTests`,
 `GameWindowChromeTests`, `InGameDenseLayoutTests`.
+
+<a id="a-recruit-is-one-figure--ui-485"></a>
+## A recruit is one figure — UI-485 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 1): one Regular showed "+2" on the map badge and "+2 Regular" in the pennant, because the
+server records a recruit twice with different origins. The client now counts a figure's arrival once, on the badge, in the stack, in
+the pennant and in the record, whichever backend it talks to. A figure that really moved away and came back stays two facts.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#a-recruit-is-one-figure--ui-485).
+
+To watch with two clients: start the scenario from the Testing catalog in one client and join its seat with a second one (or
+switch side in the test menu), play from one and watch the other.
+
+Playtest (owner's checklist):
+- [ ] `fp-muster-recruit`, watched as the Shadow. The Free Peoples recruit one Regular with the Muster die. Expect: the map badge says "+1"
+  and the pennant's tooltip "+1 Regular · <region>".
+- [ ] `sh-muster-recruit`, watched as the Free Peoples. Recruit two Regulars in two regions with one die. Expect: "+1" at each, one after
+  the other.
+
+Tests: EditMode `OpponentPresentationModelTests` (`ARecruitRecordedTwiceIsOneFigureAtItsRegion`, `TwoRealMovesOfOneFigureStayTwoFacts`),
+`ActionResultTextTests.ARecruitRecordedTwiceCountsOnce`; PlayMode `OpponentRecruitmentPoliticsTests.ARecruitRecordedTwiceShowsItsRealCount`
+(both viewers), `OpponentRecruitmentPoliticsNetworkTests` (the exact count on the real server, both directions).
+
+<a id="an-events-casualties-have-their-scene--ui-486"></a>
+## An event's casualties have their scene — UI-486 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 2): the camera travelled to the region of Dreadful Spells, Ents, Dead Men, Valinor,
+Rangers, Madness or a Kings card, and nothing played; the stack dropped at the release. Now they play as figure changes: the force glows,
+the badge says "−N", the stack settles. A downgrade is its Elite out ("−1"), then its Regular in ("+1"). A battle's casualties stay in its window.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#an-events-casualties--ui-486).
+
+Playtest (owner's checklist):
+- [ ] `layout-dreadful-spells-siege` with two clients. The Shadow plays Dreadful Spells on the Parth Celebrant army (its Nazgûl roll, so
+  try again if nothing hits) and the Free Peoples remove a Regular. Expect on the Shadow's board: the camera at Parth Celebrant, the force
+  glowing, "−1" beside it and the stack one smaller, before the next decision. The Free Peoples, who chose, get no scene.
+- [ ] Same, the Free Peoples downgrading their Elite. Expect: "−1" with the Elite's figure, then "+1" with the Regular's, the count back
+  where it was.
+- [ ] Same with Skip animations on. Expect: the same badges and counts, the camera jumping. Say if the two beats of a downgrade feel long.
+
+Tests: EditMode `OpponentPresentationModelTests.AnEventsLossesAreFigureChangesTheCameraFrames` (both viewers); PlayMode
+`OpponentRecruitmentPoliticsTests` (`AnEventsRemovalPlaysItsSceneAtTheRegion`, `AnEventsDowngradeShowsItsEliteOutAndItsRegularIn`, both
+viewers), `Shadow04NetworkTests.EventLossesRemainTheDefendersChoice`, `ShadowStrategy01NetworkTests` (a real downgrade),
+`CardPack04NetworkTests` (the Free Peoples watching the Shadow's casualties).
+
+<a id="the-spent-die-leaves--ui-487"></a>
+## The spent die leaves — UI-487 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 3; "it must be clear, not slow"): the spent die was ringed, stayed in the row and vanished in
+one frame. Now, as the action's last beat (about 0.7 s), the ring ends and a copy of the die flies from its row into the count where it
+lies: the opponent's Spent or Out chip, or the Hunt plaque's count for a die entering the Hunt Box. The count steps as it lands and the
+row closes. A Muster die with two points leaves once, at the end; a die a new turn recovers flies nowhere. Skip animations: no flight, the
+count steps with its pulse. Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#the-die-leaves--ui-487).
+
+Playtest (owner's checklist):
+- [ ] `sh-muster-recruit`, watched as the Free Peoples. Recruit one Regular and click ✓ to finish. Expect: the die stays with its "•" after
+  the recruit, and only at the finish flies to the Spent chip, which steps. Say if 0.7 s per action is right.
+- [ ] `fp-character-move-fellowship`, watched as the Shadow. Move the Fellowship. Expect: Hunt window, tracks, then the die flies to the
+  Hunt plaque's footprint count, which steps.
+- [ ] `sh-army-attack`, watched as the Free Peoples, fought to its end. Expect: the die stays in the row through the battle, and flies
+  to Spent as the battle ends, its window staying open.
+- [ ] Any action forfeited with a die. Expect: it flies to the Out chip.
+- [ ] Skip animations on, then Skip during a flight. Expect: no flight; the count steps; Skip shows the latest state.
+
+Tests: EditMode `OpponentPresentationModelTests` (`TwoMarchesLetTheirDieLeaveOnceAtTheEnd`, `AnAttacksDieLeavesWhenItsBattleEnds`,
+`ADieRecoveredByItsOwnRevisionFliesNowhere`, `AFellowshipMovesDieEntersTheHuntBoxAfterItsHunt`, `ADieKeptByVilya…`); PlayMode
+`OpponentSpentDieTests` (both viewers), `OpponentSpentDieNetworkTests` (two points, both directions); frames `ui487-*`.
+
+<a id="what-the-opponent-gains-through-your-own-click--ui-488"></a>
+## What the opponent gains through your own click — UI-488 (2026-11-04)
+
+The owner's decision on the opponent audit (gap 5): a step you decided showed nothing, so the Shadow never saw the Free Peoples' roll, and
+when your click ended the turn the opponent's dice and draws simply appeared. These facts now play on your own step, the camera staying yours:
+the opponent's dice rolled or recovered, its paying die leaving, its automatic draws as backs, and the Fellowship's Mordor inactivity. Nothing you
+did yourself is played back, and hands stay hidden. Dice that are in no row yet appear lit at once instead of 0.7 s of nothing. These beats
+come between your click and your next decision (about 1.5–3 s); Skip ends them.
+Details: [OPPONENT_ACTIONS_UX](OPPONENT_ACTIONS_UX.md#through-your-own-click--ui-488).
+
+Playtest (owner's checklist):
+- [ ] `fp-event-draw` with two clients, both sides forfeiting every die, watched from whichever side clicks last. Expect on that board: the
+  opponent's dice appear lit, then two backs fly from its decks into its card count; your own draws arrive with your hand, no back flies
+  for them.
+- [ ] Same game, next turn: Continue as the Free Peoples, then allocate the Hunt as the Shadow. Expect on the Shadow's board: the Free Peoples'
+  dice light in the top bar and show their faces before your own roll appears; the camera stays where you left it. Say if the wait after
+  your click is right.
+- [ ] `fp-mordor-track` with two clients, both sides forfeiting every die with no attempt to move or hide. Expect: the panel opens and the
+  corruption track moves one, on both boards, before the next decision.
+
+Tests: EditMode `OpponentPresentationModelTests` (`TheShadowSeesTheFreePeoplesRollOnItsOwnAllocation`,
+`TheOpponentsDrawsAndDiceFollowWhenOurClickEndedTheTurn`, `OurOwnPaymentWithTheOpponentsDieStaysOurs`,
+`MordorInactivityShowsOnOurOwnStepAndOtherTracksDoNot`); PlayMode `OpponentOwnClickPresentationTests` (both viewers),
+`OpponentSpentDieNetworkTests.TheEndOfTheTurnAndTheRollShowOnTheClickersOwnBoard`; frames `ui488-*`.

@@ -46,8 +46,9 @@ namespace Wotr.PlayTests
             .Where(cue => cue.Kind == PresentationCueKind.Card && cue.Card.Use == ActionCardUse.CombatReveal)
             .Select(cue => cue.Card.Id);
 
+        // UI-488: a die's cue is about one side's die, and each player is shown the other's.
         private static Dictionary<string, List<string>> BySource(IEnumerable<PresentationCue> cues) => cues
-            .GroupBy(cue => cue.StepId + "/" + cue.Kind)
+            .GroupBy(cue => cue.StepId + "/" + cue.Die?.Owner + "/" + cue.Kind)
             .ToDictionary(group => group.Key, group => group.Select(cue => cue.Id).ToList());
 
         public void Dispose()

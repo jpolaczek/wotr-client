@@ -20,6 +20,9 @@ namespace Wotr.Client
     // UI-315 (owner review): at the shared pace — the Ring's socket glows before its die's beat; the dice and the hand
     // count glow first with their old values, then change while lit and hold, so a draw shows the counter lighting up
     // before its number changes.
+    // UI-487 (owner, 2026-11-04): the action's die leaves through SpentDieFlight, its last beat.
+    // UI-488 (owner, 2026-11-04): dice that are in no row yet (a recovery) have nothing to light first: they appear lit at
+    // once, and a change that shows nowhere takes no time.
     public sealed class ResourcePresenter : ICuePresenter
     {
         public const int MostBacks = 4;
@@ -31,6 +34,7 @@ namespace Wotr.Client
         private readonly StagedBoard staged;
         private readonly PresentationPlayback playback;
         private readonly PresentationMarks marks;
+        private readonly SpentDieFlight spentDie;
         private readonly HashSet<string> grouped = new HashSet<string>();
 
         public ResourcePresenter(BoardScreen board, StagedBoard staged, PresentationPlayback playback, PresentationLayer layer)
@@ -39,6 +43,7 @@ namespace Wotr.Client
             this.staged = staged;
             this.playback = playback;
             marks = new PresentationMarks(layer, PlateName);
+            spentDie = new SpentDieFlight(board, staged, marks, layer);
         }
 
         public IPresentationBeat Begin(PresentationCue cue, double now)
@@ -50,6 +55,7 @@ namespace Wotr.Client
             {
                 PresentationCueKind.Cost when cue.Cost?.Kind == ActionCostKind.Ring => Ring(cue, now),
                 PresentationCueKind.Die when cue.Die != null => Dice(cue, now),
+                PresentationCueKind.SpentDie when cue.Die != null => spentDie.Begin(cue.Die, now),
                 PresentationCueKind.Draw when cue.Card != null => Cards(cue, now),
                 _ => null
             };
@@ -78,38 +84,48 @@ namespace Wotr.Client
                 changes.Add(next.Die);
                 grouped.Add(next.Id);
             }
-            var hunted = changes.Any(change => change.To == DieLocation.Hunt && change.From != DieLocation.Hunt);
-            return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)>
-            {
-                (() => marks.Place(() => LightBefore(changes, hunted)), PresentationPace.MarkSeconds),
-                (() => ChangeDice(changes, hunted), PresentationPace.HoldSeconds)
-            });
+            var hunted = changes.Where(change => change.To == DieLocation.Hunt && change.From != DieLocation.Hunt)
+                .Select(change => change.Owner).Distinct().ToList();
+            if (hunted.Count > 0 || changes.Any(InRow))
+                return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)>
+                {
+                    (() => marks.Place(() => LightBefore(changes, hunted)), PresentationPace.MarkSeconds),
+                    (() => ChangeDice(changes, hunted), PresentationPace.HoldSeconds)
+                });
+            ChangeDice(changes, hunted);
+            if (!changes.Any(InRow))
+                return null;
+            return new StepsBeat(now, marks.End, new List<(Action Start, double Seconds)> { (() => { }, PresentationPace.HoldSeconds) });
         }
 
-        // The dice that will change, where they stand now, and the plaque's Eye count an allocation will raise (UI-318:
-        // the Eye and its number, not the whole plaque).
-        private void LightBefore(IEnumerable<ActionDieChange> changes, bool hunted)
+        private bool InRow(ActionDieChange change) => board.DicePool(change.Owner).Q<Button>(change.Id) != null;
+
+        // The dice that will change, where they stand now, and the plaque's count an allocation will raise (UI-318: the
+        // Eye and its number, not the whole plaque).
+        private void LightBefore(IEnumerable<ActionDieChange> changes, IEnumerable<Side> hunted)
         {
             foreach (var change in changes)
                 marks.Light(board.DicePool(change.Owner).Q<Button>(change.Id));
-            if (hunted)
-                marks.Light(board.Hunt.Box.EyeCount);
+            foreach (var side in hunted)
+                marks.Light(board.Hunt.Box.Count(side));
         }
 
-        private void ChangeDice(IReadOnlyList<ActionDieChange> changes, bool hunted)
+        private void ChangeDice(IReadOnlyList<ActionDieChange> changes, IReadOnlyList<Side> hunted)
         {
             foreach (var change in changes)
                 staged.Die(change);
             foreach (var side in changes.Select(change => change.Owner).Distinct())
                 board.StageDice(side, staged.View);
-            if (hunted)
+            // UI-488: the counts follow the dice (the Spent and Out chips, a Hunt Box a recovery empties).
+            board.StageOpponentSummary(staged.View);
+            if (changes.Any(change => change.To == DieLocation.Hunt || change.From == DieLocation.Hunt))
                 board.StageHunt(staged.View);
             marks.Place(() =>
             {
                 foreach (var change in changes)
                     MarkDie(change);
-                if (hunted)
-                    marks.Light(board.Hunt.Box.EyeCount);
+                foreach (var side in hunted)
+                    marks.Light(board.Hunt.Box.Count(side));
             });
         }
 

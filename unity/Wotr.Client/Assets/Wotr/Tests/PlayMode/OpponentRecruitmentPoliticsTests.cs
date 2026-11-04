@@ -297,6 +297,117 @@ namespace Wotr.PlayTests
             stage.AssertFinal(latest);
         }
 
+        // UI-485 (owner, 2026-11-04): a recruit as the engine records it, from nowhere and from the reserve, is one figure on
+        // the badge and in the stack, for both viewers.
+        [UnityTest]
+        public IEnumerator ARecruitRecordedTwiceShowsItsRealCount([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            yield return stage.Ready();
+            var (nation, region) = Place(viewer);
+            var id = stage.Reserve(nation, UnitKind.Regular, 1).Single();
+            var before = stage.Army(region);
+            var latest = stage.Latest();
+            PresentedBoardStage.Place(latest, new[] { id }, region);
+            var recruit = stage.Step(1);
+            recruit.Facts.Figures.Add(new ActionFigureChange { After = stage.Unit(id), To = region });
+            recruit.Facts.Figures.Add(stage.Change(id, "reserve", region));
+            stage.Play(latest, region, recruit);
+            yield return stage.Until(() => stage.Board.Map.Q("observed-delta") != null);
+            Assert.IsNotNull(Delta(stage, "+1"), "One Regular, not two.");
+            Assert.AreEqual(before + 1, stage.Army(region));
+            yield return new WaitForSecondsRealtime(.2f);
+            LayoutTests.Save(stage.Texture, "ui485-recruit-" + viewer + ".png");
+            yield return stage.Released();
+            Assert.AreEqual(before + 1, stage.Army(region));
+            stage.AssertFinal(latest);
+        }
+
+        // UI-486 (owner, 2026-11-04): an event's casualties play their scene. The camera travels there, the force glows, the
+        // badge counts them and the stack settles — recorded as TakeEventLosses records them, a choice and its EventLosses step.
+        [UnityTest]
+        public IEnumerator AnEventsRemovalPlaysItsSceneAtTheRegion([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var (nation, region) = Place(viewer);
+            var ids = stage.Put(nation, UnitKind.Regular, region, 3);
+            yield return stage.Ready();
+            var before = stage.Army(region);
+            var latest = stage.Latest();
+            PresentedBoardStage.Place(latest, ids.Take(2), "reserve");
+            var choice = stage.Step(1);
+            choice.Command = CommandKind.TakeEventLosses;
+            foreach (var id in ids.Take(2))
+                choice.Facts.Figures.Add(stage.Change(id, region, "reserve"));
+            var losses = EventLosses(stage, 2, region, ids.Take(2).Select(id => Loss(stage, id, BattleLossKind.Remove, region)).ToArray());
+            stage.Play(latest, "grey-havens", choice, losses);
+            yield return stage.Until(() => Delta(stage, "−2") != null);
+            Assert.AreEqual(before - 2, stage.Army(region), "The stack settles to its true count.");
+            Assert.IsTrue(stage.Presenters.Trace.Lit.Any(), "The force glows.");
+            Assert.IsTrue(stage.Presenters.Camera.SafeArea().Contains(stage.Board.Map.Camera.ToScreen(stage.Anchor(region))),
+                "The camera's travel ends at a scene.");
+            yield return new WaitForSecondsRealtime(.2f);
+            LayoutTests.Save(stage.Texture, "ui486-removal-" + viewer + ".png");
+            Assert.IsTrue(stage.Playback.Holding, "The scene plays before the release.");
+            yield return stage.Released();
+            stage.AssertFinal(latest);
+            yield return stage.NothingFlies();
+        }
+
+        // A downgrade: the Elite leaves, then its Regular arrives.
+        [UnityTest]
+        public IEnumerator AnEventsDowngradeShowsItsEliteOutAndItsRegularIn([Values(Side.FreePeoples, Side.Shadow)] Side viewer)
+        {
+            using var stage = new PresentedBoardStage(1366, 1f, false, viewer);
+            var (nation, region) = Place(viewer);
+            var stays = stage.Put(nation, UnitKind.Regular, region, 1);
+            var elite = stage.Put(nation, UnitKind.Elite, region, 1).Single();
+            yield return stage.Ready();
+            var before = stage.Army(region);
+            var regular = stage.Reserve(nation, UnitKind.Regular, 1).Single();
+            var latest = stage.Latest();
+            PresentedBoardStage.Place(latest, new[] { elite }, "reserve");
+            PresentedBoardStage.Place(latest, new[] { regular }, region);
+            var choice = stage.Step(1);
+            choice.Command = CommandKind.TakeEventLosses;
+            // The board's difference lists the figures in id order: here the Regular comes first.
+            choice.Facts.Figures.Add(stage.Change(regular, "reserve", region));
+            choice.Facts.Figures.Add(stage.Change(elite, region, "reserve"));
+            var loss = Loss(stage, elite, BattleLossKind.Downgrade, region);
+            loss.ReplacementId = regular;
+            stage.Play(latest, "grey-havens", choice, EventLosses(stage, 1, region, loss));
+            yield return stage.Until(() => Delta(stage, "−1") != null);
+            Assert.AreEqual(before - 1, stage.Army(region), "The Elite left first.");
+            Assert.IsNull(Delta(stage, "+1"));
+            yield return new WaitForSecondsRealtime(.2f);
+            LayoutTests.Save(stage.Texture, "ui486-downgrade-out-" + viewer + ".png");
+            yield return stage.Until(() => Delta(stage, "+1") != null);
+            Assert.AreEqual(before, stage.Army(region), "Its Regular takes its place.");
+            yield return new WaitForSecondsRealtime(.2f);
+            LayoutTests.Save(stage.Texture, "ui486-downgrade-in-" + viewer + ".png");
+            yield return stage.Released();
+            Assert.AreEqual(stays.Count + 1, stage.Army(region));
+            stage.AssertFinal(latest);
+            yield return stage.NothingFlies();
+        }
+
+        private static (string Nation, string Region) Place(Side viewer) =>
+            viewer == Side.FreePeoples ? ("sauron", "dol-guldur") : ("rohan", "edoras");
+
+        private static ActionLossFact Loss(PresentedBoardStage stage, string id, BattleLossKind kind, string region) =>
+            new ActionLossFact { Figure = stage.Unit(id), Operation = kind, RegionId = region, Hits = 1 };
+
+        private static ActionLogStep EventLosses(PresentedBoardStage stage, int order, string region, params ActionLossFact[] losses)
+        {
+            var step = stage.Step(order);
+            step.Actor = null;
+            step.Automatic = true;
+            step.Kind = "EventLosses";
+            step.Context.Regions.Add(region);
+            step.Facts.LossDetails.AddRange(losses);
+            return step;
+        }
+
         private static void Nation(PlayerView view, string id, bool active, int steps)
         {
             var nation = view.Nations.Single(n => n.Id == id);

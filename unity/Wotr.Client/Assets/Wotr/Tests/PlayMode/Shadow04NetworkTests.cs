@@ -41,7 +41,11 @@ namespace Wotr.PlayTests
                 Assert.IsNull(room.Sh.Board.View.Decision);
                 var unit = room.Fp.Board.View.Options.Single(o => o.Kind == CommandKind.TakeEventLosses).EligibleIds[0];
                 Click(room.Fp, "loss-" + unit);
+                // UI-486 (owner, 2026-11-04): the Shadow watches Dreadful Spells' casualty leave the stack.
+                var watch = new ObservedDeltaWatch(room.Sh, "ui486-network-spells");
                 await room.Confirm(room.Fp);
+                await watch.Finish();
+                CollectionAssert.AreEqual(new[] { "−1" }, watch.Counts, "The casualty has its scene.");
                 Assert.IsFalse(room.Sh.Board.View.Units.Any(u => u.Id == unit && u.Location == "minas-tirith"));
                 Assert.IsNull(room.Sh.Board.View.EventLoss);
             }

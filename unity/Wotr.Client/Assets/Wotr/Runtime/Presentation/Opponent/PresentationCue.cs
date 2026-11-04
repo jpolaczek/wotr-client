@@ -12,7 +12,9 @@ namespace Wotr.Client
         Cost, Card, March, Travel, Attack, Retreat, Advance, Recruit, Upgrade, Removal, Entry, Transformation, Relocation,
         Politics, Control, Fellowship, Hunt, Battle, Losses, Die, Resource, Draw, Outcome,
         // UI-344: a Kings sovereign's change — a tile attached or returned, corrupted, removed, awakened.
-        Sovereign
+        Sovereign,
+        // UI-487 (owner, 2026-11-04): the die that paid for the action leaving the pool for good, its last beat.
+        SpentDie
     }
 
     // UI-303: the immutable cue contract. One visible result of a recorded step, its place in the action and the authorized
@@ -26,7 +28,8 @@ namespace Wotr.Client
         public string StepId { get; }
         public long Revision { get; }
         public int Order { get; }
-        public Side? Actor { get; }
+        // UI-488 (owner, 2026-11-04): who decided this; nobody for a consequence shown from the player's own step.
+        public Side? Actor { get; internal set; }
         public string BattleId { get; }
         public string HuntChainId { get; }
         public IReadOnlyList<string> Regions { get; }

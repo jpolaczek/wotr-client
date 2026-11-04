@@ -43,7 +43,11 @@ namespace Wotr.PlayTests
                 var elite = view.Units.Single(u => eligible.Contains(u.Id) && u.Kind == UnitKind.Elite).Id;
                 Click(room.Fp, "loss-" + elite);
                 Assert.IsTrue(room.Fp.Board.View.Units.Any(u => u.Id == elite && u.Location == "rivendell"));
+                // UI-486 (owner, 2026-11-04): the Shadow watches the downgrade: the Elite out, its Regular in.
+                var watch = new ObservedDeltaWatch(room.Sh, "ui486-network-valinor");
                 await room.Confirm(room.Fp);
+                await watch.Finish();
+                CollectionAssert.AreEqual(new[] { "−1", "+1" }, watch.Counts, "A downgrade plays as its Elite out, its Regular in.");
                 Assert.IsFalse(room.Sh.Board.View.Units.Any(u => u.Id == elite && u.Location == "rivendell"));
                 Assert.AreEqual(3, room.Sh.Board.View.Units.Count(u => u.Nation == "elves" && u.Kind == UnitKind.Regular && u.Location == "rivendell"));
                 Assert.IsTrue(room.Sh.Board.View.Units.Any(u => u.Nation == "north" && u.Location == "rivendell"));

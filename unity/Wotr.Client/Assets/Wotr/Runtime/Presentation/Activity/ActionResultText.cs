@@ -167,7 +167,8 @@ namespace Wotr.Client
         // New units on the board, by region: a unit that came from the reserve (ActionBoardChanges records its places).
         private static IEnumerable<string> Recruits(List<ActionLogStep> steps, BoardPresentation data)
         {
-            var placed = steps.SelectMany(step => step.Facts.Figures)
+            // UI-485 (owner, 2026-11-04): each figure once, however many records its arrival has.
+            var placed = FigureCues.Once(steps.SelectMany(step => step.Facts.Figures))
                 .Where(change => change.After?.UnitKind != null && OnBoard(change.To, data) && !OnBoard(change.From, data));
             foreach (var region in placed.GroupBy(change => change.To))
                 yield return "+" + Figures(region.Select(change => change.After)) + " · " + ActionCardText.Region(region.Key, data);
@@ -176,7 +177,7 @@ namespace Wotr.Client
         // Figures that left the board outside a battle (events, the Hunt); a battle's losses belong to its line.
         private static IEnumerable<string> Losses(List<ActionLogStep> steps, BoardPresentation data)
         {
-            var removed = steps.Where(step => !InBattle(step)).SelectMany(step => step.Facts.Figures)
+            var removed = FigureCues.Once(steps.Where(step => !InBattle(step)).SelectMany(step => step.Facts.Figures))
                 .Where(change => change.Before != null && OnBoard(change.From, data) && !OnBoard(change.To, data) && change.To != "fellowship");
             foreach (var region in removed.GroupBy(change => change.From))
             {

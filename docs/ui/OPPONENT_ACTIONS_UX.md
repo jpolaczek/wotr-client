@@ -137,7 +137,8 @@ choices' plate or pulse; pale blue before):
 - If the authoritative pool has already consumed the die, a **visual copy** stands at the die's last anchor for the
   whole action, with an observed trace; when the die was used as another face (Will of the West), the copy shows the
   rolled face, a small arrow and the used face. The copy never reflows the live pool and disappears with the action's
-  last beat. A spent die never reappears as available.
+  last beat. A spent die never reappears as available. Since UI-487 the die also leaves visibly: its final move is the
+  action's last beat ([below](#the-die-leaves--ui-487)).
 - A continuation of the same action (a second march with the same die, the next region of a card) does not emphasize
   the cost again.
 
@@ -375,7 +376,8 @@ plus the delta badge in `Runtime/Map/MapObservedTrace.cs` and `FigureDelta.cs`.
     entry.
   - A battle's own figure changes stay in its window.
   - The engine records a recruit with the same participant before and after, from `reserve` to the region; the
-    classification depends only on the places.
+    classification depends only on the places. It also records it a second time from nowhere; a figure counts once
+    ([UI-485](#a-recruit-is-one-figure--ui-485)).
 - **Excess units.** The player's own excess choice is their decision on the region's figures. An opponent's returned
   excess is a removal, presented only from its committed step.
 - **Political track.**
@@ -652,7 +654,7 @@ Code: `Runtime/UI/Playback/ResourcePresenter.cs` and `PresentationMarks.cs`, `St
   | The die a Ring changed | ringed in the opponent's pool, its old → new face under it | 1 s |
   | A Hunt allocation and the action-dice roll | one beat for the step's dice: the rolled dice ringed with their faces, the Hunt plaque's Eye and number lit as the count rises (UI-318: not the whole plaque); silent — the released view sounds the roll, so a decision passed with it keeps AUDIO-05's one tone | 1 s |
   | Draws or discards | one beat for a run of them at the opponent's hand count: card backs and the signed count, never an identity | 0.8 s (since UI-315 lit 0.7 s first, then changed and held 0.8 s) |
-  | A forfeited die | its cost copy (§6.1) | 0.35 s |
+  | A forfeited die | its cost copy (§6.1), then it flies into the Out chip (UI-487) | 0.35 s + 0.7 s |
   | A pass, a decline, "No card", a technical completion | no scene: nothing is recorded to show | — |
 
 - **Consequences.** An important consequence of a decline still plays once, through its own presenter.
@@ -1041,7 +1043,7 @@ not by notification sentences or today's unit counts.
 | Cost | `Costs` on the primary step (die face and used face) | — |
 | March, travel, retreat, advance | `Movements` (route, participants); `Figures` before/after | retreat/advance/travel sit on automatic steps (`Actor=null`): read the All feed |
 | Attack | `BattleStarted` with the battle snapshot and place | no attack movement: derive from the snapshot |
-| Recruitment | `Figures` reserve → region (`Before=null`) | upgrade is two unrelated figure changes: pair by region and nation |
+| Recruitment | `Figures` reserve → region (`Before=null`), and again from `''` by the producer step | upgrade is two unrelated figure changes: pair by region and nation; UI-485: one figure, one fact |
 | Politics | before/after on the decision step | automatic political steps carry only after values: take before from the previous presented state |
 | Event / combat card | Event `Cards.Use=Event` with id; CombatReveal step with id | CombatCommit carries only the deck back — never use it for a face |
 | Battle round | per-die results, rerolls and hits in the battle snapshot; `LossDetails` | no per-roll delta: diff consecutive snapshots |
@@ -1049,6 +1051,7 @@ not by notification sentences or today's unit counts.
 | Fellowship order | the move's progress is recorded on the move, before its Hunt | the Fellowship cue plays after the revision's Hunt cues (UI-310) |
 | Dice, rings, draws | die face before/after; ring ownership in `Resources`; draw count | Ring use is text only: take it from the Ring cost |
 | Pass, decline, siege shelter | text only | no scene needed; siege extension is a Figure cost |
+| A die's real move | the board's difference on the command's **first** step (`Facts.Dice`), though the die moves at its end; a paid die goes Available → Resolving and only later on | UI-487: the final move plays last in its revision; it may skip its count altogether (Resolving → Unrolled when the action ends the turn) |
 | Ordering | `Revision`, `Order`, `ActionId`, `ParentStepId` | revisions coalesce (the client sees only the latest view): stage from facts, never from snapshots |
 | Character entry | `Figures` with the character after; a character new to the game is recorded from `fellowship` | a Shadow figure from there is an Entry (UI-309) |
 | Ability source | a reaction's `Ability` cost names the character's definition id; a die ability's cost names only its `AbilityId` | the holder comes from the public catalog when only one identity lists it; Voice of Saruman needs the character recorded in the history (server follow-up) |
@@ -1077,7 +1080,8 @@ Code: `Runtime/Presentation/Opponent`.
   automatic steps (`Actor=null`) of an action the opponent started or of a revision in which it acted, and every
   shared Battle/Hunt step (`Context.BattleId` or `HuntChainId`), also when the player's click completed it (C8, D6).
   The player's own steps and legacy steps release nothing, but they are **remembered**: the attacker's own attack is
-  no attack scene for the attacker, and its die no cost.
+  no attack scene for the attacker, and its die no cost. Since UI-488 the facts about the opponent that a player's own
+  step records show from it ([below](#through-your-own-click--ui-488)).
 - **Cue.** `PresentationCue` is immutable and holds copies of its facts: `Id` = `ActionId/Kind/key`, `Kind`, `StepId`,
   `Revision`, `Order`, `Actor`, `BattleId`, `HuntChainId`, `Regions` (in camera order) and one payload (`Cost`, `Card`,
   `Movement`, `Figures`, `Losses`, `Battle`, `Hunt`, `FellowshipBefore/After`, `Nation`, `Control`, `Die`, `Resource`,
@@ -1094,8 +1098,11 @@ Code: `Runtime/Presentation/Opponent`.
   its nation arriving in the region — one replacement), `Removal`, `Entry`, `Transformation` (a new version of a
   character replaces the figure), `Relocation` (a Companion leaving the Fellowship; since UI-309 a Shadow figure
   recorded from `fellowship` is an Entry); `Fellowship`, `Hunt`,
-  `Politics`, `Control`, `Die` (the opponent's dice other than the paying die), `Resource`, `Outcome`.
-- **One fact, one cue.** Figure changes a movement or a loss already describes make no figure cue; a producer step
+  `Politics`, `Control`, `Die` (the opponent's dice other than the paying die), `Resource`, `Outcome`; since UI-487
+  `SpentDie` (the paying die's final move out of the pool, the revision's last cue). Since UI-486 `Losses` exists only
+  inside a battle.
+- **One fact, one cue.** Figure changes a movement or a battle's loss already describes make no figure cue (UI-486: an
+  event's losses are figure changes); a figure's second record of one arrival is the same fact (UI-485); a producer step
   repeating the primary step's facts, a repeated page and a later continuation of the same action reuse the action's
   memory of released keys, costs and battles, so nothing is shown twice. Both players give a shared step the same cue
   ids (history battle snapshots are public: no card identity before the reveal).
@@ -1341,3 +1348,90 @@ facts (`PresentationCueExtraction`), for a player, an observer and a replay alik
 Tests: `OpponentExpansionCueTests` (the cues and the chips), `OpponentExpansionPresentationTests` (corruption, removal,
 awakening, the Ruler chip, Dismay on my die, Sméagol; both motion settings), `TopBarTests`; the server's
 `LordsSmeagolTests`.
+
+<a id="a-recruit-is-one-figure--ui-485"></a>
+## A recruit is one figure — UI-485 (2026-11-04)
+
+The owner's decision on the audit (gap 1): one Regular showed "+2" on the map badge and "+2 Regular" in the pennant. The server
+records each recruit twice, from `''` (the producer step, `HistoryFacts.Unit`) and from `reserve` (the board's difference);
+EXP-20 fixes the server, but recorded histories and a pinned older backend keep the shape, so the client does not rely on it.
+
+- `FigureCues.Once`: a change that lands a figure where its last change already put it says nothing new, and the record that
+  knows the origin stands. A figure that really moved away and back has a change between the two, so both stay.
+- The same rule counts the facts everywhere: the cues (`FigureCuesByStep`), the badge (`FigureChangePresenter.Deltas`), the pennant
+  (`ActionResultText.Recruits`, `Losses`) and the record's lines (`ActionFactText`). An upgrade had the same fault in a worse
+  form: the duplicate Elite stayed unpaired and came out as an extra "+1".
+- A cue's key keeps its origin, so a later return to the same region is still its own beat.
+
+Tests: EditMode `OpponentPresentationModelTests`, `ActionResultTextTests`; PlayMode `OpponentRecruitmentPoliticsTests` (both viewers),
+`OpponentRecruitmentPoliticsNetworkTests` (exact count on the pinned server, which still records twice, both directions).
+
+<a id="an-events-casualties--ui-486"></a>
+## An event's casualties have their scene — UI-486 (2026-11-04)
+
+The owner's decision on the audit (gap 2): the camera travelled to the region and nothing played, because the loss "described"
+the figure change while only `BattlePresenter` shows losses, and it refuses a cue outside a battle.
+
+- Only a loss on a step of a battle covers its figures (`PresentationCueExtraction.Covered`). `Losses` cues exist only there, and
+  the camera no longer frames them.
+- An event's losses flow through `FigureChangePresenter`, like any other figure change: the camera frames the region, the force
+  glows, the badge counts ("−2"), the stack settles to its true count.
+- A downgrade plays as two beats in one region: its Elite out ("−1"), then its Regular in ("+1", with the arrival accent). The
+  board's difference lists them in id order, so `FigureCues.Classify` puts what leaves first (`LeavingFirst`); regions keep
+  their recorded order.
+- A chooser's own casualties are their own decision and play nothing for them; the opponent sees them.
+- The window of the event's losses, opened by the presented view, stays until the release; the camera frames the region beside it.
+
+Tests: EditMode `OpponentPresentationModelTests`; PlayMode `OpponentRecruitmentPoliticsTests` (a removal and a downgrade, both viewers);
+on the real server `Shadow04NetworkTests` (Dreadful Spells' casualty), `ShadowStrategy01NetworkTests` (Return to Valinor's downgrade: "−1", "+1"),
+`CardPack04NetworkTests` (the Free Peoples watching the Shadow's casualties of Dead Men).
+
+<a id="the-die-leaves--ui-487"></a>
+## The die leaves — UI-487 (2026-11-04)
+
+The owner's decision on the audit (gap 3; "clear, not slow"): the spent die was ringed, stayed in its row, then vanished in one
+frame while the Spent chip pulsed 0.32 s, and the Free Peoples' die entered the Hunt Box with no beat.
+
+- **Cue.** A paying die's final move out of the pool is a `SpentDie` cue (`PresentationCueExtraction.Dice`), once and on the
+  revision that really moves it. A move to Resolving stays the cost's own. A die back in the pool (Vilya keeps it; a new turn
+  recovers it, Resolving → Unrolled) flies nowhere: it is an ordinary die change.
+- **Order.** The board's difference records dice on a command's first step, but they move at its end, so the cue plays **last**
+  in its revision (`DiceLast`): after the action's effects, its die still ringed in the row as their source. A Fellowship move's
+  die enters the Box after its Hunt and tracks, where the engine puts it (`DiceRules.CompleteCost`). A new turn's recovery
+  follows it, before that turn's draws.
+- **Multi-step.** A Muster die with two points flies nothing on the first point, keeps its "•" in the row, and leaves once, on
+  the second point or on Finish. An attack's die leaves when its battle ends.
+- **Beat** (`SpentDieFlight`, `DrawFlight` with its own `FlightPace`, about 0.7 s). The ring ends and a copy wearing the die's
+  face (the new one when a Ring or a Ruler token changed it) flies into the count where it lies: the opponent's Spent or Out chip, a
+  Hunt Box count, or (for an observer's or a replay's shown side) that pool's own count. An Eye paid from the Box starts at the
+  plaque. The row keeps the empty place until the count steps at the landing and the row closes, so no other die ever stands in the
+  ring (the artifact the audit inferred). The battle window and the Politics panel do not count it as a next scene.
+- **Skip animations:** no flight; the count steps with its pulse, lit for 0.35 s. **Skip** removes the copy and shows the latest state.
+- A count the viewer cannot see (the opponent's die in the Council's Fellowship Box) takes no time.
+
+Tests: EditMode `OpponentPresentationModelTests` (on the recorded march, attack, card and Hunt fixtures); PlayMode `OpponentSpentDieTests`
+(both viewers); `OpponentSpentDieNetworkTests` (a Muster die with two points, both directions; a real Fellowship move's die entering the
+Box after its Hunt, whatever the roll asks).
+
+<a id="through-your-own-click--ui-488"></a>
+## What the opponent gains through your own click — UI-488 (2026-11-04)
+
+The owner's decision on the audit (gap 5): a step the player decided showed nothing, even for facts about the opponent, so the
+Shadow never saw the Free Peoples' roll (its own allocation carries it), and about half of the opponent's start-of-turn draws,
+dice recovery and Mordor inactivity went unpresented.
+
+- `PresentationSelection.OpponentsChange`: on a step that is not shown, only these still release, with no acting side and
+  `OwnCommand`, so the camera stays: the opponent's dice (rolled, recovered, its paying die leaving), the opponent's **automatic**
+  draws, and the Fellowship's change in a revision with a `MordorInactivity` step.
+- **Nothing of the player's own is played back:** their dice, their draws and their decisions make no cue, and a die they paid
+  with themselves stays theirs whoever owns it (`ActionMemory.OwnCostDice`, a Keeper's Eye).
+- **Hands stay hidden:** a draw's cue is a deck and a count, as ever; an identity never reaches a cue.
+- **Order at a turn's start:** the action's effects, its die, the recovered dice, then the draws.
+- **No empty beat** (audit E10): dice in no row yet skip the 0.7 s of lighting and appear lit at once; a change that shows nowhere
+  (a die to Removed) takes no time. The Spent and Out chips and a Hunt Box count follow the dice in the beat, and a recovered die is
+  blank in it.
+- These beats follow the player's click by about 1.5–3 s; Skip ends them.
+
+Tests: EditMode `OpponentPresentationModelTests` (on the recorded Hunt fixtures, both viewers); PlayMode `OpponentOwnClickPresentationTests`;
+`OpponentSpentDieNetworkTests` (a whole forfeited turn ending on one player's own click, then the Shadow's allocation; `fp-mordor-track`'s
+inactivity).
