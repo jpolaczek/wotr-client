@@ -25,6 +25,28 @@
     --game-button-text-selected-disabled: rgb(170, 156, 124);
     /* Under the art of a button that stands directly on the bright parchment map: the thin line needs a nearly opaque field. */
     --game-button-fill-over-map: rgba(19, 18, 16, 0.92);
+    /* UI-472: a panel's or window's frame: the menus' card on its 12-point slices, in texture pixels at 0.5 scale; the kit's
+       frontend/card-board is that card with a nearly opaque field and a dark hairline, for the bright parchment. */
+    --game-card: resource("Wotr/Art/UI/frontend/card-board");
+    --game-card-slice: 24;
+    --game-card-slice-scale: 0.5px;
+    /* The card's colours, for what stands flat (the tooltip, the undocked hand) and for the words and rules inside a card. */
+    --game-card-fill: rgba(21, 19, 17, 0.94);
+    --game-card-text: rgb(226, 214, 188);
+    --game-card-text-muted: rgb(176, 164, 136);
+    --game-hairline: rgb(163, 132, 75);
+    --game-hairline-quiet: rgba(163, 132, 75, 0.35);
+    /* A title over its hairline (frontend/title-rule); on parchment, ink over the same line tinted dark. */
+    --game-title-text: rgb(232, 207, 146);
+    --game-title-rule: resource("Wotr/Art/UI/frontend/title-rule");
+    --game-title-ink: rgb(58, 42, 24);
+    --game-title-rule-ink: rgb(172, 150, 135);
+    /* UI-474: a scroll bar under the board, as in the menus. */
+    --game-scroll-track: rgba(255, 244, 220, 0.04);
+    --game-scroll-thumb: rgba(163, 132, 75, 0.45);
+    --game-scroll-thumb-hover: rgba(196, 162, 98, 0.75);
+    --game-scroll-arrow: rgb(150, 124, 80);
+    --game-scroll-arrow-hover: rgb(214, 178, 108);
 }
 
 /* The states of .action; its base stays in Wotr.uss at its old place in the cascade. Each has two classes, in the first
@@ -60,3 +82,110 @@
     background-color: var(--game-button-fill-over-map);
     border-radius: 2px;
 }
+
+/* UI-472, UI-473, UI-474 (owner, 2026-11-03: "remember to adapt elements such as the bars at the top of the windows").
+   Every panel and window of the board wears the menus' card. These rules hold only its art, in one place: each surface's
+   own sheet keeps its size, padding and a transparent background-color, so nothing moves. The dice panel's side band, the
+   force frames, the stage ribbon, card slots and round tabs keep their art for UI-476 and UI-477. */
+#board-screen .edge-left-panel,
+#board-screen .board-dropdowns .edge-dropdown-panel,
+#board-screen .edge-corner-tab,
+#board-screen .board-right-panels .edge-cards,
+#board-screen .dice-panel,
+#board-screen .decision-window,
+#board-screen .regional-battle,
+#board-screen .battle-report.battle-chronicle,
+#board-screen .hunt-panel.hunt-window,
+#board-screen .hunt-panel.hunt-underway .hunt-pool,
+#board-screen .character-window,
+#board-screen .game-end-window,
+#board-screen .region-hover,
+#board-screen .board-information,
+#board-screen .expansion-inspector,
+#board-screen .action-log,
+#board-screen .notification-overflow,
+#board-screen .victory-panel,
+#board-screen #map-legend {
+    background-image: var(--game-card);
+    -unity-slice-top: var(--game-card-slice);
+    -unity-slice-right: var(--game-card-slice);
+    -unity-slice-bottom: var(--game-card-slice);
+    -unity-slice-left: var(--game-card-slice);
+    -unity-slice-scale: var(--game-card-slice-scale);
+}
+
+/* A header: no band, a hairline drawn over the row's bottom point. It is a picture, not a border, so it takes no layout:
+   each header keeps its height, its row and every child's place. A title on parchment tints the line in its own rule. */
+#board-screen .panel-header,
+#board-screen .window-header,
+#board-screen .character-window > .character-header,
+#board-screen .board-information .information-heading,
+#board-screen .card-inspector .card-header {
+    background-image: var(--game-title-rule);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position-y: bottom;
+}
+
+/* Its title: the menus' light gold, without the faux bold. Dropping the bold frees about 0.07 em per letter, which pays
+   for each sheet's wider letter-spacing, so a long title is never cut where it fitted. */
+#board-screen .panel-header > .title,
+#board-screen .window-header > .title,
+#board-screen .character-window > .character-header > .title,
+#board-screen .board-information .information-heading .title {
+    -unity-font-style: normal;
+    color: var(--game-title-text);
+}
+
+/* The legend's words, as a card's. */
+#board-screen #map-legend { color: var(--game-card-text); }
+
+/* The scroll bars under the board, as in the menus (Menus.uss): no plate, a slim muted-gold thumb and quiet arrows, 10
+   points wide instead of 13. Never put menu-chrome on the board's root for this (see above). */
+#board-screen .unity-scroller { background-color: rgba(0, 0, 0, 0); border-width: 0; }
+#board-screen .unity-scroller--vertical { width: 10px; min-width: 10px; }
+#board-screen .unity-scroller .unity-base-slider__tracker {
+    background-color: var(--game-scroll-track);
+    border-width: 0;
+    border-radius: 3px;
+}
+#board-screen .unity-scroller .unity-base-slider__dragger {
+    background-color: var(--game-scroll-thumb);
+    border-width: 0;
+    border-radius: 3px;
+}
+/* The theme's parts are 18 to 24 points wide and would stand out of a 10-point bar, over the frame beside it. */
+#board-screen .unity-scroller--vertical .unity-scroller__slider,
+#board-screen .unity-scroller--vertical .unity-base-slider__drag-container,
+#board-screen .unity-scroller--vertical .unity-base-slider__tracker {
+    width: 10px;
+    min-width: 10px;
+    left: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+#board-screen .unity-scroller--vertical .unity-scroller__slider { margin-top: 14px; margin-bottom: 14px; }
+#board-screen .unity-scroller--vertical .unity-scroller__low-button,
+#board-screen .unity-scroller--vertical .unity-scroller__high-button {
+    width: 10px;
+    min-width: 10px;
+    height: 14px;
+    min-height: 14px;
+    margin: 0;
+}
+#board-screen .unity-scroller--vertical .unity-base-slider__dragger {
+    left: 2px;
+    width: 6px;
+    min-width: 6px;
+    margin-left: 0;
+    margin-right: 0;
+}
+#board-screen .unity-scroller .unity-base-slider__dragger:hover { background-color: var(--game-scroll-thumb-hover); }
+#board-screen .unity-scroller__low-button,
+#board-screen .unity-scroller__high-button {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    -unity-background-image-tint-color: var(--game-scroll-arrow);
+}
+#board-screen .unity-scroller__low-button:hover,
+#board-screen .unity-scroller__high-button:hover { -unity-background-image-tint-color: var(--game-scroll-arrow-hover); }

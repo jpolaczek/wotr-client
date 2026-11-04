@@ -102,16 +102,20 @@ namespace Wotr.PlayTests
 
         private static void CheckPanel(BoardScreen board, VisualElement panel, string key, string label)
         {
-            Assert.AreEqual("panel", Texture(panel), key + " · " + label);
+            Assert.AreEqual("card-board", Texture(panel), key + " wears the menus' card (UI-472) · " + label);
             Assert.That(panel.worldBound.xMin, Is.EqualTo(board.Edges.Left.worldBound.xMax).Within(1), label);
             Inside(panel.worldBound, board.Map.worldBound, key + " panel · " + label);
             var header = panel.Q(className: "panel-header");
-            Assert.AreEqual("panel-header", Texture(header), key + " · " + label);
+            Assert.AreEqual("title-rule", Texture(header), key + " has a hairline, not a band (UI-472) · " + label);
             var icon = header.Q("panel-header-icon-" + key);
             Assert.AreSame(header, icon.parent);
             Assert.AreEqual(0, header.IndexOf(icon));
             Assert.AreEqual(key, Texture(icon), label);
             Assert.AreEqual(PickingMode.Ignore, icon.pickingMode);
+            // UI-472: the title in the menus' type, Politics' plain label included, is never cut.
+            var title = header.Children().OfType<Label>().First();
+            var width = title.MeasureTextSize(title.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+            Assert.LessOrEqual(width, title.contentRect.width + 1, key + " title fits · " + label);
             foreach (var button in header.Query<Button>().ToList().Where(Visible))
             {
                 Assert.That(Texture(button), Does.StartWith("button"), button.name + " wears the shared button art (UI-471) · " + label);

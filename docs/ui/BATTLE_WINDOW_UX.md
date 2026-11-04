@@ -66,7 +66,7 @@ Implementation ( UI-114 ): one behaviour `PressFeedback` ( `Runtime/UI/PressFeed
 ```
 
 - Header: region, mode (Field/Siege/Sortie/Relief), round and decision owner, in the
-  `frames/panel-header` frame like other windows. Attacker on the left, defender on the right
+  thin header of the other windows (a quiet title over a hairline, UI-473; formerly `frames/panel-header`). Attacker on the left, defender on the right
   (BATTLE_ACTIVITY_UX "Fighting window").
 - pass scenes: from UI-206 painted illustration battle at the place of combat ( settlement and the
   site page, two versions); without it stylized pass horizon for combat mode ( UI-115 , SVG ; UI-120
@@ -92,7 +92,7 @@ Implementation ( UI-114 ): one behaviour `PressFeedback` ( `Runtime/UI/PressFeed
 - End of battle: Continue/Stop/Hold/Retreat/Advance/Extend siege as buttons with the shared button frame
   (`frontend/button` since UI-471) and icon; cost of the elite as a preview of figure; retreat still indicates the region on
   the map.
-- Report battle: parchment-only chronicle (`frames/panel` + `cards/parchment`), header with mode,
+- Report battle: parchment-only chronicle (`frontend/card-board` since UI-473 + `cards/parchment`), header with mode,
   rounds as bookmarks ‹ Round 2/3 ›, same power layout (read only), steps as entries with icons.
   `BattleArchiveSummary` in the tab action in the same style.
 - Size: 760 Width (losses to 820), Content height, still at region (`MapPanelPlacement.Near`),

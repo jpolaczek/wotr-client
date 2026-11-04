@@ -18,9 +18,8 @@
 .loss-planning .tray { padding-top: 2px; }
 .loss-planning .tray .battle-card { height: 36px; min-height: 36px; }
 
-/* ---- The window: panel frame, lacquered header, scene strip ------------------------------------------- */
-/* UI-137: the panel art's corner curve reaches about 18 px into each corner (frames/panel.svg); 12 px at the sides
-   and bottom keep the forces and the footer clear of it, so the gilt corners no longer collide. */
+/* ---- The window: thin card and quiet header (UI-473, GameChrome.uss), scene strip ---------------------- */
+/* UI-137: 12 px at the sides and bottom keep the forces and the footer clear of the frame's corners. */
 .regional-battle {
     position: absolute;
     width: 768px;
@@ -28,12 +27,6 @@
     padding: 6px 12px 12px 12px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 .loss-planning .regional-battle { width: 820px; }
 .regional-battle > .tray { padding: 0; border-width: 0; flex-grow: 0; flex-basis: auto; }
@@ -44,19 +37,10 @@
     min-height: 26px;
     margin: 0 0 3px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
 .regional-battle .window-header > .title {
     font-size: 13px;
-    letter-spacing: 0.6px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 1.4px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -593,31 +577,19 @@
 .battle-direct-icon-no-card { background-image: resource("Wotr/Art/UI/battle/no-card"); }
 .regional-battle .tray #retreat-destination { font-size: 12px; margin: 2px 0 3px 0; color: rgb(246, 226, 160); -unity-font-style: bold; }
 
-/* The chronicle: board frame, lacquered header, parchment pages with ink. */
+/* The chronicle: the thin card and quiet header (UI-473, GameChrome.uss), parchment pages with ink. */
 .battle-report.battle-chronicle {
     padding: 6px 12px 12px 12px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 .battle-chronicle > .window-header {
     height: 26px;
     min-height: 26px;
     margin: 0 0 3px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
-.battle-chronicle > .window-header > .title { font-size: 13px; letter-spacing: 0.6px; -unity-font-style: bold; color: rgb(241, 223, 166); text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85); margin: 0; }
+.battle-chronicle > .window-header > .title { font-size: 13px; letter-spacing: 1.4px; margin: 0; }
 .battle-chronicle > .window-header .action,
 .battle-chronicle .battle-report-navigation .action {
     width: 22px;

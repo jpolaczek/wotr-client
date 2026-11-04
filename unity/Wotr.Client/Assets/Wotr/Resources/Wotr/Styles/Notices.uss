@@ -123,7 +123,7 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
 }
 
-/* The recorded action card on parchment, with the lacquer header of the board's panels. Its height follows
+/* The recorded action card on parchment, with the quiet header of the board's windows in ink (UI-473). Its height follows
    its content up to the earlier fixed height, so a short action leaves no empty parchment. */
 #board-screen .action-summary {
     height: auto;
@@ -144,19 +144,12 @@
     flex-shrink: 0;
     margin: 0 0 6px 0;
     padding: 0 4px 0 18px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
+#board-screen .action-summary > .window-header { -unity-background-image-tint-color: var(--game-title-rule-ink); }
 #board-screen .action-summary > .window-header > .title {
     font-size: 13px;
-    letter-spacing: 0.8px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 1.6px;
+    color: var(--game-title-ink);
 }
 #board-screen .action-summary > .window-header Button {
     min-height: 0;

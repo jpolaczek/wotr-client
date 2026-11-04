@@ -184,7 +184,8 @@ User decision with 2026-10-14: card characters are to fit the rest of the interf
   Fellowship, hourglass out of the game, broken sword removed, rising sun for a possible return)
   with region or short state. Tooltip line gives full state, statistics in words and entry
   conditions.
-- card (inspector) is a window in the frame `frames/panel` with a header plate: version name and tag
+- card (inspector) is a window in the thin card (`frontend/card-board` since UI-473, formerly `frames/panel` and a header plate)
+  with a quiet title over a hairline: version name and tag
   (Base, Lords, Fate...), state line with symbol and Location, pass symbol of statistics: level ★,
   movement (but) or flight (wing), ∞), level of combat (crossed swords), Leadership (the banner),
   the emblem of the nation (to Gandalf: the emblem of all Free Peoples Each symbol has tooltip;

@@ -311,7 +311,7 @@ Victory panel with a break of points stays in the Menu.
     Fellowship (Specs of Doom, Mordor step or progress, Corruption n/12); number of Companion in
     Fellowship.
 - `GameEndScreen` (`Runtime/UI/Victory`): cover for the whole board (Denmark 72%) with window in the
-  `frames/panel` frame like window battle:
+  thin card like window battle (`frontend/card-board` since UI-473, formerly `frames/panel`):
   - scene `Art/end-scenes/*` (480×240), the winner's emblem next to the title sign `end/title-victory` or
     `end/title-defeat`, subtitle and summary;
   - fixed buttons `game-end-view-board`, `game-end-log`, `game-end-save-replay`, `game-end-menu`.

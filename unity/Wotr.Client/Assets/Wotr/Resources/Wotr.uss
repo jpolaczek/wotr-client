@@ -89,11 +89,11 @@
     margin: 0;
     white-space: normal;
     font-size: 14px;
-    color: rgb(241, 235, 214);
-    background-color: rgb(39, 37, 34);
+    color: var(--game-card-text);
+    background-color: var(--game-card-fill);
     border-width: 1px;
-    border-color: rgb(210, 186, 126);
-    border-radius: 4px;
+    border-color: var(--game-hairline);
+    border-radius: 2px;
 }
 
 .tracks {
@@ -655,11 +655,11 @@
 .match-loading { position: absolute; left: 24px; top: 76px; font-size: 20px; color: rgb(231, 209, 160); }
 .board-information {
     position: absolute; left: 16px; top: 112px; bottom: 8px; width: 560px;
-    padding: 8px; background-color: rgb(34, 32, 30);
-    border-top-width: 1px; border-top-color: rgb(111, 131, 126);
+    padding: 8px; background-color: rgba(0, 0, 0, 0);
+    border-top-width: 1px; border-top-color: rgba(0, 0, 0, 0);
 }
 .information-heading { flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; height: 33px; min-height: 33px; }
-.information-heading .title { margin: 0; font-size: 16px; }
+.information-heading .title { margin: 0; font-size: 16px; letter-spacing: 1px; }
 .board-information .action { height: 33px; min-height: 33px; padding: 0 8px; margin: 0 4px 0 0; font-size: 13px; }
 #information-content { flex-grow: 1; min-height: 0; }
 .information-tabs { flex-direction: row; align-items: center; flex-wrap: nowrap; flex-shrink: 0; height: 33px; min-height: 33px; }
@@ -710,7 +710,7 @@
 .sovereign-strip { flex-direction: row; flex-wrap: wrap; }
 .sovereign-strip .action { white-space: pre; font-size: 12px; justify-content: center; -unity-text-align: middle-center; }
 .sovereign-strip .corrupted-sovereign { border-bottom-width: 3px; border-bottom-color: rgb(206, 118, 130); }
-.expansion-inspector { position: absolute; top: 112px; left: 16px; width: 560px; padding: 8px; background-color: rgb(34, 32, 30); }
+.expansion-inspector { position: absolute; top: 112px; left: 16px; width: 560px; padding: 8px; background-color: rgba(0, 0, 0, 0); }
 .expansion-inspector .action { height: 32px; min-height: 32px; margin: 0 4px 3px 0; padding: 0 6px; font-size: 13px; }
 .expansion-inspector .unity-label { margin-top: 0; margin-bottom: 2px; font-size: 13px; }
 .corruption-tile { width: 32px; min-width: 32px; height: 32px; background-color: rgb(67, 64, 59); -unity-text-align: middle-center; margin-right: 4px; }
@@ -876,8 +876,9 @@
 .action-symbol { position: absolute; left: 5px; top: 4px; width: 22px; height: 22px; }
 .special-die .action-symbol { left: 12px; top: 1px; height: 20px; }
 .die-badge { position: absolute; right: 1px; top: 0; font-size: 12px; margin: 0; padding: 0; }
-.region-hover { position: absolute; width: 440px; padding: 8px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
-.region-hover .title { font-size: 17px; margin: 0 0 2px 0; }
+/* UI-474: the card's art comes from GameChrome.uss; each 1-point border stays in the layout, transparent, so nothing moves. */
+.region-hover { position: absolute; width: 440px; padding: 8px; background-color: rgba(0, 0, 0, 0); border-width: 1px; border-color: rgba(0, 0, 0, 0); border-radius: 0; }
+.region-hover .title { font-size: 17px; letter-spacing: 1px; margin: 0 0 2px 0; -unity-font-style: normal; color: var(--game-title-text); }
 .region-hover .unity-label { font-size: 12px; margin: 1px 0; white-space: normal; }
 .hover-force { margin-top: 4px; padding-left: 4px; border-left-width: 3px; }
 .hover-force.fp { border-left-color: rgb(130, 194, 205); background-color: rgba(0, 0, 0, 0); }
@@ -1061,7 +1062,8 @@
 
 /* UI-29: one hover path across the hand and its compact, two-effect preview. */
 .cards-tab { position: absolute; right: 0; top: 64px; width: 94px; height: 36px; margin: 0; }
-.hand-drawer { position: absolute; width: 320px; padding: 4px; background-color: rgb(31, 29, 27); border-width: 1px; border-color: rgb(172, 162, 122); border-radius: 6px; }
+/* UI-474: flat, not the card's art: the docked hand wears this class too and clears only the colour (Cards.uss). */
+.hand-drawer { position: absolute; width: 320px; padding: 4px; background-color: var(--game-card-fill); border-width: 1px; border-color: var(--game-hairline); border-radius: 2px; }
 .card-header { flex-direction: row; align-items: flex-start; }
 .card-header #pin-card, .card-header #close-card { width: 24px; min-width: 24px; padding: 0; }
 .card-toolbar { flex-direction: row; margin: 6px 0 4px 0; }
@@ -1090,24 +1092,25 @@
 .window-dragging { border-top-color: rgb(247, 213, 120); }
 
 /* UI-41: virtual history and the shared read-only action card. */
-.action-log, .action-summary { position: absolute; left: 8px; bottom: 8px; width: 410px; height: 420px; max-height: 94%; padding: 8px; background-color: rgb(34, 32, 30); border-top-width: 2px; border-top-color: rgb(197, 178, 126); }
+/* UI-474: the card's art comes from GameChrome.uss; the old 2-point rule stays in the layout, transparent. */
+.action-log, .action-summary { position: absolute; left: 8px; bottom: 8px; width: 410px; height: 420px; max-height: 94%; padding: 8px; background-color: rgba(0, 0, 0, 0); border-top-width: 2px; border-top-color: rgba(0, 0, 0, 0); }
 .action-log .action, .action-summary .action { height: 26px; min-height: 26px; font-size: 12px; padding: 0 7px; margin: 2px; }
 .action-summary { width: 390px; height: 460px; bottom: auto; top: 8px; }
 .action-log > .row { flex-shrink: 0; }
 .action-log #log-status { white-space: normal; font-size: 12px; flex-grow: 1; flex-shrink: 1; }
 .action-log #log-new-entries { flex-shrink: 0; }
 #action-log-list { flex-grow: 1; min-height: 0; }
-.action-log-row { height: 94px; min-height: 94px; max-height: 94px; flex-shrink: 0; flex-direction: row; border-bottom-width: 1px; border-bottom-color: rgb(75, 72, 67); }
+.action-log-row { height: 94px; min-height: 94px; max-height: 94px; flex-shrink: 0; flex-direction: row; border-bottom-width: 1px; border-bottom-color: var(--game-hairline-quiet); }
 .action-log-open { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; padding: 5px 3px; border-width: 0; border-radius: 0; background-color: rgba(0,0,0,0); align-items: stretch; -unity-text-align: middle-left; }
-.action-log-open:hover { background-color: rgb(55, 52, 48); }
+.action-log-open:hover { background-color: rgba(255, 244, 220, 0.06); }
 .action-log-heading { font-size: 12px; color: rgb(231, 209, 160); white-space: normal; max-height: 32px; overflow: hidden; margin: 0; }
 .action-log-content { font-size: 12px; white-space: normal; max-height: 40px; overflow: hidden; margin: 2px 0; }
-.action-log-cost { font-size: 11px; white-space: nowrap; overflow: hidden; margin: 0; color: rgb(168, 186, 184); }
+.action-log-cost { font-size: 11px; white-space: nowrap; overflow: hidden; margin: 0; color: var(--game-card-text-muted); }
 .action-log .action-log-expand { width: 25px; min-width: 25px; align-self: center; }
-.action-log-child { padding-left: 10px; background-color: rgb(29, 27, 25); }
+.action-log-child { padding-left: 10px; background-color: rgba(0, 0, 0, 0.18); }
 .action-card { flex-grow: 1; min-height: 0; }
 .action-card .title { font-size: 15px; white-space: normal; margin: 4px 0; flex-shrink: 0; }
-.action-card #action-card-status { font-size: 12px; color: rgb(168, 186, 184); white-space: normal; flex-shrink: 0; }
+.action-card #action-card-status { font-size: 12px; color: var(--game-card-text-muted); white-space: normal; flex-shrink: 0; }
 .action-card-costs { padding: 5px 0; flex-shrink: 0; }
 .action-cost { flex-shrink: 0; flex-direction: row; align-items: center; }
 .action-cost .action-symbol { position: relative; left: 0; top: 0; width: 24px; height: 24px; margin-right: 4px; flex-shrink: 0; }
@@ -1131,7 +1134,7 @@
 .action-notice { background-color: rgb(105, 48, 48); border-left-width: 3px; border-left-color: rgb(244, 166, 148); white-space: normal; -unity-text-align: middle-left; overflow: hidden; }
 .notification-tabs .action-notice { flex-basis: 0; flex-grow: 1; flex-shrink: 1; min-width: 80px; max-width: 460px; }
 .notification-more { width: 48px; flex-shrink: 0; }
-.notification-overflow { position: absolute; width: 420px; height: 360px; max-height: 94%; padding: 8px; background-color: rgb(38, 35, 33); border-top-width: 2px; border-top-color: rgb(244, 166, 148); }
+.notification-overflow { position: absolute; width: 420px; height: 360px; max-height: 94%; padding: 8px; background-color: rgba(0, 0, 0, 0); border-top-width: 2px; border-top-color: rgba(0, 0, 0, 0); }
 .notification-overflow .action-notice { height: 54px; min-height: 54px; margin: 2px 0; font-size: 12px; padding: 4px 8px; }
 #notification-list { flex-grow: 1; min-height: 0; }
 #notification-retry { width: 30px; }
@@ -1224,25 +1227,25 @@
 /* UI-60 Victory */
 .victory-tab { position: absolute; right: 8px; bottom: 8px; height: 30px; font-size: 14px; }
 .victory-result { position: absolute; right: 8px; bottom: 42px; font-size: 15px; padding: 5px 8px; background-color: rgb(34, 32, 30); color: rgb(244, 219, 157); border-top-width: 2px; border-top-color: rgb(209, 181, 115); }
-.victory-panel { position: absolute; width: 480px; padding: 6px 8px; background-color: rgb(34, 32, 30); border-width: 1px; border-color: rgb(120, 145, 145); }
+.victory-panel { position: absolute; width: 480px; padding: 6px 8px; background-color: rgba(0, 0, 0, 0); border-width: 1px; border-color: rgba(0, 0, 0, 0); }
 .victory-panel > .window-header { height: 27px; align-items: center; }
-.victory-panel > .window-header .title { flex-grow: 1; font-size: 15px; margin: 0; }
+.victory-panel > .window-header .title { flex-grow: 1; font-size: 15px; letter-spacing: 1px; margin: 0; }
 .victory-panel .action { font-size: 12px; min-height: 24px; height: 24px; padding: 2px 5px; margin: 1px; }
 .victory-panel .unity-label { white-space: normal; padding: 0; }
 .victory-panel .victory-timing { font-size: 12px; color: rgb(209, 181, 115); margin: 3px 0; }
 .victory-scores { flex-direction: row; align-items: stretch; }
 .victory-score { width: 50%; padding-right: 5px; }
-.victory-score-shadow { padding-left: 5px; padding-right: 0; border-left-width: 1px; border-left-color: rgb(84, 80, 74); }
+.victory-score-shadow { padding-left: 5px; padding-right: 0; border-left-width: 1px; border-left-color: var(--game-hairline-quiet); }
 .victory-side { font-size: 14px; -unity-font-style: bold; margin: 0 0 3px 0; }
 .threshold-reached { color: rgb(244, 219, 157); border-bottom-width: 2px; border-bottom-color: rgb(209, 181, 115); }
 .victory-region { flex-direction: row; align-items: center; min-height: 37px; }
 .victory-region-text { flex-grow: 1; flex-basis: 0; }
 .victory-region-name { font-size: 12px; margin: 0; }
-.victory-region-detail { font-size: 11px; color: rgb(174, 190, 186); margin: 0; }
+.victory-region-detail { font-size: 11px; color: var(--game-card-text-muted); margin: 0; }
 .victory-pages { flex-direction: row; align-items: center; justify-content: flex-end; height: 25px; }
 .victory-pages .unity-label { font-size: 11px; }
 .victory-score > VisualElement > .muted { font-size: 12px; }
-.victory-ring { flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: rgb(84, 80, 74); margin-top: 5px; padding-top: 4px; }
+.victory-ring { flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: var(--game-hairline-quiet); margin-top: 5px; padding-top: 4px; }
 .victory-ring > VisualElement { flex-grow: 1; flex-basis: 0; }
 .victory-ring .unity-label { font-size: 12px; margin: 0; }
 

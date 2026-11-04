@@ -1874,6 +1874,16 @@
       }
     },
     {
+      "source": "frontend/card-board.svg",
+      "role": "UI-472: the card for what stands on the board's bright parchment: a nearly opaque field and a dark hairline outside the muted-gilt rule; the same concave corners, lozenges and inner rule as frontend/card.",
+      "slices": {
+        "top": 12,
+        "right": 12,
+        "bottom": 12,
+        "left": 12
+      }
+    },
+    {
       "source": "frontend/button.svg",
       "role": "UI-470: a menu button, tab or segment: a dark field edged with one muted-gold line; selected is an open page or chosen segment, primary the one main action's warm-gold gradient.",
       "variants": [
@@ -1908,6 +1918,10 @@
     {
       "source": "frontend/divider.svg",
       "role": "UI-470: a hairline fading out at both ends round a tiny open lozenge, under a menu window's title and over the sign-in card's last row; drawn unscaled."
+    },
+    {
+      "source": "frontend/title-rule.svg",
+      "role": "UI-472: the hairline under a game panel's or window's title, fading out at both ends; stretched across the header's bottom point, so it takes no layout from the row."
     },
     {
       "source": "frontend/medallion.svg",

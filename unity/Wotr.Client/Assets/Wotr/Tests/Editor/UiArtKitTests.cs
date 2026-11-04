@@ -54,7 +54,7 @@ namespace Wotr.EditorTests
             ("rules/medallion-kings-on", 56, 56, true), ("rules/crest-fate", 32, 32, true), ("rules/crest-lords", 32, 32, true),
             ("rules/crest-kings", 32, 32, true), ("rules/check-off", 14, 14, true), ("rules/check-on", 14, 14, true),
             // UI-470 (owner, 2026-11-03): the menus' thin-line chrome (sign-in, main menu, waiting room, Settings, questions).
-            ("frontend/card", 64, 64, true), ("frontend/divider", 200, 8, true),
+            ("frontend/card", 64, 64, true), ("frontend/divider", 200, 8, true), ("frontend/title-rule", 200, 1, true), ("frontend/card-board", 64, 64, true),
             ("frontend/button", 64, 32, true), ("frontend/button-hover", 64, 32, true), ("frontend/button-pressed", 64, 32, true),
             ("frontend/button-selected", 64, 32, true), ("frontend/button-primary", 64, 32, true),
             ("frontend/button-primary-hover", 64, 32, true), ("frontend/button-primary-pressed", 64, 32, true),

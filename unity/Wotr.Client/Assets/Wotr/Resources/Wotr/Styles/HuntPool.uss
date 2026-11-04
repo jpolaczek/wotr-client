@@ -62,12 +62,6 @@
     padding: 7px 12px 10px 12px;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .hunt-panel .hunt-pool-heading {
     flex-shrink: 0;

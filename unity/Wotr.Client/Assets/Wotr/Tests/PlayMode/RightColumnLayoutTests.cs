@@ -150,9 +150,9 @@ namespace Wotr.PlayTests
 
         private static void CheckPanel(VisualElement panel, string key, string label)
         {
-            Assert.AreEqual("panel", Texture(panel), key + " frame · " + label);
+            Assert.AreEqual("card-board", Texture(panel), key + " frame · " + label);
             var header = panel.Q(className: "panel-header");
-            Assert.AreEqual("panel-header", Texture(header), key + " header · " + label);
+            Assert.AreEqual("title-rule", Texture(header), key + " header · " + label);
             Assert.LessOrEqual(header.worldBound.height, 28.5f, key + " header stays thinner than the left panels · " + label);
             var icon = header.Q("panel-header-icon-" + key);
             Assert.AreEqual(0, header.IndexOf(icon));
@@ -194,9 +194,9 @@ namespace Wotr.PlayTests
         private static void CheckHuntWindow(BoardScreen board, string label)
         {
             var window = board.Hunt.Root;
-            Assert.AreEqual("panel", Texture(window), "hunt frame · " + label);
+            Assert.AreEqual("card-board", Texture(window), "hunt frame · " + label);
             var header = window.Q(className: "window-header");
-            Assert.AreEqual("panel-header", Texture(header), "hunt header · " + label);
+            Assert.AreEqual("title-rule", Texture(header), "hunt header · " + label);
             Assert.LessOrEqual(header.worldBound.height, 28.5f, "hunt header · " + label);
             foreach (var button in header.Query<Button>().ToList().Where(Visible))
             {

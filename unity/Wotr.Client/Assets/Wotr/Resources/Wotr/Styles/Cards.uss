@@ -3,18 +3,12 @@
    cards above as a read-only preview. HandView sets slot and face geometry; this sheet draws them.
    Rules carry #board-screen so they win over the older hand rules declared later in Wotr.uss. */
 
-/* The cards area closes the right column with the same frame as the panels above it. */
+/* The cards area closes the right column with the same thin card as the panels above it (UI-472, GameChrome.uss). */
 #board-screen .board-right-panels .edge-cards {
     padding: 6px 7px 7px 7px;
     border-width: 0;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .edge-cards .edge-hand { padding: 0; border-width: 0; background-color: rgba(0, 0, 0, 0); }
 
@@ -164,7 +158,9 @@
     -unity-slice-scale: 0.5px;
 }
 #board-screen .card-inspector Label { color: rgb(58, 42, 24); }
-#board-screen .card-inspector .card-header .title { font-size: 16px; -unity-font-style: bold; color: rgb(58, 42, 24); }
+/* UI-473: the title in quiet ink over the hairline of every window's header, tinted for parchment (GameChrome.uss). */
+#board-screen .card-inspector .card-header { -unity-background-image-tint-color: var(--game-title-rule-ink); }
+#board-screen .card-inspector .card-header .title { font-size: 16px; letter-spacing: 1px; -unity-font-style: normal; color: var(--game-title-ink); }
 #board-screen .card-inspector #card-window { color: rgb(122, 74, 30); }
 #board-screen .card-inspector .card-effect { border-left-color: rgba(140, 106, 51, 0.7); background-color: rgba(0, 0, 0, 0); }
 #board-screen .card-inspector .card-effect-heading,

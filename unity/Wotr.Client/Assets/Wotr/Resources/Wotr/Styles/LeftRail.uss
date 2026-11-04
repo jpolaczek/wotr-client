@@ -109,7 +109,7 @@
 .edge-tab-icon-characters, .panel-header-icon-characters { background-image: resource("Wotr/Art/UI/icons/characters"); }
 .edge-tab-icon-reinforcements, .panel-header-icon-reinforcements { background-image: resource("Wotr/Art/UI/actions/reinforcements"); }
 
-/* Panels beside the rail: dark plate in a gilt frame. */
+/* Panels beside the rail: the thin card of GameChrome.uss (UI-472). */
 #board-screen .edge-left-panel {
     position: absolute;
     left: 94px;
@@ -122,19 +122,13 @@
     border-width: 0;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .characters-panel.edge-left-panel { width: 352px; }
 /* UI-178: Politics is as wide as its rows: name, track and the step arrow, no empty column. */
 #board-screen .politics-panel.edge-left-panel { width: 256px; }
 .edge-left-panel .character-roster-grid .action { width: 108px; min-width: 108px; margin: 1px; }
 
-/* Header band in red lacquer with the panel's icon and gilt title. */
+/* A quiet title with the panel's icon over the shared hairline (UI-472, GameChrome.uss). */
 #board-screen .edge-left-panel .panel-header {
     height: 32px;
     min-height: 32px;
@@ -144,12 +138,6 @@
     justify-content: flex-start;
     margin: 0 0 6px 0;
     padding: 0 8px 0 10px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
 .panel-header-icon {
     width: 22px;
@@ -161,18 +149,20 @@
 #board-screen .edge-left-panel .panel-header > Label {
     flex-grow: 1;
     flex-shrink: 1;
-    margin: 0;
+    /* The growing title and the control after it stand a point apart: at a fractional scale their rounded edges could cross. */
+    margin: 0 1px 0 0;
     padding: 0;
     font-size: 15px;
-    letter-spacing: 1.5px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 2px;
+    /* Politics's title is a plain Label; every title of the rail reads alike. */
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+    -unity-font-style: normal;
+    color: var(--game-title-text);
 }
 #board-screen .edge-left-panel .panel-header .unity-toggle__label { color: rgb(236, 224, 196); }
 
 /* Small square buttons in headers: close and paging. Each keeps its panel's declared size;
-   the generic 36-point minimum of .action would overflow the 32-point band. */
+   the generic 36-point minimum of .action would overflow the 32-point row. */
 #board-screen .edge-left-panel .panel-header Button {
     min-height: 0;
     border-width: 0;

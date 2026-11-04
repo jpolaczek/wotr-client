@@ -39,8 +39,6 @@ namespace Wotr.Client
             Popup.style.width = 356;
             Popup.style.paddingLeft = Popup.style.paddingRight = 10;
             Popup.style.paddingTop = Popup.style.paddingBottom = 8;
-            Popup.style.backgroundColor = new Color(.13f, .126f, .117f, .98f);
-            Popup.style.color = new Color(.95f, .94f, .89f);
             Popup.style.fontSize = 12;
             Popup.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             Popup.RegisterCallback<WheelEvent>(e => e.StopPropagation());

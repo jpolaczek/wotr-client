@@ -3,32 +3,21 @@
    flight, combat level, leadership, nation), ability chips and, after a click, the ability's text on parchment.
    Art: graphicalassets/ui/src/characters. Each symbol explains itself in its tooltip. */
 
-/* The inspector window, framed like the other board windows (frames/panel, header plate). */
+/* The inspector window, framed like the other board windows: the thin card and a quiet title over a hairline, with
+   the portrait, the status and the close button in their old places (UI-473, GameChrome.uss). */
 #board-screen .character-window {
     padding: 6px 12px 12px 12px;
     border-width: 0;
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .character-window > .character-header {
     min-height: 30px;
     margin: 0 0 4px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
 /* UI-441 (owner): while a skill of the character can be used now the header wears the shared gold rim on a warm plate,
-   behind its plate art and title (a light of its own, so the header keeps its size); it breathes in the window's 750 ms
+   behind its title (a light of its own, so the header keeps its size); it breathes in the window's 750 ms
    ChoicePulse with the lit icons, by opacity only. Reduced motion keeps it bright and still. */
 #board-screen .character-inspector > .character-header > .character-header-glow {
     position: absolute;
@@ -51,9 +40,7 @@
 .motion-enabled #board-screen .character-inspector.choice-glow-pulse > .character-header > .character-header-glow { opacity: 0.4; }
 #board-screen .character-window > .character-header > .title {
     font-size: 15px;
-    letter-spacing: 0.4px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
+    letter-spacing: 1.4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

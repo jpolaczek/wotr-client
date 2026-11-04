@@ -4103,3 +4103,120 @@ Playtest (owner's checklist):
   Expect: a dark field and a readable line and icon.
 - [ ] Press a nation's token in Politics, a reserve figure and a hand card. Expect: their own pictures throughout.
 - [ ] Repeat one screen at 125 %. Expect: nothing clipped, every control in its usual place.
+
+## The docked panels in the menus' card — UI-472 (2026-11-04)
+
+Second task of the game chrome migration. The owner (2026-11-03): "update the game interface so it uses the same styles and
+buttons as the main menu; only the tabs' backgrounds, frames, buttons … remember to adapt elements such as the bars at the top
+of the windows 'Denethor', 'Effects', 'Shadow' etc." UI-471 did the buttons; UI-472, UI-473 and UI-474 do the frames and header
+bars of every panel and window. Only art and colours changed: every text, order, behaviour, size, padding and place is the one
+it was.
+
+What changed:
+- The left panels (Politics, Reserve, Characters, Effects), the Fellowship dropdown, the corner tab, the card drawer and the dice
+  panel's frame moved from `frames/panel` to the board's card (`frontend/card-board`). The deck buttons' card backs, the corner
+  tab's gold rim for a usable Fellowship, the rail tabs (UI-475) and the dice panel's side band (UI-476) keep their art.
+- The red lacquer headers are gone. Each is a quiet title (Cinzel, the menus' light gold, no faux bold) with the panel's icon, over
+  a hairline fading at both ends. Heights are unchanged (32 points on the left, 28 on the right, 26 when compact), and so is each
+  child's place. Politics' plain label takes the same Cinzel as the other titles.
+
+Decisions:
+- The board has its own card. The menus' `frontend/card` stands over a dimmed map, at 0.9. Over the bright parchment 0.9 let the
+  map's white borders and tokens show through the log's words and mixed a pool list with the Hunt window under it, and the muted
+  gilt line disappeared on parchment. `frontend/card-board` keeps the shape (the same concave corners, lozenges and inner rule) with a
+  0.985 field and a dark hairline outside the gilt rule.
+- The hairline is a picture (`frontend/title-rule`, 200×1 points, `background-size: 100% 1px`), not a border. A border would take a
+  point from the row, moving each child half a point and blurring a thin button's line, and would grow the character window's
+  30-point header, whose portrait fills it.
+- Titles stay at their old left place rather than centred as in the menus' reference: the row must fit an icon, a locate button, a
+  portrait, a status badge and buttons, and a centred lozenge cannot sit on a stretched line. A later task can centre the title-only
+  ones if the owner prefers.
+- Dropping the faux bold frees about 0.07 em per letter, which pays for wider letter-spacing, so no title takes more room than it
+  did (`GameWindowChromeTests` measures this with a long battle title).
+
+Tokens (`Styles/GameChrome.uss`, on `.client-interface` and `.board-screen`): `--game-card`, `--game-card-slice`,
+`--game-card-slice-scale`, `--game-card-fill`, `--game-card-text`, `--game-card-text-muted`, `--game-hairline`,
+`--game-hairline-quiet`, `--game-title-text`, `--game-title-rule`, `--game-title-ink`, `--game-title-rule-ink`. The frames' and the
+headers' art stand in two shared rules of the same sheet; a surface's own sheet keeps its size, padding and transparent
+`background-color`. A new frame joins the first rule. `Interaction.uss` still comes after the chrome; no CSS filter.
+
+Art (`graphicalassets/ui/src/frontend`, `render.py --only frontend/card-board`, `--only frontend/title-rule`): `card-board` (64 pt, slices
+12) and `title-rule` (200×1 pt), both in `UiArtKitTests`' contract. `frames/panel` stays in the kit, unreferenced;
+`frames/panel-header` and `panel-header-free-lacquer` now hold only the dice band.
+
+Playtest (owner's checklist):
+- [ ] Start a game at 1366×768. Open Politics, Reserve, Characters and Effects over the bright map. Expect: a dark, thin card whose
+  edge reads clearly against the parchment; a quiet gold title and a fine line instead of the red band; every button in its old place.
+- [ ] Hover the corner tab. Expect: the Fellowship panel unrolled in the same card, its title beside the Hidden/Rivendell button.
+- [ ] Look at the card drawer and the dice panel. Expect: both in the thin card; the card backs and the red or blue side band as they
+  were.
+- [ ] Make the Fellowship usable (a Guide's skill). Expect: the corner tab's gold rim still pulses over the thin card.
+- [ ] Repeat at 125 %. Expect: nothing clipped, every control in its usual place.
+
+## The floating windows in the menus' card — UI-473 (2026-11-04)
+
+The same treatment for what floats over the board: the decision window, the battle window's frame and header, the chronicle's frame,
+the Hunt window and its nested pool, the character and sovereign windows (the owner's "Denethor" bar), the end-of-game panel, and the
+headers of the recorded-action card and the card inspector.
+
+- Frame: `frontend/card-board`. Header: a quiet title over the hairline. Heights are unchanged (26 points; 24 in a short viewport;
+  30 for a character; 34 for the recorded action), and the portrait medallion, title, status badge, pin and close keep their places.
+- A skill's gold rim on a character's header (UI-441) lies over the row as before. No window header carried a side colour before this
+  task, so none was lost; a character's side stays on his medallion's ring.
+- On parchment the title is ink and the same line is tinted dark (`--game-title-ink`, `--game-title-rule-ink`). The parchment faces of
+  the recorded action and the card inspector stay.
+- Kept for UI-477: the force frames, the stage ribbon, card slots and round tabs. The end-of-game title plaques stay.
+
+Playtest (owner's checklist):
+- [ ] Open a king's window from Characters. Expect: the portrait medallion at the head of a quiet name over a fine line, the status
+  badge and the close button in their old places, and no red bar.
+- [ ] Fight a battle with the longest name you can (Dol Amroth, a siege). Expect: the whole title, the card setting and the close
+  button on one row; forces, ribbon and footer as they were.
+- [ ] Open a Hunt and its pool list from the header. Expect: the pool over the window in the same card, and the window's words not
+  showing through it.
+- [ ] Choose something that opens the decision window. Expect: the same card and header, anchored above the console.
+- [ ] Click a notice and a hand card. Expect: parchment with a dark title and a dark fine line; the pin and the close button in place.
+- [ ] Open a battle's report from a recorded action. Expect: the same card round its parchment pages.
+- [ ] Finish a game. Expect: the thin card round the painting, the green or iron title plaque unchanged.
+
+## The flat windows and scroll bars — UI-474 (2026-11-04)
+
+The windows that had no art take the card, each old border staying in the layout as a transparent one so nothing moves: region
+information, board information, the expansion inspector, the action log, the notice overflow list, the victory panel and the map legend.
+Their rules also lost their old colours (a separator is `--game-hairline-quiet`, a muted line `--game-card-text-muted`), and a region's
+name, like every title, is the quiet gold. Three stay flat with the card's colours and hairline: the tooltip, because it can be very
+small; the undocked hand drawer, because the docked hand wears the same class and clears only its colour (`Cards.uss`); and the board's
+chat, which was not listed but had the same old rule. `MapLegend` lost its last inline colours.
+
+Scroll bars under the board are the menus' thin ones, by rules scoped to `#board-screen` in `GameChrome.uss`, never by putting
+`menu-chrome` on the board's root (tokens `--game-scroll-track`, `--game-scroll-thumb`, `--game-scroll-thumb-hover`,
+`--game-scroll-arrow`, `--game-scroll-arrow-hover`). Copying the menus' rules alone was not enough: they narrow the bar to 10 points but
+leave the theme's thumb 18 points wide and its track and arrows 24, so those stand out of the bar. On the board every part is sized to
+it: a 6-point thumb inside a 10-point bar. A view's content gains the 3 points the bar gave up.
+
+Playtest (owner's checklist):
+- [ ] Hover a console button over the parchment. Expect: a small dark tooltip with one fine gold line.
+- [ ] Click a region with forces, then an empty one. Expect: the card round its figures; the name in quiet gold; the small window for the
+  empty region sized to its text.
+- [ ] Open the log and scroll it. Expect: a thin card, faint separators, a slim gold thumb inside a slim bar, and no map showing through
+  the words.
+- [ ] Open the map legend over the left rail, the game rules and the victory panel. Expect: the same card; the words readable; every
+  button in its place.
+- [ ] Open a chat. Expect: the same dark field and fine line.
+
+Tests for the three tasks: `GameWindowChromeTests` (new) reads what UI Toolkit resolved for every frame and header, the ink headers,
+scroll bars and flat surfaces, and measures the titles. `LeftRailLayoutTests` (the title fits, Politics included), `RightColumnLayoutTests`,
+`EdgePlaqueTests`, `DicePanelLayoutTests` and `ActionNoticeLayoutTests` expect the new art where they named the old; what they check is
+unchanged. `UiArtKitTests` lists the two new textures.
+
+Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, passing: `GameWindowChromeTests`, `LeftRailLayoutTests`,
+`RightColumnLayoutTests`, `EdgePlaqueTests`, `DicePanelLayoutTests`, `BattleLayoutTests`, `HuntLayoutTests`, `CharacterWindowLayoutTests`,
+`CharacterRosterLayoutTests`, `ActionNoticeLayoutTests`, `BoardChromeLayoutTests`, `TurnConsoleLayoutTests`, `GameButtonChromeTests`,
+`InGameDenseLayoutTests`, `LayoutStressScenarioTests`, `ClickInspectionTests`, `GlowingHintAuditTests`, `SovereignSectionLayoutTests`,
+`GameEndNetworkTests`, `VictoryPanelLayoutTests`, `RuntimeTooltipTests`, `RegionNameOnlyTests`, `ReinforcementsLayoutTests`,
+`FloatingWindowTests`, `CardViewportLayoutTests`, `PoliticalPanelTests`. `PoliticalPanelTests` first failed in 2 of 3 runs with "Title and
+toggle overlap" (2 of 2 passed on HEAD's stylesheets; a flake at that line has been on record since 2026-10-27): the growing title's edge
+meets the toggle's and rounding can cross them. The title now stands a point apart, and the class passed 4 of 4 runs. One failure is not
+from this work:
+`BattleReportNetworkTests.ClosedReportRejects…` ("last-battle is covered by notification-bar") fails the same way on HEAD's stylesheets.
+Screenshots: `.artifacts/screenshots/ui472-before-*.png`, `ui472-after-*.png`, and the same for `ui473` and `ui474`.

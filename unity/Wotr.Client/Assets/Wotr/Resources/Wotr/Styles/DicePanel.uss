@@ -1,4 +1,4 @@
-/* UI-97: the player's dice panel at the bottom left, in the gilt and enamel of the board.
+/* UI-97: the player's dice panel at the bottom left, since UI-472 in the thin card of GameChrome.uss.
    Medallions take the enamel of their side (dice/medallion-free|shadow) and carry a face glyph
    from dice/faces; 9-slice values are texture pixels. Layout widths stay in Wotr.uss, so the
    short-viewport, planning and sovereign variants keep their arrangement. */
@@ -16,15 +16,9 @@
     padding: 4px 8px 5px 8px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 
-/* Header band in red lacquer with the side name. */
+/* Header band in red lacquer with the side name; it stays until the console's and dice's own task (UI-476). */
 #board-screen .dice-panel .dice-header {
     height: 24px;
     min-height: 24px;

@@ -54,7 +54,7 @@ namespace Wotr.PlayTests
         private static void Check(BoardScreen board, string label)
         {
             var panel = board.OwnDice;
-            Assert.AreEqual("panel", Texture(panel), "Gilt panel frame · " + label);
+            Assert.AreEqual("card-board", Texture(panel), "The panels' thin card · " + label);
             var header = panel.Q("dice-header");
             // UI-466 (owner): the Free Peoples' band is blue lacquer, the Shadow's red.
             var band = board.View.You == Side.FreePeoples ? "panel-header-free-lacquer" : "panel-header";

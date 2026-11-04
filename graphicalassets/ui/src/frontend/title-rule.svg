@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="1" viewBox="0 0 200 1">
+  <!-- UI-472 (owner, 2026-11-03): the hairline under a game panel's or window's title, in the card's muted gilt, fading
+       out at both ends. USS stretches it across the header's bottom point (background-size: 100% 1px), so it draws
+       under the row without taking layout from it, and without the lozenge that would stretch with it. -->
+  <defs>
+    <linearGradient id="fe-title-rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" style="stop-color: var(--fe-rule)" stop-opacity="0"/>
+      <stop offset="0.07" style="stop-color: var(--fe-rule)" stop-opacity="0.9"/>
+      <stop offset="0.93" style="stop-color: var(--fe-rule)" stop-opacity="0.9"/>
+      <stop offset="1" style="stop-color: var(--fe-rule)" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="0" width="198" height="1" fill="url(#fe-title-rule)"/>
+</svg>

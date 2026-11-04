@@ -366,7 +366,8 @@
 }
 #board-screen .console-actions .console-cancel:disabled { opacity: 0.5; -unity-background-image-tint-color: rgb(255, 255, 255); }
 
-/* The decision window: choices without an object, above the console. */
+/* The decision window: choices without an object, above the console; the card and the header's hairline stand in
+   GameChrome.uss (UI-473). */
 .decision-window {
     position: absolute;
     left: 232px;
@@ -377,25 +378,14 @@
     padding: 6px 12px 12px 12px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 .decision-window .window-header {
     height: 26px;
     min-height: 26px;
     margin: 0 0 4px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
+.decision-window .window-header > .title { letter-spacing: 0.8px; }
 /* The dock takes its content's height, so the window grows upwards from its bottom anchor. */
 .decision-window > .decision-dock { flex-grow: 0; flex-shrink: 1; flex-basis: auto; min-width: 0; min-height: 0; }
 .decision-window .decision-dock > .tray { padding: 0; flex-grow: 0; flex-shrink: 0; flex-basis: auto; }

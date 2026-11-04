@@ -1,17 +1,11 @@
-/* UI-162: the Hunt window in the gilt frame and lacquered header of the battle window (Styles/Battle.uss), with the
-   same stage ribbon. 9-slice values are texture pixels (2x the points in graphicalassets/ui/assets.json). */
+/* UI-162: the Hunt window in the frame and header of the battle window: since UI-473 the thin card and a quiet title
+   over a hairline (GameChrome.uss), with the same stage ribbon. */
 #board-screen .hunt-panel.hunt-window {
     width: 500px;
     max-width: 92%;
     padding: 6px 12px 12px 12px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/panel");
-    -unity-slice-top: 44;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 44;
-    -unity-slice-left: 44;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .hunt-panel.hunt-window.hunt-reaction-panel { width: 640px; }
 #board-screen .hunt-window > .window-header {
@@ -19,20 +13,11 @@
     min-height: 26px;
     margin: 0 0 3px 0;
     padding: 0 2px 0 12px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
 }
 #board-screen .hunt-window > .window-header > .title {
     flex-grow: 1;
     font-size: 13px;
-    letter-spacing: 0.6px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 1.4px;
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0;

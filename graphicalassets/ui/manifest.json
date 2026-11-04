@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "82c15de854bf52b4e1f009f0a92e8985b0923807a24d007b94c38b19341ad2a4",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "8a803e1a5d36f0beb975dc64b51f371d354de2a58af9afedc56aa15699a9a581"
+    "assets.json": "de1ecb39f1f7b7e08f6a1e29132d0ba4c2b933b3a6824216dbfca57815182d2e"
   },
   "assets": [
     {
@@ -5240,6 +5240,22 @@
       "png_sha256": "55eed5d0ae897a007789515425d7c354acb824d76e86669a08ce48351e022a5e"
     },
     {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/card-board.png",
+      "source": "src/frontend/card-board.svg",
+      "variant": null,
+      "logical": [
+        64,
+        64
+      ],
+      "pixels": [
+        128,
+        128
+      ],
+      "alpha": true,
+      "source_sha256": "07324df0c9b31ae50c01066278162399dedc27c55a62e8901077bc03be2e9b0b",
+      "png_sha256": "84d834686fd87083d7afd1cda2777de2be024b085614b3605eb4df33a82cd829"
+    },
+    {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/button.png",
       "source": "src/frontend/button.svg",
       "variant": null,
@@ -5414,6 +5430,22 @@
       "alpha": true,
       "source_sha256": "5f59ada7da607dfb4c0ddd32465672ee2efc99782d3fda6dc28ae6df41616b4e",
       "png_sha256": "14dc8fa39054288994830dd1f9fe9a8fca624236d3cc0903849032afc9c6416f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/title-rule.png",
+      "source": "src/frontend/title-rule.svg",
+      "variant": null,
+      "logical": [
+        200,
+        1
+      ],
+      "pixels": [
+        400,
+        2
+      ],
+      "alpha": true,
+      "source_sha256": "7bb23cc698bc064a78bc5e088e381db58bedfa63db234934084e7be35109172b",
+      "png_sha256": "00c6e9f50052e997a50620cb7806ce387bfe44fa9dbbf246ec32a9f173cee76a"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/medallion.png",
