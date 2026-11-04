@@ -133,7 +133,11 @@ namespace Wotr.PlayTests
             var dice = board.OwnDice.worldBound;
             var console = board.Console.Root.worldBound;
             var cards = board.Edges.Right.worldBound;
-            Assert.Less(dice.xMin - root.xMin, 12, "The dice keep to the left edge · " + label);
+            // UI-494 (owner): the bottom row stands on the screen's edges, as the top bar and the cards do.
+            Assert.AreEqual(root.xMin, dice.xMin, 1, "The dice stand on the left edge · " + label);
+            Assert.AreEqual(root.yMax, dice.yMax, 1, "The dice stand on the bottom edge · " + label);
+            Assert.AreEqual(root.yMax, console.yMax, 1, "The console stands on the bottom edge · " + label);
+            Assert.AreEqual(root.yMax, cards.yMax, 1, "The cards stand on the bottom edge · " + label);
             Assert.Less(root.xMax - cards.xMax, 12, "The cards keep to the right edge · " + label);
             Assert.GreaterOrEqual(console.xMin, dice.xMax - 1, "The console stands right of the dice · " + label);
             Assert.LessOrEqual(console.xMax, cards.xMin + 1, "The console stands left of the cards · " + label);

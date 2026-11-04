@@ -4750,3 +4750,17 @@ an advance's pennant read only "Battle at X · Round N". Details: [OPPONENT_ACTI
 
 Playtest (owner's checklist):
 - [ ] Nothing new to play; a game played as the Shadow against the Free Peoples should read as clearly as the other way round. Say if any scene does not.
+
+<a id="the-bottom-row-stands-on-the-screens-edges--ui-494"></a>
+## The bottom row stands on the screen's edges — UI-494 (2026-11-04)
+
+The owner: "let's stick the tabs at the bottom to the edge of the screen, like the tabs at the top or the cards' tab". The own dice
+panel stands on the left and bottom edges and the console on the bottom edge (they stood 4 points off); their heights and everything
+inside them stay, and the options strip keeps its 4 points above the console. The gaps between the bottom row's panels stay.
+
+Playtest (owner's checklist):
+- [ ] Any game. Expect: the dice panel in the bottom left corner and the console on the bottom edge, level with the cards, with no map
+  showing under them.
+
+Tests: PlayMode `TurnConsoleLayoutTests` (the panels on the edges, every layout), `DicePanelLayoutTests`, `CompactBoardLayoutTests`,
+`InGameDenseLayoutTests`, `WillOfTheWestFaceNetworkTests`, `LayoutStressScenarioTests`.

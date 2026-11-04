@@ -34,7 +34,8 @@
     flex-shrink: 1;
     min-width: 0;
     height: 132px;
-    margin: 4px 4px 0 6px;
+    /* UI-494 (owner, 2026-11-04): it stands on the screen's bottom edge, as the top bar and the cards do. */
+    margin: 8px 4px 0 6px;
     padding: 12px 12px 10px 12px;
     flex-direction: row;
     align-items: stretch;
@@ -138,11 +139,12 @@
 /* UI-214: a card's object-less options take the hint's place and size: up to three buttons in one row. */
 .console-options { height: 38px; min-height: 38px; max-height: 38px; margin: 6px 4px 0 6px; flex-direction: row; align-items: center; }
 /* TEST-15: options too wide for the console's line stand in a strip just above the console, at their full text; the
-   bottom row keeps its height. The strip stands on the bottom row's top edge (its fixed 140px); only its left edge
-   follows the status column. The row keeps its side margins, so its measured width is the same in both places. */
+   bottom row keeps its height. The strip stands 4 points over the console's top (UI-494: 132 from the screen's bottom);
+   only its left edge follows the status column. The row keeps its side margins, so its measured width is the same in
+   both places. */
 .console-options-strip {
     position: absolute;
-    bottom: 140px;
+    bottom: 136px;
     flex-direction: row;
     padding: 6px 4px;
 }

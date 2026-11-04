@@ -11,8 +11,9 @@
     border-top-width: 0;
 }
 
+/* UI-494 (owner, 2026-11-04): it stands on the screen's bottom and left edges, as the top bar and the cards do. */
 #board-screen .dice-panel {
-    margin: 4px 0 0 4px;
+    margin: 8px 0 0 0;
     padding: 4px 8px 5px 8px;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
