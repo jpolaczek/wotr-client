@@ -140,13 +140,17 @@ namespace Wotr.PlayTests
         {
             using (var room = await Connect("retreat"))
             {
-                var camera = room.Sh.Board.Map.Camera.Pan;
                 await room.Direct(room.Fp, "action-ContinueBattle");
                 Assert.AreEqual(DecisionKind.BattleRetreat, room.Sh.Board.View.Decision.Kind);
+                // UI-435 (owner): the lit retreat targets come out from under the battle window once; reconnecting keeps that view.
+                var defender = room.Sh.Board.Map;
+                await room.Until(() => defender.DraftOverlay.Targets.Any() && defender.DraftOverlay.Targets.All(defender.Uncovered));
+                var camera = defender.Camera.Pan;
                 var connected = room.Sh.Connected;
                 room.Sh.Connection.Reconnect();
                 await room.Until(() => room.Sh.Connected > connected);
-                Assert.AreEqual(camera, room.Sh.Board.Map.Camera.Pan, "Continuing and reconnecting must preserve the defender's camera.");
+                await room.Settle();
+                Assert.AreEqual(camera, defender.Camera.Pan, "Reconnecting must preserve the defender's camera.");
                 await ArmyGestures.Target(room, room.Sh, "pelargir");
                 // The target helper navigates first, then checks click-to-receipt stability.
                 Assert.AreEqual(DecisionKind.BattleAdvance, room.Fp.Board.View.Decision.Kind);
