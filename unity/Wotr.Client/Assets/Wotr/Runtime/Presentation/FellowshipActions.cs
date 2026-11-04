@@ -17,6 +17,11 @@ namespace Wotr.Client
                 draft?.Kind is CommandKind.MoveFellowship or CommandKind.HideFellowship or CommandKind.DeclareFellowship or
                     CommandKind.RevealFellowship or CommandKind.SeparateCompanions or CommandKind.SelectGuide or CommandKind.EnterMordor);
 
+        // UI-482 (owner, 2026-11-04): the first turn's Fellowship phase without a declaration: the server offers none that
+        // could change nothing (EXP-19), and the Fellowship has not moved.
+        public static bool NothingToDeclare(PlayerView view) => view.Turn == 1 && view.Fellowship.Progress == 0 &&
+            view.Decision?.Kind == DecisionKind.FellowshipPhase && view.Options.All(o => o.Kind != CommandKind.DeclareFellowship);
+
         // Hiding takes the die the server lists (any die with Strider as Guide); UI-461: a Will die hides as a Character.
         public static ActionOption Option(PlayerView view, ActionDieContext context, CommandKind kind, TurnDraft draft = null)
         {

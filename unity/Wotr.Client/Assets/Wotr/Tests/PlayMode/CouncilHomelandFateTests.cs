@@ -34,7 +34,7 @@ namespace Wotr.PlayTests
                     StringAssert.StartsWith("Click Gimli again to keep this companion", board.Console.Status.Hint.text);
                     await Press(room, board, "fellowship-portrait-" + Gimli);
                     Assert.AreEqual("", Portrait(board, Gimli).Q<Label>("homeland-location").text);
-                    Assert.AreEqual("No tokens", Effect(board));
+                    StringAssert.DoesNotContain("Council token", Effect(board));
                     await Place(room, Gimli, destination, destination == "ered-luin");
                     Assert.AreEqual(0, room.Boundary.Commands);
                     Assert.AreEqual(shadow, JsonConvert.SerializeObject(await room.Sh.Api.Get<PlayerView>(

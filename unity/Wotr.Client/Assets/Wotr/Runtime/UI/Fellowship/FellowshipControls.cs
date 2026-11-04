@@ -76,7 +76,7 @@ namespace Wotr.Client
                 // UI-287: Finish phase keeps its place outside the Fellowship phase, greyed out with its reason; UI-448: so
                 // does it beside Declare while the declaration is drawn.
                 item.Value.style.display = own && (!route || declaring) ? DisplayStyle.Flex : DisplayStyle.None;
-                item.Value.tooltip = legal ? Description(view, item.Key) : UnavailableTooltip(item.Key);
+                item.Value.tooltip = legal ? Description(view, item.Key) : UnavailableTooltip(view, item.Key);
             }
             if (declaring)
                 RefreshDeclare();
@@ -88,11 +88,18 @@ namespace Wotr.Client
 
         public const string Unavailable = "Finish phase · Only in your Fellowship phase, to keep the current Guide.";
         public const string DeclareUnavailable = "Declare · Only while the hidden Fellowship may declare its position.";
+        // UI-482 (owner, 2026-11-04): Declare keeps its place, greyed, when the server offers no declaration at the start.
+        public const string DeclareNothingYet = "Declare · The Fellowship has not moved yet: there is nothing to declare at the start of the game";
         public const string DeclareStart = "Declare · Select the Fellowship and choose its route on the map";
         public const string DeclareSend = "Declare · The Fellowship stands at the route's end and stays hidden; its Progress returns to 0";
         public const string DeclareWaiting = "Declare · Draw the route on the map first";
 
-        private static string UnavailableTooltip(CommandKind kind) => kind == CommandKind.DeclareFellowship ? DeclareUnavailable : Unavailable;
+        private static string UnavailableTooltip(PlayerView view, CommandKind kind)
+        {
+            if (kind != CommandKind.DeclareFellowship)
+                return Unavailable;
+            return FellowshipActions.NothingToDeclare(view) ? DeclareNothingYet : DeclareUnavailable;
+        }
 
         // UI-448: while the declaration is drawn, Declare sends it once the tray's ✓ could.
         public void DeclareReady(bool ready)

@@ -17,6 +17,8 @@ namespace Wotr.PlayTests
         private const string Gimli = "base.character.gimli";
         private const string Legolas = "base.character.legolas";
 
+        // UI-482 (owner, 2026-11-04): the Shadow's view is the same in shape; with no candidate the client answers the step
+        // itself and a refused answer leaves the ✓ to the player; with a candidate, choosing nobody is the player's ✓.
         [UnityTest]
         public IEnumerator EmptyAndStayKeepTheSamePrivateWaitingViewAndGrantNoTokens() => MatchTestRoom.Wait(Empty());
 
@@ -28,7 +30,7 @@ namespace Wotr.PlayTests
 
         private static async Task Empty()
         {
-            using var empty = await UI10TestRoom.Connect("ui69-empty");
+            using var empty = await UI10TestRoom.Connect("ui69-empty", holdFreePeoples: true);
             using var stay = await UI10TestRoom.Connect("ui69-stay");
             Assert.IsEmpty(empty.Fp.Board.View.Options.Single().CharacterActions);
             Assert.AreEqual(5, stay.Fp.Board.View.Options.Single().CharacterActions.Count);
@@ -37,15 +39,56 @@ namespace Wotr.PlayTests
             {
                 AssertPrivate(room.Sh.Board);
                 Assert.AreSame(room.Fp.Board.Fellowship.Root, room.Fp.Board.Tray.parent, "UI-270: the homelands are on the Fellowship panel.");
-                Assert.AreEqual("No tokens", Effect(room.Fp.Board));
-                var revision = room.Fp.Board.View.Revision;
-                await Confirm(room);
-                Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision);
+            }
+            await ACandidateWaitsForTheConfirm(stay);
+            await ARefusedAnswerLeavesTheConfirm(empty);
+            foreach (var room in new[] { empty, stay })
+            {
                 Assert.AreEqual(DecisionKind.FellowshipPhase, room.Fp.Board.View.Decision.Kind);
                 Assert.IsEmpty(room.Sh.Board.View.CouncilTokens);
                 Assert.AreEqual(7, room.Fp.Board.View.Fellowship.CompanionIdentities.Count);
-                Assert.AreEqual(1, room.Boundary.Commands);
             }
+        }
+
+        private const int PastThePause = CouncilHomelandSkip.LongestPause + 300;
+
+        private static async Task ACandidateWaitsForTheConfirm(UI10TestRoom room)
+        {
+            var revision = room.Fp.Board.View.Revision;
+            await Task.Delay(PastThePause, room.Token);
+            Assert.AreEqual(0, room.Boundary.Commands, "Choosing nobody with a candidate available is a real decision.");
+            Assert.AreEqual(DecisionKind.CouncilHomelands, room.Fp.Board.View.Decision.Kind);
+            StringAssert.EndsWith("· ✓ confirms.", Effect(room.Fp.Board));
+            StringAssert.DoesNotContain("Council token", Effect(room.Fp.Board));
+            await Confirm(room);
+            Assert.AreEqual(revision + 1, room.Fp.Board.View.Revision);
+            Assert.AreEqual(1, room.Boundary.Commands);
+        }
+
+        // The client waits its short pause and sends once, without a click; refused, it leaves the ✓ and does not repeat.
+        private static async Task ARefusedAnswerLeavesTheConfirm(UI10TestRoom room)
+        {
+            var board = room.Fp.Board;
+            var revision = board.View.Revision;
+            room.Boundary.RefuseNextCommand = true;
+            var pause = System.Diagnostics.Stopwatch.StartNew();
+            room.Fp.Interaction.Hold(false);
+            await room.Until(() => Effect(board) == CouncilHomelandPresentation.AllStay);
+            await room.Settle();
+            Assert.AreEqual(0, room.Boundary.Commands, "The answer waits for its pause.");
+            Assert.AreEqual(DisplayStyle.None, board.Notice.Button.style.display.value, "No notice asks to place a companion while none can be.");
+            LayoutTests.Save(room.Fp.Viewport, "ui482-empty-homelands-pause.png");
+            await room.Until(() => room.Boundary.Commands == 1);
+            Assert.GreaterOrEqual(pause.ElapsedMilliseconds, CouncilHomelandSkip.ShortestPause - 50);
+            Assert.LessOrEqual(pause.ElapsedMilliseconds, CouncilHomelandSkip.LongestPause + 1000);
+            Assert.AreEqual(CommandKind.ChooseCouncilHomelands, room.Boundary.LastCommand.Kind);
+            Assert.IsEmpty(room.Boundary.LastCommand.Payload.Placements);
+            await room.Until(() => Effect(board) == CouncilHomelandPresentation.AllStayByHand && board.Console.Actions.Confirm.enabledInHierarchy);
+            await Task.Delay(PastThePause, room.Token);
+            Assert.AreEqual(1, room.Boundary.Commands, "No retry loop.");
+            Assert.AreEqual(revision, board.View.Revision);
+            await Confirm(room);
+            Assert.AreEqual(2, room.Boundary.Commands);
         }
 
         private static async Task One()
@@ -55,7 +98,7 @@ namespace Wotr.PlayTests
                 using var room = await UI10TestRoom.Connect(token == ExpansionDraft.CouncilPolitics ? "ui69-one-politics" : "ui69-one-travel");
                 var before = JsonConvert.SerializeObject(room.Sh.Board.View);
                 await Place(room, Gimli, "erebor", false);
-                Assert.AreEqual("Shadow chooses one", Effect(room.Fp.Board));
+                StringAssert.Contains("Shadow chooses one Council token", Effect(room.Fp.Board));
                 Assert.AreEqual(before, JsonConvert.SerializeObject(await room.Sh.Api.Get<PlayerView>(
                     "api/matches/" + room.Sh.Board.View.MatchId, room.Token)));
                 Assert.AreEqual(0, room.Boundary.Commands);
@@ -106,9 +149,9 @@ namespace Wotr.PlayTests
                 await Press(room, board, "fellowship-portrait-" + choices[0].CharacterId);
                 await Press(room, board, "fellowship-portrait-" + choices[0].CharacterId);
                 Assert.AreEqual("", Portrait(board, choices[0].CharacterId).Q<Label>("homeland-location").text);
-                Assert.AreEqual(count == 2 ? "Shadow chooses one" : "Shadow receives both", Effect(board));
+                StringAssert.Contains(count == 2 ? "Shadow chooses one Council token" : "Shadow receives both Council tokens", Effect(board));
                 await Place(room, choices[0].CharacterId, choices[0].Targets.Single(), false);
-                Assert.AreEqual("Shadow receives both", Effect(board));
+                StringAssert.Contains("Shadow receives both Council tokens", Effect(board));
                 Assert.AreEqual(before, JsonConvert.SerializeObject(await room.Sh.Api.Get<PlayerView>(
                     "api/matches/" + room.Sh.Board.View.MatchId, room.Token)));
                 Assert.AreEqual(0, room.Boundary.Commands);
@@ -130,7 +173,8 @@ namespace Wotr.PlayTests
         }
 
         private static string Public(PlayerView view) => JsonConvert.SerializeObject(view).Replace(view.MatchId, "same-match");
-        private static string Effect(BoardScreen board) => board.Tray.Q<Label>("homeland-token-effect").text;
+        // UI-482 (owner, 2026-11-04): the console's hint names the Shadow's Council tokens.
+        private static string Effect(BoardScreen board) => board.Console.Status.Hint.text;
         private static Button Portrait(BoardScreen board, string id) => board.Fellowship.Root.Q<Button>("fellowship-portrait-" + id);
 
         private static void AssertPrivate(BoardScreen board)
@@ -140,7 +184,6 @@ namespace Wotr.PlayTests
             Assert.IsEmpty(board.View.OwnCompanionVersions);
             Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
             Assert.IsTrue(board.Root.Query<Label>("homeland-location").ToList().All(l => l.style.display.value == DisplayStyle.None));
-            Assert.IsNull(board.Root.Q<VisualElement>("council-homeland-choices"));
         }
 
         private static async Task Press(UI10TestRoom room, BoardScreen board, string name)

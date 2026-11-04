@@ -64,6 +64,8 @@ namespace Wotr.Client
         private readonly WillFaceInteraction willFaces;
         private readonly TurnConsoleInteraction console;
         private readonly RingInteraction rings;
+        // UI-482 (owner, 2026-11-04): the Council's homelands with no companion to place answer themselves.
+        private readonly CouncilHomelandSkip homelandSkip;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
         private PlayerView view;
         private ViewVersion version;
@@ -169,6 +171,7 @@ namespace Wotr.Client
             tray.Skip += console.Pass;
             rings = new RingInteraction(board, face => EditChoice(() => draft.Change(p => p.Face = face)), CancelRing);
             lore = new LoreInteraction(board, EditSelection, () => SelectionBusy);
+            homelandSkip = new CouncilHomelandSkip((action, pause) => board.Root.schedule.Execute(action).ExecuteLater(pause), SkipHomelands);
             board.Characters.Enterable = figure => !SelectionBusy && board.Characters.Actions.Entry(figure) != null;
             board.Characters.EntryRequested += RequestEntry;
             if (persistence != null)
@@ -448,6 +451,13 @@ namespace Wotr.Client
                 _ = Submit();
         }
 
+        // UI-482: the empty homelands leave as a ✓ would; the server still validates them.
+        private void SkipHomelands()
+        {
+            notice = "";
+            _ = Submit(true);
+        }
+
         // UI-452: the decision whose placement regions the view was brought to.
         private string placementsRevealed = "";
 
@@ -674,6 +684,8 @@ namespace Wotr.Client
                 connectionEpoch++;
             if (online && !connected)
                 signal.Rebase();
+            if (!online && connected)
+                homelandSkip.Rearm();
             online = connected;
             if (view != null)
                 Render();
@@ -917,6 +929,7 @@ namespace Wotr.Client
             previewLegal = false;
             var currentGeneration = ++generation;
             RenderLayout();
+            homelandSkip.Refresh(view, draft, online && !SelectionBusy);
             if (!online)
             {
                 tray.Notice("Offline · Your draft is saved locally.");
@@ -1218,13 +1231,13 @@ namespace Wotr.Client
                 }
                 else
                 {
-                    notice = "The state changed or this choice is not legal. Review your selection.";
+                    notice = RefusalNotice();
                     // UI-404: nothing flies; the raised figures come back down onto their base.
                     board.Map.Figures.Lapse();
                 }
                 await connection.Refresh();
                 if (!receipt.Accepted)
-                    tray.Notice("The state changed or this choice is not legal. Review your selection.");
+                    tray.Notice(RefusalNotice());
             }
             catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
             catch (LocalSaveException error) { pendingProblem = error.Message; }
@@ -1237,6 +1250,10 @@ namespace Wotr.Client
             }
         }
 
+        // UI-482: empty homelands have no selection to review; the console's ✓ is the player's now.
+        private string RefusalNotice() => CouncilHomelandSkip.Applies(view, draft) ? CouncilHomelandPresentation.AllStayByHand
+            : "The state changed or this choice is not legal. Review your selection.";
+
         // UI-91: an armed hand card's second click is the same final gesture as a double-click.
         private void FinalizeCard(DraftToken token) => cards.Play(token);
 
@@ -1248,6 +1265,7 @@ namespace Wotr.Client
         {
             if (persistence != null)
                 persistence.Changed -= Render;
+            homelandSkip.Dispose();
             lift.Dispose();
             reserveCarry.Dispose();
             if (saveDraft && view != null)

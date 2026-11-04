@@ -4442,3 +4442,88 @@ Playtest (owner's checklist):
 
 Tests: PlayMode `CompanionSetupPanelNetworkTests`, `CompanionSetupRecoveryTests`, `CouncilHomelandPanelNetworkTests`,
 `CouncilHomelandRecoveryTests`, `BoardCompletionContextNetworkTests`, `FellowshipNetworkTests`, `ExpansionDecisionNetworkTests`.
+
+<a id="the-homelands-answer-themselves-with-no-companion-to-place--ui-482"></a>
+## The homelands answer themselves with no companion to place; their instruction in the console — UI-482 (2026-11-04)
+
+Three owner requests (translated).
+
+**(a) "If I play with the Council of Rivendell but change nothing in the Fellowship that requires declaring a companion's
+position on the map, I have to press confirm twice and one of them does not really confirm anything."**
+
+- **The decision stays on the server.** `CouncilSetup.BeginHomelands` always opens `CouncilHomelands`, even with no eligible
+  figure: the step's existence must not reveal the private versions, so the Shadow's view is the same either way.
+- **The client answers it** (`CouncilHomelandSkip`, `Application`). With no candidate (`CharacterActions.Count == 0`,
+  `CouncilHomelandPresentation.NothingToPlace`) it sends the mandatory draft's empty list through the normal send
+  (`TurnInteraction.Submit`), after a random pause of 1–2.5 s (`UnityEngine.Random`: this is not game randomness). A quick
+  click takes that long, so the timing tells the Shadow nothing about the versions chosen.
+- **When.** Once per decision id; only while online, with no command, presentation or newer revision under way
+  (`SelectionBusy`), the decision still open and owned and the draft ready. Each pause is a fresh
+  `Root.schedule.Execute(...).ExecuteLater(ms)`; any change of those conditions ends it, and the client starts a new one when it
+  is free again. A reconnection or a restored match arms the same still-open decision once more. Observers and replays never
+  send: they have no `TurnInteraction`, and `Applies` reads the view's owned decision alone.
+- **A refused send.** No retry loop: the console's ✓ stays enabled and the hint becomes "All companions stay with the
+  Fellowship · ✓ confirms." An uncertain response keeps the existing receipt recovery.
+- **The console during the pause** says "All companions stay with the Fellowship." with no "✓ confirms", and the required
+  notice ("! Place Companions in homelands") does not show (`DecisionAttention`): nothing can be placed.
+- **With a candidate nothing changes:** choosing nobody and pressing ✓ is a real decision, and nothing leaves by itself.
+
+**(b) Owner, on the Fellowship panel during the homelands: the lines "Click Legolas again to keep this companion with the
+Fellowship, or another lit homeland · ✓ confirms." and "◇ Politics → Travel  Shadow chooses one": "this information should
+be only in the bottom panel".**
+
+- The panel's part is gone (`CouncilHomelandChoices`, its labels `homeland-hint`, `homeland-tokens`, `homeland-token-effect`,
+  the element `council-homeland-choices` and their styles). `CompanionSetupChoices.ContainsInput` now names the version cards
+  alone; the homelands' keyboard is the board's (Enter is the console's ✓, Esc its ↶).
+- **The console's hint carries the consequence:** one departure "… · Shadow chooses one Council token · ✓ confirms.", more than
+  one "… · Shadow receives both Council tokens · ✓ confirms.", none adds nothing.
+- **The hint's tooltip** (`TurnConsoleState.GuidanceDetail`, `CouncilHomelandPresentation.Detail`) keeps what the token labels
+  said: the full hint, `TokenDetail`, and what the Politics and Travel tokens do.
+- **Fit.** At 100 % the longest hints stay in the console's two lines, in every game checked (Lords, the Council, Kings and
+  Fate). At 125 % a Lords and Kings game leaves the hint a narrow line (136 pt, at 1920×1080 too: the same logical width), so a
+  long hint ends in an ellipsis and the Shadow's tokens are read in its tooltip.
+- **Audit of the panel during the setup and the homelands:** no other instruction. It holds the header and its position row,
+  the two tracks, the portraits (with "→ Ered Luin" on a placed one), the greyed Declare and Finish phase, and at the versions
+  the two cards, whose captions name the versions. The tray's status line is hidden there (`hintInConsole`, UI-481), and
+  `fellowship-action-hint` shows only during actions.
+
+**(c) Declare.** The server will stop offering `DeclareFellowship` at the start of turn 1 when a declaration can change nothing
+(EXP-19). The button keeps its place, greyed, and its tooltip says why: "Declare · The Fellowship has not moved yet: there is
+nothing to declare at the start of the game" (`FellowshipActions.NothingToDeclare`: turn 1, progress 0, the Free Peoples'
+Fellowship phase decision, no such option). Elsewhere it keeps its general reason; the homelands too, since the phase's own
+choices may yet offer a declaration. No hint or glow offers it, because the console's guidance, the Fellowship figure and the
+button all read the server's option. The pinned test backend still offers it, so this is tested on a view without the option
+until the pin moves.
+
+`HomelandProfileScene` follows: it still clicked the `homeland-stay` button UI-347 removed, and now uses the portrait's second
+click. It no longer reads the tokens: the scene is offline, so the console's hint holds the Offline notice there.
+
+Screenshots: `ui482-empty-homelands-pause.png` (the pause: the console's line, no notice),
+`ui482-homelands-placed-1366-1.00.png`, `ui482-homelands-placed-1366-1.25.png` (the ellipsis),
+`ui482-homelands-placed-1920-1.00.png`, `ui482-homelands-placed-1920-1.25.png`.
+
+Tests: EditMode `CouncilHomelandSkipTests`, `CouncilHomelandPanelTests`, `FellowshipDeclareUnavailableTests`; PlayMode
+`CompanionSetupPanelNetworkTests.BaseVersionsReachTheFellowshipPhaseWithOneConfirm`,
+`CouncilHomelandPanelNetworkTests.EmptyAndStayKeepTheSamePrivateWaitingViewAndGrantNoTokens` (the Shadow's view compared whole;
+a refused answer; a candidate waits for the ✓),
+`CouncilHomelandPanelNetworkTests.FivePortraitsAndTokenPreviewFitBothRolesAtFourLayoutsWithoutScrolling`,
+`BoardCompletionLayoutTests` (`FullRosterVersions…` still fails at its roster stage, before the homelands; its homelands stage
+passed with that stage skipped for one run), `ExpansionLobbyNetworkTests`, `T36DesktopGameTests` through
+`FullGameExpansionChoices` (one ✓ crosses the homelands; the 125 % game then fails later with its recorded camera check),
+`BoardProfileDriverTests` (still fails in its characters workload on a camera check; `homelands-fp` passed its four layouts when
+run alone).
+
+Playtest (owner's checklist):
+- [ ] A new game with Lords and the Council of Rivendell. At the versions change nothing, or only Gandalf, and press the
+  console's ✓ once. Expect: the console says "All companions stay with the Fellowship." for a moment, with no red notice, and
+  the game reaches the Fellowship phase with no second click.
+- [ ] The same game on the Shadow's client. Expect: the usual waiting console; nothing shows that the step was empty.
+- [ ] A new game where a version with a homeland is chosen (Legolas or Gimli, Alternate). Expect: at the homelands the
+  panel shows portraits, tracks and the greyed buttons only; the console says what to click; nothing leaves by itself; choosing
+  nobody takes the console's ✓.
+- [ ] In that game place one companion, then two. Expect: the hint adds "Shadow chooses one Council token", then "Shadow
+  receives both Council tokens". Hover over the hint: it says what the ✓ gives and what the Politics and Travel tokens do.
+- [ ] The same at 125 % in a Lords and Kings game. Expect: the hint ends in an ellipsis and its tooltip holds all of it.
+- [ ] Once EXP-19's server is pinned: a new base game's first Fellowship phase. Expect: Declare greyed in its place with
+  "The Fellowship has not moved yet: there is nothing to declare at the start of the game", the console says "Continue to the
+  Hunt.", and the Fellowship's figure on the map does not glow.

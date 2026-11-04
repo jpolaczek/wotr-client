@@ -59,7 +59,7 @@ The options specify the required choices and the base values of the optional ver
 
 Shadow sees the expectation and only allowed public context, without version, selections, private terms, number of candidates or progress. Guide reveals itself according to existing rules. Comparison of cards does not execute commands or log in private draft on the other side.
 
-ChooseCouncilHomelands occurs separately in the first Fellowship Phase, after corresponding earlier steps of the server. Portrait → legal region or drop changes local location; Fellowship withdraws allocation figure The set can be improved, one ✓ saves the whole, also an empty list. The panel also opens without authorized figures, according to the protection of the version.
+ChooseCouncilHomelands occurs separately in the first Fellowship Phase, after corresponding earlier steps of the server. Portrait → legal region or drop changes local location; Fellowship withdraws allocation figure The set can be improved, one ✓ saves the whole, also an empty list. The panel also opens without authorized figures, according to the protection of the version; since UI-482 the client then answers the step itself after a short random pause ([UX_SPEC](UX_SPEC.md#the-homelands-answer-themselves-with-no-companion-to-place--ui-482)).
 
 Preview shows effect: zero figures → no token; one → separate choice SH; two or more → both tokens. The SH selection goes to the UI-58 resource panel. We do not move the homelands before the first Recover or connect these decisions into one command. Once approved, the disclosure, policy and further phase according to the server, without the Unity's self-predictation.
 
@@ -151,7 +151,7 @@ CM12 – CM14 have the final 20/20 Play, 15/15 appropriate Editor in full 516/51
 <a id="ui-69--interakcje-cm10cm11"></a>
 ## UI-69 — interactions CM10/CM11
 
-The Homelands tab opens a separate private panel mode in the first Fellowship Phase, also in the absence of candidates. The portrait selects figure; click the legal region or drop edits only its allocation. Fellowship undos the allocation of the selected figure. The panel shows the current version, the nation icon and the token announcement: no / selection of one by SH / both.
+The Homelands tab opens a separate private panel mode in the first Fellowship Phase, also in the absence of candidates. The portrait selects figure; click the legal region or drop edits only its allocation. Fellowship undos the allocation of the selected figure. The panel shows the current version and the nation icon; since UI-482 the console's hint gives the token announcement: no / selection of one by SH / both.
 
 One ✓ approves the entire set, also empty. Shadow until then, he doesn't see any candidates, draft or a special empty form. Gimlie Fate's homeland comes from the server also without New Cities; the lack of an icon does not activate. After one departure, the token selection belongs to a separate resource panel Shadow; after two/five, both are automatically obtained. Close/Esc keep draft and camera; new ID opens the next context. Actual tests and limits acceptance save UI-69.
 

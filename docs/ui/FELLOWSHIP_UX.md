@@ -339,7 +339,7 @@ DecisionHostNavigation leads to an existing Fellowship, Hunt tray or separate ve
 <a id="początkowe-ojczyzny-council--ui-69"></a>
 ## The initial homeland of the Council — UI-69
 
-The choice of homelands remains a separate decision of the first Fellowship Phase, after the preparation of the version and Recovery. It is not an ordinary move or disconnect behind die Homelands uses the same private host, but new ID context; one ✓ also includes an empty set. Fellowship in the panel only removes the unsent allocation of the selected figure.
+The choice of homelands remains a separate decision of the first Fellowship Phase, after the preparation of the version and Recovery. It is not an ordinary move or disconnect behind die Homelands uses the same private host, but new ID context; one ✓ also includes an empty set. Fellowship in the panel only removes the unsent allocation of the selected figure. Since UI-482 the client answers the step itself, after a short random pause, when no companion can be placed; see the Homelands item under the Council of Rivendell below.
 
 Only the public map, Characters and Fellowship are agreed to the approval. At one departure, the next step is the Shadow and its resources; the client resumes not choosing token for it. Sources and results: UI-69.
 
@@ -532,9 +532,12 @@ Council decision opens the generic window, and the separate Setup window and its
    tooltip names the homelands and the version's nation ("Leaving activates the Elves", or that a version without a
    nation icon activates none). A second click on the selected companion already placed keeps it with the Fellowship
    (UI-347, D14; the "Keep with the Fellowship" button is gone): its tooltip and the console's hint say so whenever
-   that click is available ("Click Gimli again to keep this companion with the Fellowship …"). The line in the panel
-   says which Council Action Tokens the Shadow will receive (none, a choice of one, both). The ✓ sends, an empty choice
-   included. Enter in the panel's part never sends; Escape passes the held panel by.
+   that click is available ("Click Gimli again to keep this companion with the Fellowship …"). UI-482 (owner,
+   2026-11-04): the panel keeps no instruction or token line; the console's hint names the Council Action Tokens the Shadow
+   will receive ("Shadow chooses one Council token", "Shadow receives both Council tokens") and its tooltip what each does.
+   The console's ✓ sends, an empty choice included; with no companion to place, the client sends the empty choice itself
+   after a short random pause ([UX_SPEC](UX_SPEC.md#the-homelands-answer-themselves-with-no-companion-to-place--ui-482)), because
+   the server keeps the step open to hide the versions. Escape passes the held panel by.
 2. **Council Action Tokens.** In a Council game the Shadow's pool has two fixed token slots, Politics (a war banner
    stepping forward) and Travel (the wings of a fell beast) — `graphicalassets/ui/src/tokens/council-*.svg`. A token
    not received or spent is greyed; a ready one shows plain; while the Council's choice offers both (one companion

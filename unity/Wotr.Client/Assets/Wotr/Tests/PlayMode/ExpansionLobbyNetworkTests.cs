@@ -32,10 +32,12 @@ namespace Wotr.PlayTests
                     {
                         Click(room.Fp, "version-base.character.gandalf-grey");
                         Click(room.Fp, "starting-guide-base.character.strider");
-                        await room.Confirm(room.Fp);
-                        if (room.Fp.Board.View.Decision?.Kind == DecisionKind.CouncilHomelands)
-                            await room.Confirm(room.Fp);
+                        await room.ConfirmVersionsWithoutHomelands(room.Fp);
                     }
+                    // EXP-19, UI-482 (owner): nothing can be declared at the start of the game; Declare keeps its place, disabled.
+                    var declare = room.Fp.Board.Fellowship.Root.Q<Button>("fellowship-declare");
+                    Assert.IsFalse(declare.enabledSelf, "No declaration is offered at the start.");
+                    Assert.AreEqual(FellowshipControls.DeclareNothingYet, declare.tooltip);
                     var revision = room.Fp.Board.View.Revision;
                     FellowshipGestures.Action(room.Fp, "fellowship-continue");
                     await room.At(revision + 1);

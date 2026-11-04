@@ -56,11 +56,13 @@ namespace Wotr.Client.Diagnostics
                     BoardTerrainInput.Click(board.Map, region);
                     break;
                 case 4:
+                    // UI-347 (D14): a second click on the selected companion already placed keeps it with the Fellowship.
                     click(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + companion.CharacterId));
+                    region = "";
                     break;
                 default:
-                    click(board.Fellowship.Root.Q<Button>("homeland-stay"));
-                    region = "";
+                    // A further click on the selected companion, no longer placed, changes nothing.
+                    click(board.Fellowship.Root.Q<Button>("fellowship-portrait-" + companion.CharacterId));
                     break;
             }
         }
@@ -75,9 +77,8 @@ namespace Wotr.Client.Diagnostics
             BoardProfileCheck.Selected(portrait, true);
             var location = region.Length == 0 ? "" : "→ " + board.Presentation.Regions[region].Name;
             BoardProfileCheck.Require(portrait.Q<Label>("homeland-location").text == location, "Homeland draft did not render its location.");
-            var tokens = board.Fellowship.Root.Q<Label>("homeland-token-effect").text;
-            BoardProfileCheck.Require(tokens == CouncilHomelandPresentation.TokenEffect(region.Length == 0 ? 0 : 1),
-                "Homeland draft did not render its exact token consequence.");
+            // UI-482 (owner, 2026-11-04): the Shadow's Council tokens stand in the console's hint, which this offline scene gives
+            // to its Offline notice; CouncilHomelandPanelTests and the network tests read them.
             foreach (var button in portraits)
                 BoardProfileCheck.Require(ReferenceEquals(button, board.Fellowship.Root.Q<Button>(button.name)),
                     "A homeland edit rebuilt unchanged portraits.");

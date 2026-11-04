@@ -66,11 +66,12 @@ namespace Wotr.PlayTests
             Assert.AreEqual(camera, board.Map.Camera.Pan);
             await PlaceHomeland(room, board, "iron-hills", false);
             await PlaceHomeland(room, board, "ered-luin", true);
-            Assert.AreEqual("Shadow chooses one", board.Root.Q<Label>("homeland-token-effect").text);
+            // UI-482 (owner, 2026-11-04): the console's hint names the Shadow's Council tokens.
+            StringAssert.Contains("Shadow chooses one Council token", board.Console.Status.Hint.text);
             // UI-347 (D14): a second click on the placed companion keeps it with the Fellowship.
             await Press(room, board.Root.Q<Button>("fellowship-portrait-" + Gimli));
             Assert.AreEqual("", HomelandLocation(board));
-            Assert.AreEqual("No tokens", board.Root.Q<Label>("homeland-token-effect").text);
+            StringAssert.DoesNotContain("Council token", board.Console.Status.Hint.text);
             await PlaceHomeland(room, board, "ered-luin", false);
             Assert.AreEqual("→ Ered Luin", HomelandLocation(board));
             CheckPanel(board.Fellowship.Root, board.Map.parent.worldBound);
@@ -114,7 +115,6 @@ namespace Wotr.PlayTests
             Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
             Assert.AreNotSame(board.Fellowship.Root, board.Tray.parent);
             Assert.IsNull(board.Root.Q("companion-setup-choices"));
-            Assert.IsNull(board.Root.Q("council-homeland-choices"));
         }
     }
 }

@@ -1384,20 +1384,12 @@
 .board-menu-panel > .action { height: 36px; min-height: 36px; margin: 2px 0; -unity-text-align: middle-left; }
 .board-menu-status { white-space: normal; font-size: 13px; color: rgb(245, 212, 133); margin: 8px 2px 4px; }
 
-/* UI-69/UI-270: the homelands on the Fellowship panel: the destination over a placed companion's portrait, the hint,
-   Keep with the Fellowship and the Council Action Tokens the Shadow will receive. */
+/* UI-69/UI-270: the homelands on the Fellowship panel: the destination over a placed companion's portrait.
+   UI-482 (owner, 2026-11-04): their instruction and the Shadow's Council tokens stand in the console. */
 .illustrated-companion .portrait-homeland {
     position: absolute; left: 0; right: 0; top: 1px; height: 13px; margin: 0; padding: 0 2px;
     font-size: 9px; -unity-text-align: middle-center; color: rgb(245, 212, 133); background-color: rgba(24, 22, 20, .88);
 }
-.homeland-hint { font-size: 13px; white-space: normal; }
-.homeland-tokens { flex-direction: row; align-items: center; flex-wrap: wrap; }
-.fellowship-homelands #homeland-stay { min-height: 30px; margin: 0 6px 0 0; }
-.fellowship-homelands .homeland-token { padding: 4px 6px; margin-right: 5px; font-size: 13px; border-bottom-width: 2px; }
-.homeland-token-none { opacity: 0.4; }
-.homeland-token-choice { border-bottom-color: rgb(220, 179, 83); }
-.homeland-token-granted { color: rgb(154, 216, 174); border-bottom-color: rgb(154, 216, 174); }
-#homeland-token-effect { flex-grow: 1; flex-basis: 0; min-width: 0; font-size: 13px; white-space: normal; }
 .fellowship-panel.fellowship-homelands { width: 420px; }
 
 /* UI-75/76: map artwork and paired decision windows. */

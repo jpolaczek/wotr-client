@@ -28,6 +28,7 @@ namespace Wotr.Client
         private bool idle;
         private bool uncertain;
         private string fallback = "";
+        private string fallbackDetail = "";
         private string trayHint = "";
         private string trayDetail = "";
 
@@ -75,6 +76,7 @@ namespace Wotr.Client
             board.DecisionWindow.Apply(choices, Heading(), view.MatchId + "/" + view.Decision?.Id + "/" + draft.Kind + (uncertain ? "/check" : ""));
             var state = TurnConsoleState.For(view, draft, board.ActionDie, RegionName);
             fallback = state.Guidance;
+            fallbackDetail = state.GuidanceDetail.Length > 0 ? state.GuidanceDetail : state.Guidance;
             // UI-292: the plaque glows and presses only when its click opens something.
             var clickable = Clickable(choices);
             board.Console.Status.Apply(state, clickable ? Opens(choices) : "");
@@ -189,7 +191,7 @@ namespace Wotr.Client
             var own = trayHint.Length > 0;
             var text = own ? trayHint : fallback;
             var progress = view != null && draft != null && CardDecisions.Owns(view, draft) ? CardDecisions.Progress(view, draft) : "";
-            board.Console.Status.SetHint(WithDecline(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallback);
+            board.Console.Status.SetHint(WithDecline(progress.Length > 0 ? progress + " · " + text : text), own ? trayDetail : fallbackDetail);
         }
 
         // UI-347 (D7): a step whose decline is the console's Pass says so, unless its hint already names Pass; UI-430: a

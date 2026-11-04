@@ -355,6 +355,20 @@ namespace Wotr.PlayTests
                 }
             }
         }
+        // UI-482 (owner, 2026-11-04): the versions' ✓ when no companion gets a homeland. With the Council the client answers
+        // the empty homelands itself and moves on while the Shadow's board may still present the reveal, so the two boards
+        // meet at the step after them, not at the ✓'s own revision (Confirm).
+        public async Task ConfirmVersionsWithoutHomelands(MountedMatchClient client)
+        {
+            var revision = client.Board.View.Revision;
+            var steps = client.Board.View.Configuration.Council ? 2 : 1;
+            var confirm = client.Board.Console.Actions.Confirm;
+            await Until(() => confirm.enabledSelf);
+            await Settle();
+            CardNetworkTests.Click(confirm);
+            await At(revision + steps);
+        }
+
         public async Task Confirm(MountedMatchClient client)
         {
             if (submitted.TryGetValue(client, out var choice))

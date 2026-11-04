@@ -25,6 +25,44 @@ namespace Wotr.PlayTests
         [UnityTest]
         public IEnumerator ComparisonAndGuideRemainReachableWithoutScrollAtFourLayouts() => Wait(Layouts());
 
+        // UI-482 (owner, 2026-11-04): "I have to press confirm twice and one of them does not really confirm anything".
+        [UnityTest]
+        public IEnumerator BaseVersionsReachTheFellowshipPhaseWithOneConfirm() => Wait(OneConfirm());
+
+        private static async Task OneConfirm()
+        {
+            using var room = await CreateNormalGame(new MatchConfiguration { Lords = true, Council = true });
+            var board = room.Fp.Board;
+            await room.Until(() => board.Console.Actions.Confirm.enabledInHierarchy);
+            var revision = board.View.Revision;
+            await Press(room, board, "console-confirm");
+            await room.Until(() => board.View.Revision > revision);
+            Assert.AreEqual(DecisionKind.CouncilHomelands, board.View.Decision.Kind, "The server still opens the step.");
+            Assert.IsEmpty(board.View.Options.Single().CharacterActions);
+            AssertWaitingShadow(await room.Sh.Api.Get<PlayerView>("api/matches/" + board.View.MatchId, room.Token), revision + 1);
+            await room.Until(() => board.Console.Status.Hint.text == CouncilHomelandPresentation.AllStay);
+            // A reconnection during the pause arms the same open decision again; it still leaves once.
+            await KingsCardNetworkChecks.Reconnect(room, room.Fp);
+            await room.Until(() => board.View.Decision?.Kind == DecisionKind.FellowshipPhase);
+            await room.At(revision + 2);
+            Assert.AreEqual(revision + 2, board.View.Revision, "One answer, sent by the client.");
+            Assert.IsEmpty(room.Sh.Board.View.CouncilTokens);
+            Assert.AreEqual(DecisionKind.FellowshipPhase, room.Fp.Board.View.Decision.Kind);
+            Assert.IsFalse(CompanionSetupPresentation.Setup(board.View));
+            AssertPrivate(room.Sh.Board);
+        }
+
+        // The same waiting view whichever versions were chosen (CouncilHomelandPanelNetworkTests compares the two whole).
+        private static void AssertWaitingShadow(PlayerView shadow, long revision)
+        {
+            Assert.AreEqual(revision, shadow.Revision, "The step is open while the Shadow reads it.");
+            Assert.IsNull(shadow.Decision);
+            Assert.AreEqual(Side.FreePeoples, shadow.DecisionOwner);
+            Assert.IsEmpty(shadow.Options);
+            Assert.IsEmpty(shadow.OwnCompanionVersions);
+            Assert.IsEmpty(shadow.OwnCompanions);
+        }
+
         // UI-269: the private versions and the starting Guide are chosen on the Fellowship panel's portraits — the
         // two-faces badge compares a companion's two version cards, a crown makes the starting Guide, the ✓ sends.
         private static async Task Variants()

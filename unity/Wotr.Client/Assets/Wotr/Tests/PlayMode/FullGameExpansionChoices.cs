@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using NUnit.Framework;
 using UnityEngine.UIElements;
 using Wotr.Contracts;
 
@@ -12,7 +11,6 @@ namespace Wotr.PlayTests
         public static CommandKind? Select(PlayerView view) => view.Decision.Kind switch
         {
             DecisionKind.CouncilVersions => CommandKind.ChooseCompanionVersions,
-            DecisionKind.CouncilHomelands => CommandKind.ChooseCouncilHomelands,
             DecisionKind.SpecialDieChoice => CommandKind.ChooseSpecialDie,
             DecisionKind.RulerDiscard => CommandKind.DiscardRulerDie,
             DecisionKind.Dismay => CommandKind.DeclineDismay,
@@ -34,14 +32,11 @@ namespace Wotr.PlayTests
             {
                 case CommandKind.ChooseCompanionVersions:
                     await ChooseVersions(room, client, option);
-                    break;
-                case CommandKind.ChooseCouncilHomelands:
-                    // UI-270: on the Fellowship panel; no companion shows a homeland.
-                    client.Board.Fellowship.Open();
                     await room.Settle();
-                    Assert.IsTrue(client.Board.Fellowship.Root.Query<Label>("homeland-location").ToList()
-                        .All(label => label.text.Length == 0), "This script explicitly confirms an empty homeland set.");
-                    break;
+                    inspect?.Invoke(client);
+                    // UI-482 (owner, 2026-11-04): these versions give no companion a homeland; the client answers that step.
+                    await room.ConfirmVersionsWithoutHomelands(client);
+                    return true;
                 case CommandKind.ChooseSpecialDie:
                 case CommandKind.DiscardRulerDie:
                     var revision = client.Board.View.Revision;
@@ -57,10 +52,6 @@ namespace Wotr.PlayTests
                 default:
                     return false;
             }
-            await room.Settle();
-            inspect?.Invoke(client);
-            await room.Confirm(client);
-            return true;
         }
 
         private static async Task ChooseVersions(MatchTestRoom room, MountedMatchClient client, ActionOption option)

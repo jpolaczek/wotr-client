@@ -23,12 +23,9 @@ namespace Wotr.Client
                 var choices = new CompanionSetupChoices(root, option, draft, edit, versions);
                 refresh.Add(choices.Refresh);
             }
-            else if (draft.Kind == CommandKind.ChooseCouncilHomelands)
-            {
-                var choices = new CouncilHomelandChoices(root, view, draft);
-                refresh.Add(choices.Refresh);
-            }
-            // UI-270: the Council's token choice is made on the tokens in the Shadow's pool (CouncilTokenSlots).
+            // UI-270: the homelands are chosen on the Fellowship panel's portraits and the map (UI-482 (owner, 2026-11-04): the
+            // console holds their instruction and tokens), the Council's token on the tokens in the Shadow's pool
+            // (CouncilTokenSlots).
         }
 
         public void Refresh()

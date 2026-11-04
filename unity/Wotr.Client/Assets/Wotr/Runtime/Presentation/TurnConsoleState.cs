@@ -13,6 +13,8 @@ namespace Wotr.Client
         public string Headline { get; private set; } = "";
         // What to do when the current step gives no hint of its own.
         public string Guidance { get; private set; } = "";
+        // UI-482: what the hint's tooltip says beyond Guidance; empty when the guidance alone is its tooltip.
+        public string GuidanceDetail { get; private set; } = "";
 
         public static TurnConsoleState For(PlayerView view, TurnDraft draft, ActionDieContext die, Func<string, string> regionName)
         {
@@ -32,7 +34,8 @@ namespace Wotr.Client
                     : WaitingHeadline(view, owner, regionName),
                 Guidance = own ? OwnGuidance(view, draft, die) : owner.HasValue
                     ? "The opponent is deciding. The notices under the top bar show what they do."
-                    : "The game moves to its next step."
+                    : "The game moves to its next step.",
+                GuidanceDetail = own ? CouncilHomelandPresentation.Detail(view, draft) : ""
             };
         }
 

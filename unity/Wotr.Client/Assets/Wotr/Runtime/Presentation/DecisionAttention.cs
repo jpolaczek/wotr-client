@@ -16,6 +16,10 @@ namespace Wotr.Client
         {
             if (view?.Decision == null || view.DecisionOwner != view.You || view.Winner.HasValue)
                 return null;
+            // UI-482 (owner, 2026-11-04): no companion to place, so no "Place Companions" notice for the moment the client
+            // takes to answer the step itself (CouncilHomelandSkip).
+            if (CouncilHomelandPresentation.NothingToPlace(view))
+                return null;
             // UI-274: a king's decision is made in the Characters panel, on his portrait or tiles. UI-278 (D16): a Combat
             // card's choice of a king is made with the battle window open, where a king who takes part glows.
             if (SovereignPresentation.OwnsDecision(view, null) && !SovereignChoices.InBattleWindow(view))

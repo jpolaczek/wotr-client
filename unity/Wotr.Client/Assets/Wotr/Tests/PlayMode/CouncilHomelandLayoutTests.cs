@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -7,6 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using Wotr.Client;
+using Wotr.Contracts;
 
 namespace Wotr.PlayTests
 {
@@ -37,8 +39,10 @@ namespace Wotr.PlayTests
                                 await Place(room, Gimli, "ered-luin", true);
                                 LayoutTests.Save(target, $"ui69-homelands-{client.Board.View.You}-{width}-{scale:0.00}.png");
                                 AssertHomelandPanel(client.Board);
+                                AssertConsoleHint(client.Board, scale);
+                                LayoutTests.Save(target, $"ui482-homelands-placed-{width}-{scale:0.00}.png");
                                 await CheckHomelandKeyboard(room);
-                                Assert.AreEqual("Shadow chooses one", Effect(client.Board));
+                                StringAssert.Contains("Shadow chooses one Council token", Effect(client.Board));
                             }
                             else
                                 AssertPrivate(client.Board);
@@ -55,21 +59,71 @@ namespace Wotr.PlayTests
                         }
                     }
             Assert.AreEqual(0, room.Boundary.Commands);
-            Assert.AreEqual(before, JsonConvert.SerializeObject(await room.Sh.Api.Get<Wotr.Contracts.PlayerView>(
+            Assert.AreEqual(before, JsonConvert.SerializeObject(await room.Sh.Api.Get<PlayerView>(
                 "api/matches/" + room.Sh.Board.View.MatchId, room.Token)));
         }
 
-        // UI-270: Enter in the homelands' panel part never confirms; Escape is the board's Back, so it undoes the last
-        // placement and keeps the held Fellowship panel and the camera.
+        // UI-482 (owner, 2026-11-04): the panel keeps no instruction or token line; the console's hint names both, in its two
+        // lines at 100 %. At 125 % a Lords and Kings game leaves the hint a narrow line (at 1920×1080 too, the same logical
+        // width), so the longest hints end in an ellipsis with the full text in the tooltip.
+        private static void AssertConsoleHint(BoardScreen board, float scale)
+        {
+            var hint = board.Console.Status.Hint;
+            StringAssert.Contains("Shadow chooses one Council token · ✓ confirms.", hint.text);
+            StringAssert.StartsWith(hint.text + "\n", hint.tooltip);
+            StringAssert.Contains(CouncilHomelandPresentation.TokenDetail(1), hint.tooltip);
+            StringAssert.Contains(CouncilHomelandPresentation.TravelToken, hint.tooltip);
+            foreach (var removed in new[] { "homeland-hint", "homeland-tokens", "homeland-token-effect" })
+                Assert.IsNull(board.Root.Q(removed), removed);
+            if (scale < 1.2f)
+                foreach (var text in LongestHints(board.View))
+                    Assert.LessOrEqual(HintHeight(hint, text), hint.contentRect.height + 1, text);
+        }
+
+        private static float HintHeight(Label hint, string text) => hint.MeasureTextSize(text, hint.contentRect.width,
+            VisualElement.MeasureMode.Exactly, 0, VisualElement.MeasureMode.Undefined).y;
+
+        // Every instruction of the step, each with the longest token consequence and the companions of this game.
+        private static IEnumerable<string> LongestHints(PlayerView view)
+        {
+            var option = CompanionSetupPresentation.HomelandOption(view);
+            var other = new UnitPlacementChoice { UnitId = "other", RegionId = "the-shire" };
+            yield return CouncilHomelandPresentation.Hint(view, HintDraft("", other, other));
+            yield return CouncilHomelandPresentation.Hint(view, Waiting(option, other));
+            foreach (var choice in option.CharacterActions)
+            {
+                var placed = new UnitPlacementChoice { UnitId = choice.CharacterId, RegionId = choice.Targets[0] };
+                yield return CouncilHomelandPresentation.Hint(view, HintDraft(choice.CharacterId, placed, other));
+                yield return CouncilHomelandPresentation.Hint(view, HintDraft(choice.CharacterId, other, other));
+            }
+        }
+
+        private static TurnDraft HintDraft(string selected, params UnitPlacementChoice[] placements)
+        {
+            var draft = new TurnDraft();
+            draft.Choose(CommandKind.ChooseCouncilHomelands);
+            draft.Change(payload =>
+            {
+                payload.CharacterId = selected;
+                payload.Placements.AddRange(placements);
+            });
+            return draft;
+        }
+
+        // UI-451: a homeland two companions share waits for a portrait, and the hint names them both.
+        private static TurnDraft Waiting(ActionOption option, UnitPlacementChoice other)
+        {
+            var draft = HintDraft("", other, other);
+            var shared = option.CharacterActions.SelectMany(choice => choice.Targets).GroupBy(region => region).First(group => group.Count() > 1).Key;
+            Assert.IsTrue(CouncilDraft.Region(draft, option, shared));
+            Assert.IsNotEmpty(CouncilDraft.Waiting(draft));
+            return draft;
+        }
+
+        // Escape is the board's Back, so it undoes the last placement and keeps the held Fellowship panel and the camera.
         private static async Task CheckHomelandKeyboard(UI10TestRoom room)
         {
             var board = room.Fp.Board;
-            var choices = board.Fellowship.Root.Q("council-homeland-choices");
-            choices.Focus();
-            UI10TestRoom.Key(choices, true);
-            UI10TestRoom.Key(choices, false);
-            await room.Settle();
-            Assert.AreEqual(0, room.Boundary.Commands, "Enter on information cannot confirm a strategic choice.");
             var camera = board.Map.Camera.Pan;
             using (var escape = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.Escape }))
                 board.Fellowship.Root.SendEvent(escape);
