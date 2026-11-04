@@ -91,6 +91,9 @@ namespace Wotr.PlayTests
                 // UI-370: Gandalf is the starting Guide by default, so Confirm is ready at once. UI-481 (owner): with the
                 // console's ✓; the panel keeps no confirm or instruction of its own, the console says what to do.
                 Assert.IsTrue(board.Console.Actions.Confirm.enabledInHierarchy, "The default setup can be confirmed at once.");
+                // UI-483 (owner): a ✓ that can be clicked stands out.
+                Assert.IsTrue(board.Console.Actions.Confirm.ClassListContains(ChoiceGlow.ClassName), "The available ✓ is lit.");
+                Assert.AreEqual("button-primary", board.Console.Actions.Confirm.resolvedStyle.backgroundImage.texture.name, "On the primary plate.");
                 Assert.IsFalse(PanelConfirmShown(board), "The Fellowship panel shows no ✓.");
                 Assert.IsNull(board.Fellowship.Root.Q<Label>("setup-hint"), "The instruction moved to the console.");
                 await room.Until(() => board.Console.Status.Hint.text.Contains(CompanionSetupPresentation.CompleteHint));

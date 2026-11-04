@@ -119,15 +119,16 @@ namespace Wotr.Client
             var finishing = Finishing();
             var card = CardChoice(onBoard) || PlacedChoice();
             var ending = CardFinish(onBoard);
-            ConsoleActions.Set(actions.Confirm, uncertain || idle && (finishing || ending?.Enabled == true || card && ChoiceReady()),
+            var confirmable = uncertain || idle && (finishing || ending?.Enabled == true || card && ChoiceReady());
+            ConsoleActions.Set(actions.Confirm, confirmable,
                 uncertain ? "Check result · Recover the interrupted response"
                 : finishing ? FinishTooltip()
                 : ending != null ? ending.Tooltip
                 : card ? ConfirmChoiceTooltip()
                 : "Finish · Available during an action of several steps");
-            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it; UI-430: so it
-            // does while it finishes a card.
-            actions.Invite(actions.Confirm, uncertain && tray.RecoversInConsole || idle && ending?.Enabled == true);
+            // UI-298: where the tray offers no Check result (the Fellowship panel), the console's ✓ glows for it. UI-483 (owner,
+            // 2026-11-04): every ✓ that can be clicked now stands out.
+            actions.Invite(actions.Confirm, confirmable && (!uncertain || tray.RecoversInConsole));
             RefreshAllocation();
         }
 

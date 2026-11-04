@@ -14,6 +14,9 @@
     --game-button-hover: resource("Wotr/Art/UI/frontend/button-hover");
     --game-button-pressed: resource("Wotr/Art/UI/frontend/button-pressed");
     --game-button-selected: resource("Wotr/Art/UI/frontend/button-selected");
+    --game-button-primary: resource("Wotr/Art/UI/frontend/button-primary");
+    --game-button-primary-hover: resource("Wotr/Art/UI/frontend/button-primary-hover");
+    --game-button-primary-pressed: resource("Wotr/Art/UI/frontend/button-primary-pressed");
     --game-button-slice: 12;
     --game-button-slice-scale: 0.5px;
     /* Its words, as in the menus (Menus.uss): muted parchment, a little lighter on hover, warm when chosen, grey disabled. */

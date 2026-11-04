@@ -347,6 +347,20 @@
 #board-screen .console-actions .console-action { width: 36px; min-width: 36px; height: 36px; min-height: 36px; margin: 2px 0; }
 /* UI-471: the thin line is too fine for the dim tint under this opacity; the icon stays as dim as it was. */
 #board-screen .console-actions .console-action:disabled { opacity: 0.4; -unity-background-image-tint-color: rgb(255, 255, 255); }
+/* UI-483 (owner, 2026-11-04): a confirm that can be clicked stands out: the menus' warm-gold primary plate under the
+   shared gold rim, breathing deeper and larger than the other choices (transforms only; Reduced motion keeps it bright
+   and still). A window's confirm (Apply losses, Keep roll…) wears the plate without the pulse. */
+#board-screen .console-actions #console-confirm.choice-glow { background-image: var(--game-button-primary); background-color: rgba(190, 140, 40, 0.75); }
+#board-screen .console-actions #console-confirm.choice-glow:hover { background-image: var(--game-button-primary-hover); }
+#board-screen .console-actions #console-confirm.choice-glow.pressed { background-image: var(--game-button-primary-pressed); }
+.motion-enabled #board-screen .console-actions.choice-glow-pulse #console-confirm.choice-glow {
+    border-color: rgba(255, 214, 112, 0.55);
+    background-color: rgba(120, 88, 24, 0.45);
+    scale: 1.12 1.12;
+}
+#board-screen #confirm-decision:enabled { background-image: var(--game-button-primary); }
+#board-screen #confirm-decision:enabled:hover { background-image: var(--game-button-primary-hover); }
+#board-screen #confirm-decision:enabled.pressed { background-image: var(--game-button-primary-pressed); }
 /* UI-455 (owner, 2026-11-03): a small Cancel on its own line under the four, always in its place, greyed while there is
    nothing to cancel. The grid keeps its columns; the three lines stand centred in the zone. */
 #board-screen .console-actions .console-cancel {

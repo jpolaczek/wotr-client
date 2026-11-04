@@ -4527,3 +4527,22 @@ Playtest (owner's checklist):
 - [ ] Once EXP-19's server is pinned: a new base game's first Fellowship phase. Expect: Declare greyed in its place with
   "The Fellowship has not moved yet: there is nothing to declare at the start of the game", the console says "Continue to the
   Hunt.", and the Fellowship's figure on the map does not glow.
+
+<a id="an-available-confirm-stands-out--ui-483"></a>
+## An available confirm stands out — UI-483 (2026-11-04)
+
+The owner: "when the confirm button is available we should highlight it more clearly, so it catches the eye". Until now the
+console's ✓ glowed only while recovering a response or finishing a card; otherwise an enabled ✓ looked much like a disabled
+one. Now every ✓ that can be clicked wears the menus' warm-gold primary plate (`--game-button-primary`) under the shared gold
+rim (`ChoiceGlow`) and breathes deeper and larger than other choices (scale 1.12, transform only; Reduced motion keeps it
+bright and still). A disabled ✓ stays quiet. A window's confirm (Apply losses, Keep roll…) wears the plate without the pulse.
+An action of several steps offers ✓ to finish early, so the ✓ is lit there too while further steps remain available.
+
+Playtest (owner's checklist):
+- [ ] A Lords game's setup. Expect: the ✓ in the console clearly gold and pulsing; with Skip animations gold and still.
+- [ ] A battle's losses. Expect: Apply losses on the gold plate once the losses are assigned, quiet before that.
+- [ ] A Muster die with a second point. Expect: the ✓ lit while it can finish the action early; say if this should be calmer.
+
+Tests: PlayMode `CompanionSetupPanelNetworkTests` (the available ✓ lit, on the primary plate), `ExpansionLobbyNetworkTests` (a
+disabled ✓ is not), `TurnConsoleLayoutTests`, `GlowingHintAuditTests`, `GameButtonChromeTests`, `BattleLayoutTests`,
+`PressFeedbackClickTests`, `T22BoardNetworkTests`.

@@ -38,6 +38,9 @@ namespace Wotr.PlayTests
                     var declare = room.Fp.Board.Fellowship.Root.Q<Button>("fellowship-declare");
                     Assert.IsFalse(declare.enabledSelf, "No declaration is offered at the start.");
                     Assert.AreEqual(FellowshipControls.DeclareNothingYet, declare.tooltip);
+                    // UI-483: a ✓ that cannot be clicked is not lit.
+                    Assert.IsFalse(room.Fp.Board.Console.Actions.Confirm.enabledSelf);
+                    Assert.IsFalse(room.Fp.Board.Console.Actions.Confirm.ClassListContains(ChoiceGlow.ClassName), "A disabled ✓ is not lit.");
                     var revision = room.Fp.Board.View.Revision;
                     FellowshipGestures.Action(room.Fp, "fellowship-continue");
                     await room.At(revision + 1);
