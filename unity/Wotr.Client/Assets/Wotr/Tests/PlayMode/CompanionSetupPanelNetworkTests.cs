@@ -93,7 +93,8 @@ namespace Wotr.PlayTests
                 Assert.IsTrue(board.Console.Actions.Confirm.enabledInHierarchy, "The default setup can be confirmed at once.");
                 // UI-483 (owner): a ✓ that can be clicked stands out.
                 Assert.IsTrue(board.Console.Actions.Confirm.ClassListContains(ChoiceGlow.ClassName), "The available ✓ is lit.");
-                Assert.AreEqual("button-primary", board.Console.Actions.Confirm.resolvedStyle.backgroundImage.texture.name, "On the primary plate.");
+                await room.Until(() => board.Console.Actions.Confirm.resolvedStyle.backgroundColor.r > .6f); // Solid gold, past its transition.
+                Assert.Less(board.Console.Actions.Confirm.Q(className: "icon-glyph").resolvedStyle.unityBackgroundImageTintColor.r, .3f, "With a dark check.");
                 Assert.IsFalse(PanelConfirmShown(board), "The Fellowship panel shows no ✓.");
                 Assert.IsNull(board.Fellowship.Root.Q<Label>("setup-hint"), "The instruction moved to the console.");
                 await room.Until(() => board.Console.Status.Hint.text.Contains(CompanionSetupPresentation.CompleteHint));

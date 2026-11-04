@@ -4533,9 +4533,10 @@ Playtest (owner's checklist):
 
 The owner: "when the confirm button is available we should highlight it more clearly, so it catches the eye". Until now the
 console's ✓ glowed only while recovering a response or finishing a card; otherwise an enabled ✓ looked much like a disabled
-one. Now every ✓ that can be clicked wears the menus' warm-gold primary plate (`--game-button-primary`) under the shared gold
-rim (`ChoiceGlow`) and breathes deeper and larger than other choices (scale 1.12, transform only; Reduced motion keeps it
-bright and still). A disabled ✓ stays quiet. A window's confirm (Apply losses, Keep roll…) wears the plate without the pulse.
+one. Now every ✓ that can be clicked (`ChoiceGlow`) is solid gold under a light rim with a dark check (`--game-confirm-*`), the
+strongest contrast in the console; it breathes in brightness and size (scale 1.12), never fading away, and Reduced motion
+keeps it bright and still. A disabled ✓ stays quiet. A window's confirm (Apply losses, Keep roll…) wears the menus' primary
+plate (`--game-button-primary`) without the pulse.
 An action of several steps offers ✓ to finish early, so the ✓ is lit there too while further steps remain available.
 
 Playtest (owner's checklist):
@@ -4543,6 +4544,6 @@ Playtest (owner's checklist):
 - [ ] A battle's losses. Expect: Apply losses on the gold plate once the losses are assigned, quiet before that.
 - [ ] A Muster die with a second point. Expect: the ✓ lit while it can finish the action early; say if this should be calmer.
 
-Tests: PlayMode `CompanionSetupPanelNetworkTests` (the available ✓ lit, on the primary plate), `ExpansionLobbyNetworkTests` (a
+Tests: PlayMode `CompanionSetupPanelNetworkTests` (the available ✓ lit, solid gold with a dark check), `ExpansionLobbyNetworkTests` (a
 disabled ✓ is not), `TurnConsoleLayoutTests`, `GlowingHintAuditTests`, `GameButtonChromeTests`, `BattleLayoutTests`,
 `PressFeedbackClickTests`, `T22BoardNetworkTests`.

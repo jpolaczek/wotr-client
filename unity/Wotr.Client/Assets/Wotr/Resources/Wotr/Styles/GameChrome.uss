@@ -17,6 +17,13 @@
     --game-button-primary: resource("Wotr/Art/UI/frontend/button-primary");
     --game-button-primary-hover: resource("Wotr/Art/UI/frontend/button-primary-hover");
     --game-button-primary-pressed: resource("Wotr/Art/UI/frontend/button-primary-pressed");
+    --game-confirm-fill: rgb(226, 182, 96);
+    --game-confirm-fill-hover: rgb(244, 206, 122);
+    --game-confirm-fill-pressed: rgb(178, 136, 62);
+    --game-confirm-fill-dim: rgb(186, 142, 66);
+    --game-confirm-rim: rgb(255, 236, 178);
+    --game-confirm-rim-dim: rgb(226, 182, 96);
+    --game-confirm-check: rgb(34, 24, 8);
     --game-button-slice: 12;
     --game-button-slice-scale: 0.5px;
     /* Its words, as in the menus (Menus.uss): muted parchment, a little lighter on hover, warm when chosen, grey disabled. */
