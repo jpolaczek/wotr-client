@@ -28,7 +28,7 @@
 
 /* Framed art has a pressed rendering of its own (graphicalassets/ui/assets.json variants). */
 .board-left-tabs .edge-tab.pressed,
-.board-left-tabs .edge-tab.pressed:hover { background-image: resource("Wotr/Art/UI/rail/edge-tab-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
+.board-left-tabs .edge-tab.pressed:hover { background-color: var(--game-rail-fill-pressed); background-image: var(--game-rail-tab-pressed); -unity-background-image-tint-color: rgb(255, 255, 255); }
 .dice-panel .die.die-free.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-free-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 .dice-panel .die.die-shadow.pressed { background-image: resource("Wotr/Art/UI/dice/medallion-shadow-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }
 #opponent-dice .die.pressed { background-color: rgba(0, 0, 0, 0); background-image: resource("Wotr/Art/UI/dice/medallion-pressed"); -unity-background-image-tint-color: rgb(255, 255, 255); }

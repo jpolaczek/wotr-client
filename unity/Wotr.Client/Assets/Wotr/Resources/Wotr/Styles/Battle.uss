@@ -122,12 +122,8 @@
     min-height: 22px;
     margin: 0 0 4px 0;
     padding: 0 14px;
-    background-image: resource("Wotr/Art/UI/battle/stage-ribbon");
-    -unity-slice-top: 12;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 12;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
+    /* UI-477: a thin row; its slices stand in GameChrome.uss. */
+    background-image: var(--game-row);
 }
 .battle-stage { flex-direction: row; align-items: center; height: 22px; }
 .battle-stage-icon { width: 14px; height: 14px; margin-right: 3px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; opacity: 0.6; }
@@ -163,15 +159,11 @@
     min-width: 0;
     padding: 5px 7px 5px 7px;
     margin-right: 5px;
-    background-image: resource("Wotr/Art/UI/battle/force-frame-free");
-    -unity-slice-top: 28;
-    -unity-slice-right: 28;
-    -unity-slice-bottom: 28;
-    -unity-slice-left: 28;
-    -unity-slice-scale: 0.5px;
+    /* UI-477: the side rows keep the forces blue and red; their slices stand in GameChrome.uss. */
+    background-image: var(--game-row-free);
 }
 .battle-force:last-child { margin-right: 0; }
-.battle-force.sh { background-image: resource("Wotr/Art/UI/battle/force-frame-shadow"); }
+.battle-force.sh { background-image: var(--game-row-shadow); }
 .battle-force .unity-label { font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
 .battle-force .action:disabled { opacity: 1; }
 .regional-battle .tray .battle-force-heading { padding: 0; margin: 0 0 2px 0; font-size: 11px; letter-spacing: 0.8px; -unity-font-style: bold; color: rgb(243, 228, 182); text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8); }
@@ -240,12 +232,8 @@
     flex-shrink: 0;
     margin: 0 0 3px 0;
     padding: 2px 6px;
-    background-image: resource("Wotr/Art/UI/battle/garrison-shelf");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
+    /* UI-477: a thin row; its slices stand in GameChrome.uss. */
+    background-image: var(--game-row);
 }
 .battle-garrison-icon { width: 16px; height: 16px; margin-right: 5px; flex-shrink: 0; -unity-background-scale-mode: scale-to-fit; background-image: resource("Wotr/Art/UI/battle/garrison"); opacity: 0.8; }
 .regional-battle .tray .battle-nonparticipants, .battle-report .battle-nonparticipants { flex-grow: 1; min-width: 0; padding: 0; margin: 0; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgb(190, 192, 178); }
@@ -261,15 +249,20 @@
     font-size: 11px;
     color: rgb(238, 226, 196);
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/battle/card-slot");
-    -unity-slice-top: 24;
-    -unity-slice-right: 24;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 24;
-    -unity-slice-scale: 0.5px;
+    /* UI-477: an empty slot is a thin row; a card's back and parchment below wear their own pictures and slices. */
+    background-image: var(--game-row);
+    -unity-slice-top: var(--game-row-slice);
+    -unity-slice-right: var(--game-row-slice);
+    -unity-slice-bottom: var(--game-row-slice);
+    -unity-slice-left: var(--game-row-slice);
+    -unity-slice-scale: var(--game-row-slice-scale);
     border-width: 0;
 }
-.regional-battle .tray .battle-card:hover, .regional-battle .tray .battle-card:focus { -unity-background-image-tint-color: rgb(255, 246, 220); }
+.regional-battle .tray .battle-card:hover, .regional-battle .tray .battle-card:focus {
+    background-image: var(--game-row-hover);
+    -unity-background-image-tint-color: rgb(255, 246, 220);
+}
+.regional-battle .tray .battle-card.pressed { background-image: var(--game-row-pressed); }
 .regional-battle .tray .battle-card:disabled { opacity: 1; color: rgb(196, 190, 170); }
 
 /* ---- UI-117: Combat dice as ivory d6 ---------------------------------------------------------------------
@@ -425,8 +418,8 @@
 .battle-report-navigation .unity-label { flex-grow: 1; -unity-text-align: middle-center; font-size: 13px; }
 .battle-report .battle-report-detail { white-space: normal; font-size: 12px; margin: 0; }
 .battle-report .battle-report-step { font-size: 13px; -unity-font-style: bold; margin-top: 6px; }
-.battle-report .battle-force { background-image: resource("Wotr/Art/UI/battle/force-frame-free"); padding: 5px 7px; }
-.battle-report .battle-force.sh { background-image: resource("Wotr/Art/UI/battle/force-frame-shadow"); }
+.battle-report .battle-force { background-image: var(--game-row-free); padding: 5px 7px; }
+.battle-report .battle-force.sh { background-image: var(--game-row-shadow); }
 .battle-report .battle-force-heading { font-size: 11px; -unity-font-style: bold; color: rgb(243, 228, 182); }
 .battle-report .battle-statistics { flex-direction: row; align-items: center; }
 
@@ -612,15 +605,11 @@
     height: 24px;
     min-height: 24px;
     font-size: 12px;
-    -unity-font-style: bold;
+    -unity-font-style: normal;
     -unity-text-align: middle-center;
-    color: rgb(59, 36, 18);
-    background-image: resource("Wotr/Art/UI/battle/round-tab");
-    -unity-slice-top: 16;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
+    /* UI-477: a thin row with a card's words instead of a parchment tab; its slices stand in GameChrome.uss. */
+    color: var(--game-card-text);
+    background-image: var(--game-row);
 }
 .battle-chronicle .battle-report-navigation { justify-content: flex-start; }
 .battle-chronicle #battle-report-history {

@@ -157,10 +157,10 @@ namespace Wotr.PlayTests
         private static void CheckEntries(BoardScreen board, string label)
         {
             foreach (var entry in board.TableEffects.Root.Query(className: "effect-entry").ToList())
-                Assert.AreEqual(entry.ClassListContains("shadow-effect") ? "entry-shadow" : "entry", Texture(entry), entry.name + " · " + label);
+                Assert.That(Texture(entry), Does.StartWith(entry.ClassListContains("shadow-effect") ? "row-shadow" : "row"), entry.name + " · " + label);
             // UI-391: a row stands in its cell, above its ability icons.
             foreach (var entry in board.Characters.Root.Query<Button>(className: "character-roster-row").ToList())
-                Assert.That(Texture(entry), Does.StartWith("entry"), entry.name + " · " + label);
+                Assert.That(Texture(entry), Does.StartWith("row"), entry.name + " · " + label);
         }
 
         private static string Texture(VisualElement element) => element.resolvedStyle.backgroundImage.texture?.name;

@@ -202,7 +202,7 @@ Decisions inside battle, Hunt and the card effect do not give ribbons because th
   only light the console.
 - Text: „YOUR ACTION · Turn N”, „FELLOWSHIP PHASE”, „ALLOCATE HUNT DICE”.
 - `TurnRibbon` (`Runtime/UI/Console`): a 440×52 web under the notification bar, in the middle of the
-  map, with graphics `console/ribbon-free` and `console/ribbon-shadow`. Inserts into 200 ms, takes 1
+  map, with graphics `console/ribbon-free` and `console/ribbon-shadow` (since UI-476 the side rows `frontend/row-free` and `row-shadow`). Inserts into 200 ms, takes 1
   s and extinguishs in 300 ms. All its elements have `PickingMode.Ignore`; does not move the camera.
 - `BoardScreen.SignalTurn`: with `reduced-motion` class instead of `ConsoleStatus.Flash()` ribbon,
   one flash of light on 700 ms.

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using Wotr.Client;
+using Wotr.Contracts;
 using Wotr.Fixtures;
 
 namespace Wotr.PlayTests
@@ -148,6 +149,121 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0f, legend.backgroundColor.a, 0.01f, "The legend's colour left its code (UI-474)");
         }
 
+        // UI-475: a rail tab is the thin medallion on a nearly opaque plate under one thin line; a press and a held panel have
+        // their own pictures, and gold stays the sign of a usable tab, clearly apart from the warm line of a held one.
+        [UnityTest]
+        public IEnumerator RailTabsAreThinWithAUsableRimApartFromTheSelectedLine()
+        {
+            using var client = Mount();
+            yield return Settle();
+            var board = client.Board;
+            var tab = board.Characters.Tab;
+            Assert.AreEqual("edge-tab", tab.resolvedStyle.backgroundImage.texture?.name);
+            Assert.GreaterOrEqual(tab.resolvedStyle.backgroundColor.a, 0.9f, "A plate that reads on the bright parchment");
+            Assert.AreEqual(1f, tab.resolvedStyle.borderTopWidth, 0.01f, "One thin line");
+            Assert.AreEqual(2f, tab.resolvedStyle.borderTopLeftRadius, 0.01f, "The menus' corner");
+            tab.AddToClassList("selected");
+            yield return Settle();
+            Assert.AreEqual("edge-tab-selected", tab.resolvedStyle.backgroundImage.texture?.name);
+            var selected = tab.resolvedStyle.borderTopColor;
+            Assert.Greater(selected.g, 0.6f, "No red lacquer: a warm line");
+            Assert.AreEqual(1f, tab.resolvedStyle.borderTopWidth, 0.01f);
+            tab.RemoveFromClassList("selected");
+            tab.AddToClassList("pressed");
+            yield return Settle();
+            Assert.AreEqual("edge-tab-pressed", tab.resolvedStyle.backgroundImage.texture?.name);
+            Assert.GreaterOrEqual(tab.resolvedStyle.backgroundColor.a, 0.9f, "A press keeps the plate over the map");
+            tab.RemoveFromClassList("pressed");
+            tab.AddToClassList("legal-target");
+            yield return Settle();
+            Assert.AreEqual("edge-tab-available", tab.resolvedStyle.backgroundImage.texture?.name);
+            Assert.AreEqual(3f, tab.resolvedStyle.borderTopWidth, 0.01f, "A usable tab's thick rim");
+            Assert.AreNotEqual(selected, tab.resolvedStyle.borderTopColor, "A usable rim is not the selected line");
+        }
+
+        // UI-476: what keeps a side's colour wears that side's row or button, blue and red apart, on the kit's slices.
+        [UnityTest]
+        public IEnumerator SideSurfacesKeepTheirColourOnTheSideRows()
+        {
+            using var client = Mount();
+            yield return Settle();
+            var board = client.Board;
+            var plaque = board.Console.Status.Plaque;
+            var band = board.Root.Q("turn-ribbon-band");
+            foreach (var side in new[] { "free", "shadow" })
+            {
+                plaque.RemoveFromClassList("side-free");
+                plaque.RemoveFromClassList("side-shadow");
+                plaque.AddToClassList("side-" + side);
+                band.RemoveFromClassList("side-free");
+                band.RemoveFromClassList("side-shadow");
+                band.AddToClassList("side-" + side);
+                yield return Settle();
+                Assert.AreEqual("button-" + side, plaque.resolvedStyle.backgroundImage.texture?.name);
+                Assert.AreEqual(12f, plaque.resolvedStyle.unitySliceLeft, 0.01f, "The button's 6-point slice");
+                plaque.AddToClassList("pressed");
+                yield return Settle();
+                Assert.AreEqual("button-" + side + "-pressed", plaque.resolvedStyle.backgroundImage.texture?.name, "A press has its own picture (UI-113)");
+                plaque.RemoveFromClassList("pressed");
+                Assert.AreEqual("row-" + side, band.resolvedStyle.backgroundImage.texture?.name);
+                Assert.AreEqual(16f, band.resolvedStyle.unitySliceLeft, 0.01f, "The row's 8-point slice");
+            }
+            var well = board.Console.Hunt.Well;
+            Assert.AreEqual("row", well.resolvedStyle.backgroundImage.texture?.name);
+            board.Console.Hunt.SetAllocating(true);
+            yield return Settle();
+            Assert.AreEqual("row-selected", well.resolvedStyle.backgroundImage.texture?.name, "An eligible Hunt Box stands out");
+            Assert.AreEqual(16f, well.resolvedStyle.unitySliceLeft, 0.01f);
+            var track = board.Nations.Drawer.Q(className: "nation-track");
+            Assert.That(track.resolvedStyle.backgroundImage.texture?.name, Does.StartWith("row-"), "A Politics row keeps its side");
+            Assert.AreEqual(0f, track.resolvedStyle.backgroundColor.a, 0.01f, track.name);
+        }
+
+        // UI-477: the battle's insides stand on the same rows; a card in a slot keeps its own picture.
+        [UnityTest]
+        public IEnumerator TheBattlesInsidesWearTheThinRows()
+        {
+            var view = BattleScreenFixture.Create(CommandKind.CommitCombatCard);
+            using var client = new MountedMatchClient("http://localhost", view.MatchId);
+            client.Apply(view);
+            yield return Settle();
+            if (!client.Board.Battles.IsOpen)
+                CardNetworkTests.Click(client.Board.Console.Status.Plaque);
+            yield return Settle();
+            var tray = client.Board.Tray;
+            Assert.AreEqual("row-free", tray.Q("battle-attacker").resolvedStyle.backgroundImage.texture?.name);
+            Assert.AreEqual("row-shadow", tray.Q("battle-defender").resolvedStyle.backgroundImage.texture?.name);
+            Assert.AreEqual(16f, tray.Q("battle-attacker").resolvedStyle.unitySliceLeft, 0.01f);
+            Assert.AreEqual("row", client.Board.Battles.Root.Q(className: "battle-stages").resolvedStyle.backgroundImage.texture?.name);
+            var slot = tray.Q<Button>("battle-card-defender");
+            Assert.AreEqual("row", slot.resolvedStyle.backgroundImage.texture?.name, "An empty card slot is a thin row");
+            Assert.AreEqual(16f, slot.resolvedStyle.unitySliceLeft, 0.01f);
+            var back = tray.Q<Button>("battle-card-attacker");
+            Assert.AreEqual("back", back.resolvedStyle.backgroundImage.texture?.name, "A committed card keeps its back");
+            Assert.AreEqual(28f, back.resolvedStyle.unitySliceLeft, 0.01f, "On its own slices");
+            var policy = client.Board.Battles.Root.Q(className: "battle-window-policy").Q<Button>();
+            Assert.That(policy.resolvedStyle.backgroundImage.texture?.name, Does.StartWith("button"), "The policy control is a thin button");
+        }
+
+        // UI-478: a decision the game waits on stays clearly red; the pennants keep their art.
+        [UnityTest]
+        public IEnumerator ARequiredDecisionStaysRedOnAThinLine()
+        {
+            using var client = Mount();
+            yield return Settle();
+            var notice = client.Board.Notice.Button;
+            notice.style.display = DisplayStyle.Flex;
+            notice.AddToClassList(DecisionNotice.RequiredClass);
+            // Under .motion-enabled its colours ease over the 750 ms of the pulse's rhythm.
+            yield return new WaitForSecondsRealtime(0.9f);
+            var style = notice.resolvedStyle;
+            Assert.IsNull(style.backgroundImage.texture, "A flat red field");
+            Assert.Greater(style.backgroundColor.r, 2.5f * style.backgroundColor.g, "Clearly red");
+            Assert.Greater(style.backgroundColor.r, 2.5f * style.backgroundColor.b, "Clearly red");
+            Assert.AreEqual(1f, style.borderTopWidth, 0.01f, "One thin line");
+            Assert.AreEqual(2f, style.borderTopLeftRadius, 0.01f, "The menus' corner");
+        }
+
         private static MountedMatchClient Mount()
         {
             var fixture = new BoardFixture();
@@ -163,7 +279,8 @@ namespace Wotr.PlayTests
             board.Edges.Corner, board.Root.Q("edge-cards"), board.OwnDice, board.DecisionWindow.Root, board.Battles.Root,
             board.BattleReport.Root, board.Hunt.Root, board.Characters.Inspector.Root, board.Sovereigns.Inspector,
             board.GameEnd.Root.Q(className: "game-end-window"), board.Hover.Panel.Root, board.Information.Root, board.Log.Root,
-            board.Notifications.Overflow, board.Victory.Root, board.Map.Legend.Popup
+            board.Notifications.Overflow, board.Victory.Root, board.Map.Legend.Popup, board.Console.Root,
+            board.Console.Status.RaisedOptions, board.RingPicker.Root
         };
 
         private static IEnumerable<VisualElement> Headers(BoardScreen board) => new[]

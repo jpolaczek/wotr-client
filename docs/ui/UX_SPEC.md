@@ -4220,3 +4220,134 @@ meets the toggle's and rounding can cross them. The title now stands a point apa
 from this work:
 `BattleReportNetworkTests.ClosedReportRejects…` ("last-battle is covered by notification-bar") fails the same way on HEAD's stylesheets.
 Screenshots: `.artifacts/screenshots/ui472-before-*.png`, `ui472-after-*.png`, and the same for `ui473` and `ui474`.
+
+
+## The left rail in the menus' thin line — UI-475 (2026-11-04)
+
+Next task of the game chrome migration (UI-471–UI-479). The owner (2026-11-03): "the game interface takes the main menu's styles and
+buttons; only the tabs' backgrounds, frames and buttons change, not the map, characters, icons, dice or cards." Only art and colours
+changed: every text, order, behaviour, size, padding and place is the one it was.
+
+What changed:
+- A rail tab's plate (UI-223's lacquer plate, radius 12) is one thin line on a nearly opaque dark fill, radius 2, like a menu button.
+  Hover lightens the line and the field. The art `rail/edge-tab` keeps its name, 94×66 size, icon centre (47, 22) and six variants, and
+  is re-drawn after `frontend/medallion`: a dark enamel disc in one thin ring and a hairline ring, without beads or bevel. The panel
+  icons on it are unchanged.
+- The selected tab (a panel held open) lost its red rim for the warm selected line, with a warm plate and disc.
+- The usable tab keeps its 3-point gold rim on a warm plate, its gold label and its pulse (UI-193, UI-223, UI-384), and the art's gold
+  halo round the disc. It stays clearly apart from the selected line.
+- A press darkens disc, ring and plate and sinks a point (UI-113). Politics and Reserve are `.action`, whose press cleared the plate over
+  the map; `Interaction.uss` now gives every pressed tab its dark plate.
+- Effects and Characters entries are thin rows (`frontend/row`, hover `row-hover`); a Shadow effect stands on `row-shadow`. A roster row
+  has a press of its own (`row-pressed`). A chosen roster row is `row-selected`, its 2-point rim staying in the layout and transparent,
+  because a gold rim means a legal target (as for buttons, UI-471). A sovereign's portrait stands on the same row.
+- Politics rows are the side rows (`row-free`, `row-shadow`) instead of translucent fills: a hairline in the side's colour keeps their
+  meaning, and the old 1-point separator stays in the layout as a transparent border.
+
+Tokens (`Styles/GameChrome.uss`): `--game-rail-tab`, `-hover`, `-pressed`, `-selected`, `-available`, `-available-hover`;
+`--game-rail-fill`, `-hover`, `-pressed`, `-selected`; `--game-rail-line`, `-hover`, `-selected`; `--game-row`, `-hover`, `-pressed`,
+`-selected`; `--game-row-slice` (16), `--game-row-slice-scale` (0.5px); `--game-row-free`, `--game-row-shadow` and their `-hover`. Every row
+of the board shares one slices rule in that sheet; each surface's sheet names its picture.
+
+Art (`render.py --only rail`, `--only frontend/row`): `rail/edge-tab` re-drawn; new `frontend/row-pressed`; `--tab-enamel-*` overrides in
+the `selected` variant, `--fe-line` in `available` and `available-hover`. All in `UiArtKitTests`' contract. `frames/entry*` stay in the kit,
+unreferenced.
+
+Playtest (owner's checklist):
+- [ ] Start a game at 1366×768. Expect: four tabs as dark plates with one thin line, a thin disc round each icon, labels readable over the
+  map and the sea.
+- [ ] Hover a tab, then press and release it. Expect: the line lightens; the plate and disc darken and sink a point while held, the map
+  never showing through.
+- [ ] Choose a Muster die. Expect: Politics and Reserve with a thick gold rim on a warm plate that pulses, clearly different from the rest.
+- [ ] Open Politics. Expect: blue rows and red rows with a fine line in their colour; nation tokens as they were.
+- [ ] Open Characters and Effects in an expansion game. Expect: quiet rows; a Shadow effect on a dark red row; a row darkens while held;
+  portraits, ability icons and parchment card tiles unchanged.
+
+## The console and the dice panel in the thin line, with their side's colour — UI-476 (2026-11-04)
+
+Colour variants of the kit, without new SVG (`assets.json`): `frontend/row-free`, `row-shadow` (and `-hover`), `frontend/button-free`,
+`button-shadow` (and `-hover`, `-pressed`). They override the `--fe-*` tokens with the side's enamel: the field `#0c2135` or `#2a0b09`, the line
+`#2f5f82` or `#7c2b22`, at 0.96, so they read as blue and red over the dark card and the bright map alike (checked in the screenshots: the
+force frames are the largest such areas). Only the `frontend` sources read `--fe-*`, so the other art of those variants is unaffected.
+
+What changed; every height and control's place stays (bottom row 140, console 132, dice panel 132, `TurnConsoleLayoutTests`):
+- The console and its options strip are the board's card (`frontend/card-board`, joining `GameChrome.uss`'s shared frames rule); the
+  dividers are the quiet hairline.
+- The status plaque is the button in the side's enamel (`button-free`, `button-shadow`), which gives it a hover and a pressed picture it did
+  not have. Its halo (`console/status-glow`, "must act", UI-241) stays; it only toggles classes.
+- The Hunt well (108×60) is a thin row; while eligible for Hunt dice it is `row-selected`, the warm field with a bright line. The plaque's gold
+  rims inside it are unchanged.
+- The small popover of the Elven Rings, Lore and the Council token's travel is the board's card; its tail is re-drawn thin under the same name
+  and size (`console/picker-tail`).
+- The dice band is the side row (`row-free`, `row-shadow`) with a quiet title in the menus' gold, without the faux bold. It keeps FREE PEOPLES
+  blue and SHADOW red (UI-466), its 24-point height and the title's place. CHOOSE A DIE stays gold.
+- The turn band over the map (440×52) is the side row with a gold Cinzel title. The side row has 8-point slices instead of 12 and 28.
+
+Tokens: `--game-row-free`, `--game-row-free-hover`, `--game-row-shadow`, `--game-row-shadow-hover`, `--game-side-button-free`, `-free-hover`,
+`-free-pressed`, `--game-side-button-shadow`, `-shadow-hover`, `-shadow-pressed`. `console/frame`, `status-plaque-*`, `hunt-box*`, `picker`, `ribbon-*`,
+`frames/panel-header` and `panel-header-free-lacquer` stay in the kit, unreferenced.
+
+Playtest (owner's checklist):
+- [ ] Start a game as the Free Peoples. Expect: a thin console card; a dark blue status button with a thin blue line; a blue dice band with a
+  quiet gold FREE PEOPLES; every control in its usual place.
+- [ ] Hover and press the status button. Expect: it lightens, then darkens and sinks a point; the click opens the decision's window as before.
+- [ ] Wait for the action to come to you. Expect: a thin dark blue band over the map for about a second and a half, the gold halo round the
+  status button while the decision waits.
+- [ ] Play as the Shadow. Expect: the same in dark red. Allocate Hunt dice. Expect: the Hunt well warm with a bright line, clearly lit.
+- [ ] Use an Elven Ring on a die. Expect: the results in a small thin card with a thin tail over the die.
+- [ ] Choose an option too long for the console's line. Expect: the strip above the console in the same card.
+- [ ] Repeat at 125 % and in an expansion game. Expect: nothing clipped, every control in its usual place.
+
+## The battle window's insides in the thin line — UI-477 (2026-11-04)
+
+UI-473 did the battle window's frame and header; this task does what is inside it. The scene strip's illustration, dice, figures, portraits and
+cards are unchanged.
+- The force frames are the side rows: blue for the Free Peoples and red for the Shadow, one thin line, flat fill, in the battle and in the
+  report. At their size the art stretches only flat fill and straight lines, on 8-point corners instead of 14.
+- The stage ribbon (22 points; 20 in a short viewport), used by the battle and Hunt windows, is a thin row. Its gilt marker and icons stay.
+- An empty card slot (33 points) is a thin row with `row-hover` and `row-pressed`. A committed card's back and a revealed card's parchment keep
+  their pictures and their own slices, so the shared rule stays out of them: the slot sets its slices beside its picture.
+- The report's round tab is a thin row with a card's words instead of a parchment tab.
+- The ledge of figures that stay out of the fight (`battle/garrison-shelf`) was not listed, but it is the last frame of the window, so it is a thin
+  row too.
+- The policy control (138×22) has been `.action` since UI-471, so it was already a thin button; `GameWindowChromeTests` now reads that.
+
+`battle/force-frame-*`, `stage-ribbon`, `card-slot`, `garrison-shelf` and `round-tab` stay in the kit, unreferenced.
+
+Playtest (owner's checklist):
+- [ ] Fight a battle. Expect: a blue force and a red force with flat fields and one thin line, no gilt corners; figures, dice and portraits as
+  they were.
+- [ ] Look at the stage ribbon as the stages advance. Expect: a thin row; the marker gliding as before.
+- [ ] Choose a Combat card. Expect: the other side's empty slot as a thin row; a committed card with its leather back; a revealed one on parchment.
+- [ ] Fight where figures stay out of the fight. Expect: a quiet row with the same words.
+- [ ] Open the report of a battle with more than one round. Expect: the round's name on a thin row between the arrows.
+- [ ] Repeat at 1366×768 with 125 %. Expect: nothing clipped, the rows level on both sides.
+
+## The notices in the thin line — UI-478 (2026-11-04)
+
+- The notice bar has no plate, and its plain decision notice and icon buttons have been thin since UI-471, on a nearly opaque field over the map.
+- A required decision (UI-254) stays red as a signal: a clear red field under one thin warm line instead of a gold one, with the buttons' 2-point
+  corner. Its pulse keeps the 750 ms rhythm and dims the same two colours; Reduced motion keeps it still. Tokens: `--game-warning-fill`, `-fill-hover`,
+  `-fill-dim`, `--game-warning-line`, `-line-dim`, `--game-warning-text`.
+- The pennants and the wax seal are unchanged, as the owner asked.
+
+Playtest (owner's checklist):
+- [ ] Let the opponent act. Expect: pennants and seal as they were, next to the thin log icon.
+- [ ] Reach a decision the game waits on (excess units, losses). Expect: a red notice with "!" and a thin warm line, pulsing, clearly a warning next
+  to the dark buttons; a click opens the decision's window as before.
+
+Tests for the four tasks: `GameWindowChromeTests` gains checks of what UI Toolkit resolved: the console, its strip and the popover among the frames, the
+rail tab's states, the side surfaces and their slices, the battle's rows, a card keeping its back and slices, and the required notice's red.
+`DicePanelLayoutTests` and `LeftRailLayoutTests` expect the side rows and rows where they named the old art; what they check is unchanged. `UiArtKitTests` lists the
+11 new textures.
+
+Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, all passing: `GameWindowChromeTests`, `LeftRailLayoutTests`,
+`BoardInteractionTests`, `GlowingHintAuditTests`, `PoliticalPanelTests`, `ReinforcementsLayoutTests`, `TurnConsoleLayoutTests`, `TurnRibbonTests`,
+`DicePanelLayoutTests`, `ConsoleCancelNetworkTests`, `WillOfTheWestFaceNetworkTests`, `HuntLayoutTests`, `BattleLayoutTests`, `LordsBattleNetworkTests`,
+`ActionNoticeLayoutTests`, `BoardChromeLayoutTests`, `GameButtonChromeTests`, `InGameDenseLayoutTests`, `ExpansionMatrixLayoutTests`,
+`LayoutStressScenarioTests`, `PressFeedbackClickTests`, `CharacterRosterLayoutTests`, `SovereignSectionLayoutTests`, `EffectsLayoutTests`,
+`RightColumnLayoutTests`, `EdgePlaqueTests`, `CharacterRosterActionNetworkTests`, `BattleRowsNetworkTests`. The new required-notice check first read the colour
+in the first frames of its 750 ms transition and now waits it out. The full PlayMode suite was not run.
+Screenshots: `.artifacts/screenshots/ui475-*`, `ui476-*`, `ui477-*`, `ui478-*` (`before` and `after`), taken by a temporary test that was removed. States that the
+fixtures do not reach (a tab's states, a pressed or chosen row, the Hunt well lit in the fixture, the options strip, the required notice, the round tab) were forced by
+their classes. `ui475-before-roster-free` and `ui475-before-sovereigns` are copies of `ui472-after-characters` and `ui473-after-king`; the round tab has no before picture.

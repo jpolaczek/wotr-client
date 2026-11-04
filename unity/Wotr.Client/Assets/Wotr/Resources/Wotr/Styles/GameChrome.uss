@@ -47,6 +47,47 @@
     --game-scroll-thumb-hover: rgba(196, 162, 98, 0.75);
     --game-scroll-arrow: rgb(150, 124, 80);
     --game-scroll-arrow-hover: rgb(214, 178, 108);
+    /* UI-475: a row of a panel or list: the kit's frontend/row on its 8-point slices, in texture pixels at 0.5 scale. */
+    --game-row: resource("Wotr/Art/UI/frontend/row");
+    --game-row-hover: resource("Wotr/Art/UI/frontend/row-hover");
+    --game-row-pressed: resource("Wotr/Art/UI/frontend/row-pressed");
+    --game-row-selected: resource("Wotr/Art/UI/frontend/row-selected");
+    --game-row-slice: 16;
+    --game-row-slice-scale: 0.5px;
+    /* UI-476: the same row in a side's enamel, nearly opaque: what keeps the side's colour stands on these. */
+    --game-row-free: resource("Wotr/Art/UI/frontend/row-free");
+    --game-row-free-hover: resource("Wotr/Art/UI/frontend/row-free-hover");
+    --game-row-shadow: resource("Wotr/Art/UI/frontend/row-shadow");
+    --game-row-shadow-hover: resource("Wotr/Art/UI/frontend/row-shadow-hover");
+    /* UI-476: the button in a side's enamel: the console's status plaque; the button's slices. */
+    --game-side-button-free: resource("Wotr/Art/UI/frontend/button-free");
+    --game-side-button-free-hover: resource("Wotr/Art/UI/frontend/button-free-hover");
+    --game-side-button-free-pressed: resource("Wotr/Art/UI/frontend/button-free-pressed");
+    --game-side-button-shadow: resource("Wotr/Art/UI/frontend/button-shadow");
+    --game-side-button-shadow-hover: resource("Wotr/Art/UI/frontend/button-shadow-hover");
+    --game-side-button-shadow-pressed: resource("Wotr/Art/UI/frontend/button-shadow-pressed");
+    /* UI-475: a rail tab: the thin medallion (rail/edge-tab) on a nearly opaque plate under one thin line, for the bright
+       parchment. Selected (a panel held open) is warm with a bright line; gold stays the sign of a usable tab. */
+    --game-rail-tab: resource("Wotr/Art/UI/rail/edge-tab");
+    --game-rail-tab-hover: resource("Wotr/Art/UI/rail/edge-tab-hover");
+    --game-rail-tab-pressed: resource("Wotr/Art/UI/rail/edge-tab-pressed");
+    --game-rail-tab-selected: resource("Wotr/Art/UI/rail/edge-tab-selected");
+    --game-rail-tab-available: resource("Wotr/Art/UI/rail/edge-tab-available");
+    --game-rail-tab-available-hover: resource("Wotr/Art/UI/rail/edge-tab-available-hover");
+    --game-rail-fill: rgba(21, 19, 17, 0.94);
+    --game-rail-fill-hover: rgba(34, 30, 25, 0.96);
+    --game-rail-fill-pressed: rgba(12, 11, 9, 0.96);
+    --game-rail-fill-selected: rgba(46, 37, 24, 0.96);
+    --game-rail-line: rgb(163, 132, 75);
+    --game-rail-line-hover: rgb(196, 162, 98);
+    --game-rail-line-selected: rgb(212, 178, 108);
+    /* UI-478: a decision the game waits on stays red: one thin warm line on a clear red field, dimming with its pulse. */
+    --game-warning-fill: rgb(132, 26, 20);
+    --game-warning-fill-hover: rgb(162, 38, 28);
+    --game-warning-fill-dim: rgb(92, 18, 14);
+    --game-warning-line: rgb(232, 158, 112);
+    --game-warning-line-dim: rgb(150, 92, 66);
+    --game-warning-text: rgb(255, 236, 196);
 }
 
 /* The states of .action; its base stays in Wotr.uss at its old place in the cascade. Each has two classes, in the first
@@ -85,8 +126,8 @@
 
 /* UI-472, UI-473, UI-474 (owner, 2026-11-03: "remember to adapt elements such as the bars at the top of the windows").
    Every panel and window of the board wears the menus' card. These rules hold only its art, in one place: each surface's
-   own sheet keeps its size, padding and a transparent background-color, so nothing moves. The dice panel's side band, the
-   force frames, the stage ribbon, card slots and round tabs keep their art for UI-476 and UI-477. */
+   own sheet keeps its size, padding and a transparent background-color, so nothing moves. UI-476: the console, its options
+   strip and the small popovers join them. */
 #board-screen .edge-left-panel,
 #board-screen .board-dropdowns .edge-dropdown-panel,
 #board-screen .edge-corner-tab,
@@ -105,13 +146,36 @@
 #board-screen .action-log,
 #board-screen .notification-overflow,
 #board-screen .victory-panel,
-#board-screen #map-legend {
+#board-screen #map-legend,
+#board-screen .turn-console,
+#board-screen .console-options-strip,
+#board-screen .ring-face-picker {
     background-image: var(--game-card);
     -unity-slice-top: var(--game-card-slice);
     -unity-slice-right: var(--game-card-slice);
     -unity-slice-bottom: var(--game-card-slice);
     -unity-slice-left: var(--game-card-slice);
     -unity-slice-scale: var(--game-card-slice-scale);
+}
+
+/* UI-475, UI-476, UI-477: every row of the board stands on one set of slices; each surface's own sheet names its picture
+   (--game-row and its side variants) and keeps its size and padding. A battle's card slot sets the same slices beside its
+   picture, because a card's back and parchment in it have slices of their own. */
+#board-screen .edge-left-panel .effect-entry,
+#board-screen .edge-left-panel .character-roster-grid .action,
+#board-screen .nation-track,
+#board-screen .console-hunt-well,
+#board-screen .dice-panel .dice-header,
+#board-screen .turn-ribbon-band,
+#board-screen .battle-stages,
+#board-screen .battle-force,
+#board-screen .battle-garrison-shelf,
+#board-screen .battle-chronicle .battle-round-tab {
+    -unity-slice-top: var(--game-row-slice);
+    -unity-slice-right: var(--game-row-slice);
+    -unity-slice-bottom: var(--game-row-slice);
+    -unity-slice-left: var(--game-row-slice);
+    -unity-slice-scale: var(--game-row-slice-scale);
 }
 
 /* A header: no band, a hairline drawn over the row's bottom point. It is a picture, not a border, so it takes no layout:

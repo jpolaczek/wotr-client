@@ -136,9 +136,9 @@ User applications: "change the reinforcements to reserve, improve the design of 
 
 User application (UI-181 bookmarkshot): "Delete these ribbons added to each icon and correct the titles, now they are terribly crooked, remove all this frame around".
 
-- `rail/edge-tab` is only an enameled medallion in a pearly ring: without a tile, carved frame with
-  a pin, filigree and ribbons under the signature. The state shows the border of the medallion: red
-  lake at the selected green glow at the legal goal, brighter gold at the landing.
+- `rail/edge-tab` is only an enameled medallion in a pearly ring (since UI-475 a dark disc in one thin ring): without a tile, carved frame with
+  a pin, filigree and ribbons under the signature. The state shows the border of the medallion: since UI-475 a warm bright line
+  at the selected, a gold glow at the legal goal, brighter gold at the landing.
 - The signature is a simple label 13 pt (without thickening), one line, centered under the
   medallion, with a strong shadow, because there is a map underneath it. `LeftRailLayoutTests`
   checks that it fits in the tab.

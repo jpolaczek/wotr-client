@@ -38,16 +38,11 @@
     padding: 12px 12px 10px 12px;
     flex-direction: row;
     align-items: stretch;
-    background-image: resource("Wotr/Art/UI/console/frame");
-    -unity-slice-top: 36;
-    -unity-slice-right: 36;
-    -unity-slice-bottom: 36;
-    -unity-slice-left: 36;
-    -unity-slice-scale: 0.5px;
 }
-.console-divider { width: 1px; flex-shrink: 0; margin: 4px 8px; background-color: rgba(176, 138, 64, 0.45); }
+.console-divider { width: 1px; flex-shrink: 0; margin: 4px 8px; background-color: var(--game-hairline-quiet); }
 
-/* Status: the acting side's plaque with its emblem, then a hint of at most two lines. */
+/* Status: the acting side's plaque with its emblem, then a hint of at most two lines. UI-476: the plaque is the button in
+   the side's enamel; hover lightens it and a press darkens it and sinks it a point (UI-113). */
 .console-status { flex-grow: 1; flex-shrink: 1; min-width: 0; flex-direction: column; }
 .console-status-plaque {
     height: 32px;
@@ -58,14 +53,24 @@
     align-items: center;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/console/status-plaque-free");
-    -unity-slice-top: 16;
-    -unity-slice-right: 36;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 36;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-side-button-free);
+    -unity-slice-top: var(--game-button-slice);
+    -unity-slice-right: var(--game-button-slice);
+    -unity-slice-bottom: var(--game-button-slice);
+    -unity-slice-left: var(--game-button-slice);
+    -unity-slice-scale: var(--game-button-slice-scale);
 }
-.console-status-plaque.side-shadow { background-image: resource("Wotr/Art/UI/console/status-plaque-shadow"); }
+#board-screen .console-status-plaque:hover { background-color: rgba(0, 0, 0, 0); background-image: var(--game-side-button-free-hover); }
+#board-screen .console-status-plaque.side-shadow { background-image: var(--game-side-button-shadow); }
+#board-screen .console-status-plaque.side-shadow:hover { background-image: var(--game-side-button-shadow-hover); }
+#board-screen .console-status-plaque.pressed,
+#board-screen .console-status-plaque.pressed:hover {
+    background-color: rgba(0, 0, 0, 0);
+    background-image: var(--game-side-button-free-pressed);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+#board-screen .console-status-plaque.side-shadow.pressed,
+#board-screen .console-status-plaque.side-shadow.pressed:hover { background-image: var(--game-side-button-shadow-pressed); }
 .console-emblem { width: 20px; height: 20px; flex-shrink: 0; margin-right: 8px; -unity-background-scale-mode: scale-to-fit; background-image: resource("Wotr/Art/UI/icons/ring"); }
 .side-shadow > .console-emblem { background-image: resource("Wotr/Art/UI/dice/faces/eye"); }
 .console-headline {
@@ -140,12 +145,6 @@
     bottom: 140px;
     flex-direction: row;
     padding: 6px 4px;
-    background-image: resource("Wotr/Art/UI/console/frame");
-    -unity-slice-top: 36;
-    -unity-slice-right: 36;
-    -unity-slice-bottom: 36;
-    -unity-slice-left: 36;
-    -unity-slice-scale: 0.5px;
 }
 .console-options-strip > .console-options { height: auto; min-height: 0; max-height: none; margin-top: 0; }
 #board-screen .console-options-strip .console-options .console-option { flex-grow: 0; flex-shrink: 0; flex-basis: auto; text-overflow: clip; }
@@ -168,7 +167,8 @@
 /* The board's resources: the Hunt Box above the three Elven Rings, in one column of fixed width. */
 .console-resources { width: 108px; flex-shrink: 0; flex-direction: column; justify-content: space-between; }
 
-/* Hunt Box: the Hunt plaque (Eyes, Free Peoples movement dice) in its well; a click opens the Hunt panel. */
+/* Hunt Box: the Hunt plaque (Eyes, Free Peoples movement dice) in its well, since UI-476 a thin row (slices in
+   GameChrome.uss); while eligible for Hunt dice it is the warm row with a bright line. A click opens the Hunt panel. */
 .console-hunt { width: 108px; height: 60px; flex-shrink: 0; flex-direction: row; align-items: center; }
 .console-hunt-well {
     width: 108px;
@@ -176,14 +176,9 @@
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
-    background-image: resource("Wotr/Art/UI/console/hunt-box");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-row);
 }
-.console-hunt.hunt-allocating .console-hunt-well { background-image: resource("Wotr/Art/UI/console/hunt-box-eligible"); }
+.console-hunt.hunt-allocating .console-hunt-well { background-image: var(--game-row-selected); }
 #board-screen .console-hunt .hunt-tab {
     position: relative;
     width: 104px;
@@ -193,7 +188,7 @@
     margin: 0;
     padding: 0 0 6px 0;
     border-width: 0;
-    border-radius: 5px;
+    border-radius: 2px;
     background-color: rgba(0, 0, 0, 0);
     background-image: none;
     font-size: 9px;
@@ -425,7 +420,7 @@
 }
 
 /* UI-161: the Elven Ring gesture. The dice the armed ring can change glow and the others dim; the chosen die gets
-   a popover of results (console/picker, slices in texture pixels = 2x assets.json) with a tail pointing at it. */
+   a popover of results (the board's card since UI-476, GameChrome.uss) with a tail pointing at it. */
 #board-screen .dice-panel .die.ring-candidate { border-width: 2px; border-color: rgb(231, 193, 107); border-radius: 18px; }
 #board-screen .dice-panel .die.ring-muted { opacity: 0.4; }
 /* UI-238: choosing the die to change is its own moment. The panel's band reads CHOOSE A DIE in gold, the dice the
@@ -438,12 +433,6 @@
     position: absolute;
     flex-direction: row;
     padding: 7px 8px;
-    background-image: resource("Wotr/Art/UI/console/picker");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
 }
 .ring-face-row { flex-direction: row; }
 .ring-face {
@@ -534,8 +523,9 @@
 }
 .motion-enabled .console-status-plaque.must-act.choice-glow-pulse > .console-status-glow { opacity: 0.3; }
 
-/* UI-167: the ribbon that crosses the top of the map when the action passes to the player (console/ribbon-*),
-   under the notice strip and centred; it slides in for 200 ms, holds and fades out for 300 ms. */
+/* UI-167: the band that crosses the top of the map when the action passes to the player (since UI-476 the side row, thin
+   and nearly opaque, its slices in GameChrome.uss), under the notice strip and centred; it slides in for 200 ms, holds and
+   fades out for 300 ms. */
 #board-screen .turn-ribbon {
     position: absolute;
     left: 0;
@@ -550,19 +540,14 @@
     height: 52px;
     align-items: center;
     justify-content: center;
-    background-image: resource("Wotr/Art/UI/console/ribbon-free");
-    -unity-slice-top: 24;
-    -unity-slice-right: 56;
-    -unity-slice-bottom: 24;
-    -unity-slice-left: 56;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-row-free);
     opacity: 0;
     translate: 0 -14px;
     transition-property: opacity, translate;
     transition-duration: 0.2s, 0.2s;
     transition-timing-function: ease-out, ease-out;
 }
-#board-screen .turn-ribbon-band.side-shadow { background-image: resource("Wotr/Art/UI/console/ribbon-shadow"); }
+#board-screen .turn-ribbon-band.side-shadow { background-image: var(--game-row-shadow); }
 #board-screen .turn-ribbon-band.shown { opacity: 1; translate: 0 0; }
 #board-screen .turn-ribbon-band.leaving { opacity: 0; translate: 0 0; transition-duration: 0.3s, 0.3s; }
 #board-screen .turn-ribbon-text {
@@ -570,7 +555,7 @@
     padding: 0;
     font-size: 20px;
     letter-spacing: 3px;
-    color: rgb(246, 236, 206);
+    color: var(--game-title-text);
     -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
     -unity-text-align: middle-center;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);

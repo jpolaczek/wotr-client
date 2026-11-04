@@ -107,12 +107,12 @@ Category `graphicalassets/ui/src/battle/`, entries in `assets.json`, contract in
 | Group | Files | Options |
 | --- | --- | --- |
 | Scenes | `scene-field`, `scene-siege`, `scene-sortie`, `scene-relief` | repeat-x; interchangeable for UI-120 bitmaps |
-| Framework | `force-frame`, `portrait-medallion`, `card-slot`, `garrison-shelf` | `free`/`shadow`, `cancelled` (portrait), `pressed` |
+| Framework | `portrait-medallion` (since UI-477 `force-frame`, `card-slot` and `garrison-shelf` give way to `frontend/row-free`, `row-shadow` and `row`) | `free`/`shadow`, `cancelled` (portrait), `pressed` |
 | Statistics and Decision Icons | `strength`, `leadership`, `dice`, `hit`, `garrison`, `continue`, `stop`, `hold`, `retreat`, `advance`, `extend-siege`, `no-card`, `skip-cards` | — |
 | dice | `die-1` … `die-6`, `reroll-arrow` | `hit`, `selected`, `rerolled`, `pressed` |
 | Casualties | `loss-keep`, `loss-downgrade`, `loss-remove`, `hit-seal` | `spent` |
-| Stages ribbon | `stage-ribbon`, `stage-marker`, `stage-cards`, `stage-roll`, `stage-reroll`, `stage-losses`, `stage-next` | — |
-| Report | `chronicle-header`, `round-tab` | `selected` |
+| Stages ribbon | `frontend/row` since UI-477 (`stage-ribbon` before it), `stage-marker`, `stage-cards`, `stage-roll`, `stage-reroll`, `stage-losses`, `stage-next` | — |
+| Report | `chronicle-header`, `frontend/row` since UI-477 (`round-tab` before it) | `selected` |
 | Press (UI-114) | variants `pressed` for `frontend/button` (UI-471), `dice/medallion`, `cards/parchment` | — |
 
 Portraits and backgrounds ( UI-120 ): `graphicalassets/portraits/` with an atlas PNG , JSON rects, prompts and manifesto SHA-256 pattern `figures/` and `fellowship/` ; keys after the name of the characters common to base game and Lords: gimli, boromir, legolas, gandalf-grey, gandalf-white, strider, aragon, Pippin, merry, gollum, smeagol, ring-bearers, elrond, galladriel, balrog, gothmog, saruman, mouth-of-sauron, witch-king. `PortraitArtwork` pattern `FigureArtwork` Generating bitmap requires a tool outside Claude session; to deliver them, placeholders operate SVG ed UI-115 , a UI-120 remains blocked with ready-to-use props.

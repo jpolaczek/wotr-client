@@ -2,10 +2,10 @@
    Pieces are rendered at 2x from graphicalassets/ui; 9-slice values are texture pixels.
    #board-screen keeps panel rules ahead of the panels' own Wotr.uss rules (imports lose ties). */
 
-/* UI-182: each tab is an enamel medallion ringed with gilt beads (art: rail/edge-tab, fixed 94x66 points, no plate,
-   frame or ribbon) with its icon inside and a plain label centred under it on one line. Hover brightens the gilt,
-   the selected tab's rim turns to red lacquer. UI-193: an available tab (a legal target, or usable by the chosen
-   action die, UI-136) glows gold round its medallion; the tab has no rectangle of its own to light. */
+/* UI-182: each tab is a medallion (art: rail/edge-tab, fixed 94x66 points; since UI-475 a dark disc in one thin ring, as
+   the menus' frontend/medallion) with its icon inside and a plain label centred under it on one line. Hover lightens the
+   ring; a selected tab (a panel held open) has a warm disc in a bright ring. UI-193: an available tab (a legal target, or
+   usable by the chosen action die, UI-136) glows gold round its medallion. */
 .board-left-tabs { position: absolute; left: 0; top: 58px; width: 94px; }
 .board-left-tabs .edge-tab {
     position: relative;
@@ -24,10 +24,10 @@
     -unity-font-style: normal;
     -unity-text-align: lower-center;
     white-space: nowrap;
-    color: rgb(244, 230, 186);
+    color: var(--game-button-text);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 1);
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/rail/edge-tab");
+    background-image: var(--game-rail-tab);
     -unity-background-scale-mode: stretch-to-fill;
     -unity-slice-top: 0;
     -unity-slice-right: 0;
@@ -39,29 +39,29 @@
 .board-left-tabs .edge-tab:hover,
 .board-left-tabs .edge-tab:focus {
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/rail/edge-tab-hover");
-    color: rgb(255, 245, 214);
+    background-image: var(--game-rail-tab-hover);
+    color: var(--game-button-text-hover);
 }
 .board-left-tabs .edge-tab.legal-target,
-.board-left-tabs .edge-tab.die-option { border-width: 0; background-image: resource("Wotr/Art/UI/rail/edge-tab-available"); }
+.board-left-tabs .edge-tab.die-option { border-width: 0; background-image: var(--game-rail-tab-available); }
 .board-left-tabs .edge-tab.legal-target:hover,
 .board-left-tabs .edge-tab.legal-target:focus,
 .board-left-tabs .edge-tab.die-option:hover,
-.board-left-tabs .edge-tab.die-option:focus { background-image: resource("Wotr/Art/UI/rail/edge-tab-available-hover"); }
+.board-left-tabs .edge-tab.die-option:focus { background-image: var(--game-rail-tab-available-hover); }
 .board-left-tabs .edge-tab.selected,
 .board-left-tabs .edge-tab.selected:hover,
-.board-left-tabs .edge-tab.selected:focus { background-image: resource("Wotr/Art/UI/rail/edge-tab-selected"); }
-/* UI-223: over the map a tab sits on a dark lacquer plate with a fine gilt rim, so the medallion and its label read
-   on light and dark terrain alike; a usable tab gets a bright gold rim, a warmer plate and a gold label, and pulses
+.board-left-tabs .edge-tab.selected:focus { background-image: var(--game-rail-tab-selected); }
+/* UI-223, UI-475: over the map a tab sits on a nearly opaque dark plate under one thin line, so the medallion and its label
+   read on light and dark terrain alike; a usable tab gets a bright gold rim, a warmer plate and a gold label, and pulses
    gently under .motion-enabled (Reduced motion keeps it bright and still). Sizes and places stay fixed. */
 .board-left-tabs .edge-tab {
-    background-color: rgba(22, 19, 15, 0.82);
+    background-color: var(--game-rail-fill);
     border-width: 1px;
-    border-color: rgba(214, 178, 98, 0.55);
-    border-radius: 12px;
+    border-color: var(--game-rail-line);
+    border-radius: 2px;
 }
 .board-left-tabs .edge-tab:hover,
-.board-left-tabs .edge-tab:focus { background-color: rgba(38, 32, 24, 0.9); border-color: rgba(240, 206, 128, 0.8); }
+.board-left-tabs .edge-tab:focus { background-color: var(--game-rail-fill-hover); border-color: var(--game-rail-line-hover); }
 .board-left-tabs .edge-tab.legal-target,
 .board-left-tabs .edge-tab.die-option {
     background-color: rgba(70, 52, 18, 0.92);
@@ -90,7 +90,11 @@
     border-color: rgba(255, 214, 112, 0.45);
     background-color: rgba(46, 36, 16, 0.88);
 }
-.board-left-tabs .edge-tab.selected { border-color: rgb(196, 70, 52); }
+.board-left-tabs .edge-tab.selected {
+    background-color: var(--game-rail-fill-selected);
+    border-color: var(--game-rail-line-selected);
+    color: var(--game-button-text-selected);
+}
 /* UI-261: the icon is placed from the tab's inner edge, which moves with the border (1 px, 3 px on an available tab),
    while the medallion art keeps its centre (47, 22) on the tab; each state places the 24 px icon on that centre. */
 .board-left-tabs .edge-tab .edge-tab-icon { left: 34px; top: 9px; }
@@ -169,14 +173,16 @@
     border-radius: 0;
 }
 
-/* Politics: rows in the colours of their side; UI-197: each nation's crest rides its side medallion along the track
+/* Politics: rows in the colours of their side, since UI-475 the side rows with a hairline (their slices in GameChrome.uss;
+   the old separator's point stays in the layout); UI-197: each nation's crest rides its side medallion along the track
    over a soft gilt glow (bright when active, dim when passive), so the name column carries no crest. */
 #board-screen .nation-track {
-    background-color: rgba(28, 54, 78, 0.55);
+    background-color: rgba(0, 0, 0, 0);
+    background-image: var(--game-row-free);
     border-bottom-width: 1px;
-    border-bottom-color: rgba(0, 0, 0, 0.45);
+    border-bottom-color: rgba(0, 0, 0, 0);
 }
-#board-screen .nation-track.shadow-nation { background-color: rgba(80, 24, 19, 0.6); }
+#board-screen .nation-track.shadow-nation { background-image: var(--game-row-shadow); }
 #board-screen .nation-track .nation-name { padding-left: 6px; }
 .icon-glow {
     position: absolute;
@@ -250,28 +256,33 @@
 /* The legend stays narrower than the name column it heads (60 points), or it would widen the axis row. */
 #politics-legend-passive-nation { margin-right: 6px; }
 
-/* Effects and Characters entries in the enamel of their side. */
+/* UI-475: Effects and Characters entries are thin rows (their slices in GameChrome.uss); the Shadow's effects stand on the
+   red side row. A press darkens the row and sinks it a point (UI-113); a chosen row is the warm field and bright line of a
+   chosen button, its 2-point rim staying in the layout, transparent: a gold rim means a legal target (UI-471). */
 #board-screen .edge-left-panel .effect-entry,
 #board-screen .edge-left-panel .character-roster-grid .action {
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/entry");
-    -unity-slice-top: 20;
-    -unity-slice-right: 20;
-    -unity-slice-bottom: 20;
-    -unity-slice-left: 20;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-row);
     border-width: 0;
-    border-radius: 4px;
+    border-radius: 2px;
 }
 #board-screen .edge-left-panel .effect-entry:hover,
 #board-screen .edge-left-panel .character-roster-grid .action:hover {
     background-color: rgba(0, 0, 0, 0);
-    background-image: resource("Wotr/Art/UI/frames/entry-hover");
+    background-image: var(--game-row-hover);
 }
-#board-screen .edge-left-panel .effect-entry.shadow-effect { background-image: resource("Wotr/Art/UI/frames/entry-shadow"); }
-#board-screen .edge-left-panel .effect-entry.shadow-effect:hover { background-image: resource("Wotr/Art/UI/frames/entry-shadow-hover"); }
-#board-screen .edge-left-panel .effect-entry.selected-effect { border-width: 2px; border-color: rgb(228, 197, 127); }
-#board-screen .edge-left-panel .character-roster-grid .action.selected { border-width: 2px; border-color: rgb(245, 212, 133); }
+#board-screen .edge-left-panel .character-roster-grid .action.pressed {
+    background-image: var(--game-row-pressed);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+#board-screen .edge-left-panel .effect-entry.shadow-effect { background-image: var(--game-row-shadow); }
+#board-screen .edge-left-panel .effect-entry.shadow-effect:hover { background-image: var(--game-row-shadow-hover); }
+#board-screen .edge-left-panel .effect-entry.selected-effect { border-width: 2px; border-color: var(--game-rail-line-selected); }
+#board-screen .edge-left-panel .character-roster-grid .action.selected {
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    background-image: var(--game-row-selected);
+}
 #board-screen .edge-left-panel .character-roster-grid .action.legal-target { border-width: 2px; border-color: rgb(255, 214, 112); }
 /* UI-101/UI-274: the sovereigns sit in one row of fixed slots under the characters: the painted portrait with its
    status badge, the Shadow's attempt button at its corner, the name, the corruption meter and the tiles drawn or

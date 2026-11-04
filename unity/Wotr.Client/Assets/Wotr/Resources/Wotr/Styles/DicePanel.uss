@@ -18,31 +18,25 @@
     background-color: rgba(0, 0, 0, 0);
 }
 
-/* Header band in red lacquer with the side name; it stays until the console's and dice's own task (UI-476). */
+/* The band with the side name: since UI-476 the side row with a quiet title (slices in GameChrome.uss). */
 #board-screen .dice-panel .dice-header {
     height: 24px;
     min-height: 24px;
     margin: 0 0 3px 0;
     padding: 0 2px 0 17px;
-    background-image: resource("Wotr/Art/UI/frames/panel-header");
-    -unity-slice-top: 16;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 16;
-    -unity-slice-left: 32;
-    -unity-slice-scale: 0.5px;
+    background-image: var(--game-row-shadow);
 }
-/* UI-466 (owner): the Free Peoples' band is blue lacquer; the Shadow keeps the red one. */
-#board-screen .dice-panel .dice-header.dice-header-free { background-image: resource("Wotr/Art/UI/frames/panel-header-free-lacquer"); }
+/* UI-466 (owner): the Free Peoples' band is blue; the Shadow's red. */
+#board-screen .dice-panel .dice-header.dice-header-free { background-image: var(--game-row-free); }
 #board-screen .dice-panel .dice-header > .title {
     margin: 0;
     padding: 0;
     flex-shrink: 1;
     overflow: hidden;
     font-size: 13px;
-    letter-spacing: 0.8px;
-    -unity-font-style: bold;
-    color: rgb(241, 223, 166);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.85);
+    letter-spacing: 1.2px;
+    -unity-font-style: normal;
+    color: var(--game-title-text);
 }
 #board-screen .dice-panel .dice-header Button {
     height: 20px;

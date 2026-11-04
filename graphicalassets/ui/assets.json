@@ -36,7 +36,10 @@
       "--fe-row-fill": "#2a2218",
       "--fe-row-opacity": "0.8",
       "--fe-row-line": "#c9a764",
-      "--fe-tick-opacity": "1"
+      "--fe-tick-opacity": "1",
+      "--tab-enamel-light": "#5a4526",
+      "--tab-enamel-mid": "#3a2c18",
+      "--tab-enamel-dark": "#1f170c"
     },
     "free-lacquer": {
       "--lacquer-red-top": "#1d4466",
@@ -45,12 +48,28 @@
     "free": {
       "--enamel-light": "#2f5f82",
       "--enamel-mid": "#183c58",
-      "--enamel-dark": "#0c2135"
+      "--enamel-dark": "#0c2135",
+      "--fe-row-fill": "#0c2135",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#2f5f82",
+      "--fe-field-top": "#12304a",
+      "--fe-field-bottom": "#0c2135",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#2f5f82",
+      "--fe-sheen-opacity": "0.06"
     },
     "shadow": {
       "--enamel-light": "#7c2b22",
       "--enamel-mid": "#4b1712",
-      "--enamel-dark": "#2a0b09"
+      "--enamel-dark": "#2a0b09",
+      "--fe-row-fill": "#2a0b09",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#7c2b22",
+      "--fe-field-top": "#36110d",
+      "--fe-field-bottom": "#2a0b09",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#7c2b22",
+      "--fe-sheen-opacity": "0.06"
     },
     "shadow-hover": {
       "--gilt-highlight": "#fff3cc",
@@ -60,7 +79,15 @@
       "--enamel-light": "#96382c",
       "--enamel-mid": "#5d1d16",
       "--enamel-dark": "#33100c",
-      "--glow-opacity": "0.45"
+      "--glow-opacity": "0.45",
+      "--fe-row-fill": "#33100c",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#96382c",
+      "--fe-field-top": "#42160f",
+      "--fe-field-bottom": "#33100c",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#96382c",
+      "--fe-sheen-opacity": "0.08"
     },
     "playable": {
       "--card-rim": "#8a6424",
@@ -81,7 +108,15 @@
       "--gilt-light": "#e9c977",
       "--gilt-mid": "#b08a40",
       "--gilt-shadow": "#7a5822",
-      "--glow-opacity": "0.45"
+      "--glow-opacity": "0.45",
+      "--fe-row-fill": "#102a42",
+      "--fe-row-opacity": "0.96",
+      "--fe-row-line": "#3b739a",
+      "--fe-field-top": "#17395a",
+      "--fe-field-bottom": "#102a42",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#3b739a",
+      "--fe-sheen-opacity": "0.08"
     },
     "free-selected": {
       "--enamel-light": "#2f5f82",
@@ -119,7 +154,8 @@
       "--fe-field-bottom": "#171512",
       "--fe-sheen-opacity": "0",
       "--fe-row-fill": "#0b0a09",
-      "--fe-row-opacity": "0.8"
+      "--fe-row-opacity": "0.8",
+      "--fe-row-line": "#8f7444"
     },
     "free-pressed": {
       "--gilt-highlight": "#cbb37c",
@@ -129,7 +165,12 @@
       "--glow-opacity": "0.15",
       "--enamel-light": "#1a3852",
       "--enamel-mid": "#0d2336",
-      "--enamel-dark": "#06121f"
+      "--enamel-dark": "#06121f",
+      "--fe-field-top": "#06121f",
+      "--fe-field-bottom": "#0c2135",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#2f5f82",
+      "--fe-sheen-opacity": "0"
     },
     "shadow-pressed": {
       "--gilt-highlight": "#cbb37c",
@@ -139,7 +180,12 @@
       "--glow-opacity": "0.15",
       "--enamel-light": "#4e1a14",
       "--enamel-mid": "#2c0d0a",
-      "--enamel-dark": "#160504"
+      "--enamel-dark": "#160504",
+      "--fe-field-top": "#160504",
+      "--fe-field-bottom": "#2a0b09",
+      "--fe-field-opacity": "0.96",
+      "--fe-line": "#7c2b22",
+      "--fe-sheen-opacity": "0"
     },
     "cancelled": {
       "--cancel-opacity": "1"
@@ -222,7 +268,8 @@
       "--slab-glow-opacity": "1"
     },
     "available": {
-      "--tab-glow-opacity": "1"
+      "--tab-glow-opacity": "1",
+      "--fe-line": "#e9c977"
     },
     "available-hover": {
       "--gilt-highlight": "#fff3cc",
@@ -235,7 +282,8 @@
       "--button-top": "#3d3a36",
       "--button-bottom": "#252321",
       "--glow-opacity": "0.45",
-      "--tab-glow-opacity": "1"
+      "--tab-glow-opacity": "1",
+      "--fe-line": "#f2d283"
     },
     "discard": {
       "--card-rim": "#7a2a1c",
@@ -1885,14 +1933,20 @@
     },
     {
       "source": "frontend/button.svg",
-      "role": "UI-470: a menu button, tab or segment: a dark field edged with one muted-gold line; selected is an open page or chosen segment, primary the one main action's warm-gold gradient.",
+      "role": "UI-470: a menu button, tab or segment: a dark field edged with one muted-gold line; selected is an open page or chosen segment, primary the one main action's warm-gold gradient. UI-476: free and shadow (with hover and pressed) are the same button in the side's enamel, for the console's status plaque.",
       "variants": [
         "hover",
         "pressed",
         "selected",
         "primary",
         "primary-hover",
-        "primary-pressed"
+        "primary-pressed",
+        "free",
+        "free-hover",
+        "free-pressed",
+        "shadow",
+        "shadow-hover",
+        "shadow-pressed"
       ],
       "slices": {
         "top": 6,
@@ -1903,10 +1957,15 @@
     },
     {
       "source": "frontend/row.svg",
-      "role": "UI-470: a list row, side card or waiting-room seat: a quiet dark field with a dim line; selected marks the chosen side or your seat.",
+      "role": "UI-470: a list row, side card or waiting-room seat: a quiet dark field with a dim line; selected marks the chosen side or your seat. UI-475, UI-476: pressed for a clickable row of the game; free and shadow (with hover) are the side's enamel-dark field under its enamel-light line, nearly opaque, for what keeps the side's colour on the board: the dice band, Shadow entries, Politics rows, force frames, the turn ribbon.",
       "variants": [
         "hover",
-        "selected"
+        "selected",
+        "pressed",
+        "free",
+        "free-hover",
+        "shadow",
+        "shadow-hover"
       ],
       "slices": {
         "top": 8,

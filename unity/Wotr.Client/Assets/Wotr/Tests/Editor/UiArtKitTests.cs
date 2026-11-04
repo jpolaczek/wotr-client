@@ -58,6 +58,11 @@ namespace Wotr.EditorTests
             ("frontend/button", 64, 32, true), ("frontend/button-hover", 64, 32, true), ("frontend/button-pressed", 64, 32, true),
             ("frontend/button-selected", 64, 32, true), ("frontend/button-primary", 64, 32, true),
             ("frontend/button-primary-hover", 64, 32, true), ("frontend/button-primary-pressed", 64, 32, true),
+            // UI-476: the button and the row in a side's enamel; UI-475: a clickable row's press.
+            ("frontend/button-free", 64, 32, true), ("frontend/button-free-hover", 64, 32, true), ("frontend/button-free-pressed", 64, 32, true),
+            ("frontend/button-shadow", 64, 32, true), ("frontend/button-shadow-hover", 64, 32, true), ("frontend/button-shadow-pressed", 64, 32, true),
+            ("frontend/row-pressed", 96, 40, true), ("frontend/row-free", 96, 40, true), ("frontend/row-free-hover", 96, 40, true),
+            ("frontend/row-shadow", 96, 40, true), ("frontend/row-shadow-hover", 96, 40, true),
             ("frontend/row", 96, 40, true), ("frontend/row-hover", 96, 40, true), ("frontend/row-selected", 96, 40, true),
             ("frontend/medallion", 56, 56, true), ("frontend/medallion-hover", 56, 56, true), ("frontend/medallion-pressed", 56, 56, true),
             ("frontend/medallion-fate-on", 56, 56, true), ("frontend/medallion-lords-on", 56, 56, true),

@@ -69,7 +69,7 @@ The console replaces the present dock and has a **fixed height** of the entire l
 <a id="strefa-statusu-nagłówek-i-podpowiedź-do-dwóch-linii"></a>
 ### Status Zone (header and hint to two lines)
 
-- `status-plaque` badge in enamel running side with a emblem and one sentence: who works and what
+- `status-plaque` badge (since UI-476 `frontend/button-free`/`button-shadow`) in enamel running side with a emblem and one sentence: who works and what
   now (YOUR ACTION · Army die · 1 of 2 moves left", "Waiting for Shadow · battle at Minas Tirith",
   "Fellowship phase · Declare, change the guide or enter Mordor", "Shadow allocates Hunt dice",
   "Game over · ...").
@@ -146,7 +146,7 @@ The console replaces the present dock and has a **fixed height** of the entire l
   opens the panel Hunt with a pool list ( UI-141 ) and report; the plaque is the object of dropping
   dice at the assignment. The console does not have a separate pool button – the list belongs to the
   panel (from UI-162 to the window) Hunt .
-- At the assignment of Shadow the recess is lit (`hunt-box-eligible`, section C).
+- At the assignment of Shadow the recess is lit (`hunt-box-eligible`, since UI-476 `frontend/row-selected`; section C).
 - UI-430 (owner, 2026-10-30): while an effect offers a Hunt roll (The Nazgûl Strike!) the plaque glows and pulses (the
   shared choice glow, no filter, no size change), its tooltip says that a click starts a Hunt roll now and why, and the
   click sends that roll instead of opening the panel ([UX_SPEC](UX_SPEC.md#no-button-for-an-option-the-board-draws--ui-430)).
@@ -368,7 +368,7 @@ Source: BASE p. 21, LOGIC B05. Free Peoples use the Ring and give it back to Sha
   `RingFacePicker` over the selected dice and cancels the gesture at the click in the map. Reading
   other panels (e.g. "Why unavailable?") does not interrupt the gesture. The order can be the
   opposite: the previously selected die goes straight to the walls.
-- `RingFacePicker` is a `console/picker` slop with a `picker-tail` tail and walls on the medallions
+- `RingFacePicker` is a slop (since UI-476 the board's card, `frontend/card-board`) with a `picker-tail` tail and walls on the medallions
   of the page (34 pt). It stands over the whole panel of dice, in the column of the selected dice,
   so it does not cover either dice or the panel header with the help links, and it adheres to the
   limits of board.
