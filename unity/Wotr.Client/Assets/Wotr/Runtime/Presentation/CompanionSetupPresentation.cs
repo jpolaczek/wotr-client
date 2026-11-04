@@ -48,10 +48,14 @@ namespace Wotr.Client
         public const string AlternateTooltip = "Alternate version · only you see this mark";
 
         // UI-269: the tray's and the console's hint — what is still missing, or that the ✓ sends the choice.
+        // UI-481 (owner): the console holds the setup's instruction and its ✓.
+        public const string CompleteHint =
+            "Click a portrait marked with two faces to compare its versions; a crown makes the starting Guide; ✓ confirms.";
+
         public static string Hint(TurnDraft draft, ActionOption option)
         {
             var missing = Missing(draft, option);
-            return missing.Length > 0 ? missing + " on the portraits." : "Confirm the versions and the starting Guide.";
+            return missing.Length > 0 ? missing + " on the portraits." : CompleteHint;
         }
 
         // What a click on a portrait with two versions does, and which version the draft holds.

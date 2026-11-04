@@ -112,6 +112,8 @@ namespace Wotr.Client
                 route.Clear(); // Never replace an invalid route with a different strategic choice.
         }
 
+        public const string LeavePlayHint = "Selected companions leave play · ✓ removes them.";
+
         public static string Hint(TurnDraft draft, PlayerView view)
         {
             if (!UsesFellowship(draft.Kind))
@@ -125,9 +127,10 @@ namespace Wotr.Client
                 return "";
             if (UsesRoute(draft.Kind))
             {
-                if (view.Fellowship.MordorStep.HasValue && draft.Kind == CommandKind.SeparateCompanions)
-                    return "Selected companions leave play.";
                 var option = DraftOptions.For(view, draft);
+                // UI-481: the console's ✓ takes them out, so its hint says so (the panel's "Remove from play" button is gone).
+                if (draft.Kind == CommandKind.SeparateCompanions && (view.Fellowship.MordorStep.HasValue || option.Travel.Count == 0))
+                    return LeavePlayHint;
                 if (option.AllowEmptySelection && draft.Payload.CompanionMoves.Count == 0)
                     return draft.Kind == CommandKind.MoveShadowCharacters ? ShadowFigures(view, draft) + " or confirm without moving."
                         : "Move any companions or confirm without moving.";

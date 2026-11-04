@@ -153,8 +153,8 @@ namespace Wotr.PlayTests
         private static async Task Confirm(UI10TestRoom room)
         {
             var revision = room.Fp.Board.View.Revision;
-            await room.Until(() => room.Fp.Board.Fellowship.Root.Q<Button>("confirm-decision")?.enabledInHierarchy == true);
-            await Press(room, room.Fp.Board, "confirm-decision");
+            await room.Until(() => room.Fp.Board.Console.Actions.Confirm.enabledInHierarchy);
+            await Press(room, room.Fp.Board, "console-confirm");
             await room.At(revision + 1);
         }
 

@@ -142,12 +142,14 @@ namespace Wotr.PlayTests
             var ids = board.View.Options.Single(o => o.Kind == CommandKind.SeparateCompanions).EligibleIds.ToArray();
             foreach (var id in ids)
                 PointerGestureEvents.ClickAt(Portrait(board, id));
-            await room.Until(() => board.Tray.Q<Button>("confirm-decision")?.enabledInHierarchy == true);
+            // UI-481 (owner): the console's ✓ confirms, and the console says it removes them from play.
+            await room.Until(() => board.Console.Actions.Confirm.enabledInHierarchy);
             await room.Settle();
-            Assert.AreEqual("Remove from play", board.Tray.Q<Button>("confirm-decision").text);
+            StringAssert.Contains(FellowshipDraft.LeavePlayHint, board.Console.Status.Hint.text);
+            Assert.AreEqual(DisplayStyle.None, board.Tray.Q<Button>("confirm-decision").resolvedStyle.display, "The panel shows no confirm.");
             Assert.IsEmpty(board.Map.DraftOverlay.Targets);
             Assert.IsNull(board.Tray.Q<Label>("travel-summary"));
-            PointerGestureEvents.ClickAt(board.Tray.Q<Button>("confirm-decision"));
+            PointerGestureEvents.ClickAt(board.Console.Actions.Confirm);
             await room.At(1);
             Assert.IsEmpty(room.Boundary.LastCommand.Payload.Route);
             Assert.IsEmpty(room.Boundary.LastCommand.Payload.DieId);

@@ -773,7 +773,7 @@ Owner request: the default Guide is Gandalf, so Confirm can be clicked at once, 
 phase. The setup's draft starts with Gandalf the Grey crowned as Guide (when he may be) and every required companion
 in its printed version (`CouncilDraft.Defaults`); the crowns and the version cards still change both, and nothing is
 sent until the click. During the Council's setup (versions and homelands) the console's ✓ stands in the Fellowship
-panel's action row beside Finish phase (`DecisionTray.ConfirmHost`, `FellowshipPanel.ActionRow`). Tests:
+panel's action row beside Finish phase (`FellowshipPanel.ActionRow`; since UI-481, owner 2026-11-04, the console's ✓ confirms instead). Tests:
 `CompanionSetupPanelNetworkTests` (ready at once, the ✓'s place, `ui370-council-setup-*.png`),
 `CouncilHomelandPanelNetworkTests`.
 

@@ -167,8 +167,13 @@ namespace Wotr.PlayTests
             foreach (var flat in hairlines.Concat(new[] { bar.Root, bar.Frame, bar.Opponent.Root }))
                 Assert.IsNull(flat.resolvedStyle.backgroundImage.texture, (flat.name ?? flat.GetClasses().FirstOrDefault()) + " · " + label);
             Assert.GreaterOrEqual(bar.Root.resolvedStyle.backgroundColor.a, .92f, "Readable over the bright map · " + label);
-            Assert.That(bar.Frame.resolvedStyle.borderBottomWidth, Is.EqualTo(1).Within(.5f), "One rule along the foot · " + label);
+            // UI-480 (owner): the gilt rule runs round the whole bar.
+            Assert.That(bar.Frame.resolvedStyle.borderBottomWidth, Is.EqualTo(1).Within(.5f), "The rule along the foot · " + label);
+            Assert.That(bar.Frame.resolvedStyle.borderTopWidth, Is.EqualTo(1).Within(.5f), "The rule along the top · " + label);
+            Assert.That(bar.Frame.resolvedStyle.borderLeftWidth, Is.EqualTo(1).Within(.5f), "The rule at the left · " + label);
+            Assert.That(bar.Frame.resolvedStyle.borderRightWidth, Is.EqualTo(1).Within(.5f), "The rule at the right · " + label);
             Assert.Greater(bar.Frame.resolvedStyle.borderBottomColor.a, .5f, label);
+            Assert.AreEqual(bar.Frame.resolvedStyle.borderBottomColor, bar.Frame.resolvedStyle.borderTopColor, label);
             foreach (var hairline in hairlines)
             {
                 Assert.That(hairline.resolvedStyle.width, Is.EqualTo(1).Within(PixelRounding), label);

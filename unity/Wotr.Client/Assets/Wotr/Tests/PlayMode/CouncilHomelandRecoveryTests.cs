@@ -64,7 +64,7 @@ namespace Wotr.PlayTests
             await StrictPress(client.Root, "fellowship-portrait-" + Gimli, token);
             await StrictPress(client.Root, "version-fate.character.gimli-dwarven-lord", token);
             await StrictPress(client.Root, "starting-guide-base.character.strider", token);
-            await StrictPress(client.Root, "confirm-decision", token);
+            await StrictPress(client.Root, "console-confirm", token);
             await Until(() => client.Board.View.Decision?.Kind == DecisionKind.CouncilHomelands, token);
             await Task.Delay(100, token);
             var other = JsonConvert.SerializeObject(await shadow.Get<PlayerView>("api/matches/" + match, token));
@@ -96,7 +96,7 @@ namespace Wotr.PlayTests
             client.Board.Fellowship.Open();
             await Task.Delay(100, token);
             Assert.AreEqual("→ Ered Luin", Portrait(client.Board, Gimli).Q<Label>("homeland-location").text);
-            return await LoseResponse(client, api, boundary, storage, match, "confirm-decision",
+            return await LoseResponse(client, api, boundary, storage, match, "console-confirm",
                 CommandKind.ChooseCouncilHomelands, token);
         }
 

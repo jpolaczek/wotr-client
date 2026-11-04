@@ -7,7 +7,8 @@ namespace Wotr.Client
 {
     // UI-269: the two version cards of the companion the Fellowship panel compares, side by side under its portraits;
     // a click on a card chooses that version. The portraits (two-faces badge) choose which companion is compared and
-    // their crowns the starting Guide; the console's ✓ sends the choice once it is complete.
+    // their crowns the starting Guide; the console's ✓ sends the choice once it is complete, and the console says how
+    // (UI-481, CompanionSetupPresentation.Hint).
     public sealed class CompanionSetupChoices
     {
         private readonly TurnDraft draft;
@@ -31,10 +32,6 @@ namespace Wotr.Client
             pulse = new ChoicePulse(comparison);
             var choices = new VisualElement { name = "companion-setup-choices" };
             root.Add(choices);
-            var hint = new Label("Click a portrait marked with two faces to compare its versions; a crown makes the starting Guide.")
-                { name = "setup-hint" };
-            hint.AddToClassList("draft-status");
-            choices.Add(hint);
             choices.Add(comparison);
             Compare(First(versions?.Figure ?? ""));
             if (versions != null)

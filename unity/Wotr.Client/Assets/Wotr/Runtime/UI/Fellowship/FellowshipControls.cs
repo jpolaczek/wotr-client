@@ -8,7 +8,7 @@ namespace Wotr.Client
     public sealed class FellowshipControls
     {
         public VisualElement Root { get; } = new VisualElement { name = "fellowship-controls" };
-        // UI-370: the row of Finish phase, which also hosts the Council setup's ✓.
+        // The row of Finish phase (UI-481: the Council setup's ✓ moved to the console).
         public VisualElement Row { get; } = BoardScreen.Row("fellowship-actions");
         public event Action<CommandKind> Selected;
         // UI-98: some Fellowship action is legal now, so the top-bar plaque invites a look.

@@ -1030,9 +1030,6 @@ namespace Wotr.Client
             tray.ContextualCharacter = CharacterRosterActions.OwnsDecision(view, draft);
             // UI-381: a choice planned on the board's objects is confirmed with the console's ✓.
             tray.ConfirmInConsole = ConsoleConfirm.Owns(view, draft, reinforcements.Planning);
-            // UI-370: during the Council's setup the ✓ stands beside Finish phase.
-            tray.ConfirmHost = view.DecisionOwner == view.You &&
-                view.Decision?.Kind is DecisionKind.CouncilVersions or DecisionKind.CouncilHomelands ? board.Fellowship.ActionRow : null;
             return directArmy;
         }
 

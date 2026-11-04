@@ -22,8 +22,9 @@
     right: 0;
     top: 0;
     bottom: 0;
-    border-bottom-width: 1px;
-    border-bottom-color: var(--game-topbar-rule);
+    /* UI-480 (owner, 2026-11-04): the gilt rule runs round the whole bar; it takes no layout. */
+    border-width: 1px;
+    border-color: var(--game-topbar-rule);
 }
 
 /* First child of the board stage: the bar's shadow falls on the map, under the docked panels. */

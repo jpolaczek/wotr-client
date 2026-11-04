@@ -40,21 +40,6 @@ namespace Wotr.Client
         // only; the panel's status line stays hidden.
         private bool hintInConsole;
         private string layoutKey;
-        private VisualElement confirmHost;
-
-        // UI-370: where the confirm stands instead of the footer (the Fellowship panel's action row during the Council's
-        // setup); null keeps it in the footer. A change rebuilds the tray.
-        public VisualElement ConfirmHost
-        {
-            get => confirmHost;
-            set
-            {
-                if (confirmHost == value)
-                    return;
-                confirmHost = value;
-                layoutKey = null;
-            }
-        }
         // UI-373: the view and draft the confirm's tooltip names the die from.
         private PlayerView shownView;
         private TurnDraft shownDraft;
@@ -293,7 +278,8 @@ namespace Wotr.Client
             status = new Label(DecisionObjects.Prompt(view, draft) + ".");
             status.AddToClassList("draft-status");
             footer.Insert(0, status);
-            hintInConsole = FellowshipHost && FellowshipDraft.UsesRoute(draft.Kind);
+            // UI-481: so does the Council's setup.
+            hintInConsole = FellowshipHost && (FellowshipDraft.UsesRoute(draft.Kind) || CompanionSetupPresentation.Setup(view));
             if (view.Battle != null)
             {
                 footer.AddToClassList("battle-choice-footer");
@@ -343,7 +329,7 @@ namespace Wotr.Client
                 confirm.style.display = DisplayStyle.None;
             confirm.SetEnabled(false);
             ConfirmChanged?.Invoke(false);
-            (ConfirmHost ?? footer).Add(confirm);
+            footer.Add(confirm);
             root.Add(footer);
         }
 

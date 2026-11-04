@@ -4411,3 +4411,34 @@ Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, all passi
 order-dependent and not this task's. The full PlayMode suite was not run.
 Screenshots: `.artifacts/screenshots/ui479-before-*` and `ui479-after-*` (`base`, `kings-lords-shadow`, `kings-lords-free`, `discard`, `discard-pulse`, `rims-status`, `menu`, each at `1366-1.00`, `1366-1.25` and `1920-1.00`), taken by a temporary test that was removed.
 Rims, the press and the status were forced by their classes and text; the before set has no `discard-pulse` or transition frame.
+
+<a id="the-top-bar-framed-all-round--ui-480"></a>
+## The top bar framed all round — UI-480 (2026-11-04)
+
+The owner: "add gold frames to the top bar on every side; now the frame looks ideal but it is only on the bottom edge".
+UI-479's 1-point gilt rule now runs round the whole bar: the bar's Frame element (`.topbar-frame`, absolute, no layout) has
+all four borders in `--game-topbar-rule`, so nothing in the bar moves.
+
+Playtest (owner's checklist):
+- [ ] Any game. Expect: one thin gold line along the top, both ends and the foot of the bar, the same on all sides.
+
+Tests: PlayMode `TopBarLayoutTests` (four borders of one colour).
+
+<a id="the-fellowship-panels-decisions-confirm-in-the-console--ui-481"></a>
+## The Fellowship panel's decisions confirm in the console — UI-481 (2026-11-04)
+
+The owner, on the companions' versions at the Council's setup: "the confirm button is to be clicked in the bottom panel, not
+in the Fellowship panel". As UI-381 did for the other choices on the board's objects, `ConsoleConfirm.Owns` now covers every
+decision the Fellowship panel hosts (`FellowshipActions.UsesPanel`: the private versions, the homelands, a grouped
+separation): the tray keeps its confirm hidden and the console's ✓ sends it. UI-370's ✓ beside Finish phase
+(`DecisionTray.ConfirmHost`) is gone. The setup's instruction moves to the console too (the standing rule of UI-456,
+`CompanionSetupPresentation.Hint`); the panel keeps only its portraits, cards and Declare / Finish phase. The Declare button
+stays beside Finish phase (UI-448, owner), and the console's ✓ also sends a ready declaration.
+
+Playtest (owner's checklist):
+- [ ] A Lords game's setup (`lords-*` with the Council, or a new Lords game). Expect: no ✓ in the Fellowship panel; the console
+  says what to do, and its ✓ is lit once the choice is complete and sends it.
+- [ ] A Council game's homelands. Expect: the same ✓ in the console.
+
+Tests: PlayMode `CompanionSetupPanelNetworkTests`, `CompanionSetupRecoveryTests`, `CouncilHomelandPanelNetworkTests`,
+`CouncilHomelandRecoveryTests`, `BoardCompletionContextNetworkTests`, `FellowshipNetworkTests`, `ExpansionDecisionNetworkTests`.

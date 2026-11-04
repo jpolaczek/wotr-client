@@ -55,7 +55,7 @@ namespace Wotr.PlayTests
             await ClickReady(client.Root, "fellowship-portrait-" + Gimli, token);
             await ClickReady(client.Root, "version-fate.character.gimli-dwarven-lord", token);
             await ClickReady(client.Root, "starting-guide-" + Strider, token);
-            await Until(() => client.Root.Q<Button>("confirm-decision").enabledInHierarchy, token);
+            await Until(() => client.Root.Q<Button>("console-confirm").enabledInHierarchy, token);
             await client.LocalWrites;
             var saved = await LocalMatchPersistence.Open(storage, api.Address.AbsoluteUri, api.AccountId, match);
             Assert.IsNotNull(saved.Draft);
@@ -85,7 +85,7 @@ namespace Wotr.PlayTests
             await Task.Delay(100, token);
             Assert.IsTrue(client.Root.Q<Button>("starting-guide-" + Strider).ClassListContains("selected"));
             boundary.HoldNextCommand = true;
-            await ClickReady(client.Root, "confirm-decision", token);
+            await ClickReady(client.Root, "console-confirm", token);
             await Until(() => boundary.CommandHeld, token);
             saved = await LocalMatchPersistence.Open(storage, api.Address.AbsoluteUri, api.AccountId, match);
             Assert.AreEqual(CommandKind.ChooseCompanionVersions, boundary.LastCommand.Kind);
