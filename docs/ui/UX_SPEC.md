@@ -4764,3 +4764,14 @@ Playtest (owner's checklist):
 
 Tests: PlayMode `TurnConsoleLayoutTests` (the panels on the edges, every layout), `DicePanelLayoutTests`, `CompactBoardLayoutTests`,
 `InGameDenseLayoutTests`, `WillOfTheWestFaceNetworkTests`, `LayoutStressScenarioTests`.
+
+<a id="combat-titles-wrap--ui-495"></a>
+## Combat titles wrap in a full hand — UI-495 (2026-11-04)
+
+Found in the website's pictures: with five cards in the battle window, a Combat title ran out of its narrow card and was cut
+("They Are Terr", "We Come to Ki"). The title wraps into its two lines now.
+
+Playtest (owner's checklist):
+- [ ] `showcase-siege` as the Shadow. Expect: five cards in the battle window, each title whole on one or two lines.
+
+Tests: PlayMode `WebsiteScreenshotTests.TheGreatSiege`, `BattleLayoutTests`.

@@ -495,7 +495,8 @@
 .regional-battle .tray .combat-choice .unity-label { white-space: normal; overflow: hidden; text-overflow: ellipsis; -unity-text-align: upper-left; }
 .regional-battle .tray .combat-choice .combat-choice-heading { flex-direction: row; align-items: center; margin-bottom: 2px; }
 .regional-battle .tray .combat-choice .action-symbol { position: relative; left: 0; top: 0; width: 14px; height: 14px; margin: 0 4px 0 0; flex-shrink: 0; }
-.regional-battle .tray #combat-choice-title { flex-grow: 1; min-width: 0; margin: 0; padding: 0; font-size: 11px; height: 26px; min-height: 26px; -unity-font-style: bold; -unity-text-align: middle-left; color: rgb(59, 36, 18); }
+/* UI-495: a zero basis and room for two lines of its type, so a long title wraps instead of running out of a narrow card. */
+.regional-battle .tray #combat-choice-title { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; margin: 0; padding: 0; font-size: 11px; height: 30px; min-height: 30px; -unity-font-style: bold; -unity-text-align: middle-left; color: rgb(59, 36, 18); }
 .regional-battle .tray #combat-choice-text { margin: 0; padding: 0; font-size: 10px; height: 30px; min-height: 30px; color: rgb(58, 42, 24); }
 .regional-battle .tray #combat-choice-condition { margin: 0; padding: 0; font-size: 10px; height: 30px; min-height: 30px; color: rgb(122, 74, 30); }
 .regional-battle .tray .combat-choice.combat-choice-unavailable { opacity: 0.6; -unity-background-image-tint-color: rgb(196, 190, 176); }
