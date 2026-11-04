@@ -69,6 +69,8 @@
     --game-row-free-hover: resource("Wotr/Art/UI/frontend/row-free-hover");
     --game-row-shadow: resource("Wotr/Art/UI/frontend/row-shadow");
     --game-row-shadow-hover: resource("Wotr/Art/UI/frontend/row-shadow-hover");
+    --game-side-band-free: resource("Wotr/Art/UI/frontend/side-band-free");
+    --game-side-band-shadow: resource("Wotr/Art/UI/frontend/side-band-shadow");
     /* UI-476: the button in a side's enamel: the console's status plaque; the button's slices. */
     --game-side-button-free: resource("Wotr/Art/UI/frontend/button-free");
     --game-side-button-free-hover: resource("Wotr/Art/UI/frontend/button-free-hover");
@@ -183,7 +185,6 @@
 #board-screen .edge-left-panel .character-roster-grid .action,
 #board-screen .nation-track,
 #board-screen .console-hunt-well,
-#board-screen .dice-panel .dice-header,
 #board-screen .turn-ribbon-band,
 #board-screen .battle-stages,
 #board-screen .battle-force,

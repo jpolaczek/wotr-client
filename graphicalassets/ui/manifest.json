@@ -4,7 +4,7 @@
   "shared_sha256": {
     "palette.css": "82c15de854bf52b4e1f009f0a92e8985b0923807a24d007b94c38b19341ad2a4",
     "src/shared/defs.svg": "58db1d58a4adada8fca91fb7bd05325e65bf5f27710887cce1753b6cfc3eb8bd",
-    "assets.json": "49542062112b9659f408adf6177c9d6222c2e60e252c7030debca8a46417f820"
+    "assets.json": "d309bffc65713331ea1e7b81f828599067927cdc8527fc9865be31c806bbf70a"
   },
   "assets": [
     {
@@ -5606,6 +5606,38 @@
       "alpha": true,
       "source_sha256": "5f59ada7da607dfb4c0ddd32465672ee2efc99782d3fda6dc28ae6df41616b4e",
       "png_sha256": "14dc8fa39054288994830dd1f9fe9a8fca624236d3cc0903849032afc9c6416f"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/side-band-free.png",
+      "source": "src/frontend/side-band.svg",
+      "variant": "free",
+      "logical": [
+        120,
+        24
+      ],
+      "pixels": [
+        240,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "8387ea93a106251d58e39ce2cf3d648966463fa064ff2004daf2710b5111ffb6",
+      "png_sha256": "d63569ea3dc5c9d1b03360819ca4462b4680ac45c49a40771e686bf817f7ec9e"
+    },
+    {
+      "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/side-band-shadow.png",
+      "source": "src/frontend/side-band.svg",
+      "variant": "shadow",
+      "logical": [
+        120,
+        24
+      ],
+      "pixels": [
+        240,
+        48
+      ],
+      "alpha": true,
+      "source_sha256": "8387ea93a106251d58e39ce2cf3d648966463fa064ff2004daf2710b5111ffb6",
+      "png_sha256": "fce55e445d943079c5345da2baad32012762f9b058191e851f2552883ab4c310"
     },
     {
       "output": "unity/Wotr.Client/Assets/Wotr/Resources/Wotr/Art/UI/frontend/title-rule.png",

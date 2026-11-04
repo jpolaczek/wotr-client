@@ -56,8 +56,8 @@ namespace Wotr.PlayTests
             var panel = board.OwnDice;
             Assert.AreEqual("card-board", Texture(panel), "The panels' thin card · " + label);
             var header = panel.Q("dice-header");
-            // UI-466 (owner): the Free Peoples' band is blue, the Shadow's red; UI-476: on the side rows.
-            var band = board.View.You == Side.FreePeoples ? "row-free" : "row-shadow";
+            // UI-466 (owner): the Free Peoples' band is blue, the Shadow's red; UI-484: a wash melting into the card.
+            var band = board.View.You == Side.FreePeoples ? "side-band-free" : "side-band-shadow";
             Assert.AreEqual(band, Texture(header), "Header band in the side's colour · " + label);
             Inside(header, panel, label);
             var title = header.Q<Label>(className: "title");

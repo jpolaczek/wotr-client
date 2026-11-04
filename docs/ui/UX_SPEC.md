@@ -4547,3 +4547,20 @@ Playtest (owner's checklist):
 Tests: PlayMode `CompanionSetupPanelNetworkTests` (the available ✓ lit, solid gold with a dark check), `ExpansionLobbyNetworkTests` (a
 disabled ✓ is not), `TurnConsoleLayoutTests`, `GlowingHintAuditTests`, `GameButtonChromeTests`, `BattleLayoutTests`,
 `PressFeedbackClickTests`, `T22BoardNetworkTests`.
+
+<a id="the-side-colour-melts-into-the-dice-panel--ui-484"></a>
+## The side's colour melts into the dice panel — UI-484 (2026-11-04)
+
+The owner (a screenshot of the SHADOW bar): "this red bar looks a bit out of place, integrate it better with the rest of the
+tab". The own dice panel's header (`ActionPoolView.Header`) drops the framed side row: the side's enamel washes in from the left
+edge and fades out, over a hairline of the same colour that fades out too (`frontend/side-band-free`, `-shadow`; stretched, no
+slices), under the same quiet gold title as the other panels. Blue for the Free Peoples and red for the Shadow stay (UI-466). The
+console's status plaque and the YOUR ACTION ribbon keep their side rows.
+
+Playtest (owner's checklist):
+- [ ] A Shadow game and a Free Peoples game. Expect: the side's name on a soft red or blue wash that melts into the panel to the
+  right, with no frame round it.
+- [ ] An Elven Ring being used. Expect: CHOOSE A DIE in the same place, readable on the wash.
+
+Tests: EditMode `UiArtKitTests`; PlayMode `DicePanelLayoutTests` (the side's band, both sides, four layouts), `RingUseNetworkTests`,
+`GameWindowChromeTests`, `InGameDenseLayoutTests`.

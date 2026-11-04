@@ -1979,6 +1979,15 @@
       "role": "UI-470: a hairline fading out at both ends round a tiny open lozenge, under a menu window's title and over the sign-in card's last row; drawn unscaled."
     },
     {
+      "source": "frontend/side-band.svg",
+      "role": "UI-484: the side's colour behind the own dice panel's title: a wash of the side's enamel from the left edge, fading out, over a fading hairline; stretched across the header, no frame.",
+      "variants": [
+        "free",
+        "shadow"
+      ],
+      "base": false
+    },
+    {
       "source": "frontend/title-rule.svg",
       "role": "UI-472: the hairline under a game panel's or window's title, fading out at both ends; stretched across the header's bottom point, so it takes no layout from the row."
     },

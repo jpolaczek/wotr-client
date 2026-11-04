@@ -63,6 +63,7 @@ namespace Wotr.EditorTests
             ("frontend/button-shadow", 64, 32, true), ("frontend/button-shadow-hover", 64, 32, true), ("frontend/button-shadow-pressed", 64, 32, true),
             ("frontend/row-pressed", 96, 40, true), ("frontend/row-free", 96, 40, true), ("frontend/row-free-hover", 96, 40, true),
             ("frontend/row-shadow", 96, 40, true), ("frontend/row-shadow-hover", 96, 40, true),
+            ("frontend/side-band-free", 120, 24, true), ("frontend/side-band-shadow", 120, 24, true),
             ("frontend/row", 96, 40, true), ("frontend/row-hover", 96, 40, true), ("frontend/row-selected", 96, 40, true),
             ("frontend/medallion", 56, 56, true), ("frontend/medallion-hover", 56, 56, true), ("frontend/medallion-pressed", 56, 56, true),
             ("frontend/medallion-fate-on", 56, 56, true), ("frontend/medallion-lords-on", 56, 56, true),
