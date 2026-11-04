@@ -32,13 +32,17 @@ namespace Wotr.PlayTests
                 var label = button.name;
                 var style = button.resolvedStyle;
                 Assert.AreEqual(Art("button"), style.backgroundImage.texture, label);
-                Assert.AreEqual(12f, style.unitySliceTop, label + ": the 6-point slice of the 2x art");
-                Assert.AreEqual(12f, style.unitySliceRight, label);
-                Assert.AreEqual(12f, style.unitySliceBottom, label);
-                Assert.AreEqual(12f, style.unitySliceLeft, label);
-                Assert.AreEqual(0.5f, style.unitySliceScale, 0.001f, label);
                 Assert.AreEqual(0f, style.backgroundColor.a, 0.01f, label);
             }
+            var slices = icon.resolvedStyle;
+            Assert.AreEqual(12f, slices.unitySliceTop, icon.name + ": the 6-point slice of the 2x art");
+            Assert.AreEqual(12f, slices.unitySliceRight, icon.name);
+            Assert.AreEqual(12f, slices.unitySliceBottom, icon.name);
+            Assert.AreEqual(12f, slices.unitySliceLeft, icon.name);
+            Assert.AreEqual(0.5f, slices.unitySliceScale, 0.001f, icon.name);
+            // UI-479: the Menu's picture stands whole at 28 points on its 32-point target: a slice would take no background-size.
+            Assert.AreEqual(0f, menu.resolvedStyle.unitySliceTop, menu.name);
+            Assert.AreEqual(28f, menu.resolvedStyle.backgroundSize.y.value, 0.01f, menu.name);
             Assert.AreEqual(Muted, menu.resolvedStyle.color, "Muted parchment words, as in the menus.");
 
             var cancel = client.Board.Console.Actions.Cancel;

@@ -8,7 +8,7 @@
    start right at the bar's lower edge. */
 #board-screen .notification-bar {
     position: absolute;
-    top: 44px;
+    top: var(--game-topbar-height);
     left: 0;
     right: auto;
     height: 34px;

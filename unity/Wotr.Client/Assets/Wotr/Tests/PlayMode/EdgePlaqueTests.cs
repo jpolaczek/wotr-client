@@ -255,7 +255,7 @@ namespace Wotr.PlayTests
         private static void CheckPlaques(BoardScreen board, string label)
         {
             var bar = board.TopBar.Root;
-            Assert.That(bar.resolvedStyle.height, Is.EqualTo(44).Within(.5f), "The bar is slimmer than UI-86 · " + label);
+            Assert.That(bar.resolvedStyle.height, Is.EqualTo(36).Within(.5f), "UI-479: the slim bar · " + label);
             var corner = board.Edges.Corner;
             Assert.IsTrue(Visible(corner), label);
             Assert.AreEqual("card-board", Texture(corner), "The corner tab wears the panels' thin card · " + label);

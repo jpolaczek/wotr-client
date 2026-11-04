@@ -1375,7 +1375,7 @@
 /* UI-70: board navigation; no game pause or changes to mechanic shortcuts. */
 .board-menu { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .board-menu-panel {
-    position: absolute; right: 10px; top: 46px; width: 224px;
+    position: absolute; right: 10px; top: var(--game-topbar-menu-top); width: 224px;
     padding: 10px; background-color: rgb(36, 34, 31);
     border-top-width: 1px; border-bottom-width: 1px; border-left-width: 1px; border-right-width: 1px;
     border-top-color: rgb(164, 145, 97); border-bottom-color: rgb(164, 145, 97);

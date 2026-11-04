@@ -1191,7 +1191,7 @@ The hidden route never shows on the map. Controls: Skip only (D2–D4, D6–D7).
 
 - **Counts:** every storyboard adds exactly one new control (Skip) while it plays and none afterwards; captions: A 0,
   B 0, C 0, D 0. Card reading uses the existing inspector.
-- **Four layouts:** at 1366 × 768 and 125 % the logical board is 1093 × 614 pt; with the 44 pt top bar and the 140 pt
+- **Four layouts:** at 1366 × 768 and 125 % the logical board is 1093 × 614 pt; with the 44 pt top bar (36 pt since UI-479) and the 140 pt
   console the safe map height is about 430 pt, which takes the CardInspector at its normal width (already verified for
   hand cards in all four layouts) beside a framed region; at 1920 × 1080 both fit with room to spare. The Skip
   medallion sits over the map's bottom-right corner, covers no HUD text and moves nothing. No font is reduced.

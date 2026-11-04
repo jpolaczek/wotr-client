@@ -256,7 +256,7 @@ The window of the ruler.
 
 **Notifications.**
 - `ActionNoticeBar.Root` lies in the root of board behind the stage, so it draws over it. It has
-  `position: absolute` under the top bar (44 pt) and width resulting from the content
+  `position: absolute` under the top bar (36 pt since UI-479, `--game-topbar-height`) and width resulting from the content
   (`Styles/Notices.uss`).
 - It does not take up the space in the column: the scene and `topbar-shadow` begin at the bottom
   edge of the top bar.

@@ -5,7 +5,7 @@ using Wotr.Contracts;
 
 namespace Wotr.Client
 {
-    // Opponent counters in the top bar cartouche. Chips are built once; Apply rewrites only changed values. UI-344 (owner's
+    // Opponent counters on the top bar. Chips are built once; Apply rewrites only changed values. UI-344 (owner's
     // decision EXP-15 D3): the expansions' tokens have fixed chips too — the Free Peoples' Ruler tokens, the Shadow's
     // Dismay and Council tokens — shown for the whole game when its modules use them. UI-432 (owner's rule, UI-430): while
     // Worn with Sorrow and Toil may discard a random card from the Free Peoples hand, the card counter is that choice.

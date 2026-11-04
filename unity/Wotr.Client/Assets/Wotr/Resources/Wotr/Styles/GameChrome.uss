@@ -88,6 +88,14 @@
     --game-warning-line: rgb(232, 158, 112);
     --game-warning-line-dim: rgb(150, 92, 66);
     --game-warning-text: rgb(255, 236, 196);
+    /* UI-479: the top bar, flat on one muted gilt rule, with quiet hairlines between what stands on it. Everything under the bar
+       reads its height from here or from the bar's place; the Menu panel opens two points below it. The fill is the card's,
+       opaque: the map's figures run under the bar and would ghost through a translucent one. */
+    --game-topbar-height: 36px;
+    --game-topbar-menu-top: 38px;
+    --game-topbar-fill: rgb(21, 19, 17);
+    --game-topbar-rule: rgb(163, 132, 75);
+    --game-topbar-hairline: rgba(163, 132, 75, 0.45);
 }
 
 /* The states of .action; its base stays in Wotr.uss at its old place in the cascade. Each has two classes, in the first

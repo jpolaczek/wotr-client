@@ -1,36 +1,29 @@
-/* UI-86: illustrated top bar. Pieces are rendered at 2x from graphicalassets/ui (assets.json),
-   so 9-slice values are texture pixels and -unity-slice-scale shows them at their size in points.
-   UI-98: 44 points high; the Fellowship and Hunt summary moved to the corner tab (Styles/RightColumn.uss). */
+/* UI-86: the top bar. UI-98: the Fellowship and Hunt summary moved to the corner tab (Styles/RightColumn.uss).
+   UI-479 (owner, 2026-11-03: "the top bar we could try to slim a little, but without losing any information"): 36 points
+   high and flat, in the menus' thin line. Every counter, die and state stays, and a click target stays at 32 points or more.
+   Its height and colours are tokens of Styles/GameChrome.uss; Styles/Notices.uss and the Menu panel read the same height. */
 
 .topbar {
-    height: 44px;
-    min-height: 44px;
+    height: var(--game-topbar-height);
+    min-height: var(--game-topbar-height);
     flex-shrink: 0;
     flex-direction: row;
     align-items: center;
     /* The whole bar is an edge control that pans only on its outer rim (MapEdgePan). */
     padding: 0 18px 0 30px;
-    background-color: rgb(33, 31, 29);
-    background-image: resource("Wotr/Art/UI/surfaces/topbar-plate");
-    background-repeat: repeat-x;
-    background-size: 168px 100%;
-    background-position: left top;
+    background-color: var(--game-topbar-fill);
 }
 
-/* Gilt rules and plain end posts over the plate (UI-202: no filigree caps); never takes the pointer. */
+/* One muted gilt rule along the bar's foot. It stands on this layer, out of the bar's flow, so it takes no room from the
+   bar's row; never takes the pointer. */
 .topbar-frame {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    background-image: resource("Wotr/Art/UI/frames/topbar-frame");
-    -unity-background-scale-mode: stretch-to-fill;
-    -unity-slice-top: 40;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 40;
-    -unity-slice-left: 16;
-    -unity-slice-scale: 0.5px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--game-topbar-rule);
 }
 
 /* First child of the board stage: the bar's shadow falls on the map, under the docked panels. */
@@ -39,7 +32,7 @@
     left: 0;
     right: 0;
     top: 0;
-    height: 8px;
+    height: 4px;
     background-image: resource("Wotr/Art/UI/surfaces/cast-shadow");
     -unity-background-scale-mode: stretch-to-fill;
 }
@@ -57,13 +50,15 @@
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
 
+/* UI-263's crests, at the bar's size; they are 18 points wherever else a game is listed. */
+.topbar .expansion-crest { width: 16px; height: 16px; }
+
 .topbar-divider {
-    width: 10px;
-    height: 34px;
+    width: 1px;
+    height: 18px;
     flex-shrink: 0;
-    margin: 0 6px;
-    background-image: resource("Wotr/Art/UI/ornaments/divider");
-    -unity-background-scale-mode: stretch-to-fill;
+    margin: 0 8px;
+    background-color: var(--game-topbar-hairline);
 }
 
 /* Opponent action dice: medallions; special dice use framed tiles with their origin caption. */
@@ -149,24 +144,17 @@
 #opponent-dice .die.lords-die-gothmog { background-image: resource("Wotr/Art/UI/dice/special-gothmog"); }
 #opponent-dice .die.lords-die-gothmog:hover, #opponent-dice .die.lords-die-gothmog:focus { background-image: resource("Wotr/Art/UI/dice/special-gothmog-hover"); }
 
-/* Opponent counters in a gilt cartouche, pushed right with the status, Menu and plaques.
+/* Opponent counters on the bar itself (UI-479), pushed right with the status, Menu and plaques.
    UI-98: each counter is its icon and number; the caption stays in the counter's description. */
 .opponent-summary {
-    height: 32px;
+    height: 24px;
     flex-shrink: 0;
     flex-direction: row;
     align-items: center;
     margin-left: auto;
-    padding: 0 8px;
-    background-image: resource("Wotr/Art/UI/frames/cartouche");
-    -unity-slice-top: 28;
-    -unity-slice-right: 28;
-    -unity-slice-bottom: 28;
-    -unity-slice-left: 28;
-    -unity-slice-scale: 0.5px;
 }
-.summary-chip { height: 28px; flex-direction: row; align-items: center; padding: 0 5px; }
-.summary-icon { width: 22px; height: 22px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: stretch-to-fill; }
+.summary-chip { height: 24px; flex-direction: row; align-items: center; padding: 0 5px; }
+.summary-icon { width: 18px; height: 18px; flex-shrink: 0; margin-right: 4px; -unity-background-scale-mode: stretch-to-fill; }
 .summary-icon-cards { background-image: resource("Wotr/Art/UI/icons/cards"); }
 .summary-icon-rings { background-image: resource("Wotr/Art/UI/icons/ring"); }
 .summary-icon-spent { background-image: resource("Wotr/Art/UI/icons/spent"); }
@@ -178,8 +166,11 @@
 .summary-text { flex-direction: column; justify-content: center; }
 /* UI-432 (owner's rule, UI-430): the Free Peoples card counter Worn with Sorrow and Toil may discard a random card from
    wears the red of a card to discard (UI-222, UI-430): a red rim on a red plate, breathing with the summary's pulse. Its
-   rim takes the place of its padding, so the counter keeps its size and the bar does not move; no filter. */
+   rim takes the place of its padding and, UI-479, as the only counter a click can reach it stands 32 points high over
+   margins that take the difference back, so the bar does not move; no filter. */
 #board-screen .opponent-summary .summary-chip.discard-target {
+    height: 32px;
+    margin: -4px 0;
     padding: 0 3px;
     border-width: 2px;
     border-radius: 6px;
@@ -209,24 +200,25 @@
     height: 18px;
     margin: 0;
     padding: 0;
-    font-size: 16px;
+    font-size: 15px;
     -unity-font-style: bold;
     -unity-text-align: middle-left;
     color: rgb(241, 230, 196);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
 .summary-divider {
-    width: 8px;
-    height: 24px;
+    width: 1px;
+    height: 18px;
     flex-shrink: 0;
-    background-image: resource("Wotr/Art/UI/ornaments/divider-small");
-    -unity-background-scale-mode: stretch-to-fill;
+    background-color: var(--game-topbar-hairline);
 }
 
 .topbar > .muted {
     flex-shrink: 0;
     max-width: 96px;
     margin: 0 8px;
+    /* The longest status takes two lines, which fit the bar only without the theme's padding. */
+    padding: 0;
     white-space: normal;
     font-size: 11px;
 }
@@ -242,6 +234,15 @@
     font-size: 15px;
     border-width: 0;
     border-radius: 0;
+    /* UI-479: a thin 28-point button by its picture, while the 32 points of its element stay the click target. The picture
+       stands whole, because UI Toolkit draws a sliced picture over the whole element, whatever its background-size. */
+    -unity-slice-top: 0;
+    -unity-slice-right: 0;
+    -unity-slice-bottom: 0;
+    -unity-slice-left: 0;
+    background-size: 100% 28px;
+    background-repeat: no-repeat;
+    background-position-y: center;
 }
 
 /* Narrow bars keep icons, values and plaques; spacing tightens and the dice owner label gives way. */
@@ -260,7 +261,7 @@
 .topbar-compact #opponent-dice .special-die .action-symbol { left: 12px; top: 1px; width: 16px; height: 16px; }
 .topbar-compact #open-board-menu { width: 56px; min-width: 56px; }
 /* UI-273: the opponent's Ruler die keeps its crown; a die discarded after the roll stays dimmed. */
-#opponent-dice .die.ruler-die > .ruler-crown { top: -7px; translate: -7px 0; width: 14px; height: 9px; }
+#opponent-dice .die.ruler-die > .ruler-crown { top: -5px; translate: -7px 0; width: 14px; height: 9px; }
 /* ART-07: the opponent's Ruler die in its round royal art, as a Lords special die. */
 #opponent-dice .die.ruler-die { width: 29px; min-width: 29px; height: 29px; min-height: 29px; border-radius: 14.5px; }
 #opponent-dice .die.ruler-die.die-free { background-image: resource("Wotr/Art/UI/dice/special-ruler-free"); }

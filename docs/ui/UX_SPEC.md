@@ -709,7 +709,7 @@ The drag started inside the preview keeps its source and targets to be completed
 
 The left panel loses the curtain and the fastening: the developed panel works immediately, click on the tab only develops it, the focus on the click does not hold the panel, and the focus on the keyboard also keeps it inside. The panel to which the decision tray will be placed, is as open as context. This extension of the change UI-92 rules UI-80 from the user's decision: the edge tab panels are interactive after the raid; other panels, card and options still open click or Enter/Space.
 
-The bar has 44 pt instead of 56 (new 44 pt frame) and is a border control: edge pan works only on the outer edge, so reading the bar does not move the map. Counter counters are an icon with a number (a name in a balloon), without a Hunt counter; Menu has 64 pt (56 in a narrow bar). pass notifications end at column, like the bottom bar, next to a tab in the corner.
+The bar has 44 pt instead of 56 (new 44 pt frame; 36 pt and flat since UI-479) and is a border control: edge pan works only on the outer edge, so reading the bar does not move the map. Counter counters are an icon with a number (a name in a balloon), without a Hunt counter; Menu has 64 pt (56 in a narrow bar). pass notifications end at column, like the bottom bar, next to a tab in the corner.
 
 <a id="powiadomienia-jako-stos-banerów--ui-99"></a>
 ## Notifications as a stack of banners — UI-99
@@ -4351,3 +4351,63 @@ in the first frames of its 750 ms transition and now waits it out. The full Play
 Screenshots: `.artifacts/screenshots/ui475-*`, `ui476-*`, `ui477-*`, `ui478-*` (`before` and `after`), taken by a temporary test that was removed. States that the
 fixtures do not reach (a tab's states, a pressed or chosen row, the Hunt well lit in the fixture, the options strip, the required notice, the round tab) were forced by
 their classes. `ui475-before-roster-free` and `ui475-before-sovereigns` are copies of `ui472-after-characters` and `ui473-after-king`; the round tab has no before picture.
+
+## The top bar in the thin line — UI-479 (2026-11-04)
+
+The last task of the game chrome migration (UI-471–UI-479). The owner (2026-11-03): "the top bar we could try to slim a little, but without losing any
+information"; he chose 36 points, with click targets staying at 32 points or more. Art and sizes only: no behaviour, text, order or control changed. Every
+counter, die, state and tooltip stays.
+
+| Part | Before | Since UI-479 |
+| --- | --- | --- |
+| Bar | 44 points, `surfaces/topbar-plate` under `frames/topbar-frame` | 36 points, the card's colour, opaque, with one 1-point muted gilt rule along its foot |
+| Shadow on the map | 8 points | 4 points, the same `surfaces/cast-shadow` |
+| Phase, side name, status | 15, 11, 11 px | unchanged; the status lost the theme's padding, so its longest text (two lines) is 30 points high instead of 38 |
+| Crests | 18 points | 16, in the bar only |
+| Divider after the crests | 10×34 ornament | 1×18 hairline |
+| Opponent's dice | medallions 29 (28 compact), tiles 44×32 (42×32) | unchanged, with every rim |
+| Counters | in a 32-point cartouche; 28 high, icon 22, value 16 | on the bar; 24 high, icon 18, value 15 |
+| Between counters | 8×24 ornament | 1×18 hairline |
+| Menu | 64×32 picture and target (56 wide compact) | a 28-point `frontend/button` picture on the same 64×32 target |
+
+Width: Kings and Lords against the Shadow, six counters: 328 points become 252. The fullest pool in the screenshots (10 dice, Ruler, two Lords dice and a tile) squeezed the
+phase at 1366×768 and 125 %; it now leaves 79 points free. `TopBarView.CompactBelow` (1340) is unchanged.
+
+Decisions the numbers above do not explain:
+- **The Menu's two heights.** UI Toolkit draws a sliced picture over the whole element, whatever its `background-size` (measured in the screenshot: 32 pixels), so a 28-point button on a
+  32-point target needs the picture whole: `#open-board-menu` sets the slices to 0, an exception to UI-471's rule that a context rule sizes a button only. All its states take the same
+  size, so no state is beaten. At 7/8 its lines stay one pixel, in the same colour (measured).
+- **The offered card counter.** The only counter a click can reach (UI-432) was 28 points high. While offered it stands 32 high over -4-point margins, so nothing moves; a plain
+  counter stays at 24.
+- **An opaque fill.** The map's figures run under the bar and showed through at 0.96, as faint ghosts.
+- **The Ruler die's crown** stands 2 points lower (`top: -5px`), or its tip would leave the screen. A Lords die's star and emblem already fit.
+
+Everything that hung from the old height follows the new one. `Styles/Notices.uss` and the Menu panel read `--game-topbar-height` (36px) and `--game-topbar-menu-top` (38px) instead of 44 and 46.
+The stage, the right column, the dropdown panels (`BoardEdgeLayout`), `BoardScreen.CardBounds` and `BoardMiddle` read the bar's own bounds. The left rail, the panels beside it and the turn band
+are placed in the stage (`top: 58px`, `top: 48px`), so they rise with it, and the map's stage is 8 points taller. Nothing else in the sheets or code named 44 or 46 for the bar.
+
+Tokens (`Styles/GameChrome.uss`): `--game-topbar-height`, `--game-topbar-menu-top`, `--game-topbar-fill`, `--game-topbar-rule`, `--game-topbar-hairline`. `surfaces/topbar-plate`, `frames/topbar-frame`, `frames/cartouche` and
+`ornaments/divider` stay in the kit, unreferenced, and in `UiArtKitTests`' contract; `ornaments/divider-small` is still used by the right column. The element tree is unchanged: `TopBarView.Frame` now carries the rule, out of the bar's flow.
+
+Known limit: at a fractional panel scale a 1-point hairline rounds to one pixel or two, by its position, as the console's dividers do.
+
+Playtest (owner's checklist):
+- [ ] Start a base game at 1366×768. Expect: a flat dark bar with one fine gilt line; phase, dice and four counters readable; the map 8 points taller; notices right under the bar.
+- [ ] Hover and press Menu, then open it. Expect: a thin button that lightens, then darkens and sinks a point; the panel just under the bar. The top and bottom 2 points around the button still click.
+- [ ] Start a Kings and Lords game as the Free Peoples. Expect: the Shadow's dice with the crown and emblems whole, six counters with Dismay and Council, crests after the phase.
+- [ ] Reach Worn with Sorrow and Toil as the Shadow. Expect: the Cards counter with a taller red rim, pulsing, clicking as before, and nothing else moving.
+- [ ] Repeat at 125 %. Expect: nothing cut, the side's name hidden as before, every tooltip as before.
+- [ ] Lose the connection. Expect: the status beside Menu, in two lines at most, inside the bar.
+
+Tests: `TopBarLayoutTests` expects 36 points, a 4-point shadow, flat chrome (no art on the bar, frame, summary or hairlines; a fill of at least 0.92; a 1-point rule), counters of 24, 18 and 15, 16-point crests, a die's
+marks inside the bar and Menu's 32-point target with its 28-point picture. Its new `EveryTargetAndStateStaysInsideTheSlimBar` covers, in four layouts, a special tile at 32 points, the offered counter at 32 with nothing moved and
+returning to 24, the three rims keeping a die's box, and the longest status. `EdgePlaqueTests` expects 36, `GameButtonChromeTests` reads the Menu's picture and an icon button's slices apart, and `BoardMenuLayoutTests` checks that the panel opens
+just under the bar.
+
+Results (2026-11-04): EditMode 1504/1504. PlayMode, one class per run, all passing: `TopBarLayoutTests` (2), `EdgePlaqueTests` (4), `ActionNoticeLayoutTests` (1), `BoardChromeLayoutTests` (3),
+`BoardMenuLayoutTests` (7), `LeftRailLayoutTests` (1), `RightColumnLayoutTests` (3), `ExpansionMatrixLayoutTests` (2), `InGameDenseLayoutTests` (1), `LayoutStressScenarioTests` (9), `OpponentResourcePresentationTests` (8),
+`CharacterWindowLayoutTests` (2), `GameButtonChromeTests` (2), `GameWindowChromeTests` (10), `GlowingHintAuditTests` (22), `NazgulStrikeObjectTests` (3), `InterfaceSettingsTests` (2), `PressFeedbackClickTests` (2), `BattleLayoutTests` (5),
+`CardViewportLayoutTests` (2). `BoardRuleDeclineTests` passes 5 of 7 as a class: `WornsRedTableCard…` and `WornsSkipEffect…` fail in that order and pass each in its own run, and the same two failed as a class on 2026-11-02 (`ui435-3`), so they are
+order-dependent and not this task's. The full PlayMode suite was not run.
+Screenshots: `.artifacts/screenshots/ui479-before-*` and `ui479-after-*` (`base`, `kings-lords-shadow`, `kings-lords-free`, `discard`, `discard-pulse`, `rims-status`, `menu`, each at `1366-1.00`, `1366-1.25` and `1920-1.00`), taken by a temporary test that was removed.
+Rims, the press and the status were forced by their classes and text; the before set has no `discard-pulse` or transition frame.
