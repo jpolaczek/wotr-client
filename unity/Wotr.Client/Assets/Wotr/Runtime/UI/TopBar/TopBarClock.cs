@@ -17,6 +17,9 @@ namespace Wotr.Client
         private const float LowestOpacity = 0.72f;
 
         public Label Root { get; } = new Label { name = "move-clock" };
+        // UI-500: beside the clock; disabled, not hidden, with no pauses left or during a pause.
+        public Button PauseButton { get; }
+        public event Action PauseRequested;
         public event Action<string> Warning;
         private readonly MoveClockCountdown countdown = new MoveClockCountdown();
         private readonly Func<bool> reducedMotion;
@@ -29,6 +32,9 @@ namespace Wotr.Client
             Root.AddToClassList("move-clock");
             Root.tooltip = "The time left for this decision. Whoever runs out of time loses the game.";
             Root.schedule.Execute(Tick).Every(TickMilliseconds);
+            PauseButton = BoardScreen.Button("Pause", () => PauseRequested?.Invoke());
+            PauseButton.name = "move-clock-pause";
+            PauseButton.AddToClassList("move-clock-pause");
         }
 
         public bool Active => countdown.Active;
@@ -37,8 +43,18 @@ namespace Wotr.Client
         {
             you = viewer;
             countdown.Sync(clock, Now);
-            if (countdown.Active)
-                Tick();
+            if (!countdown.Active)
+                return;
+            ShowPauses(clock);
+            Tick();
+        }
+
+        private void ShowPauses(MoveClockView clock)
+        {
+            PauseButton.SetEnabled(clock.PausesLeft > 0 && !clock.Paused);
+            PauseButton.tooltip = clock.Paused ? "The game is paused."
+                : clock.PausesLeft == 0 ? "You have no pauses left. Your opponent has " + clock.OpponentPausesLeft + "."
+                : "Pause the game. You have " + clock.PausesLeft + " left, your opponent " + clock.OpponentPausesLeft + "; either of you can resume.";
         }
 
         private static double Now => Time.realtimeSinceStartupAsDouble;

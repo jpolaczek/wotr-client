@@ -30,6 +30,14 @@ namespace Wotr.Client
         // MENU-22: the match is gone from the server (deleted by a player); reconnecting cannot bring it back.
         public const string Deleted = "MatchDeleted";
         public const int ApplyAttempts = 3;
+        // UI-500: every view as it arrives, whatever its revision, so a ranked clock counts from the moment it was read and
+        // not from when a presentation lets the view go.
+        public event Action<PlayerView> ClockSeen;
+        // RANK-10: a seat's socket closes after 8 s of silence; normal matches send nothing.
+        private const int HeartbeatMilliseconds = 2000;
+        private static readonly ArraySegment<byte> HeartbeatFrame = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{}"));
+        private bool ranked;
+        private long clockVersion;
         public event Action<PlayerView> Updated;
         public event Action<string> StatusChanged;
         public long Revision => version.Revision;
@@ -52,8 +60,25 @@ namespace Wotr.Client
         {
             var ticket = generation;
             var view = await api.Get<PlayerView>(routes.View, lifetime.Token);
+            if (disposed || ticket != generation)
+                return;
+            Seen(view);
+            Apply(view);
+        }
+
+        // UI-500: a pause moves the clock without a revision, so the view is read for its clock alone.
+        public async Task RefreshClock()
+        {
+            var ticket = generation;
+            var view = await api.Get<PlayerView>(routes.View, lifetime.Token);
             if (!disposed && ticket == generation)
-                Apply(view);
+                Seen(view);
+        }
+
+        private void Seen(PlayerView view)
+        {
+            ranked = view.Clock != null;
+            ClockSeen?.Invoke(view);
         }
 
         // OBS-05: another perspective of the same match. The current revision applies again from the other side, and
@@ -184,7 +209,7 @@ namespace Wotr.Client
                         await socket.ConnectAsync(address.Uri, lifetime.Token);
                         SetStatus(failedView.Length > 0 ? DisplayError : "Connected");
                         delay = 1;
-                        await Receive(socket);
+                        await ReceiveWithHeartbeat(socket);
                     }
                 }
                 catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { return; }
@@ -235,6 +260,39 @@ namespace Wotr.Client
         private static bool IsPermanent(string code) => code is "CorruptSave" or "UnsupportedSaveVersion"
             or ClientCompatibility.ClientUpdateRequired or ClientCompatibility.ServerUpdateRequired;
 
+        private async Task ReceiveWithHeartbeat(ClientWebSocket activeSocket)
+        {
+            using (var beating = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token))
+            {
+                var heartbeat = Heartbeat(activeSocket, beating.Token);
+                try
+                {
+                    await Receive(activeSocket);
+                }
+                finally
+                {
+                    beating.Cancel();
+                    await heartbeat;
+                }
+            }
+        }
+
+        private async Task Heartbeat(ClientWebSocket activeSocket, CancellationToken stop)
+        {
+            try
+            {
+                while (!stop.IsCancellationRequested && activeSocket.State == WebSocketState.Open)
+                {
+                    if (ranked)
+                        await activeSocket.SendAsync(HeartbeatFrame, WebSocketMessageType.Text, true, stop);
+                    await Task.Delay(HeartbeatMilliseconds, stop);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (WebSocketException) { }
+            catch (ObjectDisposedException) { }
+        }
+
         private async Task Receive(ClientWebSocket activeSocket)
         {
             var buffer = new byte[1024];
@@ -246,8 +304,13 @@ namespace Wotr.Client
                 if (!message.EndOfMessage || message.MessageType != WebSocketMessageType.Text)
                     throw new InvalidOperationException("Invalid revision notification.");
                 var notice = JsonConvert.DeserializeObject<RevisionNotice>(Encoding.UTF8.GetString(buffer, 0, message.Count));
-                if (notice != null && notice.MatchId == matchId && version.IsAhead(notice.Revision, notice.PrivateVersion))
+                if (notice == null || notice.MatchId != matchId)
+                    continue;
+                if (version.IsAhead(notice.Revision, notice.PrivateVersion))
                     await Refresh();
+                else if (notice.ClockVersion != clockVersion)
+                    await RefreshClock();
+                clockVersion = notice.ClockVersion;
             }
         }
 
@@ -271,6 +334,7 @@ namespace Wotr.Client
             public string MatchId { get; set; }
             public long Revision { get; set; }
             public long PrivateVersion { get; set; }
+            public long ClockVersion { get; set; }
         }
     }
 }

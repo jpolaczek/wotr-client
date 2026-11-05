@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search and the clock (UI-497–UI-499) stand. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock and the pause (UI-497–UI-500) stand. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -68,6 +68,9 @@ A window in the family of Host game. It has no name, visibility or variant contr
 - A small **Pause** button beside the clock. Its tooltip names the pauses left; at zero it is disabled.
 - While paused, both clients show a banner naming who paused, with **Resume** for both players. The board's decisions
   are dimmed and inert, the clock is frozen, and chat works. The banner does not cover the chat.
+- One veil lies over everything below the top bar, so it covers whichever panel or column holds a decision, and the menu
+  above it can still concede. The board cannot be panned or inspected during a pause. Nothing new leaves while paused, also
+  from the keyboard; a command already sent may still learn its receipt.
 
 ## Leaving and returning (UI-501)
 

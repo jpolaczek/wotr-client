@@ -16,6 +16,9 @@ namespace Wotr.PlayTests
 {
     public sealed class TopBarLayoutTests
     {
+        // Where the chat's icon stood before the pause.
+        private static Vector2 ChatPlace;
+
         // At a fractional panel scale an element's edges round to whole pixels: a 1-point hairline shows as one pixel or two.
         private const float PixelRounding = 1.2f;
 
@@ -51,12 +54,33 @@ namespace Wotr.PlayTests
                             // UI-499: a normal game's bar holds no clock, and takes no room for one.
                             Assert.IsNull(client.Board.TopBar.Root.Q("move-clock"), label);
                             var normal = Bounds(client.Board);
-                            client.Apply(Ranked(views[key]));
+                            var ranked = Ranked(views[key]);
+                            client.Apply(ranked);
+                            client.Board.ShowClock(ranked.Clock, ranked.You);
                             for (var frame = 0; frame < 6; frame++)
                                 yield return null;
                             LayoutTests.Save(target, $"ui499-topbar-{key}-{width}-{scale:0.00}.png");
                             CheckBar(client.Board, label + " with the clock");
                             CheckClock(client.Board, label);
+                            // UI-500: the banner under the bar, Resume inside it, and the chat clear of the veil.
+                            client.Board.GameChat.Available(true);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            ChatPlace = client.Board.GameChat.Icon.worldBound.position;
+                            ranked.Clock.Paused = true;
+                            ranked.Clock.PausedBy = TurnFlowOther(ranked.You);
+                            client.Board.ShowClock(ranked.Clock, ranked.You);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            LayoutTests.Save(target, $"ui500-paused-{key}-{width}-{scale:0.00}.png");
+                            CheckBar(client.Board, label + " paused");
+                            CheckPaused(client.Board, label);
+                            ranked.Clock.Paused = false;
+                            client.Board.ShowClock(null, ranked.You);
+                            for (var frame = 0; frame < 6; frame++)
+                                yield return null;
+                            Assert.That(client.Board.GameChat.Icon.worldBound.position.y, Is.EqualTo(ChatPlace.y).Within(1), "The chat comes back. " + label);
+                            client.Board.GameChat.Available(false);
                             client.Apply(views[key]);
                             for (var frame = 0; frame < 6; frame++)
                                 yield return null;
@@ -85,6 +109,7 @@ namespace Wotr.PlayTests
             ranked.Clock.RemainingMilliseconds = 60000;
             ranked.Clock.WarningMilliseconds = 60000;
             client.Apply(ranked);
+            client.Board.ShowClock(ranked.Clock, ranked.You);
             var clock = client.Board.TopBar.Root.Q<Label>("move-clock");
             var lowest = 1f;
             for (var wait = 0f; wait < 1.1f; wait += Time.unscaledDeltaTime)
@@ -133,6 +158,30 @@ namespace Wotr.PlayTests
             var needed = clock.MeasureTextSize("Opponent 0:00", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
             Assert.GreaterOrEqual(clock.contentRect.width + 1, needed, "The clock's text is not cut. " + label);
             Assert.IsTrue(clock.ClassListContains(TopBarClock.WarningClass), "Red past the warning, whoever hears the sound. " + label);
+        }
+
+        private static void CheckPaused(BoardScreen board, string label)
+        {
+            var banner = board.Root.Q("pause-banner");
+            Inside(banner, board.Root.Q("board-stage").worldBound, label);
+            Inside(board.Root.Q<Button>("pause-resume"), banner.worldBound, label);
+            Assert.AreEqual("Paused by your opponent", board.Root.Q<Label>("pause-banner-text").text, label);
+            Assert.IsFalse(board.TopBar.Clock.PauseButton.enabledInHierarchy, "No second pause during a pause. " + label);
+            Assert.Greater(board.TopBar.Clock.PauseButton.worldBound.height, 0, "Disabled, not hidden. " + label);
+            var panel = board.Root.panel;
+            var veil = board.Root.Q("pause-veil");
+            var surfaces = new Dictionary<string, VisualElement>
+            {
+                ["the map"] = board.Root.Q("board-stage"), ["the console"] = board.Console.Root, ["the hand"] = board.Hand,
+                ["the own dice"] = board.OwnDice, ["the Fellowship corner"] = board.Edges.Corner, ["the left rail"] = board.Nations.Root
+            };
+            foreach (var surface in surfaces)
+                Assert.AreSame(veil, panel.Pick(surface.Value.worldBound.center), $"The veil takes the clicks of {surface.Key}. {label}");
+            Assert.AreSame(board.GameChat.Icon, panel.Pick(board.GameChat.Icon.worldBound.center), "The chat stands above the veil. " + label);
+            Assert.AreNotSame(veil, panel.Pick(board.Menu.Toggle.worldBound.center), "The bar stays free, for the menu. " + label);
+            Assert.That(board.GameChat.Icon.worldBound.position.x, Is.EqualTo(ChatPlace.x).Within(1), "The chat does not move. " + label);
+            Assert.That(board.GameChat.Icon.worldBound.position.y, Is.EqualTo(ChatPlace.y).Within(1), "The chat does not move. " + label);
+            Assert.IsFalse(board.GameChat.Icon.worldBound.Overlaps(banner.worldBound), label);
         }
 
         private static void CheckBar(BoardScreen board, string label)

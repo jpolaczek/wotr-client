@@ -20,6 +20,7 @@ namespace Wotr.Client
         private readonly BoardScreen board;
         private string notice = "";
         private string pendingProblem = "";
+        private bool paused;
         private readonly MatchConnection connection;
         private readonly DecisionTray tray;
         private readonly CommandSender sender;
@@ -677,6 +678,9 @@ namespace Wotr.Client
                 Render();
         }
 
+        // UI-500: during a pause nothing new leaves; a command already sent may still learn its receipt.
+        public void SetPaused(bool value) => paused = value;
+
         public void SetConnection(string status)
         {
             var connected = status == "Connected";
@@ -1196,6 +1200,7 @@ namespace Wotr.Client
             if (WouldSendWhileLifting())
                 return;
             if (sending || policy.Busy || !online || view == null || view.Revision < requiredRevision ||
+                paused && sender.Pending == null ||
                 sender.Pending == null && (held || view.Decision == null || !draft.Kind.HasValue || !immediate && !previewLegal))
                 return;
             sending = true;

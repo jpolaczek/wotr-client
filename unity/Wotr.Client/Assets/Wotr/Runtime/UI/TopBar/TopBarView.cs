@@ -53,9 +53,15 @@ namespace Wotr.Client
         {
             Clock.Show(clock, you);
             if (Clock.Active && Clock.Root.parent == null)
+            {
                 Root.Insert(Root.IndexOf(divider), Clock.Root);
+                Root.Insert(Root.IndexOf(divider), Clock.PauseButton);
+            }
             else if (!Clock.Active)
+            {
                 Clock.Root.RemoveFromHierarchy();
+                Clock.PauseButton.RemoveFromHierarchy();
+            }
         }
 
         private void UpdateCompact(float width)

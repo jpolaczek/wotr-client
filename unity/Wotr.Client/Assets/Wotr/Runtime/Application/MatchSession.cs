@@ -19,6 +19,7 @@ namespace Wotr.Client
         private readonly OpponentPresenters presenters;
         // REPLAY-04: Save replay on the end screen; none without a library.
         private readonly ReplaySaver saver;
+        private readonly RankedPauseController pause;
         private bool disposed;
         public BoardExit Exit { get; }
         public bool Expired { get; private set; }
@@ -46,6 +47,8 @@ namespace Wotr.Client
             this.sounds = sounds == null ? null : new GameSounds(sounds, board, turns);
             presenters.Sounds.Target = this.sounds;
             board.TopBar.Clock.Warning += WarnClock;
+            pause = new RankedPauseController(api, matchId, board, connection);
+            connection.ClockSeen += ShowClock;
             if (replays != null)
                 saver = new ReplaySaver(api, "api/matches/" + Uri.EscapeDataString(matchId) + "/replay", replays, board.GameEnd);
             connection.Start();
@@ -84,6 +87,14 @@ namespace Wotr.Client
 
         private void WarnClock(string decisionId) => sounds?.ClockWarning(decisionId);
 
+        private void ShowClock(PlayerView view)
+        {
+            if (disposed)
+                return;
+            board.ShowClock(view.Clock, view.You);
+            turns.SetPaused(view.Clock?.Paused == true);
+        }
+
         public void Dispose() => Dispose(true);
 
         public void Dispose(bool saveDraft)
@@ -96,6 +107,8 @@ namespace Wotr.Client
             playback.Dispose();
             connection.StatusChanged -= ConnectionChanged;
             board.TopBar.Clock.Warning -= WarnClock;
+            connection.ClockSeen -= ShowClock;
+            pause.Dispose();
             sounds?.Dispose();
             saver?.Dispose();
             turns.Dispose(saveDraft);

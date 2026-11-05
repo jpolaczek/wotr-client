@@ -289,3 +289,56 @@
     -unity-text-align: middle-center;
 }
 .topbar > .move-clock.move-clock-warning { color: rgb(244, 96, 72); }
+
+/* UI-500: beside the clock, small; the banner and the veils of a paused game. */
+.topbar > .move-clock-pause {
+    flex-shrink: 0;
+    width: 50px;
+    height: 24px;
+    min-height: 24px;
+    margin: 0 2px 0 0;
+    padding: 0;
+    font-size: 12px;
+}
+.pause-layer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+.pause-veil {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.38);
+}
+.pause-host { position: absolute; }
+.pause-banner-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    flex-direction: row;
+    justify-content: center;
+}
+.pause-banner {
+    flex-direction: row;
+    align-items: center;
+    height: 44px;
+    padding: 0 8px 0 18px;
+    border-width: 1px;
+    border-color: rgb(176, 148, 88);
+    border-radius: 2px;
+    background-color: rgb(28, 24, 18);
+}
+.pause-banner-text {
+    margin: 0 16px 0 0;
+    padding: 0;
+    font-size: 16px;
+    color: rgb(236, 220, 174);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.pause-resume { width: 96px; height: 32px; min-height: 32px; margin: 0; padding: 0; font-size: 14px; }
