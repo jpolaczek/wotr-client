@@ -10,6 +10,8 @@ namespace Wotr.Client
     public sealed class MapCanvas : VisualElement
     {
         public CameraState Camera { get; } = new CameraState();
+        // How often a presentation has moved the camera to show a map effect (PresentationCamera).
+        public int PresentationMoves { get; set; }
         public MapMarkerVisibility MarkerVisibility { get; } = new MapMarkerVisibility();
         public Rect TerrainBounds => new Rect(0, 0, Data.Geometry.Width, Data.Geometry.Height);
         // UI-102: the camera may show the paper and sea around the map, so edge regions clear the HUD.

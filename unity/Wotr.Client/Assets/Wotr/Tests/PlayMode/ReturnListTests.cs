@@ -100,7 +100,10 @@ namespace Wotr.PlayTests
                             {
                                 var id = fixture.ReturnMatches[name];
                                 var current = await api.Get<PlayerView>($"api/matches/{id}", token);
-                                await Open(client, id, token);
+                                if (name == "ring-destroyed")
+                                    await OpenFinished(client, id, token);
+                                else
+                                    await Open(client, id, token);
                                 Assert.IsTrue(JToken.DeepEquals(JToken.FromObject(current), JToken.FromObject(client.Board.View)), name + "/" + side);
                                 if (name == "ring-destroyed")
                                     await InspectRingResult(client, token);

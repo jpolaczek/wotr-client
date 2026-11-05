@@ -38,6 +38,9 @@ namespace Wotr.PlayTests
             CardNetworkTests.Click(board.OwnDice.Q<Button>(die.Id));
             await Task.Delay(300, token);
             CardNetworkTests.Click(board.Hand.Q<Button>("base.fp.strategy.04"));
+            // The Book of Mazarbul first moves the Companions outside the Fellowship; the console's ✓ finishes that without a move.
+            await Until(() => board.View.Decision?.Kind == DecisionKind.CompanionSeparation && board.Console.Actions.Confirm.enabledInHierarchy, token);
+            PointerGestureEvents.ClickAt(board.Console.Actions.Confirm);
             await Until(() => board.View.Decision?.Window == "event.completed", token);
             await Task.Delay(1500, token);
             LayoutTests.Save(client.Panel.targetTexture, "ui296-book-gandalf-draw.png");

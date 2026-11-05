@@ -69,7 +69,11 @@ namespace Wotr.PlayTests
                 var nextApi = await fixture.Login(side, token, recovered, server.Address);
                 using (var second = new MountedFlowClient(nextApi, storage))
                 {
-                    await Open(second, id, token);
+                    // The final action went through, so the finished game has left My games (LOBBY-05).
+                    if (name == "victory")
+                        await OpenFinished(second, id, token);
+                    else
+                        await Open(second, id, token);
                     await ReturnRecoveryTests.EmptyJournal(storage, nextApi, id, false, token);
                     Assert.AreEqual(1, recovered.ReceiptLookups);
                     Assert.AreEqual(0, recovered.Commands, "Recovery looks up the receipt; it cannot execute the restored draft.");

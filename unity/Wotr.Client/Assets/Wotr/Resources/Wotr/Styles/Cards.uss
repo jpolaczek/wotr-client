@@ -95,10 +95,11 @@
     align-items: center;
     padding: 0 18px 0 8px;
 }
+/* TEST-21: room for the two lines of the title's type (16.5 px each at 12 px, 15 at 11 px); less cut the second line. */
 #hand-card-title {
     flex-grow: 1;
     flex-shrink: 1;
-    max-height: 30px;
+    max-height: 34px;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -107,7 +108,7 @@
     -unity-font-style: bold;
     color: rgb(59, 36, 18);
 }
-.compact-edge-board #hand-card-title { font-size: 11px; max-height: 28px; }
+.compact-edge-board #hand-card-title { font-size: 11px; max-height: 31px; }
 #board-screen .hand-card .action-symbol { position: relative; left: 0; top: 0; width: 18px; height: 18px; margin: 0 6px 0 0; flex-shrink: 0; }
 
 /* Full layer: laid out at the hand's width; it fades in while the face unrolls. */

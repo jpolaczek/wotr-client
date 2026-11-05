@@ -46,6 +46,17 @@ namespace Wotr.PlayTests
                 await FourLayouts(room, "homelands", InspectHomelands);
         }
 
+        private static async Task<UnityEngine.Vector2> CameraAtRest(MatchTestRoom room, BoardScreen board)
+        {
+            UnityEngine.Vector2 last;
+            do
+            {
+                last = board.Map.Camera.Pan;
+                await room.Settle();
+            } while (last != board.Map.Camera.Pan);
+            return last;
+        }
+
         private static async Task InspectRoster(MatchTestRoom room, MountedMatchClient client)
         {
             var board = client.Board;
@@ -75,6 +86,8 @@ namespace Wotr.PlayTests
             foreach (var row in rows)
             {
                 await Press(room, row);
+                // UI-449 (owner): a row's click on a character in play brings the camera to it; reading the card moves it no further.
+                camera = await CameraAtRest(room, board);
                 var inspector = characters.Inspector;
                 Assert.AreEqual(row.name.Substring("character-roster-".Length), inspector.FigureId);
                 Assert.IsTrue(characters.InspectorPinned);
@@ -89,8 +102,8 @@ namespace Wotr.PlayTests
                     Assert.AreEqual(version.name.Substring("character-version-".Length), inspector.DefinitionId);
                     await InspectAbilities(room, client);
                 }
+                Assert.AreEqual(camera, board.Map.Camera.Pan, "Reading complete character cards never locates a figure implicitly.");
             }
-            Assert.AreEqual(camera, board.Map.Camera.Pan, "Reading complete character cards never locates a figure implicitly.");
             CheckPanel(characters.Root, board.Map.parent.worldBound);
             CheckPanel(characters.Inspector.Root, board.Map.parent.worldBound);
         }

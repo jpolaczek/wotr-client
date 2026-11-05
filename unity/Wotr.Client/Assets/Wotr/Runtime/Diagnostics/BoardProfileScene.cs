@@ -54,7 +54,8 @@ namespace Wotr.Client.Diagnostics
                 return;
             if (board.View.Revision != revision || board.View.Decision?.Id != decision || board.View.Phase != phase)
                 throw new InvalidOperationException("A presentation gesture changed the authoritative decision.");
-            if (board.Map.Camera.Pan != camera)
+            // UI-449 (owner): the Characters workload clicks roster rows, and a row's click is a Locate gesture.
+            if (workload is not CharacterProfileScene && board.Map.Camera.Pan != camera)
                 throw new InvalidOperationException("Board inspection moved the camera without a Locate gesture.");
             workload.Verify();
         }

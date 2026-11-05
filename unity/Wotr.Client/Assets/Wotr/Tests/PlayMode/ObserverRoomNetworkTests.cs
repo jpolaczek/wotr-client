@@ -50,8 +50,12 @@ namespace Wotr.PlayTests
                 Assert.IsFalse(first.Root.Q<Button>("room-ready").enabledSelf, "An observer does not get ready.");
                 await Until(() => host.Root.Q("observer-" + firstApi.Username) != null, token);
 
+                // CHAT-01 (RoomChat): an observer reads everyone and the players read only the players.
                 await Say(first, "Watching closely", token);
-                await Until(() => ChatHas(host, firstApi.Username + " (observer):"), token);
+                await Until(() => ChatHas(first, firstApi.Username + " (observer):"), token);
+                await Say(host, "Welcome", token);
+                await Until(() => ChatHas(host, hostApi.Username + ":") && ChatHas(first, hostApi.Username + ":"), token);
+                Assert.IsFalse(ChatHas(host, firstApi.Username + " (observer):"), "A player does not read the observers.");
 
                 var code = (await hostApi.Post<RoomView>("api/rooms/" + room.Id + "/invitation", null, token)).JoinCode;
                 second.Root.Q<TextField>("table-invitation").value = code;

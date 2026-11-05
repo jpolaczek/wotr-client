@@ -49,7 +49,8 @@ namespace Wotr.PlayTests
 
                 await Until(() => host.Root.Q<Label>("seat-shadow-player")?.text == "Waiting for a player…", token);
                 await Until(() => guest.Root.Q("main-menu") != null, token);
-                Assert.AreEqual("The host removed you from this room.", guest.Root.Q<Label>("lobby-status").text);
+                // The menu shows while it loads; the reason it was opened with stays in the status line once it has.
+                await Until(() => guest.Root.Q<Label>("lobby-status").text == "The host removed you from this room.", token);
                 var code = (await hostApi.Post<RoomView>("api/rooms/" + room.Id + "/invitation", null, token)).JoinCode;
                 var refused = 0;
                 try { await guestApi.Post<RoomView>("api/rooms/join", new JoinRoomRequest { Code = code }, token); }

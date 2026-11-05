@@ -167,7 +167,7 @@ namespace Wotr.PlayTests
                 Assert.AreEqual(0, client.Quits, "Nothing closes before the confirmation.");
                 await Press(client.Root, "quit-confirm", token);
                 Assert.AreEqual(1, client.Quits);
-                await Open(client, fixture.ReturnMatches["ui70-ring-destroyed"], token);
+                await OpenFinished(client, fixture.ReturnMatches["ui70-ring-destroyed"], token);
                 Assert.IsTrue(client.Board.View.Winner.HasValue);
                 // UI-169: a finished game opens on its end screen; View board leaves the Menu reachable.
                 await Until(() => client.Board.GameEnd.IsOpen, token);

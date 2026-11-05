@@ -55,6 +55,14 @@ namespace Wotr.PlayTests
             await Task.Delay(80, token);
         }
 
+        // LOBBY-05: a finished game is not in My games, so it opens by its id, not from a row.
+        public static async Task OpenFinished(MountedFlowClient client, string id, CancellationToken token)
+        {
+            await client.Flow.OpenMatch(id);
+            await Until(() => client.Board?.View?.MatchId == id && client.Board.Connection.text == "Live", token);
+            await Task.Delay(80, token);
+        }
+
         public static async Task Until(Func<bool> condition, CancellationToken token)
         {
             while (!condition())
