@@ -55,9 +55,10 @@ namespace Wotr.Client
             Root.RegisterCallback<KeyDownEvent>(KeyDown, TrickleDown.TrickleDown);
         }
 
-        public void Render(UpdateSnapshot update, string ownVersion, bool exiting, string exitError)
+        // UI-501: a required update waits for the end of an unfinished ranked game (RANK-10 lets its seat play on).
+        public void Render(UpdateSnapshot update, string ownVersion, bool exiting, string exitError, bool rankedActive = false)
         {
-            if (!update.Blocked)
+            if (!update.Blocked || rankedActive)
             {
                 Root.style.display = DisplayStyle.None;
                 return;

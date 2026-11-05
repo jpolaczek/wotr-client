@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -102,14 +103,59 @@ namespace Wotr.PlayTests
             Assert.AreEqual(0, quits, "A failed exit never quits.");
         }
 
-        private UpdateController Controller(MountedMatchClient client, Func<bool, Task<string>> save, Action quit)
+        // UI-501: an unfinished ranked game holds the restart back, since restarting would lose it, and lets it go at its end.
+        [UnityTest]
+        public IEnumerator AnUnfinishedRankedGameHoldsTheRestartBack()
+        {
+            using var client = new MountedMatchClient("http://localhost", "exit-lock-ranked");
+            client.Apply(new BoardFixture().View);
+            yield return Settle();
+            var saves = 0;
+            var quits = 0;
+            var ranked = true;
+            using var updates = Controller(client, _ =>
+            {
+                saves++;
+                return Task.FromResult("");
+            }, () => quits++, () => ranked);
+            updates.Restart();
+            updates.DeclineAndQuit();
+            yield return Settle();
+            Assert.IsFalse(client.Interface.ExitLock.IsShown, "Nothing locks the screen during the game.");
+            Assert.AreEqual((0, 0), (saves, quits), "Nothing is saved for an exit, and the game does not quit.");
+
+            var section = updates.Section.Root;
+            var ready = new UpdateSnapshot();
+            typeof(UpdateSnapshot).GetProperty(nameof(UpdateSnapshot.Status)).SetValue(ready, UpdateStatus.Ready);
+            typeof(UpdateSnapshot).GetProperty(nameof(UpdateSnapshot.Blocked)).SetValue(ready, true);
+            typeof(UpdateSnapshot).GetProperty(nameof(UpdateSnapshot.CanInstall)).SetValue(ready, true);
+            typeof(UpdateSnapshot).GetProperty(nameof(UpdateSnapshot.Version)).SetValue(ready, "0.9.1");
+            updates.Section.Render(ready, "0.9.0", false, "", rankedActive: true);
+            updates.Overlay.Render(ready, "0.9.0", false, "", rankedActive: true);
+            yield return Settle();
+            var restart = section.Query<Button>().ToList().First(button => button.text == "Restart and update");
+            Assert.IsFalse(restart.enabledSelf, "The restart is not offered during the game.");
+            Assert.AreEqual(UpdateSettingsSection.RankedHolds, restart.tooltip);
+            Assert.IsFalse(updates.Overlay.IsOpen, "A required update waits for the end of the game.");
+
+            ranked = false;
+            updates.Section.Render(ready, "0.9.0", false, "", rankedActive: false);
+            updates.Overlay.Render(ready, "0.9.0", false, "", rankedActive: false);
+            yield return Settle();
+            Assert.IsTrue(restart.enabledSelf, "At its end the restart is offered.");
+            Assert.IsTrue(updates.Overlay.IsOpen, "And the required update returns.");
+            updates.Overlay.Render(new UpdateSnapshot(), "0.9.0", false, "");
+            client.Interface.Hold(false);
+        }
+
+        private UpdateController Controller(MountedMatchClient client, Func<bool, Task<string>> save, Action quit, Func<bool> ranked = null)
         {
             var identity = new ClientBuildInfo { Version = "0.9.0", Platform = ClientPlatforms.MacOS, ProtocolVersion = 2 };
             var coordinator = new UpdateCoordinator(identity, new SilentCatalog(), new PackageDownloader(folder, "WotR test"),
                 new UpdateStore(folder), ReleaseTrust.ForOrigin("https://downloads.example.test/"), null, new ServerClock(),
                 () => TimeSpan.FromMinutes(5));
             return new UpdateController(coordinator, client.Interface, save, () => Task.CompletedTask, quit, () => { }, _ => { },
-                _ => { }, "0.9.0");
+                _ => { }, "0.9.0", rankedActive: ranked);
         }
 
         // Keys go to the focused element; a die of the player's pool holds the focus before the exit.

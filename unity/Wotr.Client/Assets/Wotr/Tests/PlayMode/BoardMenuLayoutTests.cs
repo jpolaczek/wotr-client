@@ -373,6 +373,56 @@ namespace Wotr.PlayTests
             Assert.LessOrEqual(element.worldBound.yMax, parent.worldBound.yMax + 1, element.name);
         }
 
+        // UI-501: a ranked game's menu and questions fit the four layouts; the ordinary menu returns unchanged.
+        [UnityTest]
+        public IEnumerator ARankedMenuConcedesAndTheOrdinaryMenuStaysAsItWas()
+        {
+            using var client = new MountedMatchClient("http://localhost", "menu-ranked");
+            client.Apply(new BoardFixture().View);
+            var menu = client.Board.Menu;
+            var exit = menu.Panel.Q<Button>("back-to-games");
+            Assert.AreEqual("Exit match", exit.text, "An ordinary board keeps its words.");
+            StringAssert.Contains("Exit match", menu.Toggle.tooltip);
+            foreach (var width in new[] { 1366, 1920 })
+                foreach (var scale in new[] { 1f, 1.25f })
+                {
+                    var texture = new RenderTexture(width, width == 1366 ? 768 : 1080, 24);
+                    texture.Create();
+                    client.Panel.targetTexture = texture;
+                    client.Interface.Preferences.SetScale(scale);
+                    menu.SetRanked(true);
+                    menu.Open();
+                    yield return Settle();
+                    Assert.AreEqual("Concede", exit.text);
+                    foreach (var button in menu.Panel.Query<Button>().ToList().Where(b => b.resolvedStyle.display != DisplayStyle.None))
+                        Check(button, menu.Panel);
+                    foreach (var question in new[] { (menu.ConcedeQuestion, "concede"), (menu.QuitAndConcedeQuestion, "quit-concede") })
+                    {
+                        question.Item1.Open();
+                        yield return Settle();
+                        Assert.AreSame(question.Item1, menu.OpenQuestion, "Escape answers the question first.");
+                        var window = menu.Root.Q(question.Item2 + "-window");
+                        Check(window, client.Board.Root);
+                        var confirm = menu.Root.Q<Button>(question.Item2 + "-confirm");
+                        Check(confirm, window);
+                        var needed = confirm.MeasureTextSize(confirm.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+                        Assert.GreaterOrEqual(confirm.layout.width, needed + 16, "The word has room inside its button.");
+                        var cancel = menu.Root.Q<Button>(question.Item2 + "-cancel");
+                        Check(cancel, window);
+                        Assert.AreSame(cancel, cancel.panel.focusController.focusedElement, "Focus starts on Cancel.");
+                        LayoutTests.Save(texture, $"ui501-{question.Item2}-{width}-{scale:0.00}.png");
+                        question.Item1.Hide();
+                    }
+                    menu.Close();
+                    menu.SetRanked(false);
+                    yield return Settle();
+                    Assert.AreEqual("Exit match", exit.text, "A finished ranked game has the ordinary menu.");
+                    client.Panel.targetTexture = client.Viewport;
+                    texture.Release();
+                    Object.Destroy(texture);
+                }
+        }
+
         private static IEnumerator Settle()
         {
             for (var frame = 0; frame < 6; frame++)

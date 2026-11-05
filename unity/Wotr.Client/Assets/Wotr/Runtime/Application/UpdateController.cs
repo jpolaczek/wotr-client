@@ -21,6 +21,7 @@ namespace Wotr.Client
         private readonly Action openGamePage;
         private readonly Action<UpdateNote> showNote;
         private readonly IDisposable owned;
+        private readonly Func<bool> rankedActive;
         private readonly string ownVersion;
         private DateTimeOffset nextRender;
         private bool exiting;
@@ -34,8 +35,9 @@ namespace Wotr.Client
 
         public UpdateController(UpdateCoordinator coordinator, InterfaceController ui, Func<bool, Task<string>> save, Func<Task> close,
             Action quit, Action openGamePage, Action<string> openNotes, Action<UpdateNote> showNote, string installedVersion,
-            IDisposable owned = null)
+            IDisposable owned = null, Func<bool> rankedActive = null)
         {
+            this.rankedActive = rankedActive ?? (() => false);
             this.coordinator = coordinator;
             this.ui = ui;
             this.save = save;
@@ -84,9 +86,18 @@ namespace Wotr.Client
                 new PackageDownloader(Folder, $"WotR/{identity.Version} ({identity.Platform})"), new UpdateStore(Folder),
                 ReleaseTrust.Pinned, installer, new ServerClock(), () => TimeSpan.FromSeconds(random.NextDouble() * 600));
             var gamePage = ServerConfiguration.Address.TrimEnd('/') + "/";
-            return new UpdateController(coordinator, ui, flow.SaveForExit, flow.CloseForExit, ApplicationQuit.Exit,
+            var controller = new UpdateController(coordinator, ui, flow.SaveForExit, flow.CloseForExit, ApplicationQuit.Exit,
                 () => Application.OpenURL(gamePage), version => Application.OpenURL(UpdateNotes.Url(gamePage, version)),
-                flow.ShowUpdate, ClientInstallation.InstalledVersion, catalog);
+                flow.ShowUpdate, ClientInstallation.InstalledVersion, catalog, () => flow.RankedMatchActive);
+            flow.RankedMatchChanged += controller.RankedMatchChanged;
+            return controller;
+        }
+
+        // UI-501: the restart and the required update's overlay wait for the end of an unfinished ranked game.
+        public void RankedMatchChanged()
+        {
+            if (!disposed)
+                Render(coordinator.Snapshot);
         }
 
         // Every frame from ClientBootstrap: the coordinator's clock, and the countdown once a second.
@@ -107,7 +118,7 @@ namespace Wotr.Client
 
         private async Task Exit(bool install)
         {
-            if (exiting || disposed)
+            if (exiting || disposed || rankedActive())
                 return;
             exiting = true;
             exitError = "";
@@ -158,8 +169,9 @@ namespace Wotr.Client
             var now = coordinator.Now;
             nextRender = now.AddSeconds(1);
             showNote(UpdateHint.For(update, now));
-            Overlay.Render(update, ownVersion, exiting, exitError);
-            Section.Render(update, ownVersion, exiting, exitError);
+            var ranked = rankedActive();
+            Overlay.Render(update, ownVersion, exiting, exitError, ranked);
+            Section.Render(update, ownVersion, exiting, exitError, ranked);
             ui.Hold(Overlay.IsOpen);
         }
 

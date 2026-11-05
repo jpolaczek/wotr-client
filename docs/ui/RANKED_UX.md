@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock and the pause (UI-497–UI-500) stand. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock, the pause and leaving (UI-497–UI-501) stand. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -77,7 +77,12 @@ A window in the family of Host game. It has no name, visibility or variant contr
 - In a ranked game the board menu's Exit match becomes **Concede**, and Quit game warns that it concedes. Both ask for
   a confirmation with Cancel focused, then send the concession before anything else. A concession that cannot reach
   the server says so and leaves the player in the game.
-- Signing in with an active ranked match opens it directly. The update restart is not offered while one is active.
+- After Concede the board stays, with the end screen over it. After Quit and concede the game closes once the server has answered.
+- The window's own close asks the same question while connected. Without a connection it just closes: nothing could be
+  conceded, and a lost connection is not leaving.
+- Signing in with an active ranked match opens it directly: the menu stands for the moment the question takes, so a player
+  without a seat and a slow connection wait for nothing. The update restart is not offered while one is active, and a
+  required update's overlay waits for its end, since RANK-10 lets a seat play on.
 - My games marks ranked rows. A finished ranked game stands in the Finished tab and opens its end screen.
 - Normal, test, replay and observer boards keep their menus unchanged.
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Wotr.Contracts;
 
@@ -20,9 +21,17 @@ namespace Wotr.Client
         // REPLAY-04: Save replay on the end screen; none without a library.
         private readonly ReplaySaver saver;
         private readonly RankedPauseController pause;
+        private readonly GameApi api;
+        private readonly string matchId;
+        // UI-501: the same id for every attempt, so a concession that did arrive answers its retry with its first receipt.
+        private readonly string concession = Guid.NewGuid().ToString("N");
         private bool disposed;
         public BoardExit Exit { get; }
         public bool Expired { get; private set; }
+        // UI-501: an unfinished ranked game: leaving it loses it.
+        public bool RankedActive { get; private set; }
+        public bool Connected { get; private set; }
+        public event Action RankedChanged;
         public Task LocalWrites => turns.LocalWrites;
         // UI-304: presenters of opponent actions register here (UI-305–UI-312).
         public PresentationPlayback Playback => playback.Playback;
@@ -31,7 +40,8 @@ namespace Wotr.Client
             ReplayLibrary replays = null)
         {
             this.board = board;
-
+            this.api = api;
+            this.matchId = matchId;
             Exit = new BoardExit(persistence);
             connection = new MatchConnection(api, matchId);
             turns = new TurnInteraction(api, connection, board, persistence);
@@ -75,6 +85,7 @@ namespace Wotr.Client
             if (disposed)
                 return;
             Expired = state == "SessionExpired";
+            Connected = state == "Connected";
             board.SetConnection(state);
             sounds?.SetConnection(state);
             turns.SetConnection(state);
@@ -93,6 +104,24 @@ namespace Wotr.Client
                 return;
             board.ShowClock(view.Clock, view.You);
             turns.SetPaused(view.Clock?.Paused == true);
+            ShowRanked(view.Clock != null);
+        }
+
+        private void ShowRanked(bool active)
+        {
+            board.Menu.SetRanked(active);
+            if (active == RankedActive)
+                return;
+            RankedActive = active;
+            RankedChanged?.Invoke();
+        }
+
+        // UI-501: sends the concession and waits for the answer; the view that follows shows the end of the game.
+        public async Task Concede()
+        {
+            var route = "api/matches/" + Uri.EscapeDataString(matchId) + "/concede";
+            await api.Post<CommandReceipt>(route, new ConcedeRequest { CommandId = concession }, CancellationToken.None);
+            await connection.Refresh();
         }
 
         public void Dispose() => Dispose(true);

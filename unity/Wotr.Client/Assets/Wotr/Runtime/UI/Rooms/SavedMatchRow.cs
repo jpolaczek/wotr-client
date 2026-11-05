@@ -37,13 +37,13 @@ namespace Wotr.Client
         public void Apply(MatchSummary match)
         {
             current = match;
-            var key = $"{match.Revision}/{match.LastSeenRevision}/{match.Status}/{match.Opponent}/{match.Name}";
+            var key = $"{match.Revision}/{match.LastSeenRevision}/{match.Status}/{match.Opponent}/{match.Name}/{match.Ranked}";
             if (key == version)
                 return;
             version = key;
             heading.text = string.IsNullOrEmpty(match.Name) ? "With " + match.Opponent : match.Name;
             detail.text = (string.IsNullOrEmpty(match.Name) ? "" : "With " + match.Opponent + " · ") + BoardScreen.SideName(match.You) + " · Turn " + match.Turn + " · " + Modules(match.Configuration);
-            state.text = (match.HasUnseenChanges ? "● New changes · " : "") + Status(match);
+            state.text = (match.Ranked ? "Ranked · " : "") + (match.HasUnseenChanges ? "● New changes · " : "") + Status(match);
             Root.EnableInClassList("your-decision", match.Status == MatchStatus.YourDecision);
             ExpansionCrests.Show(crests, match.Configuration);
         }
