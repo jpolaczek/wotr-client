@@ -33,6 +33,9 @@ namespace Wotr.Client
         private int unseenResults;
         private readonly HostGameForm host;
         private readonly DemoStartPage demo = new DemoStartPage();
+        // UI-497: the ranked search's page; opening it asks the flow for the released modules and the rating.
+        private readonly FindGameForm find = new FindGameForm();
+        public event Action FindOpened;
         private readonly VisualElement lists = new VisualElement();
         private readonly VisualElement publicRooms = new VisualElement();
         private readonly Dictionary<string, PublicRoomRow> publicRows = new Dictionary<string, PublicRoomRow>();
@@ -104,6 +107,9 @@ namespace Wotr.Client
             demo.Back += ShowPublicGames;
             demo.Root.style.display = DisplayStyle.None;
             panel.Add(demo.Root);
+            find.Back += ShowPublicGames;
+            find.Root.style.display = DisplayStyle.None;
+            panel.Add(find.Root);
             testScenarios.Start += id => StartScenario?.Invoke(id);
             testScenarios.Back += ShowPublicGames;
             testScenarios.Root.style.display = DisplayStyle.None;
@@ -196,6 +202,7 @@ namespace Wotr.Client
             column.Add(showPublic);
             column.Add(showMine);
             column.Add(showReplays);
+            column.Add(Action("find-game", "Find game", ShowFindGame));
             column.Add(Action("host-game", "Host a game", ShowHostForm));
             column.Add(Action("menu-demo", "Demo vs CPU", ShowDemo));
             column.Add(JoinBox());
@@ -303,6 +310,7 @@ namespace Wotr.Client
             games.style.display = shown == games ? DisplayStyle.Flex : DisplayStyle.None;
             host.Root.style.display = shown == host.Root ? DisplayStyle.Flex : DisplayStyle.None;
             demo.Root.style.display = shown == demo.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            find.Root.style.display = shown == find.Root ? DisplayStyle.Flex : DisplayStyle.None;
             testScenarios.Root.style.display = shown == testScenarios.Root ? DisplayStyle.Flex : DisplayStyle.None;
             Replays.Root.style.display = shown == Replays.Root ? DisplayStyle.Flex : DisplayStyle.None;
             showPublic.EnableInClassList("selected", shown == tables);
@@ -328,6 +336,15 @@ namespace Wotr.Client
             ShowPage("Demo vs CPU", demo.Root);
             DemoOpened?.Invoke();
         }
+
+        private void ShowFindGame()
+        {
+            find.Reset();
+            ShowPage("Find game", find.Root);
+            FindOpened?.Invoke();
+        }
+
+        public FindGameForm FindGame => find;
 
         public DemoStartPage DemoPage => demo;
 

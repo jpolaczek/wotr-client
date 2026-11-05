@@ -779,6 +779,52 @@
 .main-menu .side-choice { height: 96px; margin-bottom: 8px; }
 .main-menu .side-choice > .side-card { padding: 8px 12px; }
 .main-menu .demo-note { margin-bottom: 6px; font-size: 14px; }
+/* UI-497: Find game. Two columns, no scrolling: the rows on the left, the side cards and the rating on the right. */
+.main-menu .find-columns { flex-direction: row; flex-grow: 1; flex-shrink: 1; min-height: 0; }
+.main-menu .find-column { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 16px; }
+.main-menu .find-column:last-child { margin-right: 0; }
+.main-menu .find-column > .host-heading { flex-shrink: 0; margin-bottom: 2px; }
+.main-menu .find-row { flex-direction: row; align-items: center; flex-grow: 1; flex-shrink: 0; min-height: 34px; max-height: 44px; }
+.main-menu .find-row-label { width: 84px; flex-shrink: 0; justify-content: center; }
+.main-menu .find-row-name {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: rgb(226, 214, 184);
+    -unity-text-align: middle-left;
+}
+.main-menu .find-row-detail {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(190, 178, 150);
+    -unity-text-align: middle-left;
+}
+.main-menu .find-segments { flex-grow: 1; flex-shrink: 0; justify-content: flex-end; }
+.main-menu .find-segments > .host-segment { width: 66px; height: 30px; min-height: 30px; margin: 0 0 0 4px; padding: 0; font-size: 14px; }
+.main-menu .find-form .side-choice { height: 112px; margin: 0 -4px 6px -4px; }
+.main-menu .find-form .side-choice > .side-card { padding: 8px 10px; }
+.main-menu .find-form .side-card-heading .menu-row-emblem { width: 28px; height: 28px; }
+.main-menu .find-form .side-card-name { font-size: 14px; letter-spacing: 0; }
+.main-menu .find-form .side-card-detail { font-size: 13px; }
+.main-menu .find-form .find-note {
+    flex-shrink: 0;
+    margin: 8px 0 0 0;
+    padding: 0;
+    font-size: 14px;
+    white-space: normal;
+    color: rgb(206, 194, 164);
+}
+.main-menu .find-form .find-rating {
+    flex-shrink: 0;
+    height: 32px;
+    margin: 4px 0 0 0;
+    padding: 0;
+    font-size: 15px;
+    color: rgb(226, 214, 184);
+    -unity-text-align: middle-left;
+}
+.main-menu .host-footer > .find-submit { width: 200px; }
 .main-menu .replay-library { padding: 2px 4px 0 4px; }
 .main-menu .replay-action { height: 32px; min-height: 32px; font-size: 14px; }
 .main-menu .replay-footer { height: 36px; }

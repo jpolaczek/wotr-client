@@ -130,6 +130,7 @@ namespace Wotr.Client
             lobby.Create += request => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms", request, screenLifetime.Token)));
             lobby.Demo += (side, configuration) => Perform(() => StartDemo(side, configuration));
             lobby.DemoOpened += () => _ = LoadDemoModules(lobby, screenLifetime.Token);
+            lobby.FindOpened += () => _ = LoadFindGame(lobby, screenLifetime.Token);
             lobby.Join += (code, role) => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms/join",
                 new JoinRoomRequest { Code = code, Role = role }, screenLifetime.Token)));
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
@@ -185,6 +186,24 @@ namespace Wotr.Client
                 var offered = await api.Get<OfferedModulesView>("api/rooms/offered-modules", token);
                 if (!token.IsCancellationRequested)
                     lobby.ShowDemoModules(offered.Modules);
+            }
+            catch (ApiException) { }
+            catch (HttpRequestException) { }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+        }
+
+        // UI-497: the released modules and the rating of the Find game page. Without an answer the expansions stay Off, which
+        // the server accepts, and the rating stays blank.
+        private async Task LoadFindGame(MainMenuScreen lobby, CancellationToken token)
+        {
+            try
+            {
+                var offered = await api.Get<OfferedModulesView>("api/rooms/offered-modules", token);
+                if (!token.IsCancellationRequested)
+                    lobby.FindGame.Offer(offered.Modules);
+                var search = await api.Get<RankedSearchView>("api/ranked/queue", token);
+                if (!token.IsCancellationRequested)
+                    lobby.FindGame.ShowRating(search.Rating);
             }
             catch (ApiException) { }
             catch (HttpRequestException) { }

@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: planned, not implemented. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game (UI-497) stands. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -26,7 +26,11 @@ A window in the family of Host game. It has no name, visibility or variant contr
 - Enforcing a time preset lowers another enforced preset to Allow, and the last preset that is not Off cannot be
   turned off: its Off segment is disabled, with a tooltip saying why.
 - Every segment's tooltip says what it means for the match, for example "Kings must be in the game".
-- The player's rating stands in the window.
+- An expansion the server does not release stays Off and disabled, with a tooltip saying so. Until the server answers,
+  every expansion is in that state.
+- The player's rating stands in the window, with a line saying that leaving a ranked game or running out of time loses it.
+- The page has two columns, the rows on the left and the side cards on the right, so that nothing scrolls at
+  1366×768 at 125 %.
 - The primary **Find ranked game** button has a fixed place. The window always opens in the defaults: the faction
   is never remembered.
 - No numeric entry and no scrolling, in all four standard layouts.
