@@ -120,7 +120,15 @@ namespace Wotr.PlayTests
         {
             using var room = await Connect("grey", ScenarioKind.Character, openPanels: false);
             var c = Reaction(room, room.Fp, ReactionDecks.GreyDraw, "grey-draw");
-            await Pictured(c, () => AssertLights(c, true, "while the draw is offered"));
+            // UI-457 (owner): Gandalf guides, so his Characters row shows his next version, which is not on the board: neither
+            // that row nor the tab lights, while the version in play keeps its light on his Fellowship portrait.
+            const string Offered = "grey-draw while the draw is offered";
+            await Pictured(c, async () =>
+            {
+                await AssertTab(c, false, Offered);
+                await AssertRow(c, false, Offered);
+                await AssertFellowship(c, true, Offered);
+            });
             var revision = room.Fp.Board.View.Revision;
             await ReactionGestures.Use(room, room.Fp, ReactionDecks.GreyDraw);
             await room.At(revision + 1);
