@@ -23,8 +23,8 @@ namespace Wotr.PlayTests
 
         [UnityTest] public IEnumerator TheSpecialDiceToKeepGlowInTheOwnPool() => Wait(SpecialDice());
         [UnityTest] public IEnumerator TheDiceTheRulerDiscardTakesGlowInTheOwnPool() => Wait(RulerDiscard());
-        [UnityTest] public IEnumerator BothRulerDiesGlowForDismayBeforeLoreEachInItsPool() => Wait(Dismay("ui58-dismay-before-lore", "dismay-before-lore"));
-        [UnityTest] public IEnumerator BothRulerDiesGlowForDismayEachInItsPoolAndTheHintNamesBoth() => Wait(Dismay("ui09-dismay", "dismay"));
+        [UnityTest] public IEnumerator BothRulerDiesGlowForDismayBeforeLoreEachInItsPool() => Wait(Dismay("ui58-dismay-before-lore-audit", "dismay-before-lore"));
+        [UnityTest] public IEnumerator BothRulerDiesGlowForDismayEachInItsPoolAndTheHintNamesBoth() => Wait(Dismay("ui09-dismay-audit", "dismay"));
         [UnityTest] public IEnumerator VilyasSocketAndThePaidDieGlow() => Wait(Vilya());
         [UnityTest] public IEnumerator NenyasSocketGlowsInTheTileStep() => Wait(Nenya());
         [UnityTest] public IEnumerator TheRingsThreeRingsRecoversGlowInTheConsole() => Wait(ThreeRings());

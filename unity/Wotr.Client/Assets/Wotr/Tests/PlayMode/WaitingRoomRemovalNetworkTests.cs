@@ -51,7 +51,8 @@ namespace Wotr.PlayTests
                 await Until(() => guest.Root.Q("main-menu") != null, token);
                 // The menu shows while it loads; the reason it was opened with stays in the status line once it has.
                 await Until(() => MenuStatus(guest.Root).text == "The host removed you from this room.", token);
-                Assert.Greater(MenuStatus(guest.Root).worldBound.height, 0, "The removed player sees the reason.");
+                // The removed player sees the reason: its height is NaN until the layout has placed the new text.
+                await Until(() => MenuStatus(guest.Root).worldBound.height > 0, token);
                 var code = (await hostApi.Post<RoomView>("api/rooms/" + room.Id + "/invitation", null, token)).JoinCode;
                 var refused = 0;
                 try { await guestApi.Post<RoomView>("api/rooms/join", new JoinRoomRequest { Code = code }, token); }

@@ -123,7 +123,7 @@ namespace Wotr.PlayTests
         // which its tooltip names; the Dismay tokens are information; no panel or window opens.
         private static async Task Dismay()
         {
-            using var room = await Connect("ui09-dismay", ScenarioKind.CardPack);
+            using var room = await Connect("ui09-dismay-click", ScenarioKind.CardPack);
             var actor = room.Sh;
             var option = actor.Board.View.Options.Single(o => o.Kind == CommandKind.UseDismay);
             var die = actor.Board.View.Dice.Single(d => d.Owner == Side.FreePeoples && option.EligibleDice.Contains(d.Id));
