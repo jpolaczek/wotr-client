@@ -36,6 +36,10 @@ namespace Wotr.Client
         // UI-497: the ranked search's page; opening it asks the flow for the released modules and the rating.
         private readonly FindGameForm find = new FindGameForm();
         public event Action FindOpened;
+        // UI-503: the ranked top 25; opening it asks the flow to read it.
+        public LeaderboardPage Leaderboards { get; } = new LeaderboardPage();
+        public event Action LeaderboardsOpened;
+        private Button showLeaderboards;
         private readonly VisualElement lists = new VisualElement();
         private readonly VisualElement publicRooms = new VisualElement();
         private readonly Dictionary<string, PublicRoomRow> publicRows = new Dictionary<string, PublicRoomRow>();
@@ -110,6 +114,8 @@ namespace Wotr.Client
             find.Back += ShowPublicGames;
             find.Root.style.display = DisplayStyle.None;
             panel.Add(find.Root);
+            Leaderboards.Root.style.display = DisplayStyle.None;
+            panel.Add(Leaderboards.Root);
             testScenarios.Start += id => StartScenario?.Invoke(id);
             testScenarios.Back += ShowPublicGames;
             testScenarios.Root.style.display = DisplayStyle.None;
@@ -120,6 +126,8 @@ namespace Wotr.Client
             showMine = Action("show-my-games", "My games", ShowMyGames);
             showReplays = Action("show-replays", "Replays", ShowReplays);
             showReplays.tooltip = "Watch saved games again, and import or export replay files.";
+            showLeaderboards = Action("show-leaderboards", "Leaderboards", ShowLeaderboards);
+            showLeaderboards.tooltip = "The 25 highest ranked players, and your own place.";
             myTurns.AddToClassList("menu-action-badge");
             showMine.Add(myTurns);
             ShowTurns(0);
@@ -203,6 +211,7 @@ namespace Wotr.Client
             column.Add(showMine);
             column.Add(showReplays);
             column.Add(Action("find-game", "Find game", ShowFindGame));
+            column.Add(showLeaderboards);
             column.Add(Action("host-game", "Host a game", ShowHostForm));
             column.Add(Action("menu-demo", "Demo vs CPU", ShowDemo));
             column.Add(JoinBox());
@@ -311,6 +320,8 @@ namespace Wotr.Client
             host.Root.style.display = shown == host.Root ? DisplayStyle.Flex : DisplayStyle.None;
             demo.Root.style.display = shown == demo.Root ? DisplayStyle.Flex : DisplayStyle.None;
             find.Root.style.display = shown == find.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            Leaderboards.Root.style.display = shown == Leaderboards.Root ? DisplayStyle.Flex : DisplayStyle.None;
+            showLeaderboards.EnableInClassList("selected", shown == Leaderboards.Root);
             testScenarios.Root.style.display = shown == testScenarios.Root ? DisplayStyle.Flex : DisplayStyle.None;
             Replays.Root.style.display = shown == Replays.Root ? DisplayStyle.Flex : DisplayStyle.None;
             showPublic.EnableInClassList("selected", shown == tables);
@@ -345,6 +356,14 @@ namespace Wotr.Client
         }
 
         public FindGameForm FindGame => find;
+
+        public bool LeaderboardsShown => Leaderboards.Root.style.display.value == DisplayStyle.Flex;
+
+        private void ShowLeaderboards()
+        {
+            ShowPage("Leaderboards", Leaderboards.Root);
+            LeaderboardsOpened?.Invoke();
+        }
 
         // UI-498: while a search runs, only its Cancel search responds; the menu's other actions are disabled, not hidden.
         public void ShowSearching(bool value)

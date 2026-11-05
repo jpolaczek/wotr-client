@@ -1,6 +1,6 @@
 # Ranked play — interface
 
-Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock, the pause, leaving and the end screen (UI-497–UI-502) stand. The rules of the mode (compatibility,
+Owner's decision of 2026-11-05 (R35). Status: being implemented; Find game, the search, the clock, the pause, leaving, the end screen and the leaderboard (UI-497–UI-503) stand. The rules of the mode (compatibility,
 pairing, clocks, pause, reconnecting, rating) are in `wotr-server:docs/RANKED_PLAY.md`; this document describes only
 how the client shows them. The implementation tasks are UI-497–UI-504.
 
@@ -111,6 +111,7 @@ A window in the family of Host game. It has no name, visibility or variant contr
   rank and rating stand below the table.
 - Loading and error states follow My games: a failed read keeps what was shown and offers Refresh.
 - Rows are not clickable. Before any ranked game, an empty message says how to get on the board.
+- All 25 rows share the window's height, so nothing scrolls at 1366×768 at 125 %; a shorter list keeps their size.
 
 ## Statements this mode changes
 

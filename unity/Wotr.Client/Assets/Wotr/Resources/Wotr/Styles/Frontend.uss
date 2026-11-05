@@ -825,6 +825,62 @@
     -unity-text-align: middle-left;
 }
 .main-menu .host-footer > .find-submit { width: 200px; }
+/* UI-503: every row shares the window's height, so all 25 stand without scrolling; a shorter list keeps their size. */
+.main-menu .leaderboard { flex-grow: 1; flex-shrink: 1; min-height: 0; padding: 0 4px; }
+.main-menu .leaderboard-head {
+    flex-direction: row;
+    flex-shrink: 0;
+    height: 22px;
+    border-bottom-width: 1px;
+    border-color: rgb(120, 104, 70);
+}
+.main-menu .leaderboard-head > .leaderboard-cell {
+    font-size: 13px;
+    color: rgb(214, 198, 160);
+    -unity-font-definition: resource("Wotr/Fonts/Cinzel-SemiBold");
+}
+.main-menu .leaderboard-rows { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-height: 0; }
+.main-menu .leaderboard-row { flex-direction: row; align-items: center; flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-height: 0; max-height: 26px; }
+.main-menu .leaderboard-row.leaderboard-own { background-color: rgba(176, 148, 88, 0.3); }
+.main-menu .leaderboard-cell {
+    margin: 0;
+    padding: 0 4px;
+    font-size: 13px;
+    color: rgb(226, 214, 184);
+    white-space: nowrap;
+    -unity-text-align: middle-left;
+}
+.main-menu .leaderboard-rank { width: 36px; flex-shrink: 0; -unity-text-align: middle-right; }
+.main-menu .leaderboard-name { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.main-menu .leaderboard-number { width: 62px; flex-shrink: 0; -unity-text-align: middle-right; }
+.main-menu .leaderboard-empty {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0 24px;
+    font-size: 15px;
+    white-space: normal;
+    color: rgb(214, 198, 160);
+    -unity-text-align: middle-center;
+}
+.main-menu .leaderboard-footer { flex-direction: row; align-items: center; flex-shrink: 0; height: 26px; margin-top: 2px; }
+.main-menu .leaderboard-you { flex-shrink: 0; margin: 0; padding: 0 4px; font-size: 14px; color: rgb(240, 226, 190); }
+.main-menu .leaderboard-status {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin: 0 0 0 12px;
+    padding: 0;
+    font-size: 13px;
+    color: rgb(236, 160, 140);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -unity-text-align: middle-right;
+}
 /* UI-498: art and opacity only here, never a filter: it crashes the renderer when a parent fades. */
 .main-menu .host-footer > .find-progress {
     flex-direction: row;

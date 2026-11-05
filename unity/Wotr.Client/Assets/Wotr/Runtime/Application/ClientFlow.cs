@@ -20,6 +20,7 @@ namespace Wotr.Client
         private readonly Action quit;
         private readonly SoundModule sounds;
         private RankedSearchController rankedSearch;
+        private LeaderboardController leaderboards;
         // UI-501: an open, unfinished ranked game holds the update's restart back.
         public event Action RankedMatchChanged;
         public bool RankedMatchActive => matchSession?.RankedActive == true;
@@ -173,6 +174,7 @@ namespace Wotr.Client
             lobby.DemoOpened += () => _ = LoadDemoModules(lobby, screenLifetime.Token);
             lobby.FindOpened += () => _ = LoadFindGame(lobby, screenLifetime.Token);
             rankedSearch = new RankedSearchController(api, lobby, id => Perform(() => ShowMatch(id)), ErrorText, sounds);
+            leaderboards = new LeaderboardController(api, lobby);
             lobby.Join += (code, role) => Perform(async () => ShowRoom(await api.Post<RoomView>("api/rooms/join",
                 new JoinRoomRequest { Code = code, Role = role }, screenLifetime.Token)));
             lobby.JoinPublic += (id, role) => Perform(async () => ShowRoom(await api.Post<RoomView>(
@@ -701,6 +703,8 @@ namespace Wotr.Client
             CloseMatch();
             rankedSearch?.Dispose();
             rankedSearch = null;
+            leaderboards?.Dispose();
+            leaderboards = null;
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();
@@ -725,6 +729,7 @@ namespace Wotr.Client
             screenLifetime.Dispose();
             CloseMatch();
             rankedSearch?.Dispose();
+            leaderboards?.Dispose();
             waitingRoom?.Dispose();
             waitingRoom = null;
             lobbyBrowser?.Dispose();

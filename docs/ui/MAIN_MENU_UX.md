@@ -39,7 +39,7 @@ The screen (`MainMenuScreen`) has three layers:
 
 - background**: dim map (`MapCanvas/terrain`), without interaction;
 - **header**: ‘WAR OF THE RING’ in Cinzel and ‘Signed in as {username}’;
-- **Body** of constant size 980×540, (reduces only on the screen that does not accommodate it):
+- **Body** of constant size 980×600 (540 until the compact menu of UI-470's line; `Frontend.uss` has held 600 since), reduced only on a screen that does not accommodate it:
   - **window** (`menu-window`; since UI-470 the thin `frontend/card` with the page title centred over
     `frontend/divider` and the Refresh button at the header's right end; formerly `frames/panel` and
     `frames/panel-header`);
